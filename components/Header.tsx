@@ -1,28 +1,59 @@
 export default function Header() {
   return (
-    <header className="w-full bg-black text-white border-b border-yellow-600">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-8 py-4">
+    <header className="w-full bg-background-header border-b border-border-main">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-8 py-6">
 
         {/* Logo */}
-        <div className="text-xl tracking-widest font-semibold text-yellow-500">
+        <div className="text-primary text-2xl tracking-[0.25em] ">
           IBPA
         </div>
 
         {/* Navigation */}
-        <nav className="flex gap-10 text-sm uppercase tracking-wider">
-          <a className="hover:text-yellow-500 transition" href="/">Home</a>
-          <a className="hover:text-yellow-500 transition" href="/categories">Categories</a>
-          <a className="hover:text-yellow-500 transition" href="/jury">Jury</a>
-          <a className="hover:text-yellow-500 transition" href="/grand-prix">Grand Prix</a>
-          <a className="hover:text-yellow-500 transition" href="/apply">Apply</a>
+        <nav className="flex items-center gap-10 text-[14px] uppercase tracking-[0.08em] ">
+
+          <a
+            href="/"
+            className="text-text-main hover:text-primary transition"
+          >
+            Home
+          </a>
+
+          <a
+            href="/categories"
+            className="text-text-main hover:text-primary transition"
+          >
+            Categories
+          </a>
+
+          <a
+            href="/jury"
+            className="text-text-main hover:text-primary transition"
+          >
+            Jury
+          </a>
+
+          <a
+            href="/grand-prix"
+            className="text-text-main hover:text-primary transition"
+          >
+            Grand Prix
+          </a>
+
+          <a
+            href="/apply"
+            className="text-text-main hover:text-primary transition"
+          >
+            Apply
+          </a>
+
         </nav>
 
-        {/* Apply button */}
+        {/* Apply Button */}
         <a
           href="/apply"
-          className="border border-yellow-500 text-yellow-500 px-4 py-2 text-sm uppercase hover:bg-yellow-500 hover:text-black transition"
+          className="bg-primary text-white px-6 py-3 rounded-full text-sm font-semibold uppercase tracking-[0.05em] hover:bg-primary-hover transition "
         >
-          Apply
+          Apply Now
         </a>
 
       </div>
