@@ -39,13 +39,6 @@ export default function Header() {
             Grand Prix
           </a>
 
-          <a
-            href="/apply"
-            className="text-text-main hover:text-primary transition"
-          >
-            Apply
-          </a>
-
         </nav>
 
         {/* Apply Button */}
