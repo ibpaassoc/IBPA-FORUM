@@ -5,11 +5,15 @@
   --foreground: #171717;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@theme {
+  --color-primary: #c89b1f;
+  --color-primary-hover: #b88a12;
+  --color-background-header: #f5f5f5;
+  --color-background-footer: #071126;
+  --color-text-main: #6b778c;
+  --color-text-muted: #8fa2c4;
+  --color-border-main: #e6e6e6;
+  --color-border-footer: #1c2947;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,5 +26,9 @@
 body {
   background: var(--background);
   color: var(--foreground);
+<<<<<<< HEAD
   font-family: Arial, Helvetica, sans-serif;
+=======
+  font-family: var(--font-body);
+>>>>>>> header-footer-save
 }
