@@ -1,135 +1,105 @@
+import Image from "next/image";
+
 export default function Footer() {
   return (
-    <footer className="bg-background-footer text-white mt-24">
+    <footer className="w-full border-t border-border-main bg-[#03143b] text-white">
+      <div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-2 xl:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
+          <div className="max-w-sm">
+            <a href="/" className="inline-flex items-center">
+              <Image
+                src="/logo.png"
+                alt="IBPA Logo"
+                width={220}
+                height={80}
+                className="h-14 w-auto object-contain"
+              />
+            </a>
 
-      <div className="max-w-7xl mx-auto px-8 py-16">
-
-        {/* Top Grid */}
-        <div className="grid md:grid-cols-4 gap-12">
-
-          {/* Brand */}
-          <div>
-            <div className="text-primary text-xl tracking-[0.25em] mb-6 ">
-              IBPA BEAUTY AWARDS
-            </div>
-
-            <p className="text-text-muted text-sm leading-relaxed ">
-              Celebrating excellence in the global beauty industry and recognizing
-              professionals shaping the future of beauty.
+            <p className="mt-6 text-sm leading-8 text-white/75">
+              Celebrating excellence in the global beauty industry and
+              recognizing professionals shaping the future of beauty.
             </p>
+          </div>
 
-            <div className="mt-6 text-text-muted text-sm ">
-              info@ibpa-awards.com
+          <div>
+            <h4 className="mb-5 text-sm font-semibold uppercase tracking-[0.22em] text-yellow-500">
+              About
+            </h4>
+            <div className="flex flex-col gap-4">
+              <a href="#" className="text-sm text-white/75 transition hover:text-yellow-500">
+                About Awards
+              </a>
+              <a href="#" className="text-sm text-white/75 transition hover:text-yellow-500">
+                How It Works
+              </a>
+              <a href="#" className="text-sm text-white/75 transition hover:text-yellow-500">
+                Timeline
+              </a>
+              <a href="#" className="text-sm text-white/75 transition hover:text-yellow-500">
+                FAQ
+              </a>
             </div>
           </div>
 
-          {/* About */}
           <div>
-            <h3 className="text-primary uppercase text-sm tracking-[0.15em] mb-4 ">
-              About
-            </h3>
-
-            <ul className="space-y-2 text-sm ">
-              <li>
-                <a className="text-text-muted hover:text-white transition" href="#">
-                  About Awards
-                </a>
-              </li>
-              <li>
-                <a className="text-text-muted hover:text-white transition" href="#">
-                  How It Works
-                </a>
-              </li>
-              <li>
-                <a className="text-text-muted hover:text-white transition" href="#">
-                  Timeline
-                </a>
-              </li>
-              <li>
-                <a className="text-text-muted hover:text-white transition" href="#">
-                  FAQ
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Awards */}
-          <div>
-            <h3 className="text-primary uppercase text-sm tracking-[0.15em] mb-4 ">
+            <h4 className="mb-5 text-sm font-semibold uppercase tracking-[0.22em] text-yellow-500">
               Awards
-            </h3>
-
-            <ul className="space-y-2 text-sm ">
-              <li>
-                <a className="text-text-muted hover:text-white transition" href="#">
-                  Categories
-                </a>
-              </li>
-              <li>
-                <a className="text-text-muted hover:text-white transition" href="#">
-                  Jury
-                </a>
-              </li>
-              <li>
-                <a className="text-text-muted hover:text-white transition" href="#">
-                  Judging Process
-                </a>
-              </li>
-              <li>
-                <a className="text-text-muted hover:text-white transition" href="#">
-                  Past Winners
-                </a>
-              </li>
-            </ul>
+            </h4>
+            <div className="flex flex-col gap-4">
+              <a href="#" className="text-sm text-white/75 transition hover:text-yellow-500">
+                Categories
+              </a>
+              <a href="#" className="text-sm text-white/75 transition hover:text-yellow-500">
+                Jury
+              </a>
+              <a href="#" className="text-sm text-white/75 transition hover:text-yellow-500">
+                Judging Process
+              </a>
+              <a href="#" className="text-sm text-white/75 transition hover:text-yellow-500">
+                Past Winners
+              </a>
+            </div>
           </div>
 
-          {/* Resources */}
           <div>
-            <h3 className="text-primary uppercase text-sm tracking-[0.15em] mb-4 ">
+            <h4 className="mb-5 text-sm font-semibold uppercase tracking-[0.22em] text-yellow-500">
               Resources
-            </h3>
-
-            <ul className="space-y-2 text-sm ">
-              <li>
-                <a className="text-text-muted hover:text-white transition" href="#">
-                  Media Centre
-                </a>
-              </li>
-              <li>
-                <a className="text-text-muted hover:text-white transition" href="#">
-                  Contact
-                </a>
-              </li>
-              <li>
-                <a className="text-text-muted hover:text-white transition" href="#">
-                  Terms & Conditions
-                </a>
-              </li>
-              <li>
-                <a className="text-text-muted hover:text-white transition" href="#">
-                  Privacy Policy
-                </a>
-              </li>
-            </ul>
+            </h4>
+            <div className="flex flex-col gap-4">
+              <a href="#" className="text-sm text-white/75 transition hover:text-yellow-500">
+                Media Centre
+              </a>
+              <a href="#" className="text-sm text-white/75 transition hover:text-yellow-500">
+                Contact
+              </a>
+              <a href="#" className="text-sm text-white/75 transition hover:text-yellow-500">
+                Terms & Conditions
+              </a>
+              <a href="#" className="text-sm text-white/75 transition hover:text-yellow-500">
+                Privacy Policy
+              </a>
+            </div>
           </div>
-
-        </div>
-
-        {/* Bottom */}
-        <div className="border-t border-border-footer mt-16 pt-6 flex flex-col md:flex-row justify-between text-sm text-text-muted ">
 
           <div>
-            © {new Date().getFullYear()} IBPA Beauty Awards. All rights reserved.
+            <h4 className="mb-5 text-sm font-semibold uppercase tracking-[0.22em] text-yellow-500">
+              Contact
+            </h4>
+            <a
+              href="mailto:info@ibpa-awards.com"
+              className="text-sm text-white/75 transition hover:text-yellow-500"
+            >
+              info@ibpa-awards.com
+            </a>
           </div>
-
-          <div className="mt-4 md:mt-0">
-            Open to global participants
-          </div>
-
         </div>
 
+        <div className="mt-12 flex flex-col gap-4 border-t border-white/10 pt-6 text-sm text-white/60 sm:flex-row sm:items-center sm:justify-between">
+          <p>© 2026 IBPA Beauty Awards. All rights reserved.</p>
+          <p>Open to global participants.</p>
+        </div>
       </div>
-
     </footer>
-  )
+  );
 }
