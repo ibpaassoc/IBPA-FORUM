@@ -8,7 +8,7 @@ export default function Footer() {
           <div className="max-w-sm">
             <a href="/" className="inline-flex items-center">
               <Image
-                src="/logo.png"
+                src="/logo.svg"
                 alt="IBPA Logo"
                 width={220}
                 height={80}
