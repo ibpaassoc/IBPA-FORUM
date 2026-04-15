@@ -1,6 +1,6 @@
 import Countdown from "@/components/home/Countdown";
 
-export default function Hero() {
+export default function HomeHero() {
   return (
     <section className="relative overflow-hidden border-b border-white/10">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(216,194,122,0.22),transparent_38%)]" />
