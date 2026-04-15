@@ -1,49 +1,75 @@
+"use client"
+
+import { useState } from "react"
+
 const faqs = [
   {
     question: "Do I pay when I submit the application?",
     answer:
-      "No. Jury applications are submitted free of charge. The $250 fee is paid only after approval.",
+      "No. Jury applications are submitted free of charge. The $250 fee is charged only after approval.",
   },
   {
     question: "How long does the review take?",
     answer:
-      "Applications may be reviewed within up to 14 business days after submission.",
+      "Applications are reviewed individually and may take up to 14 business days.",
   },
   {
-    question: "Will all applicants be accepted?",
+    question: "Will every applicant be accepted?",
     answer:
-      "No. Each application is reviewed individually based on professional experience, qualifications, and fit for the jury panel.",
+      "No. Approval depends on professional background, qualifications, and jury fit.",
   },
   {
     question: "What happens after approval?",
     answer:
-      "Approved candidates receive payment instructions. After payment confirmation, they are officially added to the jury panel.",
+      "Approved candidates receive payment instructions. After payment confirmation, they officially join the jury panel.",
   },
 ]
 
 export default function JuryFaq() {
+  const [openIndex, setOpenIndex] = useState<number | null>(0)
+
   return (
-    <section className="border-b border-black/10 bg-[#fcfcfc]">
-      <div className="mx-auto max-w-5xl px-6 py-20 md:px-10">
-        <div className="text-center">
-          <p className="text-sm font-medium uppercase tracking-[0.25em] text-[#b48a2c]">
-            FAQ
+    <section className="border-b border-white/10 bg-[#050505]">
+      <div className="mx-auto max-w-7xl px-6 py-14 md:px-10">
+        <div className="mb-8 max-w-3xl">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d6a63a]">
+            Questions
           </p>
-          <h2 className="mt-4 text-3xl font-semibold sm:text-4xl">
-            Common questions
+          <h2 className="mt-3 text-3xl font-semibold leading-tight sm:text-4xl">
+            Frequently asked questions
           </h2>
         </div>
 
-        <div className="mt-12 space-y-4">
-          {faqs.map((faq) => (
-            <div
-              key={faq.question}
-              className="rounded-3xl border border-black/10 bg-white p-6"
-            >
-              <h3 className="text-lg font-semibold">{faq.question}</h3>
-              <p className="mt-3 text-base leading-7 text-black/70">{faq.answer}</p>
-            </div>
-          ))}
+        <div className="rounded-2xl border border-white/12 bg-white/2">
+          {faqs.map((faq, index) => {
+            const isOpen = openIndex === index
+
+            return (
+              <div
+                key={faq.question}
+                className="border-b border-white/10 last:border-b-0"
+              >
+                <button
+                  type="button"
+                  onClick={() => setOpenIndex(isOpen ? null : index)}
+                  className="flex w-full items-center justify-between gap-6 px-5 py-5 text-left"
+                >
+                  <span className="text-sm font-medium text-white sm:text-base">
+                    {faq.question}
+                  </span>
+                  <span className="text-xl text-[#d6a63a]">{isOpen ? "−" : "+"}</span>
+                </button>
+
+                {isOpen && (
+                  <div className="px-5 pb-5">
+                    <p className="max-w-3xl text-sm leading-6 text-white/65">
+                      {faq.answer}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </div>
       </div>
     </section>

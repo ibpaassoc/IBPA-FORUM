@@ -1,36 +1,50 @@
-const requirements = [
-  "Minimum 5 years of professional experience in the beauty industry.",
-  "Strong professional background in one or more championship categories.",
-  "Professional certifications and supporting documents are required.",
-  "Applicants must disclose any conflict of interest with possible nominees.",
-  "Jury applicants submit their application free of charge.",
-  "The $250 jury registration fee is paid only after approval.",
+const items = [
+  {
+    label: "Minimum Experience",
+    value: "5+ Years",
+    text: "Applicants must have at least five years of professional industry experience.",
+  },
+  {
+    label: "Expertise",
+    value: "12 Categories",
+    text: "Judges are selected based on their expertise in relevant championship areas.",
+  },
+  {
+    label: "Documents",
+    value: "Required",
+    text: "Professional certifications, bio, and profile materials must be submitted.",
+  },
+  {
+    label: "Payment Rule",
+    value: "After Approval",
+    text: "The jury fee is never charged at the application stage.",
+  },
 ]
 
 export default function JuryRequirements() {
   return (
-    <section id="requirements" className="border-b border-black/10 bg-white">
-      <div className="mx-auto max-w-7xl px-6 py-20 md:px-10">
-        <div className="max-w-3xl">
-          <p className="text-sm font-medium uppercase tracking-[0.25em] text-[#b48a2c]">
+    <section id="requirements" className="border-b border-white/10 bg-[#050505]">
+      <div className="mx-auto max-w-7xl px-6 py-14 md:px-10">
+        <div className="mb-8 max-w-3xl">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d6a63a]">
             Requirements
           </p>
-          <h2 className="mt-4 text-3xl font-semibold sm:text-4xl">
-            Who can apply to become a judge
+          <h2 className="mt-3 text-3xl font-semibold leading-tight sm:text-4xl">
+            Who can apply for the jury panel
           </h2>
-          <p className="mt-6 text-base leading-8 text-black/70">
-            The jury panel is formed from experienced professionals with recognized expertise,
-            ethical standards, and the ability to evaluate submissions fairly and confidentially.
-          </p>
         </div>
 
-        <div className="mt-12 grid gap-4 md:grid-cols-2">
-          {requirements.map((item) => (
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {items.map((item) => (
             <div
-              key={item}
-              className="rounded-3xl border border-black/10 bg-[#faf8f3] p-6"
+              key={item.label}
+              className="rounded-2xl border border-white/12 bg-white/3 p-5"
             >
-              <p className="text-base leading-7 text-black/80">{item}</p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d6a63a]">
+                {item.label}
+              </p>
+              <p className="mt-3 text-3xl font-semibold">{item.value}</p>
+              <p className="mt-3 text-sm leading-6 text-white/65">{item.text}</p>
             </div>
           ))}
         </div>

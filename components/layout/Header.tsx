@@ -31,13 +31,13 @@ export default function Header() {
         />
 
         <nav className="absolute left-1/2 hidden -translate-x-1/2 lg:flex items-center gap-12 text-base uppercase tracking-wider">
-          <a href="#" className="text-black transition hover:text-yellow-500">
+          <a href="/" className="text-black transition hover:text-yellow-500">
             Home
           </a>
           <a href="#" className="text-black transition hover:text-yellow-500">
             Categories
           </a>
-          <a href="#" className="text-black transition hover:text-yellow-500">
+          <a href="/jury" className="text-black transition hover:text-yellow-500">
             Jury
           </a>
           <a href="#" className="text-black transition hover:text-yellow-500">

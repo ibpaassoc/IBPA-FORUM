@@ -2,27 +2,30 @@ import Link from "next/link"
 
 export default function JuryCta() {
   return (
-    <section className="bg-[#1f1f1f] text-white">
-      <div className="mx-auto max-w-5xl px-6 py-20 text-center md:px-10">
-        <p className="text-sm font-medium uppercase tracking-[0.25em] text-[#d6b15c]">
-          Apply Now
-        </p>
+    <section className="bg-[#050505]">
+      <div className="mx-auto max-w-7xl px-6 py-14 md:px-10">
+        <div className="rounded-[1.25rem] border border-white/12 bg-[linear-gradient(to_right,rgba(255,255,255,0.03),rgba(214,166,58,0.10))] p-6 md:p-8">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d6a63a]">
+            Jury
+          </p>
 
-        <h2 className="mt-4 text-3xl font-semibold sm:text-4xl">
-          Ready to join the IBPA jury panel?
-        </h2>
+          <h2 className="mt-4 max-w-2xl text-3xl font-semibold leading-tight sm:text-4xl">
+            Apply to become an official IBPA judge
+          </h2>
 
-        <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-white/75">
-          Submit your application and become part of the official judging panel
-          for the IBPA Beauty Championship.
-        </p>
+          <p className="mt-4 max-w-2xl text-sm leading-7 text-white/70">
+            Jury candidates must demonstrate professional experience, recognized
+            expertise, and ethical judgment. After approval, judges receive official
+            confirmation, supporting documents, and a public profile on the jury page.
+          </p>
 
-        <Link
-          href="/apply/jury"
-          className="mt-8 inline-flex items-center justify-center rounded-full bg-[#b48a2c] px-8 py-4 text-sm font-semibold uppercase tracking-[0.15em] text-white transition hover:opacity-90"
-        >
-          Apply to Become a Judge
-        </Link>
+          <Link
+            href="/apply/jury"
+            className="mt-7 inline-flex items-center justify-center rounded-full bg-[#d6a63a] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-black transition hover:opacity-90"
+          >
+            Apply as Judge
+          </Link>
+        </div>
       </div>
     </section>
   )
