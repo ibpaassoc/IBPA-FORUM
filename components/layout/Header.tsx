@@ -47,7 +47,7 @@ export default function Header() {
 
         <div className="ml-auto flex items-center gap-4">
           <a
-            href="#"
+            href="/apply"
             className="hidden rounded-full bg-yellow-500 px-5 py-2.5 text-sm font-medium text-black transition hover:opacity-90 lg:inline-flex"
           >
             Apply Now
