@@ -82,6 +82,35 @@ model Application {
   updatedAt             DateTime            @updatedAt
 }
 
+model JuryApplication {
+  id                                String                @id @default(cuid())
+  fullName                          String
+  email                             String
+  phone                             String
+  country                           String
+  city                              String
+  professionalTitle                 String
+  yearsExperience                   Int
+  employerAffiliation               String
+  membershipStatus                  String
+  membershipLevel                   String?
+  previousJudgingExperience         Boolean
+  previousJudgingDetails            String?
+  pastWinner                        Boolean                @default(false)
+  pastWinnerYear                    Int?
+  expertiseAreas                    String[]
+  professionalBio                   String
+  professionalWebsite               String?
+  conflictDisclosure                String
+  confidentialityAgreementAccepted  Boolean               @default(false)
+  motivation                        String
+  status                            ApplicationStatus     @default(SUBMITTED)
+  submittedAt                       DateTime?
+  files                             JuryApplicationFile[]
+  createdAt                         DateTime              @default(now())
+  updatedAt                         DateTime              @updatedAt
+}
+
 model ApplicationAnswer {
   id             String       @id @default(cuid())
   applicationId  String
@@ -94,6 +123,20 @@ model ApplicationAnswer {
   valueJson      Json?
 
   createdAt      DateTime     @default(now())
+}
+
+model JuryApplicationFile {
+  id                 String           @id @default(cuid())
+  juryApplicationId  String
+  juryApplication    JuryApplication  @relation(fields: [juryApplicationId], references: [id], onDelete: Cascade)
+
+  fieldKey           String
+  fileName           String
+  mimeType           String
+  fileSize           Int
+  storageKey         String?
+
+  createdAt          DateTime         @default(now())
 }
 
 model ApplicationFile {

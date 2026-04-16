@@ -1,4 +1,8 @@
 import { NextResponse } from "next/server";
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { randomUUID } from "node:crypto";
+import { prisma } from "@/lib/prisma";
 
 function getText(formData: FormData, key: string) {
   return String(formData.get(key) ?? "").trim();
@@ -6,6 +10,37 @@ function getText(formData: FormData, key: string) {
 
 function isFilledFile(value: FormDataEntryValue | null): value is File {
   return value instanceof File && value.size > 0;
+}
+
+function toOptionalText(value: string) {
+  return value || null;
+}
+
+function sanitizeFileName(fileName: string) {
+  return fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
+}
+
+async function saveUploadedFile(
+  file: File,
+  applicationId: string,
+  fieldKey: string,
+  index = 0
+) {
+  const uploadsRoot = path.join(process.cwd(), "data", "uploads", "jury");
+  const applicationDir = path.join(uploadsRoot, applicationId);
+  const safeFileName = `${fieldKey}-${index + 1}-${sanitizeFileName(file.name)}`;
+  const absolutePath = path.join(applicationDir, safeFileName);
+  const arrayBuffer = await file.arrayBuffer();
+
+  await mkdir(applicationDir, { recursive: true });
+  await writeFile(absolutePath, Buffer.from(arrayBuffer));
+
+  return {
+    fileName: file.name,
+    mimeType: file.type || "application/octet-stream",
+    fileSize: file.size,
+    storageKey: path.relative(process.cwd(), absolutePath).replace(/\\/g, "/"),
+  };
 }
 
 export async function POST(request: Request) {
@@ -119,34 +154,83 @@ export async function POST(request: Request) {
       );
     }
 
-    // TODO: Persist accepted jury applications once the jury workflow is modeled in Prisma.
-    console.info("POST /api/jury received application", {
-      fullName,
-      email,
-      phone,
-      country,
-      city,
-      professionalTitle,
-      yearsExperience,
-      employerAffiliation,
-      membershipStatus,
-      membershipLevel: membershipLevel || null,
-      previousJudgingExperience,
-      pastWinner,
-      pastWinnerYear: pastWinnerYear || null,
-      expertise,
-      certificationsCount: certifications.length,
-      professionalWebsite: professionalWebsite || null,
+    if (!isFilledFile(profilePhoto)) {
+      return NextResponse.json(
+        { message: "Profile photo is required." },
+        { status: 400 }
+      );
+    }
+
+    const applicationId = randomUUID();
+    const savedProfilePhoto = await saveUploadedFile(
+      profilePhoto,
+      applicationId,
+      "profilePhoto"
+    );
+    const savedCertifications = await Promise.all(
+      certifications.map((file, index) =>
+        saveUploadedFile(file, applicationId, "certifications", index)
+      )
+    );
+
+    const juryApplication = await prisma.juryApplication.create({
+      data: {
+        id: applicationId,
+        fullName,
+        email,
+        phone,
+        country,
+        city,
+        professionalTitle,
+        yearsExperience,
+        employerAffiliation,
+        membershipStatus,
+        membershipLevel: toOptionalText(membershipLevel),
+        previousJudgingExperience: previousJudgingExperience === "yes",
+        previousJudgingDetails: toOptionalText(previousJudgingDetails),
+        pastWinner: pastWinner === "yes",
+        pastWinnerYear: pastWinnerYear ? Number(pastWinnerYear) : null,
+        expertiseAreas: expertise,
+        professionalBio,
+        professionalWebsite: toOptionalText(professionalWebsite),
+        conflictDisclosure,
+        confidentialityAgreementAccepted: true,
+        motivation,
+        status: "SUBMITTED",
+        submittedAt: new Date(),
+        files: {
+          create: [
+            {
+              fieldKey: "profilePhoto",
+              ...savedProfilePhoto,
+            },
+            ...savedCertifications.map((file) => ({
+              fieldKey: "certifications",
+              ...file,
+            })),
+          ],
+        },
+      },
+      select: {
+        id: true,
+        fullName: true,
+        city: true,
+        country: true,
+        expertiseAreas: true,
+        status: true,
+      },
     });
 
     return NextResponse.json(
       {
         message:
           "Your jury application has been received. IBPA review may take up to 14 business days.",
+        id: juryApplication.id,
+        status: juryApplication.status,
         summary: {
-          name: fullName,
-          location: `${city}, ${country}`,
-          expertise,
+          name: juryApplication.fullName,
+          location: `${juryApplication.city}, ${juryApplication.country}`,
+          expertise: juryApplication.expertiseAreas,
         },
       },
       { status: 201 }
