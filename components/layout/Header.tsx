@@ -31,13 +31,13 @@ export default function Header() {
         />
 
         <nav className="absolute left-1/2 hidden -translate-x-1/2 lg:flex items-center gap-12 text-base uppercase tracking-wider">
-          <a href="#" className="text-black transition hover:text-yellow-500">
+          <a href="/" className="text-black transition hover:text-yellow-500">
             Home
           </a>
           <a href="#" className="text-black transition hover:text-yellow-500">
             Categories
           </a>
-          <a href="#" className="text-black transition hover:text-yellow-500">
+          <a href="/jury" className="text-black transition hover:text-yellow-500">
             Jury
           </a>
           <a href="#" className="text-black transition hover:text-yellow-500">
@@ -47,7 +47,7 @@ export default function Header() {
 
         <div className="ml-auto flex items-center gap-4">
           <a
-            href="#"
+            href="/apply"
             className="hidden rounded-full bg-yellow-500 px-5 py-2.5 text-sm font-medium text-black transition hover:opacity-90 lg:inline-flex"
           >
             Apply Now

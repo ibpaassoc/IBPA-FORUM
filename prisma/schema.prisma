@@ -1,0 +1,169 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ApplicationStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  awards      Award[]
+  applications Application[]
+
+  createdAt   DateTime @default(now())
+}
+
+model Award {
+  id          String   @id @default(cuid())
+  name        String
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  applications Application[]
+
+  createdAt   DateTime @default(now())
+}
+
+model Application {
+  id                    String              @id @default(cuid())
+  fullName              String
+  email                 String
+  phone                 String
+  country               String
+  stateProvince         String?
+  city                  String
+  professionalTitle     String
+  yearsExperience       Int
+  membershipNumber      String
+  membershipLevel       String?
+  websiteUrl            String?
+  socialUrl             String?
+  reviewsUrl            String?
+  heardAbout            String?
+
+  categoryId            String
+  category              Category            @relation(fields: [categoryId], references: [id])
+
+  awardId               String
+  award                 Award               @relation(fields: [awardId], references: [id])
+
+  status                ApplicationStatus   @default(DRAFT)
+  paymentStatus         PaymentStatus       @default(PENDING)
+
+  answers               ApplicationAnswer[]
+  files                 ApplicationFile[]
+  payments              Payment[]
+
+  submittedAt           DateTime?
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+}
+
+model JuryApplication {
+  id                                String                @id @default(cuid())
+  fullName                          String
+  email                             String
+  phone                             String
+  country                           String
+  city                              String
+  professionalTitle                 String
+  yearsExperience                   Int
+  employerAffiliation               String
+  membershipStatus                  String
+  membershipLevel                   String?
+  previousJudgingExperience         Boolean
+  previousJudgingDetails            String?
+  pastWinner                        Boolean                @default(false)
+  pastWinnerYear                    Int?
+  expertiseAreas                    String[]
+  professionalBio                   String
+  professionalWebsite               String?
+  conflictDisclosure                String
+  confidentialityAgreementAccepted  Boolean               @default(false)
+  motivation                        String
+  status                            ApplicationStatus     @default(SUBMITTED)
+  submittedAt                       DateTime?
+  files                             JuryApplicationFile[]
+  createdAt                         DateTime              @default(now())
+  updatedAt                         DateTime              @updatedAt
+}
+
+model ApplicationAnswer {
+  id             String       @id @default(cuid())
+  applicationId  String
+  application    Application  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  fieldKey       String
+  valueText      String?
+  valueNumber    Int?
+  valueBoolean   Boolean?
+  valueJson      Json?
+
+  createdAt      DateTime     @default(now())
+}
+
+model JuryApplicationFile {
+  id                 String           @id @default(cuid())
+  juryApplicationId  String
+  juryApplication    JuryApplication  @relation(fields: [juryApplicationId], references: [id], onDelete: Cascade)
+
+  fieldKey           String
+  fileName           String
+  mimeType           String
+  fileSize           Int
+  storageKey         String?
+
+  createdAt          DateTime         @default(now())
+}
+
+model ApplicationFile {
+  id             String       @id @default(cuid())
+  applicationId  String
+  application    Application  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  fieldKey       String
+  fileName       String
+  fileUrl        String
+  mimeType       String
+  fileSize       Int
+
+  createdAt      DateTime     @default(now())
+}
+
+model Payment {
+  id                    String       @id @default(cuid())
+  applicationId         String
+  application           Application  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  stripeSessionId       String?      @unique
+  stripePaymentIntentId String?      @unique
+  amount                Int
+  currency              String       @default("usd")
+  status                PaymentStatus @default(PENDING)
+  paidAt                DateTime?
+
+  createdAt             DateTime     @default(now())
+}
