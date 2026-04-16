@@ -292,6 +292,7 @@ export default async function AdminJuryApplicationDetailsPage(
                       alt={application.fullName}
                       width={960}
                       height={960}
+                      unoptimized
                       className="h-auto w-full object-cover"
                     />
                   </div>
