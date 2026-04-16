@@ -24,20 +24,20 @@ A Next.js 16 application for the IBPA Beauty Championship website. The project c
 
 ```mermaid
 flowchart LR
-    A[Public Jury Form] --> B[/api/jury]
-    B --> C[Save files locally]
-    B --> D[Save JuryApplication in Postgres]
-    D --> E[Admin Dashboard]
-    C --> F[Protected file route]
+    A["Public Jury Form"] --> B["/api/jury"]
+    B --> C["Save files locally"]
+    B --> D["Save JuryApplication in Postgres"]
+    D --> E["Admin Dashboard"]
+    C --> F["Protected file route"]
     E --> F
 ```
 
 ```mermaid
 flowchart TD
-    A[/admin] --> B[Cookie-based login]
-    B --> C[/admin/jury-applications]
-    C --> D[/admin/jury-applications/[id]]
-    D --> E[Update status and notes]
+    A["/admin"] --> B["Cookie-based login"]
+    B --> C["/admin/jury-applications"]
+    C --> D["/admin/jury-applications/[id]"]
+    D --> E["Update status and notes"]
     E --> C
 ```
 
