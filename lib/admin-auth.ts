@@ -27,6 +27,8 @@ export async function loginAdmin(password: string) {
 
   const cookieStore = await cookies();
 
+  // The admin area uses a simple server-set cookie instead of a full auth
+  // provider so the internal review flow stays lightweight.
   cookieStore.set(ADMIN_COOKIE_NAME, ADMIN_COOKIE_VALUE, {
     httpOnly: true,
     sameSite: "lax",

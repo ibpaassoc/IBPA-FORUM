@@ -59,6 +59,8 @@ export async function updateJuryApplicationReview(formData: FormData) {
     },
   });
 
+  // Refresh both the list and detail page so the saved review state appears
+  // immediately after a server action submission.
   revalidatePath("/admin/jury-applications");
   revalidatePath(`/admin/jury-applications/${id}`);
 }

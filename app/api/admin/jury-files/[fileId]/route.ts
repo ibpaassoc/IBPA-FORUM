@@ -31,6 +31,8 @@ export async function GET(
   const uploadsRoot = path.resolve(process.cwd(), "data", "uploads");
   const absolutePath = path.resolve(process.cwd(), fileRecord.storageKey);
 
+  // Only serve files from the dedicated uploads directory, even if a stored
+  // path were ever tampered with in the database.
   if (!absolutePath.startsWith(uploadsRoot)) {
     return new Response("Invalid file path", { status: 400 });
   }

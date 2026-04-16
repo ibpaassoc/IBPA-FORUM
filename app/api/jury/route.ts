@@ -26,6 +26,8 @@ async function saveUploadedFile(
   fieldKey: string,
   index = 0
 ) {
+  // Jury uploads are stored on the local filesystem for now. The database
+  // keeps metadata plus a storageKey that points back to this saved file.
   const uploadsRoot = path.join(process.cwd(), "data", "uploads", "jury");
   const applicationDir = path.join(uploadsRoot, applicationId);
   const safeFileName = `${fieldKey}-${index + 1}-${sanitizeFileName(file.name)}`;
@@ -161,6 +163,8 @@ export async function POST(request: Request) {
       );
     }
 
+    // Use the same id for the database record and upload folder so admin file
+    // lookups stay predictable while local storage is in place.
     const applicationId = randomUUID();
     const savedProfilePhoto = await saveUploadedFile(
       profilePhoto,
