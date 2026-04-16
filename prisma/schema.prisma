@@ -105,6 +105,8 @@ model JuryApplication {
   confidentialityAgreementAccepted  Boolean               @default(false)
   motivation                        String
   status                            ApplicationStatus     @default(SUBMITTED)
+  adminNotes                        String?
+  reviewedAt                        DateTime?
   submittedAt                       DateTime?
   files                             JuryApplicationFile[]
   createdAt                         DateTime              @default(now())
