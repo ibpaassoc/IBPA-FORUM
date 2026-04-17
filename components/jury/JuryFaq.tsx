@@ -29,10 +29,10 @@ export default function JuryFaq() {
   const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   return (
-    <section className="border-b border-white/10 bg-[#050505]">
+    <section className="border-b border-white/10 bg-[#141415]">
       <div className="mx-auto max-w-7xl px-6 py-14 md:px-10">
         <div className="mb-8 max-w-3xl">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d6a63a]">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d8c27a]">
             Questions
           </p>
           <h2 className="mt-3 text-3xl font-semibold leading-tight sm:text-4xl">
@@ -40,7 +40,7 @@ export default function JuryFaq() {
           </h2>
         </div>
 
-        <div className="rounded-2xl border border-white/12 bg-white/2">
+        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm">
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index
 
@@ -57,12 +57,12 @@ export default function JuryFaq() {
                   <span className="text-sm font-medium text-white sm:text-base">
                     {faq.question}
                   </span>
-                  <span className="text-xl text-[#d6a63a]">{isOpen ? "−" : "+"}</span>
+                  <span className="text-xl text-[#d8c27a]">{isOpen ? "-" : "+"}</span>
                 </button>
 
                 {isOpen && (
                   <div className="px-5 pb-5">
-                    <p className="max-w-3xl text-sm leading-6 text-white/65">
+                    <p className="max-w-3xl text-sm leading-6 text-[#d9d4ca]">
                       {faq.answer}
                     </p>
                   </div>

@@ -23,10 +23,10 @@ const items = [
 
 export default function JuryRequirements() {
   return (
-    <section id="requirements" className="border-b border-white/10 bg-[#050505]">
+    <section id="requirements" className="border-b border-white/10 bg-[#141415]">
       <div className="mx-auto max-w-7xl px-6 py-14 md:px-10">
         <div className="mb-8 max-w-3xl">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d6a63a]">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d8c27a]">
             Requirements
           </p>
           <h2 className="mt-3 text-3xl font-semibold leading-tight sm:text-4xl">
@@ -38,13 +38,13 @@ export default function JuryRequirements() {
           {items.map((item) => (
             <div
               key={item.label}
-              className="rounded-2xl border border-white/12 bg-white/3 p-5"
+              className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm"
             >
-              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d6a63a]">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
                 {item.label}
               </p>
               <p className="mt-3 text-3xl font-semibold">{item.value}</p>
-              <p className="mt-3 text-sm leading-6 text-white/65">{item.text}</p>
+              <p className="mt-3 text-sm leading-6 text-[#d9d4ca]">{item.text}</p>
             </div>
           ))}
         </div>

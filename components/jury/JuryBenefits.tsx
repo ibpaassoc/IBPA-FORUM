@@ -1,9 +1,9 @@
 export default function JuryBenefits() {
   return (
-    <section className="border-b border-white/10 bg-[#050505]">
+    <section className="border-b border-white/10 bg-[#0f0f10]">
       <div className="mx-auto max-w-7xl px-6 py-14 md:px-10">
-        <div className="rounded-[1.25rem] border border-white/12 bg-[linear-gradient(to_right,rgba(214,166,58,0.10),rgba(255,255,255,0.02))] p-6 md:p-8">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d6a63a]">
+        <div className="rounded-[1.25rem] border border-white/10 bg-[linear-gradient(to_right,rgba(216,194,122,0.12),rgba(255,255,255,0.04))] p-6 md:p-8">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d8c27a]">
             Benefits
           </p>
 
@@ -12,7 +12,7 @@ export default function JuryBenefits() {
               <h2 className="text-3xl font-semibold leading-tight sm:text-4xl">
                 What approved judges receive
               </h2>
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-white/70">
+              <p className="mt-4 max-w-2xl text-sm leading-7 text-[#d9d4ca]">
                 After approval and payment, official judges receive formal recognition,
                 supporting documents, and public listing as part of the championship jury panel.
               </p>
