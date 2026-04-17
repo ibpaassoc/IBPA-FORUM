@@ -1,8 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0f0f10;
+  --foreground: #f5f1e8;
+  --surface: #141415;
+  --surface-elevated: rgba(255, 255, 255, 0.05);
+  --surface-strong: rgba(255, 255, 255, 0.08);
+  --border-soft: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(216, 194, 122, 0.28);
+  --accent: #d8c27a;
+  --accent-strong: #f0e0a6;
+  --text-soft: #d9d4ca;
+  --text-muted: rgba(245, 241, 232, 0.68);
 }
 
 @theme {
@@ -16,14 +25,83 @@
   --color-border-footer: #1c2947;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background:
+    radial-gradient(circle at top, rgba(216, 194, 122, 0.1), transparent 30%),
+    linear-gradient(180deg, #0f0f10 0%, #131314 100%);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+  min-height: 100vh;
+}
+
+a {
+  transition:
+    color 150ms ease,
+    border-color 150ms ease,
+    background-color 150ms ease,
+    opacity 150ms ease;
+}
+
+::selection {
+  background: rgba(216, 194, 122, 0.3);
+  color: #fff8e8;
+}
+
+@utility page-shell {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(216, 194, 122, 0.12), transparent 30%),
+    linear-gradient(180deg, #0f0f10 0%, #141415 100%);
+  color: var(--foreground);
+}
+
+@utility page-section {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 80rem;
+  padding-inline: 1.5rem;
+}
+
+@utility page-section-pad {
+  padding-block: 5rem;
+}
+
+@utility page-card {
+  border: 1px solid var(--border-soft);
+  background: var(--surface-elevated);
+  backdrop-filter: blur(12px);
+}
+
+@utility page-panel {
+  border: 1px solid var(--border-soft);
+  background:
+    radial-gradient(circle at top left, rgba(216, 194, 122, 0.18), transparent 32%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+}
+
+@utility page-eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+@utility page-copy {
+  color: var(--text-soft);
+  line-height: 2rem;
+}
+
+@media (width >= 48rem) {
+  .page-section {
+    padding-inline: 2.5rem;
+  }
+}
+
+@media (width >= 64rem) {
+  .page-section {
+    padding-inline: 3rem;
+  }
 }
