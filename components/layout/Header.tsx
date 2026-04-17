@@ -28,7 +28,7 @@ export default function Header() {
   const handleLinkClick = () => setOpen(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full px-3 pt-3 sm:px-5">
+    <header className="fixed inset-x-0 top-0 z-50 w-full px-3 pt-3 sm:px-5">
       <div className="mx-auto max-w-7xl overflow-hidden rounded-[1.75rem] border border-[#d8c27a]/18 bg-[linear-gradient(135deg,rgba(25,24,26,0.94),rgba(18,22,28,0.9)_55%,rgba(39,33,24,0.86))] shadow-[0_18px_50px_rgba(0,0,0,0.28)] backdrop-blur-xl">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(216,194,122,0.18),transparent_30%),radial-gradient(circle_at_right,rgba(255,255,255,0.06),transparent_28%)]" />
 
@@ -64,7 +64,7 @@ export default function Header() {
             </Link>
 
             <Link
-              href="/apply"
+              href="/under-development"
               className="inline-flex items-center justify-center rounded-full bg-[#d8c27a] px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#111111] transition hover:opacity-90"
             >
               Apply Now
@@ -127,7 +127,7 @@ export default function Header() {
               </Link>
 
               <Link
-                href="/apply"
+                href="/under-development"
                 onClick={handleLinkClick}
                 className="inline-flex justify-center rounded-full bg-[#d8c27a] px-5 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-[#111111] transition hover:opacity-90"
               >
