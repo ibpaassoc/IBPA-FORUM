@@ -44,12 +44,14 @@ function DetailItem({
   );
 }
 
-export default async function AdminJuryApplicationDetailsPage(
-  props: PageProps<"/admin/jury-applications/[id]">
-) {
+export default async function AdminJuryApplicationDetailsPage({
+  params,
+}: {
+  params: { id: string };
+}) {
   await requireAdmin();
 
-  const { id } = await props.params;
+  const { id } = params;
 
   const application = await prisma.juryApplication.findUnique({
     where: { id },
@@ -175,7 +177,7 @@ export default async function AdminJuryApplicationDetailsPage(
                   Areas of Expertise
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {application.expertiseAreas.map((area) => (
+                  {application.expertiseAreas.map((area: string) => (
                     <span
                       key={area}
                       className="rounded-full border border-white/12 bg-white/3 px-3 py-1 text-xs text-[#d9d4ca]"
@@ -307,7 +309,7 @@ export default async function AdminJuryApplicationDetailsPage(
               <div className="mt-6">
                 <p className="text-sm font-medium text-white">Certifications</p>
                 <div className="mt-4 space-y-3">
-                  {certifications.map((file) => (
+                  {certifications.map((file: { fieldKey: string; id: string; fileName: string; fileSize: number }) => (
                     <a
                       key={file.id}
                       href={`/api/admin/jury-files/${file.id}`}

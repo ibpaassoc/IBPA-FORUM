@@ -13,8 +13,6 @@ const pool = new Pool({
 const adapter = new PrismaPg(pool);
 
 export const prisma =
-  // Reuse the Prisma client during local hot reloads so Next.js dev mode
-  // doesn't keep opening new database connections on every file change.
   globalForPrisma.prisma ?? new PrismaClient({ adapter });
 
 if (process.env.NODE_ENV !== "production") {

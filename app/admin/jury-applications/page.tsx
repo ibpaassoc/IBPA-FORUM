@@ -4,12 +4,12 @@ import Link from "next/link";
 import { logoutAdminAction } from "@/app/admin/actions";
 import { PageShell } from "@/components/layout/PageShell";
 
-const statusStyles: Record<string, string> = {
+const statusStyles = {
   SUBMITTED: "bg-white/8 text-white/85 border-white/12",
   UNDER_REVIEW: "bg-[#7a5a14]/25 text-[#f1d98a] border-[#d8c27a]/35",
   APPROVED: "bg-[#1b4d34]/45 text-[#9fe0b4] border-[#3e8f62]/45",
   REJECTED: "bg-[#5c2323]/45 text-[#f1aaaa] border-[#9d4a4a]/45",
-};
+} as const;
 
 function formatDate(date: Date | null) {
   if (!date) {
@@ -88,11 +88,16 @@ export default async function AdminJuryApplicationsPage() {
             { label: "Under Review", value: reviewCount },
             { label: "Approved", value: approvedCount },
           ].map((item) => (
-            <div key={item.label} className="page-card rounded-2xl bg-white/4.5 p-5">
+            <div
+              key={item.label}
+              className="page-card rounded-2xl bg-white/4.5 p-5"
+            >
               <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
                 {item.label}
               </p>
-              <p className="mt-3 text-3xl font-semibold text-white">{item.value}</p>
+              <p className="mt-3 text-3xl font-semibold text-white">
+                {item.value}
+              </p>
             </div>
           ))}
         </div>
@@ -117,7 +122,9 @@ export default async function AdminJuryApplicationsPage() {
                   <p className="text-sm font-semibold text-white">
                     {application.fullName}
                   </p>
-                  <p className="mt-1 text-sm text-[#d9d4ca]/80">{application.email}</p>
+                  <p className="mt-1 text-sm text-[#d9d4ca]/80">
+                    {application.email}
+                  </p>
                   <p className="mt-1 text-sm text-[#d9d4ca]/80">
                     {application.city}, {application.country}
                   </p>
@@ -146,7 +153,9 @@ export default async function AdminJuryApplicationsPage() {
                 <div>
                   <span
                     className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${
-                      statusStyles[application.status]
+                      statusStyles[
+                        application.status as keyof typeof statusStyles
+                      ]
                     }`}
                   >
                     {application.status.replaceAll("_", " ")}
