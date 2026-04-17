@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 function getTimeLeft() {
   const target = new Date("2026-07-31T23:59:00-04:00").getTime();
@@ -16,6 +16,15 @@ function getTimeLeft() {
     hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
     minutes: Math.floor((difference / (1000 * 60)) % 60),
     seconds: Math.floor((difference / 1000) % 60),
+  };
+}
+
+function getFallbackTime() {
+  return {
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
   };
 }
 
@@ -39,42 +48,14 @@ function CountdownCard({
 }
 
 export default function Countdown() {
-  const [mounted, setMounted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
-
-  useEffect(() => {
-    setMounted(true);
-    setTimeLeft(getTimeLeft());
-
-    const interval = setInterval(() => {
-      setTimeLeft(getTimeLeft());
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  if (!mounted) {
-    return (
-      <div className="mt-10">
-        <div className="grid max-w-2xl grid-cols-2 gap-4 md:grid-cols-4">
-          <CountdownCard value={0} label="Days" />
-          <CountdownCard value={0} label="Hours" />
-          <CountdownCard value={0} label="Minutes" />
-          <CountdownCard value={0} label="Seconds" />
-        </div>
-
-        <p className="mt-5 text-sm text-[#beb8aa]">
-          Application deadline: July 31, 2026 • Judging: August 5 – August 20,
-          2026 • Ceremony: September 4–5, 2026
-        </p>
-      </div>
-    );
-  }
+  const timeLeft = useSyncExternalStore(
+    (onStoreChange) => {
+      const interval = setInterval(onStoreChange, 1000);
+      return () => clearInterval(interval);
+    },
+    getTimeLeft,
+    getFallbackTime
+  );
 
   return (
     <div className="mt-10">
@@ -86,8 +67,8 @@ export default function Countdown() {
       </div>
 
       <p className="mt-5 text-sm text-[#beb8aa]">
-        Application deadline: July 31, 2026 • Judging: August 5 – August 20,
-        2026 • Ceremony: September 4–5, 2026
+        Application deadline: July 31, 2026 | Judging: August 5 to August 20,
+        2026 | Ceremony: September 4-5, 2026
       </p>
     </div>
   );

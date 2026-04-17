@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 import { logoutAdminAction } from "@/app/admin/actions";
+import { PageShell } from "@/components/layout/PageShell";
 
 const statusStyles: Record<string, string> = {
   SUBMITTED: "bg-white/8 text-white/85 border-white/12",
@@ -54,9 +55,9 @@ export default async function AdminJuryApplicationsPage() {
   ).length;
 
   return (
-    <main className="min-h-screen bg-[#050505] px-6 py-12 text-white md:px-10">
+    <PageShell className="px-6 py-12 text-white md:px-10">
       <div className="mx-auto max-w-7xl">
-        <div className="flex flex-col gap-5 rounded-3xl border border-white/12 bg-[linear-gradient(to_right,rgba(214,166,58,0.10),rgba(255,255,255,0.03))] p-6 md:flex-row md:items-end md:justify-between md:p-8">
+        <div className="page-panel flex flex-col gap-5 rounded-3xl p-6 md:flex-row md:items-end md:justify-between md:p-8">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d6a63a]">
               Jury Admin
@@ -89,7 +90,7 @@ export default async function AdminJuryApplicationsPage() {
           ].map((item) => (
             <div
               key={item.label}
-              className="rounded-2xl border border-white/12 bg-white/3 p-5"
+              className="page-card rounded-2xl p-5"
             >
               <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d6a63a]">
                 {item.label}
@@ -99,7 +100,7 @@ export default async function AdminJuryApplicationsPage() {
           ))}
         </div>
 
-        <section className="mt-6 rounded-3xl border border-white/12 bg-white/3 p-4 md:p-6">
+        <section className="page-card mt-6 rounded-3xl p-4 md:p-6">
           <div className="hidden grid-cols-[1.2fr_1fr_1fr_0.8fr_0.8fr_0.7fr] gap-4 border-b border-white/10 px-4 pb-4 text-[10px] font-semibold uppercase tracking-[0.24em] text-white/40 lg:grid">
             <span>Candidate</span>
             <span>Title</span>
@@ -178,6 +179,6 @@ export default async function AdminJuryApplicationsPage() {
           </div>
         </section>
       </div>
-    </main>
+    </PageShell>
   );
 }

@@ -7,6 +7,7 @@ import {
   logoutAdminAction,
   updateJuryApplicationReview,
 } from "@/app/admin/actions";
+import { PageShell } from "@/components/layout/PageShell";
 
 const statusOptions = [
   "SUBMITTED",
@@ -73,9 +74,9 @@ export default async function AdminJuryApplicationDetailsPage(
   );
 
   return (
-    <main className="min-h-screen bg-[#050505] px-6 py-12 text-white md:px-10">
+    <PageShell className="px-6 py-12 text-white md:px-10">
       <div className="mx-auto max-w-7xl">
-        <div className="flex flex-col gap-5 rounded-3xl border border-white/12 bg-[linear-gradient(to_right,rgba(214,166,58,0.10),rgba(255,255,255,0.03))] p-6 md:flex-row md:items-end md:justify-between md:p-8">
+        <div className="page-panel flex flex-col gap-5 rounded-3xl p-6 md:flex-row md:items-end md:justify-between md:p-8">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d6a63a]">
               Jury Admin
@@ -109,7 +110,7 @@ export default async function AdminJuryApplicationDetailsPage(
 
         <div className="mt-6 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-6">
-            <section className="rounded-3xl border border-white/12 bg-white/3 p-6">
+            <section className="page-card rounded-3xl p-6">
               <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d6a63a]">
                 Applicant
               </p>
@@ -144,7 +145,7 @@ export default async function AdminJuryApplicationDetailsPage(
               </div>
             </section>
 
-            <section className="rounded-3xl border border-white/12 bg-white/3 p-6">
+            <section className="page-card rounded-3xl p-6">
               <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d6a63a]">
                 Experience
               </p>
@@ -186,7 +187,7 @@ export default async function AdminJuryApplicationDetailsPage(
               </div>
             </section>
 
-            <section className="rounded-3xl border border-white/12 bg-white/3 p-6">
+            <section className="page-card rounded-3xl p-6">
               <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d6a63a]">
                 Statements
               </p>
@@ -209,7 +210,7 @@ export default async function AdminJuryApplicationDetailsPage(
           </div>
 
           <div className="space-y-6">
-            <section className="rounded-3xl border border-white/12 bg-white/3 p-6">
+            <section className="page-card rounded-3xl p-6">
               <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d6a63a]">
                 Review Panel
               </p>
@@ -278,7 +279,7 @@ export default async function AdminJuryApplicationDetailsPage(
               </div>
             </section>
 
-            <section className="rounded-3xl border border-white/12 bg-white/3 p-6">
+            <section className="page-card rounded-3xl p-6">
               <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d6a63a]">
                 Files
               </p>
@@ -334,6 +335,6 @@ export default async function AdminJuryApplicationDetailsPage(
           </div>
         </div>
       </div>
-    </main>
+    </PageShell>
   );
 }

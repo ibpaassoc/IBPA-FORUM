@@ -2,6 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+
+const navigation = [
+  { href: "/", label: "Home" },
+  { href: "/categories", label: "Categories" },
+  { href: "/jury", label: "Jury" },
+  { href: "/grand-prix", label: "Grand Prix" },
+];
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -22,36 +30,35 @@ export default function Header() {
   return (
     <header className="top-0 z-50 w-full border-b border-border-main bg-background-header/95 backdrop-blur">
       <div className="relative mx-auto flex w-full max-w-7xl items-center px-4 py-4 sm:px-6 lg:px-8">
-        <Image
-        src="/logo.svg"
-        alt="IBPA Logo"
-        width={220}
-        height={80}
-        className="h-14 w-auto object-contain"
-        />
+        <Link href="/" aria-label="IBPA home">
+          <Image
+            src="/logo.svg"
+            alt="IBPA Logo"
+            width={220}
+            height={80}
+            className="h-14 w-auto object-contain"
+          />
+        </Link>
 
-        <nav className="absolute left-1/2 hidden -translate-x-1/2 lg:flex items-center gap-12 text-base uppercase tracking-wider">
-          <a href="/" className="text-black transition hover:text-yellow-500">
-            Home
-          </a>
-          <a href="#" className="text-black transition hover:text-yellow-500">
-            Categories
-          </a>
-          <a href="/jury" className="text-black transition hover:text-yellow-500">
-            Jury
-          </a>
-          <a href="#" className="text-black transition hover:text-yellow-500">
-            Grand Prix
-          </a>
+        <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-12 text-base uppercase tracking-wider lg:flex">
+          {navigation.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="text-black transition hover:text-yellow-500"
+            >
+              {item.label}
+            </Link>
+          ))}
         </nav>
 
         <div className="ml-auto flex items-center gap-4">
-          <a
+          <Link
             href="/apply"
             className="hidden rounded-full bg-yellow-500 px-5 py-2.5 text-sm font-medium text-black transition hover:opacity-90 lg:inline-flex"
           >
             Apply Now
-          </a>
+          </Link>
 
           <button
             type="button"
@@ -87,42 +94,24 @@ export default function Header() {
         }`}
       >
         <div className="flex flex-col gap-1 px-4 py-4 sm:px-6">
-          <a
-            href="#"
-            onClick={handleLinkClick}
-            className="rounded-xl px-4 py-3 text-base uppercase tracking-wider text-black transition hover:bg-black/5 hover:text-yellow-500"
-          >
-            Home
-          </a>
-          <a
-            href="#"
-            onClick={handleLinkClick}
-            className="rounded-xl px-4 py-3 text-base uppercase tracking-wider text-black transition hover:bg-black/5 hover:text-yellow-500"
-          >
-            Categories
-          </a>
-          <a
-            href="#"
-            onClick={handleLinkClick}
-            className="rounded-xl px-4 py-3 text-base uppercase tracking-wider text-black transition hover:bg-black/5 hover:text-yellow-500"
-          >
-            Jury
-          </a>
-          <a
-            href="#"
-            onClick={handleLinkClick}
-            className="rounded-xl px-4 py-3 text-base uppercase tracking-wider text-black transition hover:bg-black/5 hover:text-yellow-500"
-          >
-            Grand Prix
-          </a>
+          {navigation.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={handleLinkClick}
+              className="rounded-xl px-4 py-3 text-base uppercase tracking-wider text-black transition hover:bg-black/5 hover:text-yellow-500"
+            >
+              {item.label}
+            </Link>
+          ))}
 
-          <a
-            href="#"
+          <Link
+            href="/apply"
             onClick={handleLinkClick}
             className="mt-3 inline-flex justify-center rounded-full bg-yellow-500 px-5 py-3 text-sm font-medium text-black transition hover:opacity-90"
           >
             Apply Now
-          </a>
+          </Link>
         </div>
       </div>
     </header>

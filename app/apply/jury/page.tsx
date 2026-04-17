@@ -4,6 +4,7 @@ import JuryProcess from "@/components/jury/JuryProcess"
 import JuryFaq from "@/components/jury/JuryFaq"
 import JuryApplyHero from "@/components/jury/JuryApplyHero"
 import JuryApplicationForm from "@/components/jury/JuryApplicationForm"
+import { PageShell } from "@/components/layout/PageShell"
 
 export const metadata: Metadata = {
   title: "Apply as Jury | IBPA Beauty Championship",
@@ -13,12 +14,12 @@ export const metadata: Metadata = {
 
 export default function ApplyJuryPage() {
   return (
-    <main className="bg-[#050505] text-white">
+    <PageShell>
       <JuryApplyHero />
       <JuryRequirements />
       <JuryProcess />
       <JuryApplicationForm />
       <JuryFaq />
-    </main>
+    </PageShell>
   )
 }

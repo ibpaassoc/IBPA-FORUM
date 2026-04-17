@@ -5,10 +5,11 @@ import JuryProcess from "@/components/jury/JuryProcess"
 import JuryBenefits from "@/components/jury/JuryBenefits"
 import JuryFaq from "@/components/jury/JuryFaq"
 import JuryCta from "@/components/jury/JuryCta"
+import { PageShell } from "@/components/layout/PageShell"
 
 export default function JuryPage() {
   return (
-    <main className="bg-[#050505] text-white">
+    <PageShell>
       <JuryHero />
       <JuryRequirements />
       <JuryResponsibilities />
@@ -16,6 +17,6 @@ export default function JuryPage() {
       <JuryBenefits />
       <JuryFaq />
       <JuryCta />
-    </main>
+    </PageShell>
   )
 }

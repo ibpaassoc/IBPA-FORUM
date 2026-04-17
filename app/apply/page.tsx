@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { PageCard, PageHero, PageSection, PageShell } from "@/components/layout/PageShell";
 
 export default function ApplyPage() {
-  const [applications, setApplications] = useState<any[]>([]);
+  const [applications, setApplications] = useState<unknown[]>([]);
 
   async function testCreateApplication() {
     const response = await fetch("/api/applications", {
@@ -41,34 +42,42 @@ export default function ApplyPage() {
   }
 
   return (
-    <main className="min-h-screen bg-black flex items-center justify-center px-4">
-      <div className="w-full max-w-xl rounded-2xl bg-white p-8 shadow-xl space-y-6">
+    <PageShell>
+      <PageHero
+        eyebrow="Applications"
+        title="Application workspace in the championship visual style."
+        description="This route is still wired as an API test page, but it now matches the rest of the site while you validate application endpoints and payloads."
+      />
 
-        <h1 className="text-2xl font-semibold text-black text-center">
-          Application API Test
-        </h1>
+      <PageSection className="flex justify-center">
+        <PageCard className="w-full max-w-3xl space-y-6">
+          <h2 className="text-2xl font-semibold text-white text-center">
+            Application API Test
+          </h2>
 
-        <div className="flex gap-4 justify-center">
-          <button
-            onClick={testCreateApplication}
-            className="rounded-lg bg-blue-600 px-6 py-3 text-white hover:bg-blue-700 transition"
-          >
-            Create Test Application
-          </button>
+          <div className="flex flex-wrap justify-center gap-4">
+            <button
+              onClick={testCreateApplication}
+              className="rounded-full bg-[#d8c27a] px-6 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-[#111111] hover:opacity-90"
+            >
+              Create Test Application
+            </button>
 
-          <button
-            onClick={fetchApplications}
-            className="rounded-lg bg-green-600 px-6 py-3 text-white hover:bg-green-700 transition"
-          >
-            Get Applications
-          </button>
-        </div>
+            <button
+              onClick={fetchApplications}
+              className="rounded-full border border-white/20 px-6 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-white hover:border-[#d8c27a] hover:text-[#d8c27a]"
+            >
+              Get Applications
+            </button>
+          </div>
 
-        <div className="bg-gray-100 text-black p-4 rounded text-sm max-h-64 overflow-auto">
-          <pre>{JSON.stringify(applications, null, 2)}</pre>
-        </div>
-
-      </div>
-    </main>
+          <div className="rounded-2xl border border-white/10 bg-black/25 p-4 text-sm text-[#f5f1e8]">
+            <pre className="max-h-80 overflow-auto whitespace-pre-wrap break-all">
+              {JSON.stringify(applications, null, 2)}
+            </pre>
+          </div>
+        </PageCard>
+      </PageSection>
+    </PageShell>
   );
 }
