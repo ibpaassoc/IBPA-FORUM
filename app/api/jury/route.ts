@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { mkdir, writeFile } from "node:fs/promises";
-import path from "node:path";
+import { put } from "@vercel/blob";
 import { randomUUID } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 
@@ -26,22 +25,20 @@ async function saveUploadedFile(
   fieldKey: string,
   index = 0
 ) {
-  // Jury uploads are stored on the local filesystem for now. The database
-  // keeps metadata plus a storageKey that points back to this saved file.
-  const uploadsRoot = path.join(process.cwd(), "data", "uploads", "jury");
-  const applicationDir = path.join(uploadsRoot, applicationId);
-  const safeFileName = `${fieldKey}-${index + 1}-${sanitizeFileName(file.name)}`;
-  const absolutePath = path.join(applicationDir, safeFileName);
-  const arrayBuffer = await file.arrayBuffer();
+  const safeFileName = sanitizeFileName(file.name);
+  const pathname = `jury/${applicationId}/${fieldKey}-${index + 1}-${safeFileName}`;
 
-  await mkdir(applicationDir, { recursive: true });
-  await writeFile(absolutePath, Buffer.from(arrayBuffer));
+  const blob = await put(pathname, file, {
+    access: "private",
+    addRandomSuffix: true,
+    contentType: file.type || "application/octet-stream",
+  });
 
   return {
     fileName: file.name,
     mimeType: file.type || "application/octet-stream",
     fileSize: file.size,
-    storageKey: path.relative(process.cwd(), absolutePath).replace(/\\/g, "/"),
+    storageKey: blob.pathname,
   };
 }
 
@@ -163,14 +160,14 @@ export async function POST(request: Request) {
       );
     }
 
-    // Use the same id for the database record and upload folder so admin file
-    // lookups stay predictable while local storage is in place.
     const applicationId = randomUUID();
+
     const savedProfilePhoto = await saveUploadedFile(
       profilePhoto,
       applicationId,
       "profilePhoto"
     );
+
     const savedCertifications = await Promise.all(
       certifications.map((file, index) =>
         saveUploadedFile(file, applicationId, "certifications", index)
@@ -240,10 +237,13 @@ export async function POST(request: Request) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("POST /api/jury error:", error);
+    console.error("Failed to submit jury application", error);
 
     return NextResponse.json(
-      { message: "Failed to submit the jury application." },
+      {
+        message:
+          "We could not submit the jury application right now. Please try again.",
+      },
       { status: 500 }
     );
   }
