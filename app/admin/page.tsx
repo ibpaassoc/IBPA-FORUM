@@ -10,7 +10,7 @@ export default async function AdminPage() {
 
   return (
     <PageShell className="px-6 py-16 md:px-10 md:py-20">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-6xl pt-10">
         <div className="grid gap-8 lg:grid-cols-[1.08fr_0.92fr]">
           <section className="page-panel rounded-3xl p-8 md:p-10">
             <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d8c27a]">
@@ -30,7 +30,7 @@ export default async function AdminPage() {
                 "Fast candidate scanning",
                 "Status and notes management",
               ].map((item) => (
-                <div key={item} className="page-card rounded-2xl bg-white/[0.045] p-4">
+                <div key={item} className="page-card rounded-2xl bg-white/4.5 p-4">
                   <p className="text-sm font-medium text-[#f1ecde]">{item}</p>
                 </div>
               ))}

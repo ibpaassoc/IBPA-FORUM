@@ -35,7 +35,7 @@ function DetailItem({
   value: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/12 bg-white/[0.04] p-4">
+    <div className="rounded-2xl border border-white/12 bg-white/4.5 p-4">
       <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
         {label}
       </p>
@@ -75,7 +75,7 @@ export default async function AdminJuryApplicationDetailsPage(
 
   return (
     <PageShell className="px-6 py-10 text-white md:px-10 md:py-12">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-7xl pt-16">
         <div className="page-panel flex flex-col gap-5 rounded-3xl p-6 md:flex-row md:items-end md:justify-between md:p-8">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d8c27a]">
@@ -178,7 +178,7 @@ export default async function AdminJuryApplicationDetailsPage(
                   {application.expertiseAreas.map((area) => (
                     <span
                       key={area}
-                      className="rounded-full border border-white/12 bg-white/[0.03] px-3 py-1 text-xs text-[#d9d4ca]"
+                      className="rounded-full border border-white/12 bg-white/3 px-3 py-1 text-xs text-[#d9d4ca]"
                     >
                       {area}
                     </span>
@@ -229,7 +229,7 @@ export default async function AdminJuryApplicationDetailsPage(
                     id="status"
                     name="status"
                     defaultValue={application.status}
-                    className="w-full rounded-2xl border border-white/12 bg-white/[0.05] px-4 py-3 text-sm text-white outline-none transition focus:border-[#d8c27a] focus:bg-white/[0.07]"
+                    className="w-full rounded-2xl border border-white/12 bg-white/5 px-4 py-3 text-sm text-white outline-none transition focus:border-[#d8c27a] focus:bg-white/7"
                   >
                     {statusOptions.map((status) => (
                       <option
@@ -254,7 +254,7 @@ export default async function AdminJuryApplicationDetailsPage(
                     id="adminNotes"
                     name="adminNotes"
                     defaultValue={application.adminNotes || ""}
-                    className="min-h-45 w-full rounded-2xl border border-white/12 bg-white/[0.05] px-4 py-3 text-sm text-white outline-none transition placeholder:text-[#d9d4ca]/45 focus:border-[#d8c27a] focus:bg-white/[0.07]"
+                    className="min-h-45 w-full rounded-2xl border border-white/12 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-[#d9d4ca]/45 focus:border-[#d8c27a] focus:bg-white/7"
                     placeholder="Add internal review notes, follow-up items, or approval context."
                   />
                 </div>
@@ -287,7 +287,7 @@ export default async function AdminJuryApplicationDetailsPage(
               {profilePhoto ? (
                 <div className="mt-5">
                   <p className="text-sm font-medium text-white">Profile Photo</p>
-                  <div className="mt-4 overflow-hidden rounded-2xl border border-white/12 bg-white/[0.03]">
+                  <div className="mt-4 overflow-hidden rounded-2xl border border-white/12 bg-white/3">
                     <Image
                       src={`/api/admin/jury-files/${profilePhoto.id}`}
                       alt={application.fullName}

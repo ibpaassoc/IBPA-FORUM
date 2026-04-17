@@ -56,7 +56,7 @@ export default async function AdminJuryApplicationsPage() {
 
   return (
     <PageShell className="px-6 py-10 text-white md:px-10 md:py-12">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-7xl pt-16">
         <div className="page-panel flex flex-col gap-5 rounded-3xl p-6 md:flex-row md:items-end md:justify-between md:p-8">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d8c27a]">
@@ -88,7 +88,7 @@ export default async function AdminJuryApplicationsPage() {
             { label: "Under Review", value: reviewCount },
             { label: "Approved", value: approvedCount },
           ].map((item) => (
-            <div key={item.label} className="page-card rounded-2xl bg-white/[0.045] p-5">
+            <div key={item.label} className="page-card rounded-2xl bg-white/4.5 p-5">
               <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
                 {item.label}
               </p>
@@ -111,7 +111,7 @@ export default async function AdminJuryApplicationsPage() {
             {applications.map((application) => (
               <div
                 key={application.id}
-                className="grid gap-4 px-4 py-5 transition hover:bg-white/[0.02] lg:grid-cols-[1.2fr_1fr_1fr_0.8fr_0.8fr_0.7fr] lg:items-center"
+                className="grid gap-4 px-4 py-5 transition hover:bg-white/2 lg:grid-cols-[1.2fr_1fr_1fr_0.8fr_0.8fr_0.7fr] lg:items-center"
               >
                 <div>
                   <p className="text-sm font-semibold text-white">
@@ -131,13 +131,13 @@ export default async function AdminJuryApplicationsPage() {
                   {application.expertiseAreas.slice(0, 3).map((area) => (
                     <span
                       key={area}
-                      className="rounded-full border border-white/12 bg-white/[0.03] px-3 py-1 text-xs text-[#d9d4ca]"
+                      className="rounded-full border border-white/12 bg-white/3 px-3 py-1 text-xs text-[#d9d4ca]"
                     >
                       {area}
                     </span>
                   ))}
                   {application.expertiseAreas.length > 3 ? (
-                    <span className="rounded-full border border-white/12 bg-white/[0.03] px-3 py-1 text-xs text-[#d9d4ca]/60">
+                    <span className="rounded-full border border-white/12 bg-white/3 px-3 py-1 text-xs text-[#d9d4ca]/60">
                       +{application.expertiseAreas.length - 3}
                     </span>
                   ) : null}

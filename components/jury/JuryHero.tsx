@@ -2,7 +2,7 @@ import Link from "next/link"
 
 export default function JuryHero() {
   return (
-    <section className="border-b border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(216,194,122,0.18),transparent_35%),linear-gradient(to_right,#151515,#0f0f10_55%)]">
+    <section className="border-b border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(216,194,122,0.18),transparent_35%),linear-gradient(to_right,#151515,#0f0f10_55%)] pt-10">
       <div className="mx-auto grid max-w-7xl gap-10 px-6 py-16 md:px-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:py-20">
         <div className="max-w-3xl">
           <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d8c27a]">

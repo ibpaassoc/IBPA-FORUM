@@ -43,7 +43,7 @@ export function PageHero({
   return (
     <section
       className={joinClasses(
-        "border-b border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(216,194,122,0.16),transparent_35%),linear-gradient(135deg,#151515,#0f0f10_55%,#171718)]",
+        "border-b border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(216,194,122,0.16),transparent_35%),linear-gradient(135deg,#151515,#0f0f10_55%,#171718)] pt-10",
         className
       )}
     >
