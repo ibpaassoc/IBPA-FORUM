@@ -14,10 +14,10 @@ const membershipLevels = [
 ]
 
 const inputClassName =
-  "w-full rounded-2xl border border-white/12 bg-white/4 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#d6a63a] focus:bg-white/6"
+  "w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#d8c27a] focus:bg-white/[0.07]"
 
 const textareaClassName =
-  "min-h-[132px] w-full rounded-2xl border border-white/12 bg-white/4 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#d6a63a] focus:bg-white/6"
+  "min-h-[132px] w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#d8c27a] focus:bg-white/[0.07]"
 
 type SubmissionSummary = {
   name: string
@@ -51,7 +51,7 @@ function FieldShell({
       <div className="mb-2 flex items-center gap-2">
         <label className="text-sm font-medium text-white">{label}</label>
         {required ? (
-          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#d6a63a]">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#d8c27a]">
             Required
           </span>
         ) : null}
@@ -102,12 +102,12 @@ function SidebarCard({
   text: string
 }) {
   return (
-    <div className="rounded-2xl border border-white/12 bg-white/3 p-5">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d6a63a]">
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
         {eyebrow}
       </p>
       <h3 className="mt-3 text-lg font-semibold">{title}</h3>
-      <p className="mt-3 text-sm leading-6 text-white/65">{text}</p>
+      <p className="mt-3 text-sm leading-6 text-[#d9d4ca]">{text}</p>
     </div>
   )
 }
@@ -192,16 +192,16 @@ export default function JuryApplicationForm() {
   }
 
   return (
-    <section id="jury-application-form" className="border-b border-white/10 bg-[#050505]">
+    <section id="jury-application-form" className="border-b border-white/10 bg-[#0f0f10]">
       <div className="mx-auto max-w-7xl px-6 py-14 md:px-10">
         <div className="mb-8 max-w-3xl">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d6a63a]">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d8c27a]">
             Application Form
           </p>
           <h2 className="mt-3 text-3xl font-semibold leading-tight sm:text-4xl">
             Complete your official jury application
           </h2>
-          <p className="mt-4 text-sm leading-7 text-white/70">
+          <p className="mt-4 text-sm leading-7 text-[#d9d4ca]">
             Submit your professional profile, areas of expertise, certifications,
             biography, and ethics declaration. Required materials are marked and
             will help the IBPA team evaluate your candidacy.
@@ -211,11 +211,11 @@ export default function JuryApplicationForm() {
         <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
           <form
             onSubmit={handleSubmit}
-            className="rounded-[1.4rem] border border-white/12 bg-white/3 p-6 md:p-8"
+            className="rounded-[1.4rem] border border-white/10 bg-white/5 p-6 backdrop-blur-sm md:p-8"
           >
             <div className="space-y-10">
               <div className="border-b border-white/10 pb-8">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d6a63a]">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
                   Professional Profile
                 </p>
                 <div className="mt-5 grid gap-5 md:grid-cols-2">
@@ -283,7 +283,7 @@ export default function JuryApplicationForm() {
               </div>
 
               <div className="border-b border-white/10 pb-8">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d6a63a]">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
                   Membership & Experience
                 </p>
 
@@ -300,7 +300,7 @@ export default function JuryApplicationForm() {
                       ].map((item) => (
                         <label
                           key={item.value}
-                          className="flex cursor-pointer items-center gap-3 rounded-2xl border border-white/12 bg-white/4 px-4 py-3 text-sm text-white transition hover:border-[#d6a63a]"
+                          className="flex cursor-pointer items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white transition hover:border-[#d8c27a]"
                         >
                           <input
                             type="radio"
@@ -308,7 +308,7 @@ export default function JuryApplicationForm() {
                             value={item.value}
                             checked={membershipStatus === item.value}
                             onChange={() => setMembershipStatus(item.value)}
-                            className="h-4 w-4 accent-[#d6a63a]"
+                            className="h-4 w-4 accent-[#d8c27a]"
                           />
                           <span>{item.label}</span>
                         </label>
@@ -354,7 +354,7 @@ export default function JuryApplicationForm() {
                       ].map((item) => (
                         <label
                           key={item.value}
-                          className="flex cursor-pointer items-center gap-3 rounded-2xl border border-white/12 bg-white/4 px-4 py-3 text-sm text-white transition hover:border-[#d6a63a]"
+                          className="flex cursor-pointer items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white transition hover:border-[#d8c27a]"
                         >
                           <input
                             type="radio"
@@ -362,7 +362,7 @@ export default function JuryApplicationForm() {
                             value={item.value}
                             checked={hasPreviousJudging === item.value}
                             onChange={() => setHasPreviousJudging(item.value)}
-                            className="h-4 w-4 accent-[#d6a63a]"
+                            className="h-4 w-4 accent-[#d8c27a]"
                           />
                           <span>{item.label}</span>
                         </label>
@@ -390,7 +390,7 @@ export default function JuryApplicationForm() {
                       ].map((item) => (
                         <label
                           key={item.value}
-                          className="flex cursor-pointer items-center gap-3 rounded-2xl border border-white/12 bg-white/4 px-4 py-3 text-sm text-white transition hover:border-[#d6a63a]"
+                          className="flex cursor-pointer items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white transition hover:border-[#d8c27a]"
                         >
                           <input
                             type="radio"
@@ -398,7 +398,7 @@ export default function JuryApplicationForm() {
                             value={item.value}
                             checked={isPastWinner === item.value}
                             onChange={() => setIsPastWinner(item.value)}
-                            className="h-4 w-4 accent-[#d6a63a]"
+                            className="h-4 w-4 accent-[#d8c27a]"
                           />
                           <span>{item.label}</span>
                         </label>
@@ -426,7 +426,7 @@ export default function JuryApplicationForm() {
                       {categories.map((category) => (
                         <label
                           key={category}
-                          className="flex cursor-pointer items-center gap-3 rounded-2xl border border-white/12 bg-white/4 px-4 py-3 text-sm text-white transition hover:border-[#d6a63a]"
+                          className="flex cursor-pointer items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white transition hover:border-[#d8c27a]"
                         >
                           <input
                             type="checkbox"
@@ -434,7 +434,7 @@ export default function JuryApplicationForm() {
                             value={category}
                             checked={selectedExpertise.includes(category)}
                             onChange={handleExpertiseChange}
-                            className="h-4 w-4 rounded accent-[#d6a63a]"
+                            className="h-4 w-4 rounded accent-[#d8c27a]"
                           />
                           <span>{category}</span>
                         </label>
@@ -445,7 +445,7 @@ export default function JuryApplicationForm() {
               </div>
 
               <div className="border-b border-white/10 pb-8">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d6a63a]">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
                   Materials & Disclosure
                 </p>
 
@@ -461,7 +461,7 @@ export default function JuryApplicationForm() {
                       accept=".pdf,.jpg,.jpeg,.png"
                       multiple
                       required
-                      className="block w-full rounded-2xl border border-dashed border-white/14 bg-white/4 px-4 py-3 text-sm text-white file:mr-4 file:rounded-full file:border-0 file:bg-[#d6a63a] file:px-4 file:py-2 file:text-xs file:font-semibold file:uppercase file:tracking-[0.16em] file:text-black"
+                      className="block w-full rounded-2xl border border-dashed border-white/14 bg-white/5 px-4 py-3 text-sm text-white file:mr-4 file:rounded-full file:border-0 file:bg-[#d8c27a] file:px-4 file:py-2 file:text-xs file:font-semibold file:uppercase file:tracking-[0.16em] file:text-black"
                     />
                   </FieldShell>
 
@@ -484,7 +484,7 @@ export default function JuryApplicationForm() {
                       name="profilePhoto"
                       accept=".jpg,.jpeg,.png"
                       required
-                      className="block w-full rounded-2xl border border-dashed border-white/14 bg-white/4 px-4 py-3 text-sm text-white file:mr-4 file:rounded-full file:border-0 file:bg-[#d6a63a] file:px-4 file:py-2 file:text-xs file:font-semibold file:uppercase file:tracking-[0.16em] file:text-black"
+                      className="block w-full rounded-2xl border border-dashed border-white/14 bg-white/5 px-4 py-3 text-sm text-white file:mr-4 file:rounded-full file:border-0 file:bg-[#d8c27a] file:px-4 file:py-2 file:text-xs file:font-semibold file:uppercase file:tracking-[0.16em] file:text-black"
                     />
                   </FieldShell>
 
@@ -511,13 +511,13 @@ export default function JuryApplicationForm() {
                     required
                   />
 
-                  <label className="flex items-start gap-3 rounded-2xl border border-white/12 bg-white/4 px-4 py-4 text-sm text-white">
+                  <label className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-white">
                     <input
                       type="checkbox"
                       name="confidentialityAgreement"
                       value="yes"
                       required
-                      className="mt-1 h-4 w-4 rounded accent-[#d6a63a]"
+                      className="mt-1 h-4 w-4 rounded accent-[#d8c27a]"
                     />
                     <span className="leading-6 text-white/85">
                       I agree to keep all jury deliberations, candidate information,
@@ -531,7 +531,7 @@ export default function JuryApplicationForm() {
                 <div
                   className={`rounded-2xl border px-4 py-4 text-sm leading-6 ${
                     submissionState.type === "success"
-                      ? "border-[#d6a63a]/35 bg-[#d6a63a]/10 text-white"
+                      ? "border-[#d8c27a]/35 bg-[#d8c27a]/10 text-white"
                       : "border-[#a64b4b]/45 bg-[#4d1d1d]/35 text-white"
                   }`}
                   aria-live="polite"
@@ -541,8 +541,8 @@ export default function JuryApplicationForm() {
               ) : null}
 
               {summary ? (
-                <div className="rounded-2xl border border-white/12 bg-black/20 p-5">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d6a63a]">
+                <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
                     Application Summary
                   </p>
                   <div className="mt-4 grid gap-4 sm:grid-cols-3">
@@ -581,7 +581,7 @@ export default function JuryApplicationForm() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="inline-flex items-center justify-center rounded-full bg-[#d6a63a] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-black transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex items-center justify-center rounded-full bg-[#d8c27a] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-black transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {isSubmitting ? "Sending Application..." : "Submit Jury Application"}
                 </button>
@@ -608,8 +608,8 @@ export default function JuryApplicationForm() {
               text="Approved and paid judges receive an official invitation, jury certificate, appreciation letter, contribution letter, and public jury listing."
             />
 
-            <div className="rounded-2xl border border-white/12 bg-[linear-gradient(to_right,rgba(214,166,58,0.10),rgba(255,255,255,0.02))] p-5">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d6a63a]">
+            <div className="rounded-2xl border border-white/10 bg-[linear-gradient(to_right,rgba(216,194,122,0.12),rgba(255,255,255,0.04))] p-5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
                 Live Snapshot
               </p>
 
