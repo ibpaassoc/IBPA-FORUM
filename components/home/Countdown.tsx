@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 
 function getTimeLeft() {
   const target = new Date("2026-07-31T23:59:00-04:00").getTime();
@@ -19,7 +19,7 @@ function getTimeLeft() {
   };
 }
 
-function getFallbackTime() {
+function getEmptyTime() {
   return {
     days: 0,
     hours: 0,
@@ -48,14 +48,15 @@ function CountdownCard({
 }
 
 export default function Countdown() {
-  const timeLeft = useSyncExternalStore(
-    (onStoreChange) => {
-      const interval = setInterval(onStoreChange, 1000);
-      return () => clearInterval(interval);
-    },
-    getTimeLeft,
-    getFallbackTime
-  );
+  const [timeLeft, setTimeLeft] = useState(getEmptyTime);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeLeft(getTimeLeft());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="mt-10">
