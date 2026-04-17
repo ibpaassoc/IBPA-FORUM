@@ -64,7 +64,7 @@ export default function Header() {
             </Link>
 
             <Link
-              href="/apply"
+              href="/under-development"
               className="inline-flex items-center justify-center rounded-full bg-[#d8c27a] px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#111111] transition hover:opacity-90"
             >
               Apply Now
@@ -127,7 +127,7 @@ export default function Header() {
               </Link>
 
               <Link
-                href="/apply"
+                href="/under-development"
                 onClick={handleLinkClick}
                 className="inline-flex justify-center rounded-full bg-[#d8c27a] px-5 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-[#111111] transition hover:opacity-90"
               >

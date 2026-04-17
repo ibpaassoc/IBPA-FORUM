@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function CTASection() {
   return (
     <section className="border-t border-white/10 bg-[linear-gradient(180deg,#141415_0%,#0f0f10_100%)]">
@@ -16,19 +18,19 @@ export default function CTASection() {
         </p>
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-          <a
-            href="/apply"
+          <Link
+            href="/under-development"
             className="rounded-full bg-[#d8c27a] px-7 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-[#111111] transition hover:opacity-90"
           >
             Apply Now
-          </a>
+          </Link>
 
-          <a
+          <Link
             href="/jury"
             className="rounded-full border border-white/20 px-7 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
           >
             Become a Judge
-          </a>
+          </Link>
         </div>
       </div>
     </section>

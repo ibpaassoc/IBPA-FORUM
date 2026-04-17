@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Countdown from "@/components/home/Countdown";
 
 export default function HomeHero() {
@@ -23,19 +24,19 @@ export default function HomeHero() {
           </p>
 
           <div className="mt-8 flex flex-wrap gap-4">
-            <a
-              href="/apply"
+            <Link
+              href="/under-development"
               className="rounded-full bg-[#d8c27a] px-7 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-[#111111] transition hover:opacity-90"
             >
               Apply Now
-            </a>
+            </Link>
 
-            <a
+            <Link
               href="/categories"
               className="rounded-full border border-white/20 px-7 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
             >
               Explore Categories
-            </a>
+            </Link>
           </div>
 
           <Countdown />
