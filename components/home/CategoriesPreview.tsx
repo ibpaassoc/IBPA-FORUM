@@ -1,3 +1,4 @@
+import Link from "next/link";
 import SectionTitle from "@/components/ui/SectionTitle";
 import { categories } from "@/data/home";
 
@@ -8,21 +9,21 @@ export default function CategoriesPreview() {
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <SectionTitle
             label="Categories"
-            title="12 championship paths for today’s beauty industry."
+            title="12 championship paths for today's beauty industry."
             className="max-w-2xl"
           />
 
-          <a
+          <Link
             href="/categories"
             className="text-sm uppercase tracking-[0.16em] text-[#d8c27a] transition hover:text-white"
           >
-            View all categories →
-          </a>
+            View all categories {"->"}
+          </Link>
         </div>
 
         <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {categories.map((category, index) => (
-            <a
+            <Link
               key={category}
               href="/categories"
               className="group rounded-2xl border border-white/10 bg-white/5 p-5 transition hover:border-[#d8c27a]/45 hover:bg-white/[0.07]"
@@ -33,7 +34,7 @@ export default function CategoriesPreview() {
               <div className="mt-3 text-lg font-medium text-white group-hover:text-[#f0e0a6]">
                 {category}
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       </div>
