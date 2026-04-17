@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { requireAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
+import Link from "next/link";
 import { logoutAdminAction } from "@/app/admin/actions";
 import { PageShell } from "@/components/layout/PageShell";
 
@@ -88,10 +88,7 @@ export default async function AdminJuryApplicationsPage() {
             { label: "Under Review", value: reviewCount },
             { label: "Approved", value: approvedCount },
           ].map((item) => (
-            <div
-              key={item.label}
-              className="page-card rounded-2xl p-5"
-            >
+            <div key={item.label} className="page-card rounded-2xl p-5">
               <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d6a63a]">
                 {item.label}
               </p>

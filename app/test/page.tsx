@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { PageCard, PageHero, PageSection, PageShell } from "@/components/layout/PageShell";
+import { PageHero, PageShell } from "@/components/layout/PageShell";
+import { PageCard, PageSection } from "@/components/layout/PageShell";
 
-export default function ApplyPage() {
+export default function TestPage() {
   const [applications, setApplications] = useState<unknown[]>([]);
 
   async function testCreateApplication() {
@@ -24,7 +25,7 @@ export default function ApplyPage() {
         membershipNumber: "IBPA-12345",
         membershipLevel: "Trainer",
         categoryId: "cmo0mcbkz0000okt0vbmd6rzt",
-        awardId: "cmo0mcbnz0002okt08ni0xs45"
+        awardId: "cmo0mcbnz0002okt08ni0xs45",
       }),
     });
 
@@ -51,7 +52,7 @@ export default function ApplyPage() {
 
       <PageSection className="flex justify-center">
         <PageCard className="w-full max-w-3xl space-y-6">
-          <h2 className="text-2xl font-semibold text-white text-center">
+          <h2 className="text-center text-2xl font-semibold text-white">
             Application API Test
           </h2>
 

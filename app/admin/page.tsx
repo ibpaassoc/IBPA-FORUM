@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
-import AdminLoginForm from "@/components/admin/AdminLoginForm";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import AdminLoginForm from "@/components/admin/AdminLoginForm";
 import { PageShell } from "@/components/layout/PageShell";
 
 export default async function AdminPage() {

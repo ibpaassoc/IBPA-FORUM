@@ -1,8 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
+import Image from "next/image";
 import {
   logoutAdminAction,
   updateJuryApplicationReview,
@@ -293,8 +293,6 @@ export default async function AdminJuryApplicationDetailsPage(
                       alt={application.fullName}
                       width={960}
                       height={960}
-                      // The file route is cookie-protected, so this image needs
-                      // to bypass Next.js optimization and load in the browser directly.
                       unoptimized
                       className="h-auto w-full object-cover"
                     />
