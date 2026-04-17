@@ -33,7 +33,7 @@ const footerColumns = [
 
 export default function Footer() {
   return (
-    <footer className="w-full border-t border-white/10 bg-[linear-gradient(180deg,#071126,#081735_55%,#091b3d)] text-white">
+    <footer className="w-full border-t border-white/10 bg-[linear-gradient(180deg,#111214,#131416_55%,#161719)] text-white">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-10 border-b border-white/10 pb-10 md:grid-cols-2 xl:grid-cols-[1.45fr_1fr_1fr_1fr_1fr]">
           <div className="max-w-sm">
