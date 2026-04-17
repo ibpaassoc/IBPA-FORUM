@@ -5,9 +5,9 @@ const footerColumns = [
   {
     title: "About",
     links: [
-      { href: "/about", label: "About Awards" },
+      { href: "/", label: "About Awards" },
       { href: "/", label: "How It Works" },
-      { href: "/", label: "Timeline" },
+      { href: "/grand-prix", label: "Timeline" },
       { href: "/", label: "FAQ" },
     ],
   },
@@ -23,10 +23,10 @@ const footerColumns = [
   {
     title: "Resources",
     links: [
-      { href: "/about", label: "Media Centre" },
+      { href: "/categories", label: "Media Centre" },
       { href: "mailto:info@ibpa-awards.com", label: "Contact" },
-      { href: "/about", label: "Terms & Conditions" },
-      { href: "/about", label: "Privacy Policy" },
+      { href: "/", label: "Terms & Conditions" },
+      { href: "/", label: "Privacy Policy" },
     ],
   },
 ];
