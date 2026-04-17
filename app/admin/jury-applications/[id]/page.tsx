@@ -47,11 +47,15 @@ function DetailItem({
 export default async function AdminJuryApplicationDetailsPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   await requireAdmin();
 
-  const { id } = params;
+  const { id } = await params;
+
+  if (!id) {
+    notFound();
+  }
 
   const application = await prisma.juryApplication.findUnique({
     where: { id },
@@ -71,6 +75,7 @@ export default async function AdminJuryApplicationDetailsPage({
   const profilePhoto = application.files.find(
     (file) => file.fieldKey === "profilePhoto"
   );
+
   const certifications = application.files.filter(
     (file) => file.fieldKey === "certifications"
   );
@@ -99,6 +104,7 @@ export default async function AdminJuryApplicationDetailsPage({
             >
               Back to List
             </Link>
+
             <form action={logoutAdminAction}>
               <button
                 type="submit"
@@ -116,6 +122,7 @@ export default async function AdminJuryApplicationDetailsPage({
               <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
                 Applicant
               </p>
+
               <div className="mt-5 grid gap-4 md:grid-cols-2">
                 <DetailItem label="Full Name" value={application.fullName} />
                 <DetailItem label="Email" value={application.email} />
@@ -151,6 +158,7 @@ export default async function AdminJuryApplicationDetailsPage({
               <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
                 Experience
               </p>
+
               <div className="mt-5 grid gap-4 md:grid-cols-2">
                 <DetailItem
                   label="Previous Judging Experience"
@@ -176,6 +184,7 @@ export default async function AdminJuryApplicationDetailsPage({
                 <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
                   Areas of Expertise
                 </p>
+
                 <div className="mt-4 flex flex-wrap gap-2">
                   {application.expertiseAreas.map((area: string) => (
                     <span
@@ -193,8 +202,12 @@ export default async function AdminJuryApplicationDetailsPage({
               <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
                 Statements
               </p>
+
               <div className="mt-5 space-y-4">
-                <DetailItem label="Professional Bio" value={application.professionalBio} />
+                <DetailItem
+                  label="Professional Bio"
+                  value={application.professionalBio}
+                />
                 <DetailItem
                   label="Conflict Disclosure"
                   value={application.conflictDisclosure}
@@ -308,14 +321,15 @@ export default async function AdminJuryApplicationDetailsPage({
 
               <div className="mt-6">
                 <p className="text-sm font-medium text-white">Certifications</p>
+
                 <div className="mt-4 space-y-3">
-                  {certifications.map((file: { fieldKey: string; id: string; fileName: string; fileSize: number }) => (
+                  {certifications.map((file) => (
                     <a
                       key={file.id}
                       href={`/api/admin/jury-files/${file.id}`}
                       target="_blank"
                       rel="noreferrer"
-                    className="flex items-center justify-between rounded-2xl border border-white/12 bg-white/[0.035] px-4 py-3 text-sm text-[#d9d4ca] transition hover:border-[#d8c27a] hover:text-white"
+                      className="flex items-center justify-between rounded-2xl border border-white/12 bg-white/[0.035] px-4 py-3 text-sm text-[#d9d4ca] transition hover:border-[#d8c27a] hover:text-white"
                     >
                       <span>{file.fileName}</span>
                       <span className="text-xs text-white/45">
