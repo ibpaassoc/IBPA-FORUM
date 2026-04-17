@@ -35,11 +35,11 @@ function DetailItem({
   value: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/12 bg-white/3 p-4">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d6a63a]">
+    <div className="rounded-2xl border border-white/12 bg-white/[0.04] p-4">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
         {label}
       </p>
-      <p className="mt-3 text-sm leading-6 text-white/85">{value}</p>
+      <p className="mt-3 text-sm leading-6 text-[#f1ecde]">{value}</p>
     </div>
   );
 }
@@ -74,17 +74,17 @@ export default async function AdminJuryApplicationDetailsPage(
   );
 
   return (
-    <PageShell className="px-6 py-12 text-white md:px-10">
+    <PageShell className="px-6 py-10 text-white md:px-10 md:py-12">
       <div className="mx-auto max-w-7xl">
         <div className="page-panel flex flex-col gap-5 rounded-3xl p-6 md:flex-row md:items-end md:justify-between md:p-8">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d6a63a]">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d8c27a]">
               Jury Admin
             </p>
             <h1 className="mt-4 text-3xl font-semibold sm:text-4xl">
               {application.fullName}
             </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-white/70">
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-[#d9d4ca]">
               {application.professionalTitle} from {application.city},{" "}
               {application.country}
             </p>
@@ -93,14 +93,14 @@ export default async function AdminJuryApplicationDetailsPage(
           <div className="flex flex-wrap gap-3">
             <Link
               href="/admin/jury-applications"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d6a63a] hover:text-[#d6a63a]"
+              className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
             >
               Back to List
             </Link>
             <form action={logoutAdminAction}>
               <button
                 type="submit"
-                className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d6a63a] hover:text-[#d6a63a]"
+                className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
               >
                 Log Out
               </button>
@@ -111,7 +111,7 @@ export default async function AdminJuryApplicationDetailsPage(
         <div className="mt-6 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-6">
             <section className="page-card rounded-3xl p-6">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d6a63a]">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
                 Applicant
               </p>
               <div className="mt-5 grid gap-4 md:grid-cols-2">
@@ -146,7 +146,7 @@ export default async function AdminJuryApplicationDetailsPage(
             </section>
 
             <section className="page-card rounded-3xl p-6">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d6a63a]">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
                 Experience
               </p>
               <div className="mt-5 grid gap-4 md:grid-cols-2">
@@ -170,15 +170,15 @@ export default async function AdminJuryApplicationDetailsPage(
                 />
               </div>
 
-              <div className="mt-4 rounded-2xl border border-white/12 bg-black/20 p-4">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d6a63a]">
+              <div className="mt-4 rounded-2xl border border-white/12 bg-white/[0.035] p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
                   Areas of Expertise
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {application.expertiseAreas.map((area) => (
                     <span
                       key={area}
-                      className="rounded-full border border-white/12 px-3 py-1 text-xs text-white/75"
+                      className="rounded-full border border-white/12 bg-white/[0.03] px-3 py-1 text-xs text-[#d9d4ca]"
                     >
                       {area}
                     </span>
@@ -188,7 +188,7 @@ export default async function AdminJuryApplicationDetailsPage(
             </section>
 
             <section className="page-card rounded-3xl p-6">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d6a63a]">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
                 Statements
               </p>
               <div className="mt-5 space-y-4">
@@ -211,7 +211,7 @@ export default async function AdminJuryApplicationDetailsPage(
 
           <div className="space-y-6">
             <section className="page-card rounded-3xl p-6">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d6a63a]">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
                 Review Panel
               </p>
 
@@ -229,7 +229,7 @@ export default async function AdminJuryApplicationDetailsPage(
                     id="status"
                     name="status"
                     defaultValue={application.status}
-                    className="w-full rounded-2xl border border-white/12 bg-white/4 px-4 py-3 text-sm text-white outline-none transition focus:border-[#d6a63a] focus:bg-white/6"
+                    className="w-full rounded-2xl border border-white/12 bg-white/[0.05] px-4 py-3 text-sm text-white outline-none transition focus:border-[#d8c27a] focus:bg-white/[0.07]"
                   >
                     {statusOptions.map((status) => (
                       <option
@@ -254,14 +254,14 @@ export default async function AdminJuryApplicationDetailsPage(
                     id="adminNotes"
                     name="adminNotes"
                     defaultValue={application.adminNotes || ""}
-                    className="min-h-45 w-full rounded-2xl border border-white/12 bg-white/4 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#d6a63a] focus:bg-white/6"
+                    className="min-h-45 w-full rounded-2xl border border-white/12 bg-white/[0.05] px-4 py-3 text-sm text-white outline-none transition placeholder:text-[#d9d4ca]/45 focus:border-[#d8c27a] focus:bg-white/[0.07]"
                     placeholder="Add internal review notes, follow-up items, or approval context."
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="inline-flex items-center justify-center rounded-full bg-[#d6a63a] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-black transition hover:opacity-90"
+                  className="inline-flex items-center justify-center rounded-full bg-[#d8c27a] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-[#e2d093]"
                 >
                   Save Review
                 </button>
@@ -280,14 +280,14 @@ export default async function AdminJuryApplicationDetailsPage(
             </section>
 
             <section className="page-card rounded-3xl p-6">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d6a63a]">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
                 Files
               </p>
 
               {profilePhoto ? (
                 <div className="mt-5">
                   <p className="text-sm font-medium text-white">Profile Photo</p>
-                  <div className="mt-4 overflow-hidden rounded-2xl border border-white/12 bg-black/20">
+                  <div className="mt-4 overflow-hidden rounded-2xl border border-white/12 bg-white/[0.03]">
                     <Image
                       src={`/api/admin/jury-files/${profilePhoto.id}`}
                       alt={application.fullName}
@@ -299,7 +299,7 @@ export default async function AdminJuryApplicationDetailsPage(
                   </div>
                 </div>
               ) : (
-                <p className="mt-5 text-sm text-white/55">
+                <p className="mt-5 text-sm text-[#d9d4ca]/75">
                   No profile photo was saved for this application.
                 </p>
               )}
@@ -313,7 +313,7 @@ export default async function AdminJuryApplicationDetailsPage(
                       href={`/api/admin/jury-files/${file.id}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex items-center justify-between rounded-2xl border border-white/12 bg-black/20 px-4 py-3 text-sm text-white/80 transition hover:border-[#d6a63a] hover:text-white"
+                    className="flex items-center justify-between rounded-2xl border border-white/12 bg-white/[0.035] px-4 py-3 text-sm text-[#d9d4ca] transition hover:border-[#d8c27a] hover:text-white"
                     >
                       <span>{file.fileName}</span>
                       <span className="text-xs text-white/45">
@@ -323,7 +323,7 @@ export default async function AdminJuryApplicationDetailsPage(
                   ))}
 
                   {certifications.length === 0 ? (
-                    <p className="text-sm text-white/55">
+                    <p className="text-sm text-[#d9d4ca]/75">
                       No certifications were saved for this application.
                     </p>
                   ) : null}

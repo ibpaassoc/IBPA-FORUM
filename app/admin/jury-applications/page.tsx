@@ -6,7 +6,7 @@ import { PageShell } from "@/components/layout/PageShell";
 
 const statusStyles: Record<string, string> = {
   SUBMITTED: "bg-white/8 text-white/85 border-white/12",
-  UNDER_REVIEW: "bg-[#7a5a14]/25 text-[#f2cf72] border-[#d6a63a]/30",
+  UNDER_REVIEW: "bg-[#7a5a14]/25 text-[#f1d98a] border-[#d8c27a]/35",
   APPROVED: "bg-[#1b4d34]/45 text-[#9fe0b4] border-[#3e8f62]/45",
   REJECTED: "bg-[#5c2323]/45 text-[#f1aaaa] border-[#9d4a4a]/45",
 };
@@ -55,17 +55,17 @@ export default async function AdminJuryApplicationsPage() {
   ).length;
 
   return (
-    <PageShell className="px-6 py-12 text-white md:px-10">
+    <PageShell className="px-6 py-10 text-white md:px-10 md:py-12">
       <div className="mx-auto max-w-7xl">
         <div className="page-panel flex flex-col gap-5 rounded-3xl p-6 md:flex-row md:items-end md:justify-between md:p-8">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d6a63a]">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d8c27a]">
               Jury Admin
             </p>
             <h1 className="mt-4 text-3xl font-semibold sm:text-4xl">
               Jury applications dashboard
             </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-white/70">
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-[#d9d4ca]">
               Review submitted applications, open candidate details, and track
               approval decisions in one place.
             </p>
@@ -74,7 +74,7 @@ export default async function AdminJuryApplicationsPage() {
           <form action={logoutAdminAction}>
             <button
               type="submit"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d6a63a] hover:text-[#d6a63a]"
+              className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
             >
               Log Out
             </button>
@@ -88,17 +88,17 @@ export default async function AdminJuryApplicationsPage() {
             { label: "Under Review", value: reviewCount },
             { label: "Approved", value: approvedCount },
           ].map((item) => (
-            <div key={item.label} className="page-card rounded-2xl p-5">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d6a63a]">
+            <div key={item.label} className="page-card rounded-2xl bg-white/[0.045] p-5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
                 {item.label}
               </p>
-              <p className="mt-3 text-3xl font-semibold">{item.value}</p>
+              <p className="mt-3 text-3xl font-semibold text-white">{item.value}</p>
             </div>
           ))}
         </div>
 
         <section className="page-card mt-6 rounded-3xl p-4 md:p-6">
-          <div className="hidden grid-cols-[1.2fr_1fr_1fr_0.8fr_0.8fr_0.7fr] gap-4 border-b border-white/10 px-4 pb-4 text-[10px] font-semibold uppercase tracking-[0.24em] text-white/40 lg:grid">
+          <div className="hidden grid-cols-[1.2fr_1fr_1fr_0.8fr_0.8fr_0.7fr] gap-4 border-b border-white/10 px-4 pb-4 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d9d4ca]/65 lg:grid">
             <span>Candidate</span>
             <span>Title</span>
             <span>Expertise</span>
@@ -111,19 +111,19 @@ export default async function AdminJuryApplicationsPage() {
             {applications.map((application) => (
               <div
                 key={application.id}
-                className="grid gap-4 px-4 py-5 lg:grid-cols-[1.2fr_1fr_1fr_0.8fr_0.8fr_0.7fr] lg:items-center"
+                className="grid gap-4 px-4 py-5 transition hover:bg-white/[0.02] lg:grid-cols-[1.2fr_1fr_1fr_0.8fr_0.8fr_0.7fr] lg:items-center"
               >
                 <div>
                   <p className="text-sm font-semibold text-white">
                     {application.fullName}
                   </p>
-                  <p className="mt-1 text-sm text-white/55">{application.email}</p>
-                  <p className="mt-1 text-sm text-white/55">
+                  <p className="mt-1 text-sm text-[#d9d4ca]/80">{application.email}</p>
+                  <p className="mt-1 text-sm text-[#d9d4ca]/80">
                     {application.city}, {application.country}
                   </p>
                 </div>
 
-                <div className="text-sm text-white/75">
+                <div className="text-sm text-[#d9d4ca]">
                   {application.professionalTitle}
                 </div>
 
@@ -131,13 +131,13 @@ export default async function AdminJuryApplicationsPage() {
                   {application.expertiseAreas.slice(0, 3).map((area) => (
                     <span
                       key={area}
-                      className="rounded-full border border-white/12 px-3 py-1 text-xs text-white/70"
+                      className="rounded-full border border-white/12 bg-white/[0.03] px-3 py-1 text-xs text-[#d9d4ca]"
                     >
                       {area}
                     </span>
                   ))}
                   {application.expertiseAreas.length > 3 ? (
-                    <span className="rounded-full border border-white/12 px-3 py-1 text-xs text-white/45">
+                    <span className="rounded-full border border-white/12 bg-white/[0.03] px-3 py-1 text-xs text-[#d9d4ca]/60">
                       +{application.expertiseAreas.length - 3}
                     </span>
                   ) : null}
@@ -153,14 +153,14 @@ export default async function AdminJuryApplicationsPage() {
                   </span>
                 </div>
 
-                <div className="text-sm text-white/60">
+                <div className="text-sm text-[#d9d4ca]/75">
                   {formatDate(application.submittedAt)}
                 </div>
 
                 <div>
                   <Link
                     href={`/admin/jury-applications/${application.id}`}
-                    className="inline-flex items-center justify-center rounded-full bg-[#d6a63a] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-black transition hover:opacity-90"
+                    className="inline-flex items-center justify-center rounded-full bg-[#d8c27a] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-black transition hover:bg-[#e2d093]"
                   >
                     Review
                   </Link>
@@ -169,7 +169,7 @@ export default async function AdminJuryApplicationsPage() {
             ))}
 
             {applications.length === 0 ? (
-              <div className="px-4 py-12 text-center text-sm text-white/60">
+              <div className="px-4 py-12 text-center text-sm text-[#d9d4ca]/75">
                 No jury applications have been submitted yet.
               </div>
             ) : null}
