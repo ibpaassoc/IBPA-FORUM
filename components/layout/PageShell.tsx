@@ -29,7 +29,7 @@ function joinClasses(...values: Array<string | undefined>) {
 }
 
 export function PageShell({ children, className }: PageShellProps) {
-  return <main className={joinClasses("page-shell", className)}>{children}</main>;
+  return <div className={joinClasses("page-shell", className)}>{children}</div>;
 }
 
 export function PageHero({

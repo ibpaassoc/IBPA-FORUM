@@ -19,15 +19,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-
         <Header />
-
-        <main className="min-h-screen">
+        <div className="min-h-screen">
           {children}
-        </main>
-
+        </div>
         <Footer />
-
       </body>
     </html>
   )
