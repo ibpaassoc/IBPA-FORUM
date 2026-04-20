@@ -1,6 +1,6 @@
 import { put } from "@vercel/blob";
 import { prisma } from "@/lib/prisma";
-import { categoryCatalog, legacyAwardNameMappings } from "@/lib/apply/catalog";
+import { categoryCatalog } from "@/lib/apply/catalog";
 import { categoryFieldConfigs } from "@/lib/apply/categoryFieldConfigs";
 import { validateApplicationValues } from "@/lib/apply/categorySchemas";
 import { validateMembershipNumber } from "@/lib/apply/membership";
@@ -33,7 +33,7 @@ export async function syncApplicationCatalog() {
       },
     });
 
-    await reconcileCategoryAwards(category.id, definition.slug, definition.awards);
+    await reconcileCategoryAwards(category.id, definition.awards);
   }
 }
 
@@ -77,11 +77,9 @@ async function moveApplicationsToAward(fromAwardId: string, toAwardId: string) {
 
 async function reconcileCategoryAwards(
   categoryId: string,
-  categorySlug: string,
   desiredAwardNames: string[]
 ) {
   const desiredNameSet = new Set(desiredAwardNames);
-  const aliasMappings = legacyAwardNameMappings[categorySlug] ?? {};
 
   const awards = await prisma.award.findMany({
     where: {
@@ -143,18 +141,6 @@ async function reconcileCategoryAwards(
 
   for (const award of refreshedAwards) {
     if (desiredNameSet.has(award.name)) {
-      continue;
-    }
-
-    const mappedName = aliasMappings[award.name];
-
-    if (mappedName && canonicalByName.has(mappedName)) {
-      await moveApplicationsToAward(award.id, canonicalByName.get(mappedName)!.id);
-      await prisma.award.deleteMany({
-        where: {
-          id: award.id,
-        },
-      });
       continue;
     }
 
