@@ -1,6 +1,6 @@
+import Link from "next/link";
 import { requireAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
-import Link from "next/link";
 import { logoutAdminAction } from "@/app/admin/actions";
 import { PageShell } from "@/components/layout/PageShell";
 
@@ -22,62 +22,75 @@ function formatDate(date: Date | null) {
   }).format(date);
 }
 
-export default async function AdminJuryApplicationsPage() {
+export default async function AdminApplicationsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string }>;
+}) {
   await requireAdmin();
 
-  const applications = await prisma.juryApplication.findMany({
+  const { status } = await searchParams;
+  const activeStatus =
+    status === "SUBMITTED" ||
+    status === "UNDER_REVIEW" ||
+    status === "APPROVED" ||
+    status === "REJECTED"
+      ? status
+      : undefined;
+
+  const applications = await prisma.application.findMany({
+    where: activeStatus
+      ? {
+          status: activeStatus,
+        }
+      : undefined,
     orderBy: {
       createdAt: "desc",
     },
-    select: {
-      id: true,
-      fullName: true,
-      email: true,
-      city: true,
-      country: true,
-      professionalTitle: true,
-      expertiseAreas: true,
-      status: true,
-      submittedAt: true,
-      reviewedAt: true,
+    include: {
+      category: true,
+      award: true,
     },
   });
 
-  const totalCount = applications.length;
-  const submittedCount = applications.filter(
-    (application) => application.status === "SUBMITTED"
-  ).length;
-  const reviewCount = applications.filter(
-    (application) => application.status === "UNDER_REVIEW"
-  ).length;
-  const approvedCount = applications.filter(
-    (application) => application.status === "APPROVED"
-  ).length;
+  const allApplications = await prisma.application.findMany({
+    select: {
+      status: true,
+    },
+  });
+
+  const totals = {
+    total: allApplications.length,
+    submitted: allApplications.filter((item) => item.status === "SUBMITTED").length,
+    underReview: allApplications.filter((item) => item.status === "UNDER_REVIEW").length,
+    approved: allApplications.filter((item) => item.status === "APPROVED").length,
+  };
 
   return (
     <PageShell className="px-6 py-10 text-white md:px-10 md:py-12">
       <div className="mx-auto max-w-7xl pt-16">
-          <div className="page-panel flex flex-col gap-5 rounded-3xl p-6 md:flex-row md:items-end md:justify-between md:p-8">
-            <div>
+        <div className="page-panel flex flex-col gap-5 rounded-3xl p-6 md:flex-row md:items-end md:justify-between md:p-8">
+          <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d8c27a]">
-              Jury Admin
+              Participant Admin
             </p>
             <h1 className="mt-4 text-3xl font-semibold sm:text-4xl">
-              Jury applications dashboard
+              Championship participant applications
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-[#d9d4ca]">
-              Review submitted applications, open candidate details, and track
-              approval decisions in one place.
+              Review applicant profiles, category entries, supporting files, and
+              current review status in one private workspace.
             </p>
-            </div>
+          </div>
 
           <div className="flex flex-wrap gap-3">
             <Link
-              href="/admin/applications"
+              href="/admin/jury-applications"
               className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
             >
-              Participant Dashboard
+              Jury Dashboard
             </Link>
+
             <form action={logoutAdminAction}>
               <button
                 type="submit"
@@ -91,10 +104,10 @@ export default async function AdminJuryApplicationsPage() {
 
         <div className="mt-6 grid gap-4 md:grid-cols-4">
           {[
-            { label: "Total", value: totalCount },
-            { label: "Submitted", value: submittedCount },
-            { label: "Under Review", value: reviewCount },
-            { label: "Approved", value: approvedCount },
+            { label: "Total", value: totals.total },
+            { label: "Submitted", value: totals.submitted },
+            { label: "Under Review", value: totals.underReview },
+            { label: "Approved", value: totals.approved },
           ].map((item) => (
             <div
               key={item.label}
@@ -111,12 +124,50 @@ export default async function AdminJuryApplicationsPage() {
         </div>
 
         <section className="page-card mt-6 rounded-3xl p-4 md:p-6">
-          <div className="hidden grid-cols-[1.2fr_1fr_1fr_0.8fr_0.8fr_0.7fr] gap-4 border-b border-white/10 px-4 pb-4 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d9d4ca]/65 lg:grid">
-            <span>Candidate</span>
-            <span>Title</span>
-            <span>Expertise</span>
+          <div className="mb-5 flex flex-wrap gap-3">
+            {[
+              { label: "All", href: "/admin/applications", active: !activeStatus },
+              {
+                label: "Submitted",
+                href: "/admin/applications?status=SUBMITTED",
+                active: activeStatus === "SUBMITTED",
+              },
+              {
+                label: "Under Review",
+                href: "/admin/applications?status=UNDER_REVIEW",
+                active: activeStatus === "UNDER_REVIEW",
+              },
+              {
+                label: "Approved",
+                href: "/admin/applications?status=APPROVED",
+                active: activeStatus === "APPROVED",
+              },
+              {
+                label: "Rejected",
+                href: "/admin/applications?status=REJECTED",
+                active: activeStatus === "REJECTED",
+              },
+            ].map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className={`inline-flex rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] transition ${
+                  item.active
+                    ? "border-[#d8c27a]/45 bg-[#d8c27a]/10 text-[#f2df9c]"
+                    : "border-white/12 bg-white/3 text-white/75 hover:border-[#d8c27a]/25 hover:text-[#d8c27a]"
+                }`}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+
+          <div className="hidden grid-cols-[1.1fr_0.9fr_1fr_0.8fr_0.9fr_0.7fr] gap-4 border-b border-white/10 px-4 pb-4 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d9d4ca]/65 lg:grid">
+            <span>Applicant</span>
+            <span>Category</span>
+            <span>Award</span>
             <span>Status</span>
-            <span>Submitted</span>
+            <span>Created</span>
             <span>Open</span>
           </div>
 
@@ -124,7 +175,7 @@ export default async function AdminJuryApplicationsPage() {
             {applications.map((application) => (
               <div
                 key={application.id}
-                className="grid gap-4 px-4 py-5 transition hover:bg-white/2 lg:grid-cols-[1.2fr_1fr_1fr_0.8fr_0.8fr_0.7fr] lg:items-center"
+                className="grid gap-4 px-4 py-5 transition hover:bg-white/2 lg:grid-cols-[1.1fr_0.9fr_1fr_0.8fr_0.9fr_0.7fr] lg:items-center"
               >
                 <div>
                   <p className="text-sm font-semibold text-white">
@@ -139,23 +190,11 @@ export default async function AdminJuryApplicationsPage() {
                 </div>
 
                 <div className="text-sm text-[#d9d4ca]">
-                  {application.professionalTitle}
+                  {application.category.name}
                 </div>
 
-                <div className="flex flex-wrap gap-2">
-                  {application.expertiseAreas.slice(0, 3).map((area) => (
-                    <span
-                      key={area}
-                      className="rounded-full border border-white/12 bg-white/3 px-3 py-1 text-xs text-[#d9d4ca]"
-                    >
-                      {area}
-                    </span>
-                  ))}
-                  {application.expertiseAreas.length > 3 ? (
-                    <span className="rounded-full border border-white/12 bg-white/3 px-3 py-1 text-xs text-[#d9d4ca]/60">
-                      +{application.expertiseAreas.length - 3}
-                    </span>
-                  ) : null}
+                <div className="text-sm text-[#d9d4ca]">
+                  {application.award.name}
                 </div>
 
                 <div>
@@ -171,12 +210,12 @@ export default async function AdminJuryApplicationsPage() {
                 </div>
 
                 <div className="text-sm text-[#d9d4ca]/75">
-                  {formatDate(application.submittedAt)}
+                  {formatDate(application.createdAt)}
                 </div>
 
                 <div>
                   <Link
-                    href={`/admin/jury-applications/${application.id}`}
+                    href={`/admin/applications/${application.id}`}
                     className="inline-flex items-center justify-center rounded-full bg-[#d8c27a] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-black transition hover:bg-[#e2d093]"
                   >
                     Review
@@ -187,7 +226,7 @@ export default async function AdminJuryApplicationsPage() {
 
             {applications.length === 0 ? (
               <div className="px-4 py-12 text-center text-sm text-[#d9d4ca]/75">
-                No jury applications have been submitted yet.
+                No participant applications matched this filter.
               </div>
             ) : null}
           </div>
