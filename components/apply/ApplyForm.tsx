@@ -291,11 +291,8 @@ export default function ApplyForm({
               values={values}
               errors={errors}
               categories={categories}
-              membership={membership}
-              isValidatingMembership={isValidatingMembership}
               onChange={handleChange}
               onFilesChange={handleFilesChange}
-              onValidateMembership={validateMembership}
             />
           </FormSection>
 
