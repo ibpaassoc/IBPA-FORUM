@@ -1,0 +1,338 @@
+import { put } from "@vercel/blob";
+import { prisma } from "@/lib/prisma";
+import { categoryCatalog } from "@/lib/apply/catalog";
+import { categoryFieldConfigs } from "@/lib/apply/categoryFieldConfigs";
+import { validateApplicationValues } from "@/lib/apply/categorySchemas";
+import { validateMembershipNumber } from "@/lib/apply/membership";
+import type {
+  ApplicationValues,
+  CategoryOption,
+  UploadedApplicationFile,
+} from "@/lib/apply/types";
+
+function isFilledFile(value: FormDataEntryValue | null): value is File {
+  return value instanceof File && value.size > 0;
+}
+
+function sanitizeFileName(fileName: string) {
+  return fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
+}
+
+export async function syncApplicationCatalog() {
+  const existingCategories = await prisma.category.findMany({
+    include: {
+      awards: true,
+    },
+  });
+
+  const categoryMap = new Map(
+    existingCategories.map((category) => [category.slug, category])
+  );
+
+  for (const definition of categoryCatalog) {
+    const existingCategory = categoryMap.get(definition.slug);
+
+    const category =
+      existingCategory ??
+      (await prisma.category.create({
+        data: {
+          name: definition.name,
+          slug: definition.slug,
+        },
+        include: {
+          awards: true,
+        },
+      }));
+
+    const existingAwardNames = new Set(category.awards.map((award) => award.name));
+    const missingAwards = definition.awards.filter(
+      (awardName) => !existingAwardNames.has(awardName)
+    );
+
+    if (missingAwards.length > 0) {
+      await prisma.award.createMany({
+        data: missingAwards.map((awardName) => ({
+          name: awardName,
+          categoryId: category.id,
+        })),
+      });
+    }
+  }
+}
+
+export async function getApplicationCategories(): Promise<CategoryOption[]> {
+  await syncApplicationCatalog();
+
+  const categories = await prisma.category.findMany({
+    include: {
+      awards: {
+        orderBy: {
+          name: "asc",
+        },
+      },
+    },
+  });
+
+  const order = new Map(categoryCatalog.map((item, index) => [item.slug, index]));
+
+  return categories
+    .sort((left, right) => {
+      const leftOrder = order.get(left.slug) ?? Number.MAX_SAFE_INTEGER;
+      const rightOrder = order.get(right.slug) ?? Number.MAX_SAFE_INTEGER;
+      return leftOrder - rightOrder;
+    })
+    .map((category) => ({
+      id: category.id,
+      slug: category.slug,
+      name: category.name,
+      awards: category.awards.map((award) => ({
+        id: award.id,
+        name: award.name,
+      })),
+    }));
+}
+
+function getTextValue(formData: FormData, key: string) {
+  return String(formData.get(key) ?? "").trim();
+}
+
+export function extractApplicationValues(
+  formData: FormData,
+  categories: CategoryOption[]
+): ApplicationValues {
+  const values: ApplicationValues = {
+    fullName: getTextValue(formData, "fullName"),
+    email: getTextValue(formData, "email"),
+    phone: getTextValue(formData, "phone"),
+    country: getTextValue(formData, "country"),
+    stateProvince: getTextValue(formData, "stateProvince"),
+    city: getTextValue(formData, "city"),
+    professionalTitle: getTextValue(formData, "professionalTitle"),
+    yearsExperience: getTextValue(formData, "yearsExperience"),
+    membershipNumber: getTextValue(formData, "membershipNumber"),
+    membershipLevel: getTextValue(formData, "membershipLevel"),
+    categoryId: getTextValue(formData, "categoryId"),
+    awardId: getTextValue(formData, "awardId"),
+    websiteUrl: getTextValue(formData, "websiteUrl"),
+    socialUrl: getTextValue(formData, "socialUrl"),
+    reviewsUrl: getTextValue(formData, "reviewsUrl"),
+    heardAbout: getTextValue(formData, "heardAbout"),
+    heardAboutOther: getTextValue(formData, "heardAboutOther"),
+    licenseCertification: formData
+      .getAll("licenseCertification")
+      .filter((entry): entry is File => isFilledFile(entry)),
+  };
+
+  const selectedCategory = categories.find(
+    (category) => category.id === values.categoryId
+  );
+  const categoryFields = selectedCategory
+    ? categoryFieldConfigs[selectedCategory.slug] ?? []
+    : [];
+
+  for (const field of categoryFields) {
+    if (field.type === "checkbox-group") {
+      values[field.key] = formData
+        .getAll(field.key)
+        .map((item) => String(item).trim())
+        .filter(Boolean);
+      continue;
+    }
+
+    if (field.type === "file") {
+      values[field.key] = formData
+        .getAll(field.key)
+        .filter((item): item is File => isFilledFile(item));
+      continue;
+    }
+
+    values[field.key] = getTextValue(formData, field.key);
+  }
+
+  return values;
+}
+
+async function uploadApplicationFile(
+  file: File,
+  applicationId: string,
+  fieldKey: string,
+  index = 0
+) {
+  const safeFileName = sanitizeFileName(file.name);
+  const pathname = `applications/${applicationId}/${fieldKey}-${index + 1}-${safeFileName}`;
+
+  const blob = await put(pathname, file, {
+    access: "private",
+    addRandomSuffix: true,
+    contentType: file.type || "application/octet-stream",
+  });
+
+  return {
+    fieldKey,
+    fileName: file.name,
+    fileUrl: blob.pathname,
+    mimeType: file.type || "application/octet-stream",
+    fileSize: file.size,
+  } satisfies UploadedApplicationFile;
+}
+
+export async function saveApplicationSubmission(formData: FormData) {
+  const categories = await getApplicationCategories();
+  const values = extractApplicationValues(formData, categories);
+  const membership = await validateMembershipNumber(
+    String(values.membershipNumber ?? "")
+  );
+  const validation = validateApplicationValues({
+    values,
+    categories,
+    membership,
+  });
+
+  if (!validation.success || !validation.selectedCategory || !validation.selectedAward) {
+    return {
+      ok: false as const,
+      status: 400,
+      body: {
+        message:
+          "Please review the participant application form and correct the highlighted fields.",
+        fieldErrors: validation.errors,
+      },
+    };
+  }
+
+  const licenseFiles = Array.isArray(values.licenseCertification)
+    ? values.licenseCertification.filter((file): file is File => file instanceof File)
+    : [];
+
+  const categoryFields = categoryFieldConfigs[validation.selectedCategory.slug] ?? [];
+  const answerEntries = [];
+  const pendingFileUploads: Array<{ fieldKey: string; files: File[] }> = [
+    {
+      fieldKey: "licenseCertification",
+      files: licenseFiles,
+    },
+  ];
+
+  for (const field of categoryFields) {
+    const rawValue = values[field.key];
+
+    if (field.type === "file") {
+      const files = Array.isArray(rawValue)
+        ? rawValue.filter((file): file is File => file instanceof File)
+        : [];
+      if (files.length > 0) {
+        pendingFileUploads.push({
+          fieldKey: field.key,
+          files,
+        });
+      }
+      continue;
+    }
+
+    if (field.type === "checkbox-group") {
+      const list = Array.isArray(rawValue)
+        ? rawValue.filter((item): item is string => typeof item === "string")
+        : [];
+      if (list.length > 0) {
+        answerEntries.push({
+          fieldKey: field.key,
+          valueJson: list,
+        });
+      }
+      continue;
+    }
+
+    if (field.type === "number") {
+      const rawText = typeof rawValue === "string" ? rawValue.trim() : "";
+      if (rawText) {
+        answerEntries.push({
+          fieldKey: field.key,
+          valueNumber: Number(rawText),
+          valueText: rawText,
+        });
+      }
+      continue;
+    }
+
+    const textValue = typeof rawValue === "string" ? rawValue.trim() : "";
+    if (textValue) {
+      answerEntries.push({
+        fieldKey: field.key,
+        valueText: textValue,
+      });
+    }
+  }
+
+  if (typeof values.heardAboutOther === "string" && values.heardAboutOther.trim()) {
+    answerEntries.push({
+      fieldKey: "heardAboutOther",
+      valueText: values.heardAboutOther.trim(),
+    });
+  }
+
+  const application = await prisma.application.create({
+    data: {
+      fullName: String(values.fullName),
+      email: String(values.email),
+      phone: String(values.phone),
+      country: String(values.country),
+      stateProvince: String(values.stateProvince || "") || null,
+      city: String(values.city),
+      professionalTitle: String(values.professionalTitle),
+      yearsExperience: Number(values.yearsExperience),
+      membershipNumber: String(values.membershipNumber),
+      membershipLevel: membership.membershipLevel,
+      websiteUrl: String(values.websiteUrl || "") || null,
+      socialUrl: String(values.socialUrl || "") || null,
+      reviewsUrl: String(values.reviewsUrl || "") || null,
+      heardAbout: String(values.heardAbout || "") || null,
+      categoryId: validation.selectedCategory.id,
+      awardId: validation.selectedAward.id,
+      status: "SUBMITTED",
+      paymentStatus: "PENDING",
+      submittedAt: new Date(),
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  const uploadedFiles = (
+    await Promise.all(
+      pendingFileUploads.flatMap(({ fieldKey, files }) =>
+        files.map((file, index) =>
+          uploadApplicationFile(file, application.id, fieldKey, index)
+        )
+      )
+    )
+  ).filter(Boolean);
+
+  await prisma.application.update({
+    where: {
+      id: application.id,
+    },
+    data: {
+      answers: answerEntries.length
+        ? {
+            create: answerEntries,
+          }
+        : undefined,
+      files: uploadedFiles.length
+        ? {
+            create: uploadedFiles,
+          }
+        : undefined,
+    },
+  });
+
+  return {
+    ok: true as const,
+    status: 201,
+    body: {
+      message:
+        "Your participant application has been submitted successfully. The IBPA review team will contact you with the next steps.",
+      applicationId: application.id,
+      membershipLevel: membership.membershipLevel,
+    },
+  };
+}
