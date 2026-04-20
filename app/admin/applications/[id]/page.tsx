@@ -186,7 +186,7 @@ export default async function AdminApplicationDetailPage({
                 />
                 <DetailItem
                   label="IBPA Membership Number"
-                  value={application.membershipNumber}
+                  value={application.membershipNumber || "Not provided"}
                 />
                 <DetailItem
                   label="Membership Level"

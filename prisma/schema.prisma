@@ -58,7 +58,7 @@ model Application {
   city                  String
   professionalTitle     String
   yearsExperience       Int
-  membershipNumber      String
+  membershipNumber      String?
   membershipLevel       String?
   websiteUrl            String?
   socialUrl             String?
@@ -86,14 +86,14 @@ model Application {
 model JuryApplication {
   id                                String                @id @default(cuid())
   fullName                          String
-  email                             String
+  email                             String                @unique
   phone                             String
   country                           String
   city                              String
   professionalTitle                 String
   yearsExperience                   Int
   employerAffiliation               String
-  membershipStatus                  String
+  membershipStatus                  String?
   membershipLevel                   String?
   previousJudgingExperience         Boolean
   previousJudgingDetails            String?

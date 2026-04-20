@@ -9,7 +9,6 @@ import { applicationTimeline } from "@/lib/apply/catalog";
 import type {
   ApplicationValues,
   CategoryOption,
-  MembershipValidationResult,
   ValidationErrors,
 } from "@/lib/apply/types";
 
@@ -42,8 +41,6 @@ export default function ApplyForm({
 }) {
   const [values, setValues] = useState<ApplicationValues>({});
   const [errors, setErrors] = useState<ValidationErrors>({});
-  const [membership, setMembership] = useState<MembershipValidationResult | null>(null);
-  const [isValidatingMembership, setIsValidatingMembership] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionState, setSubmissionState] = useState<SubmissionState>({
     type: "idle",
@@ -69,17 +66,12 @@ export default function ApplyForm({
     "city",
     "professionalTitle",
     "yearsExperience",
-    "membershipNumber",
     "licenseCertification",
     "categoryId",
     "awardId",
     ...visibleCategoryFields.filter((field) => field.required).map((field) => field.key),
   ];
   const completedRequiredCount = requiredFieldKeys.filter((fieldKey) => {
-    if (fieldKey === "membershipNumber") {
-      return Boolean(membership?.membershipLevel) && Boolean(membership?.qualified);
-    }
-
     if (fieldKey === "awardId" && !selectedCategory) {
       return false;
     }
@@ -102,11 +94,6 @@ export default function ApplyForm({
         next.awardId = "";
       }
 
-      if (name === "membershipNumber") {
-        setMembership(null);
-        next.membershipLevel = "";
-      }
-
       return next;
     });
 
@@ -116,10 +103,6 @@ export default function ApplyForm({
 
       if (name === "categoryId") {
         delete next.awardId;
-      }
-
-      if (name === "membershipNumber") {
-        delete next.membershipNumber;
       }
 
       return next;
@@ -139,69 +122,13 @@ export default function ApplyForm({
     });
   }
 
-  async function validateMembership() {
-    const membershipNumber = String(values.membershipNumber ?? "").trim();
-
-    if (!membershipNumber) {
-      setErrors((current) => ({
-        ...current,
-        membershipNumber: "IBPA Membership Number is required.",
-      }));
-      return null;
-    }
-
-    setIsValidatingMembership(true);
-    try {
-      const response = await fetch("/api/membership/validate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ membershipNumber }),
-      });
-
-      const data = (await response.json()) as MembershipValidationResult;
-      setMembership(data);
-      setValues((current) => ({
-        ...current,
-        membershipLevel: data.membershipLevel ?? "",
-      }));
-
-      setErrors((current) => {
-        const next = { ...current };
-        if (data.membershipLevel && data.qualified) {
-          delete next.membershipNumber;
-        } else if (data.message) {
-          next.membershipNumber = data.message;
-        }
-        return next;
-      });
-
-      return data;
-    } catch {
-      setErrors((current) => ({
-        ...current,
-        membershipNumber: "Unable to validate membership right now.",
-      }));
-      return null;
-    } finally {
-      setIsValidatingMembership(false);
-    }
-  }
-
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSubmissionState({ type: "idle", message: "" });
 
-    let currentMembership = membership;
-    if (!currentMembership || currentMembership.membershipNumber !== values.membershipNumber) {
-      currentMembership = await validateMembership();
-    }
-
     const validation = validateApplicationValues({
       values,
       categories,
-      membership: currentMembership,
     });
 
     if (!validation.success) {
@@ -234,10 +161,6 @@ export default function ApplyForm({
         formData.append(key, String(rawValue));
       }
 
-      if (membership?.membershipLevel) {
-        formData.set("membershipLevel", membership.membershipLevel);
-      }
-
       const response = await fetch("/api/applications", {
         method: "POST",
         body: formData,
@@ -266,7 +189,6 @@ export default function ApplyForm({
       });
       setValues({});
       setErrors({});
-      setMembership(null);
     } catch {
       setSubmissionState({
         type: "error",
@@ -332,7 +254,6 @@ export default function ApplyForm({
             <div className="mt-6 space-y-4">
               {[
                 ["Entry Fee", applicationTimeline.feeLabel],
-                ["Membership", membership?.membershipLevel ?? "Pending validation"],
                 ["Category", selectedCategory?.name ?? "Not selected"],
                 ["Specific Award", selectedAward?.name ?? "Not selected"],
               ].map(([label, value]) => (
@@ -355,10 +276,6 @@ export default function ApplyForm({
             </p>
             <div className="mt-4 space-y-4 text-sm leading-7 text-[#d9d4ca]">
               <p>Each category is a separate submission and billed separately.</p>
-              <p>
-                Membership must validate at <strong>{applicationTimeline.membershipMinimum}</strong> or
-                higher before submission is unlocked.
-              </p>
               <p>
                 Your uploaded files are stored with structured metadata for later
                 review in the admin panel.
@@ -391,7 +308,7 @@ export default function ApplyForm({
 
             <button
               type="submit"
-              disabled={isSubmitting || isValidatingMembership}
+              disabled={isSubmitting}
               className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-[#d8c27a] px-6 py-3.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-[#e5d28f] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isSubmitting ? "Submitting Application..." : "Submit Championship Application"}
