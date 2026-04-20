@@ -1,38 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { PageHero, PageShell } from "@/components/layout/PageShell";
 import { PageCard, PageSection } from "@/components/layout/PageShell";
 
 export default function TestPage() {
   const [applications, setApplications] = useState<unknown[]>([]);
-
-  async function testCreateApplication() {
-    const response = await fetch("/api/applications", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        fullName: "Ivan Makovetskyi",
-        email: "test@test.com",
-        phone: "+123456789",
-        country: "USA",
-        stateProvince: "California",
-        city: "Sacramento",
-        professionalTitle: "PMU Artist",
-        yearsExperience: 3,
-        membershipNumber: "IBPA-12345",
-        membershipLevel: "Trainer",
-        categoryId: "cmo0mcbkz0000okt0vbmd6rzt",
-        awardId: "cmo0mcbnz0002okt08ni0xs45",
-      }),
-    });
-
-    const data = await response.json();
-    console.log("Created:", data);
-    alert("Application created");
-  }
 
   async function fetchApplications() {
     const response = await fetch("/api/applications");
@@ -55,15 +29,16 @@ export default function TestPage() {
           <h2 className="text-center text-2xl font-semibold text-white">
             Application API Test
           </h2>
+          <p className="text-center text-sm leading-7 text-[#d9d4ca]">
+            Participant submissions now require the full multipart form flow at{" "}
+            <Link href="/apply" className="text-[#d8c27a] hover:text-[#f0dfa4]">
+              /apply
+            </Link>
+            . This internal page remains useful for listing saved applications
+            during development.
+          </p>
 
           <div className="flex flex-wrap justify-center gap-4">
-            <button
-              onClick={testCreateApplication}
-              className="rounded-full bg-[#d8c27a] px-6 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-[#111111] hover:opacity-90"
-            >
-              Create Test Application
-            </button>
-
             <button
               onClick={fetchApplications}
               className="rounded-full border border-white/20 px-6 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-white hover:border-[#d8c27a] hover:text-[#d8c27a]"

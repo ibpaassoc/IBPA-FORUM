@@ -60,7 +60,7 @@ export default function Footer() {
                 Apply as Jury
               </Link>
               <Link
-                href="/under-development"
+                href="/apply"
                 className="inline-flex items-center justify-center rounded-full bg-[#d8c27a] px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#111111] transition hover:opacity-90"
               >
                 Apply Now
