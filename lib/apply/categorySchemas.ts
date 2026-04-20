@@ -4,7 +4,6 @@ import type {
   ApplicationValues,
   ApplyFieldConfig,
   CategoryOption,
-  MembershipValidationResult,
   ValidationErrors,
 } from "@/lib/apply/types";
 
@@ -33,10 +32,6 @@ const baseApplicationSchema = z.object({
     .number()
     .int("Years of Professional Experience must be a whole number.")
     .min(2, "A minimum of 2 years of professional experience is required."),
-  membershipNumber: z
-    .string()
-    .trim()
-    .min(1, "IBPA Membership Number is required."),
   categoryId: z.string().trim().min(1, "Award Category is required."),
   awardId: z.string().trim().min(1, "Specific Award is required."),
   websiteUrl: optionalUrlSchema,
@@ -215,11 +210,9 @@ function validateConfigField(
 export function validateApplicationValues({
   values,
   categories,
-  membership,
 }: {
   values: ApplicationValues;
   categories: CategoryOption[];
-  membership: MembershipValidationResult | null;
 }) {
   const errors: ValidationErrors = {};
   const result = baseApplicationSchema.safeParse({
@@ -231,7 +224,6 @@ export function validateApplicationValues({
     city: getStringValue(values, "city"),
     professionalTitle: getStringValue(values, "professionalTitle"),
     yearsExperience: getStringValue(values, "yearsExperience"),
-    membershipNumber: getStringValue(values, "membershipNumber"),
     categoryId: getStringValue(values, "categoryId"),
     awardId: getStringValue(values, "awardId"),
     websiteUrl: getStringValue(values, "websiteUrl"),
@@ -275,13 +267,6 @@ export function validateApplicationValues({
 
   if (!selectedAward) {
     errors.awardId = "Please select a valid specific award.";
-  }
-
-  if (!membership?.membershipLevel) {
-    errors.membershipNumber = "Validate your IBPA Membership Number to continue.";
-  } else if (!membership.qualified) {
-    errors.membershipNumber =
-      "Your current membership level does not qualify for Championship participation.\n\nUpgrade to Trainer / Coach or higher at ibpa-usa.org to apply.";
   }
 
   validateConfigField(

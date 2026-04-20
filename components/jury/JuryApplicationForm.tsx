@@ -3,15 +3,7 @@
 import type { ChangeEvent, FormEvent, InputHTMLAttributes, ReactNode, TextareaHTMLAttributes } from "react"
 import { useState } from "react"
 import { categories } from "@/data/home"
-
-const membershipLevels = [
-  "Trainer",
-  "Coach",
-  "Educator",
-  "Master",
-  "Director",
-  "Other",
-]
+import { countryOptions } from "@/lib/apply/countries"
 
 const inputClassName =
   "w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#d8c27a] focus:bg-white/[0.07]"
@@ -113,7 +105,6 @@ function SidebarCard({
 }
 
 export default function JuryApplicationForm() {
-  const [membershipStatus, setMembershipStatus] = useState("member")
   const [hasPreviousJudging, setHasPreviousJudging] = useState("no")
   const [isPastWinner, setIsPastWinner] = useState("no")
   const [selectedExpertise, setSelectedExpertise] = useState<string[]>([])
@@ -176,7 +167,6 @@ export default function JuryApplicationForm() {
       })
 
       form.reset()
-      setMembershipStatus("member")
       setHasPreviousJudging("no")
       setIsPastWinner("no")
       setSelectedExpertise([])
@@ -242,12 +232,27 @@ export default function JuryApplicationForm() {
                     required
                   />
 
-                  <TextInput
-                    label="Country"
-                    name="country"
-                    placeholder="United States"
-                    required
-                  />
+                  <FieldShell label="Country" required>
+                    <select
+                      name="country"
+                      defaultValue=""
+                      required
+                      className={inputClassName}
+                    >
+                      <option value="" className="bg-[#101010] text-white">
+                        Select country
+                      </option>
+                      {countryOptions.map((country) => (
+                        <option
+                          key={country.value}
+                          value={country.value}
+                          className="bg-[#101010] text-white"
+                        >
+                          {country.label}
+                        </option>
+                      ))}
+                    </select>
+                  </FieldShell>
 
                   <TextInput
                     label="City"
@@ -284,64 +289,10 @@ export default function JuryApplicationForm() {
 
               <div className="border-b border-white/10 pb-8">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
-                  Membership & Experience
+                  Experience
                 </p>
 
                 <div className="mt-5 space-y-5">
-                  <FieldShell
-                    label="IBPA Membership Status"
-                    hint="Membership is not required, but it can strengthen the application."
-                    required
-                  >
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      {[
-                        { value: "member", label: "Member" },
-                        { value: "not-yet", label: "Not yet" },
-                      ].map((item) => (
-                        <label
-                          key={item.value}
-                          className="flex cursor-pointer items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white transition hover:border-[#d8c27a]"
-                        >
-                          <input
-                            type="radio"
-                            name="membershipStatus"
-                            value={item.value}
-                            checked={membershipStatus === item.value}
-                            onChange={() => setMembershipStatus(item.value)}
-                            className="h-4 w-4 accent-[#d8c27a]"
-                          />
-                          <span>{item.label}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </FieldShell>
-
-                  {membershipStatus === "member" ? (
-                    <FieldShell
-                      label="IBPA Membership Level"
-                      hint="Shown only when the applicant is already an IBPA member."
-                    >
-                      <select
-                        name="membershipLevel"
-                        defaultValue=""
-                        className={inputClassName}
-                      >
-                        <option value="" className="bg-[#101010] text-white">
-                          Select membership level
-                        </option>
-                        {membershipLevels.map((level) => (
-                          <option
-                            key={level}
-                            value={level}
-                            className="bg-[#101010] text-white"
-                          >
-                            {level}
-                          </option>
-                        ))}
-                      </select>
-                    </FieldShell>
-                  ) : null}
-
                   <FieldShell
                     label="Previous Judging Experience"
                     hint="If yes, tell us where, when, and in what format you served."
@@ -620,15 +571,6 @@ export default function JuryApplicationForm() {
                   </p>
                   <p className="mt-2 text-2xl font-semibold">
                     {selectedExpertise.length}
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.22em] text-white/40">
-                    Membership
-                  </p>
-                  <p className="mt-2 text-2xl font-semibold">
-                    {membershipStatus === "member" ? "Member" : "Not Yet"}
                   </p>
                 </div>
 

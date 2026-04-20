@@ -153,8 +153,8 @@ export default async function AdminJuryApplicationDetailsPage({
                   label="Membership"
                   value={
                     application.membershipLevel
-                      ? `${application.membershipStatus} (${application.membershipLevel})`
-                      : application.membershipStatus
+                      ? `${application.membershipStatus ?? "Not provided"} (${application.membershipLevel})`
+                      : application.membershipStatus || "Not provided"
                   }
                 />
               </div>

@@ -4,7 +4,6 @@ import { prisma } from "@/lib/prisma";
 import { categoryCatalog } from "@/lib/apply/catalog";
 import { categoryFieldConfigs } from "@/lib/apply/categoryFieldConfigs";
 import { validateApplicationValues } from "@/lib/apply/categorySchemas";
-import { validateMembershipNumber } from "@/lib/apply/membership";
 import type {
   ApplicationValues,
   CategoryOption,
@@ -221,8 +220,6 @@ export function extractApplicationValues(
     city: getTextValue(formData, "city"),
     professionalTitle: getTextValue(formData, "professionalTitle"),
     yearsExperience: getTextValue(formData, "yearsExperience"),
-    membershipNumber: getTextValue(formData, "membershipNumber"),
-    membershipLevel: getTextValue(formData, "membershipLevel"),
     categoryId: getTextValue(formData, "categoryId"),
     awardId: getTextValue(formData, "awardId"),
     websiteUrl: getTextValue(formData, "websiteUrl"),
@@ -291,13 +288,9 @@ async function uploadApplicationFile(
 export async function saveApplicationSubmission(formData: FormData) {
   const categories = await getApplicationCategories();
   const values = extractApplicationValues(formData, categories);
-  const membership = await validateMembershipNumber(
-    String(values.membershipNumber ?? "")
-  );
   const validation = validateApplicationValues({
     values,
     categories,
-    membership,
   });
 
   if (!validation.success || !validation.selectedCategory || !validation.selectedAward) {
@@ -392,8 +385,8 @@ export async function saveApplicationSubmission(formData: FormData) {
       city: String(values.city),
       professionalTitle: String(values.professionalTitle),
       yearsExperience: Number(values.yearsExperience),
-      membershipNumber: String(values.membershipNumber),
-      membershipLevel: membership.membershipLevel,
+      membershipNumber: null,
+      membershipLevel: null,
       websiteUrl: String(values.websiteUrl || "") || null,
       socialUrl: String(values.socialUrl || "") || null,
       reviewsUrl: String(values.reviewsUrl || "") || null,
@@ -444,7 +437,6 @@ export async function saveApplicationSubmission(formData: FormData) {
       message:
         "Your participant application has been submitted successfully. The IBPA review team will contact you with the next steps.",
       applicationId: application.id,
-      membershipLevel: membership.membershipLevel,
     },
   };
 }

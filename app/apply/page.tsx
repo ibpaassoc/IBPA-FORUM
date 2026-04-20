@@ -36,7 +36,7 @@ export default function ApplyPage() {
       <PageHero
         eyebrow="Participant Applications"
         title="Apply for the IBPA Beauty Championship"
-        description="Submit your official participant entry with category-specific supporting materials, verified membership, and production-ready files for the championship review team."
+        description="Submit your official participant entry with category-specific supporting materials and production-ready files for the championship review team."
         aside={
           <div className="space-y-4">
             <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
@@ -83,14 +83,6 @@ export default function ApplyPage() {
                 Participation fee: <strong>$50 per category</strong>.
               </p>
               <p>Each category is submitted as a separate application.</p>
-              <p>
-                Minimum membership required:{" "}
-                <strong>{applicationTimeline.membershipMinimum}</strong>.
-              </p>
-              <p>
-                Applicants below the required membership level will be blocked from
-                submitting until they upgrade.
-              </p>
               <p>Jury fee rules do not apply to this participant application page.</p>
             </div>
           </PageCard>
@@ -104,7 +96,7 @@ export default function ApplyPage() {
                 "Prepare your license or certification file.",
                 "Choose one category and one specific award.",
                 "Gather all portfolio and supporting files for Block B.",
-                "Have a valid Trainer / Coach membership number ready.",
+                "Review your portfolio files before uploading.",
               ].map((item) => (
                 <div
                   key={item}

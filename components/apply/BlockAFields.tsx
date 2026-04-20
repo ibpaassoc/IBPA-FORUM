@@ -118,19 +118,6 @@ export default function BlockAFields({
       />
 
       <div className="md:col-span-2">
-        <TextField
-          label="IBPA Membership Number"
-          name="membershipNumber"
-          value={String(values.membershipNumber ?? "")}
-          required
-          placeholder="Example: IBPA-12345 or TRN-2048"
-          error={errors.membershipNumber}
-          description="Membership qualification is checked automatically during submission."
-          onChange={onChange}
-        />
-      </div>
-
-      <div className="md:col-span-2">
         <UploadField
           label="Professional License / Certification"
           name="licenseCertification"

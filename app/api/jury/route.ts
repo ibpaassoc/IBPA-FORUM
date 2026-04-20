@@ -48,13 +48,12 @@ export async function POST(request: Request) {
 
     const fullName = getText(formData, "fullName");
     const email = getText(formData, "email");
+    const normalizedEmail = email.toLowerCase();
     const phone = getText(formData, "phone");
     const country = getText(formData, "country");
     const city = getText(formData, "city");
     const professionalTitle = getText(formData, "professionalTitle");
     const employerAffiliation = getText(formData, "employerAffiliation");
-    const membershipStatus = getText(formData, "membershipStatus");
-    const membershipLevel = getText(formData, "membershipLevel");
     const previousJudgingExperience = getText(
       formData,
       "previousJudgingExperience"
@@ -101,9 +100,6 @@ export async function POST(request: Request) {
     if (!employerAffiliation) {
       fieldErrors.employerAffiliation =
         "Current employer or affiliation is required.";
-    }
-    if (!membershipStatus) {
-      fieldErrors.membershipStatus = "Membership status is required.";
     }
     if (!previousJudgingExperience) {
       fieldErrors.previousJudgingExperience =
@@ -160,6 +156,24 @@ export async function POST(request: Request) {
       );
     }
 
+    const existingApplication = await prisma.juryApplication.findFirst({
+      where: {
+        email: normalizedEmail,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (existingApplication) {
+      return NextResponse.json(
+        {
+          message: "You already submitted the application.",
+        },
+        { status: 409 }
+      );
+    }
+
     const applicationId = randomUUID();
 
     const savedProfilePhoto = await saveUploadedFile(
@@ -178,15 +192,13 @@ export async function POST(request: Request) {
       data: {
         id: applicationId,
         fullName,
-        email,
+        email: normalizedEmail,
         phone,
         country,
         city,
         professionalTitle,
         yearsExperience,
         employerAffiliation,
-        membershipStatus,
-        membershipLevel: toOptionalText(membershipLevel),
         previousJudgingExperience: previousJudgingExperience === "yes",
         previousJudgingDetails: toOptionalText(previousJudgingDetails),
         pastWinner: pastWinner === "yes",
@@ -237,6 +249,20 @@ export async function POST(request: Request) {
       { status: 201 }
     );
   } catch (error) {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      error.code === "P2002"
+    ) {
+      return NextResponse.json(
+        {
+          message: "You already submitted the application.",
+        },
+        { status: 409 }
+      );
+    }
+
     console.error("Failed to submit jury application", error);
 
     return NextResponse.json(
