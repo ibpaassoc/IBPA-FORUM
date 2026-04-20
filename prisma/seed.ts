@@ -2,6 +2,7 @@ import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
+import { categoryCatalog } from "@/lib/apply/catalog";
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -17,28 +18,43 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  const hair = await prisma.category.create({
-    data: {
-      name: "Hair",
-      slug: "hair",
-    },
-  });
+  for (const definition of categoryCatalog) {
+    const category = await prisma.category.upsert({
+      where: {
+        slug: definition.slug,
+      },
+      update: {
+        name: definition.name,
+      },
+      create: {
+        name: definition.name,
+        slug: definition.slug,
+      },
+    });
 
-  const nail = await prisma.category.create({
-    data: {
-      name: "Nail",
-      slug: "nail",
-    },
-  });
+    const existingAwards = await prisma.award.findMany({
+      where: {
+        categoryId: category.id,
+      },
+      select: {
+        name: true,
+      },
+    });
 
-  await prisma.award.createMany({
-    data: [
-      { name: "Best Hair Restoration", categoryId: hair.id },
-      { name: "Best Hair Color Transformation", categoryId: hair.id },
-      { name: "Best Nail Extension", categoryId: nail.id },
-      { name: "Best Nail Design", categoryId: nail.id },
-    ],
-  });
+    const existingNames = new Set(existingAwards.map((award) => award.name));
+    const missingAwards = definition.awards.filter(
+      (awardName) => !existingNames.has(awardName)
+    );
+
+    if (missingAwards.length > 0) {
+      await prisma.award.createMany({
+        data: missingAwards.map((awardName) => ({
+          name: awardName,
+          categoryId: category.id,
+        })),
+      });
+    }
+  }
 }
 
 main()

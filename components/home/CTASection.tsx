@@ -19,7 +19,7 @@ export default function CTASection() {
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
           <Link
-            href="/under-development"
+            href="/apply"
             className="rounded-full bg-[#d8c27a] px-7 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-[#111111] transition hover:opacity-90"
           >
             Apply Now

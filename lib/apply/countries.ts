@@ -1,0 +1,21 @@
+export const countryOptions = [
+  "Australia",
+  "Brazil",
+  "Canada",
+  "France",
+  "Germany",
+  "Italy",
+  "Kazakhstan",
+  "Mexico",
+  "Poland",
+  "Spain",
+  "Turkey",
+  "Ukraine",
+  "United Arab Emirates",
+  "United Kingdom",
+  "USA",
+  "Other",
+].map((country) => ({
+  label: country,
+  value: country,
+}));

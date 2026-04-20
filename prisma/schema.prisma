@@ -19,10 +19,20 @@ enum ApplicationStatus {
   REJECTED
 }
 
+enum JuryApplicationStatus {
+  PENDING_REVIEW
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  ACTIVE_JUDGE
+}
+
 enum PaymentStatus {
+  NOT_REQUIRED
   PENDING
   PAID
   FAILED
+  EXPIRED
   REFUNDED
 }
 
@@ -44,6 +54,8 @@ model Award {
   applications Application[]
 
   createdAt   DateTime @default(now())
+
+  @@unique([categoryId, name])
 }
 
 model Application {
@@ -56,7 +68,7 @@ model Application {
   city                  String
   professionalTitle     String
   yearsExperience       Int
-  membershipNumber      String
+  membershipNumber      String?
   membershipLevel       String?
   websiteUrl            String?
   socialUrl             String?
@@ -84,14 +96,14 @@ model Application {
 model JuryApplication {
   id                                String                @id @default(cuid())
   fullName                          String
-  email                             String
+  email                             String                @unique
   phone                             String
   country                           String
   city                              String
   professionalTitle                 String
   yearsExperience                   Int
   employerAffiliation               String
-  membershipStatus                  String
+  membershipStatus                  String?
   membershipLevel                   String?
   previousJudgingExperience         Boolean
   previousJudgingDetails            String?
@@ -103,13 +115,31 @@ model JuryApplication {
   conflictDisclosure                String
   confidentialityAgreementAccepted  Boolean               @default(false)
   motivation                        String
-  status                            ApplicationStatus     @default(SUBMITTED)
+  status                            JuryApplicationStatus @default(PENDING_REVIEW)
+  paymentStatus                     PaymentStatus         @default(NOT_REQUIRED)
   adminNotes                        String?
+  approvedAt                        DateTime?
+  rejectedAt                        DateTime?
+  paidAt                            DateTime?
   reviewedAt                        DateTime?
   submittedAt                       DateTime?
+  stripeCheckoutSessionId           String?               @unique
+  stripePaymentIntentId             String?               @unique
+  registrationTokenHash             String?
+  registrationTokenExpiresAt        DateTime?
+  registrationEmailSentAt           DateTime?
   files                             JuryApplicationFile[]
   createdAt                         DateTime              @default(now())
   updatedAt                         DateTime              @updatedAt
+}
+
+model StripeWebhookEvent {
+  id             String   @id @default(cuid())
+  stripeEventId  String   @unique
+  eventType      String
+  payloadJson    Json?
+  processedAt    DateTime @default(now())
+  createdAt      DateTime @default(now())
 }
 
 model ApplicationAnswer {

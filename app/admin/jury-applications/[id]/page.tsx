@@ -1,20 +1,32 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { requireAdmin } from "@/lib/admin-auth";
-import { prisma } from "@/lib/prisma";
-import Image from "next/image";
 import {
+  approveJuryApplicationAction,
   logoutAdminAction,
-  updateJuryApplicationReview,
+  rejectJuryApplicationAction,
+  saveJuryApplicationNotesAction,
 } from "@/app/admin/actions";
 import { PageShell } from "@/components/layout/PageShell";
+import { requireAdmin } from "@/lib/admin-auth";
+import { prisma } from "@/lib/prisma";
 
-const statusOptions = [
-  "SUBMITTED",
-  "UNDER_REVIEW",
-  "APPROVED",
-  "REJECTED",
-] as const;
+const statusStyles = {
+  PENDING_REVIEW: "bg-white/8 text-white/85 border-white/12",
+  UNDER_REVIEW: "bg-[#7a5a14]/25 text-[#f1d98a] border-[#d8c27a]/35",
+  APPROVED: "bg-[#1b4d34]/45 text-[#9fe0b4] border-[#3e8f62]/45",
+  REJECTED: "bg-[#5c2323]/45 text-[#f1aaaa] border-[#9d4a4a]/45",
+  ACTIVE_JUDGE: "bg-[#0f4d5d]/45 text-[#95dfea] border-[#4196aa]/45",
+} as const;
+
+const paymentStatusStyles = {
+  NOT_REQUIRED: "bg-white/8 text-white/70 border-white/12",
+  PENDING: "bg-[#7a5a14]/25 text-[#f1d98a] border-[#d8c27a]/35",
+  PAID: "bg-[#1b4d34]/45 text-[#9fe0b4] border-[#3e8f62]/45",
+  FAILED: "bg-[#5c2323]/45 text-[#f1aaaa] border-[#9d4a4a]/45",
+  EXPIRED: "bg-[#47311a]/45 text-[#f0cb9a] border-[#a97a41]/45",
+  REFUNDED: "bg-[#33414b]/45 text-[#bed1e0] border-[#6986a1]/45",
+} as const;
 
 function formatDate(date: Date | null) {
   if (!date) {
@@ -46,12 +58,15 @@ function DetailItem({
 
 export default async function AdminJuryApplicationDetailsPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ error?: string; notice?: string }>;
 }) {
   await requireAdmin();
 
   const { id } = await params;
+  const { error, notice } = await searchParams;
 
   if (!id) {
     notFound();
@@ -75,7 +90,6 @@ export default async function AdminJuryApplicationDetailsPage({
   const profilePhoto = application.files.find(
     (file) => file.fieldKey === "profilePhoto"
   );
-
   const certifications = application.files.filter(
     (file) => file.fieldKey === "certifications"
   );
@@ -104,6 +118,12 @@ export default async function AdminJuryApplicationDetailsPage({
             >
               Back to List
             </Link>
+            <Link
+              href="/admin/applications"
+              className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
+            >
+              Participant Dashboard
+            </Link>
 
             <form action={logoutAdminAction}>
               <button
@@ -118,6 +138,18 @@ export default async function AdminJuryApplicationDetailsPage({
 
         <div className="mt-6 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-6">
+            {error ? (
+              <div className="rounded-2xl border border-[#a64b4b]/55 bg-[#4d1d1d]/35 px-5 py-4 text-sm leading-7 text-white">
+                {error}
+              </div>
+            ) : null}
+
+            {notice ? (
+              <div className="rounded-2xl border border-[#d8c27a]/35 bg-[#d8c27a]/10 px-5 py-4 text-sm leading-7 text-white">
+                {notice}
+              </div>
+            ) : null}
+
             <section className="page-card rounded-3xl p-6">
               <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
                 Applicant
@@ -147,8 +179,8 @@ export default async function AdminJuryApplicationDetailsPage({
                   label="Membership"
                   value={
                     application.membershipLevel
-                      ? `${application.membershipStatus} (${application.membershipLevel})`
-                      : application.membershipStatus
+                      ? `${application.membershipStatus ?? "Not provided"} (${application.membershipLevel})`
+                      : application.membershipStatus || "Not provided"
                   }
                 />
               </div>
@@ -230,33 +262,36 @@ export default async function AdminJuryApplicationDetailsPage({
                 Review Panel
               </p>
 
-              <form action={updateJuryApplicationReview} className="mt-5 space-y-5">
-                <input type="hidden" name="id" value={application.id} />
-
-                <div>
-                  <label
-                    htmlFor="status"
-                    className="mb-2 block text-sm font-medium text-white"
+              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-2xl border border-white/12 bg-white/[0.035] p-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
+                    Application Status
+                  </p>
+                  <span
+                    className={`mt-4 inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${
+                      statusStyles[application.status]
+                    }`}
                   >
-                    Review status
-                  </label>
-                  <select
-                    id="status"
-                    name="status"
-                    defaultValue={application.status}
-                    className="w-full rounded-2xl border border-white/12 bg-white/5 px-4 py-3 text-sm text-white outline-none transition focus:border-[#d8c27a] focus:bg-white/7"
-                  >
-                    {statusOptions.map((status) => (
-                      <option
-                        key={status}
-                        value={status}
-                        className="bg-[#101010] text-white"
-                      >
-                        {status.replaceAll("_", " ")}
-                      </option>
-                    ))}
-                  </select>
+                    {application.status.replaceAll("_", " ")}
+                  </span>
                 </div>
+
+                <div className="rounded-2xl border border-white/12 bg-white/[0.035] p-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
+                    Payment Status
+                  </p>
+                  <span
+                    className={`mt-4 inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${
+                      paymentStatusStyles[application.paymentStatus]
+                    }`}
+                  >
+                    {application.paymentStatus.replaceAll("_", " ")}
+                  </span>
+                </div>
+              </div>
+
+              <form action={saveJuryApplicationNotesAction} className="mt-5 space-y-5">
+                <input type="hidden" name="id" value={application.id} />
 
                 <div>
                   <label
@@ -278,11 +313,11 @@ export default async function AdminJuryApplicationDetailsPage({
                   type="submit"
                   className="inline-flex items-center justify-center rounded-full bg-[#d8c27a] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-[#e2d093]"
                 >
-                  Save Review
+                  Save Notes
                 </button>
               </form>
 
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <DetailItem
                   label="Submitted"
                   value={formatDate(application.submittedAt)}
@@ -291,6 +326,47 @@ export default async function AdminJuryApplicationDetailsPage({
                   label="Last Reviewed"
                   value={formatDate(application.reviewedAt)}
                 />
+                <DetailItem
+                  label="Approved At"
+                  value={formatDate(application.approvedAt)}
+                />
+                <DetailItem
+                  label="Rejected At"
+                  value={formatDate(application.rejectedAt)}
+                />
+                <DetailItem label="Paid At" value={formatDate(application.paidAt)} />
+                <DetailItem
+                  label="Stripe Session"
+                  value={application.stripeCheckoutSessionId || "Not created"}
+                />
+              </div>
+
+              <div className="mt-5 flex flex-wrap gap-3">
+                {application.status !== "REJECTED" &&
+                application.status !== "ACTIVE_JUDGE" ? (
+                  <form action={approveJuryApplicationAction}>
+                    <input type="hidden" name="id" value={application.id} />
+                    <button
+                      type="submit"
+                      className="inline-flex items-center justify-center rounded-full bg-[#d8c27a] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-[#e2d093]"
+                    >
+                      Approve & Send Payment Link
+                    </button>
+                  </form>
+                ) : null}
+
+                {application.status !== "REJECTED" &&
+                application.status !== "ACTIVE_JUDGE" ? (
+                  <form action={rejectJuryApplicationAction}>
+                    <input type="hidden" name="id" value={application.id} />
+                    <button
+                      type="submit"
+                      className="inline-flex items-center justify-center rounded-full border border-[#a64b4b]/55 bg-[#4d1d1d]/35 px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d67a7a]"
+                    >
+                      Reject Application
+                    </button>
+                  </form>
+                ) : null}
               </div>
             </section>
 
