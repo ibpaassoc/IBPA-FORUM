@@ -5,10 +5,20 @@ import { logoutAdminAction } from "@/app/admin/actions";
 import { PageShell } from "@/components/layout/PageShell";
 
 const statusStyles = {
-  SUBMITTED: "bg-white/8 text-white/85 border-white/12",
+  PENDING_REVIEW: "bg-white/8 text-white/85 border-white/12",
   UNDER_REVIEW: "bg-[#7a5a14]/25 text-[#f1d98a] border-[#d8c27a]/35",
   APPROVED: "bg-[#1b4d34]/45 text-[#9fe0b4] border-[#3e8f62]/45",
   REJECTED: "bg-[#5c2323]/45 text-[#f1aaaa] border-[#9d4a4a]/45",
+  ACTIVE_JUDGE: "bg-[#0f4d5d]/45 text-[#95dfea] border-[#4196aa]/45",
+} as const;
+
+const paymentStatusStyles = {
+  NOT_REQUIRED: "bg-white/8 text-white/70 border-white/12",
+  PENDING: "bg-[#7a5a14]/25 text-[#f1d98a] border-[#d8c27a]/35",
+  PAID: "bg-[#1b4d34]/45 text-[#9fe0b4] border-[#3e8f62]/45",
+  FAILED: "bg-[#5c2323]/45 text-[#f1aaaa] border-[#9d4a4a]/45",
+  EXPIRED: "bg-[#47311a]/45 text-[#f0cb9a] border-[#a97a41]/45",
+  REFUNDED: "bg-[#33414b]/45 text-[#bed1e0] border-[#6986a1]/45",
 } as const;
 
 function formatDate(date: Date | null) {
@@ -38,14 +48,15 @@ export default async function AdminJuryApplicationsPage() {
       professionalTitle: true,
       expertiseAreas: true,
       status: true,
+      paymentStatus: true,
       submittedAt: true,
-      reviewedAt: true,
+      paidAt: true,
     },
   });
 
   const totalCount = applications.length;
-  const submittedCount = applications.filter(
-    (application) => application.status === "SUBMITTED"
+  const pendingCount = applications.filter(
+    (application) => application.status === "PENDING_REVIEW"
   ).length;
   const reviewCount = applications.filter(
     (application) => application.status === "UNDER_REVIEW"
@@ -53,12 +64,15 @@ export default async function AdminJuryApplicationsPage() {
   const approvedCount = applications.filter(
     (application) => application.status === "APPROVED"
   ).length;
+  const activeJudgeCount = applications.filter(
+    (application) => application.status === "ACTIVE_JUDGE"
+  ).length;
 
   return (
     <PageShell className="px-6 py-10 text-white md:px-10 md:py-12">
       <div className="mx-auto max-w-7xl pt-16">
-          <div className="page-panel flex flex-col gap-5 rounded-3xl p-6 md:flex-row md:items-end md:justify-between md:p-8">
-            <div>
+        <div className="page-panel flex flex-col gap-5 rounded-3xl p-6 md:flex-row md:items-end md:justify-between md:p-8">
+          <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d8c27a]">
               Jury Admin
             </p>
@@ -66,10 +80,10 @@ export default async function AdminJuryApplicationsPage() {
               Jury applications dashboard
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-[#d9d4ca]">
-              Review submitted applications, open candidate details, and track
-              approval decisions in one place.
+              Review submitted applications, send payment links after approval,
+              and track final activation in one place.
             </p>
-            </div>
+          </div>
 
           <div className="flex flex-wrap gap-3">
             <Link
@@ -89,12 +103,13 @@ export default async function AdminJuryApplicationsPage() {
           </div>
         </div>
 
-        <div className="mt-6 grid gap-4 md:grid-cols-4">
+        <div className="mt-6 grid gap-4 md:grid-cols-5">
           {[
             { label: "Total", value: totalCount },
-            { label: "Submitted", value: submittedCount },
+            { label: "Pending Review", value: pendingCount },
             { label: "Under Review", value: reviewCount },
             { label: "Approved", value: approvedCount },
+            { label: "Active Judges", value: activeJudgeCount },
           ].map((item) => (
             <div
               key={item.label}
@@ -111,12 +126,13 @@ export default async function AdminJuryApplicationsPage() {
         </div>
 
         <section className="page-card mt-6 rounded-3xl p-4 md:p-6">
-          <div className="hidden grid-cols-[1.2fr_1fr_1fr_0.8fr_0.8fr_0.7fr] gap-4 border-b border-white/10 px-4 pb-4 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d9d4ca]/65 lg:grid">
+          <div className="hidden grid-cols-[1.15fr_0.95fr_0.95fr_0.75fr_0.75fr_0.8fr_0.65fr] gap-4 border-b border-white/10 px-4 pb-4 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d9d4ca]/65 lg:grid">
             <span>Candidate</span>
             <span>Title</span>
             <span>Expertise</span>
-            <span>Status</span>
-            <span>Submitted</span>
+            <span>Application</span>
+            <span>Payment</span>
+            <span>Date</span>
             <span>Open</span>
           </div>
 
@@ -124,7 +140,7 @@ export default async function AdminJuryApplicationsPage() {
             {applications.map((application) => (
               <div
                 key={application.id}
-                className="grid gap-4 px-4 py-5 transition hover:bg-white/2 lg:grid-cols-[1.2fr_1fr_1fr_0.8fr_0.8fr_0.7fr] lg:items-center"
+                className="grid gap-4 px-4 py-5 transition hover:bg-white/2 lg:grid-cols-[1.15fr_0.95fr_0.95fr_0.75fr_0.75fr_0.8fr_0.65fr] lg:items-center"
               >
                 <div>
                   <p className="text-sm font-semibold text-white">
@@ -161,17 +177,27 @@ export default async function AdminJuryApplicationsPage() {
                 <div>
                   <span
                     className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${
-                      statusStyles[
-                        application.status as keyof typeof statusStyles
-                      ]
+                      statusStyles[application.status]
                     }`}
                   >
                     {application.status.replaceAll("_", " ")}
                   </span>
                 </div>
 
+                <div>
+                  <span
+                    className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${
+                      paymentStatusStyles[application.paymentStatus]
+                    }`}
+                  >
+                    {application.paymentStatus.replaceAll("_", " ")}
+                  </span>
+                </div>
+
                 <div className="text-sm text-[#d9d4ca]/75">
-                  {formatDate(application.submittedAt)}
+                  {application.paidAt
+                    ? formatDate(application.paidAt)
+                    : formatDate(application.submittedAt)}
                 </div>
 
                 <div>
