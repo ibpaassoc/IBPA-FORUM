@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { saveApplicationSubmission } from "@/lib/apply/server";
 
 export async function GET() {
   try {
@@ -10,6 +11,8 @@ export async function GET() {
       include: {
         category: true,
         award: true,
+        files: true,
+        answers: true,
       },
     });
 
@@ -26,33 +29,20 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const contentType = request.headers.get("content-type") ?? "";
+    if (!contentType.includes("multipart/form-data")) {
+      return NextResponse.json(
+        {
+          error:
+            "Participant applications must be submitted as multipart form data.",
+        },
+        { status: 415 }
+      );
+    }
+    const formData = await request.formData();
+    const result = await saveApplicationSubmission(formData);
 
-    const application = await prisma.application.create({
-      data: {
-        fullName: body.fullName,
-        email: body.email,
-        phone: body.phone,
-        country: body.country,
-        stateProvince: body.stateProvince || null,
-        city: body.city,
-        professionalTitle: body.professionalTitle,
-        yearsExperience: Number(body.yearsExperience),
-        membershipNumber: body.membershipNumber,
-        membershipLevel: body.membershipLevel || null,
-        websiteUrl: body.websiteUrl || null,
-        socialUrl: body.socialUrl || null,
-        reviewsUrl: body.reviewsUrl || null,
-        heardAbout: body.heardAbout || null,
-        categoryId: body.categoryId,
-        awardId: body.awardId,
-        status: "SUBMITTED",
-        paymentStatus: "PENDING",
-        submittedAt: new Date(),
-      },
-    });
-
-    return NextResponse.json(application, { status: 201 });
+    return NextResponse.json(result.body, { status: result.status });
   } catch (error) {
     console.error("POST /api/applications error:", error);
 

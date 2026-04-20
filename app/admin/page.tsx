@@ -5,7 +5,7 @@ import { PageShell } from "@/components/layout/PageShell";
 
 export default async function AdminPage() {
   if (await isAdminAuthenticated()) {
-    redirect("/admin/jury-applications");
+    redirect("/admin/applications");
   }
 
   return (
@@ -17,18 +17,18 @@ export default async function AdminPage() {
               Admin Access
             </p>
             <h1 className="mt-5 max-w-3xl text-4xl font-semibold leading-tight sm:text-5xl">
-              Review jury applications in one private workspace.
+              Review participant and jury applications in one private workspace.
             </h1>
             <p className="mt-5 max-w-2xl text-sm leading-7 text-[#d9d4ca] sm:text-base">
-              Sign in to access the same premium site language, tuned for internal
-              review, file inspection, and decision tracking.
+              Sign in to access the same premium site language, tuned for internal review,
+              file inspection, and decision tracking across both application flows.
             </p>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
               {[
                 "Private review access",
-                "Fast candidate scanning",
-                "Status and notes management",
+                "Fast application scanning",
+                "Status management",
               ].map((item) => (
                 <div key={item} className="page-card rounded-2xl bg-white/4.5 p-4">
                   <p className="text-sm font-medium text-[#f1ecde]">{item}</p>
@@ -43,7 +43,7 @@ export default async function AdminPage() {
             </p>
             <h2 className="mt-4 text-2xl font-semibold">Admin login</h2>
             <p className="mt-3 text-sm leading-6 text-[#d9d4ca]/85">
-              Enter the admin password to access the jury applications dashboard.
+              Enter the admin password to access the application dashboards.
             </p>
 
             <AdminLoginForm />

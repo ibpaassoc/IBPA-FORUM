@@ -104,6 +104,12 @@ export default async function AdminJuryApplicationDetailsPage({
             >
               Back to List
             </Link>
+            <Link
+              href="/admin/applications"
+              className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
+            >
+              Participant Dashboard
+            </Link>
 
             <form action={logoutAdminAction}>
               <button

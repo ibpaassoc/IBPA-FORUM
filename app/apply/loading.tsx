@@ -1,15 +1,6 @@
-import type { Metadata } from "next";
-import { Suspense } from "react";
-import ApplyFormServer from "@/components/apply/ApplyFormServer";
-import ApplyFormSkeleton from "@/components/apply/ApplyFormSkeleton";
 import { PageCard, PageHero, PageSection, PageShell } from "@/components/layout/PageShell";
+import ApplyFormSkeleton from "@/components/apply/ApplyFormSkeleton";
 import { applicationTimeline } from "@/lib/apply/catalog";
-
-export const metadata: Metadata = {
-  title: "Apply | IBPA Beauty Championship",
-  description:
-    "Submit your official participant application for the IBPA Beauty Championship.",
-};
 
 const heroStats = [
   {
@@ -30,7 +21,7 @@ const heroStats = [
   },
 ];
 
-export default function ApplyPage() {
+export default function Loading() {
   return (
     <PageShell>
       <PageHero
@@ -117,9 +108,7 @@ export default function ApplyPage() {
           </PageCard>
         </div>
 
-        <Suspense fallback={<ApplyFormSkeleton />}>
-          <ApplyFormServer />
-        </Suspense>
+        <ApplyFormSkeleton />
       </PageSection>
     </PageShell>
   );

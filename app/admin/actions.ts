@@ -22,7 +22,7 @@ export async function loginAdminAction(
     };
   }
 
-  redirect("/admin/jury-applications");
+  redirect("/admin/applications");
 }
 
 export async function logoutAdminAction() {
@@ -63,4 +63,34 @@ export async function updateJuryApplicationReview(formData: FormData) {
   // immediately after a server action submission.
   revalidatePath("/admin/jury-applications");
   revalidatePath(`/admin/jury-applications/${id}`);
+}
+
+export async function updateParticipantApplicationStatus(formData: FormData) {
+  await requireAdmin();
+
+  const id = String(formData.get("id") ?? "");
+  const status = String(formData.get("status") ?? "");
+
+  if (!id) {
+    throw new Error("Missing participant application id.");
+  }
+
+  if (
+    status !== "SUBMITTED" &&
+    status !== "UNDER_REVIEW" &&
+    status !== "APPROVED" &&
+    status !== "REJECTED"
+  ) {
+    throw new Error("Invalid participant application status.");
+  }
+
+  await prisma.application.update({
+    where: { id },
+    data: {
+      status,
+    },
+  });
+
+  revalidatePath("/admin/applications");
+  revalidatePath(`/admin/applications/${id}`);
 }

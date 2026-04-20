@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getApplicationCategories } from "@/lib/apply/server";
 
 export async function GET(
   _request: Request,
@@ -7,11 +7,9 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-
-    const awards = await prisma.award.findMany({
-      where: { categoryId: id },
-      orderBy: { name: "asc" },
-    });
+    const categories = await getApplicationCategories();
+    const awards =
+      categories.find((category) => category.id === id)?.awards ?? [];
 
     return NextResponse.json(awards);
   } catch (error) {
