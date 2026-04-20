@@ -1,6 +1,6 @@
 import { put } from "@vercel/blob";
 import { prisma } from "@/lib/prisma";
-import { categoryCatalog } from "@/lib/apply/catalog";
+import { categoryCatalog, legacyAwardNameMappings } from "@/lib/apply/catalog";
 import { categoryFieldConfigs } from "@/lib/apply/categoryFieldConfigs";
 import { validateApplicationValues } from "@/lib/apply/categorySchemas";
 import { validateMembershipNumber } from "@/lib/apply/membership";
@@ -19,42 +19,150 @@ function sanitizeFileName(fileName: string) {
 }
 
 export async function syncApplicationCatalog() {
-  const existingCategories = await prisma.category.findMany({
-    include: {
-      awards: true,
+  for (const definition of categoryCatalog) {
+    const category = await prisma.category.upsert({
+      where: {
+        slug: definition.slug,
+      },
+      update: {
+        name: definition.name,
+      },
+      create: {
+        name: definition.name,
+        slug: definition.slug,
+      },
+    });
+
+    await reconcileCategoryAwards(category.id, definition.slug, definition.awards);
+  }
+}
+
+async function ensureAward(categoryId: string, name: string) {
+  const existing = await prisma.award.findFirst({
+    where: {
+      categoryId,
+      name,
+    },
+    orderBy: {
+      createdAt: "asc",
     },
   });
 
-  const categoryMap = new Map(
-    existingCategories.map((category) => [category.slug, category])
-  );
+  if (existing) {
+    return existing;
+  }
 
-  for (const definition of categoryCatalog) {
-    const existingCategory = categoryMap.get(definition.slug);
+  return prisma.award.create({
+    data: {
+      categoryId,
+      name,
+    },
+  });
+}
 
-    const category =
-      existingCategory ??
-      (await prisma.category.create({
-        data: {
-          name: definition.name,
-          slug: definition.slug,
+async function moveApplicationsToAward(fromAwardId: string, toAwardId: string) {
+  if (fromAwardId === toAwardId) {
+    return;
+  }
+
+  await prisma.application.updateMany({
+    where: {
+      awardId: fromAwardId,
+    },
+    data: {
+      awardId: toAwardId,
+    },
+  });
+}
+
+async function reconcileCategoryAwards(
+  categoryId: string,
+  categorySlug: string,
+  desiredAwardNames: string[]
+) {
+  const desiredNameSet = new Set(desiredAwardNames);
+  const aliasMappings = legacyAwardNameMappings[categorySlug] ?? {};
+
+  const awards = await prisma.award.findMany({
+    where: {
+      categoryId,
+    },
+    include: {
+      _count: {
+        select: {
+          applications: true,
         },
-        include: {
-          awards: true,
+      },
+    },
+    orderBy: {
+      createdAt: "asc",
+    },
+  });
+
+  const awardsByName = new Map<string, typeof awards>();
+  for (const award of awards) {
+    const group = awardsByName.get(award.name) ?? [];
+    group.push(award);
+    awardsByName.set(award.name, group);
+  }
+
+  const canonicalByName = new Map<string, (typeof awards)[number]>();
+
+  for (const desiredName of desiredAwardNames) {
+    const duplicates = awardsByName.get(desiredName) ?? [];
+    const canonical =
+      duplicates.sort(
+        (left, right) => right._count.applications - left._count.applications
+      )[0] ?? (await ensureAward(categoryId, desiredName));
+
+    canonicalByName.set(desiredName, canonical);
+
+    const redundant = duplicates.filter((award) => award.id !== canonical.id);
+    for (const duplicate of redundant) {
+      await moveApplicationsToAward(duplicate.id, canonical.id);
+      await prisma.award.deleteMany({
+        where: {
+          id: duplicate.id,
         },
-      }));
+      });
+    }
+  }
 
-    const existingAwardNames = new Set(category.awards.map((award) => award.name));
-    const missingAwards = definition.awards.filter(
-      (awardName) => !existingAwardNames.has(awardName)
-    );
+  const refreshedAwards = await prisma.award.findMany({
+    where: {
+      categoryId,
+    },
+    include: {
+      _count: {
+        select: {
+          applications: true,
+        },
+      },
+    },
+  });
 
-    if (missingAwards.length > 0) {
-      await prisma.award.createMany({
-        data: missingAwards.map((awardName) => ({
-          name: awardName,
-          categoryId: category.id,
-        })),
+  for (const award of refreshedAwards) {
+    if (desiredNameSet.has(award.name)) {
+      continue;
+    }
+
+    const mappedName = aliasMappings[award.name];
+
+    if (mappedName && canonicalByName.has(mappedName)) {
+      await moveApplicationsToAward(award.id, canonicalByName.get(mappedName)!.id);
+      await prisma.award.deleteMany({
+        where: {
+          id: award.id,
+        },
+      });
+      continue;
+    }
+
+    if (award._count.applications === 0) {
+      await prisma.award.deleteMany({
+        where: {
+          id: award.id,
+        },
       });
     }
   }

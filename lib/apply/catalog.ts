@@ -116,6 +116,87 @@ export const categoryCatalog: CategoryCatalogDefinition[] = [
   },
 ];
 
+export const legacyAwardNameMappings: Record<string, Record<string, string>> = {
+  hair: {
+    "Best Color Technique": "Award of Excellence in Hair Color Technique",
+    "Best Hair Color Transformation": "Award of Excellence in Hair Color Technique",
+    "Best Hair Transformation": "Award of Excellence in Hair Color Technique",
+    "Best Hair Restoration": "Hair Restoration Mastery Award",
+    "Best Precision Cut": "Barbering Excellence Award",
+    "Best Editorial Hair Styling": "Barbering Excellence Award",
+  },
+  nail: {
+    "Best Nail Extension": "Award of Excellence in Nail Extension",
+    "Best Nail Design": "Award of Excellence in Nail Extension",
+    "Best Natural Nail Care": "Award of Excellence in Manicure",
+    "Best Editorial Nail Art": "Award of Excellence in Nail Extension",
+  },
+  brow: {
+    "Best Brow Lamination": "Award of Excellence in Brow Lamination",
+    "Best Brow Shaping": "Award of Excellence in Brow Styling & Design",
+    "Best Brow Correction": "Award of Excellence in Brow Styling & Design",
+    "Best Brow Styling Result": "Award of Excellence in Brow Styling & Design",
+  },
+  lash: {
+    "Best Lash Extension Set": "Award of Excellence in Classic & Volume Lash",
+    "Best Lash Styling Innovation": "Award of Excellence in Creative Lash Design",
+    "Best Lash Lift Result": "Award of Excellence in Lash Lift",
+    "Best Lash Educator Technique": "Award of Excellence in Creative Lash Design",
+  },
+  "skin-cosmetology": {
+    "Best Clinical Skin Transformation": "Skin Transformation Award",
+    "Best Acne Correction Result": "Acne Treatment Transformation Award",
+    "Best Anti-Aging Program": "Award of Excellence in Non-Invasive Rejuvenation",
+    "Best Advanced Cosmetology Practice": "Award of Excellence in Non-Invasive Rejuvenation",
+  },
+  "facial-treatments": {
+    "Best Signature Facial Program": "Award of Excellence in Facial Treatment Protocol",
+    "Best Device-Based Facial Treatment": "Award of Excellence in Facial Treatment Protocol",
+    "Best Luxury Spa Facial": "Hydration & Glow Mastery Award",
+    "Best Results-Driven Treatment Plan": "Award of Excellence in Anti-Aging Facial",
+  },
+  "makeup-artistry": {
+    "Best Bridal Makeup": "Award of Excellence in Bridal Makeup Artistry",
+    "Best Editorial Makeup": "Award of Excellence in Editorial & Creative Makeup",
+    "Best Creative Beauty Look": "Award of Excellence in Editorial & Creative Makeup",
+    "Best Client Transformation": "Award of Excellence in Everyday Makeup Artistry",
+  },
+  "permanent-makeup": {
+    "Best Brow PMU Result": "Award of Excellence in PMU Brows",
+    "Best Eyeliner PMU Result": "Award of Excellence in Eyeliner Precision",
+    "Best Lip Blush Result": "Award of Excellence in Lips PMU",
+    "Best Corrective PMU Case": "Award of Excellence in Camouflage & Correction",
+  },
+  "body-wellness": {
+    "Best Body Contouring Result": "Body Transformation Award",
+    "Best Holistic Beauty Service": "Body Transformation Award",
+    "Best Recovery & Sculpting Method": "Sculpting Massage Mastery Award",
+    "Best Wellness Treatment Program": "Sculpting Massage Mastery Award",
+  },
+  education: {
+    "Best Beauty Educator": "Award of Excellence in Professional Beauty Training",
+    "Best Academy Program": "Award of Excellence in Professional Beauty Training",
+    "Best Online Education Experience": "Award of Excellence in Online Beauty Education",
+    "Best Student Outcomes": "Award of Excellence in Professional Beauty Training",
+  },
+  salon: {
+    "Best Luxury Salon Experience": "Award of Excellence in Beauty Salon Innovation",
+    "Best Team Excellence": "Award of Excellence in Beauty Salon Innovation",
+    "Best Client Satisfaction Program":
+      "Award for Outstanding Achievement in Beauty Business Development",
+    "Best Salon Growth & Reputation":
+      "Award for Outstanding Achievement in Beauty Business Development",
+  },
+  brand: {
+    "Best Professional Beauty Brand":
+      "Award of Excellence in Beauty Brand Development",
+    "Best Product Innovation":
+      "Award of Excellence in Professional Beauty Product Development",
+    "Best Packaging & Presentation": "Innovation in Beauty Award",
+    "Best Compliance & Safety Leadership": "Innovation in Beauty Award",
+  },
+};
+
 export const heardAboutOptions = [
   { label: "Instagram", value: "instagram" },
   { label: "Facebook", value: "facebook" },

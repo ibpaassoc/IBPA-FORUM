@@ -44,6 +44,8 @@ model Award {
   applications Application[]
 
   createdAt   DateTime @default(now())
+
+  @@unique([categoryId, name])
 }
 
 model Application {
