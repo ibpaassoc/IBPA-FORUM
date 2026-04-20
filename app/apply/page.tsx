@@ -47,7 +47,7 @@ export default async function ApplyPage() {
               {heroStats.map((item) => (
                 <div
                   key={item.label}
-                  className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4"
+                  className="rounded-2xl border border-white/10 bg-white/4 px-4 py-4"
                 >
                   <p className="text-[10px] uppercase tracking-[0.22em] text-white/40">
                     {item.label}
@@ -65,7 +65,7 @@ export default async function ApplyPage() {
           {heroStats.map((item) => (
             <div
               key={item.label}
-              className="rounded-full border border-[#d8c27a]/22 bg-white/[0.04] px-4 py-2 text-xs uppercase tracking-[0.18em] text-[#efe6d0]"
+              className="rounded-full border border-[#d8c27a]/22 bg-white/4 px-4 py-2 text-xs uppercase tracking-[0.18em] text-[#efe6d0]"
             >
               {item.label}: {item.value}
             </div>

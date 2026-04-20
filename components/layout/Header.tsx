@@ -35,7 +35,7 @@ export default function Header() {
         <div className="relative flex items-center gap-4 px-4 py-4 sm:px-6 lg:px-7">
           <Link href="/" aria-label="IBPA home" className="shrink-0">
             <Image
-              src="/logo.svg"
+              src="/logo.png"
               alt="IBPA Logo"
               width={220}
               height={80}
