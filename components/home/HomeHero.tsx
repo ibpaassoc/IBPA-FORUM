@@ -6,7 +6,7 @@ export default function HomeHero() {
     <section className="relative overflow-hidden border-b border-white/10">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(216,194,122,0.22),transparent_38%)]"/>
 
-      <div className="relative z-10 mx-auto flex max-w-7xl flex-col gap-16 px-6 py-20 md:px-10 lg:flex-row lg:items-center lg:justify-between lg:px-12 lg:py-28">
+      <div className="relative z-10 mx-auto flex max-w-7xl flex-col gap-16 px-6 md:px-10 py-32 lg:flex-row lg:items-center lg:justify-between lg:px-12">
         <div className="max-w-3xl">
           <p className="mb-5 text-xs uppercase tracking-[0.32em] text-[#d8c27a]">
             IBPA Beauty Championship 2026

@@ -43,11 +43,11 @@ export function PageHero({
   return (
     <section
       className={joinClasses(
-        "border-b border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(216,194,122,0.16),transparent_35%),linear-gradient(135deg,#151515,#0f0f10_55%,#171718)] pt-10",
+        "border-b border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(216,194,122,0.16),transparent_35%),linear-gradient(135deg,#151515,#0f0f10_55%,#171718)]",
         className
       )}
     >
-      <div className="page-section grid gap-10 py-16 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:py-20">
+      <div className="page-section grid gap-10 py-32 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
         <div className="max-w-3xl">
           <p className="page-eyebrow">{eyebrow}</p>
           <h1 className="mt-5 text-4xl font-semibold leading-tight text-white sm:text-5xl lg:text-6xl">
