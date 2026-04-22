@@ -1,14 +1,157 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+model Category {
+  id           String        @id @default(cuid())
+  name         String
+  slug         String        @unique
+  createdAt    DateTime      @default(now())
+  applications Application[]
+  awards       Award[]
+}
+
+model Award {
+  id           String        @id @default(cuid())
+  name         String
+  categoryId   String
+  createdAt    DateTime      @default(now())
+  applications Application[]
+  category     Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, name])
+}
+
+model Application {
+  id                String              @id @default(cuid())
+  fullName          String
+  email             String
+  phone             String
+  country           String
+  stateProvince     String?
+  city              String
+  professionalTitle String
+  yearsExperience   Int
+  membershipNumber  String?
+  membershipLevel   String?
+  websiteUrl        String?
+  socialUrl         String?
+  reviewsUrl        String?
+  heardAbout        String?
+  categoryId        String
+  awardId           String
+  status            ApplicationStatus   @default(DRAFT)
+  paymentStatus     PaymentStatus       @default(PENDING)
+  submittedAt       DateTime?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  award             Award               @relation(fields: [awardId], references: [id])
+  category          Category            @relation(fields: [categoryId], references: [id])
+  answers           ApplicationAnswer[]
+  files             ApplicationFile[]
+  payments          Payment[]
+}
+
+model JuryApplication {
+  id                               String                @id @default(cuid())
+  fullName                         String
+  email                            String                @unique
+  phone                            String
+  country                          String
+  city                             String
+  professionalTitle                String
+  yearsExperience                  Int
+  employerAffiliation              String
+  membershipStatus                 String?
+  membershipLevel                  String?
+  previousJudgingExperience        Boolean
+  previousJudgingDetails           String?
+  pastWinner                       Boolean               @default(false)
+  pastWinnerYear                   Int?
+  expertiseAreas                   String[]
+  professionalBio                  String
+  professionalWebsite              String?
+  conflictDisclosure               String
+  confidentialityAgreementAccepted Boolean               @default(false)
+  motivation                       String
+  status                           JuryApplicationStatus @default(PENDING_REVIEW)
+  submittedAt                      DateTime?
+  createdAt                        DateTime              @default(now())
+  updatedAt                        DateTime              @updatedAt
+  adminNotes                       String?
+  reviewedAt                       DateTime?
+  paymentStatus                    PaymentStatus         @default(NOT_REQUIRED)
+  approvedAt                       DateTime?
+  rejectedAt                       DateTime?
+  paidAt                           DateTime?
+  stripeCheckoutSessionId          String?               @unique
+  stripePaymentIntentId            String?               @unique
+  registrationTokenHash            String?
+  registrationTokenExpiresAt       DateTime?
+  registrationEmailSentAt          DateTime?
+  files                            JuryApplicationFile[]
+}
+
+model ApplicationAnswer {
+  id            String      @id @default(cuid())
+  applicationId String
+  fieldKey      String
+  valueText     String?
+  valueNumber   Int?
+  valueBoolean  Boolean?
+  valueJson     Json?
+  createdAt     DateTime    @default(now())
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+}
+
+model JuryApplicationFile {
+  id                String          @id @default(cuid())
+  juryApplicationId String
+  fieldKey          String
+  fileName          String
+  mimeType          String
+  fileSize          Int
+  storageKey        String?
+  createdAt         DateTime        @default(now())
+  juryApplication   JuryApplication @relation(fields: [juryApplicationId], references: [id], onDelete: Cascade)
+}
+
+model ApplicationFile {
+  id            String      @id @default(cuid())
+  applicationId String
+  fieldKey      String
+  fileName      String
+  fileUrl       String
+  mimeType      String
+  fileSize      Int
+  createdAt     DateTime    @default(now())
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+}
+
+model Payment {
+  id                    String        @id @default(cuid())
+  applicationId         String
+  stripeSessionId       String?       @unique
+  stripePaymentIntentId String?       @unique
+  amount                Int
+  currency              String        @default("usd")
+  status                PaymentStatus @default(PENDING)
+  paidAt                DateTime?
+  createdAt             DateTime      @default(now())
+  application           Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+}
+
+model StripeWebhookEvent {
+  id            String   @id
+  stripeEventId String   @unique
+  eventType     String
+  payloadJson   Json?
+  processedAt   DateTime @default(now())
+  createdAt     DateTime @default(now())
 }
 
 enum ApplicationStatus {
@@ -19,182 +162,19 @@ enum ApplicationStatus {
   REJECTED
 }
 
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+  NOT_REQUIRED
+  EXPIRED
+}
+
 enum JuryApplicationStatus {
   PENDING_REVIEW
   UNDER_REVIEW
   APPROVED
   REJECTED
   ACTIVE_JUDGE
-}
-
-enum PaymentStatus {
-  NOT_REQUIRED
-  PENDING
-  PAID
-  FAILED
-  EXPIRED
-  REFUNDED
-}
-
-model Category {
-  id          String   @id @default(cuid())
-  name        String
-  slug        String   @unique
-  awards      Award[]
-  applications Application[]
-
-  createdAt   DateTime @default(now())
-}
-
-model Award {
-  id          String   @id @default(cuid())
-  name        String
-  categoryId  String
-  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  applications Application[]
-
-  createdAt   DateTime @default(now())
-
-  @@unique([categoryId, name])
-}
-
-model Application {
-  id                    String              @id @default(cuid())
-  fullName              String
-  email                 String
-  phone                 String
-  country               String
-  stateProvince         String?
-  city                  String
-  professionalTitle     String
-  yearsExperience       Int
-  membershipNumber      String?
-  membershipLevel       String?
-  websiteUrl            String?
-  socialUrl             String?
-  reviewsUrl            String?
-  heardAbout            String?
-
-  categoryId            String
-  category              Category            @relation(fields: [categoryId], references: [id])
-
-  awardId               String
-  award                 Award               @relation(fields: [awardId], references: [id])
-
-  status                ApplicationStatus   @default(DRAFT)
-  paymentStatus         PaymentStatus       @default(PENDING)
-
-  answers               ApplicationAnswer[]
-  files                 ApplicationFile[]
-  payments              Payment[]
-
-  submittedAt           DateTime?
-  createdAt             DateTime            @default(now())
-  updatedAt             DateTime            @updatedAt
-}
-
-model JuryApplication {
-  id                                String                @id @default(cuid())
-  fullName                          String
-  email                             String                @unique
-  phone                             String
-  country                           String
-  city                              String
-  professionalTitle                 String
-  yearsExperience                   Int
-  employerAffiliation               String
-  membershipStatus                  String?
-  membershipLevel                   String?
-  previousJudgingExperience         Boolean
-  previousJudgingDetails            String?
-  pastWinner                        Boolean                @default(false)
-  pastWinnerYear                    Int?
-  expertiseAreas                    String[]
-  professionalBio                   String
-  professionalWebsite               String?
-  conflictDisclosure                String
-  confidentialityAgreementAccepted  Boolean               @default(false)
-  motivation                        String
-  status                            JuryApplicationStatus @default(PENDING_REVIEW)
-  paymentStatus                     PaymentStatus         @default(NOT_REQUIRED)
-  adminNotes                        String?
-  approvedAt                        DateTime?
-  rejectedAt                        DateTime?
-  paidAt                            DateTime?
-  reviewedAt                        DateTime?
-  submittedAt                       DateTime?
-  stripeCheckoutSessionId           String?               @unique
-  stripePaymentIntentId             String?               @unique
-  registrationTokenHash             String?
-  registrationTokenExpiresAt        DateTime?
-  registrationEmailSentAt           DateTime?
-  files                             JuryApplicationFile[]
-  createdAt                         DateTime              @default(now())
-  updatedAt                         DateTime              @updatedAt
-}
-
-model StripeWebhookEvent {
-  id             String   @id @default(cuid())
-  stripeEventId  String   @unique
-  eventType      String
-  payloadJson    Json?
-  processedAt    DateTime @default(now())
-  createdAt      DateTime @default(now())
-}
-
-model ApplicationAnswer {
-  id             String       @id @default(cuid())
-  applicationId  String
-  application    Application  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-
-  fieldKey       String
-  valueText      String?
-  valueNumber    Int?
-  valueBoolean   Boolean?
-  valueJson      Json?
-
-  createdAt      DateTime     @default(now())
-}
-
-model JuryApplicationFile {
-  id                 String           @id @default(cuid())
-  juryApplicationId  String
-  juryApplication    JuryApplication  @relation(fields: [juryApplicationId], references: [id], onDelete: Cascade)
-
-  fieldKey           String
-  fileName           String
-  mimeType           String
-  fileSize           Int
-  storageKey         String?
-
-  createdAt          DateTime         @default(now())
-}
-
-model ApplicationFile {
-  id             String       @id @default(cuid())
-  applicationId  String
-  application    Application  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-
-  fieldKey       String
-  fileName       String
-  fileUrl        String
-  mimeType       String
-  fileSize       Int
-
-  createdAt      DateTime     @default(now())
-}
-
-model Payment {
-  id                    String       @id @default(cuid())
-  applicationId         String
-  application           Application  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-
-  stripeSessionId       String?      @unique
-  stripePaymentIntentId String?      @unique
-  amount                Int
-  currency              String       @default("usd")
-  status                PaymentStatus @default(PENDING)
-  paidAt                DateTime?
-
-  createdAt             DateTime     @default(now())
 }
