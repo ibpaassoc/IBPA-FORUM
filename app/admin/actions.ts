@@ -209,6 +209,7 @@ export async function updateParticipantApplicationStatus(formData: FormData) {
   }
 
   if (
+    status !== "PAYMENT_PENDING" &&
     status !== "SUBMITTED" &&
     status !== "UNDER_REVIEW" &&
     status !== "APPROVED" &&

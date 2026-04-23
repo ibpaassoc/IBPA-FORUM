@@ -16,6 +16,8 @@ const paymentStatusStyles: Record<PaymentStatus, string> = {
   PENDING: "bg-[#7a5a14]/25 text-[#f1d98a] border-[#d8c27a]/35",
   PAID: "bg-[#1b4d34]/45 text-[#9fe0b4] border-[#3e8f62]/45",
   FAILED: "bg-[#5c2323]/45 text-[#f1aaaa] border-[#9d4a4a]/45",
+  EXPIRED: "bg-[#523b19]/45 text-[#f3cb8a] border-[#9e7a43]/45",
+  REFUNDED: "bg-[#2c3d5a]/45 text-[#bfd7ff] border-[#5577a8]/45",
 };
 
 function formatDate(date: Date | null) {

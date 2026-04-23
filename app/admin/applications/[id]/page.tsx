@@ -10,6 +10,7 @@ import {
 import { PageShell } from "@/components/layout/PageShell";
 
 const statusOptions = [
+  "PAYMENT_PENDING",
   "SUBMITTED",
   "UNDER_REVIEW",
   "APPROVED",
@@ -297,6 +298,26 @@ export default async function AdminApplicationDetailPage({
               </form>
 
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                <DetailItem
+                  label="Payment Status"
+                  value={application.paymentStatus.replaceAll("_", " ")}
+                />
+                <DetailItem
+                  label="Amount"
+                  value={`${(application.amount / 100).toFixed(2)} ${application.currency.toUpperCase()}`}
+                />
+                <DetailItem
+                  label="Checkout Session"
+                  value={application.stripeCheckoutSessionId || "Not set"}
+                />
+                <DetailItem
+                  label="Payment Intent"
+                  value={application.stripePaymentIntentId || "Not set"}
+                />
+                <DetailItem
+                  label="Paid At"
+                  value={formatDate(application.paidAt)}
+                />
                 <DetailItem
                   label="Submitted"
                   value={formatDate(application.submittedAt)}
