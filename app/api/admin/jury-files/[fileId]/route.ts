@@ -1,6 +1,6 @@
 import { get } from "@vercel/blob";
-import { prisma } from "@/lib/prisma";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
+import { prisma } from "@/shared/lib/prisma";
 
 export async function GET(
   request: Request,

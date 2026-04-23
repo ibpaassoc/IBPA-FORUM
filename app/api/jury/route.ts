@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { submitJuryApplication } from "@/lib/jury/service";
+import { submitJuryApplication } from "@/features/jury/server/commands";
 
 export async function POST(request: Request) {
   try {

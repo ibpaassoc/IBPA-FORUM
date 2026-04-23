@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { processStripeWebhook } from "@/lib/stripe-webhook";
+import { processStripeWebhook } from "@/features/payments/server/webhook-dispatch";
 
 export const runtime = "nodejs";
 

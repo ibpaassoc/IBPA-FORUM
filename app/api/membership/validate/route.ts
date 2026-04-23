@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { validateMembershipNumber } from "@/lib/apply/membership";
+import { validateMembershipNumber } from "@/features/applications/server/membership";
 
 export async function POST(request: Request) {
   try {
