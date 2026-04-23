@@ -7,6 +7,7 @@ import {
   logoutAdminAction,
   rejectJuryApplicationAction,
   saveJuryApplicationNotesAction,
+  updateJuryApplicationStatusAction,
 } from "@/app/admin/actions";
 import { PageShell } from "@/components/layout/PageShell";
 import { requireAdmin } from "@/lib/admin-auth";
@@ -314,6 +315,50 @@ export default async function AdminJuryApplicationDetailsPage({
                 </button>
               </form>
 
+              <form
+                action={updateJuryApplicationStatusAction}
+                className="mt-5 rounded-2xl border border-white/12 bg-white/[0.035] p-4"
+              >
+                <input type="hidden" name="id" value={application.id} />
+
+                <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
+                  Change Status
+                </p>
+                <p className="mt-3 text-sm leading-6 text-[#d9d4ca]">
+                  Move this application back to submitted, approve it again with
+                  a fresh payment link, or reject it after review. Paid status
+                  remains webhook-only.
+                </p>
+
+                <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <select
+                    name="status"
+                    defaultValue={application.status}
+                    className="w-full rounded-full border border-white/12 bg-white/5 px-4 py-3 text-sm text-white outline-none transition focus:border-[#d8c27a] focus:bg-white/7 sm:max-w-[240px]"
+                  >
+                    <option value="SUBMITTED" className="bg-[#101010] text-white">
+                      Submitted
+                    </option>
+                    <option value="APPROVED" className="bg-[#101010] text-white">
+                      Approved
+                    </option>
+                    <option value="REJECTED" className="bg-[#101010] text-white">
+                      Rejected
+                    </option>
+                    <option value="PAID" className="bg-[#101010] text-white" disabled>
+                      Paid (webhook only)
+                    </option>
+                  </select>
+
+                  <button
+                    type="submit"
+                    className="inline-flex items-center justify-center rounded-full border border-white/20 px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
+                  >
+                    Update Status
+                  </button>
+                </div>
+              </form>
+
               <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <DetailItem
                   label="Submitted"
@@ -335,7 +380,7 @@ export default async function AdminJuryApplicationDetailsPage({
               </div>
 
               <div className="mt-5 flex flex-wrap gap-3">
-                {application.status === "SUBMITTED" ? (
+                {application.status !== "PAID" ? (
                   <form action={approveJuryApplicationAction}>
                     <input type="hidden" name="id" value={application.id} />
                     <button

@@ -316,6 +316,42 @@ export async function saveJuryApplicationNotes({
   });
 }
 
+export async function resetJuryApplicationToSubmitted({
+  id,
+  adminNotes,
+}: {
+  id: string;
+  adminNotes?: string;
+}) {
+  const application = await prisma.juryApplication.findUnique({
+    where: { id },
+    select: {
+      status: true,
+    },
+  });
+
+  if (!application) {
+    throw new Error("Jury application not found.");
+  }
+
+  if (application.status === "PAID") {
+    throw new Error("Paid jury applications cannot be moved back to submitted.");
+  }
+
+  await prisma.juryApplication.update({
+    where: { id },
+    data: {
+      status: "SUBMITTED",
+      paymentStatus: "PENDING",
+      approvedAt: null,
+      rejectedAt: null,
+      stripeCheckoutSessionId: null,
+      paidAt: null,
+      adminNotes: adminNotes?.trim() || undefined,
+    },
+  });
+}
+
 export async function approveJuryApplication(id: string) {
   const application = await prisma.juryApplication.findUnique({
     where: { id },
@@ -331,8 +367,8 @@ export async function approveJuryApplication(id: string) {
     throw new Error("Jury application not found.");
   }
 
-  if (application.status !== "SUBMITTED") {
-    throw new Error("Only submitted jury applications can be approved.");
+  if (application.status === "PAID") {
+    throw new Error("Paid jury applications cannot be approved again.");
   }
 
   const session = await createJuryCheckoutSession({
@@ -403,10 +439,6 @@ export async function rejectJuryApplication({
     throw new Error("Paid jury applications cannot be rejected.");
   }
 
-  if (application.status === "REJECTED") {
-    throw new Error("This jury application has already been rejected.");
-  }
-
   await prisma.juryApplication.update({
     where: { id },
     data: {
@@ -432,6 +464,39 @@ export async function rejectJuryApplication({
   } catch (error) {
     console.error("Failed to send jury rejection email", error);
   }
+}
+
+export async function updateJuryApplicationStatus({
+  id,
+  status,
+  adminNotes,
+}: {
+  id: string;
+  status: JuryApplicationStatus;
+  adminNotes?: string;
+}) {
+  if (status === "SUBMITTED") {
+    await resetJuryApplicationToSubmitted({
+      id,
+      adminNotes,
+    });
+    return "Application moved back to submitted.";
+  }
+
+  if (status === "APPROVED") {
+    await approveJuryApplication(id);
+    return "Application approved and payment link sent.";
+  }
+
+  if (status === "REJECTED") {
+    await rejectJuryApplication({
+      id,
+      adminNotes,
+    });
+    return "Application rejected successfully.";
+  }
+
+  throw new Error("Paid status can only be set by Stripe webhook confirmation.");
 }
 
 function serializeStripeEvent(event: Stripe.Event): Prisma.InputJsonValue {

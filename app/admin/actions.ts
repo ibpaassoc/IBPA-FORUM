@@ -8,7 +8,9 @@ import {
   approveJuryApplication,
   rejectJuryApplication,
   saveJuryApplicationNotes,
+  updateJuryApplicationStatus,
 } from "@/lib/jury/service";
+import type { JuryApplicationStatus } from "@prisma/client";
 
 export type AdminLoginState = {
   error?: string;
@@ -147,6 +149,51 @@ export async function rejectJuryApplicationAction(formData: FormData) {
   redirect(
     getJuryApplicationDetailPath(id, {
       notice: "Application rejected successfully.",
+    })
+  );
+}
+
+export async function updateJuryApplicationStatusAction(formData: FormData) {
+  await requireAdmin();
+
+  const id = String(formData.get("id") ?? "");
+  const status = String(formData.get("status") ?? "") as JuryApplicationStatus;
+  const adminNotes = String(formData.get("adminNotes") ?? "").trim();
+
+  if (!id) {
+    throw new Error("Missing jury application id.");
+  }
+
+  if (
+    status !== "SUBMITTED" &&
+    status !== "APPROVED" &&
+    status !== "REJECTED" &&
+    status !== "PAID"
+  ) {
+    throw new Error("Invalid jury application status.");
+  }
+
+  let notice = "";
+
+  try {
+    notice = await updateJuryApplicationStatus({
+      id,
+      status,
+      adminNotes,
+    });
+  } catch (error) {
+    redirect(
+      getJuryApplicationDetailPath(id, {
+        error: getActionErrorMessage(error),
+      })
+    );
+  }
+
+  revalidatePath("/admin/jury-applications");
+  revalidatePath(`/admin/jury-applications/${id}`);
+  redirect(
+    getJuryApplicationDetailPath(id, {
+      notice,
     })
   );
 }
