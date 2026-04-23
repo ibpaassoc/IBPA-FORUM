@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { retryCompetitorApplicationPayment } from "@/lib/apply/server";
+import { retryCompetitorApplicationPayment } from "@/features/applications/server/commands";
 
 export async function POST(request: NextRequest) {
   try {
