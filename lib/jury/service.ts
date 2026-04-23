@@ -10,7 +10,7 @@ import {
   sendEmail,
 } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
-import { constructStripeEvent, createJuryCheckoutSession } from "@/lib/stripe";
+import { createJuryCheckoutSession } from "@/lib/stripe";
 
 function getText(formData: FormData, key: string) {
   return String(formData.get(key) ?? "").trim();
@@ -663,53 +663,17 @@ async function handlePaymentFailed(event: Stripe.Event) {
   }
 }
 
-export async function processStripeWebhook({
-  payload,
-  signature,
-}: {
-  payload: string;
-  signature: string | null;
-}) {
-  if (!signature) {
-    return {
-      status: 400,
-      body: {
-        message: "Missing Stripe signature.",
-      },
-    };
-  }
-
-  let event: Stripe.Event;
-
-  try {
-    event = constructStripeEvent(payload, signature);
-  } catch (error) {
-    console.error("Failed to verify Stripe webhook signature", error);
-    return {
-      status: 400,
-      body: {
-        message: "Invalid Stripe signature.",
-      },
-    };
-  }
-
+export async function handleJuryStripeEvent(event: Stripe.Event) {
   switch (event.type) {
     case "checkout.session.completed":
       await handleCheckoutCompleted(event);
-      break;
+      return true;
     case "payment_intent.payment_failed":
       await handlePaymentFailed(event);
-      break;
+      return true;
     default:
-      break;
+      return false;
   }
-
-  return {
-    status: 200,
-    body: {
-      received: true,
-    },
-  };
 }
 
 export async function getPublicJuryMembers() {

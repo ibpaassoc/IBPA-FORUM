@@ -20,6 +20,12 @@ type JuryEmailTemplate = {
   text: string;
 };
 
+type CompetitorConfirmationTemplateInput = {
+  fullName: string;
+  categoryName: string;
+  awardName: string;
+};
+
 function isProduction() {
   return process.env.NODE_ENV === "production";
 }
@@ -188,4 +194,45 @@ export function juryPaymentConfirmed({
     html: wrapEmail("Your jury payment has been confirmed", paragraphs),
     text: buildTextBody(paragraphs),
   };
+}
+
+export function competitorApplicationConfirmed({
+  fullName,
+  categoryName,
+  awardName,
+}: CompetitorConfirmationTemplateInput) {
+  const paragraphs = [
+    `Dear ${fullName},`,
+    "Your $50 USD payment for the IBPA Beauty Championship competitor application has been received successfully.",
+    `Your application for ${categoryName} / ${awardName} is now complete and has been submitted for review.`,
+    "Our judges and admin team will review your materials and follow up with any next steps separately.",
+  ];
+
+  return {
+    subject: "Your IBPA Competitor Application Is Complete",
+    html: wrapEmail("Your competitor application has been confirmed", paragraphs),
+    text: buildTextBody(paragraphs),
+  };
+}
+
+export async function sendCompetitorApplicationConfirmedEmail({
+  to,
+  fullName,
+  categoryName,
+  awardName,
+}: CompetitorConfirmationTemplateInput & {
+  to: string;
+}) {
+  const template = competitorApplicationConfirmed({
+    fullName,
+    categoryName,
+    awardName,
+  });
+
+  return sendEmail({
+    to,
+    subject: template.subject,
+    html: template.html,
+    text: template.text,
+  });
 }
