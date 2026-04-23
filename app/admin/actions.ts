@@ -90,8 +90,18 @@ export async function approveJuryApplicationAction(formData: FormData) {
     throw new Error("Missing jury application id.");
   }
 
+  let notice = "Application approved and payment link sent.";
+
   try {
-    await approveJuryApplication(id);
+    const result = await approveJuryApplication(id);
+
+    if (!result.emailDelivered && result.emailSkipReason === "dev_email_missing") {
+      notice =
+        "Application approved, but the payment email was skipped because DEV_EMAIL is not configured in development.";
+    } else if (!result.emailDelivered && result.emailSkipReason === "resend_missing") {
+      notice =
+        "Application approved, but the payment email was skipped because RESEND_API_KEY is not configured.";
+    }
   } catch (error) {
     redirect(
       getJuryApplicationDetailPath(id, {
@@ -104,7 +114,7 @@ export async function approveJuryApplicationAction(formData: FormData) {
   revalidatePath(`/admin/jury-applications/${id}`);
   redirect(
     getJuryApplicationDetailPath(id, {
-      notice: "Application approved and payment link sent.",
+      notice,
     })
   );
 }

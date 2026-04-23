@@ -1,20 +1,16 @@
 import { put } from "@vercel/blob";
-import {
-  Prisma,
-  type JuryApplicationStatus,
-  type StripeWebhookEvent,
-} from "@prisma/client";
+import { Prisma, type JuryApplicationStatus, type StripeWebhookEvent } from "@prisma/client";
 import { randomUUID } from "node:crypto";
 import type Stripe from "stripe";
-import { prisma } from "@/lib/prisma";
 import {
-  sendJuryApplicationReceivedEmail,
-  sendJuryApprovalPaymentEmail,
-  sendJuryPaymentConfirmedEmail,
-  sendJuryRejectionEmail,
+  juryApplicationReceived,
+  juryApprovedPaymentLink,
+  juryPaymentConfirmed,
+  juryRejected,
+  sendEmail,
 } from "@/lib/email";
-import { constructStripeEvent, createJuryCheckoutSession, getAppUrl } from "@/lib/stripe/server";
-import { createRegistrationToken, hashRegistrationToken } from "@/lib/jury/tokens";
+import { prisma } from "@/lib/prisma";
+import { constructStripeEvent, createJuryCheckoutSession } from "@/lib/stripe";
 
 function getText(formData: FormData, key: string) {
   return String(formData.get(key) ?? "").trim();
@@ -240,8 +236,8 @@ export async function submitJuryApplication(formData: FormData) {
       conflictDisclosure,
       confidentialityAgreementAccepted: true,
       motivation,
-      status: "PENDING_REVIEW",
-      paymentStatus: "NOT_REQUIRED",
+      status: "SUBMITTED",
+      paymentStatus: "PENDING",
       submittedAt: new Date(),
       files: {
         create: [
@@ -267,9 +263,12 @@ export async function submitJuryApplication(formData: FormData) {
   });
 
   try {
-    await sendJuryApplicationReceivedEmail({
+    const template = juryApplicationReceived({ fullName });
+    await sendEmail({
       to: normalizedEmail,
-      fullName,
+      subject: template.subject,
+      html: template.html,
+      text: template.text,
     });
   } catch (error) {
     console.error("Failed to send jury application received email", error);
@@ -309,15 +308,10 @@ export async function saveJuryApplicationNotes({
     throw new Error("Jury application not found.");
   }
 
-  const nextStatus: JuryApplicationStatus =
-    application.status === "PENDING_REVIEW" ? "UNDER_REVIEW" : application.status;
-
   await prisma.juryApplication.update({
     where: { id },
     data: {
-      status: nextStatus,
       adminNotes: adminNotes || null,
-      reviewedAt: new Date(),
     },
   });
 }
@@ -330,7 +324,6 @@ export async function approveJuryApplication(id: string) {
       fullName: true,
       email: true,
       status: true,
-      paymentStatus: true,
     },
   });
 
@@ -338,13 +331,13 @@ export async function approveJuryApplication(id: string) {
     throw new Error("Jury application not found.");
   }
 
-  if (application.status === "REJECTED" || application.status === "ACTIVE_JUDGE") {
-    throw new Error("This jury application cannot be approved from its current status.");
+  if (application.status !== "SUBMITTED") {
+    throw new Error("Only submitted jury applications can be approved.");
   }
 
   const session = await createJuryCheckoutSession({
-    applicationId: application.id,
-    applicantEmail: application.email,
+    juryApplicationId: application.id,
+    email: application.email,
   });
 
   await prisma.juryApplication.update({
@@ -353,20 +346,36 @@ export async function approveJuryApplication(id: string) {
       status: "APPROVED",
       paymentStatus: "PENDING",
       approvedAt: new Date(),
-      reviewedAt: new Date(),
+      rejectedAt: null,
+      paidAt: null,
       stripeCheckoutSessionId: session.id,
     },
   });
 
+  let emailDelivered = false;
+  let emailSkipReason: "dev_email_missing" | "resend_missing" | undefined;
+
   try {
-    await sendJuryApprovalPaymentEmail({
-      to: application.email,
+    const template = juryApprovedPaymentLink({
       fullName: application.fullName,
-      checkoutUrl: session.url!,
+      checkoutUrl: session.url,
     });
+    const result = await sendEmail({
+      to: application.email,
+      subject: template.subject,
+      html: template.html,
+      text: template.text,
+    });
+    emailDelivered = result.delivered;
+    emailSkipReason = result.reason;
   } catch (error) {
     console.error("Failed to send jury approval payment email", error);
   }
+
+  return {
+    emailDelivered,
+    emailSkipReason,
+  };
 }
 
 export async function rejectJuryApplication({
@@ -390,28 +399,35 @@ export async function rejectJuryApplication({
     throw new Error("Jury application not found.");
   }
 
-  if (application.status === "ACTIVE_JUDGE") {
-    throw new Error("Active judges cannot be rejected from this action.");
+  if (application.status === "PAID") {
+    throw new Error("Paid jury applications cannot be rejected.");
+  }
+
+  if (application.status === "REJECTED") {
+    throw new Error("This jury application has already been rejected.");
   }
 
   await prisma.juryApplication.update({
     where: { id },
     data: {
       status: "REJECTED",
-      paymentStatus: "NOT_REQUIRED",
+      paymentStatus: "FAILED",
       adminNotes: adminNotes?.trim() || undefined,
+      approvedAt: null,
       rejectedAt: new Date(),
-      reviewedAt: new Date(),
-      registrationTokenHash: null,
-      registrationTokenExpiresAt: null,
-      registrationEmailSentAt: null,
+      stripeCheckoutSessionId: null,
     },
   });
 
   try {
-    await sendJuryRejectionEmail({
-      to: application.email,
+    const template = juryRejected({
       fullName: application.fullName,
+    });
+    await sendEmail({
+      to: application.email,
+      subject: template.subject,
+      html: template.html,
+      text: template.text,
     });
   } catch (error) {
     console.error("Failed to send jury rejection email", error);
@@ -447,106 +463,19 @@ async function recordStripeEvent(
 function getApplicationIdFromMetadata(
   metadata: Record<string, string> | null | undefined
 ) {
-  if (!metadata || metadata.flowType !== "jury") {
+  if (!metadata) {
     return null;
   }
 
-  return metadata.applicationId ?? null;
+  return metadata.juryApplicationId ?? null;
 }
 
 type JuryPaymentConfirmedEmailPayload = {
   to: string;
   fullName: string;
-  registrationUrl: string;
-  applicationId: string;
 };
 
 async function handleCheckoutCompleted(event: Stripe.Event) {
-  const session = event.data.object as Stripe.Checkout.Session;
-  const applicationId = getApplicationIdFromMetadata(session.metadata);
-
-  if (!applicationId) {
-    return;
-  }
-
-  const paymentIntentId =
-    typeof session.payment_intent === "string" ? session.payment_intent : null;
-  const registration = createRegistrationToken();
-  let emailPayload: JuryPaymentConfirmedEmailPayload | null = null;
-
-  try {
-    await prisma.$transaction(async (tx) => {
-      await recordStripeEvent(tx, event);
-
-      const application = await tx.juryApplication.findUnique({
-        where: {
-          id: applicationId,
-        },
-        select: {
-          id: true,
-          email: true,
-          fullName: true,
-          paymentStatus: true,
-        },
-      });
-
-      if (!application || application.paymentStatus === "PAID") {
-        return;
-      }
-
-      emailPayload = {
-        to: application.email,
-        fullName: application.fullName,
-        registrationUrl: `${getAppUrl()}/jury/register?token=${registration.rawToken}`,
-        applicationId: application.id,
-      };
-
-      await tx.juryApplication.update({
-        where: { id: application.id },
-        data: {
-          status: "ACTIVE_JUDGE",
-          paymentStatus: "PAID",
-          paidAt: new Date(),
-          stripeCheckoutSessionId: session.id,
-          stripePaymentIntentId: paymentIntentId,
-          registrationTokenHash: registration.tokenHash,
-          registrationTokenExpiresAt: registration.expiresAt,
-        },
-      });
-    });
-  } catch (error) {
-    if (isDuplicateStripeEventError(error)) {
-      return;
-    }
-
-    throw error;
-  }
-
-  if (!emailPayload) {
-    return;
-  }
-
-  const confirmedEmailPayload: JuryPaymentConfirmedEmailPayload = emailPayload;
-
-  try {
-    const result = await sendJuryPaymentConfirmedEmail(confirmedEmailPayload);
-
-    if (result.delivered) {
-      await prisma.juryApplication.update({
-        where: {
-          id: confirmedEmailPayload.applicationId,
-        },
-        data: {
-          registrationEmailSentAt: new Date(),
-        },
-      });
-    }
-  } catch (error) {
-    console.error("Failed to send jury payment confirmed email", error);
-  }
-}
-
-async function handleCheckoutExpired(event: Stripe.Event) {
   const session = event.data.object as Stripe.Checkout.Session;
   const applicationId =
     getApplicationIdFromMetadata(session.metadata) ??
@@ -565,30 +494,43 @@ async function handleCheckoutExpired(event: Stripe.Event) {
     return;
   }
 
+  let emailPayload: JuryPaymentConfirmedEmailPayload | null = null;
+
   try {
     await prisma.$transaction(async (tx) => {
       await recordStripeEvent(tx, event);
 
       const application = await tx.juryApplication.findUnique({
-        where: { id: applicationId },
+        where: {
+          id: applicationId,
+        },
         select: {
-          status: true,
+          id: true,
+          email: true,
+          fullName: true,
           paymentStatus: true,
+          status: true,
         },
       });
 
-      if (
-        application &&
-        application.status === "APPROVED" &&
-        application.paymentStatus !== "PAID"
-      ) {
-        await tx.juryApplication.update({
-          where: { id: applicationId },
-          data: {
-            paymentStatus: "EXPIRED",
-          },
-        });
+      if (!application || application.paymentStatus === "PAID") {
+        return;
       }
+
+      await tx.juryApplication.update({
+        where: { id: application.id },
+        data: {
+          status: "PAID",
+          paymentStatus: "PAID",
+          paidAt: new Date(),
+          stripeCheckoutSessionId: session.id,
+        },
+      });
+
+      emailPayload = {
+        to: application.email,
+        fullName: application.fullName,
+      };
     });
   } catch (error) {
     if (isDuplicateStripeEventError(error)) {
@@ -596,6 +538,26 @@ async function handleCheckoutExpired(event: Stripe.Event) {
     }
 
     throw error;
+  }
+
+  if (!emailPayload) {
+    return;
+  }
+
+  const confirmedEmailPayload: JuryPaymentConfirmedEmailPayload = emailPayload;
+
+  try {
+    const template = juryPaymentConfirmed({
+      fullName: confirmedEmailPayload.fullName,
+    });
+    await sendEmail({
+      to: confirmedEmailPayload.to,
+      subject: template.subject,
+      html: template.html,
+      text: template.text,
+    });
+  } catch (error) {
+    console.error("Failed to send jury payment confirmed email", error);
   }
 }
 
@@ -623,7 +585,6 @@ async function handlePaymentFailed(event: Stripe.Event) {
           where: { id: applicationId },
           data: {
             paymentStatus: "FAILED",
-            stripePaymentIntentId: paymentIntent.id,
           },
         });
       }
@@ -671,9 +632,6 @@ export async function processStripeWebhook({
     case "checkout.session.completed":
       await handleCheckoutCompleted(event);
       break;
-    case "checkout.session.expired":
-      await handleCheckoutExpired(event);
-      break;
     case "payment_intent.payment_failed":
       await handlePaymentFailed(event);
       break;
@@ -689,43 +647,37 @@ export async function processStripeWebhook({
   };
 }
 
-export async function validateJuryRegistrationToken(token: string) {
-  if (!token) {
-    return {
-      status: "missing" as const,
-    };
+export async function getPublicJuryMembers() {
+  try {
+    return await prisma.juryApplication.findMany({
+      where: {
+        status: "PAID",
+        paymentStatus: "PAID",
+      },
+      orderBy: {
+        paidAt: "desc",
+      },
+      select: {
+        id: true,
+        fullName: true,
+        professionalTitle: true,
+        city: true,
+        country: true,
+        expertiseAreas: true,
+        professionalBio: true,
+        files: {
+          where: {
+            fieldKey: "profilePhoto",
+          },
+          select: {
+            id: true,
+          },
+          take: 1,
+        },
+      },
+    });
+  } catch (error) {
+    console.warn("Failed to load public jury members.", error);
+    return [];
   }
-
-  const tokenHash = hashRegistrationToken(token);
-  const application = await prisma.juryApplication.findFirst({
-    where: {
-      registrationTokenHash: tokenHash,
-    },
-    select: {
-      fullName: true,
-      registrationTokenExpiresAt: true,
-      status: true,
-    },
-  });
-
-  if (!application) {
-    return {
-      status: "invalid" as const,
-    };
-  }
-
-  if (
-    !application.registrationTokenExpiresAt ||
-    application.registrationTokenExpiresAt.getTime() < Date.now()
-  ) {
-    return {
-      status: "expired" as const,
-    };
-  }
-
-  return {
-    status: "valid" as const,
-    fullName: application.fullName,
-    juryStatus: application.status,
-  };
 }

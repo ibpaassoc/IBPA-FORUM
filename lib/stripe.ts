@@ -1,3 +1,4 @@
+import "server-only";
 import Stripe from "stripe";
 
 let stripeClient: Stripe | null = null;
@@ -13,10 +14,10 @@ function getStripeSecretKey() {
 }
 
 export function getAppUrl() {
-  const appUrl = process.env.APP_URL;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
   if (!appUrl) {
-    throw new Error("APP_URL is not configured.");
+    throw new Error("NEXT_PUBLIC_APP_URL is not configured.");
   }
 
   return appUrl.replace(/\/+$/, "");
@@ -31,60 +32,53 @@ export function getStripe() {
 }
 
 export async function createJuryCheckoutSession({
-  applicationId,
-  applicantEmail,
+  juryApplicationId,
+  email,
 }: {
-  applicationId: string;
-  applicantEmail: string;
+  juryApplicationId: string;
+  email: string;
 }) {
   const stripe = getStripe();
   const appUrl = getAppUrl();
-  const priceId = process.env.STRIPE_JURY_PRICE;
 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
-    customer_email: applicantEmail,
+    customer_email: email,
     success_url: `${appUrl}/jury/register?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${appUrl}/jury`,
     metadata: {
-      flowType: "jury",
-      applicationId,
-      applicantEmail,
+      juryApplicationId,
+      email,
     },
     payment_intent_data: {
       metadata: {
-        flowType: "jury",
-        applicationId,
-        applicantEmail,
+        juryApplicationId,
+        email,
       },
     },
-    line_items: priceId
-      ? [
-          {
-            price: priceId,
-            quantity: 1,
+    line_items: [
+      {
+        price_data: {
+          currency: "usd",
+          unit_amount: 25000,
+          product_data: {
+            name: "IBPA Jury Registration Fee",
+            description: "Official IBPA jury registration fee after admin approval.",
           },
-        ]
-      : [
-          {
-            price_data: {
-              currency: "usd",
-              unit_amount: 25000,
-              product_data: {
-                name: "IBPA Jury Activation Fee",
-                description: "Official jury activation fee after admin approval.",
-              },
-            },
-            quantity: 1,
-          },
-        ],
+        },
+        quantity: 1,
+      },
+    ],
   });
 
   if (!session.url) {
     throw new Error("Stripe Checkout session was created without a payment URL.");
   }
 
-  return session;
+  return {
+    id: session.id,
+    url: session.url,
+  };
 }
 
 export function constructStripeEvent(payload: string, signature: string) {
