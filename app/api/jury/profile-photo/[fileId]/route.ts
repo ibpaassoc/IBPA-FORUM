@@ -1,5 +1,5 @@
 import { get } from "@vercel/blob";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/shared/lib/prisma";
 
 export async function GET(
   request: Request,
