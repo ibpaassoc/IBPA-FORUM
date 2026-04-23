@@ -1,4 +1,4 @@
-import SectionTitle from "@/components/ui/SectionTitle";
+import SectionTitle from "@/shared/components/ui/SectionTitle";
 import { faqs } from "@/data/home";
 
 export default function FAQ() {

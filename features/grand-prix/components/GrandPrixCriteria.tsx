@@ -1,4 +1,4 @@
-import { PageCard, PageSection } from "@/components/layout/PageShell";
+import { PageCard, PageSection } from "@/shared/components/layout/PageShell";
 
 const criteria = [
   "Competitive strength across multiple live categories",

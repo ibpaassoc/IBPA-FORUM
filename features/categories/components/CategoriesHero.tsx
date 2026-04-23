@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PageHero } from "@/components/layout/PageShell";
+import { PageHero } from "@/shared/components/layout/PageShell";
 
 export default function CategoriesHero() {
   return (

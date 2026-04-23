@@ -1,4 +1,4 @@
-import SectionTitle from "@/components/ui/SectionTitle";
+import SectionTitle from "@/shared/components/ui/SectionTitle";
 import { steps } from "@/data/home";
 
 export default function Process() {

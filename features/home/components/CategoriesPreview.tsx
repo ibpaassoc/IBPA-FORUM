@@ -1,5 +1,5 @@
 import Link from "next/link";
-import SectionTitle from "@/components/ui/SectionTitle";
+import SectionTitle from "@/shared/components/ui/SectionTitle";
 import { categories } from "@/data/home";
 
 export default function CategoriesPreview() {

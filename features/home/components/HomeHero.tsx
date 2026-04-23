@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Countdown from "@/components/home/Countdown";
+import Countdown from "@/features/home/components/Countdown";
 
 export default function HomeHero() {
   return (
