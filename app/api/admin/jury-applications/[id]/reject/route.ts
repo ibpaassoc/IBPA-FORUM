@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin-auth";
-import { rejectJuryApplication } from "@/lib/jury/service";
+import { rejectJuryApplication } from "@/features/jury/server/commands";
+import { requireAdmin } from "@/shared/lib/admin-auth";
 
 async function getAdminNotes(request: Request) {
   const contentType = request.headers.get("content-type") ?? "";

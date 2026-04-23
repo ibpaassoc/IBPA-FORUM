@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin-auth";
-import { approveJuryApplication } from "@/lib/jury/service";
+import { approveJuryApplication } from "@/features/jury/server/commands";
+import { requireAdmin } from "@/shared/lib/admin-auth";
 
 export async function POST(
   _request: Request,
