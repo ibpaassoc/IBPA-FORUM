@@ -46,6 +46,11 @@ model Application {
   awardId           String
   status            ApplicationStatus   @default(DRAFT)
   paymentStatus     PaymentStatus       @default(PENDING)
+  amount            Int                 @default(5000)
+  currency          String              @default("usd")
+  stripeCheckoutSessionId String?       @unique
+  stripePaymentIntentId  String?        @unique
+  paidAt            DateTime?
   submittedAt       DateTime?
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @updatedAt
@@ -151,6 +156,7 @@ model StripeWebhookEvent {
 
 enum ApplicationStatus {
   DRAFT
+  PAYMENT_PENDING
   SUBMITTED
   UNDER_REVIEW
   APPROVED
@@ -161,6 +167,8 @@ enum PaymentStatus {
   PENDING
   PAID
   FAILED
+  EXPIRED
+  REFUNDED
 }
 
 enum JuryApplicationStatus {
