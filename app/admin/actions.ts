@@ -8,7 +8,9 @@ import {
   approveJuryApplication,
   rejectJuryApplication,
   saveJuryApplicationNotes,
+  updateJuryApplicationStatus,
 } from "@/lib/jury/service";
+import type { JuryApplicationStatus } from "@prisma/client";
 
 export type AdminLoginState = {
   error?: string;
@@ -90,8 +92,18 @@ export async function approveJuryApplicationAction(formData: FormData) {
     throw new Error("Missing jury application id.");
   }
 
+  let notice = "Application approved and payment link sent.";
+
   try {
-    await approveJuryApplication(id);
+    const result = await approveJuryApplication(id);
+
+    if (!result.emailDelivered && result.emailSkipReason === "dev_email_missing") {
+      notice =
+        "Application approved, but the payment email was skipped because DEV_EMAIL is not configured in development.";
+    } else if (!result.emailDelivered && result.emailSkipReason === "resend_missing") {
+      notice =
+        "Application approved, but the payment email was skipped because RESEND_API_KEY is not configured.";
+    }
   } catch (error) {
     redirect(
       getJuryApplicationDetailPath(id, {
@@ -104,7 +116,7 @@ export async function approveJuryApplicationAction(formData: FormData) {
   revalidatePath(`/admin/jury-applications/${id}`);
   redirect(
     getJuryApplicationDetailPath(id, {
-      notice: "Application approved and payment link sent.",
+      notice,
     })
   );
 }
@@ -141,6 +153,51 @@ export async function rejectJuryApplicationAction(formData: FormData) {
   );
 }
 
+export async function updateJuryApplicationStatusAction(formData: FormData) {
+  await requireAdmin();
+
+  const id = String(formData.get("id") ?? "");
+  const status = String(formData.get("status") ?? "") as JuryApplicationStatus;
+  const adminNotes = String(formData.get("adminNotes") ?? "").trim();
+
+  if (!id) {
+    throw new Error("Missing jury application id.");
+  }
+
+  if (
+    status !== "SUBMITTED" &&
+    status !== "APPROVED" &&
+    status !== "REJECTED" &&
+    status !== "PAID"
+  ) {
+    throw new Error("Invalid jury application status.");
+  }
+
+  let notice = "";
+
+  try {
+    notice = await updateJuryApplicationStatus({
+      id,
+      status,
+      adminNotes,
+    });
+  } catch (error) {
+    redirect(
+      getJuryApplicationDetailPath(id, {
+        error: getActionErrorMessage(error),
+      })
+    );
+  }
+
+  revalidatePath("/admin/jury-applications");
+  revalidatePath(`/admin/jury-applications/${id}`);
+  redirect(
+    getJuryApplicationDetailPath(id, {
+      notice,
+    })
+  );
+}
+
 export async function updateParticipantApplicationStatus(formData: FormData) {
   await requireAdmin();
 
@@ -152,6 +209,7 @@ export async function updateParticipantApplicationStatus(formData: FormData) {
   }
 
   if (
+    status !== "PAYMENT_PENDING" &&
     status !== "SUBMITTED" &&
     status !== "UNDER_REVIEW" &&
     status !== "APPROVED" &&

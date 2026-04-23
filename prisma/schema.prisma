@@ -46,6 +46,11 @@ model Application {
   awardId           String
   status            ApplicationStatus   @default(DRAFT)
   paymentStatus     PaymentStatus       @default(PENDING)
+  amount            Int                 @default(5000)
+  currency          String              @default("usd")
+  stripeCheckoutSessionId String?       @unique
+  stripePaymentIntentId  String?        @unique
+  paidAt            DateTime?
   submittedAt       DateTime?
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @updatedAt
@@ -78,21 +83,16 @@ model JuryApplication {
   conflictDisclosure               String
   confidentialityAgreementAccepted Boolean               @default(false)
   motivation                       String
-  status                           JuryApplicationStatus @default(PENDING_REVIEW)
+  status                           JuryApplicationStatus @default(SUBMITTED)
   submittedAt                      DateTime?
   createdAt                        DateTime              @default(now())
   updatedAt                        DateTime              @updatedAt
   adminNotes                       String?
-  reviewedAt                       DateTime?
-  paymentStatus                    PaymentStatus         @default(NOT_REQUIRED)
+  paymentStatus                    PaymentStatus         @default(PENDING)
   approvedAt                       DateTime?
   rejectedAt                       DateTime?
   paidAt                           DateTime?
   stripeCheckoutSessionId          String?               @unique
-  stripePaymentIntentId            String?               @unique
-  registrationTokenHash            String?
-  registrationTokenExpiresAt       DateTime?
-  registrationEmailSentAt          DateTime?
   files                            JuryApplicationFile[]
 }
 
@@ -146,7 +146,7 @@ model Payment {
 }
 
 model StripeWebhookEvent {
-  id            String   @id
+  id            String   @id @default(cuid())
   stripeEventId String   @unique
   eventType     String
   payloadJson   Json?
@@ -156,6 +156,7 @@ model StripeWebhookEvent {
 
 enum ApplicationStatus {
   DRAFT
+  PAYMENT_PENDING
   SUBMITTED
   UNDER_REVIEW
   APPROVED
@@ -166,15 +167,13 @@ enum PaymentStatus {
   PENDING
   PAID
   FAILED
-  REFUNDED
-  NOT_REQUIRED
   EXPIRED
+  REFUNDED
 }
 
 enum JuryApplicationStatus {
-  PENDING_REVIEW
-  UNDER_REVIEW
+  SUBMITTED
   APPROVED
   REJECTED
-  ACTIVE_JUDGE
+  PAID
 }

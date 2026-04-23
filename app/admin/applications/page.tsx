@@ -5,10 +5,19 @@ import { logoutAdminAction } from "@/app/admin/actions";
 import { PageShell } from "@/components/layout/PageShell";
 
 const statusStyles = {
+  PAYMENT_PENDING: "bg-[#3c3214]/35 text-[#f1d98a] border-[#d8c27a]/30",
   SUBMITTED: "bg-white/8 text-white/85 border-white/12",
   UNDER_REVIEW: "bg-[#7a5a14]/25 text-[#f1d98a] border-[#d8c27a]/35",
   APPROVED: "bg-[#1b4d34]/45 text-[#9fe0b4] border-[#3e8f62]/45",
   REJECTED: "bg-[#5c2323]/45 text-[#f1aaaa] border-[#9d4a4a]/45",
+} as const;
+
+const paymentStatusStyles = {
+  PENDING: "bg-white/8 text-white/85 border-white/12",
+  PAID: "bg-[#1b4d34]/45 text-[#9fe0b4] border-[#3e8f62]/45",
+  FAILED: "bg-[#5c2323]/45 text-[#f1aaaa] border-[#9d4a4a]/45",
+  EXPIRED: "bg-[#523b19]/45 text-[#f3cb8a] border-[#9e7a43]/45",
+  REFUNDED: "bg-[#2c3d5a]/45 text-[#bfd7ff] border-[#5577a8]/45",
 } as const;
 
 function formatDate(date: Date | null) {
@@ -31,6 +40,7 @@ export default async function AdminApplicationsPage({
 
   const { status } = await searchParams;
   const activeStatus =
+    status === "PAYMENT_PENDING" ||
     status === "SUBMITTED" ||
     status === "UNDER_REVIEW" ||
     status === "APPROVED" ||
@@ -61,6 +71,8 @@ export default async function AdminApplicationsPage({
 
   const totals = {
     total: allApplications.length,
+    paymentPending: allApplications.filter((item) => item.status === "PAYMENT_PENDING")
+      .length,
     submitted: allApplications.filter((item) => item.status === "SUBMITTED").length,
     underReview: allApplications.filter((item) => item.status === "UNDER_REVIEW").length,
     approved: allApplications.filter((item) => item.status === "APPROVED").length,
@@ -102,9 +114,10 @@ export default async function AdminApplicationsPage({
           </div>
         </div>
 
-        <div className="mt-6 grid gap-4 md:grid-cols-4">
+        <div className="mt-6 grid gap-4 md:grid-cols-5">
           {[
             { label: "Total", value: totals.total },
+            { label: "Payment Pending", value: totals.paymentPending },
             { label: "Submitted", value: totals.submitted },
             { label: "Under Review", value: totals.underReview },
             { label: "Approved", value: totals.approved },
@@ -127,6 +140,11 @@ export default async function AdminApplicationsPage({
           <div className="mb-5 flex flex-wrap gap-3">
             {[
               { label: "All", href: "/admin/applications", active: !activeStatus },
+              {
+                label: "Payment Pending",
+                href: "/admin/applications?status=PAYMENT_PENDING",
+                active: activeStatus === "PAYMENT_PENDING",
+              },
               {
                 label: "Submitted",
                 href: "/admin/applications?status=SUBMITTED",
@@ -162,11 +180,12 @@ export default async function AdminApplicationsPage({
             ))}
           </div>
 
-          <div className="hidden grid-cols-[1.1fr_0.9fr_1fr_0.8fr_0.9fr_0.7fr] gap-4 border-b border-white/10 px-4 pb-4 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d9d4ca]/65 lg:grid">
+          <div className="hidden grid-cols-[1.1fr_0.9fr_1fr_0.8fr_0.8fr_0.9fr_0.7fr] gap-4 border-b border-white/10 px-4 pb-4 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d9d4ca]/65 lg:grid">
             <span>Applicant</span>
             <span>Category</span>
             <span>Award</span>
-            <span>Status</span>
+            <span>App Status</span>
+            <span>Payment</span>
             <span>Created</span>
             <span>Open</span>
           </div>
@@ -175,7 +194,7 @@ export default async function AdminApplicationsPage({
             {applications.map((application) => (
               <div
                 key={application.id}
-                className="grid gap-4 px-4 py-5 transition hover:bg-white/2 lg:grid-cols-[1.1fr_0.9fr_1fr_0.8fr_0.9fr_0.7fr] lg:items-center"
+                className="grid gap-4 px-4 py-5 transition hover:bg-white/2 lg:grid-cols-[1.1fr_0.9fr_1fr_0.8fr_0.8fr_0.9fr_0.7fr] lg:items-center"
               >
                 <div>
                   <p className="text-sm font-semibold text-white">
@@ -206,6 +225,18 @@ export default async function AdminApplicationsPage({
                     }`}
                   >
                     {application.status.replaceAll("_", " ")}
+                  </span>
+                </div>
+
+                <div>
+                  <span
+                    className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${
+                      paymentStatusStyles[
+                        application.paymentStatus as keyof typeof paymentStatusStyles
+                      ]
+                    }`}
+                  >
+                    {application.paymentStatus.replaceAll("_", " ")}
                   </span>
                 </div>
 

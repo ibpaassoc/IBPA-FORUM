@@ -1,25 +1,24 @@
+import type { JuryApplicationStatus, PaymentStatus } from "@prisma/client";
 import { requireAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { logoutAdminAction } from "@/app/admin/actions";
 import { PageShell } from "@/components/layout/PageShell";
 
-const statusStyles = {
-  PENDING_REVIEW: "bg-white/8 text-white/85 border-white/12",
-  UNDER_REVIEW: "bg-[#7a5a14]/25 text-[#f1d98a] border-[#d8c27a]/35",
+const statusStyles: Record<JuryApplicationStatus, string> = {
+  SUBMITTED: "bg-white/8 text-white/85 border-white/12",
   APPROVED: "bg-[#1b4d34]/45 text-[#9fe0b4] border-[#3e8f62]/45",
   REJECTED: "bg-[#5c2323]/45 text-[#f1aaaa] border-[#9d4a4a]/45",
-  ACTIVE_JUDGE: "bg-[#0f4d5d]/45 text-[#95dfea] border-[#4196aa]/45",
-} as const;
+  PAID: "bg-[#0f4d5d]/45 text-[#95dfea] border-[#4196aa]/45",
+};
 
-const paymentStatusStyles = {
-  NOT_REQUIRED: "bg-white/8 text-white/70 border-white/12",
+const paymentStatusStyles: Record<PaymentStatus, string> = {
   PENDING: "bg-[#7a5a14]/25 text-[#f1d98a] border-[#d8c27a]/35",
   PAID: "bg-[#1b4d34]/45 text-[#9fe0b4] border-[#3e8f62]/45",
   FAILED: "bg-[#5c2323]/45 text-[#f1aaaa] border-[#9d4a4a]/45",
-  EXPIRED: "bg-[#47311a]/45 text-[#f0cb9a] border-[#a97a41]/45",
-  REFUNDED: "bg-[#33414b]/45 text-[#bed1e0] border-[#6986a1]/45",
-} as const;
+  EXPIRED: "bg-[#523b19]/45 text-[#f3cb8a] border-[#9e7a43]/45",
+  REFUNDED: "bg-[#2c3d5a]/45 text-[#bfd7ff] border-[#5577a8]/45",
+};
 
 function formatDate(date: Date | null) {
   if (!date) {
@@ -56,16 +55,13 @@ export default async function AdminJuryApplicationsPage() {
 
   const totalCount = applications.length;
   const pendingCount = applications.filter(
-    (application) => application.status === "PENDING_REVIEW"
-  ).length;
-  const reviewCount = applications.filter(
-    (application) => application.status === "UNDER_REVIEW"
+    (application) => application.status === "SUBMITTED"
   ).length;
   const approvedCount = applications.filter(
     (application) => application.status === "APPROVED"
   ).length;
   const activeJudgeCount = applications.filter(
-    (application) => application.status === "ACTIVE_JUDGE"
+    (application) => application.status === "PAID"
   ).length;
 
   return (
@@ -103,13 +99,12 @@ export default async function AdminJuryApplicationsPage() {
           </div>
         </div>
 
-        <div className="mt-6 grid gap-4 md:grid-cols-5">
+        <div className="mt-6 grid gap-4 md:grid-cols-4">
           {[
             { label: "Total", value: totalCount },
-            { label: "Pending Review", value: pendingCount },
-            { label: "Under Review", value: reviewCount },
+            { label: "Submitted", value: pendingCount },
             { label: "Approved", value: approvedCount },
-            { label: "Active Judges", value: activeJudgeCount },
+            { label: "Paid Jurors", value: activeJudgeCount },
           ].map((item) => (
             <div
               key={item.label}

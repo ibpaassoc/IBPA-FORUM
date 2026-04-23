@@ -9,6 +9,8 @@ CREATE TYPE "JuryApplicationStatus" AS ENUM (
 ALTER TYPE "PaymentStatus" ADD VALUE IF NOT EXISTS 'NOT_REQUIRED';
 ALTER TYPE "PaymentStatus" ADD VALUE IF NOT EXISTS 'EXPIRED';
 
+COMMIT;
+
 ALTER TABLE "JuryApplication"
 ADD COLUMN "paymentStatus" "PaymentStatus" NOT NULL DEFAULT 'NOT_REQUIRED',
 ADD COLUMN "approvedAt" TIMESTAMP(3),

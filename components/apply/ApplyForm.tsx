@@ -167,6 +167,7 @@ export default function ApplyForm({
       });
       const data = (await response.json()) as {
         message?: string;
+        checkoutUrl?: string;
         fieldErrors?: ValidationErrors;
       };
 
@@ -185,10 +186,12 @@ export default function ApplyForm({
         type: "success",
         message:
           data.message ??
-          "Your application has been submitted successfully.",
+          "Redirecting to secure Stripe Checkout.",
       });
-      setValues({});
-      setErrors({});
+
+      if (data.checkoutUrl) {
+        window.location.assign(data.checkoutUrl);
+      }
     } catch {
       setSubmissionState({
         type: "error",
