@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { saveApplicationSubmission } from "@/lib/apply/server";
+import { saveApplicationSubmission } from "@/features/applications/server/commands";
+import { prisma } from "@/shared/lib/prisma";
 
 export async function GET() {
   try {
