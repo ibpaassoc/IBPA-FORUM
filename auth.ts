@@ -9,7 +9,7 @@ declare module "next-auth" {
     user: DefaultSession["user"] & {
       id: string;
       email: string;
-      juryApplicationId: string;
+      juryApplicationId?: string;
       expertiseAreas: string[];
     };
   }
@@ -17,7 +17,7 @@ declare module "next-auth" {
   interface User {
     id: string;
     email: string;
-    juryApplicationId: string;
+    juryApplicationId?: string;
     expertiseAreas: string[];
   }
 }
@@ -32,6 +32,10 @@ declare module "next-auth/jwt" {
 }
 
 export const authOptions: NextAuthOptions = {
+  secret:
+    process.env.NEXTAUTH_SECRET ??
+    process.env.AUTH_SECRET ??
+    "beauty-web-dev-jury-auth-secret",
   session: {
     strategy: "jwt",
   },
@@ -74,8 +78,8 @@ export const authOptions: NextAuthOptions = {
         return {
           id: account.id,
           email: account.email,
-          juryApplicationId: account.juryApplicationId,
-          expertiseAreas: account.juryApplication.expertiseAreas,
+          juryApplicationId: account.juryApplicationId ?? undefined,
+          expertiseAreas: account.juryApplication?.expertiseAreas ?? [],
         };
       },
     }),
@@ -92,7 +96,7 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      if (!session.user || !token.id || !token.email || !token.juryApplicationId) {
+      if (!session.user || !token.id || !token.email) {
         return session;
       }
 
@@ -106,11 +110,22 @@ export const authOptions: NextAuthOptions = {
 
       return session;
     },
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith("/")) {
+        return `${baseUrl}${url}`;
+      }
+
+      if (url.startsWith(baseUrl)) {
+        return url;
+      }
+
+      return `${baseUrl}/`;
+    },
   },
 };
 
 export const authHandler = NextAuth(authOptions);
 
-export function getJurySession() {
+export function getAppSession() {
   return getServerSession(authOptions);
 }

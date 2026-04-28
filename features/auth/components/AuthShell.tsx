@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { PageShell } from "@/shared/components/layout/PageShell";
 
-export default function JuryAuthShell({
+export default function AuthShell({
   eyebrow,
   title,
   description,
@@ -32,9 +32,9 @@ export default function JuryAuthShell({
 
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
               {[
-                "Private jury access",
-                "Category-limited review",
+                "Private member access",
                 "Luxury IBPA styling",
+                "Protected championship pages",
               ].map((item) => (
                 <div key={item} className="page-card rounded-2xl bg-white/4.5 p-4">
                   <p className="text-sm font-medium text-[#f1ecde]">{item}</p>
@@ -44,25 +44,24 @@ export default function JuryAuthShell({
 
             <div className="mt-8 rounded-3xl border border-white/10 bg-black/20 p-6">
               <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
-                Jury Access Rules
+                Access
               </p>
               <p className="mt-4 text-sm leading-7 text-[#d9d4ca]/90">
-                Registration opens only after your jury application is approved and
-                payment is confirmed. Once signed in, you will see only the participant
-                applications that match the categories you applied to judge.
+                Sign in to access the IBPA site experience. New visitors can register
+                with email and password, then continue directly to the main site.
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
                 <Link
-                  href="/apply/jury"
+                  href="/jury/login"
                   className="inline-flex items-center justify-center rounded-full border border-[#d8c27a]/35 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#f5f1e8] transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
                 >
-                  Apply as Jury
+                  Login
                 </Link>
                 <Link
-                  href="/jury/login"
+                  href="/jury/register"
                   className="inline-flex items-center justify-center rounded-full bg-[#d8c27a] px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#111111] transition hover:opacity-90"
                 >
-                  Jury Login
+                  Register
                 </Link>
               </div>
             </div>

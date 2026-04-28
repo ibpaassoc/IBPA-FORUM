@@ -2,7 +2,7 @@ import "server-only";
 import { randomBytes, scrypt as scryptCallback, timingSafeEqual } from "node:crypto";
 import { promisify } from "node:util";
 import { redirect } from "next/navigation";
-import { getJurySession } from "@/auth";
+import { getAppSession } from "@/auth";
 import { prisma } from "@/shared/lib/prisma";
 
 const scrypt = promisify(scryptCallback);
@@ -81,16 +81,34 @@ export async function getPaidJuryApplicationByEmail(email: string) {
 }
 
 export async function requireJuryAuth() {
-  const session = await getJurySession();
+  const session = await getAppSession();
 
-  if (!session?.user?.email || !session.user.juryApplicationId) {
+  if (!session?.user?.email) {
     redirect("/jury/login");
   }
 
+  const account = await prisma.juryAccount.findUnique({
+    where: {
+      email: normalizeJuryEmail(session.user.email),
+    },
+    include: {
+      juryApplication: {
+        select: {
+          id: true,
+          expertiseAreas: true,
+        },
+      },
+    },
+  });
+
+  if (!account?.juryApplication) {
+    redirect("/");
+  }
+
   return {
-    id: session.user.id,
-    email: session.user.email,
-    juryApplicationId: session.user.juryApplicationId,
-    expertiseAreas: session.user.expertiseAreas ?? [],
+    id: account.id,
+    email: account.email,
+    juryApplicationId: account.juryApplication.id,
+    expertiseAreas: account.juryApplication.expertiseAreas,
   } satisfies JuryAuthUser;
 }

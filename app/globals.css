@@ -26,13 +26,11 @@
 }
 
 html {
-  background:
-    radial-gradient(circle at top, rgba(216, 194, 122, 0.1), transparent 30%),
-    linear-gradient(180deg, #0f0f10 0%, #131314 100%);
+  background: #0f0f10;
 }
 
 body {
-  background: var(--background);
+  background: linear-gradient(180deg, #0f0f10 0%, #131314 100%);
   color: var(--foreground);
   min-height: 100vh;
 }

@@ -56,7 +56,7 @@ export default function JuryMenu({
             Apply as Jury
           </Link>
           <Link
-            href="/jury/register"
+            href="/jury/login"
             onClick={() => {
               setOpen(false);
               onNavigate?.();
