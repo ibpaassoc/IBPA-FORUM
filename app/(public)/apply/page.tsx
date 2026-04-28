@@ -2,9 +2,6 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import ApplicationFormLoader from "@/features/applications/components/application-form/ApplicationFormLoader";
 import ApplicationFormSkeleton from "@/features/applications/components/application-form/ApplicationFormSkeleton";
-import ApplyHero from "@/features/applications/components/pages/ApplyHero";
-import ApplyIntroCards from "@/features/applications/components/pages/ApplyIntroCards";
-import { applicationTimeline } from "@/features/applications/config/application-timeline";
 import { PageSection, PageShell } from "@/shared/components/layout/PageShell";
 
 export const metadata: Metadata = {
@@ -13,33 +10,24 @@ export const metadata: Metadata = {
     "Submit your official participant application for the IBPA Beauty Championship.",
 };
 
-const heroStats = [
-  {
-    label: "Entry Fee",
-    value: applicationTimeline.feeLabel,
-  },
-  {
-    label: "Deadline",
-    value: applicationTimeline.deadlineLabel,
-  },
-  {
-    label: "Judging",
-    value: applicationTimeline.judgingLabel,
-  },
-  {
-    label: "Ceremony",
-    value: applicationTimeline.ceremonyLabel,
-  },
-];
-
 export default function ApplyPage() {
   return (
     <PageShell>
-      <ApplyHero heroStats={heroStats} />
+      <PageSection className="pt-28 pb-8">
+        <div className="mx-auto mb-8 max-w-3xl rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(216,194,122,0.14),transparent_38%),linear-gradient(135deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] px-6 py-7 backdrop-blur-sm sm:px-8">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
+            Candidate Application
+          </p>
+          <h1 className="mt-3 text-3xl font-semibold leading-tight text-white sm:text-[2.25rem]">
+            Submit your championship entry.
+          </h1>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-[#d9d4ca] sm:text-base">
+            Complete the form below with your professional details and category materials.
+          </p>
+        </div>
+      </PageSection>
 
-      <PageSection className="space-y-8">
-        <ApplyIntroCards />
-
+      <PageSection className="pt-0 pb-16">
         <Suspense fallback={<ApplicationFormSkeleton />}>
           <ApplicationFormLoader />
         </Suspense>

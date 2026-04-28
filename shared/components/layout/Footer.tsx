@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import JuryMenu from "@/shared/components/layout/JuryMenu";
 
 const footerColumns = [
   {
@@ -53,12 +54,7 @@ export default function Footer() {
             </p>
 
             <div className="mt-7 flex flex-wrap gap-3">
-              <Link
-                href="/apply/jury"
-                className="inline-flex items-center justify-center rounded-full border border-[#d8c27a]/35 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#f5f1e8] transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
-              >
-                Apply as Jury
-              </Link>
+              <JuryMenu />
               <Link
                 href="/apply"
                 className="inline-flex items-center justify-center rounded-full bg-[#d8c27a] px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#111111] transition hover:opacity-90"
