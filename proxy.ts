@@ -7,10 +7,12 @@ const AUTH_SECRET =
   process.env.AUTH_SECRET ??
   "beauty-web-dev-jury-auth-secret";
 
-const PUBLIC_PATHS = new Set(["/login", "/register", "/jury/login", "/jury/register"]);
-
 function isPublicFile(pathname: string) {
   return /\.[^/]+$/.test(pathname);
+}
+
+function isProtectedJuryPath(pathname: string) {
+  return pathname === "/jury/dashboard" || pathname.startsWith("/jury/dashboard/");
 }
 
 export async function proxy(request: NextRequest) {
@@ -26,12 +28,16 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  if (!isProtectedJuryPath(pathname)) {
+    return NextResponse.next();
+  }
+
   const token = await getToken({
     req: request,
     secret: AUTH_SECRET,
   });
 
-  if (!token && !PUBLIC_PATHS.has(pathname)) {
+  if (!token) {
     return NextResponse.redirect(new URL("/jury/login", request.url));
   }
 
