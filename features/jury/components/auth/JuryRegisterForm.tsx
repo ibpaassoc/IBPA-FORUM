@@ -4,10 +4,8 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useActionState } from "react";
-import {
-  createJuryAccountAction,
-  type JuryRegistrationState,
-} from "@/features/jury/server/register.actions";
+import { createJuryAccountAction } from "@/features/jury/server/register.actions";
+import type { JuryRegistrationState } from "@/features/jury/server/register.types";
 
 export default function JuryRegisterForm({
   state,

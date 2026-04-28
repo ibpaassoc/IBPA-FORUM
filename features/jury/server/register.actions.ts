@@ -8,18 +8,7 @@ import {
   isStrongPassword,
   normalizeJuryEmail,
 } from "@/features/jury/server/auth";
-
-export type JuryRegistrationState = {
-  step: "email" | "password";
-  email?: string;
-  notice?: string;
-  error?: string;
-  success?: boolean;
-};
-
-export const initialJuryRegistrationState: JuryRegistrationState = {
-  step: "email",
-};
+import type { JuryRegistrationState } from "@/features/jury/server/register.types";
 
 export async function checkJuryRegistrationEmailAction(
   _previousState: JuryRegistrationState,

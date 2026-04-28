@@ -3,10 +3,8 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import JuryRegisterForm from "@/features/jury/components/auth/JuryRegisterForm";
-import {
-  checkJuryRegistrationEmailAction,
-  initialJuryRegistrationState,
-} from "@/features/jury/server/register.actions";
+import { checkJuryRegistrationEmailAction } from "@/features/jury/server/register.actions";
+import { initialJuryRegistrationState } from "@/features/jury/server/register.types";
 
 export default function JuryEmailCheckForm({
   defaultEmail,
