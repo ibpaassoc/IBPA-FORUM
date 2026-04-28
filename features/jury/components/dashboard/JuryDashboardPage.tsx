@@ -8,7 +8,7 @@ export default function JuryDashboardPage({
   professionalTitle,
   expertiseAreas,
   applications,
-  activeStatus,
+  activeCategory,
   totals,
 }: {
   juryName: string;
@@ -20,19 +20,18 @@ export default function JuryDashboardPage({
     email: string;
     city: string;
     country: string;
-    status: "DRAFT" | "PAYMENT_PENDING" | "SUBMITTED" | "UNDER_REVIEW" | "APPROVED" | "REJECTED";
-    paymentStatus: "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "REFUNDED";
     createdAt: Date;
     category: { name: string };
     award: { name: string };
   }>;
-  activeStatus?: string;
+  activeCategory?: string;
   totals: {
     total: number;
-    paymentPending: number;
-    submitted: number;
-    underReview: number;
-    approved: number;
+    categories: number;
+    byCategory: Array<{
+      name: string;
+      count: number;
+    }>;
   };
 }) {
   return (
@@ -51,12 +50,6 @@ export default function JuryDashboardPage({
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Link
-              href="/jury/register"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
-            >
-              Register Another Email
-            </Link>
             <JurySignOutButton />
           </div>
         </div>
@@ -79,11 +72,12 @@ export default function JuryDashboardPage({
 
         <div className="mt-6 grid gap-4 md:grid-cols-5">
           {[
-            { label: "Total", value: totals.total },
-            { label: "Payment Pending", value: totals.paymentPending },
-            { label: "Submitted", value: totals.submitted },
-            { label: "Under Review", value: totals.underReview },
-            { label: "Approved", value: totals.approved },
+            { label: "Total Applications", value: totals.total },
+            { label: "Approved Categories", value: totals.categories },
+            ...totals.byCategory.slice(0, 3).map((item) => ({
+              label: item.name,
+              value: item.count,
+            })),
           ].map((item) => (
             <div key={item.label} className="page-card rounded-2xl bg-white/4.5 p-5">
               <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
@@ -97,32 +91,12 @@ export default function JuryDashboardPage({
         <section className="page-card mt-6 rounded-3xl p-4 md:p-6">
           <div className="mb-5 flex flex-wrap gap-3">
             {[
-              { label: "All", href: "/jury/dashboard", active: !activeStatus },
-              {
-                label: "Payment Pending",
-                href: "/jury/dashboard?status=PAYMENT_PENDING",
-                active: activeStatus === "PAYMENT_PENDING",
-              },
-              {
-                label: "Submitted",
-                href: "/jury/dashboard?status=SUBMITTED",
-                active: activeStatus === "SUBMITTED",
-              },
-              {
-                label: "Under Review",
-                href: "/jury/dashboard?status=UNDER_REVIEW",
-                active: activeStatus === "UNDER_REVIEW",
-              },
-              {
-                label: "Approved",
-                href: "/jury/dashboard?status=APPROVED",
-                active: activeStatus === "APPROVED",
-              },
-              {
-                label: "Rejected",
-                href: "/jury/dashboard?status=REJECTED",
-                active: activeStatus === "REJECTED",
-              },
+              { label: "All Categories", href: "/jury/dashboard", active: !activeCategory },
+              ...expertiseAreas.map((area) => ({
+                label: area,
+                href: `/jury/dashboard?category=${encodeURIComponent(area)}`,
+                active: activeCategory === area,
+              })),
             ].map((item) => (
               <Link
                 key={item.label}
@@ -138,12 +112,10 @@ export default function JuryDashboardPage({
             ))}
           </div>
 
-          <div className="hidden grid-cols-[1.1fr_0.9fr_1fr_0.8fr_0.8fr_0.9fr_0.7fr] gap-4 border-b border-white/10 px-4 pb-4 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d9d4ca]/65 lg:grid">
+          <div className="hidden grid-cols-[1.25fr_0.95fr_1.1fr_0.9fr_0.7fr] gap-4 border-b border-white/10 px-4 pb-4 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d9d4ca]/65 lg:grid">
             <span>Applicant</span>
             <span>Category</span>
             <span>Award</span>
-            <span>App Status</span>
-            <span>Payment</span>
             <span>Created</span>
             <span>Open</span>
           </div>
@@ -152,7 +124,7 @@ export default function JuryDashboardPage({
             {applications.map((application) => (
               <div
                 key={application.id}
-                className="grid gap-4 px-4 py-5 transition hover:bg-white/2 lg:grid-cols-[1.1fr_0.9fr_1fr_0.8fr_0.8fr_0.9fr_0.7fr] lg:items-center"
+                className="grid gap-4 px-4 py-5 transition hover:bg-white/2 lg:grid-cols-[1.25fr_0.95fr_1.1fr_0.9fr_0.7fr] lg:items-center"
               >
                 <div>
                   <p className="text-sm font-semibold text-white">{application.fullName}</p>
@@ -165,14 +137,6 @@ export default function JuryDashboardPage({
                 <div className="text-sm text-[#d9d4ca]">{application.category.name}</div>
 
                 <div className="text-sm text-[#d9d4ca]">{application.award.name}</div>
-
-                <div className="text-sm text-[#d9d4ca]">
-                  {application.status.replaceAll("_", " ")}
-                </div>
-
-                <div className="text-sm text-[#d9d4ca]">
-                  {application.paymentStatus.replaceAll("_", " ")}
-                </div>
 
                 <div className="text-sm text-[#d9d4ca]/75">
                   {formatAdminDate(application.createdAt)}

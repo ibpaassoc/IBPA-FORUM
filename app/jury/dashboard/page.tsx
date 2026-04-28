@@ -5,14 +5,14 @@ import { getJuryDashboardData } from "@/features/jury/server/dashboard-queries";
 export default async function JuryDashboardRoute({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ category?: string }>;
 }) {
   const juryUser = await requireJuryAuth();
-  const { status } = await searchParams;
+  const { category } = await searchParams;
   const data = await getJuryDashboardData({
     juryApplicationId: juryUser.juryApplicationId,
     expertiseAreas: juryUser.expertiseAreas,
-    status,
+    category,
   });
 
   return (
@@ -21,7 +21,7 @@ export default async function JuryDashboardRoute({
       professionalTitle={data.juryApplication.professionalTitle}
       expertiseAreas={data.juryApplication.expertiseAreas}
       applications={data.applications}
-      activeStatus={data.activeStatus}
+      activeCategory={data.activeCategory}
       totals={data.totals}
     />
   );

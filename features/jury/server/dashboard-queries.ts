@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import type { ApplicationStatus } from "@prisma/client";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import { prisma } from "@/shared/lib/prisma";
 
@@ -9,8 +8,6 @@ export type JuryDashboardApplicationRecord = {
   email: string;
   city: string;
   country: string;
-  status: "DRAFT" | "PAYMENT_PENDING" | "SUBMITTED" | "UNDER_REVIEW" | "APPROVED" | "REJECTED";
-  paymentStatus: "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "REFUNDED";
   createdAt: Date;
   category: { name: string };
   award: { name: string };
@@ -19,28 +16,25 @@ export type JuryDashboardApplicationRecord = {
 export async function getJuryDashboardData({
   juryApplicationId,
   expertiseAreas,
-  status,
+  category,
 }: {
   juryApplicationId: string;
   expertiseAreas: string[];
-  status?: string;
+  category?: string;
 }) {
-  const activeStatus: ApplicationStatus | undefined =
-    status === "PAYMENT_PENDING" ||
-    status === "SUBMITTED" ||
-    status === "UNDER_REVIEW" ||
-    status === "APPROVED" ||
-    status === "REJECTED"
-      ? status
-      : undefined;
+  const activeCategory =
+    category && expertiseAreas.includes(category) ? category : undefined;
 
   const where = {
-    category: {
-      name: {
-        in: expertiseAreas,
-      },
-    },
-    ...(activeStatus ? { status: activeStatus } : {}),
+    category: activeCategory
+      ? {
+          name: activeCategory,
+        }
+      : {
+          name: {
+            in: expertiseAreas,
+          },
+        },
   };
 
   const [juryApplication, applications, allApplications] = await Promise.all([
@@ -65,8 +59,6 @@ export async function getJuryDashboardData({
         email: true,
         city: true,
         country: true,
-        status: true,
-        paymentStatus: true,
         createdAt: true,
         category: {
           select: {
@@ -89,7 +81,11 @@ export async function getJuryDashboardData({
         },
       },
       select: {
-        status: true,
+        category: {
+          select: {
+            name: true,
+          },
+        },
       },
     }),
   ]);
@@ -105,8 +101,6 @@ export async function getJuryDashboardData({
       email: application.email,
       city: application.city,
       country: application.country,
-      status: application.status,
-      paymentStatus: application.paymentStatus,
       createdAt: application.createdAt,
       category: {
         name: application.category.name,
@@ -119,15 +113,15 @@ export async function getJuryDashboardData({
 
   return {
     juryApplication,
-    activeStatus,
+    activeCategory,
     applications: dashboardApplications,
     totals: {
       total: allApplications.length,
-      paymentPending: allApplications.filter((item) => item.status === "PAYMENT_PENDING")
-        .length,
-      submitted: allApplications.filter((item) => item.status === "SUBMITTED").length,
-      underReview: allApplications.filter((item) => item.status === "UNDER_REVIEW").length,
-      approved: allApplications.filter((item) => item.status === "APPROVED").length,
+      categories: expertiseAreas.length,
+      byCategory: expertiseAreas.map((area) => ({
+        name: area,
+        count: allApplications.filter((item) => item.category.name === area).length,
+      })),
     },
   };
 }
