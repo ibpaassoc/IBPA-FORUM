@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import JuryMenu from "@/shared/components/layout/JuryMenu";
 
 const navigation = [
   { href: "/", label: "Home" },
@@ -56,12 +57,7 @@ export default function Header() {
           </nav>
 
           <div className="hidden items-center gap-3 lg:flex">
-            <Link
-              href="/apply/jury"
-              className="inline-flex items-center justify-center rounded-full border border-[#d8c27a]/35 bg-white/5 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#f5f1e8] transition hover:border-[#d8c27a] hover:bg-white/8 hover:text-[#d8c27a]"
-            >
-              Apply as Jury
-            </Link>
+            <JuryMenu />
 
             <Link
               href="/apply"
@@ -118,13 +114,7 @@ export default function Header() {
             </div>
 
             <div className="grid gap-3 pt-2 sm:grid-cols-2">
-              <Link
-                href="/apply/jury"
-                onClick={handleLinkClick}
-                className="inline-flex justify-center rounded-full border border-[#d8c27a]/35 bg-white/5 px-5 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-[#f5f1e8] transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
-              >
-                Apply as Jury
-              </Link>
+              <JuryMenu mobile onNavigate={handleLinkClick} />
 
               <Link
                 href="/apply"
