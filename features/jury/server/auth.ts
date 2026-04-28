@@ -80,6 +80,22 @@ export async function getPaidJuryApplicationByEmail(email: string) {
   });
 }
 
+export async function getJuryApplicationByEmail(email: string) {
+  return prisma.juryApplication.findUnique({
+    where: {
+      email: normalizeJuryEmail(email),
+    },
+    select: {
+      id: true,
+      email: true,
+      fullName: true,
+      paymentStatus: true,
+      status: true,
+      expertiseAreas: true,
+    },
+  });
+}
+
 export async function requireJuryAuth() {
   const session = await getAppSession();
 

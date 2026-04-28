@@ -25,7 +25,11 @@ export default function LoginForm() {
     });
 
     if (!result || result.error) {
-      setError("Invalid email or password. Please try again.");
+      if (result?.error === "No account is registered with this email.") {
+        setError("No account is registered with this email.");
+      } else {
+        setError("Invalid email or password. Please try again.");
+      }
       setIsSubmitting(false);
       return;
     }

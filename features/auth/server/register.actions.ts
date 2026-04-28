@@ -4,6 +4,7 @@ import { prisma } from "@/shared/lib/prisma";
 import {
   createPasswordHash,
   findJuryAccountByEmail,
+  getJuryApplicationByEmail,
   isStrongPassword,
   normalizeJuryEmail,
 } from "@/features/jury/server/auth";
@@ -42,6 +43,22 @@ export async function registerAccountAction(
     };
   }
 
+  const juryApplication = await getJuryApplicationByEmail(email);
+
+  if (!juryApplication) {
+    return {
+      email,
+      error: "There is no jury application with this email.",
+    };
+  }
+
+  if (juryApplication.paymentStatus !== "PAID") {
+    return {
+      email,
+      error: "Payment is incomplete for this email.",
+    };
+  }
+
   const existingAccount = await findJuryAccountByEmail(email);
 
   if (existingAccount) {
@@ -57,6 +74,7 @@ export async function registerAccountAction(
     data: {
       email,
       passwordHash,
+      juryApplicationId: juryApplication.id,
     },
   });
 

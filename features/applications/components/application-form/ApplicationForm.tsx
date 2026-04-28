@@ -4,7 +4,6 @@ import { useState } from "react";
 import BlockAFields from "@/features/applications/components/application-form/blocks/BlockAFields";
 import BlockBRenderer from "@/features/applications/components/application-form/blocks/BlockBRenderer";
 import FormSection from "@/features/applications/components/application-form/FormSection";
-import { applicationTimeline } from "@/features/applications/config/application-timeline";
 import { getVisibleCategoryFields, validateApplicationValues } from "@/features/applications/schemas/category-field-validation";
 import type {
   ApplicationValues,
@@ -49,9 +48,6 @@ export default function ApplyForm({
 
   const selectedCategory = categories.find(
     (category) => category.id === String(values.categoryId ?? "")
-  );
-  const selectedAward = selectedCategory?.awards.find(
-    (award) => award.id === String(values.awardId ?? "")
   );
   const visibleCategoryFields = getVisibleCategoryFields(
     selectedCategory?.slug ?? null,
@@ -205,119 +201,80 @@ export default function ApplyForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      <div className="grid gap-6 xl:grid-cols-[1.18fr_0.82fr]">
-        <div className="space-y-6">
-          <FormSection
-            eyebrow="Block A"
-            title="Professional Profile & Eligibility"
-            description="Complete the shared championship application section before moving into the category-specific evaluation materials."
-          >
-            <BlockAFields
+      <div className="space-y-6">
+        <FormSection
+          eyebrow="Block A"
+          title="Professional Profile & Eligibility"
+          description="Complete the shared championship application section before moving into the category-specific evaluation materials."
+        >
+          <BlockAFields
+            values={values}
+            errors={errors}
+            categories={categories}
+            onChange={handleChange}
+            onFilesChange={handleFilesChange}
+          />
+        </FormSection>
+
+        <FormSection
+          eyebrow="Block B"
+          title="Category-Specific Championship Materials"
+          description="Block B changes based on the category you select."
+        >
+          <div className="transition-all duration-300 ease-out">
+            <BlockBRenderer
+              categorySlug={selectedCategory?.slug ?? null}
+              categoryName={selectedCategory?.name}
               values={values}
               errors={errors}
-              categories={categories}
               onChange={handleChange}
               onFilesChange={handleFilesChange}
             />
-          </FormSection>
-
-          <FormSection
-            eyebrow="Block B"
-            title="Category-Specific Championship Materials"
-            description="Block B changes based on the category you select. Each field is tailored to the judging criteria for that discipline."
-          >
-            <div className="transition-all duration-300 ease-out">
-              <BlockBRenderer
-                categorySlug={selectedCategory?.slug ?? null}
-                categoryName={selectedCategory?.name}
-                values={values}
-                errors={errors}
-                onChange={handleChange}
-                onFilesChange={handleFilesChange}
-              />
-            </div>
-          </FormSection>
-        </div>
-
-        <div className="space-y-6">
-          <div className="rounded-[1.8rem] border border-[#d8c27a]/18 bg-[linear-gradient(145deg,rgba(24,24,27,0.95),rgba(19,22,29,0.92)_60%,rgba(41,34,25,0.88))] p-6 shadow-[0_28px_70px_rgba(0,0,0,0.25)]">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
-              Submission Readiness
-            </p>
-            <div className="mt-4 h-2 rounded-full bg-white/8">
-              <div
-                className="h-2 rounded-full bg-[linear-gradient(90deg,#b68a1f,#d8c27a,#f0dfa4)] transition-all"
-                style={{ width: `${progressPercentage}%` }}
-              />
-            </div>
-            <p className="mt-3 text-sm text-[#efe6d0]">
-              {completedRequiredCount} of {requiredFieldKeys.length} required items complete
-            </p>
-
-            <div className="mt-6 space-y-4">
-              {[
-                ["Entry Fee", applicationTimeline.feeLabel],
-                ["Category", selectedCategory?.name ?? "Not selected"],
-                ["Specific Award", selectedAward?.name ?? "Not selected"],
-              ].map(([label, value]) => (
-                <div
-                  key={label}
-                  className="rounded-2xl border border-white/10 bg-white/[0.035] px-4 py-3"
-                >
-                  <p className="text-[10px] uppercase tracking-[0.22em] text-white/42">
-                    {label}
-                  </p>
-                  <p className="mt-2 text-sm font-medium text-white">{value}</p>
-                </div>
-              ))}
-            </div>
           </div>
+        </FormSection>
 
-          <div className="rounded-[1.7rem] border border-white/10 bg-white/[0.045] p-6">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
-              Important Notes
-            </p>
-            <div className="mt-4 space-y-4 text-sm leading-7 text-[#d9d4ca]">
-              <p>Each category is a separate submission and billed separately.</p>
-              <p>
-                Your uploaded files are stored with structured metadata for later
-                review in the admin panel.
+        <section className="rounded-[1.7rem] border border-white/10 bg-white/[0.045] p-6">
+          <div className="flex flex-col gap-4 border-b border-white/10 pb-5 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
+                Application Progress
+              </p>
+              <p className="mt-3 text-sm text-[#efe6d0]">
+                {completedRequiredCount} of {requiredFieldKeys.length} required items complete
               </p>
             </div>
-          </div>
 
-          <div className="rounded-[1.7rem] border border-white/10 bg-white/[0.045] p-6">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
-              Submission Footer
-            </p>
-            <p className="mt-4 text-sm leading-7 text-[#d9d4ca]">
-              By submitting, you confirm that the information, files, and claims
-              provided are accurate, professionally obtained, and suitable for
-              IBPA championship review.
-            </p>
-
-            {submissionState.message ? (
-              <div
-                className={`mt-5 rounded-[1.4rem] border px-4 py-4 text-sm leading-7 ${
-                  submissionState.type === "success"
-                    ? "border-[#d8c27a]/28 bg-[#d8c27a]/10 text-white"
-                    : "border-[#8a3f3f]/55 bg-[#35191a]/70 text-white"
-                }`}
-                aria-live="polite"
-              >
-                {submissionState.message}
+            <div className="w-full max-w-sm">
+              <div className="h-2 rounded-full bg-white/8">
+                <div
+                  className="h-2 rounded-full bg-[linear-gradient(90deg,#b68a1f,#d8c27a,#f0dfa4)] transition-all"
+                  style={{ width: `${progressPercentage}%` }}
+                />
               </div>
-            ) : null}
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-[#d8c27a] px-6 py-3.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-[#e5d28f] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {isSubmitting ? "Submitting Application..." : "Submit Championship Application"}
-            </button>
+            </div>
           </div>
-        </div>
+
+          {submissionState.message ? (
+            <div
+              className={`mt-5 rounded-[1.4rem] border px-4 py-4 text-sm leading-7 ${
+                submissionState.type === "success"
+                  ? "border-[#d8c27a]/28 bg-[#d8c27a]/10 text-white"
+                  : "border-[#8a3f3f]/55 bg-[#35191a]/70 text-white"
+              }`}
+              aria-live="polite"
+            >
+              {submissionState.message}
+            </div>
+          ) : null}
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-[#d8c27a] px-6 py-3.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-[#e5d28f] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isSubmitting ? "Submitting Application..." : "Submit Championship Application"}
+          </button>
+        </section>
       </div>
     </form>
   );

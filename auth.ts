@@ -66,7 +66,7 @@ export const authOptions: NextAuthOptions = {
         const account = await findJuryAccountByEmail(email);
 
         if (!account) {
-          return null;
+          throw new Error("No account is registered with this email.");
         }
 
         const isValid = await verifyPasswordHash(password, account.passwordHash);
