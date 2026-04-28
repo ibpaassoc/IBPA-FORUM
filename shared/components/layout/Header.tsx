@@ -40,7 +40,7 @@ export default function Header() {
               alt="IBPA Logo"
               width={220}
               height={80}
-              className="h-10 w-auto max-w-[170px] object-contain sm:h-14 sm:max-w-none"
+              className="h-10 w-auto max-w-42.5 object-contain sm:h-14 sm:max-w-none"
             />
           </Link>
 
@@ -96,7 +96,7 @@ export default function Header() {
 
         <div
           className={`relative overflow-hidden border-t border-white/10 transition-all duration-300 ease-in-out lg:hidden ${
-            open ? "max-h-[32rem] opacity-100" : "max-h-0 opacity-0"
+            open ? "max-h-128 opacity-100" : "max-h-0 opacity-0"
           }`}
         >
           <div className="space-y-4 px-3 py-4 sm:px-6">

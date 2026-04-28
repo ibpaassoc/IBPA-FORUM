@@ -44,9 +44,9 @@ export default function JuryMenu({
         <Link
           href="/jury/login"
           onClick={onNavigate}
-          className="inline-flex justify-center rounded-2xl border border-white/12 bg-white/[0.045] px-5 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-[#f5f1e8] transition hover:border-[#d8c27a]/35 hover:text-[#d8c27a]"
+          className="inline-flex justify-center rounded-2xl border border-white/12 bg-white/4.5 px-5 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-[#f5f1e8] transition hover:border-[#d8c27a]/35 hover:text-[#d8c27a]"
         >
-          Log In / Register
+          Jury Account
         </Link>
       </div>
     );
@@ -88,7 +88,7 @@ export default function JuryMenu({
             }}
             className="mt-2 block rounded-2xl px-4 py-3 text-sm font-medium text-white transition hover:bg-white/6 hover:text-[#d8c27a]"
           >
-            Log In / Register
+            Jury Account
           </Link>
         </div>
       ) : null}
