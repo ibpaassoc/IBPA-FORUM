@@ -1,10 +1,9 @@
-import JuryRegisterStatus from "@/features/jury/components/pages/JuryRegisterStatus";
+import JuryRegisterPageContent from "@/features/jury/components/auth/JuryRegisterPageContent";
 
 export default async function JuryRegisterPage({
   searchParams,
 }: {
-  searchParams: Promise<{ session_id?: string }>;
+  searchParams: Promise<{ email?: string }>;
 }) {
-  const { session_id: sessionId } = await searchParams;
-  return <JuryRegisterStatus sessionId={sessionId} />;
+  return <JuryRegisterPageContent searchParams={await searchParams} />;
 }
