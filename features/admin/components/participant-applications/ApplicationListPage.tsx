@@ -55,6 +55,12 @@ export default function ApplicationListPage({
             >
               Jury Dashboard
             </Link>
+            <Link
+              href="/admin/scoring"
+              className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
+            >
+              Scoring Dashboard
+            </Link>
 
             <form action={logoutAdminAction}>
               <button

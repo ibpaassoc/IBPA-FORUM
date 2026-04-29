@@ -1,31 +1,17 @@
 import Link from "next/link";
-import type {
-  Application,
-  ApplicationAnswer,
-  ApplicationFile,
-  Award,
-  Category,
-} from "@prisma/client";
+import type { ApplicationAnswer, ApplicationFile } from "@prisma/client";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import { logoutAdminAction } from "@/features/admin/actions/auth.actions";
-import { updateParticipantApplicationStatus } from "@/features/admin/actions/participant.actions";
 import { formatAdminDate } from "@/features/admin/server/view-models";
+import AdminReopenScoreButton from "@/features/scoring/components/admin/AdminReopenScoreButton";
+import ScoreStatusBadge from "@/features/scoring/components/ScoreStatusBadge";
+import type { AdminScoringApplicationRecord } from "@/features/scoring/server/admin";
 import { PageShell } from "@/shared/components/layout/PageShell";
 
-type ParticipantApplicationDetail = Application & {
-  category: Category;
-  award: Award;
+type ParticipantApplicationDetail = AdminScoringApplicationRecord & {
   answers: ApplicationAnswer[];
   files: ApplicationFile[];
 };
-
-const statusOptions = [
-  "PAYMENT_PENDING",
-  "SUBMITTED",
-  "UNDER_REVIEW",
-  "APPROVED",
-  "REJECTED",
-] as const;
 
 function DetailItem({
   label,
@@ -73,10 +59,35 @@ function formatAnswerValue(answer: {
   return "Not provided";
 }
 
-export default function ApplicationDetailPage({
+export default function AdminScoringDetailPage({
   application,
+  summary,
+  judgeRows,
 }: {
   application: ParticipantApplicationDetail;
+  summary: {
+    assignedJudgeCount: number;
+    submittedJudgeCount: number;
+    averageScore: number | null;
+    averageScoreLabel: string;
+    status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETE";
+    rank: number | null;
+  };
+  judgeRows: Array<{
+    judgeId: string;
+    judgeName: string;
+    judgeEmail: string;
+    scoreId: string | null;
+    technical: number | null;
+    aesthetic: number | null;
+    creativity: number | null;
+    impact: number | null;
+    presentation: number | null;
+    totalScore: number | null;
+    comment: string | null;
+    scoreStatus: "NOT_STARTED" | "DRAFT" | "SUBMITTED" | "REOPENED";
+    submittedAt: Date | null;
+  }>;
 }) {
   const categoryFields = categoryFieldConfigs[application.category.slug] ?? [];
   const answerMap = new Map(application.answers.map((answer) => [answer.fieldKey, answer]));
@@ -94,7 +105,7 @@ export default function ApplicationDetailPage({
         <div className="page-panel flex flex-col gap-5 rounded-3xl p-6 md:flex-row md:items-end md:justify-between md:p-8">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d8c27a]">
-              Participant Admin
+              Scoring Admin
             </p>
             <h1 className="mt-4 text-3xl font-semibold sm:text-4xl">
               {application.fullName}
@@ -106,23 +117,17 @@ export default function ApplicationDetailPage({
 
           <div className="flex flex-wrap gap-3">
             <Link
-              href="/admin/applications"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
-            >
-              Back to List
-            </Link>
-            <Link
-              href="/admin/jury-applications"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
-            >
-              Jury Dashboard
-            </Link>
-            <Link
               href="/admin/scoring"
               className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
             >
-              Scoring Dashboard
+              Back to Scoring
             </Link>
+            <a
+              href={`/api/admin/scoring/${application.id}/export`}
+              className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
+            >
+              Export CSV
+            </a>
             <form action={logoutAdminAction}>
               <button
                 type="submit"
@@ -134,11 +139,11 @@ export default function ApplicationDetailPage({
           </div>
         </div>
 
-        <div className="mt-6 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+        <div className="mt-6 grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
           <div className="space-y-6">
             <section className="page-card rounded-3xl p-6">
               <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
-                Block A
+                Participant Details
               </p>
               <div className="mt-5 grid gap-4 md:grid-cols-2">
                 <DetailItem label="Full Legal Name" value={application.fullName} />
@@ -160,14 +165,6 @@ export default function ApplicationDetailPage({
                   label="Years of Experience"
                   value={String(application.yearsExperience)}
                 />
-                <DetailItem
-                  label="IBPA Membership Number"
-                  value={application.membershipNumber || "Not provided"}
-                />
-                <DetailItem
-                  label="Membership Level"
-                  value={application.membershipLevel || "Not available"}
-                />
                 <DetailItem label="Category" value={application.category.name} />
                 <DetailItem label="Specific Award" value={application.award.name} />
                 <DetailItem
@@ -182,20 +179,12 @@ export default function ApplicationDetailPage({
                   label="Client Reviews"
                   value={application.reviewsUrl || "Not provided"}
                 />
-                <DetailItem
-                  label="How They Heard About Us"
-                  value={
-                    answerMap.get("heardAboutOther")?.valueText
-                      ? `${application.heardAbout || "Other"}: ${answerMap.get("heardAboutOther")?.valueText}`
-                      : application.heardAbout || "Not provided"
-                  }
-                />
               </div>
             </section>
 
             <section className="page-card rounded-3xl p-6">
               <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
-                Block B Answers
+                Statement and Application Answers
               </p>
               <div className="mt-5 space-y-4">
                 {categoryFields
@@ -215,14 +204,6 @@ export default function ApplicationDetailPage({
                       />
                     );
                   })}
-
-                {categoryFields.every(
-                  (field) => field.type === "file" || !answerMap.get(field.key)
-                ) ? (
-                  <p className="text-sm text-[#d9d4ca]/75">
-                    No text-based Block B answers were saved for this application.
-                  </p>
-                ) : null}
               </div>
             </section>
           </div>
@@ -230,77 +211,33 @@ export default function ApplicationDetailPage({
           <div className="space-y-6">
             <section className="page-card rounded-3xl p-6">
               <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
-                Review Status
+                Scoring Summary
               </p>
 
-              <form
-                action={updateParticipantApplicationStatus}
-                className="mt-5 space-y-5"
-              >
-                <input type="hidden" name="id" value={application.id} />
-
-                <div>
-                  <label
-                    htmlFor="status"
-                    className="mb-2 block text-sm font-medium text-white"
-                  >
-                    Application status
-                  </label>
-                  <select
-                    id="status"
-                    name="status"
-                    defaultValue={application.status}
-                    className="w-full rounded-2xl border border-white/12 bg-white/5 px-4 py-3 text-sm text-white outline-none transition focus:border-[#d8c27a] focus:bg-white/7"
-                  >
-                    {statusOptions.map((status) => (
-                      <option
-                        key={status}
-                        value={status}
-                        className="bg-[#101010] text-white"
-                      >
-                        {status.replaceAll("_", " ")}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <button
-                  type="submit"
-                  className="inline-flex items-center justify-center rounded-full bg-[#d8c27a] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-[#e2d093]"
-                >
-                  Save Status
-                </button>
-              </form>
-
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                <DetailItem label="Overall Status" value={summary.status.replaceAll("_", " ")} />
+                <DetailItem label="Average Score" value={summary.averageScoreLabel} />
                 <DetailItem
-                  label="Payment Status"
-                  value={application.paymentStatus.replaceAll("_", " ")}
+                  label="Assigned Judges"
+                  value={String(summary.assignedJudgeCount)}
                 />
                 <DetailItem
-                  label="Amount"
-                  value={`${(application.amount / 100).toFixed(2)} ${application.currency.toUpperCase()}`}
+                  label="Submitted Scores"
+                  value={String(summary.submittedJudgeCount)}
                 />
                 <DetailItem
-                  label="Checkout Session"
-                  value={application.stripeCheckoutSessionId || "Not set"}
+                  label="Rank in Category"
+                  value={summary.rank ? String(summary.rank) : "Not ranked"}
                 />
                 <DetailItem
-                  label="Payment Intent"
-                  value={application.stripePaymentIntentId || "Not set"}
-                />
-                <DetailItem
-                  label="Paid At"
-                  value={formatAdminDate(application.paidAt)}
-                />
-                <DetailItem
-                  label="Submitted"
+                  label="Submitted At"
                   value={formatAdminDate(application.submittedAt)}
                 />
-                <DetailItem
-                  label="Updated"
-                  value={formatAdminDate(application.updatedAt)}
-                />
+              </div>
+
+              <div className="mt-5 rounded-2xl border border-dashed border-[#d8c27a]/25 bg-white/[0.025] p-4 text-sm text-[#d9d4ca]/75">
+                TODO: Mark category winner here if a dedicated winner/status field is added to
+                the project schema.
               </div>
             </section>
 
@@ -368,6 +305,67 @@ export default function ApplicationDetailPage({
             </section>
           </div>
         </div>
+
+        <section className="page-card mt-6 rounded-3xl p-4 md:p-6">
+          <div className="mb-5 flex items-center justify-between gap-4">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
+                Judge Breakdown
+              </p>
+              <h2 className="mt-3 text-2xl font-semibold text-white">All judge scores</h2>
+            </div>
+          </div>
+
+          <div className="hidden grid-cols-[1fr_0.7fr_0.7fr_0.7fr_0.7fr_0.7fr_0.7fr_0.85fr_0.95fr_0.9fr] gap-4 border-b border-white/10 px-4 pb-4 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d9d4ca]/65 xl:grid">
+            <span>Judge</span>
+            <span>Technical</span>
+            <span>Aesthetic</span>
+            <span>Creativity</span>
+            <span>Impact</span>
+            <span>Presentation</span>
+            <span>Total</span>
+            <span>Status</span>
+            <span>Submitted</span>
+            <span>Action</span>
+          </div>
+
+          <div className="divide-y divide-white/10">
+            {judgeRows.map((row) => (
+              <div
+                key={row.judgeId}
+                className="grid gap-4 px-4 py-5 xl:grid-cols-[1fr_0.7fr_0.7fr_0.7fr_0.7fr_0.7fr_0.7fr_0.85fr_0.95fr_0.9fr] xl:items-center"
+              >
+                <div>
+                  <p className="text-sm font-semibold text-white">{row.judgeName}</p>
+                  <p className="mt-1 text-sm text-[#d9d4ca]/80">{row.judgeEmail}</p>
+                  {row.comment ? (
+                    <p className="mt-2 text-sm text-[#d9d4ca]/75">{row.comment}</p>
+                  ) : null}
+                </div>
+
+                <div className="text-sm text-[#d9d4ca]">{row.technical ?? "-"}</div>
+                <div className="text-sm text-[#d9d4ca]">{row.aesthetic ?? "-"}</div>
+                <div className="text-sm text-[#d9d4ca]">{row.creativity ?? "-"}</div>
+                <div className="text-sm text-[#d9d4ca]">{row.impact ?? "-"}</div>
+                <div className="text-sm text-[#d9d4ca]">{row.presentation ?? "-"}</div>
+                <div className="text-sm text-[#d9d4ca]">{row.totalScore ?? "-"}</div>
+                <div>
+                  <ScoreStatusBadge status={row.scoreStatus} />
+                </div>
+                <div className="text-sm text-[#d9d4ca]/75">
+                  {formatAdminDate(row.submittedAt)}
+                </div>
+                <div>
+                  {row.scoreId && row.scoreStatus === "SUBMITTED" ? (
+                    <AdminReopenScoreButton scoreId={row.scoreId} />
+                  ) : (
+                    <span className="text-xs text-[#d9d4ca]/60">No action</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
       </div>
     </PageShell>
   );

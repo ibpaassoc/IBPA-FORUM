@@ -1,0 +1,38 @@
+import { NextResponse } from "next/server";
+import { reopenJudgeScore } from "@/features/scoring/server/admin";
+import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
+
+export async function POST(request: Request) {
+  try {
+    if (!(await isAdminAuthenticated())) {
+      return NextResponse.json(
+        { message: "Admin authentication is required." },
+        { status: 401 }
+      );
+    }
+    const body = (await request.json()) as { scoreId?: string };
+    const scoreId = String(body.scoreId ?? "").trim();
+
+    if (!scoreId) {
+      return NextResponse.json({ message: "Missing score id." }, { status: 400 });
+    }
+
+    const score = await reopenJudgeScore(scoreId);
+    return NextResponse.json(score);
+  } catch (error) {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "status" in error &&
+      typeof error.status === "number"
+    ) {
+      return NextResponse.json(
+        { message: error instanceof Error ? error.message : "Request failed." },
+        { status: error.status }
+      );
+    }
+
+    console.error("POST /api/admin/scoring/reopen error:", error);
+    return NextResponse.json({ message: "Failed to reopen score." }, { status: 500 });
+  }
+}
