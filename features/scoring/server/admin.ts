@@ -1,0 +1,465 @@
+import "server-only";
+
+import { revalidatePath } from "next/cache";
+import type { Prisma } from "@prisma/client";
+import { prisma } from "@/shared/lib/prisma";
+import {
+  buildCategoryRanks,
+  formatAverageScore,
+  getAdminScoringStatus,
+  getAverageSubmittedScore,
+  getScoreableApplicationsWhere,
+  getSubmittedJudgeCount,
+  ScoringHttpError,
+} from "@/features/scoring/server/shared";
+
+export type AdminScoringSort = "averageScore" | "category" | "status";
+export type AdminScoringFilterStatus = "NOT_STARTED" | "IN_PROGRESS" | "COMPLETE";
+export type AdminScoringApplicationRecord = Prisma.ApplicationGetPayload<{
+  include: {
+    category: true;
+    award: true;
+    answers: true;
+    files: true;
+  };
+}>;
+
+function getSafeStatusFilter(status?: string): AdminScoringFilterStatus | undefined {
+  if (status === "NOT_STARTED" || status === "IN_PROGRESS" || status === "COMPLETE") {
+    return status;
+  }
+
+  return undefined;
+}
+
+function getSafeSort(sort?: string): AdminScoringSort {
+  if (sort === "category" || sort === "status") {
+    return sort;
+  }
+
+  return "averageScore";
+}
+
+async function getActiveJudgeAssignments() {
+  const judges = await prisma.juryApplication.findMany({
+    where: {
+      status: {
+        in: ["APPROVED", "PAID"],
+      },
+    },
+    select: {
+      id: true,
+      fullName: true,
+      email: true,
+      expertiseAreas: true,
+    },
+    orderBy: {
+      fullName: "asc",
+    },
+  });
+
+  const countByCategory = new Map<string, number>();
+
+  for (const judge of judges) {
+    for (const area of judge.expertiseAreas) {
+      countByCategory.set(area, (countByCategory.get(area) ?? 0) + 1);
+    }
+  }
+
+  return {
+    judges,
+    countByCategory,
+  };
+}
+
+export async function getAdminScoringOverview({
+  category,
+  status,
+  q,
+  sort,
+}: {
+  category?: string;
+  status?: string;
+  q?: string;
+  sort?: string;
+}) {
+  const { countByCategory } = await getActiveJudgeAssignments();
+  const applications = await prisma.application.findMany({
+    where: getScoreableApplicationsWhere(),
+    orderBy: [
+      {
+        submittedAt: "desc",
+      },
+      {
+        createdAt: "desc",
+      },
+    ],
+    select: {
+      id: true,
+      fullName: true,
+      email: true,
+      createdAt: true,
+      submittedAt: true,
+      category: {
+        select: {
+          name: true,
+        },
+      },
+      award: {
+        select: {
+          name: true,
+        },
+      },
+      judgeScores: {
+        select: {
+          id: true,
+          status: true,
+          totalScore: true,
+        },
+      },
+    },
+  });
+
+  const enrichedApplications = applications.map((application) => {
+    const assignedJudgeCount = countByCategory.get(application.category.name) ?? 0;
+    const submittedJudgeCount = getSubmittedJudgeCount(application.judgeScores);
+    const averageScore = getAverageSubmittedScore(application.judgeScores);
+
+    return {
+      id: application.id,
+      fullName: application.fullName,
+      email: application.email,
+      createdAt: application.createdAt,
+      submittedAt: application.submittedAt,
+      categoryName: application.category.name,
+      awardName: application.award.name,
+      assignedJudgeCount,
+      submittedJudgeCount,
+      averageScore,
+      status: getAdminScoringStatus({
+        assignedJudgeCount,
+        submittedJudgeCount,
+      }),
+    };
+  });
+
+  const ranks = buildCategoryRanks(
+    enrichedApplications.map((application) => ({
+      id: application.id,
+      categoryName: application.categoryName,
+      averageScore: application.averageScore,
+      submittedAt: application.submittedAt,
+      createdAt: application.createdAt,
+    }))
+  );
+
+  const categories = [...new Set(enrichedApplications.map((item) => item.categoryName))].sort();
+  const activeCategory = category && categories.includes(category) ? category : undefined;
+  const activeStatus = getSafeStatusFilter(status);
+  const searchQuery = q?.trim() ?? "";
+  const activeSort = getSafeSort(sort);
+
+  const filteredApplications = enrichedApplications
+    .filter((application) =>
+      activeCategory ? application.categoryName === activeCategory : true
+    )
+    .filter((application) =>
+      activeStatus ? application.status === activeStatus : true
+    )
+    .filter((application) =>
+      searchQuery.length > 0
+        ? application.fullName.toLowerCase().includes(searchQuery.toLowerCase())
+        : true
+    );
+
+  filteredApplications.sort((left, right) => {
+    if (activeSort === "category") {
+      const categoryComparison = left.categoryName.localeCompare(right.categoryName);
+      if (categoryComparison !== 0) {
+        return categoryComparison;
+      }
+    }
+
+    if (activeSort === "status") {
+      const leftStatus = left.status;
+      const rightStatus = right.status;
+      if (leftStatus !== rightStatus) {
+        return leftStatus.localeCompare(rightStatus);
+      }
+    }
+
+    const leftAverage = left.averageScore ?? -1;
+    const rightAverage = right.averageScore ?? -1;
+    if (rightAverage !== leftAverage) {
+      return rightAverage - leftAverage;
+    }
+
+    return left.fullName.localeCompare(right.fullName);
+  });
+
+  const totalScoreable = enrichedApplications.length;
+  const totalScored = enrichedApplications.filter(
+    (application) => application.submittedJudgeCount > 0
+  ).length;
+  const averageCompletionPercentage =
+    totalScoreable === 0
+      ? 0
+      : enrichedApplications.reduce((sum, application) => {
+          if (application.assignedJudgeCount === 0) {
+            return sum;
+          }
+
+          return sum + application.submittedJudgeCount / application.assignedJudgeCount;
+        }, 0) / totalScoreable;
+
+  return {
+    filters: {
+      category: activeCategory,
+      status: activeStatus,
+      q: searchQuery,
+      sort: activeSort,
+    },
+    categories,
+    stats: {
+      totalScoreableApplications: totalScoreable,
+      totalScoredApplications: totalScored,
+      totalNotScoredApplications: Math.max(totalScoreable - totalScored, 0),
+      averageCompletionPercentage: averageCompletionPercentage * 100,
+    },
+    applications: filteredApplications.map((application) => ({
+      id: application.id,
+      fullName: application.fullName,
+      email: application.email,
+      categoryName: application.categoryName,
+      awardName: application.awardName,
+      assignedJudgeCount: application.assignedJudgeCount,
+      submittedJudgeCount: application.submittedJudgeCount,
+      averageScore: application.averageScore,
+      averageScoreLabel: formatAverageScore(application.averageScore),
+      status: application.status,
+      rank: ranks.get(application.id) ?? null,
+    })),
+  };
+}
+
+export async function getAdminApplicationScoringDetail(applicationId: string) {
+  const { judges, countByCategory } = await getActiveJudgeAssignments();
+
+  const application = await prisma.application.findFirst({
+    where: {
+      id: applicationId,
+      ...getScoreableApplicationsWhere(),
+    },
+    include: {
+      category: true,
+      award: true,
+      answers: {
+        orderBy: {
+          createdAt: "asc",
+        },
+      },
+      files: {
+        orderBy: {
+          createdAt: "asc",
+        },
+      },
+      judgeScores: {
+        include: {
+          judge: {
+            select: {
+              id: true,
+              fullName: true,
+              email: true,
+            },
+          },
+        },
+        orderBy: [
+          {
+            submittedAt: "desc",
+          },
+          {
+            updatedAt: "desc",
+          },
+        ],
+      },
+    },
+  });
+
+  if (!application) {
+    return null;
+  }
+
+  const assignedJudges = judges.filter((judge) =>
+    judge.expertiseAreas.includes(application.category.name)
+  );
+
+  const scoreByJudgeId = new Map(application.judgeScores.map((score) => [score.judgeId, score]));
+  const submittedJudgeCount = getSubmittedJudgeCount(application.judgeScores);
+  const assignedJudgeCount = countByCategory.get(application.category.name) ?? 0;
+  const averageScore = getAverageSubmittedScore(application.judgeScores);
+
+  const rankingPool = await prisma.application.findMany({
+    where: {
+      ...getScoreableApplicationsWhere(),
+      categoryId: application.categoryId,
+    },
+    select: {
+      id: true,
+      createdAt: true,
+      submittedAt: true,
+      category: {
+        select: {
+          name: true,
+        },
+      },
+      judgeScores: {
+        select: {
+          status: true,
+          totalScore: true,
+        },
+      },
+    },
+  });
+
+  const rankingMap = buildCategoryRanks(
+    rankingPool.map((item) => ({
+      id: item.id,
+      categoryName: item.category.name,
+      averageScore: getAverageSubmittedScore(item.judgeScores),
+      submittedAt: item.submittedAt,
+      createdAt: item.createdAt,
+    }))
+  );
+
+  return {
+    application: application as AdminScoringApplicationRecord,
+    summary: {
+      assignedJudgeCount,
+      submittedJudgeCount,
+      averageScore,
+      averageScoreLabel: formatAverageScore(averageScore),
+      status: getAdminScoringStatus({
+        assignedJudgeCount,
+        submittedJudgeCount,
+      }),
+      rank: rankingMap.get(application.id) ?? null,
+    },
+    judgeRows: assignedJudges.map((judge) => {
+      const score = scoreByJudgeId.get(judge.id);
+
+      return {
+        judgeId: judge.id,
+        judgeName: judge.fullName,
+        judgeEmail: judge.email,
+        scoreId: score?.id ?? null,
+        technical: score?.technical ?? null,
+        aesthetic: score?.aesthetic ?? null,
+        creativity: score?.creativity ?? null,
+        impact: score?.impact ?? null,
+        presentation: score?.presentation ?? null,
+        totalScore: score?.totalScore ?? null,
+        comment: score?.comment ?? null,
+        scoreStatus: (score?.status ?? "NOT_STARTED") as
+          | "NOT_STARTED"
+          | "DRAFT"
+          | "SUBMITTED"
+          | "REOPENED",
+        submittedAt: score?.submittedAt ?? null,
+      };
+    }),
+  };
+}
+
+export async function reopenJudgeScore(scoreId: string) {
+  const existingScore = await prisma.judgeScore.findUnique({
+    where: {
+      id: scoreId,
+    },
+    select: {
+      id: true,
+      applicationId: true,
+      status: true,
+    },
+  });
+
+  if (!existingScore) {
+    throw new ScoringHttpError(404, "The judge score could not be found.");
+  }
+
+  if (existingScore.status !== "SUBMITTED") {
+    throw new ScoringHttpError(409, "Only submitted scores can be reopened.");
+  }
+
+  const score = await prisma.judgeScore.update({
+    where: {
+      id: scoreId,
+    },
+    data: {
+      status: "REOPENED",
+      submittedAt: null,
+    },
+    select: {
+      id: true,
+      applicationId: true,
+      status: true,
+      updatedAt: true,
+    },
+  });
+
+  revalidatePath("/jury/dashboard");
+  revalidatePath(`/jury/dashboard/applications/${score.applicationId}`);
+  revalidatePath("/admin/scoring");
+  revalidatePath(`/admin/scoring/${score.applicationId}`);
+
+  return score;
+}
+
+export async function exportApplicationScoresCsv(applicationId: string) {
+  const detail = await getAdminApplicationScoringDetail(applicationId);
+
+  if (!detail) {
+    throw new ScoringHttpError(404, "The participant application could not be found.");
+  }
+
+  const headers = [
+    "Participant Name",
+    "Category",
+    "Award",
+    "Judge Name",
+    "Judge Email",
+    "Status",
+    "Technical",
+    "Aesthetic",
+    "Creativity",
+    "Impact",
+    "Presentation",
+    "Total",
+    "Comment",
+    "Submitted At",
+  ];
+
+  const rows = detail.judgeRows.map((row) => [
+    detail.application.fullName,
+    detail.application.category.name,
+    detail.application.award.name,
+    row.judgeName,
+    row.judgeEmail,
+    row.scoreStatus,
+    row.technical ?? "",
+    row.aesthetic ?? "",
+    row.creativity ?? "",
+    row.impact ?? "",
+    row.presentation ?? "",
+    row.totalScore ?? "",
+    row.comment ?? "",
+    row.submittedAt?.toISOString() ?? "",
+  ]);
+
+  return [headers, ...rows]
+    .map((row) =>
+      row
+        .map((cell) => `"${String(cell).replaceAll('"', '""')}"`)
+        .join(",")
+    )
+    .join("\n");
+}
