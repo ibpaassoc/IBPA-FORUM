@@ -40,9 +40,9 @@ export default function Footer() {
           <div className="max-w-sm">
             <Link href="/" className="inline-flex items-center">
               <Image
-                src="/logo.png"
+                src="/logo_white.png"
                 alt="IBPA Logo"
-                width={220}
+                width={320}
                 height={80}
                 className="h-14 w-auto object-contain"
               />
