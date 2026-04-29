@@ -1,18 +1,12 @@
 import Link from "next/link";
-import type {
-  Application,
-  ApplicationAnswer,
-  ApplicationFile,
-  Award,
-  Category,
-} from "@prisma/client";
+import type { ApplicationAnswer, ApplicationFile } from "@prisma/client";
 import { formatAdminDate } from "@/features/admin/server/view-models";
 import JurySignOutButton from "@/features/jury/components/dashboard/JurySignOutButton";
+import JuryScoreForm from "@/features/scoring/components/jury/JuryScoreForm";
+import type { JuryScoringApplicationRecord } from "@/features/scoring/server/jury";
 import { PageShell } from "@/shared/components/layout/PageShell";
 
-type JuryApplicationDetail = Application & {
-  category: Category;
-  award: Award;
+type JuryApplicationDetail = JuryScoringApplicationRecord & {
   answers: ApplicationAnswer[];
   files: ApplicationFile[];
 };
@@ -66,6 +60,7 @@ function formatAnswerValue(answer: {
 export default function JuryApplicationDetailPage({
   application,
   categoryFields,
+  score,
 }: {
   application: JuryApplicationDetail;
   categoryFields: Array<{
@@ -73,6 +68,19 @@ export default function JuryApplicationDetailPage({
     label: string;
     type: string;
   }>;
+  score: {
+    id: string;
+    technical: number | null;
+    aesthetic: number | null;
+    creativity: number | null;
+    impact: number | null;
+    presentation: number | null;
+    totalScore: number | null;
+    comment: string | null;
+    status: "DRAFT" | "SUBMITTED" | "REOPENED";
+    submittedAt: Date | null;
+    updatedAt: Date;
+  } | null;
 }) {
   const answerMap = new Map(application.answers.map((answer) => [answer.fieldKey, answer]));
   const fileMap = new Map<string, typeof application.files>();
@@ -204,6 +212,8 @@ export default function JuryApplicationDetailPage({
           </div>
 
           <div className="space-y-6">
+            <JuryScoreForm applicationId={application.id} initialScore={score} />
+
             <section className="page-card rounded-3xl p-6">
               <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
                 Review Status

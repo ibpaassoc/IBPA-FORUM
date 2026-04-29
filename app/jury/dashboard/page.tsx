@@ -1,5 +1,5 @@
 import JuryDashboardPage from "@/features/jury/components/dashboard/JuryDashboardPage";
-import { requireJuryAuth } from "@/features/jury/server/auth";
+import { getAuthenticatedJudgeScoringContext } from "@/features/scoring/server/jury";
 import { getJuryDashboardData } from "@/features/jury/server/dashboard-queries";
 
 export default async function JuryDashboardRoute({
@@ -7,19 +7,18 @@ export default async function JuryDashboardRoute({
 }: {
   searchParams: Promise<{ category?: string }>;
 }) {
-  const juryUser = await requireJuryAuth();
+  const judge = await getAuthenticatedJudgeScoringContext();
   const { category } = await searchParams;
   const data = await getJuryDashboardData({
-    juryApplicationId: juryUser.juryApplicationId,
-    expertiseAreas: juryUser.expertiseAreas,
+    judge,
     category,
   });
 
   return (
     <JuryDashboardPage
-      juryName={data.juryApplication.fullName}
-      professionalTitle={data.juryApplication.professionalTitle}
-      expertiseAreas={data.juryApplication.expertiseAreas}
+      juryName={data.judge.fullName}
+      professionalTitle={data.judge.professionalTitle}
+      expertiseAreas={data.judge.expertiseAreas}
       applications={data.applications}
       activeCategory={data.activeCategory}
       totals={data.totals}

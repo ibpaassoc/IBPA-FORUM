@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { formatAdminDate } from "@/features/admin/server/view-models";
 import JurySignOutButton from "@/features/jury/components/dashboard/JurySignOutButton";
+import ScoreStatusBadge from "@/features/scoring/components/ScoreStatusBadge";
 import { PageShell } from "@/shared/components/layout/PageShell";
 
 export default function JuryDashboardPage({
@@ -21,17 +22,18 @@ export default function JuryDashboardPage({
     city: string;
     country: string;
     createdAt: Date;
+    submittedAt: Date | null;
     category: { name: string };
     award: { name: string };
+    scoreStatus: "NOT_STARTED" | "DRAFT" | "SUBMITTED";
+    scoreId: string | null;
   }>;
   activeCategory?: string;
   totals: {
-    total: number;
+    totalAssignedApplications: number;
+    scoredApplications: number;
+    remainingApplications: number;
     categories: number;
-    byCategory: Array<{
-      name: string;
-      count: number;
-    }>;
   };
 }) {
   return (
@@ -72,12 +74,10 @@ export default function JuryDashboardPage({
 
         <div className="mt-6 grid gap-4 md:grid-cols-5">
           {[
-            { label: "Total Applications", value: totals.total },
+            { label: "Assigned Applications", value: totals.totalAssignedApplications },
+            { label: "Scored", value: totals.scoredApplications },
+            { label: "Remaining", value: totals.remainingApplications },
             { label: "Approved Categories", value: totals.categories },
-            ...totals.byCategory.slice(0, 3).map((item) => ({
-              label: item.name,
-              value: item.count,
-            })),
           ].map((item) => (
             <div key={item.label} className="page-card rounded-2xl bg-white/4.5 p-5">
               <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
@@ -112,11 +112,12 @@ export default function JuryDashboardPage({
             ))}
           </div>
 
-          <div className="hidden grid-cols-[1.25fr_0.95fr_1.1fr_0.9fr_0.7fr] gap-4 border-b border-white/10 px-4 pb-4 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d9d4ca]/65 lg:grid">
+          <div className="hidden grid-cols-[1.25fr_0.95fr_1.05fr_0.8fr_0.85fr_0.8fr] gap-4 border-b border-white/10 px-4 pb-4 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d9d4ca]/65 lg:grid">
             <span>Applicant</span>
             <span>Category</span>
             <span>Award</span>
-            <span>Created</span>
+            <span>Status</span>
+            <span>Submitted</span>
             <span>Open</span>
           </div>
 
@@ -124,7 +125,7 @@ export default function JuryDashboardPage({
             {applications.map((application) => (
               <div
                 key={application.id}
-                className="grid gap-4 px-4 py-5 transition hover:bg-white/2 lg:grid-cols-[1.25fr_0.95fr_1.1fr_0.9fr_0.7fr] lg:items-center"
+                className="grid gap-4 px-4 py-5 transition hover:bg-white/2 lg:grid-cols-[1.25fr_0.95fr_1.05fr_0.8fr_0.85fr_0.8fr] lg:items-center"
               >
                 <div>
                   <p className="text-sm font-semibold text-white">{application.fullName}</p>
@@ -138,8 +139,12 @@ export default function JuryDashboardPage({
 
                 <div className="text-sm text-[#d9d4ca]">{application.award.name}</div>
 
+                <div>
+                  <ScoreStatusBadge status={application.scoreStatus} />
+                </div>
+
                 <div className="text-sm text-[#d9d4ca]/75">
-                  {formatAdminDate(application.createdAt)}
+                  {formatAdminDate(application.submittedAt ?? application.createdAt)}
                 </div>
 
                 <div>
@@ -147,7 +152,11 @@ export default function JuryDashboardPage({
                     href={`/jury/dashboard/applications/${application.id}`}
                     className="inline-flex items-center justify-center rounded-full bg-[#d8c27a] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-black transition hover:bg-[#e2d093]"
                   >
-                    Review
+                    {application.scoreStatus === "NOT_STARTED"
+                      ? "Review & Score"
+                      : application.scoreStatus === "DRAFT"
+                        ? "Continue Draft"
+                        : "View Submitted"}
                   </Link>
                 </div>
               </div>
