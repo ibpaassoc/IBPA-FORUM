@@ -1,5 +1,5 @@
 import JuryApplicationDetailPage from "@/features/jury/components/dashboard/JuryApplicationDetailPage";
-import { requireJuryAuth } from "@/features/jury/server/auth";
+import { getAuthenticatedJudgeScoringContext } from "@/features/scoring/server/jury";
 import { getJuryDashboardApplicationDetail } from "@/features/jury/server/dashboard-queries";
 
 export default async function JuryDashboardApplicationRoute({
@@ -7,17 +7,18 @@ export default async function JuryDashboardApplicationRoute({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const juryUser = await requireJuryAuth();
+  const judge = await getAuthenticatedJudgeScoringContext();
   const { id } = await params;
   const data = await getJuryDashboardApplicationDetail({
+    judge,
     applicationId: id,
-    expertiseAreas: juryUser.expertiseAreas,
   });
 
   return (
     <JuryApplicationDetailPage
       application={data.application}
       categoryFields={data.categoryFields}
+      score={data.score}
     />
   );
 }

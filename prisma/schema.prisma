@@ -58,6 +58,7 @@ model Application {
   category          Category            @relation(fields: [categoryId], references: [id])
   answers           ApplicationAnswer[]
   files             ApplicationFile[]
+  judgeScores       JudgeScore[]
   payments          Payment[]
 }
 
@@ -94,6 +95,7 @@ model JuryApplication {
   paidAt                           DateTime?
   stripeCheckoutSessionId          String?               @unique
   files                            JuryApplicationFile[]
+  judgeScores                      JudgeScore[]
   account                          JuryAccount?
 }
 
@@ -165,6 +167,29 @@ model StripeWebhookEvent {
   createdAt     DateTime @default(now())
 }
 
+model JudgeScore {
+  id            String      @id @default(cuid())
+  applicationId String
+  judgeId       String
+  technical     Int?
+  aesthetic     Int?
+  creativity    Int?
+  impact        Int?
+  presentation  Int?
+  totalScore    Int?
+  comment       String?
+  status        ScoreStatus @default(DRAFT)
+  submittedAt   DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  judge         JuryApplication @relation(fields: [judgeId], references: [id], onDelete: Cascade)
+
+  @@unique([applicationId, judgeId])
+  @@index([applicationId])
+  @@index([judgeId])
+}
+
 enum ApplicationStatus {
   DRAFT
   PAYMENT_PENDING
@@ -187,4 +212,10 @@ enum JuryApplicationStatus {
   APPROVED
   REJECTED
   PAID
+}
+
+enum ScoreStatus {
+  DRAFT
+  SUBMITTED
+  REOPENED
 }
