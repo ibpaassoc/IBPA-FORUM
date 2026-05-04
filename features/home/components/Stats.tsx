@@ -1,10 +1,14 @@
-import { stats } from "@/data/home";
+"use client";
+
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 export default function Stats() {
+  const { t } = useLanguage();
+
   return (
     <section className="mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12">
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {stats.map((item) => (
+        {t.home.stats.map((item) => (
           <div
             key={item.title}
             className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm"

@@ -5,6 +5,7 @@ import BlockAFields from "@/features/applications/components/application-form/bl
 import BlockBRenderer from "@/features/applications/components/application-form/blocks/BlockBRenderer";
 import FormSection from "@/features/applications/components/application-form/FormSection";
 import { getVisibleCategoryFields, validateApplicationValues } from "@/features/applications/schemas/category-field-validation";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import type {
   ApplicationValues,
   CategoryOption,
@@ -45,6 +46,7 @@ export default function ApplyForm({
     type: "idle",
     message: "",
   });
+  const { t } = useLanguage();
 
   const selectedCategory = categories.find(
     (category) => category.id === String(values.categoryId ?? "")
@@ -131,8 +133,7 @@ export default function ApplyForm({
       setErrors(validation.errors);
       setSubmissionState({
         type: "error",
-        message:
-          "Please review the highlighted fields before submitting your championship entry.",
+        message: t.applyPage.form.validationError,
       });
       return;
     }
@@ -173,16 +174,14 @@ export default function ApplyForm({
           type: "error",
           message:
             data.message ??
-            "We could not submit the application. Please try again.",
+            t.applyPage.form.submitError,
         });
         return;
       }
 
       setSubmissionState({
         type: "success",
-        message:
-          data.message ??
-          "Redirecting to secure Stripe Checkout.",
+        message: data.message ?? t.applyPage.form.redirecting,
       });
 
       if (data.checkoutUrl) {
@@ -191,8 +190,7 @@ export default function ApplyForm({
     } catch {
       setSubmissionState({
         type: "error",
-        message:
-          "Something went wrong during submission. Please try again in a moment.",
+        message: t.applyPage.form.submitException,
       });
     } finally {
       setIsSubmitting(false);
@@ -203,9 +201,9 @@ export default function ApplyForm({
     <form onSubmit={handleSubmit} className="space-y-8">
       <div className="space-y-6">
         <FormSection
-          eyebrow="Block A"
-          title="Professional Profile & Eligibility"
-          description="Complete the shared championship application section before moving into the category-specific evaluation materials."
+          eyebrow={t.applyPage.form.blockA}
+          title={t.applyPage.form.blockATitle}
+          description={t.applyPage.form.blockADescription}
         >
           <BlockAFields
             values={values}
@@ -217,9 +215,9 @@ export default function ApplyForm({
         </FormSection>
 
         <FormSection
-          eyebrow="Block B"
-          title="Category-Specific Championship Materials"
-          description="Block B changes based on the category you select."
+          eyebrow={t.applyPage.form.blockB}
+          title={t.applyPage.form.blockBTitle}
+          description={t.applyPage.form.blockBDescription}
         >
           <div className="transition-all duration-300 ease-out">
             <BlockBRenderer
@@ -237,10 +235,11 @@ export default function ApplyForm({
           <div className="flex flex-col gap-4 border-b border-white/10 pb-5 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
-                Application Progress
+                {t.applyPage.form.progress}
               </p>
               <p className="mt-3 text-sm text-[#efe6d0]">
-                {completedRequiredCount} of {requiredFieldKeys.length} required items complete
+                {completedRequiredCount} of {requiredFieldKeys.length}{" "}
+                {t.applyPage.form.requiredComplete}
               </p>
             </div>
 
@@ -272,7 +271,7 @@ export default function ApplyForm({
             disabled={isSubmitting}
             className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-[#d8c27a] px-6 py-3.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-[#e5d28f] disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {isSubmitting ? "Submitting Application..." : "Submit Championship Application"}
+            {isSubmitting ? t.applyPage.form.submitting : t.applyPage.form.submit}
           </button>
         </section>
       </div>

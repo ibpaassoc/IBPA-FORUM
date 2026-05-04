@@ -1,41 +1,24 @@
-const items = [
-  {
-    label: "Minimum Experience",
-    value: "5+ Years",
-    text: "Applicants must have at least five years of professional industry experience.",
-  },
-  {
-    label: "Expertise",
-    value: "12 Categories",
-    text: "Judges are selected based on their expertise in relevant championship areas.",
-  },
-  {
-    label: "Documents",
-    value: "Required",
-    text: "Professional certifications, bio, and profile materials must be submitted.",
-  },
-  {
-    label: "Payment Rule",
-    value: "After Approval",
-    text: "The jury fee is never charged at the application stage.",
-  },
-]
+"use client";
+
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 export default function JuryRequirements() {
+  const { t } = useLanguage();
+
   return (
     <section id="requirements" className="border-b border-white/10 bg-[#141415]">
       <div className="mx-auto max-w-7xl px-6 py-14 md:px-10">
         <div className="mb-8 max-w-3xl">
           <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d8c27a]">
-            Requirements
+            {t.juryPage.requirements.label}
           </p>
           <h2 className="mt-3 text-3xl font-semibold leading-tight sm:text-4xl">
-            Who can apply for the jury panel
+            {t.juryPage.requirements.title}
           </h2>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {items.map((item) => (
+          {t.juryPage.requirements.items.map((item) => (
             <div
               key={item.label}
               className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm"

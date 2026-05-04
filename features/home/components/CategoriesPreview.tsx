@@ -1,15 +1,20 @@
+"use client";
+
 import Link from "next/link";
 import SectionTitle from "@/shared/components/ui/SectionTitle";
-import { categories } from "@/data/home";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 export default function CategoriesPreview() {
+  const { t } = useLanguage();
+  const categories = t.home.categoriesPreview.items;
+
   return (
     <section className="border-y border-white/10 bg-[#141415]">
       <div className="mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <SectionTitle
-            label="Categories"
-            title="12 championship paths for today's beauty industry."
+            label={t.home.categoriesPreview.label}
+            title={t.home.categoriesPreview.title}
             className="max-w-2xl"
           />
 
@@ -17,7 +22,7 @@ export default function CategoriesPreview() {
             href="/categories"
             className="text-sm uppercase tracking-[0.16em] text-[#d8c27a] transition hover:text-white"
           >
-            View all categories {"->"}
+            {t.home.categoriesPreview.viewAll} {"->"}
           </Link>
         </div>
 

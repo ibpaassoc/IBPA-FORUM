@@ -4,11 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 export default function LoginForm() {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const { t } = useLanguage();
 
   async function handleSubmit(formData: FormData) {
     setIsSubmitting(true);
@@ -26,9 +28,9 @@ export default function LoginForm() {
 
     if (!result || result.error) {
       if (result?.error === "No account is registered with this email.") {
-        setError("No account is registered with this email.");
+        setError(t.auth.form.noRegisteredAccount);
       } else {
-        setError("Invalid email or password. Please try again.");
+        setError(t.auth.form.invalidCredentials);
       }
       setIsSubmitting(false);
       return;
@@ -42,7 +44,7 @@ export default function LoginForm() {
     <form action={handleSubmit} className="mt-8 space-y-5">
       <div>
         <label htmlFor="email" className="mb-2 block text-sm font-medium text-[#f1ecde]">
-          Email
+          {t.auth.form.email}
         </label>
         <input
           id="email"
@@ -50,13 +52,13 @@ export default function LoginForm() {
           type="email"
           required
           className="w-full rounded-2xl border border-white/12 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-[#d9d4ca]/45 focus:border-[#d8c27a] focus:bg-white/[0.07]"
-          placeholder="Enter your email"
+          placeholder={t.auth.form.emailPlaceholder}
         />
       </div>
 
       <div>
         <label htmlFor="password" className="mb-2 block text-sm font-medium text-[#f1ecde]">
-          Password
+          {t.auth.form.password}
         </label>
         <input
           id="password"
@@ -64,7 +66,7 @@ export default function LoginForm() {
           type="password"
           required
           className="w-full rounded-2xl border border-white/12 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-[#d9d4ca]/45 focus:border-[#d8c27a] focus:bg-white/[0.07]"
-          placeholder="Enter your password"
+          placeholder={t.auth.form.passwordPlaceholder}
         />
       </div>
 
@@ -79,13 +81,13 @@ export default function LoginForm() {
         disabled={isSubmitting}
         className="inline-flex w-full items-center justify-center rounded-full bg-[#d8c27a] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-[#e2d093] disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {isSubmitting ? "Opening Site..." : "Login"}
+        {isSubmitting ? t.auth.form.openingSite : t.auth.form.login}
       </button>
 
       <p className="text-sm leading-6 text-[#d9d4ca]/85">
-        Don&apos;t have an account?{" "}
+        {t.auth.form.noAccount}{" "}
         <Link href="/jury/register" className="text-[#d8c27a] hover:text-[#f0e0a6]">
-          Register
+          {t.auth.form.register}
         </Link>
         .
       </p>
