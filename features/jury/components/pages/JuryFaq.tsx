@@ -1,47 +1,26 @@
 "use client"
 
 import { useState } from "react"
-
-const faqs = [
-  {
-    question: "Do I pay when I submit the application?",
-    answer:
-      "No. Jury applications are submitted free of charge. The $250 fee is charged only after approval.",
-  },
-  {
-    question: "How long does the review take?",
-    answer:
-      "Applications are reviewed individually and may take up to 14 business days.",
-  },
-  {
-    question: "Will every applicant be accepted?",
-    answer:
-      "No. Approval depends on professional background, qualifications, and jury fit.",
-  },
-  {
-    question: "What happens after approval?",
-    answer:
-      "Approved candidates receive payment instructions. After payment confirmation, they officially join the jury panel.",
-  },
-]
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 export default function JuryFaq() {
   const [openIndex, setOpenIndex] = useState<number | null>(0)
+  const { t } = useLanguage();
 
   return (
     <section className="border-b border-white/10 bg-[#141415]">
       <div className="mx-auto max-w-7xl px-6 py-14 md:px-10">
         <div className="mb-8 max-w-3xl">
           <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d8c27a]">
-            Questions
+            {t.juryPage.faq.label}
           </p>
           <h2 className="mt-3 text-3xl font-semibold leading-tight sm:text-4xl">
-            Frequently asked questions
+            {t.juryPage.faq.title}
           </h2>
         </div>
 
         <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm">
-          {faqs.map((faq, index) => {
+          {t.juryPage.faq.items.map((faq, index) => {
             const isOpen = openIndex === index
 
             return (

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 export default function JuryMenu({
   mobile = false,
@@ -12,6 +13,7 @@ export default function JuryMenu({
 }) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (mobile) {
@@ -32,21 +34,21 @@ export default function JuryMenu({
     return (
       <div className="grid gap-3">
         <p className="px-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
-          Jury
+          {t.common.jury}
         </p>
         <Link
           href="/apply/jury"
           onClick={onNavigate}
           className="inline-flex justify-center rounded-2xl border border-[#d8c27a]/25 bg-white/5 px-5 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-[#f5f1e8] transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
         >
-          Apply as Jury
+          {t.common.applyAsJury}
         </Link>
         <Link
           href="/jury/login"
           onClick={onNavigate}
           className="inline-flex justify-center rounded-2xl border border-white/12 bg-white/4.5 px-5 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-[#f5f1e8] transition hover:border-[#d8c27a]/35 hover:text-[#d8c27a]"
         >
-          Jury Account
+          {t.common.juryAccount}
         </Link>
       </div>
     );
@@ -63,7 +65,7 @@ export default function JuryMenu({
         className={buttonClassName}
         aria-expanded={open}
       >
-        Jury
+        {t.common.jury}
       </button>
 
       {open ? (
@@ -78,7 +80,7 @@ export default function JuryMenu({
             }}
             className="block rounded-2xl px-4 py-3 text-sm font-medium text-white transition hover:bg-white/6 hover:text-[#d8c27a]"
           >
-            Apply as Jury
+            {t.common.applyAsJury}
           </Link>
           <Link
             href="/jury/login"
@@ -88,7 +90,7 @@ export default function JuryMenu({
             }}
             className="mt-2 block rounded-2xl px-4 py-3 text-sm font-medium text-white transition hover:bg-white/6 hover:text-[#d8c27a]"
           >
-            Jury Account
+            {t.common.juryAccount}
           </Link>
         </div>
       ) : null}

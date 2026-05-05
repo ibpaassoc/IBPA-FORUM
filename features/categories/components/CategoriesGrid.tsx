@@ -1,7 +1,12 @@
-import { categories } from "@/data/home";
+"use client";
+
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { PageCard, PageSection } from "@/shared/components/layout/PageShell";
 
 export default function CategoriesGrid() {
+  const { t } = useLanguage();
+  const categories = t.home.categoriesPreview.items;
+
   return (
     <PageSection>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -17,8 +22,7 @@ export default function CategoriesGrid() {
               {category}
             </p>
             <p className="page-copy mt-3 text-sm">
-              Professional submissions are reviewed within the official IBPA
-              championship framework.
+              {t.categoriesPage.cardText}
             </p>
           </PageCard>
         ))}

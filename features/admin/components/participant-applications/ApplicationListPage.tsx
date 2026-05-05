@@ -1,8 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import ApplicationStatusBadge from "@/features/admin/components/badges/ApplicationStatusBadge";
 import PaymentStatusBadge from "@/features/admin/components/badges/PaymentStatusBadge";
 import { logoutAdminAction } from "@/features/admin/actions/auth.actions";
 import { formatAdminDate } from "@/features/admin/server/view-models";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { PageShell } from "@/shared/components/layout/PageShell";
 
 export default function ApplicationListPage({
@@ -31,20 +34,56 @@ export default function ApplicationListPage({
     approved: number;
   };
 }) {
+  const { t } = useLanguage();
+  const summaryItems = [
+    { label: t.admin.common.total, value: totals.total },
+    { label: t.admin.common.paymentPending, value: totals.paymentPending },
+    { label: t.admin.common.submitted, value: totals.submitted },
+    { label: t.admin.common.underReview, value: totals.underReview },
+    { label: t.admin.common.approved, value: totals.approved },
+  ];
+  const filters = [
+    { label: "All", href: "/admin/applications", active: !activeStatus },
+    {
+      label: t.admin.common.paymentPending,
+      href: "/admin/applications?status=PAYMENT_PENDING",
+      active: activeStatus === "PAYMENT_PENDING",
+    },
+    {
+      label: t.admin.common.submitted,
+      href: "/admin/applications?status=SUBMITTED",
+      active: activeStatus === "SUBMITTED",
+    },
+    {
+      label: t.admin.common.underReview,
+      href: "/admin/applications?status=UNDER_REVIEW",
+      active: activeStatus === "UNDER_REVIEW",
+    },
+    {
+      label: t.admin.common.approved,
+      href: "/admin/applications?status=APPROVED",
+      active: activeStatus === "APPROVED",
+    },
+    {
+      label: t.admin.common.rejected,
+      href: "/admin/applications?status=REJECTED",
+      active: activeStatus === "REJECTED",
+    },
+  ];
+
   return (
     <PageShell className="px-6 py-10 text-white md:px-10 md:py-12">
       <div className="mx-auto max-w-7xl pt-16">
         <div className="page-panel flex flex-col gap-5 rounded-3xl p-6 md:flex-row md:items-end md:justify-between md:p-8">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d8c27a]">
-              Participant Admin
+              {t.admin.participants.eyebrow}
             </p>
             <h1 className="mt-4 text-3xl font-semibold sm:text-4xl">
-              Championship participant applications
+              {t.admin.participants.title}
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-[#d9d4ca]">
-              Review applicant profiles, category entries, supporting files, and
-              current review status in one private workspace.
+              {t.admin.participants.text}
             </p>
           </div>
 
@@ -53,13 +92,13 @@ export default function ApplicationListPage({
               href="/admin/jury-applications"
               className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
             >
-              Jury Dashboard
+              {t.admin.participants.juryDashboard}
             </Link>
             <Link
               href="/admin/scoring"
               className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
             >
-              Scoring Dashboard
+              {t.admin.participants.scoringDashboard}
             </Link>
 
             <form action={logoutAdminAction}>
@@ -67,20 +106,14 @@ export default function ApplicationListPage({
                 type="submit"
                 className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
               >
-                Log Out
+                {t.admin.common.logout}
               </button>
             </form>
           </div>
         </div>
 
         <div className="mt-6 grid gap-4 md:grid-cols-5">
-          {[
-            { label: "Total", value: totals.total },
-            { label: "Payment Pending", value: totals.paymentPending },
-            { label: "Submitted", value: totals.submitted },
-            { label: "Under Review", value: totals.underReview },
-            { label: "Approved", value: totals.approved },
-          ].map((item) => (
+          {summaryItems.map((item) => (
             <div
               key={item.label}
               className="page-card rounded-2xl bg-white/4.5 p-5"
@@ -97,34 +130,7 @@ export default function ApplicationListPage({
 
         <section className="page-card mt-6 rounded-3xl p-4 md:p-6">
           <div className="mb-5 flex flex-wrap gap-3">
-            {[
-              { label: "All", href: "/admin/applications", active: !activeStatus },
-              {
-                label: "Payment Pending",
-                href: "/admin/applications?status=PAYMENT_PENDING",
-                active: activeStatus === "PAYMENT_PENDING",
-              },
-              {
-                label: "Submitted",
-                href: "/admin/applications?status=SUBMITTED",
-                active: activeStatus === "SUBMITTED",
-              },
-              {
-                label: "Under Review",
-                href: "/admin/applications?status=UNDER_REVIEW",
-                active: activeStatus === "UNDER_REVIEW",
-              },
-              {
-                label: "Approved",
-                href: "/admin/applications?status=APPROVED",
-                active: activeStatus === "APPROVED",
-              },
-              {
-                label: "Rejected",
-                href: "/admin/applications?status=REJECTED",
-                active: activeStatus === "REJECTED",
-              },
-            ].map((item) => (
+            {filters.map((item) => (
               <Link
                 key={item.label}
                 href={item.href}
@@ -140,13 +146,13 @@ export default function ApplicationListPage({
           </div>
 
           <div className="hidden grid-cols-[1.1fr_0.9fr_1fr_0.8fr_0.8fr_0.9fr_0.7fr] gap-4 border-b border-white/10 px-4 pb-4 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d9d4ca]/65 lg:grid">
-            <span>Applicant</span>
-            <span>Category</span>
-            <span>Award</span>
-            <span>App Status</span>
-            <span>Payment</span>
-            <span>Created</span>
-            <span>Open</span>
+            <span>{t.admin.common.applicant}</span>
+            <span>{t.admin.common.category}</span>
+            <span>{t.admin.common.award}</span>
+            <span>{t.admin.participants.appStatus}</span>
+            <span>{t.admin.common.payment}</span>
+            <span>{t.admin.common.created}</span>
+            <span>{t.admin.common.open}</span>
           </div>
 
           <div className="divide-y divide-white/10">
@@ -192,7 +198,7 @@ export default function ApplicationListPage({
                     href={`/admin/applications/${application.id}`}
                     className="inline-flex items-center justify-center rounded-full bg-[#d8c27a] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-black transition hover:bg-[#e2d093]"
                   >
-                    Review
+                    {t.admin.common.review}
                   </Link>
                 </div>
               </div>
@@ -200,7 +206,7 @@ export default function ApplicationListPage({
 
             {applications.length === 0 ? (
               <div className="px-4 py-12 text-center text-sm text-[#d9d4ca]/75">
-                No participant applications matched this filter.
+                {t.admin.participants.empty}
               </div>
             ) : null}
           </div>

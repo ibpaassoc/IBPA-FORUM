@@ -9,11 +9,13 @@ import {
   registerAccountAction,
   type RegisterState,
 } from "@/features/auth/server/register.actions";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 export default function RegisterForm() {
   const passwordRef = useRef<HTMLInputElement>(null);
   const signingInRef = useRef(false);
   const router = useRouter();
+  const { t } = useLanguage();
   const [state, action, pending] = useActionState<RegisterState | undefined, FormData>(
     registerAccountAction,
     undefined
@@ -55,7 +57,7 @@ export default function RegisterForm() {
     <form action={action} className="mt-8 space-y-5">
       <div>
         <label htmlFor="email" className="mb-2 block text-sm font-medium text-[#f1ecde]">
-          Email
+          {t.auth.form.email}
         </label>
         <input
           id="email"
@@ -64,13 +66,13 @@ export default function RegisterForm() {
           required
           defaultValue={state?.email ?? ""}
           className="w-full rounded-2xl border border-white/12 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-[#d9d4ca]/45 focus:border-[#d8c27a] focus:bg-white/[0.07]"
-          placeholder="Enter your email"
+          placeholder={t.auth.form.emailPlaceholder}
         />
       </div>
 
       <div>
         <label htmlFor="password" className="mb-2 block text-sm font-medium text-[#f1ecde]">
-          Password
+          {t.auth.form.password}
         </label>
         <input
           id="password"
@@ -80,7 +82,7 @@ export default function RegisterForm() {
           minLength={8}
           ref={passwordRef}
           className="w-full rounded-2xl border border-white/12 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-[#d9d4ca]/45 focus:border-[#d8c27a] focus:bg-white/[0.07]"
-          placeholder="At least 8 characters"
+          placeholder={t.auth.form.passwordRegisterPlaceholder}
         />
       </div>
 
@@ -89,7 +91,7 @@ export default function RegisterForm() {
           htmlFor="confirmPassword"
           className="mb-2 block text-sm font-medium text-[#f1ecde]"
         >
-          Confirm Password
+          {t.auth.form.confirmPassword}
         </label>
         <input
           id="confirmPassword"
@@ -98,7 +100,7 @@ export default function RegisterForm() {
           required
           minLength={8}
           className="w-full rounded-2xl border border-white/12 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-[#d9d4ca]/45 focus:border-[#d8c27a] focus:bg-white/[0.07]"
-          placeholder="Repeat your password"
+          placeholder={t.auth.form.confirmPasswordPlaceholder}
         />
       </div>
 
@@ -113,13 +115,17 @@ export default function RegisterForm() {
         disabled={pending || state?.success}
         className="inline-flex w-full items-center justify-center rounded-full bg-[#d8c27a] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-[#e2d093] disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {pending ? "Creating Account..." : state?.success ? "Opening Site..." : "Register"}
+        {pending
+          ? t.auth.form.creatingAccount
+          : state?.success
+            ? t.auth.form.openingSite
+            : t.auth.form.register}
       </button>
 
       <p className="text-sm leading-6 text-[#d9d4ca]/85">
-        Already have an account?{" "}
+        {t.auth.form.haveAccount}{" "}
         <Link href="/jury/login" className="text-[#d8c27a] hover:text-[#f0e0a6]">
-          Back to login
+          {t.auth.form.backToLogin}
         </Link>
         .
       </p>

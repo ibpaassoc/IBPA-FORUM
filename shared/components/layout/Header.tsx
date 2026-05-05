@@ -3,17 +3,20 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import JuryMenu from "@/shared/components/layout/JuryMenu";
-
-const navigation = [
-  { href: "/", label: "Home" },
-  { href: "/categories", label: "Categories" },
-  { href: "/jury", label: "Jury" },
-  { href: "/grand-prix", label: "Grand Prix" },
-];
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const { t } = useLanguage();
+
+  const navigation = [
+    { href: "/", label: t.header.navigation.home },
+    { href: "/categories", label: t.header.navigation.categories },
+    { href: "/jury", label: t.header.navigation.jury },
+    { href: "/grand-prix", label: t.header.navigation.grandPrix },
+  ];
 
   useEffect(() => {
     const closeOnResize = () => {
@@ -57,24 +60,27 @@ export default function Header() {
           </nav>
 
           <div className="hidden items-center gap-3 lg:flex">
+            <LanguageSwitcher />
             <JuryMenu />
 
             <Link
               href="/apply"
               className="inline-flex items-center justify-center rounded-full bg-[#d8c27a] px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#111111] transition hover:opacity-90"
             >
-              Apply Now
+              {t.common.applyNow}
             </Link>
           </div>
 
           <button
             type="button"
-            aria-label={open ? "Close menu" : "Open menu"}
+            aria-label={open ? t.header.closeMenu : t.header.openMenu}
             aria-expanded={open}
             onClick={() => setOpen((prev) => !prev)}
             className="relative ml-auto flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/12 bg-white/8 text-[#f5f1e8] transition hover:border-[#d8c27a]/40 hover:text-[#d8c27a] sm:h-11 sm:w-11 lg:hidden"
           >
-            <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
+            <span className="sr-only">
+              {open ? t.header.closeMenu : t.header.openMenu}
+            </span>
 
             <span
               className={`absolute h-0.5 w-5 bg-current transition-all duration-300 ${
@@ -114,6 +120,7 @@ export default function Header() {
             </div>
 
             <div className="grid gap-3 border-t border-white/8 pt-4">
+              <LanguageSwitcher mobile />
               <JuryMenu mobile onNavigate={handleLinkClick} />
 
               <Link
@@ -121,7 +128,7 @@ export default function Header() {
                 onClick={handleLinkClick}
                 className="inline-flex justify-center rounded-2xl bg-[#d8c27a] px-5 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-[#111111] transition hover:opacity-90"
               >
-                Apply Now
+                {t.common.applyNow}
               </Link>
             </div>
           </div>

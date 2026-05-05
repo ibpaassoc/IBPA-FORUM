@@ -1,3 +1,7 @@
+"use client";
+
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
+
 const statusStyles = {
   DRAFT: "bg-white/5 text-white/65 border-white/10",
   PAYMENT_PENDING: "bg-[#3c3214]/35 text-[#f1d98a] border-[#d8c27a]/30",
@@ -13,11 +17,13 @@ export default function ApplicationStatusBadge({
 }: {
   status: keyof typeof statusStyles;
 }) {
+  const { t } = useLanguage();
+
   return (
     <span
       className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${statusStyles[status]}`}
     >
-      {status.replaceAll("_", " ")}
+      {t.statuses[status]}
     </span>
   );
 }

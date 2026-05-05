@@ -1,3 +1,7 @@
+"use client";
+
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
+
 type ScoreStatusBadgeProps = {
   status: "NOT_STARTED" | "DRAFT" | "SUBMITTED" | "REOPENED" | "IN_PROGRESS" | "COMPLETE";
 };
@@ -12,11 +16,13 @@ const statusStyles: Record<ScoreStatusBadgeProps["status"], string> = {
 };
 
 export default function ScoreStatusBadge({ status }: ScoreStatusBadgeProps) {
+  const { t } = useLanguage();
+
   return (
     <span
       className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${statusStyles[status]}`}
     >
-      {status.replaceAll("_", " ")}
+      {t.statuses[status]}
     </span>
   );
 }
