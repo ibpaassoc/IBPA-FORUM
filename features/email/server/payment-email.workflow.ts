@@ -33,11 +33,30 @@ export async function sendPaymentAdminNotificationEmail({
     `Stripe payment intent: ${stripePaymentIntentId ?? "Not provided"}`,
   ];
 
-  return sendEmail({
+  const result = await sendEmail({
     type: "payment",
     to: EMAIL_PAYMENTS,
     subject: `IBPA Payment Confirmed: ${flowLabel}`,
     html: wrapEmail(`${flowLabel} payment confirmed`, paragraphs),
     text: buildTextBody(paragraphs),
   });
+
+  if (!result.delivered) {
+    console.error("Payment admin notification email was not delivered", {
+      flowLabel,
+      stripeSessionId,
+      reason: result.reason,
+      error: result.error,
+      recipient: result.recipient,
+    });
+  } else {
+    console.info("Payment admin notification email sent", {
+      flowLabel,
+      stripeSessionId,
+      recipient: result.recipient,
+      providerId: result.providerId,
+    });
+  }
+
+  return result;
 }

@@ -1,10 +1,18 @@
 import "server-only";
+import { readEnv } from "@/lib/env";
 
-export const EMAIL_NO_REPLY = process.env.EMAIL_NO_REPLY ?? "";
-export const EMAIL_PAYMENTS = process.env.EMAIL_PAYMENTS ?? "";
-export const EMAIL_SUPPORT = process.env.EMAIL_SUPPORT ?? "";
-export const EMAIL_APPLICATIONS = process.env.EMAIL_APPLICATIONS ?? "";
-export const EMAIL_TEST = process.env.EMAIL_TEST ?? "";
+export const EMAIL_NO_REPLY = readEnv([
+  "EMAIL_NO_REPLY",
+  "NO_REPLY_EMAIL",
+  "EMAIL_FROM",
+]);
+export const EMAIL_PAYMENTS = readEnv(["EMAIL_PAYMENTS", "PAYMENT_EMAIL"]);
+export const EMAIL_SUPPORT = readEnv(["EMAIL_SUPPORT", "SUPPORT_EMAIL"]);
+export const EMAIL_APPLICATIONS = readEnv([
+  "EMAIL_APPLICATIONS",
+  "APPLICATIONS_EMAIL",
+]);
+export const EMAIL_TEST = readEnv(["EMAIL_TEST", "TEST_EMAIL"]);
 export const EMAIL_REDIRECT_ALL_TO_TEST =
   process.env.EMAIL_REDIRECT_ALL_TO_TEST?.toLowerCase() === "true";
 

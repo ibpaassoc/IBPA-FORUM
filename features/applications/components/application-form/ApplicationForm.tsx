@@ -162,7 +162,13 @@ export default function ApplyForm({
         method: "POST",
         body: formData,
       });
-      const data = (await response.json()) as {
+      const data = (await response.json().catch((error) => {
+        console.error("Application submission response was not JSON", {
+          status: response.status,
+          error,
+        });
+        return {};
+      })) as {
         message?: string;
         checkoutUrl?: string;
         fieldErrors?: ValidationErrors;
@@ -187,7 +193,8 @@ export default function ApplyForm({
       if (data.checkoutUrl) {
         window.location.assign(data.checkoutUrl);
       }
-    } catch {
+    } catch (error) {
+      console.error("Application submission request failed", error);
       setSubmissionState({
         type: "error",
         message: t.applyPage.form.submitException,
