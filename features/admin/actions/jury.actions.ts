@@ -77,6 +77,30 @@ export async function approveJuryApplicationAction(formData: FormData) {
     } else if (!result.emailDelivered && result.emailSkipReason === "resend_missing") {
       notice =
         "Application approved, but the payment email was skipped because RESEND_API_KEY is not configured.";
+    } else if (
+      !result.emailDelivered &&
+      result.emailSkipReason === "resend_invalid_key"
+    ) {
+      notice =
+        "Application approved, but the payment email was skipped because RESEND_API_KEY contains invalid characters.";
+    } else if (
+      !result.emailDelivered &&
+      result.emailSkipReason === "email_sender_missing"
+    ) {
+      notice =
+        "Application approved, but the payment email was skipped because the sender email is not configured.";
+    } else if (
+      !result.emailDelivered &&
+      result.emailSkipReason === "email_recipient_missing"
+    ) {
+      notice =
+        "Application approved, but the payment email was skipped because the recipient email is not configured.";
+    } else if (!result.emailDelivered && result.emailSkipReason === "resend_error") {
+      notice =
+        "Application approved, but Resend rejected the payment email. Check the production logs for the Resend error.";
+    } else if (!result.emailDelivered) {
+      notice =
+        "Application approved, but the payment email was not delivered. Check the production logs for details.";
     }
   } catch (error) {
     redirect(
