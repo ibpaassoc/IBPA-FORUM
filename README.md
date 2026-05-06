@@ -214,7 +214,7 @@ Set these in Vercel/Render before deploying production. Do not paste secrets int
 ```env
 DATABASE_URL="postgresql://..."
 BLOB_READ_WRITE_TOKEN="..."
-STRIPE_SECRET_KEY="sk_live_..."
+STRIPE_SECRET_KEY="sk_live_... or sk_test_..."
 STRIPE_WEBHOOK_SECRET="whsec_..."
 RESEND_API_KEY="re_..."
 APP_URL="https://your-production-domain.com"
@@ -247,6 +247,10 @@ Copy the displayed `whsec_...` value into `STRIPE_WEBHOOK_SECRET` for the local 
 ```bash
 stripe trigger checkout.session.completed
 ```
+
+Stripe key mode matters: if production uses a test `STRIPE_SECRET_KEY`, the production
+`STRIPE_WEBHOOK_SECRET` must come from a test-mode webhook endpoint or Stripe CLI session.
+If production uses a live key, use the live-mode webhook secret.
 
 ## Current Status
 
