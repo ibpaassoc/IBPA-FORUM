@@ -280,7 +280,14 @@ export async function approveJuryApplication(id: string) {
   });
 
   let emailDelivered = false;
-  let emailSkipReason: "email_test_missing" | "resend_missing" | undefined;
+  let emailSkipReason:
+    | "email_sender_missing"
+    | "email_recipient_missing"
+    | "email_test_missing"
+    | "resend_invalid_key"
+    | "resend_missing"
+    | "resend_error"
+    | undefined;
 
   try {
     const result = await sendJuryApprovedPaymentLinkEmail({
