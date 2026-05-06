@@ -205,6 +205,48 @@ npm run dev
 | `npx prisma generate` | Regenerate Prisma client |
 | `npx prisma migrate deploy` | Apply migrations |
 | `npx tsx prisma/seed.ts` | Seed categories and awards |
+| `npm run test:application-submission` | Submit a local smoke-test application to `TEST_APP_URL` or `http://localhost:3000` |
+
+## Production Environment
+
+Set these in Vercel/Render before deploying production. Do not paste secrets into logs or commits.
+
+```env
+DATABASE_URL="postgresql://..."
+BLOB_READ_WRITE_TOKEN="..."
+STRIPE_SECRET_KEY="sk_live_..."
+STRIPE_WEBHOOK_SECRET="whsec_..."
+RESEND_API_KEY="re_..."
+APP_URL="https://your-production-domain.com"
+EMAIL_NO_REPLY="forum-no-reply@ibpassociations.org"
+EMAIL_PAYMENTS="forum-payments@ibpassociations.org"
+EMAIL_APPLICATIONS="forum-applications@ibpassociations.org"
+EMAIL_SUPPORT="forum-support@ibpassociations.org"
+EMAIL_TEST="dev@ibpassociations.org"
+EMAIL_REDIRECT_ALL_TO_TEST=false
+```
+
+Aliases supported by the app:
+
+```text
+APP_URL, FRONTEND_URL, or NEXT_PUBLIC_APP_URL
+EMAIL_NO_REPLY, NO_REPLY_EMAIL, or EMAIL_FROM
+EMAIL_PAYMENTS or PAYMENT_EMAIL
+EMAIL_APPLICATIONS or APPLICATIONS_EMAIL
+EMAIL_SUPPORT or SUPPORT_EMAIL
+```
+
+For local Stripe webhook testing, run the app and then:
+
+```bash
+stripe listen --forward-to localhost:3000/api/stripe/webhook
+```
+
+Copy the displayed `whsec_...` value into `STRIPE_WEBHOOK_SECRET` for the local shell or `.env.local`, then trigger a Checkout payment or use:
+
+```bash
+stripe trigger checkout.session.completed
+```
 
 ## Current Status
 

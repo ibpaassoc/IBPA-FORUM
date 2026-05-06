@@ -8,6 +8,7 @@ import { createCompetitorCheckoutSession } from "@/features/payments/server/chec
 import { prisma } from "@/shared/lib/prisma";
 
 export async function saveApplicationSubmission(formData: FormData) {
+  console.info("saveApplicationSubmission started");
   const categories = await getApplicationCategories();
   const values = extractApplicationValues(formData, categories);
   const validation = validateApplicationValues({
@@ -16,6 +17,11 @@ export async function saveApplicationSubmission(formData: FormData) {
   });
 
   if (!validation.success || !validation.selectedCategory || !validation.selectedAward) {
+    console.warn("Application submission validation failed", {
+      errors: validation.errors,
+      categoryId: String(values.categoryId ?? ""),
+      awardId: String(values.awardId ?? ""),
+    });
     return {
       ok: false as const,
       status: 400,
@@ -99,97 +105,176 @@ export async function saveApplicationSubmission(formData: FormData) {
 
   const normalizedEmail = String(values.email).trim().toLowerCase();
 
-  const application = await prisma.application.create({
-    data: {
-      fullName: String(values.fullName),
-      email: normalizedEmail,
-      phone: String(values.phone),
-      country: String(values.country),
-      stateProvince: String(values.stateProvince || "") || null,
-      city: String(values.city),
-      professionalTitle: String(values.professionalTitle),
-      yearsExperience: Number(values.yearsExperience),
-      membershipNumber: null,
-      membershipLevel: null,
-      websiteUrl: String(values.websiteUrl || "") || null,
-      socialUrl: String(values.socialUrl || "") || null,
-      reviewsUrl: String(values.reviewsUrl || "") || null,
-      heardAbout: String(values.heardAbout || "") || null,
+  let application: { id: string };
+
+  try {
+    application = await prisma.application.create({
+      data: {
+        fullName: String(values.fullName),
+        email: normalizedEmail,
+        phone: String(values.phone),
+        country: String(values.country),
+        stateProvince: String(values.stateProvince || "") || null,
+        city: String(values.city),
+        professionalTitle: String(values.professionalTitle),
+        yearsExperience: Number(values.yearsExperience),
+        membershipNumber: null,
+        membershipLevel: null,
+        websiteUrl: String(values.websiteUrl || "") || null,
+        socialUrl: String(values.socialUrl || "") || null,
+        reviewsUrl: String(values.reviewsUrl || "") || null,
+        heardAbout: String(values.heardAbout || "") || null,
+        categoryId: validation.selectedCategory.id,
+        awardId: validation.selectedAward.id,
+        status: "PAYMENT_PENDING",
+        paymentStatus: "PENDING",
+        amount: 5000,
+        currency: "usd",
+      },
+      select: {
+        id: true,
+      },
+    });
+    console.info("Application database record created", {
+      applicationId: application.id,
       categoryId: validation.selectedCategory.id,
       awardId: validation.selectedAward.id,
-      status: "PAYMENT_PENDING",
-      paymentStatus: "PENDING",
-      amount: 5000,
-      currency: "usd",
-    },
-    select: {
-      id: true,
-    },
-  });
+    });
+  } catch (error) {
+    console.error("Application database insert failed", {
+      categoryId: validation.selectedCategory.id,
+      awardId: validation.selectedAward.id,
+      error,
+    });
+    throw error;
+  }
 
-  const uploadedFiles = (
-    await Promise.all(
-      pendingFileUploads.flatMap(({ fieldKey, files }) =>
-        files.map((file, index) =>
-          uploadApplicationFile(file, application.id, fieldKey, index)
+  let uploadedFiles: Array<NonNullable<Awaited<ReturnType<typeof uploadApplicationFile>>>>;
+
+  try {
+    uploadedFiles = (
+      await Promise.all(
+        pendingFileUploads.flatMap(({ fieldKey, files }) =>
+          files.map((file, index) =>
+            uploadApplicationFile(file, application.id, fieldKey, index)
+          )
         )
       )
-    )
-  ).filter(Boolean);
+    ).filter(Boolean);
+    console.info("Application files uploaded", {
+      applicationId: application.id,
+      fileCount: uploadedFiles.length,
+      fields: uploadedFiles.map((file) => file.fieldKey),
+    });
+  } catch (error) {
+    console.error("Application file upload failed", {
+      applicationId: application.id,
+      uploadFields: pendingFileUploads.map(({ fieldKey, files }) => ({
+        fieldKey,
+        fileCount: files.length,
+      })),
+      error,
+    });
+    throw error;
+  }
 
-  await prisma.application.update({
-    where: {
-      id: application.id,
-    },
-    data: {
-      answers: answerEntries.length
-        ? {
-            create: answerEntries,
-          }
-        : undefined,
-      files: uploadedFiles.length
-        ? {
-            create: uploadedFiles,
-          }
-        : undefined,
-    },
-  });
-
-  const checkoutSession = await createCompetitorCheckoutSession({
-    applicationId: application.id,
-    email: normalizedEmail,
-    categoryId: validation.selectedCategory.id,
-    awardId: validation.selectedAward.id,
-  });
-
-  await prisma.$transaction([
-    prisma.payment.updateMany({
-      where: {
-        applicationId: application.id,
-        status: "PENDING",
-      },
-      data: {
-        status: "EXPIRED",
-      },
-    }),
-    prisma.application.update({
+  try {
+    await prisma.application.update({
       where: {
         id: application.id,
       },
       data: {
-        stripeCheckoutSessionId: checkoutSession.id,
+        answers: answerEntries.length
+          ? {
+              create: answerEntries,
+            }
+          : undefined,
+        files: uploadedFiles.length
+          ? {
+              create: uploadedFiles,
+            }
+          : undefined,
       },
-    }),
-    prisma.payment.create({
-      data: {
-        applicationId: application.id,
-        stripeSessionId: checkoutSession.id,
-        amount: 5000,
-        currency: "usd",
-        status: "PENDING",
-      },
-    }),
-  ]);
+    });
+    console.info("Application answers/files database update completed", {
+      applicationId: application.id,
+      answerCount: answerEntries.length,
+      fileCount: uploadedFiles.length,
+    });
+  } catch (error) {
+    console.error("Application answers/files database update failed", {
+      applicationId: application.id,
+      answerCount: answerEntries.length,
+      fileCount: uploadedFiles.length,
+      error,
+    });
+    throw error;
+  }
+
+  let checkoutSession: { id: string; url: string };
+
+  try {
+    checkoutSession = await createCompetitorCheckoutSession({
+      applicationId: application.id,
+      email: normalizedEmail,
+      categoryId: validation.selectedCategory.id,
+      awardId: validation.selectedAward.id,
+    });
+    console.info("Stripe competitor checkout session created", {
+      applicationId: application.id,
+      checkoutSessionId: checkoutSession.id,
+    });
+  } catch (error) {
+    console.error("Stripe competitor checkout session creation failed", {
+      applicationId: application.id,
+      categoryId: validation.selectedCategory.id,
+      awardId: validation.selectedAward.id,
+      error,
+    });
+    throw error;
+  }
+
+  try {
+    await prisma.$transaction([
+      prisma.payment.updateMany({
+        where: {
+          applicationId: application.id,
+          status: "PENDING",
+        },
+        data: {
+          status: "EXPIRED",
+        },
+      }),
+      prisma.application.update({
+        where: {
+          id: application.id,
+        },
+        data: {
+          stripeCheckoutSessionId: checkoutSession.id,
+        },
+      }),
+      prisma.payment.create({
+        data: {
+          applicationId: application.id,
+          stripeSessionId: checkoutSession.id,
+          amount: 5000,
+          currency: "usd",
+          status: "PENDING",
+        },
+      }),
+    ]);
+    console.info("Payment database transaction completed", {
+      applicationId: application.id,
+      checkoutSessionId: checkoutSession.id,
+    });
+  } catch (error) {
+    console.error("Payment database transaction failed", {
+      applicationId: application.id,
+      checkoutSessionId: checkoutSession.id,
+      error,
+    });
+    throw error;
+  }
 
   try {
     await sendApplicationReceivedNotificationEmail({
@@ -203,7 +288,10 @@ export async function saveApplicationSubmission(formData: FormData) {
       ],
     });
   } catch (error) {
-    console.error("Failed to send competitor application admin notification email", error);
+    console.error("Failed to send competitor application admin notification email", {
+      applicationId: application.id,
+      error,
+    });
   }
 
   return {
