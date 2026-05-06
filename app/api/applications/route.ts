@@ -11,6 +11,28 @@ function getErrorMessage(error: unknown) {
   return "Unknown server error.";
 }
 
+function getSubmissionErrorCode(error: unknown) {
+  const message = getErrorMessage(error).toLowerCase();
+
+  if (error instanceof EnvConfigError) {
+    return "ENV_CONFIG";
+  }
+
+  if (message.includes("stripe")) {
+    return "STRIPE_CHECKOUT";
+  }
+
+  if (message.includes("blob") || message.includes("upload")) {
+    return "FILE_UPLOAD";
+  }
+
+  if (message.includes("prisma") || message.includes("database")) {
+    return "DATABASE";
+  }
+
+  return "SUBMISSION_ERROR";
+}
+
 export async function GET() {
   try {
     const applications = await prisma.application.findMany({
@@ -79,6 +101,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result.body, { status: result.status });
   } catch (error) {
+    const errorCode = getSubmissionErrorCode(error);
     console.error("POST /api/applications error:", error);
     const devMessage =
       error instanceof EnvConfigError
@@ -87,6 +110,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       {
+        errorCode,
         message: isProduction()
           ? "Something went wrong during submission. Please try again in a moment."
           : devMessage,

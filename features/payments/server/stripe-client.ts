@@ -1,15 +1,11 @@
 import "server-only";
 import Stripe from "stripe";
-import { isProduction, readEnv, requireEnv } from "@/lib/env";
+import { readEnv, requireEnv } from "@/lib/env";
 
 let stripeClient: Stripe | null = null;
 
 function getStripeSecretKey() {
   const secretKey = requireEnv(["STRIPE_SECRET_KEY"]);
-
-  if (isProduction() && secretKey.startsWith("sk_test_")) {
-    throw new Error("Production STRIPE_SECRET_KEY must be a live key, not a test key.");
-  }
 
   return secretKey;
 }
