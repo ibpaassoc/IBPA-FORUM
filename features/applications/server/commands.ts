@@ -1,3 +1,4 @@
+import { sendApplicationReceivedNotificationEmail } from "@/features/email/server/application-email.workflow";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import { validateApplicationValues } from "@/features/applications/schemas/category-field-validation";
 import { extractApplicationValues } from "@/features/applications/server/form-mapping";
@@ -189,6 +190,21 @@ export async function saveApplicationSubmission(formData: FormData) {
       },
     }),
   ]);
+
+  try {
+    await sendApplicationReceivedNotificationEmail({
+      applicationType: "Competitor",
+      applicantName: String(values.fullName),
+      applicantEmail: normalizedEmail,
+      details: [
+        `Category: ${validation.selectedCategory.name}`,
+        `Award: ${validation.selectedAward.name}`,
+        "Payment status: Pending checkout",
+      ],
+    });
+  } catch (error) {
+    console.error("Failed to send competitor application admin notification email", error);
+  }
 
   return {
     ok: true as const,

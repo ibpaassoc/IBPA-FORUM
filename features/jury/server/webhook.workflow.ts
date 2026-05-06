@@ -1,7 +1,13 @@
 import { Prisma, type StripeWebhookEvent } from "@prisma/client";
 import type Stripe from "stripe";
 import { sendJuryPaymentConfirmedEmail } from "@/features/email/server/jury-email.workflow";
+import { sendPaymentAdminNotificationEmail } from "@/features/email/server/payment-email.workflow";
 import { prisma } from "@/shared/lib/prisma";
+
+type JuryPaymentEmailPayload = {
+  to: string;
+  fullName: string;
+};
 
 function serializeStripeEvent(event: Stripe.Event): Prisma.InputJsonValue {
   return JSON.parse(JSON.stringify(event)) as Prisma.InputJsonValue;
@@ -39,6 +45,14 @@ function getApplicationIdFromMetadata(
   return metadata.juryApplicationId ?? null;
 }
 
+function getPaymentIntentId(value: string | Stripe.PaymentIntent | null) {
+  if (!value) {
+    return null;
+  }
+
+  return typeof value === "string" ? value : value.id;
+}
+
 export async function handleJuryStripeEvent(event: Stripe.Event) {
   switch (event.type) {
     case "checkout.session.completed":
@@ -71,7 +85,8 @@ async function handleCheckoutCompleted(event: Stripe.Event) {
     return;
   }
 
-  let emailPayload: { to: string; fullName: string } | null = null;
+  const paymentIntentId = getPaymentIntentId(session.payment_intent);
+  let emailPayload: JuryPaymentEmailPayload | null = null;
 
   try {
     await prisma.$transaction(async (tx) => {
@@ -120,10 +135,26 @@ async function handleCheckoutCompleted(event: Stripe.Event) {
     return;
   }
 
+  const confirmedEmailPayload = emailPayload as JuryPaymentEmailPayload;
+
   try {
-    await sendJuryPaymentConfirmedEmail(emailPayload);
+    await sendJuryPaymentConfirmedEmail(confirmedEmailPayload);
   } catch (error) {
     console.error("Failed to send jury payment confirmed email", error);
+  }
+
+  try {
+    await sendPaymentAdminNotificationEmail({
+      flowLabel: "Jury registration",
+      applicantName: confirmedEmailPayload.fullName,
+      applicantEmail: confirmedEmailPayload.to,
+      amount: 25000,
+      currency: "usd",
+      stripeSessionId: session.id,
+      stripePaymentIntentId: paymentIntentId,
+    });
+  } catch (error) {
+    console.error("Failed to send jury payment admin notification email", error);
   }
 }
 

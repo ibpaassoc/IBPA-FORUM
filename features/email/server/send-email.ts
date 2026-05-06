@@ -1,7 +1,14 @@
 import "server-only";
 import { Resend } from "resend";
+import {
+  EMAIL_REDIRECT_ALL_TO_TEST,
+  resolveFrom,
+  resolveTo,
+  type EmailFromType,
+} from "@/lib/email/config";
 
 export type SendEmailInput = {
+  type: EmailFromType;
   to: string;
   subject: string;
   html: string;
@@ -11,53 +18,33 @@ export type SendEmailInput = {
 export type SendEmailResult = {
   delivered: boolean;
   recipient?: string;
-  reason?: "dev_email_missing" | "resend_missing";
+  reason?: "email_test_missing" | "resend_missing";
 };
 
-function isProduction() {
-  return process.env.NODE_ENV === "production";
-}
-
 function getNormalizedEmailPayload(input: SendEmailInput) {
-  if (isProduction()) {
-    const from = process.env.EMAIL_FROM;
+  const from = resolveFrom(input.type);
 
-    if (!from) {
-      throw new Error("EMAIL_FROM is not configured.");
-    }
-
-    return {
-      from,
-      to: input.to,
-      subject: input.subject,
-      html: input.html,
-      text: input.text,
-    };
+  if (!from) {
+    throw new Error(`Email sender for type "${input.type}" is not configured.`);
   }
 
-  const devEmail = process.env.DEV_EMAIL;
-  const payload = {
-    from: "IBPA <onboarding@resend.dev>",
-    to: devEmail ?? "",
+  return {
+    from,
+    to: resolveTo(input.to),
     subject: input.subject,
     html: input.html,
     text: input.text,
-    originalTo: input.to,
   };
-
-  console.log("DEV_EMAIL_PAYLOAD", payload);
-
-  return payload;
 }
 
 export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult> {
   const payload = getNormalizedEmailPayload(input);
 
-  if (!isProduction() && !payload.to) {
-    console.warn("DEV_EMAIL is not configured. Skipping development email send.");
+  if (EMAIL_REDIRECT_ALL_TO_TEST && !payload.to) {
+    console.warn("EMAIL_TEST is not configured. Skipping redirected email send.");
     return {
       delivered: false,
-      reason: "dev_email_missing",
+      reason: "email_test_missing",
     };
   }
 
