@@ -71,9 +71,9 @@ export async function approveJuryApplicationAction(formData: FormData) {
   try {
     const result = await approveJuryApplication(id);
 
-    if (!result.emailDelivered && result.emailSkipReason === "dev_email_missing") {
+    if (!result.emailDelivered && result.emailSkipReason === "email_test_missing") {
       notice =
-        "Application approved, but the payment email was skipped because DEV_EMAIL is not configured in development.";
+        "Application approved, but the payment email was skipped because EMAIL_TEST is not configured while email redirection is enabled.";
     } else if (!result.emailDelivered && result.emailSkipReason === "resend_missing") {
       notice =
         "Application approved, but the payment email was skipped because RESEND_API_KEY is not configured.";

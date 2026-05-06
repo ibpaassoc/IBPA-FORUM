@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import type { JuryApplicationStatus } from "@prisma/client";
+import { sendApplicationReceivedNotificationEmail } from "@/features/email/server/application-email.workflow";
 import {
   sendJuryApplicationReceivedEmail,
   sendJuryApprovedPaymentLinkEmail,
@@ -150,6 +151,20 @@ export async function submitJuryApplication(formData: FormData) {
     console.error("Failed to send jury application received email", error);
   }
 
+  try {
+    await sendApplicationReceivedNotificationEmail({
+      applicationType: "Jury",
+      applicantName: fullName,
+      applicantEmail: normalizedEmail,
+      details: [
+        `Location: ${city}, ${country}`,
+        `Professional title: ${professionalTitle}`,
+      ],
+    });
+  } catch (error) {
+    console.error("Failed to send jury application admin notification email", error);
+  }
+
   return {
     status: 201,
     body: {
@@ -265,7 +280,7 @@ export async function approveJuryApplication(id: string) {
   });
 
   let emailDelivered = false;
-  let emailSkipReason: "dev_email_missing" | "resend_missing" | undefined;
+  let emailSkipReason: "email_test_missing" | "resend_missing" | undefined;
 
   try {
     const result = await sendJuryApprovedPaymentLinkEmail({

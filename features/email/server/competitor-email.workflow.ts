@@ -19,6 +19,7 @@ export async function sendCompetitorApplicationConfirmedEmail({
   });
 
   return sendEmail({
+    type: "user",
     to,
     subject: template.subject,
     html: template.html,

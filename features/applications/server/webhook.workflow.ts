@@ -1,7 +1,17 @@
 import { Prisma, type StripeWebhookEvent } from "@prisma/client";
 import type Stripe from "stripe";
 import { sendCompetitorApplicationConfirmedEmail } from "@/features/email/server/competitor-email.workflow";
+import { sendPaymentAdminNotificationEmail } from "@/features/email/server/payment-email.workflow";
 import { prisma } from "@/shared/lib/prisma";
+
+type CompetitorPaymentEmailPayload = {
+  to: string;
+  fullName: string;
+  categoryName: string;
+  awardName: string;
+  amount: number;
+  currency: string;
+};
 
 function serializeStripeEvent(event: Stripe.Event): Prisma.InputJsonValue {
   return JSON.parse(JSON.stringify(event)) as Prisma.InputJsonValue;
@@ -80,12 +90,7 @@ async function handleCompetitorCheckoutCompleted(event: Stripe.Event) {
   }
 
   const paymentIntentId = getPaymentIntentId(session.payment_intent);
-  let emailPayload: {
-    to: string;
-    fullName: string;
-    categoryName: string;
-    awardName: string;
-  } | null = null;
+  let emailPayload: CompetitorPaymentEmailPayload | null = null;
 
   try {
     await prisma.$transaction(async (tx) => {
@@ -99,6 +104,8 @@ async function handleCompetitorCheckoutCompleted(event: Stripe.Event) {
           id: true,
           email: true,
           fullName: true,
+          amount: true,
+          currency: true,
           paymentStatus: true,
           submittedAt: true,
           category: {
@@ -150,6 +157,8 @@ async function handleCompetitorCheckoutCompleted(event: Stripe.Event) {
         fullName: application.fullName,
         categoryName: application.category.name,
         awardName: application.award.name,
+        amount: application.amount,
+        currency: application.currency,
       };
     });
   } catch (error) {
@@ -164,10 +173,27 @@ async function handleCompetitorCheckoutCompleted(event: Stripe.Event) {
     return true;
   }
 
+  const confirmedEmailPayload =
+    emailPayload as CompetitorPaymentEmailPayload;
+
   try {
-    await sendCompetitorApplicationConfirmedEmail(emailPayload);
+    await sendCompetitorApplicationConfirmedEmail(confirmedEmailPayload);
   } catch (error) {
     console.error("Failed to send competitor payment confirmation email", error);
+  }
+
+  try {
+    await sendPaymentAdminNotificationEmail({
+      flowLabel: "Competitor application",
+      applicantName: confirmedEmailPayload.fullName,
+      applicantEmail: confirmedEmailPayload.to,
+      amount: confirmedEmailPayload.amount,
+      currency: confirmedEmailPayload.currency,
+      stripeSessionId: session.id,
+      stripePaymentIntentId: paymentIntentId,
+    });
+  } catch (error) {
+    console.error("Failed to send competitor payment admin notification email", error);
   }
 
   return true;

@@ -55,6 +55,7 @@ function templateToPayload(
   template: { subject: string; html: string; text: string }
 ) {
   return {
+    type: "user" as const,
     to,
     subject: template.subject,
     html: template.html,
