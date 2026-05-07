@@ -6,20 +6,20 @@ export default function Stats() {
   const { t } = useLanguage();
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12">
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <section className="mx-auto max-w-[var(--content-width)] px-[var(--page-gutter)] py-[var(--space-2xl)]">
+      <div className="grid gap-[var(--space-md)] md:grid-cols-2 xl:grid-cols-4">
         {t.home.stats.map((item) => (
           <div
             key={item.title}
-            className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm"
+            className="page-card p-[var(--space-lg)]"
           >
-            <p className="text-sm uppercase tracking-[0.2em] text-[#d8c27a]">
+            <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-[var(--color-gold)]">
               {item.title}
             </p>
-            <p className="mt-4 text-2xl font-semibold text-white md:text-3xl">
+            <p className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(1.8rem,4vw,2.8rem)] font-light text-[var(--color-navy)]">
               {item.value}
             </p>
-            <p className="mt-3 text-sm leading-7 text-[#d9d4ca]">{item.text}</p>
+            <p className="mt-[var(--space-sm)] text-sm leading-[1.7] text-[var(--color-steel)]">{item.text}</p>
           </div>
         ))}
       </div>

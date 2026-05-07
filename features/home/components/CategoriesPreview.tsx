@@ -9,9 +9,9 @@ export default function CategoriesPreview() {
   const categories = t.home.categoriesPreview.items;
 
   return (
-    <section className="border-y border-white/10 bg-[#141415]">
-      <div className="mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12">
-        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+    <section className="bg-[var(--color-white)]">
+      <div className="mx-auto max-w-[var(--content-width)] px-[var(--page-gutter)] py-[var(--space-2xl)]">
+        <div className="flex flex-col gap-[var(--space-md)] md:flex-row md:items-end md:justify-between">
           <SectionTitle
             label={t.home.categoriesPreview.label}
             title={t.home.categoriesPreview.title}
@@ -20,23 +20,23 @@ export default function CategoriesPreview() {
 
           <Link
             href="/categories"
-            className="text-sm uppercase tracking-[0.16em] text-[#d8c27a] transition hover:text-white"
+            className="font-[var(--font-body)] text-[clamp(0.72rem,1vw,0.85rem)] font-medium uppercase tracking-[0.1em] text-[var(--color-navy)] transition hover:text-[var(--color-gold)]"
           >
             {t.home.categoriesPreview.viewAll} {"->"}
           </Link>
         </div>
 
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="mt-[var(--space-xl)] grid gap-[var(--space-sm)] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {categories.map((category, index) => (
             <Link
               key={category}
               href="/categories"
-              className="group rounded-2xl border border-white/10 bg-white/5 p-5 transition hover:border-[#d8c27a]/45 hover:bg-white/[0.07]"
+              className="page-card group bg-[var(--color-off-white)] p-[var(--space-md)] transition hover:border-[var(--color-navy)] hover:bg-[var(--color-navy)]"
             >
-              <div className="text-sm text-[#8b8578]">
+              <div className="text-sm font-medium tracking-[0.12em] text-[var(--color-gold)] group-hover:text-[var(--color-gold-light)]">
                 {String(index + 1).padStart(2, "0")}
               </div>
-              <div className="mt-3 text-lg font-medium text-white group-hover:text-[#f0e0a6]">
+              <div className="mt-[var(--space-xs)] font-[var(--font-display)] text-[clamp(1.1rem,2vw,1.6rem)] font-normal text-[var(--color-navy)] group-hover:text-white">
                 {category}
               </div>
             </Link>

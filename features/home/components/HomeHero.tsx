@@ -8,40 +8,43 @@ export default function HomeHero() {
   const { t } = useLanguage();
 
   return (
-    <section className="relative overflow-hidden border-b border-white/10">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(216,194,122,0.22),transparent_38%)]"/>
+    <section className="relative flex min-h-[92vh] items-center overflow-hidden bg-[linear-gradient(160deg,var(--color-navy-deep)_0%,var(--color-navy)_50%,var(--color-navy-mid)_100%)] pt-[clamp(60px,8vh,72px)]">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_80%_40%,rgba(124,168,200,0.15)_0%,transparent_70%),radial-gradient(ellipse_40%_40%_at_20%_80%,rgba(201,169,110,0.08)_0%,transparent_60%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(white_1px,transparent_1px),linear-gradient(90deg,white_1px,transparent_1px)] bg-[length:clamp(40px,5vw,60px)_clamp(40px,5vw,60px)] opacity-[0.04]" />
 
-      <div className="relative z-10 mx-auto flex max-w-7xl flex-col gap-16 px-6 md:px-10 py-32 lg:flex-row lg:items-center lg:justify-between lg:px-12">
+      <div className="relative z-10 mx-auto flex max-w-[var(--content-width)] flex-col gap-[var(--space-xl)] px-[var(--page-gutter)] py-[var(--space-2xl)] lg:flex-row lg:items-center lg:justify-between">
         <div className="max-w-3xl">
-          <p className="mb-5 text-xs uppercase tracking-[0.32em] text-[#d8c27a]">
+          <p className="page-eyebrow mb-[var(--space-md)] animate-[fadeUp_0.7s_ease_both]">
             {t.home.hero.eyebrow}
           </p>
 
-          <h1 className="text-4xl font-semibold leading-tight text-white md:text-6xl">
+          <h1 className="animate-[fadeUp_0.7s_ease_0.1s_both] font-[var(--font-display)] text-[clamp(2.2rem,5vw,4.2rem)] font-light leading-[1.1] text-white">
             {t.home.hero.title}
           </h1>
 
-          <p className="mt-6 max-w-2xl text-base leading-8 text-[#d9d4ca] md:text-lg">
+          <p className="mt-[var(--space-md)] max-w-2xl animate-[fadeUp_0.7s_ease_0.22s_both] text-[clamp(0.875rem,1.5vw,1rem)] leading-[1.75] text-[rgba(255,255,255,0.65)]">
             {t.home.hero.description}
           </p>
 
-          <div className="mt-8 flex flex-wrap gap-4">
+          <div className="mt-[var(--space-lg)] flex animate-[fadeUp_0.7s_ease_0.34s_both] flex-wrap gap-[var(--space-sm)]">
             <Link
               href="/apply"
-              className="rounded-full bg-[#d8c27a] px-7 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-[#111111] transition hover:opacity-90"
+              className="ibpa-button ibpa-button-gold"
             >
               {t.common.applyNow}
             </Link>
 
             <Link
               href="/categories"
-              className="rounded-full border border-white/20 px-7 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
+              className="ibpa-button ibpa-button-white"
             >
               {t.home.hero.categoriesCta}
             </Link>
           </div>
 
-          <Countdown />
+          <div className="animate-[fadeUp_0.7s_ease_0.46s_both]">
+            <Countdown />
+          </div>
         </div>
       </div>
     </section>
