@@ -23,7 +23,7 @@ export default function BlockBRenderer({
 }) {
   if (!categorySlug) {
     return (
-      <div className="rounded-[1.6rem] border border-dashed border-white/12 bg-white/[0.025] p-6 text-sm leading-7 text-[#d9d4ca]">
+      <div className="rounded-[1.6rem] border border-dashed border-white/12 bg-white/2.5 p-6 text-sm leading-7 text-[#d9d4ca]">
         Choose an award category in Block A to unlock the category-specific
         championship requirements in Block B.
       </div>
@@ -36,7 +36,7 @@ export default function BlockBRenderer({
 
   return (
     <div className="space-y-5">
-      <div className="rounded-[1.5rem] border border-[#d8c27a]/16 bg-[linear-gradient(135deg,rgba(216,194,122,0.08),rgba(255,255,255,0.02))] px-4 py-4 text-sm text-[#efe6d0]">
+      <div className="rounded-3xl border border-[#d8c27a]/16 bg-[linear-gradient(135deg,rgba(216,194,122,0.08),rgba(255,255,255,0.02))] px-4 py-4 text-sm text-(--color-navy)">
         Block B is tailored for <strong>{categoryName ?? "this category"}</strong>.
         Complete every required item to submit a review-ready application.
       </div>

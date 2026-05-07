@@ -7,13 +7,13 @@ export default function GrandPrixCriteria() {
   const { t } = useLanguage();
 
   return (
-    <PageSection className="grid gap-[var(--space-md)] lg:grid-cols-[1.05fr_0.95fr]">
+    <PageSection className="grid gap-(--space-md) lg:grid-cols-[1.05fr_0.95fr]">
       <PageCard>
         <p className="page-eyebrow">{t.grandPrixPage.criteria.label}</p>
-        <h2 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(1.8rem,3.5vw,3rem)] font-light text-[var(--color-navy)]">
+        <h2 className="mt-(--space-sm) font-(--font-display) text-[clamp(1.8rem,3.5vw,3rem)] text-(--color-navy)">
           {t.grandPrixPage.criteria.title}
         </h2>
-        <p className="mt-[var(--space-sm)] text-sm leading-[1.7] text-[var(--color-steel)]">
+        <p className="mt-(--space-sm) text-sm leading-[1.7] text-(--color-steel)">
           {t.grandPrixPage.criteria.text}
         </p>
       </PageCard>
@@ -22,10 +22,10 @@ export default function GrandPrixCriteria() {
         <p className="page-eyebrow">
           {t.grandPrixPage.criteria.listLabel}
         </p>
-        <div className="mt-[var(--space-md)] space-y-[var(--space-sm)]">
+        <div className="mt-(--space-md) space-y-(--space-sm)">
           {t.grandPrixPage.criteria.items.map((item) => (
-            <div key={item} className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-off-white)] p-[var(--space-sm)]">
-              <p className="text-sm leading-[1.65] text-[var(--color-steel)]">{item}</p>
+            <div key={item} className="rounded-sm border border-(--border-default) bg-(--color-off-white) p-(--space-sm)">
+              <p className="text-sm leading-[1.65] text-(--color-steel)">{item}</p>
             </div>
           ))}
         </div>
