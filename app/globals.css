@@ -70,8 +70,7 @@ h1,
 h2,
 h3,
 h4 {
-  color: var(--color-navy);
-  font-family: var(--font-display);
+  font-family: inherit;
   font-weight: 300;
   letter-spacing: 0.02em;
   line-height: 1.15;
@@ -80,10 +79,6 @@ h4 {
 a,
 button {
   transition: all 0.2s ease;
-}
-
-a {
-  color: inherit;
 }
 
 ::selection {
