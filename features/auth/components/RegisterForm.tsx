@@ -54,9 +54,9 @@ export default function RegisterForm() {
   }, [router, state]);
 
   return (
-    <form action={action} className="mt-8 space-y-5">
+    <form action={action} className="mt-[var(--space-lg)] space-y-[var(--space-md)]">
       <div>
-        <label htmlFor="email" className="mb-2 block text-sm font-medium text-[#f1ecde]">
+        <label htmlFor="email" className="mb-[var(--space-xs)] block text-[clamp(0.68rem,1vw,0.78rem)] font-medium uppercase tracking-[0.08em] text-[var(--color-navy)]">
           {t.auth.form.email}
         </label>
         <input
@@ -65,13 +65,13 @@ export default function RegisterForm() {
           type="email"
           required
           defaultValue={state?.email ?? ""}
-          className="w-full rounded-2xl border border-white/12 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-[#d9d4ca]/45 focus:border-[#d8c27a] focus:bg-white/[0.07]"
+          className="w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] text-[var(--color-navy)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-navy)] focus:shadow-[0_0_0_3px_rgba(26,38,64,0.07)]"
           placeholder={t.auth.form.emailPlaceholder}
         />
       </div>
 
       <div>
-        <label htmlFor="password" className="mb-2 block text-sm font-medium text-[#f1ecde]">
+        <label htmlFor="password" className="mb-[var(--space-xs)] block text-[clamp(0.68rem,1vw,0.78rem)] font-medium uppercase tracking-[0.08em] text-[var(--color-navy)]">
           {t.auth.form.password}
         </label>
         <input
@@ -81,7 +81,7 @@ export default function RegisterForm() {
           required
           minLength={8}
           ref={passwordRef}
-          className="w-full rounded-2xl border border-white/12 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-[#d9d4ca]/45 focus:border-[#d8c27a] focus:bg-white/[0.07]"
+          className="w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] text-[var(--color-navy)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-navy)] focus:shadow-[0_0_0_3px_rgba(26,38,64,0.07)]"
           placeholder={t.auth.form.passwordRegisterPlaceholder}
         />
       </div>
@@ -89,7 +89,7 @@ export default function RegisterForm() {
       <div>
         <label
           htmlFor="confirmPassword"
-          className="mb-2 block text-sm font-medium text-[#f1ecde]"
+          className="mb-[var(--space-xs)] block text-[clamp(0.68rem,1vw,0.78rem)] font-medium uppercase tracking-[0.08em] text-[var(--color-navy)]"
         >
           {t.auth.form.confirmPassword}
         </label>
@@ -99,13 +99,13 @@ export default function RegisterForm() {
           type="password"
           required
           minLength={8}
-          className="w-full rounded-2xl border border-white/12 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-[#d9d4ca]/45 focus:border-[#d8c27a] focus:bg-white/[0.07]"
+          className="w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] text-[var(--color-navy)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-navy)] focus:shadow-[0_0_0_3px_rgba(26,38,64,0.07)]"
           placeholder={t.auth.form.confirmPasswordPlaceholder}
         />
       </div>
 
       {state?.error ? (
-        <p className="rounded-2xl border border-[#a64b4b]/45 bg-[#4d1d1d]/35 px-4 py-3 text-sm text-[#f8efef]">
+        <p className="rounded-[var(--radius-sm)] border border-[var(--color-gold)] bg-[rgba(201,169,110,0.15)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-navy)]">
           {state.error}
         </p>
       ) : null}
@@ -113,7 +113,7 @@ export default function RegisterForm() {
       <button
         type="submit"
         disabled={pending || state?.success}
-        className="inline-flex w-full items-center justify-center rounded-full bg-[#d8c27a] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-[#e2d093] disabled:cursor-not-allowed disabled:opacity-60"
+        className="ibpa-button ibpa-button-primary w-full disabled:cursor-not-allowed disabled:opacity-60"
       >
         {pending
           ? t.auth.form.creatingAccount
@@ -122,9 +122,9 @@ export default function RegisterForm() {
             : t.auth.form.register}
       </button>
 
-      <p className="text-sm leading-6 text-[#d9d4ca]/85">
+      <p className="text-sm leading-6 text-[var(--color-steel)]">
         {t.auth.form.haveAccount}{" "}
-        <Link href="/jury/login" className="text-[#d8c27a] hover:text-[#f0e0a6]">
+        <Link href="/jury/login" className="text-[var(--color-gold)] hover:text-[var(--color-navy)]">
           {t.auth.form.backToLogin}
         </Link>
         .
