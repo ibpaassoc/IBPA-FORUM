@@ -15,32 +15,32 @@ export default function PublicJuryGrid({
 }) {
   return (
     <PageSection>
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-[var(--space-md)] md:grid-cols-2 xl:grid-cols-3">
         {members.map((member) => (
-          <PageCard key={member.id} className="rounded-3xl p-6">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
+          <PageCard key={member.id}>
+            <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-[var(--color-gold)]">
               Active Jury Member
             </p>
-            <h3 className="mt-4 text-2xl font-semibold text-white">{member.fullName}</h3>
-            <p className="mt-2 text-sm text-[#d9d4ca]">
+            <h3 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(1.1rem,2vw,1.6rem)] font-normal text-[var(--color-navy)]">{member.fullName}</h3>
+            <p className="mt-[var(--space-xs)] text-sm text-[var(--color-steel)]">
               {member.professionalTitle}
             </p>
-            <p className="mt-1 text-sm text-[#d9d4ca]/75">
+            <p className="mt-[var(--space-xs)] text-sm text-[var(--color-steel)]">
               {member.city}, {member.country}
             </p>
 
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="mt-[var(--space-sm)] flex flex-wrap gap-2">
               {member.expertiseAreas.map((area) => (
                 <span
                   key={area}
-                  className="rounded-full border border-white/12 bg-white/3 px-3 py-1 text-xs text-[#d9d4ca]"
+                  className="rounded-full border border-[var(--border-default)] bg-[var(--color-off-white)] px-3 py-1 text-xs text-[var(--color-steel)]"
                 >
                   {area}
                 </span>
               ))}
             </div>
 
-            <p className="mt-5 text-sm leading-7 text-[#d9d4ca]">
+            <p className="mt-[var(--space-md)] text-sm leading-[1.7] text-[var(--color-steel)]">
               {member.professionalBio}
             </p>
           </PageCard>

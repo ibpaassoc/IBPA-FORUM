@@ -20,12 +20,12 @@ export default async function JuryPage() {
       <JuryRequirements />
       <JuryProcess />
 
-      <PageSection className="space-y-6">
-        <PageCard className="rounded-3xl p-7">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
+      <PageSection className="space-y-[var(--space-md)]">
+        <PageCard>
+          <p className="page-eyebrow">
             Review Timeline
           </p>
-          <div className="mt-5 grid gap-4 md:grid-cols-3">
+          <div className="mt-[var(--space-md)] grid gap-[var(--space-sm)] md:grid-cols-3">
             {[
               ["Application Review", "Up to 14 business days"],
               ["Approval Email", "Sent only after review"],
@@ -33,27 +33,27 @@ export default async function JuryPage() {
             ].map(([label, value]) => (
               <div
                 key={label}
-                className="rounded-2xl border border-white/10 bg-white/[0.035] p-4"
+                className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-off-white)] p-[var(--space-sm)]"
               >
-                <p className="text-[10px] uppercase tracking-[0.22em] text-white/40">
+                <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-[var(--color-gold)]">
                   {label}
                 </p>
-                <p className="mt-2 text-sm font-medium text-white">{value}</p>
+                <p className="mt-[var(--space-xs)] text-sm font-medium text-[var(--color-navy)]">{value}</p>
               </div>
             ))}
           </div>
         </PageCard>
 
         {juryMembers.length > 0 ? (
-          <section className="space-y-6">
+          <section className="space-y-[var(--space-md)]">
             <div className="max-w-3xl">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
+              <p className="page-eyebrow">
                 Active Panel
               </p>
-              <h2 className="mt-3 text-3xl font-semibold sm:text-4xl">
+              <h2 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(1.8rem,3.5vw,3rem)] font-light text-[var(--color-navy)]">
                 Meet approved and paid jury members
               </h2>
-              <p className="mt-4 text-sm leading-7 text-[#d9d4ca]">
+              <p className="mt-[var(--space-sm)] text-sm leading-[1.7] text-[var(--color-steel)]">
                 These professionals completed review, approval, and official jury
                 payment confirmation. Public profile photos are available through
                 the protected image route when uploaded.
