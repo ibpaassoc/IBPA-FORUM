@@ -33,20 +33,20 @@ export default function JuryMenu({
   if (mobile) {
     return (
       <div className="grid gap-3">
-        <p className="px-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
+        <p className="px-1 text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-[var(--color-gold)]">
           {t.common.jury}
         </p>
         <Link
           href="/apply/jury"
           onClick={onNavigate}
-          className="inline-flex justify-center rounded-2xl border border-[#d8c27a]/25 bg-white/5 px-5 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-[#f5f1e8] transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
+          className="ibpa-button ibpa-button-ghost"
         >
           {t.common.applyAsJury}
         </Link>
         <Link
           href="/jury/login"
           onClick={onNavigate}
-          className="inline-flex justify-center rounded-2xl border border-white/12 bg-white/4.5 px-5 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-[#f5f1e8] transition hover:border-[#d8c27a]/35 hover:text-[#d8c27a]"
+          className="ibpa-button ibpa-button-ghost"
         >
           {t.common.juryAccount}
         </Link>
@@ -55,7 +55,7 @@ export default function JuryMenu({
   }
 
   const buttonClassName =
-    "inline-flex items-center justify-center rounded-full border border-[#d8c27a]/35 bg-white/5 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#f5f1e8] transition hover:border-[#d8c27a] hover:bg-white/8 hover:text-[#d8c27a]";
+    "ibpa-button ibpa-button-ghost px-[var(--space-sm)] py-[var(--space-xs)]";
 
   return (
     <div ref={containerRef} className="relative">
@@ -70,7 +70,7 @@ export default function JuryMenu({
 
       {open ? (
         <div
-          className="absolute right-0 top-full z-50 mt-3 min-w-60 rounded-3xl border border-white/12 bg-[#101011] p-3 shadow-[0_18px_40px_rgba(0,0,0,0.38)]"
+          className="absolute right-0 top-full z-50 mt-[var(--space-sm)] min-w-60 rounded-[var(--radius)] border border-[var(--border-default)] bg-[var(--color-white)] p-[var(--space-xs)] shadow-[var(--shadow-md)]"
         >
           <Link
             href="/apply/jury"
@@ -78,7 +78,7 @@ export default function JuryMenu({
               setOpen(false);
               onNavigate?.();
             }}
-            className="block rounded-2xl px-4 py-3 text-sm font-medium text-white transition hover:bg-white/6 hover:text-[#d8c27a]"
+            className="block rounded-[var(--radius-sm)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm font-medium text-[var(--color-navy)] transition hover:bg-[var(--color-mist)] hover:text-[var(--color-gold)]"
           >
             {t.common.applyAsJury}
           </Link>
@@ -88,7 +88,7 @@ export default function JuryMenu({
               setOpen(false);
               onNavigate?.();
             }}
-            className="mt-2 block rounded-2xl px-4 py-3 text-sm font-medium text-white transition hover:bg-white/6 hover:text-[#d8c27a]"
+            className="mt-[var(--space-xs)] block rounded-[var(--radius-sm)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm font-medium text-[var(--color-navy)] transition hover:bg-[var(--color-mist)] hover:text-[var(--color-gold)]"
           >
             {t.common.juryAccount}
           </Link>

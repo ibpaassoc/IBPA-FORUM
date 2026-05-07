@@ -34,9 +34,9 @@ const footerColumns = [
 
 export default function Footer() {
   return (
-    <footer className="w-full border-t border-white/10 bg-[linear-gradient(180deg,#111214,#131416_55%,#161719)] text-white">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-10 border-b border-white/10 pb-10 md:grid-cols-2 xl:grid-cols-[1.45fr_1fr_1fr_1fr_1fr]">
+    <footer className="w-full bg-[var(--color-navy-deep)] py-[var(--space-xl)] pb-[var(--space-lg)] text-[rgba(255,255,255,0.5)]">
+      <div className="mx-auto max-w-[var(--content-width)] px-[var(--page-gutter)]">
+        <div className="grid grid-cols-1 gap-[var(--space-lg)] border-b border-[rgba(255,255,255,0.08)] pb-[var(--space-lg)] md:grid-cols-2 xl:grid-cols-[1.45fr_1fr_1fr_1fr_1fr]">
           <div className="max-w-sm">
             <Link href="/" className="inline-flex items-center">
               <Image
@@ -48,16 +48,16 @@ export default function Footer() {
               />
             </Link>
 
-            <p className="mt-6 text-sm leading-8 text-[#d9d4ca]">
+            <p className="mt-[var(--space-md)] text-[clamp(0.875rem,1.5vw,1rem)] leading-[1.7] text-[rgba(255,255,255,0.5)]">
               Celebrating excellence in the global beauty industry and
               recognizing professionals shaping the future of beauty.
             </p>
 
-            <div className="mt-7 flex flex-wrap gap-3">
+            <div className="mt-[var(--space-md)] flex flex-wrap gap-3">
               <JuryMenu />
               <Link
                 href="/apply"
-                className="inline-flex items-center justify-center rounded-full bg-[#d8c27a] px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#111111] transition hover:opacity-90"
+                className="ibpa-button ibpa-button-gold"
               >
                 Apply Now
               </Link>
@@ -66,16 +66,16 @@ export default function Footer() {
 
           {footerColumns.map((column) => (
             <div key={column.title}>
-              <h4 className="mb-5 text-sm font-semibold uppercase tracking-[0.22em] text-[#d8c27a]">
+              <h4 className="mb-[var(--space-sm)] font-[var(--font-body)] text-[0.72rem] font-medium uppercase tracking-[0.18em] text-[var(--color-gold)]">
                 {column.title}
               </h4>
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-[var(--space-sm)]">
                 {column.links.map((link) =>
                   link.href.startsWith("mailto:") ? (
                     <a
                       key={link.label}
                       href={link.href}
-                      className="text-sm text-white/72 transition hover:text-[#d8c27a]"
+                      className="text-sm text-[rgba(255,255,255,0.5)] transition hover:text-white"
                     >
                       {link.label}
                     </a>
@@ -83,7 +83,7 @@ export default function Footer() {
                     <Link
                       key={link.label}
                       href={link.href}
-                      className="text-sm text-white/72 transition hover:text-[#d8c27a]"
+                      className="text-sm text-[rgba(255,255,255,0.5)] transition hover:text-white"
                     >
                       {link.label}
                     </Link>
@@ -94,21 +94,21 @@ export default function Footer() {
           ))}
 
           <div>
-            <h4 className="mb-5 text-sm font-semibold uppercase tracking-[0.22em] text-[#d8c27a]">
+            <h4 className="mb-[var(--space-sm)] font-[var(--font-body)] text-[0.72rem] font-medium uppercase tracking-[0.18em] text-[var(--color-gold)]">
               Contact
             </h4>
             <a
               href="mailto:info@ibpa-awards.com"
-              className="text-sm text-white/72 transition hover:text-[#d8c27a]"
+              className="text-sm text-[rgba(255,255,255,0.5)] transition hover:text-white"
             >
               info@ibpa-awards.com
             </a>
           </div>
         </div>
 
-        <div className="mt-6 flex flex-col gap-4 text-sm text-white/56 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-[var(--space-md)] flex flex-col gap-[var(--space-sm)] text-[0.75rem] text-[rgba(255,255,255,0.5)] sm:flex-row sm:items-center sm:justify-between">
           <p>Copyright 2026 IBPA Beauty Awards. All rights reserved.</p>
-          <p>Open to global participants.</p>
+          <p className="text-[var(--color-gold)]">Open to global participants.</p>
         </div>
       </div>
     </footer>

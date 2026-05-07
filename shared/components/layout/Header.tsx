@@ -32,27 +32,25 @@ export default function Header() {
   const handleLinkClick = () => setOpen(false);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 w-full px-3 pt-3 sm:px-5">
-      <div className="mx-auto max-w-7xl overflow-hidden rounded-[1.4rem] border border-[#d8c27a]/18 bg-[linear-gradient(135deg,rgba(19,20,22,0.96),rgba(17,18,20,0.94)_55%,rgba(15,16,18,0.96))] shadow-[0_18px_50px_rgba(0,0,0,0.28)] backdrop-blur-xl sm:rounded-[1.75rem] lg:overflow-visible">
-        <div className="pointer-events-none absolute inset-0 rounded-[1.75rem] bg-[radial-gradient(circle_at_top,rgba(216,194,122,0.08),transparent_38%),radial-gradient(circle_at_right,rgba(255,255,255,0.04),transparent_24%)]" />
-
-        <div className="relative flex items-center gap-3 px-3 py-3 sm:px-6 sm:py-4 lg:px-7">
+    <header className="fixed inset-x-0 top-0 z-100 w-full border-b border-[var(--border-default)] bg-[rgba(255,255,255,0.92)] px-[var(--page-gutter)] shadow-[var(--shadow-sm)] backdrop-blur-[16px]">
+      <div className="mx-auto max-w-[var(--content-width)]">
+        <div className="relative flex h-[clamp(60px,8vh,72px)] items-center gap-[var(--space-sm)]">
           <Link href="/" aria-label="IBPA home" className="min-w-0 shrink">
             <Image
-              src="/logo_white.png"
+              src="/logo_black.png"
               alt="IBPA Logo"
               width={320}
               height={80}
-              className="h-10 w-auto max-w-42.5 object-contain sm:h-14 sm:max-w-none"
+              className="h-10 w-auto max-w-42.5 object-contain sm:h-12 sm:max-w-none"
             />
           </Link>
 
-          <nav className="ml-auto mr-6 hidden items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 lg:flex">
+          <nav className="ml-auto mr-[var(--space-md)] hidden items-center gap-[var(--space-md)] lg:flex">
             {navigation.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="rounded-full px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#efe6d0] transition hover:bg-white/8 hover:text-[#d8c27a]"
+                className="font-[var(--font-body)] text-[clamp(0.7rem,1vw,0.8rem)] font-medium uppercase tracking-[0.1em] text-[var(--color-navy)] opacity-70 transition-opacity hover:opacity-100"
               >
                 {item.label}
               </Link>
@@ -65,7 +63,7 @@ export default function Header() {
 
             <Link
               href="/apply"
-              className="inline-flex items-center justify-center rounded-full bg-[#d8c27a] px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#111111] transition hover:opacity-90"
+              className="ibpa-button ibpa-button-primary"
             >
               {t.common.applyNow}
             </Link>
@@ -76,7 +74,7 @@ export default function Header() {
             aria-label={open ? t.header.closeMenu : t.header.openMenu}
             aria-expanded={open}
             onClick={() => setOpen((prev) => !prev)}
-            className="relative ml-auto flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/12 bg-white/8 text-[#f5f1e8] transition hover:border-[#d8c27a]/40 hover:text-[#d8c27a] sm:h-11 sm:w-11 lg:hidden"
+            className="relative ml-auto flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--border-default)] bg-[var(--color-white)] text-[var(--color-navy)] shadow-[var(--shadow-sm)] transition hover:border-[var(--color-navy)] sm:h-11 sm:w-11 lg:hidden"
           >
             <span className="sr-only">
               {open ? t.header.closeMenu : t.header.openMenu}
@@ -101,32 +99,32 @@ export default function Header() {
         </div>
 
         <div
-          className={`relative overflow-hidden border-t border-white/10 transition-all duration-300 ease-in-out lg:hidden ${
+          className={`relative overflow-hidden border-t border-[var(--border-default)] transition-all duration-300 ease-in-out lg:hidden ${
             open ? "max-h-128 opacity-100" : "max-h-0 opacity-0"
           }`}
         >
-          <div className="space-y-4 px-3 py-4 sm:px-6">
+          <div className="space-y-4 py-[var(--space-md)]">
             <div className="grid gap-2">
               {navigation.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
                   onClick={handleLinkClick}
-                  className="rounded-2xl border border-transparent bg-white/4 px-4 py-3 text-sm font-medium uppercase tracking-[0.16em] text-[#efe6d0] transition hover:border-[#d8c27a]/20 hover:bg-white/8 hover:text-[#d8c27a]"
+                  className="rounded-[var(--radius-sm)] border border-transparent bg-[var(--color-mist)] px-[var(--space-md)] py-[var(--space-sm)] text-sm font-medium uppercase tracking-[0.16em] text-[var(--color-navy)] transition hover:border-[var(--color-gold)]"
                 >
                   {item.label}
                 </Link>
               ))}
             </div>
 
-            <div className="grid gap-3 border-t border-white/8 pt-4">
+            <div className="grid gap-3 border-t border-[var(--border-default)] pt-[var(--space-md)]">
               <LanguageSwitcher mobile />
               <JuryMenu mobile onNavigate={handleLinkClick} />
 
               <Link
                 href="/apply"
                 onClick={handleLinkClick}
-                className="inline-flex justify-center rounded-2xl bg-[#d8c27a] px-5 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-[#111111] transition hover:opacity-90"
+                className="ibpa-button ibpa-button-primary"
               >
                 {t.common.applyNow}
               </Link>
