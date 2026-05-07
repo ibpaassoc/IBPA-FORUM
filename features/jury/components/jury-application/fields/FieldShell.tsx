@@ -19,15 +19,15 @@ export default function FieldShell({
   return (
     <div>
       <div className="mb-2 flex items-center gap-2">
-        <label className="text-[clamp(0.68rem,1vw,0.78rem)] font-medium uppercase tracking-[0.08em] text-[var(--color-navy)]">{label}</label>
+        <label className="text-[clamp(0.68rem,1vw,0.78rem)] font-medium uppercase tracking-[0.08em] text-(--color-navy)">{label}</label>
         {required ? (
-          <span className="rounded-[20px] bg-[rgba(201,169,110,0.15)] px-[7px] py-[2px] text-[0.6rem] font-medium uppercase tracking-[0.1em] text-[var(--color-gold)]">
-            Required
+          <span className="py-0.5 text-[1rem] font-medium uppercase tracking-widest text-(--color-gold)">
+            *
           </span>
         ) : null}
       </div>
       {children}
-      {hint ? <p className="mt-[var(--space-xs)] text-xs leading-5 text-[var(--color-steel)]">{hint}</p> : null}
+      {hint ? <p className="mt-(--space-xs) text-xs leading-5 text-(--color-steel)">{hint}</p> : null}
     </div>
   );
 }

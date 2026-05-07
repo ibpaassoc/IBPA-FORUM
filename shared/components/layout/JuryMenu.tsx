@@ -7,9 +7,11 @@ import { useLanguage } from "@/lib/i18n/LanguageProvider";
 export default function JuryMenu({
   mobile = false,
   onNavigate,
+  className = "",
 }: {
   mobile?: boolean;
   onNavigate?: () => void;
+  className?: string ;
 }) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -33,7 +35,7 @@ export default function JuryMenu({
   if (mobile) {
     return (
       <div className="grid gap-3">
-        <p className="px-1 text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-[var(--color-gold)]">
+        <p className="px-1 text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-(--color-gold)">
           {t.common.jury}
         </p>
         <Link
@@ -54,11 +56,10 @@ export default function JuryMenu({
     );
   }
 
-  const buttonClassName =
-    "ibpa-button ibpa-button-ghost px-[var(--space-sm)] py-[var(--space-xs)]";
+  const buttonClassName = ["ibpa-button ibpa-button-ghost px-[var(--space-sm)] py-[var(--space-xs)]", className].join(" ");
 
   return (
-    <div ref={containerRef} className="relative">
+    <div ref={containerRef} className="relative inline">
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
@@ -70,7 +71,7 @@ export default function JuryMenu({
 
       {open ? (
         <div
-          className="absolute right-0 top-full z-50 mt-[var(--space-sm)] min-w-60 rounded-[var(--radius)] border border-[var(--border-default)] bg-[var(--color-white)] p-[var(--space-xs)] shadow-[var(--shadow-md)]"
+          className="absolute left-0 top-full z-50 mt-(--space-sm) min-w-60 rounded-(--radius) border border-(--border-default) bg-(--color-white) p-(--space-xs) shadow-(--shadow-md)"
         >
           <Link
             href="/apply/jury"
@@ -78,7 +79,7 @@ export default function JuryMenu({
               setOpen(false);
               onNavigate?.();
             }}
-            className="block rounded-[var(--radius-sm)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm font-medium text-[var(--color-navy)] transition hover:bg-[var(--color-mist)] hover:text-[var(--color-gold)]"
+            className="block rounded-sm px-(--space-sm) py-(--space-sm) text-sm font-medium text-(--color-navy) transition hover:bg-(--color-mist) hover:text-(--color-gold)"
           >
             {t.common.applyAsJury}
           </Link>
@@ -88,7 +89,7 @@ export default function JuryMenu({
               setOpen(false);
               onNavigate?.();
             }}
-            className="mt-[var(--space-xs)] block rounded-[var(--radius-sm)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm font-medium text-[var(--color-navy)] transition hover:bg-[var(--color-mist)] hover:text-[var(--color-gold)]"
+            className="mt-(--space-xs) block rounded-sm px-(--space-sm) py-(--space-sm) text-sm font-medium text-(--color-navy) transition hover:bg-(--color-mist) hover:text-(--color-gold)"
           >
             {t.common.juryAccount}
           </Link>

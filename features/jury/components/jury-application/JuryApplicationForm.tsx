@@ -104,9 +104,9 @@ export default function JuryApplicationForm() {
       <div className="mx-auto max-w-5xl">
         <form
           onSubmit={handleSubmit}
-          className="rounded-[var(--radius)] border border-[var(--border-default)] bg-[var(--color-off-white)] p-[var(--space-lg)] shadow-[var(--shadow-lg)]"
+          className="rounded-(--radius) border border-(--border-default) bg-(--color-off-white) p-(--space-lg) shadow-(--shadow-lg)"
         >
-          <div className="space-y-[var(--space-lg)]">
+          <div className="space-y-(--space-lg)">
             <ProfessionalProfileSection />
             <ExperienceSection
               hasPreviousJudging={hasPreviousJudging}
@@ -120,10 +120,10 @@ export default function JuryApplicationForm() {
 
             {submissionState.message ? (
               <div
-                className={`rounded-[var(--radius-sm)] border px-[var(--space-sm)] py-[var(--space-sm)] text-sm leading-[1.65] ${
+                className={`rounded-sm border px-(--space-sm) py-(--space-sm) text-sm leading-[1.65] ${
                   submissionState.type === "success"
-                    ? "border-[var(--color-gold)] bg-[rgba(201,169,110,0.15)] text-[var(--color-navy)]"
-                    : "border-[var(--color-gold)] bg-[rgba(201,169,110,0.15)] text-[var(--color-navy)]"
+                    ? "border-(--color-gold) bg-[rgba(201,169,110,0.15)] text-(--color-navy)"
+                    : "border-(--color-gold) bg-[rgba(201,169,110,0.15)] text-(--color-navy)"
                 }`}
                 aria-live="polite"
               >
@@ -132,30 +132,30 @@ export default function JuryApplicationForm() {
             ) : null}
 
             {summary ? (
-              <div className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-white)] p-[var(--space-md)]">
-                <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-[var(--color-gold)]">
+              <div className="rounded-sm border border-(--border-default) bg-(--color-white) p-(--space-md)">
+                <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-gold)">
                   Application Summary
                 </p>
                 <div className="mt-4 grid gap-4 sm:grid-cols-3">
                   <div>
-                    <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-[var(--color-gold)]">
+                    <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-gold)">
                       Candidate
                     </p>
-                    <p className="mt-[var(--space-xs)] text-sm font-medium text-[var(--color-navy)]">{summary.name}</p>
+                    <p className="mt-(--space-xs) text-sm font-medium text-(--color-navy)">{summary.name}</p>
                   </div>
                   <div>
-                    <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-[var(--color-gold)]">
+                    <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-gold)">
                       Location
                     </p>
-                    <p className="mt-[var(--space-xs)] text-sm font-medium text-[var(--color-navy)]">
+                    <p className="mt-(--space-xs) text-sm font-medium text-(--color-navy)">
                       {summary.location}
                     </p>
                   </div>
                   <div>
-                    <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-[var(--color-gold)]">
+                    <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-gold)">
                       Expertise
                     </p>
-                    <p className="mt-[var(--space-xs)] text-sm font-medium text-[var(--color-navy)]">
+                    <p className="mt-(--space-xs) text-sm font-medium text-(--color-navy)">
                       {summary.expertise.join(", ")}
                     </p>
                   </div>
@@ -163,13 +163,15 @@ export default function JuryApplicationForm() {
               </div>
             ) : null}
 
-            <div className="flex flex-col gap-[var(--space-sm)] border-t border-[var(--border-default)] pt-[var(--space-md)]">
+            <div className="flex flex-col gap-(--space-sm) border-t border-(--border-default) pt-(--space-md)">
               <div className="flex items-center justify-between gap-4">
                 <div className="min-w-0">
-                  <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-[var(--color-gold)]">
+                  <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-gold)">
                     Expertise Selected
                   </p>
-                  <p className="mt-[var(--space-xs)] text-sm text-[var(--color-steel)]">{selectedExpertise.length}</p>
+                  <p className="mt-(--space-xs) text-sm text-(--color-steel)">
+                    {selectedExpertise.length}
+                  </p>
                 </div>
 
                 <button
