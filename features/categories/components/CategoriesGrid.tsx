@@ -9,19 +9,19 @@ export default function CategoriesGrid() {
 
   return (
     <PageSection>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid gap-[var(--space-sm)] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {categories.map((category, index) => (
           <PageCard
             key={category}
-            className="group border-white/10 bg-white/5 transition hover:border-[#d8c27a]/45 hover:bg-white/[0.07]"
+            className="group bg-[var(--color-off-white)] transition hover:border-[var(--color-navy)] hover:bg-[var(--color-navy)]"
           >
-            <p className="text-sm text-[#8b8578]">
+            <p className="text-sm font-medium tracking-[0.12em] text-[var(--color-gold)] group-hover:text-[var(--color-gold-light)]">
               {String(index + 1).padStart(2, "0")}
             </p>
-            <p className="mt-3 text-xl font-medium text-white group-hover:text-[#f0e0a6]">
+            <p className="mt-[var(--space-xs)] font-[var(--font-display)] text-[clamp(1.1rem,2vw,1.6rem)] font-normal text-[var(--color-navy)] group-hover:text-white">
               {category}
             </p>
-            <p className="page-copy mt-3 text-sm">
+            <p className="mt-[var(--space-sm)] text-sm leading-[1.7] text-[var(--color-steel)] group-hover:text-[rgba(255,255,255,0.55)]">
               {t.categoriesPage.cardText}
             </p>
           </PageCard>
