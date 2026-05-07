@@ -4,9 +4,9 @@ import FormFieldShell from "@/features/applications/components/application-form/
 import type { FieldOption } from "@/features/applications/types/application.types";
 
 const inputClassName =
-  "w-full rounded-2xl border border-white/12 bg-[#17181b]/90 px-4 py-3.5 text-sm text-white outline-none transition placeholder:text-white/28 focus:border-[#d8c27a] focus:bg-[#1a1b1e]";
+  "w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] text-[var(--color-navy)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-navy)] focus:shadow-[0_0_0_3px_rgba(26,38,64,0.07)]";
 
-const errorClassName = "border-[#8a3f3f] bg-[#2a1717]/80 focus:border-[#c46f6f]";
+const errorClassName = "border-[var(--color-gold)] focus:border-[var(--color-gold)]";
 
 export function TextField({
   label,
@@ -58,7 +58,7 @@ export function TextField({
         onBlur={() => onBlur?.(name)}
         onChange={(event) => onChange(name, event.target.value)}
         className={`${inputClassName} ${error ? errorClassName : ""} ${
-          readOnly ? "cursor-not-allowed bg-white/[0.08] text-[#f1df9a]" : ""
+          readOnly ? "cursor-not-allowed bg-[var(--color-mist)] text-[var(--color-steel)]" : ""
         } ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
       />
     </FormFieldShell>
@@ -99,7 +99,7 @@ export function TextareaField({
         value={value}
         placeholder={placeholder}
         onChange={(event) => onChange(name, event.target.value)}
-        className={`min-h-36 w-full rounded-2xl border border-white/12 bg-[#17181b]/90 px-4 py-3.5 text-sm leading-6 text-white outline-none transition placeholder:text-white/28 focus:border-[#d8c27a] focus:bg-[#1a1b1e] ${
+        className={`min-h-36 w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] leading-6 text-[var(--color-navy)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-navy)] focus:shadow-[0_0_0_3px_rgba(26,38,64,0.07)] ${
           error ? errorClassName : ""
         }`}
       />
@@ -147,20 +147,20 @@ export function SelectField({
             error ? errorClassName : ""
           } ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
         >
-          <option value="" className="bg-[#101010] text-white">
+          <option value="" className="bg-[var(--color-white)] text-[var(--color-navy)]">
             {placeholder ?? "Select an option"}
           </option>
           {options.map((option) => (
             <option
               key={option.value}
               value={option.value}
-              className="bg-[#101010] text-white"
+              className="bg-[var(--color-white)] text-[var(--color-navy)]"
             >
               {option.label}
             </option>
           ))}
         </select>
-        <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-white/40">
+        <span className="pointer-events-none absolute inset-y-0 right-[var(--space-sm)] flex items-center text-[var(--color-steel)]">
           ▾
         </span>
       </div>
@@ -205,10 +205,10 @@ export function ChoiceGroupField({
           return (
             <label
               key={option.value}
-              className={`flex cursor-pointer items-center gap-3 rounded-2xl border px-4 py-3 text-sm transition ${
+              className={`flex cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] border px-[var(--space-sm)] py-[var(--space-sm)] text-sm transition ${
                 checked
-                  ? "border-[#d8c27a]/45 bg-[#d8c27a]/10 text-white"
-                  : "border-white/10 bg-white/5 text-[#efe6d0] hover:border-[#d8c27a]/25 hover:bg-white/7"
+                  ? "border-[var(--color-gold)] bg-[rgba(201,169,110,0.15)] text-[var(--color-navy)]"
+                  : "border-[var(--border-default)] bg-[var(--color-white)] text-[var(--color-navy)] hover:border-[var(--color-navy)] hover:bg-[var(--color-mist)]"
               }`}
             >
               <input
@@ -227,7 +227,7 @@ export function ChoiceGroupField({
 
                   onChange(name, option.value);
                 }}
-                className="h-4 w-4 accent-[#d8c27a]"
+                className="h-4 w-4 accent-[var(--color-gold)]"
               />
               <span>{option.label}</span>
             </label>

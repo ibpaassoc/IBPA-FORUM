@@ -205,8 +205,8 @@ export default function ApplyForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
-      <div className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-[var(--space-lg)]">
+      <div className="space-y-[var(--space-md)]">
         <FormSection
           eyebrow={t.applyPage.form.blockA}
           title={t.applyPage.form.blockATitle}
@@ -238,22 +238,22 @@ export default function ApplyForm({
           </div>
         </FormSection>
 
-        <section className="rounded-[1.7rem] border border-white/10 bg-white/[0.045] p-6">
-          <div className="flex flex-col gap-4 border-b border-white/10 pb-5 md:flex-row md:items-center md:justify-between">
+        <section className="rounded-[var(--radius)] border border-[var(--border-default)] bg-[var(--color-off-white)] p-[var(--space-lg)] shadow-[var(--shadow-lg)]">
+          <div className="flex flex-col gap-[var(--space-sm)] border-b border-[var(--border-default)] pb-[var(--space-md)] md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
+              <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-[var(--color-gold)]">
                 {t.applyPage.form.progress}
               </p>
-              <p className="mt-3 text-sm text-[#efe6d0]">
+              <p className="mt-[var(--space-xs)] text-sm text-[var(--color-steel)]">
                 {completedRequiredCount} of {requiredFieldKeys.length}{" "}
                 {t.applyPage.form.requiredComplete}
               </p>
             </div>
 
             <div className="w-full max-w-sm">
-              <div className="h-2 rounded-full bg-white/8">
+              <div className="h-2 rounded-full bg-[var(--color-mist)]">
                 <div
-                  className="h-2 rounded-full bg-[linear-gradient(90deg,#b68a1f,#d8c27a,#f0dfa4)] transition-all"
+                  className="h-2 rounded-full bg-[var(--color-gold)] transition-all"
                   style={{ width: `${progressPercentage}%` }}
                 />
               </div>
@@ -264,8 +264,8 @@ export default function ApplyForm({
             <div
               className={`mt-5 rounded-[1.4rem] border px-4 py-4 text-sm leading-7 ${
                 submissionState.type === "success"
-                  ? "border-[#d8c27a]/28 bg-[#d8c27a]/10 text-white"
-                  : "border-[#8a3f3f]/55 bg-[#35191a]/70 text-white"
+                  ? "border-[var(--color-gold)] bg-[rgba(201,169,110,0.15)] text-[var(--color-navy)]"
+                  : "border-[var(--color-gold)] bg-[rgba(201,169,110,0.15)] text-[var(--color-navy)]"
               }`}
               aria-live="polite"
             >
@@ -276,7 +276,7 @@ export default function ApplyForm({
           <button
             type="submit"
             disabled={isSubmitting}
-            className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-[#d8c27a] px-6 py-3.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-[#e5d28f] disabled:cursor-not-allowed disabled:opacity-60"
+            className="ibpa-button ibpa-button-primary mt-[var(--space-md)] w-full disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSubmitting ? t.applyPage.form.submitting : t.applyPage.form.submit}
           </button>

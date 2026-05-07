@@ -6,14 +6,14 @@ export default function ApplyPageIntro() {
   const { t } = useLanguage();
 
   return (
-    <div className="mx-auto mb-8 max-w-3xl rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(216,194,122,0.14),transparent_38%),linear-gradient(135deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] px-6 py-7 backdrop-blur-sm sm:px-8">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
+    <div className="mx-auto mb-[var(--space-lg)] max-w-3xl rounded-t-[var(--radius)] bg-[var(--color-navy)] px-[var(--space-xl)] py-[var(--space-lg)]">
+      <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-[var(--color-gold)]">
         {t.applyPage.intro.eyebrow}
       </p>
-      <h1 className="mt-3 text-3xl font-semibold leading-tight text-white sm:text-[2.25rem]">
+      <h1 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(2.2rem,5vw,4.2rem)] font-light leading-[1.1] text-white">
         {t.applyPage.intro.title}
       </h1>
-      <p className="mt-3 max-w-2xl text-sm leading-7 text-[#d9d4ca] sm:text-base">
+      <p className="mt-[var(--space-sm)] max-w-2xl text-sm leading-[1.7] text-[rgba(255,255,255,0.55)] sm:text-base">
         {t.applyPage.intro.text}
       </p>
     </div>
