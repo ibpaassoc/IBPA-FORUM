@@ -6,11 +6,11 @@ import TextInput from "@/features/jury/components/jury-application/fields/TextIn
 
 export default function ProfessionalProfileSection() {
   return (
-    <div className="border-b border-white/10 pb-8">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
+    <div className="border-b border-[var(--border-default)] pb-[var(--space-lg)]">
+      <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-[var(--color-gold)]">
         Professional Profile
       </p>
-      <div className="mt-5 grid gap-5 md:grid-cols-2">
+      <div className="mt-[var(--space-md)] grid gap-[var(--space-md)] md:grid-cols-2">
         <TextInput
           label="Full Legal Name"
           name="fullName"
@@ -41,14 +41,14 @@ export default function ProfessionalProfileSection() {
             required
             className={inputClassName}
           >
-            <option value="" className="bg-[#101010] text-white">
+            <option value="" className="bg-[var(--color-white)] text-[var(--color-navy)]">
               Select country
             </option>
             {countryOptions.map((country) => (
               <option
                 key={country.value}
                 value={country.value}
-                className="bg-[#101010] text-white"
+                className="bg-[var(--color-white)] text-[var(--color-navy)]"
               >
                 {country.label}
               </option>

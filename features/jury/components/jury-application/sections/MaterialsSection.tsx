@@ -6,12 +6,12 @@ import TextareaField from "@/features/jury/components/jury-application/fields/Te
 
 export default function MaterialsSection() {
   return (
-    <div className="border-b border-white/10 pb-8">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
+    <div className="border-b border-[var(--border-default)] pb-[var(--space-lg)]">
+      <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-[var(--color-gold)]">
         Materials & Disclosure
       </p>
 
-      <div className="mt-5 space-y-5">
+      <div className="mt-[var(--space-md)] space-y-[var(--space-md)]">
         <FieldShell
           label="Professional Certifications"
           hint="Upload up to 5 PDF or image files."
@@ -23,7 +23,7 @@ export default function MaterialsSection() {
             accept=".pdf,.jpg,.jpeg,.png"
             multiple
             required
-            className="block w-full rounded-2xl border border-dashed border-white/14 bg-white/5 px-4 py-3 text-sm text-white file:mr-4 file:rounded-full file:border-0 file:bg-[#d8c27a] file:px-4 file:py-2 file:text-xs file:font-semibold file:uppercase file:tracking-[0.16em] file:text-black"
+            className="block w-full rounded-[var(--radius-sm)] border-[1.5px] border-dashed border-[var(--border-default)] bg-[var(--color-white)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-navy)] file:mr-[var(--space-sm)] file:rounded-full file:border-0 file:bg-[var(--color-gold)] file:px-[var(--space-sm)] file:py-[var(--space-xs)] file:text-xs file:font-medium file:uppercase file:tracking-[0.16em] file:text-[var(--color-navy-deep)]"
           />
         </FieldShell>
 
@@ -46,7 +46,7 @@ export default function MaterialsSection() {
             name="profilePhoto"
             accept=".jpg,.jpeg,.png"
             required
-            className="block w-full rounded-2xl border border-dashed border-white/14 bg-white/5 px-4 py-3 text-sm text-white file:mr-4 file:rounded-full file:border-0 file:bg-[#d8c27a] file:px-4 file:py-2 file:text-xs file:font-semibold file:uppercase file:tracking-[0.16em] file:text-black"
+            className="block w-full rounded-[var(--radius-sm)] border-[1.5px] border-dashed border-[var(--border-default)] bg-[var(--color-white)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-navy)] file:mr-[var(--space-sm)] file:rounded-full file:border-0 file:bg-[var(--color-gold)] file:px-[var(--space-sm)] file:py-[var(--space-xs)] file:text-xs file:font-medium file:uppercase file:tracking-[0.16em] file:text-[var(--color-navy-deep)]"
           />
         </FieldShell>
 
@@ -73,15 +73,15 @@ export default function MaterialsSection() {
           required
         />
 
-        <label className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-white">
+        <label className="flex items-start gap-3 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-white)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-navy)]">
           <input
             type="checkbox"
             name="confidentialityAgreement"
             value="yes"
             required
-            className="mt-1 h-4 w-4 rounded accent-[#d8c27a]"
+            className="mt-1 h-4 w-4 rounded accent-[var(--color-gold)]"
           />
-          <span className="leading-6 text-white/85">
+          <span className="leading-6 text-[var(--color-steel)]">
             I agree to keep all jury deliberations, candidate information,
             and judging materials confidential.
           </span>
