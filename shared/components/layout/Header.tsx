@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
+import LanguageSwitcher from "@/shared/components/layout/LanguageSwitcher";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import JuryMenu from "@/shared/components/layout/JuryMenu";
 

@@ -59,18 +59,11 @@ export default function Countdown() {
   }, []);
 
   return (
-    <div className="mt-10">
-      <div className="grid max-w-2xl grid-cols-2 gap-4 md:grid-cols-4">
+      <div className="mt-10 grid max-w-2xl grid-cols-2 gap-4 md:grid-cols-4">
         <CountdownCard value={timeLeft.days} label="Days" />
         <CountdownCard value={timeLeft.hours} label="Hours" />
         <CountdownCard value={timeLeft.minutes} label="Minutes" />
         <CountdownCard value={timeLeft.seconds} label="Seconds" />
       </div>
-
-      <p className="mt-5 text-sm text-[#beb8aa]">
-        Application deadline: July 31, 2026 | Judging: August 5 to August 20,
-        2026 | Ceremony: September 4-5, 2026
-      </p>
-    </div>
   );
 }
