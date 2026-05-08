@@ -56,10 +56,6 @@ export default function JuryApplicationDetailPage({
         actions={
           <>
             <AdminToolbarButton href="/admin/jury-applications">Back to List</AdminToolbarButton>
-            <AdminToolbarButton href="/admin/applications">Participant Dashboard</AdminToolbarButton>
-            <form action={logoutAdminAction}>
-              <AdminToolbarButton type="submit">Log Out</AdminToolbarButton>
-            </form>
           </>
         }
       />

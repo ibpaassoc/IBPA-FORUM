@@ -92,11 +92,6 @@ export default function ApplicationDetailPage({
         actions={
           <>
             <AdminToolbarButton href="/admin/applications">Back to List</AdminToolbarButton>
-            <AdminToolbarButton href="/admin/jury-applications">Jury Dashboard</AdminToolbarButton>
-            <AdminToolbarButton href="/admin/scoring">Scoring Dashboard</AdminToolbarButton>
-            <form action={logoutAdminAction}>
-              <AdminToolbarButton type="submit">Log Out</AdminToolbarButton>
-            </form>
           </>
         }
       />
