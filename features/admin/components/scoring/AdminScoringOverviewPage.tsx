@@ -9,7 +9,7 @@ import {
   AdminToolbarButton,
 } from "@/shared/components/admin/AdminDashboard";
 
-const scoringGrid = "grid-cols-[1.4fr_0.8fr_1.4fr_0.6fr_auto] items-center justify-center";
+const scoringGrid = "grid-cols-[1.4fr_0.8fr_1.4fr_0.6fr] items-center";
 
 export default function AdminScoringOverviewPage({
   categories,
@@ -63,95 +63,153 @@ export default function AdminScoringOverviewPage({
       />
 
       <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {[
-          { label: "Scoreable Applications", value: stats.totalScoreableApplications },
-          { label: "Scored", value: stats.totalScoredApplications },
-          { label: "Not Scored", value: stats.totalNotScoredApplications },
-          {
-            label: "Avg Completion",
-            value: `${stats.averageCompletionPercentage.toFixed(0)}%`,
-          },
-        ].map((item) => (
-          <AdminStatCard key={item.label} label={item.label} value={item.value} />
-        ))}
+        <AdminStatCard
+          label="Scoreable Applications"
+          value={stats.totalScoreableApplications}
+        />
+        <AdminStatCard label="Scored" value={stats.totalScoredApplications} />
+        <AdminStatCard
+          label="Not Scored"
+          value={stats.totalNotScoredApplications}
+        />
+        <AdminStatCard
+          label="Avg Completion"
+          value={`${stats.averageCompletionPercentage.toFixed(0)}%`}
+        />
       </div>
 
       <AdminSection className="mt-5">
-        <form className="grid gap-4 lg:grid-cols-[1.15fr_0.9fr_0.8fr_0.8fr_auto]">
-          <input
-            type="text"
-            name="q"
-            defaultValue={filters.q}
-            placeholder="Search participant name"
-            className="admin-field w-full rounded-2xl px-4 py-3 text-sm outline-none transition"
-          />
+        {/* MOBILE FILTERS */}
+        <details className="group lg:hidden">
+            <summary className="admin-field flex cursor-pointer list-none items-center justify-between rounded-2xl px-4 py-3 text-sm font-semibold text-(--admin-ink)">
+                <span>Filters</span>
+                <span className="transition group-open:rotate-180">⌄</span>
+            </summary>
 
-          <select
-            name="category"
-            defaultValue={filters.category ?? ""}
-            className="admin-field w-full rounded-2xl px-4 py-3 text-sm outline-none transition"
-          >
-            <option value="" className="bg-white text-(--admin-ink)">
-              All Categories
-            </option>
-            {categories.map((category) => (
-              <option key={category} value={category} className="bg-white text-(--admin-ink)">
-                {category}
-              </option>
-            ))}
-          </select>
+            <form className="mt-3 grid gap-2 rounded-2xl border border-[rgba(13,27,54,0.08)] bg-white/70 p-3">
+                <input
+                type="text"
+                name="q"
+                defaultValue={filters.q}
+                placeholder="Search by name"
+                className="admin-field rounded-xl px-3 py-2 text-sm outline-none"
+                />
 
-          <select
-            name="status"
-            defaultValue={filters.status ?? ""}
-            className="admin-field w-full rounded-2xl px-4 py-3 text-sm outline-none transition"
-          >
-            <option value="" className="bg-white text-(--admin-ink)">
-              All Statuses
-            </option>
-            {["NOT_STARTED", "IN_PROGRESS", "COMPLETE"].map((status) => (
-              <option key={status} value={status} className="bg-white text-(--admin-ink)">
-                {status.replaceAll("_", " ")}
-              </option>
-            ))}
-          </select>
+                <select
+                name="category"
+                defaultValue={filters.category ?? ""}
+                className="admin-field rounded-xl px-3 py-2 text-sm outline-none"
+                >
+                <option value="">All Categories</option>
 
-          <select
-            name="sort"
-            defaultValue={filters.sort}
-            className="admin-field w-full rounded-2xl px-4 py-3 text-sm outline-none transition"
-          >
-            <option value="averageScore" className="bg-white text-(--admin-ink)">
-              Sort by Average Score
-            </option>
-            <option value="category" className="bg-white text-(--admin-ink)">
-              Sort by Category
-            </option>
-            <option value="status" className="bg-white text-(--admin-ink)">
-              Sort by Status
-            </option>
-          </select>
+                {categories.map((category) => (
+                    <option key={category} value={category}>
+                    {category}
+                    </option>
+                ))}
+                </select>
 
-          <button
-            type="submit"
-            className="admin-action-primary inline-flex items-center justify-center rounded-full px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.16em] transition"
-          >
-            Apply
-          </button>
+                <select
+                name="status"
+                defaultValue={filters.status ?? ""}
+                className="admin-field rounded-xl px-3 py-2 text-sm outline-none"
+                >
+                <option value="">All Statuses</option>
+                <option value="NOT_STARTED">Not Started</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="COMPLETE">Complete</option>
+                </select>
+
+                <select
+                name="sort"
+                defaultValue={filters.sort}
+                className="admin-field rounded-xl px-3 py-2 text-sm outline-none"
+                >
+                <option value="averageScore">Average Score</option>
+                <option value="category">Category</option>
+                <option value="status">Status</option>
+                </select>
+
+                <button
+                type="submit"
+                className="admin-action-primary rounded-full px-5 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] transition"
+                >
+                Apply
+                </button>
+            </form>
+        </details>
+
+        {/* DESKTOP FILTERS */}
+        <form className="hidden gap-3 lg:grid lg:grid-cols-[1.15fr_0.9fr_0.8fr_0.8fr_auto] lg:items-center">
+            <input
+                type="text"
+                name="q"
+                defaultValue={filters.q}
+                placeholder="Search by name"
+                className="admin-field rounded-xl px-3 py-2 text-sm outline-none"
+            />
+
+            <select
+                name="category"
+                defaultValue={filters.category ?? ""}
+                className="admin-field rounded-xl px-3 py-2 text-sm outline-none"
+            >
+                <option value="">All Categories</option>
+
+                {categories.map((category) => (
+                <option key={category} value={category}>
+                    {category}
+                </option>
+                ))}
+            </select>
+
+            <select
+                name="status"
+                defaultValue={filters.status ?? ""}
+                className="admin-field rounded-xl px-3 py-2 text-sm outline-none"
+            >
+                <option value="">All Statuses</option>
+                <option value="NOT_STARTED">Not Started</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="COMPLETE">Complete</option>
+            </select>
+
+            <select
+                name="sort"
+                defaultValue={filters.sort}
+                className="admin-field rounded-xl px-3 py-2 text-sm outline-none"
+            >
+                <option value="averageScore">Average Score</option>
+                <option value="category">Category</option>
+                <option value="status">Status</option>
+            </select>
+
+            <button
+                type="submit"
+                className="admin-action-primary rounded-full px-5 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] transition"
+            >
+                Apply
+            </button>
         </form>
 
         <AdminDataTable
           className="mt-5"
-          headers={["Participant", "Category", "Award", "Average", ""]}
+          headers={["Participant", "Category", "Award", "Average"]}
           gridClassName={scoringGrid}
         >
           {applications.map((application) => (
-            <AdminDataRow key={application.id} gridClassName={scoringGrid} href={`/admin/scoring/${application.id}`}>
-              <div >
+            <AdminDataRow
+              key={application.id}
+              gridClassName={scoringGrid}
+              href={`/admin/scoring/${application.id}`}
+            >
+              <div>
                 <p className="text-sm font-semibold text-(--admin-ink)">
                   {application.fullName}
                 </p>
-                <p className="admin-muted mt-1 text-sm">{application.email}</p>
+                <p className="admin-muted mt-1 text-sm">
+                  {application.email}
+                </p>
               </div>
 
               <div className="text-sm text-(--admin-ink)">
