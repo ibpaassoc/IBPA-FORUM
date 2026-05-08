@@ -193,35 +193,6 @@ export default function JuryApplicationDetailPage({
           <div className="space-y-6">
             <JuryScoreForm applicationId={application.id} initialScore={score} />
 
-            <AdminSection eyebrow="Review Status">
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                <DetailItem
-                  label="Application Status"
-                  value={application.status.replaceAll("_", " ")}
-                />
-                <DetailItem
-                  label="Payment Status"
-                  value={application.paymentStatus.replaceAll("_", " ")}
-                />
-                <DetailItem
-                  label="Amount"
-                  value={`${(application.amount / 100).toFixed(2)} ${application.currency.toUpperCase()}`}
-                />
-                <DetailItem
-                  label="Paid At"
-                  value={formatAdminDate(application.paidAt)}
-                />
-                <DetailItem
-                  label="Submitted"
-                  value={formatAdminDate(application.submittedAt)}
-                />
-                <DetailItem
-                  label="Updated"
-                  value={formatAdminDate(application.updatedAt)}
-                />
-              </div>
-            </AdminSection>
-
             <AdminSection eyebrow="Uploaded Files">
               <div className="mt-5 space-y-5">
                 <div>
