@@ -190,22 +190,13 @@ export default function JuryApplicationDetailPage({
                 Review Panel
               </p>
 
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              <div className="mt-5 grid gap-4">
                 <div className="admin-detail-card rounded-2xl p-4">
                   <p className="admin-eyebrow">
                     Application Status
                   </p>
                   <div className="mt-4">
                     <ApplicationStatusBadge status={application.status} />
-                  </div>
-                </div>
-
-                <div className="admin-detail-card rounded-2xl p-4">
-                  <p className="admin-eyebrow">
-                    Payment Status
-                  </p>
-                  <div className="mt-4">
-                    <PaymentStatusBadge status={application.paymentStatus} />
                   </div>
                 </div>
               </div>
@@ -228,56 +219,14 @@ export default function JuryApplicationDetailPage({
                     placeholder="Add internal review notes, follow-up items, or approval context."
                   />
                 </div>
-
-                <button
-                  type="submit"
-                  className="admin-action-primary inline-flex items-center justify-center rounded-full px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
-                >
-                  Save Notes
-                </button>
-              </form>
-
-              <form
-                action={updateJuryApplicationStatusAction}
-                className="admin-detail-card mt-5 rounded-2xl p-4"
-              >
-                <input type="hidden" name="id" value={application.id} />
-
-                <p className="admin-eyebrow">
-                  Change Status
-                </p>
-                <p className="admin-copy mt-3 text-sm leading-6">
-                  Move this application back to submitted, approve it again with
-                  a fresh payment link, or reject it after review. Paid status
-                  remains webhook-only.
-                </p>
-
-                <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <select
-                    name="status"
-                    defaultValue={application.status}
-                    className="admin-field w-full rounded-full px-4 py-3 text-sm outline-none transition sm:max-w-60"
-                  >
-                    <option value="SUBMITTED" className="bg-white text-[var(--admin-ink)]">
-                      Submitted
-                    </option>
-                    <option value="APPROVED" className="bg-white text-[var(--admin-ink)]">
-                      Approved
-                    </option>
-                    <option value="REJECTED" className="bg-white text-[var(--admin-ink)]">
-                      Rejected
-                    </option>
-                    <option value="PAID" className="bg-white text-[var(--admin-ink)]" disabled>
-                      Paid (webhook only)
-                    </option>
-                  </select>
-
-                  <button
-                    type="submit"
-                    className="admin-action-secondary inline-flex items-center justify-center rounded-full px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
-                  >
-                    Update Status
-                  </button>
+                
+                <div className="justify-self-center">
+                    <button
+                        type="submit"
+                        className="admin-action-primary inline-flex items-center rounded-full px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
+                        >
+                        Save Notes
+                    </button>
                 </div>
               </form>
 
@@ -290,15 +239,7 @@ export default function JuryApplicationDetailPage({
                   label="Approved At"
                   value={formatAdminDate(application.approvedAt)}
                 />
-                <DetailItem
-                  label="Rejected At"
-                  value={formatAdminDate(application.rejectedAt)}
-                />
                 <DetailItem label="Paid At" value={formatAdminDate(application.paidAt)} />
-                <DetailItem
-                  label="Stripe Session"
-                  value={application.stripeCheckoutSessionId || "Not created"}
-                />
               </div>
 
               <div className="mt-5 flex flex-wrap gap-3">
@@ -320,7 +261,7 @@ export default function JuryApplicationDetailPage({
                     <input type="hidden" name="id" value={application.id} />
                     <button
                       type="submit"
-                      className="admin-alert-danger inline-flex items-center justify-center rounded-full px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition hover:border-[var(--admin-gold)] hover:text-[var(--admin-gold-strong)]"
+                      className="admin-alert-danger inline-flex items-center justify-center rounded-full px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition hover:border-(--admin-gold) hover:text-(--admin-gold-strong)"
                     >
                       Reject Application
                     </button>
@@ -336,7 +277,7 @@ export default function JuryApplicationDetailPage({
 
               {profilePhoto ? (
                 <div className="mt-5">
-                  <p className="text-sm font-semibold text-[var(--admin-ink)]">Profile Photo</p>
+                  <p className="text-sm font-semibold text-(--admin-ink)">Profile Photo</p>
                   <div className="mt-4 overflow-hidden rounded-2xl border border-[rgba(26,38,64,0.12)] bg-white">
                     <Image
                       src={`/api/admin/jury-files/${profilePhoto.id}`}
@@ -355,7 +296,7 @@ export default function JuryApplicationDetailPage({
               )}
 
               <div className="mt-6">
-                <p className="text-sm font-semibold text-[var(--admin-ink)]">Certifications</p>
+                <p className="text-sm font-semibold text-(--admin-ink)">Certifications</p>
 
                 <div className="mt-4 space-y-3">
                   {certifications.map((file) => (
@@ -364,7 +305,7 @@ export default function JuryApplicationDetailPage({
                       href={`/api/admin/jury-files/${file.id}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-[var(--admin-gold)]"
+                      className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-(--admin-gold)"
                     >
                       <span>{file.fileName}</span>
                       <span className="admin-muted text-xs">

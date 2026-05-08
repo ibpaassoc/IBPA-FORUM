@@ -7,8 +7,6 @@ import type {
 } from "@prisma/client";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import { logoutAdminAction } from "@/features/admin/actions/auth.actions";
-import { updateParticipantApplicationStatus } from "@/features/admin/actions/participant.actions";
-import { formatAdminDate } from "@/features/admin/server/view-models";
 import {
   AdminDashboardShell,
   AdminDetailCard,
@@ -197,82 +195,6 @@ export default function ApplicationDetailPage({
           </div>
 
           <div className="space-y-6">
-            <section className="admin-card rounded-3xl p-6">
-              <p className="admin-eyebrow">
-                Review Status
-              </p>
-
-              <form
-                action={updateParticipantApplicationStatus}
-                className="mt-5 space-y-5"
-              >
-                <input type="hidden" name="id" value={application.id} />
-
-                <div>
-                  <label
-                    htmlFor="status"
-                    className="admin-label mb-2 block text-sm font-semibold"
-                  >
-                    Application status
-                  </label>
-                  <select
-                    id="status"
-                    name="status"
-                    defaultValue={application.status}
-                    className="admin-field w-full rounded-2xl px-4 py-3 text-sm outline-none transition"
-                  >
-                    {statusOptions.map((status) => (
-                      <option
-                        key={status}
-                        value={status}
-                        className="bg-white text-(--admin-ink)"
-                      >
-                        {status.replaceAll("_", " ")}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <button
-                  type="submit"
-                  className="admin-action-primary inline-flex items-center justify-center rounded-full px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
-                >
-                  Save Status
-                </button>
-              </form>
-
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                <DetailItem
-                  label="Payment Status"
-                  value={application.paymentStatus.replaceAll("_", " ")}
-                />
-                <DetailItem
-                  label="Amount"
-                  value={`${(application.amount / 100).toFixed(2)} ${application.currency.toUpperCase()}`}
-                />
-                <DetailItem
-                  label="Checkout Session"
-                  value={application.stripeCheckoutSessionId || "Not set"}
-                />
-                <DetailItem
-                  label="Payment Intent"
-                  value={application.stripePaymentIntentId || "Not set"}
-                />
-                <DetailItem
-                  label="Paid At"
-                  value={formatAdminDate(application.paidAt)}
-                />
-                <DetailItem
-                  label="Submitted"
-                  value={formatAdminDate(application.submittedAt)}
-                />
-                <DetailItem
-                  label="Updated"
-                  value={formatAdminDate(application.updatedAt)}
-                />
-              </div>
-            </section>
-
             <section className="admin-card rounded-3xl p-6">
               <p className="admin-eyebrow">
                 Uploaded Files
