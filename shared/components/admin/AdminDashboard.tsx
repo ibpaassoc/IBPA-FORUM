@@ -257,11 +257,11 @@ export function AdminDataTable({
         )}
       >
         {headers.map((header, index) => (
-          <span key={index}>{header}</span>
+          <span className="justify-self-center" key={index}>{header}</span>
         ))}
       </div>
 
-      <div className="divide-y divide-(--admin-border)">{children}</div>
+      <div className="divide-y divide-(--admin-border) ">{children}</div>
     </div>
   );
 }
@@ -272,7 +272,7 @@ export function AdminDataRow({ children, gridClassName, href }: AdminDataRowProp
   const row = (
     <div
       className={adminCn(
-        "grid gap-3 px-4 py-4 transition hover:bg-[rgba(184,148,83,0.08)] lg:items-center",
+        "grid gap-3 px-4 py-4 transition hover:bg-[rgba(184,148,83,0.08)] lg:items-center ",
         gridClassName ?? autoGrid
       )}
     >

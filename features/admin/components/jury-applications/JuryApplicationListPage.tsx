@@ -90,22 +90,22 @@ export default function JuryApplicationListPage({
 
               >
                 <div>
-                  <p className="text-sm font-semibold text-(--admin-ink)">
+                  <p className="justify-self-center text-sm font-semibold text-(--admin-ink)">
                     {application.fullName}
                   </p>
-                  <p className="admin-muted mt-1 text-sm">
+                  <p className="justify-self-center admin-muted mt-1 text-sm">
                     {application.email}
                   </p>
-                  <p className="admin-muted mt-1 text-sm">
+                  <p className="justify-self-center admin-muted mt-1 text-sm">
                     {application.city}, {application.country}
                   </p>
                 </div>
 
-                <div className="text-sm text-(--admin-ink)">
+                <div className="justify-self-center text-sm text-(--admin-ink)">
                   {application.professionalTitle}
                 </div>
 
-                <div className="flex flex-wrap gap-2">
+                <div className="justify-self-center flex flex-wrap gap-2">
                   {application.expertiseAreas.slice(0, 3).map((area) => (
                     <span
                       key={area}
@@ -115,17 +115,17 @@ export default function JuryApplicationListPage({
                     </span>
                   ))}
                   {application.expertiseAreas.length > 3 ? (
-                    <span className="admin-chip rounded-full px-3 py-1 text-xs">
+                    <span className="justify-self-center admin-chip rounded-full px-3 py-1 text-xs">
                       +{application.expertiseAreas.length - 3}
                     </span>
                   ) : null}
                 </div>
 
-                <div>
+                <div className="justify-self-center">
                   <ApplicationStatusBadge status={application.status} />
                 </div>
 
-                <div className="admin-muted text-sm">
+                <div className="justify-self-center admin-muted text-sm">
                   {application.paidAt
                     ? formatAdminDate(application.paidAt)
                     : formatAdminDate(application.submittedAt)}

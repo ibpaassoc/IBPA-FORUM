@@ -204,23 +204,23 @@ export default function AdminScoringOverviewPage({
               href={`/admin/scoring/${application.id}`}
             >
               <div>
-                <p className="text-sm font-semibold text-(--admin-ink)">
+                <p className="justify-self-center text-sm font-semibold text-(--admin-ink)">
                   {application.fullName}
                 </p>
-                <p className="admin-muted mt-1 text-sm">
+                <p className="justify-self-center admin-muted mt-1 text-sm">
                   {application.email}
                 </p>
               </div>
 
-              <div className="text-sm text-(--admin-ink)">
+              <div className="justify-self-center text-sm text-(--admin-ink)">
                 {application.categoryName}
               </div>
 
-              <div className="text-sm text-(--admin-ink)">
+              <div className="justify-self-center text-sm text-(--admin-ink)">
                 {application.awardName}
               </div>
 
-              <div className="text-sm font-semibold text-(--admin-ink)">
+              <div className="justify-self-center text-sm font-semibold text-(--admin-ink)">
                 {application.averageScoreLabel}
               </div>
             </AdminDataRow>

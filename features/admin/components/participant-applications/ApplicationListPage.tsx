@@ -126,30 +126,30 @@ export default function ApplicationListPage({
                 href={`/admin/applications/${application.id}`}
               >
                 <div>
-                  <p className="text-sm font-semibold text-(--admin-ink)">
+                  <p className="justify-self-center text-sm font-semibold text-(--admin-ink)">
                     {application.fullName}
                   </p>
-                  <p className="admin-muted mt-1 text-sm">
+                  <p className="justify-self-center admin-muted mt-1 text-sm">
                     {application.email}
                   </p>
-                  <p className="admin-muted mt-1 text-sm">
+                  <p className="justify-self-center admin-muted mt-1 text-sm">
                     {application.city}, {application.country}
                   </p>
                 </div>
 
-                <div className="text-sm text-(--admin-ink)">
+                <div className="justify-self-center text-sm text-(--admin-ink)">
                   {application.category.name}
                 </div>
 
-                <div className="text-sm text-(--admin-ink)">
+                <div className="justify-self-center text-sm text-(--admin-ink)">
                   {application.award.name}
                 </div>
 
-                <div>
+                <div className="justify-self-center">
                   <ApplicationStatusBadge status={application.status} />
                 </div>
 
-                <div className="admin-muted text-sm">
+                <div className="justify-self-center admin-muted text-sm">
                   {formatAdminDate(application.createdAt)}
                 </div>
               </AdminDataRow>
