@@ -2,9 +2,9 @@ import type { ApplicationAnswer, ApplicationFile } from "@prisma/client";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import { logoutAdminAction } from "@/features/admin/actions/auth.actions";
 import { formatAdminDate } from "@/features/admin/server/view-models";
-import AdminReopenScoreButton from "@/features/scoring/components/admin/AdminReopenScoreButton";
-import ScoreStatusBadge from "@/features/scoring/components/ScoreStatusBadge";
-import type { AdminScoringApplicationRecord } from "@/features/scoring/server/admin";
+import AdminReopenScoreButton from "@/features/admin/components/scoring/AdminReopenScoreButton";
+import ScoreStatusBadge from "@/features/admin/components/scoring/ScoreStatusBadge";
+import type { AdminScoringApplicationRecord } from "@/features/admin/server/admin";
 import {
   AdminDashboardShell,
   AdminDataRow,
@@ -216,7 +216,7 @@ export default function AdminScoringDetailPage({
                 />
               </div>
 
-              <div className="admin-empty mt-5 rounded-2xl border border-dashed border-[rgba(184,148,83,0.34)] bg-[var(--admin-gold-soft)] p-4 text-sm">
+              <div className="admin-empty mt-5 rounded-2xl border border-dashed border-[rgba(184,148,83,0.34)] bg-(--admin-gold-soft) p-4 text-sm">
                 TODO: Mark category winner here if a dedicated winner/status field is added to
                 the project schema.
               </div>
@@ -229,7 +229,7 @@ export default function AdminScoringDetailPage({
 
               <div className="mt-5 space-y-5">
                 <div>
-                  <p className="text-sm font-semibold text-[var(--admin-ink)]">
+                  <p className="text-sm font-semibold text-(--admin-ink)">
                     Professional License / Certification
                   </p>
                   <div className="mt-3 space-y-3">
@@ -239,7 +239,7 @@ export default function AdminScoringDetailPage({
                         href={`/api/admin/application-files/${file.id}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-[var(--admin-gold)]"
+                        className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-(--admin-gold)"
                       >
                         <span>{file.fileName}</span>
                         <span className="admin-muted text-xs">
@@ -257,7 +257,7 @@ export default function AdminScoringDetailPage({
 
                     return (
                       <div key={field.key}>
-                        <p className="text-sm font-semibold text-[var(--admin-ink)]">{field.label}</p>
+                        <p className="text-sm font-semibold text-(--admin-ink)">{field.label}</p>
                         <div className="mt-3 space-y-3">
                           {files.map((file) => (
                             <a
@@ -265,7 +265,7 @@ export default function AdminScoringDetailPage({
                               href={`/api/admin/application-files/${file.id}`}
                               target="_blank"
                               rel="noreferrer"
-                              className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-[var(--admin-gold)]"
+                              className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-(--admin-gold)"
                             >
                               <span>{file.fileName}</span>
                               <span className="admin-muted text-xs">
@@ -318,19 +318,19 @@ export default function AdminScoringDetailPage({
                 gridClassName="lg:grid-cols-[1fr_0.7fr_0.7fr_0.7fr_0.7fr_0.7fr_0.7fr_0.85fr_0.95fr_0.9fr]"
               >
                 <div>
-                  <p className="text-sm font-semibold text-[var(--color-navy-deep)]">{row.judgeName}</p>
+                  <p className="text-sm font-semibold text-(--color-navy-deep)">{row.judgeName}</p>
                   <p className="admin-muted mt-1 text-sm">{row.judgeEmail}</p>
                   {row.comment ? (
                     <p className="admin-muted mt-2 text-sm">{row.comment}</p>
                   ) : null}
                 </div>
 
-                <div className="text-sm text-[var(--admin-ink)]">{row.technical ?? "-"}</div>
-                <div className="text-sm text-[var(--admin-ink)]">{row.aesthetic ?? "-"}</div>
-                <div className="text-sm text-[var(--admin-ink)]">{row.creativity ?? "-"}</div>
-                <div className="text-sm text-[var(--admin-ink)]">{row.impact ?? "-"}</div>
-                <div className="text-sm text-[var(--admin-ink)]">{row.presentation ?? "-"}</div>
-                <div className="text-sm text-[var(--admin-ink)]">{row.totalScore ?? "-"}</div>
+                <div className="text-sm text-(--admin-ink)">{row.technical ?? "-"}</div>
+                <div className="text-sm text-(--admin-ink)">{row.aesthetic ?? "-"}</div>
+                <div className="text-sm text-(--admin-ink)">{row.creativity ?? "-"}</div>
+                <div className="text-sm text-(--admin-ink)">{row.impact ?? "-"}</div>
+                <div className="text-sm text-(--admin-ink)">{row.presentation ?? "-"}</div>
+                <div className="text-sm text-(--admin-ink)">{row.totalScore ?? "-"}</div>
                 <div>
                   <ScoreStatusBadge status={row.scoreStatus} />
                 </div>

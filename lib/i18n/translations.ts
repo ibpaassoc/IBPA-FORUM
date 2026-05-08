@@ -453,8 +453,8 @@ const en = {
       title: "Championship participant applications",
       text:
         "Review applicant profiles, category entries, supporting files, and current review status in one private workspace.",
-      juryDashboard: "Jury Dashboard",
-      scoringDashboard: "Scoring Dashboard",
+      juryDashboard: "Jurys",
+      scoringDashboard: "Scorings",
       appStatus: "App Status",
       empty: "No participant applications matched this filter.",
     },
@@ -463,7 +463,8 @@ const en = {
       title: "Jury applications dashboard",
       text:
         "Review submitted applications, send payment links after approval, and track final activation in one place.",
-      participantDashboard: "Participant Dashboard",
+      participantDashboard: "Participants",
+      scoringDashboard: "Scorings",
       paidJurors: "Paid Jurors",
       empty: "No jury applications have been submitted yet.",
     },
@@ -1003,8 +1004,8 @@ const ru: typeof en = {
       title: "Заявки участников чемпионата",
       text:
         "Проверяйте профили участников, категории, файлы и текущие статусы в одном закрытом рабочем пространстве.",
-      juryDashboard: "Панель жюри",
-      scoringDashboard: "Панель оценок",
+      juryDashboard: "Жюри",
+      scoringDashboard: "Оценки",
       appStatus: "Статус заявки",
       empty: "Нет заявок участников, соответствующих этому фильтру.",
     },
@@ -1013,7 +1014,8 @@ const ru: typeof en = {
       title: "Панель заявок жюри",
       text:
         "Проверяйте заявки, отправляйте ссылки на оплату после одобрения и отслеживайте активацию в одном месте.",
-      participantDashboard: "Панель участников",
+      participantDashboard: "Участники",
+      scoringDashboard: "Оценки",
       paidJurors: "Оплаченные судьи",
       empty: "Заявки в жюри пока не отправлены.",
     },
@@ -1553,8 +1555,8 @@ const ua: typeof en = {
       title: "Заявки учасників чемпіонату",
       text:
         "Перевіряйте профілі учасників, категорії, файли та поточні статуси в одному закритому робочому просторі.",
-      juryDashboard: "Панель журі",
-      scoringDashboard: "Панель оцінок",
+      juryDashboard: "Журі",
+      scoringDashboard: "Оцінки",
       appStatus: "Статус заявки",
       empty: "Немає заявок учасників, що відповідають цьому фільтру.",
     },
@@ -1563,7 +1565,8 @@ const ua: typeof en = {
       title: "Панель заявок журі",
       text:
         "Перевіряйте заявки, надсилайте посилання на оплату після схвалення та відстежуйте активацію в одному місці.",
-      participantDashboard: "Панель учасників",
+      participantDashboard: "Учасники",
+      scoringDashboard: "Оцінки",
       paidJurors: "Оплачені судді",
       empty: "Заявки до журі ще не надсилалися.",
     },

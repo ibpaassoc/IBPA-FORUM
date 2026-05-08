@@ -94,9 +94,6 @@ export default function ApplicationListPage({
             <AdminToolbarButton href="/admin/scoring">
               {t.admin.participants.scoringDashboard}
             </AdminToolbarButton>
-            <form action={logoutAdminAction}>
-              <AdminToolbarButton type="submit">{t.admin.common.logout}</AdminToolbarButton>
-            </form>
           </>
         }
       />
@@ -134,7 +131,7 @@ export default function ApplicationListPage({
                 gridClassName="lg:grid-cols-[1.1fr_0.9fr_1fr_0.8fr_0.8fr_0.9fr_0.7fr]"
               >
                 <div>
-                  <p className="text-sm font-semibold text-[var(--admin-ink)]">
+                  <p className="text-sm font-semibold text-(--admin-ink)">
                     {application.fullName}
                   </p>
                   <p className="admin-muted mt-1 text-sm">
@@ -145,11 +142,11 @@ export default function ApplicationListPage({
                   </p>
                 </div>
 
-                <div className="text-sm text-[var(--admin-ink)]">
+                <div className="text-sm text-(--admin-ink)">
                   {application.category.name}
                 </div>
 
-                <div className="text-sm text-[var(--admin-ink)]">
+                <div className="text-sm text-(--admin-ink)">
                   {application.award.name}
                 </div>
 

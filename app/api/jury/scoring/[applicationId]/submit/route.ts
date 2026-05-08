@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { submitScoreSchema } from "@/features/scoring/schemas";
+import { submitScoreSchema } from "@/features/admin/actions/scoring_schemas";
 import {
   getAuthenticatedJudgeScoringApiContext,
   submitJudgeScore,
-} from "@/features/scoring/server/jury";
+} from "@/features/admin/server/jury";
 
 export async function POST(
   request: Request,

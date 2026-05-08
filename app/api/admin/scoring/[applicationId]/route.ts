@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAdminApplicationScoringDetail } from "@/features/scoring/server/admin";
+import { getAdminApplicationScoringDetail } from "@/features/admin/server/admin";
 import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
 
 export async function GET(

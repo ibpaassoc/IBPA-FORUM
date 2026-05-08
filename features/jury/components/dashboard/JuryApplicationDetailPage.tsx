@@ -1,8 +1,8 @@
 import type { ApplicationAnswer, ApplicationFile } from "@prisma/client";
 import { formatAdminDate } from "@/features/admin/server/view-models";
 import JurySignOutButton from "@/features/jury/components/dashboard/JurySignOutButton";
-import JuryScoreForm from "@/features/scoring/components/jury/JuryScoreForm";
-import type { JuryScoringApplicationRecord } from "@/features/scoring/server/jury";
+import JuryScoreForm from "@/features/admin/components/jury-applications/JuryScoreForm";
+import type { JuryScoringApplicationRecord } from "@/features/admin/server/jury";
 import {
   AdminDashboardShell,
   AdminDetailCard,
@@ -225,7 +225,7 @@ export default function JuryApplicationDetailPage({
             <AdminSection eyebrow="Uploaded Files">
               <div className="mt-5 space-y-5">
                 <div>
-                  <p className="text-sm font-semibold text-[var(--admin-ink)]">
+                  <p className="text-sm font-semibold text-(--admin-ink)">
                     Professional License / Certification
                   </p>
                   <div className="mt-3 space-y-3">
@@ -235,7 +235,7 @@ export default function JuryApplicationDetailPage({
                         href={`/api/jury/application-files/${file.id}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-[var(--admin-gold)]"
+                        className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-(--admin-gold)"
                       >
                         <span>{file.fileName}</span>
                         <span className="admin-muted text-xs">
@@ -253,7 +253,7 @@ export default function JuryApplicationDetailPage({
 
                     return (
                       <div key={field.key}>
-                        <p className="text-sm font-semibold text-[var(--admin-ink)]">{field.label}</p>
+                        <p className="text-sm font-semibold text-(--admin-ink)">{field.label}</p>
                         <div className="mt-3 space-y-3">
                           {files.map((file) => (
                             <a
@@ -261,7 +261,7 @@ export default function JuryApplicationDetailPage({
                               href={`/api/jury/application-files/${file.id}`}
                               target="_blank"
                               rel="noreferrer"
-                              className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-[var(--admin-gold)]"
+                              className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-(--admin-gold)"
                             >
                               <span>{file.fileName}</span>
                               <span className="admin-muted text-xs">

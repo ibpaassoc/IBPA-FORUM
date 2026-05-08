@@ -1,5 +1,5 @@
 import JuryDashboardPage from "@/features/jury/components/dashboard/JuryDashboardPage";
-import { getAuthenticatedJudgeScoringContext } from "@/features/scoring/server/jury";
+import { getAuthenticatedJudgeScoringContext } from "@/features/admin/server/jury";
 import { getJuryDashboardData } from "@/features/jury/server/dashboard-queries";
 
 export default async function JuryDashboardRoute({

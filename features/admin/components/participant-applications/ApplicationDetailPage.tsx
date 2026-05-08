@@ -225,7 +225,7 @@ export default function ApplicationDetailPage({
                       <option
                         key={status}
                         value={status}
-                        className="bg-white text-[var(--admin-ink)]"
+                        className="bg-white text-(--admin-ink)"
                       >
                         {status.replaceAll("_", " ")}
                       </option>
@@ -280,7 +280,7 @@ export default function ApplicationDetailPage({
 
               <div className="mt-5 space-y-5">
                 <div>
-                  <p className="text-sm font-semibold text-[var(--admin-ink)]">
+                  <p className="text-sm font-semibold text-(--admin-ink)">
                     Professional License / Certification
                   </p>
                   <div className="mt-3 space-y-3">
@@ -290,7 +290,7 @@ export default function ApplicationDetailPage({
                         href={`/api/admin/application-files/${file.id}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-[var(--admin-gold)]"
+                        className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-(--admin-gold)"
                       >
                         <span>{file.fileName}</span>
                         <span className="admin-muted text-xs">
@@ -308,7 +308,7 @@ export default function ApplicationDetailPage({
 
                     return (
                       <div key={field.key}>
-                        <p className="text-sm font-semibold text-[var(--admin-ink)]">{field.label}</p>
+                        <p className="text-sm font-semibold text-(--admin-ink)">{field.label}</p>
                         <div className="mt-3 space-y-3">
                           {files.map((file) => (
                             <a
@@ -316,7 +316,7 @@ export default function ApplicationDetailPage({
                               href={`/api/admin/application-files/${file.id}`}
                               target="_blank"
                               rel="noreferrer"
-                              className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-[var(--admin-gold)]"
+                              className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-(--admin-gold)"
                             >
                               <span>{file.fileName}</span>
                               <span className="admin-muted text-xs">

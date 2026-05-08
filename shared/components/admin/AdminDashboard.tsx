@@ -58,6 +58,7 @@ type AdminDataTableProps = {
 type AdminDataRowProps = {
   children: ReactNode;
   gridClassName: string;
+  href?: string;
 };
 
 type AdminEmptyStateProps = {
@@ -206,8 +207,8 @@ export function AdminFilterChip({ children, href, active }: AdminFilterChipProps
       className={adminCn(
         "inline-flex rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] transition",
         active
-          ? "border-[rgba(184,148,83,0.38)] bg-[var(--admin-gold-soft)] text-[var(--admin-ink)]"
-          : "border-[color:var(--admin-border)] bg-[var(--admin-surface)] text-[var(--admin-slate-strong)] hover:border-[var(--admin-gold)] hover:text-[var(--admin-gold-strong)]"
+          ? "border-[rgba(184,148,83,0.38)] bg-(--admin-gold-soft) text-(--admin-ink)"
+          : "border-(--admin-border) bg-(--admin-surface) admin-copy hover:border-(--admin-gold) hover:text-(--admin-gold-strong)"
       )}
     >
       {children}
@@ -249,13 +250,17 @@ export function AdminDataTable({
           <span key={index}>{header}</span>
         ))}
       </div>
-      <div className="divide-y divide-[color:var(--admin-border)]">{children}</div>
+      <div className="divide-y divide-(--admin-border)">{children}</div>
     </div>
   );
 }
 
-export function AdminDataRow({ children, gridClassName }: AdminDataRowProps) {
-  return (
+export function AdminDataRow({
+  children,
+  gridClassName,
+  href,
+}: AdminDataRowProps) {
+  const content = (
     <div
       className={adminCn(
         "grid gap-3 px-4 py-4 transition hover:bg-[rgba(184,148,83,0.08)] lg:items-center",
@@ -265,6 +270,16 @@ export function AdminDataRow({ children, gridClassName }: AdminDataRowProps) {
       {children}
     </div>
   );
+
+  if (href) {
+    return (
+      <Link href={href} className="block">
+        {content}
+      </Link>
+    );
+  }
+
+  return content;
 }
 
 export function AdminEmptyState({ title, text }: AdminEmptyStateProps) {
@@ -280,7 +295,7 @@ export function AdminDetailCard({ label, value }: AdminDetailCardProps) {
   return (
     <div className="admin-detail-card rounded-2xl p-4">
       <p className="admin-eyebrow">{label}</p>
-      <p className="mt-3 text-sm leading-6 text-[var(--admin-ink)]">{value}</p>
+      <p className="mt-3 text-sm leading-6 text-(--admin-ink)">{value}</p>
     </div>
   );
 }

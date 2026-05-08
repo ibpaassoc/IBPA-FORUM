@@ -60,9 +60,9 @@ export default function JuryApplicationListPage({
             <AdminToolbarButton href="/admin/applications">
               {t.admin.jury.participantDashboard}
             </AdminToolbarButton>
-            <form action={logoutAdminAction}>
-              <AdminToolbarButton type="submit">{t.admin.common.logout}</AdminToolbarButton>
-            </form>
+            <AdminToolbarButton href="/admin/scoring">
+              {t.admin.jury.scoringDashboard}
+            </AdminToolbarButton>
           </>
         }
       />
@@ -92,7 +92,7 @@ export default function JuryApplicationListPage({
                 gridClassName="lg:grid-cols-[1.15fr_0.95fr_0.95fr_0.75fr_0.75fr_0.8fr_0.65fr]"
               >
                 <div>
-                  <p className="text-sm font-semibold text-[var(--admin-ink)]">
+                  <p className="text-sm font-semibold text-(--admin-ink)">
                     {application.fullName}
                   </p>
                   <p className="admin-muted mt-1 text-sm">
@@ -103,7 +103,7 @@ export default function JuryApplicationListPage({
                   </p>
                 </div>
 
-                <div className="text-sm text-[var(--admin-ink)]">
+                <div className="text-sm text-(--admin-ink)">
                   {application.professionalTitle}
                 </div>
 

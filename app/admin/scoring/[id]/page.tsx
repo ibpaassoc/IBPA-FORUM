@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import AdminScoringDetailPage from "@/features/scoring/components/admin/AdminScoringDetailPage";
-import { getAdminApplicationScoringDetail } from "@/features/scoring/server/admin";
+import AdminScoringDetailPage from "@/features/admin/components/scoring/AdminScoringDetailPage";
+import { getAdminApplicationScoringDetail } from "@/features/admin/server/admin";
 import { requireAdmin } from "@/shared/lib/admin-auth";
 
 export default async function AdminScoringDetailRoute({

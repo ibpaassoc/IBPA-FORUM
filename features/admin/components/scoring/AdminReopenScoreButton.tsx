@@ -51,7 +51,7 @@ export default function AdminReopenScoreButton({
       >
         Reopen Score
       </button>
-      {error ? <p className="text-xs text-[var(--admin-danger)]">{error}</p> : null}
+      {error ? <p className="text-xs text-(--admin-danger)">{error}</p> : null}
     </div>
   );
 }

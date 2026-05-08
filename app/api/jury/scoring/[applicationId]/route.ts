@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import {
   getAuthenticatedJudgeScoringApiContext,
   getJudgeApplicationScoringDetail,
-} from "@/features/scoring/server/jury";
+} from "@/features/admin/server/jury";
 
 export async function GET(
   _request: Request,

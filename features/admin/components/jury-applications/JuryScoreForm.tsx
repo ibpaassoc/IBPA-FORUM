@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { formatAdminDate } from "@/features/admin/server/view-models";
-import ScoreStatusBadge from "@/features/scoring/components/ScoreStatusBadge";
+import ScoreStatusBadge from "@/features/admin/components/scoring/ScoreStatusBadge";
 import {
   AdminSection,
   AdminToolbarButton,
@@ -133,7 +133,7 @@ export default function JuryScoreForm({
       ) : null}
 
       {isSubmitted ? (
-        <div className="mt-5 rounded-2xl border border-[rgba(184,148,83,0.34)] bg-[var(--admin-gold-soft)] px-4 py-3 text-sm text-[var(--admin-navy)]">
+        <div className="mt-5 rounded-2xl border border-[rgba(184,148,83,0.34)] bg-(--admin-gold-soft) px-4 py-3 text-sm admin-label">
           This score has been submitted and is now read-only. Only an admin can reopen
           it.
         </div>

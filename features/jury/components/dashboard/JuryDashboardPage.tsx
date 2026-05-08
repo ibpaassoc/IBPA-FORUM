@@ -1,7 +1,7 @@
 "use client";
 import { formatAdminDate } from "@/features/admin/server/view-models";
 import JurySignOutButton from "@/features/jury/components/dashboard/JurySignOutButton";
-import ScoreStatusBadge from "@/features/scoring/components/ScoreStatusBadge";
+import ScoreStatusBadge from "@/features/admin/components/scoring/ScoreStatusBadge";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import {
   AdminDashboardShell,
@@ -130,7 +130,7 @@ export default function JuryDashboardPage({
                 gridClassName="lg:grid-cols-[1.25fr_0.95fr_1.05fr_0.8fr_0.85fr_0.8fr]"
               >
                 <div>
-                  <p className="text-sm font-semibold text-[var(--admin-ink)]">
+                  <p className="text-sm font-semibold text-(--admin-ink)">
                     {application.fullName}
                   </p>
                   <p className="admin-muted mt-1 text-sm">{application.email}</p>
@@ -139,9 +139,9 @@ export default function JuryDashboardPage({
                   </p>
                 </div>
 
-                <div className="text-sm text-[var(--admin-ink)]">{application.category.name}</div>
+                <div className="text-sm text-(--admin-ink)">{application.category.name}</div>
 
-                <div className="text-sm text-[var(--admin-ink)]">{application.award.name}</div>
+                <div className="text-sm text-(--admin-ink)">{application.award.name}</div>
 
                 <div>
                   <ScoreStatusBadge status={application.scoreStatus} />
