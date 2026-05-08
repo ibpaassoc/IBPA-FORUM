@@ -1,51 +1,80 @@
-import { PageCard, PageSection } from "@/shared/components/layout/PageShell";
+"use client";
+
+type PublicJuryMember = {
+  id: string;
+  fullName: string;
+  professionalTitle?: string | null;
+  city?: string | null;
+  country?: string | null;
+  bio?: string | null;
+  expertise?: string[] | null;
+  profilePhotoFileId?: string | null;
+};
 
 export default function PublicJuryGrid({
   members,
 }: {
-  members: Array<{
-    id: string;
-    fullName: string;
-    professionalTitle: string;
-    city: string;
-    country: string;
-    expertiseAreas: string[];
-    professionalBio: string;
-  }>;
+  members: PublicJuryMember[];
 }) {
   return (
-    <PageSection>
-      <div className="grid gap-(--space-md) md:grid-cols-2 xl:grid-cols-3">
-        {members.map((member) => (
-          <PageCard key={member.id}>
-            <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-gold)">
-              Active Jury Member
-            </p>
-            <h3 className="mt-(--space-sm) font-(--font-display) text-[clamp(1.1rem,2vw,1.6rem)] text-(--color-navy)">{member.fullName}</h3>
-            <p className="mt-(--space-xs) text-sm text-(--color-steel)">
-              {member.professionalTitle}
-            </p>
-            <p className="mt-(--space-xs) text-sm text-(--color-steel)">
-              {member.city}, {member.country}
-            </p>
+    <div className="grid gap-(--space-lg) sm:grid-cols-2 lg:grid-cols-3">
+      {members.map((member) => (
+        <article
+          key={member.id}
+          className="group overflow-hidden rounded-4xlrder border-black/10 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+        >
+          <div className="relative aspect-4/5 overflow-hidden bg-[#f7efe4]">
+            {member.profilePhotoFileId ? (
+              <img
+                src={`/api/jury/profile-photo/${member.profilePhotoFileId}`}
+                alt={`${member.fullName} jury profile photo`}
+                className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-sm uppercase tracking-[0.25em] text-(--color-gold)">
+                No Photo
+              </div>
+            )}
+          </div>
 
-            <div className="mt-(--space-sm) flex flex-wrap gap-2">
-              {member.expertiseAreas.map((area) => (
-                <span
-                  key={area}
-                  className="rounded-full border border-(--border-default) bg-(--color-off-white) px-3 py-1 text-xs text-(--color-steel)"
-                >
-                  {area}
-                </span>
-              ))}
+          <div className="space-y-4 p-(--space-md)">
+            <div>
+              <p className="text-xs uppercase tracking-[0.22em] text-(--color-gold)">
+                Active Jury Member
+              </p>
+
+              <h3 className="mt-2 font-(--font-display) text-2xl text-(--color-navy)">
+                {member.fullName}
+              </h3>
+
+              {member.professionalTitle ? (
+                <p className="mt-1 text-sm font-medium text-(--color-steel)">
+                  {member.professionalTitle}
+                </p>
+              ) : null}
+
+              {member.city || member.country ? (
+                <p className="mt-1 text-sm text-(--color-steel)">
+                  {[member.city, member.country].filter(Boolean).join(", ")}
+                </p>
+              ) : null}
             </div>
 
-            <p className="mt-(--space-md) text-sm leading-[1.7] text-(--color-steel)">
-              {member.professionalBio}
-            </p>
-          </PageCard>
-        ))}
-      </div>
-    </PageSection>
+            {member.expertise?.length ? (
+              <div className="flex flex-wrap gap-2">
+                {member.expertise.map((item) => (
+                  <span
+                    key={item}
+                    className="rounded-full border border-black/10 bg-[#fbf7f0] px-3 py-1 text-xs text-(--color-navy)"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        </article>
+      ))}
+    </div>
   );
 }

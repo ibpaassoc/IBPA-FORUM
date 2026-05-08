@@ -1,13 +1,10 @@
 import Image from "next/image";
 import type { JuryApplication, JuryApplicationFile } from "@prisma/client";
 import ApplicationStatusBadge from "@/features/admin/components/badges/ApplicationStatusBadge";
-import PaymentStatusBadge from "@/features/admin/components/badges/PaymentStatusBadge";
-import { logoutAdminAction } from "@/features/admin/actions/auth.actions";
 import {
   approveJuryApplicationAction,
   rejectJuryApplicationAction,
   saveJuryApplicationNotesAction,
-  updateJuryApplicationStatusAction,
 } from "@/features/admin/actions/jury.actions";
 import { formatAdminDate } from "@/features/admin/server/view-models";
 import {
