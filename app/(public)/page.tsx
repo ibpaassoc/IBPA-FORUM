@@ -9,7 +9,7 @@ import Stats from "@/features/home/components/Stats";
 
 export default function Home() {
   return (
-    <main className="bg-[var(--color-off-white)] text-[var(--color-navy)]">
+    <main className="bg-(--color-off-white) text-(--color-navy)">
       <HomeHero />
       <Stats />
       <CategoriesPreview />
