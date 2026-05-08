@@ -5,7 +5,7 @@ import type { Prisma } from "@prisma/client";
 import { getAppSession } from "@/auth";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import { normalizeJuryEmail } from "@/features/jury/server/auth";
-import type { DraftScoreInput, SubmitScoreInput } from "@/features/scoring/schemas";
+import type { DraftScoreInput, SubmitScoreInput } from "@/features/admin/actions/scoring_schemas";
 import { prisma } from "@/shared/lib/prisma";
 import {
   calculateTotalScore,
@@ -16,7 +16,7 @@ import {
   ScoringHttpError,
   serializeScoreValues,
   type ActiveJudgeContext,
-} from "@/features/scoring/server/shared";
+} from "@/features/admin/server/shared";
 
 export type JuryDashboardApplicationRecord = {
   id: string;

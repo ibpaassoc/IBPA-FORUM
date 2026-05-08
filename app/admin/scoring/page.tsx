@@ -1,5 +1,5 @@
-import AdminScoringOverviewPage from "@/features/scoring/components/admin/AdminScoringOverviewPage";
-import { getAdminScoringOverview } from "@/features/scoring/server/admin";
+import AdminScoringOverviewPage from "@/features/admin/components/scoring/AdminScoringOverviewPage";
+import { getAdminScoringOverview } from "@/features/admin/server/admin";
 import { requireAdmin } from "@/shared/lib/admin-auth";
 
 export default async function AdminScoringPage({

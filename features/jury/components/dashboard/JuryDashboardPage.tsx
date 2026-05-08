@@ -1,11 +1,19 @@
 "use client";
-
-import Link from "next/link";
 import { formatAdminDate } from "@/features/admin/server/view-models";
 import JurySignOutButton from "@/features/jury/components/dashboard/JurySignOutButton";
-import ScoreStatusBadge from "@/features/scoring/components/ScoreStatusBadge";
+import ScoreStatusBadge from "@/features/admin/components/scoring/ScoreStatusBadge";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { PageShell } from "@/shared/components/layout/PageShell";
+import {
+  AdminDashboardShell,
+  AdminDataRow,
+  AdminDataTable,
+  AdminEmptyState,
+  AdminFilterChip,
+  AdminHeroCard,
+  AdminSection,
+  AdminStatCard,
+  AdminToolbarButton,
+} from "@/shared/components/admin/AdminDashboard";
 
 export default function JuryDashboardPage({
   juryName,
@@ -48,53 +56,45 @@ export default function JuryDashboardPage({
   ];
 
   return (
-    <PageShell className="px-6 py-10 text-white md:px-10 md:py-12">
-      <div className="mx-auto max-w-7xl pt-16">
-        <div className="page-panel flex flex-col gap-5 rounded-3xl p-6 md:flex-row md:items-end md:justify-between md:p-8">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d8c27a]">
-              {t.juryDashboard.dashboard}
-            </p>
-            <h1 className="mt-4 text-3xl font-semibold sm:text-4xl">{juryName}</h1>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-[#d9d4ca]">
-              {professionalTitle}. {t.juryDashboard.accessText}
-            </p>
-          </div>
+    <AdminDashboardShell>
+      <AdminHeroCard
+        eyebrow={t.juryDashboard.dashboard}
+        title={juryName}
+        subtitle={`${professionalTitle}. ${t.juryDashboard.accessText}`}
+        actions={<JurySignOutButton />}
+      />
 
-          <div className="flex flex-wrap gap-3">
-            <JurySignOutButton />
-          </div>
-        </div>
-
-        <div className="mt-6 rounded-3xl border border-white/10 bg-white/[0.035] p-5">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
-            {t.juryDashboard.approvedCategories}
-          </p>
+      <AdminSection
+        className="mt-5"
+        eyebrow={t.juryDashboard.approvedCategories}
+      >
+        {expertiseAreas.length > 0 ? (
           <div className="mt-4 flex flex-wrap gap-2">
             {expertiseAreas.map((area) => (
               <span
                 key={area}
-                className="rounded-full border border-white/12 bg-white/3 px-3 py-1 text-xs text-[#d9d4ca]"
+                className="admin-chip rounded-full px-3 py-1 text-xs font-semibold"
               >
                 {area}
               </span>
             ))}
           </div>
-        </div>
+        ) : (
+          <AdminEmptyState
+            title={t.juryDashboard.approvedCategories}
+            text={t.juryDashboard.empty}
+          />
+        )}
+      </AdminSection>
 
-        <div className="mt-6 grid gap-4 md:grid-cols-5">
-          {summaryItems.map((item) => (
-            <div key={item.label} className="page-card rounded-2xl bg-white/4.5 p-5">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
-                {item.label}
-              </p>
-              <p className="mt-3 text-3xl font-semibold text-white">{item.value}</p>
-            </div>
-          ))}
-        </div>
+      <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {summaryItems.map((item) => (
+          <AdminStatCard key={item.label} label={item.label} value={item.value} />
+        ))}
+      </div>
 
-        <section className="page-card mt-6 rounded-3xl p-4 md:p-6">
-          <div className="mb-5 flex flex-wrap gap-3">
+      <AdminSection className="mt-5">
+          <div className="justify-self-center mt-2 mb-10 flex flex-wrap gap-3">
             {[
               { label: t.juryDashboard.allCategories, href: "/jury/dashboard", active: !activeCategory },
               ...expertiseAreas.map((area) => ({
@@ -103,78 +103,61 @@ export default function JuryDashboardPage({
                 active: activeCategory === area,
               })),
             ].map((item) => (
-              <Link
+              <AdminFilterChip
                 key={item.label}
                 href={item.href}
-                className={`inline-flex rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] transition ${
-                  item.active
-                    ? "border-[#d8c27a]/45 bg-[#d8c27a]/10 text-[#f2df9c]"
-                    : "border-white/12 bg-white/3 text-white/75 hover:border-[#d8c27a]/25 hover:text-[#d8c27a]"
-                }`}
+                active={item.active}
               >
                 {item.label}
-              </Link>
+              </AdminFilterChip>
             ))}
           </div>
 
-          <div className="hidden grid-cols-[1.25fr_0.95fr_1.05fr_0.8fr_0.85fr_0.8fr] gap-4 border-b border-white/10 px-4 pb-4 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d9d4ca]/65 lg:grid">
-            <span>{t.juryDashboard.applicant}</span>
-            <span>{t.juryDashboard.category}</span>
-            <span>{t.juryDashboard.award}</span>
-            <span>{t.juryDashboard.status}</span>
-            <span>{t.juryDashboard.submitted}</span>
-            <span>{t.juryDashboard.open}</span>
-          </div>
-
-          <div className="divide-y divide-white/10">
+          <AdminDataTable
+            headers={[
+              t.juryDashboard.applicant,
+              t.juryDashboard.category,
+              t.juryDashboard.award,
+              t.juryDashboard.status,
+              t.juryDashboard.submitted,
+            ]}
+          >
             {applications.map((application) => (
-              <div
+              <AdminDataRow
                 key={application.id}
-                className="grid gap-4 px-4 py-5 transition hover:bg-white/2 lg:grid-cols-[1.25fr_0.95fr_1.05fr_0.8fr_0.85fr_0.8fr] lg:items-center"
+                href={`/jury/dashboard/applications/${application.id}`}
               >
                 <div>
-                  <p className="text-sm font-semibold text-white">{application.fullName}</p>
-                  <p className="mt-1 text-sm text-[#d9d4ca]/80">{application.email}</p>
-                  <p className="mt-1 text-sm text-[#d9d4ca]/80">
+                  <p className="justify-self-center text-sm font-semibold text-(--admin-ink)">
+                    {application.fullName}
+                  </p>
+                  <p className="justify-self-center admin-muted mt-1 text-sm">{application.email}</p>
+                  <p className="justify-self-center admin-muted mt-1 text-sm">
                     {application.city}, {application.country}
                   </p>
                 </div>
 
-                <div className="text-sm text-[#d9d4ca]">{application.category.name}</div>
+                <div className="justify-self-center text-sm text-(--admin-ink)">{application.category.name}</div>
 
-                <div className="text-sm text-[#d9d4ca]">{application.award.name}</div>
+                <div className="justify-self-center text-sm text-(--admin-ink)">{application.award.name}</div>
 
-                <div>
+                <div className="justify-self-center">
                   <ScoreStatusBadge status={application.scoreStatus} />
                 </div>
 
-                <div className="text-sm text-[#d9d4ca]/75">
+                <div className="justify-self-center admin-muted text-sm">
                   {formatAdminDate(application.submittedAt ?? application.createdAt)}
                 </div>
-
-                <div>
-                  <Link
-                    href={`/jury/dashboard/applications/${application.id}`}
-                    className="inline-flex items-center justify-center rounded-full bg-[#d8c27a] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-black transition hover:bg-[#e2d093]"
-                  >
-                    {application.scoreStatus === "NOT_STARTED"
-                      ? t.juryDashboard.reviewScore
-                      : application.scoreStatus === "DRAFT"
-                        ? t.juryDashboard.continueDraft
-                        : t.juryDashboard.viewSubmitted}
-                  </Link>
-                </div>
-              </div>
+              </AdminDataRow>
             ))}
 
             {applications.length === 0 ? (
-              <div className="px-4 py-12 text-center text-sm text-[#d9d4ca]/75">
-                {t.juryDashboard.empty}
+              <div className="px-4 py-5">
+                <AdminEmptyState title={t.juryDashboard.empty} />
               </div>
             ) : null}
-          </div>
-        </section>
-      </div>
-    </PageShell>
+          </AdminDataTable>
+      </AdminSection>
+    </AdminDashboardShell>
   );
 }

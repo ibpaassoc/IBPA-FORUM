@@ -7,26 +7,26 @@ export default function Process() {
   const { t } = useLanguage();
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12">
+    <section className="mx-auto max-w-(--content-width) bg-(--color-off-white) px-(--page-gutter) page-section-pad">
       <SectionTitle
         label={t.home.process.label}
         title={t.home.process.title}
         className="max-w-2xl"
       />
 
-      <div className="mt-12 grid gap-6 lg:grid-cols-5">
+      <div className="relative mt-(--space-xl) grid gap-(--space-md) lg:grid-cols-5">
         {t.home.process.steps.map((step) => (
           <div
             key={step.number}
-            className="rounded-3xl border border-white/10 bg-[#171718] p-6"
+            className="page-card p-(--space-md) text-center"
           >
-            <div className="text-sm tracking-[0.25em] text-[#d8c27a]">
+            <div className="mx-auto flex size-14 items-center justify-center rounded-full border border-(--border-default) bg-(--color-white) text-sm font-medium tracking-widest text-(--color-gold) transition">
               {step.number}
             </div>
-            <h3 className="mt-4 text-xl font-semibold text-white">
+            <h3 className="mt-(--space-sm) font-(--font-display) text-[clamp(1.1rem,2vw,1.6rem)] text-(--color-navy)">
               {step.title}
             </h3>
-            <p className="mt-4 text-sm leading-7 text-[#c8c2b5]">
+            <p className="mt-(--space-sm) text-sm leading-[1.65] text-(--color-steel)">
               {step.text}
             </p>
           </div>

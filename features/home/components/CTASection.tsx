@@ -7,31 +7,31 @@ export default function CTASection() {
   const { t } = useLanguage();
 
   return (
-    <section className="border-t border-white/10 bg-[linear-gradient(180deg,#141415_0%,#0f0f10_100%)]">
-      <div className="mx-auto max-w-7xl px-6 py-20 text-center md:px-10 lg:px-12">
-        <p className="text-xs uppercase tracking-[0.32em] text-[#d8c27a]">
+    <section className="bg-[linear-gradient(160deg,var(--color-navy-deep)_0%,var(--color-navy)_50%,var(--color-navy-mid)_100%)]">
+      <div className="mx-auto max-w-[var(--content-width)] px-[var(--page-gutter)] py-[var(--space-2xl)] text-center">
+        <p className="mx-auto inline-flex items-center gap-[var(--space-sm)] text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-[var(--color-gold)]">
           {t.home.cta.label}
         </p>
 
-        <h2 className="mx-auto mt-4 max-w-3xl text-3xl font-semibold text-white md:text-5xl">
+        <h2 className="mx-auto mt-[var(--space-sm)] max-w-3xl font-[var(--font-display)] text-[clamp(1.8rem,3.5vw,3rem)] font-light text-white">
           {t.home.cta.title}
         </h2>
 
-        <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-[#d9d4ca]">
+        <p className="mx-auto mt-[var(--space-md)] max-w-2xl text-base leading-[1.7] text-[rgba(255,255,255,0.65)]">
           {t.home.cta.text}
         </p>
 
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+        <div className="mt-[var(--space-lg)] flex flex-wrap items-center justify-center gap-[var(--space-sm)]">
           <Link
             href="/apply"
-            className="rounded-full bg-[#d8c27a] px-7 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-[#111111] transition hover:opacity-90"
+            className="ibpa-button ibpa-button-gold"
           >
             {t.common.applyNow}
           </Link>
 
           <Link
             href="/jury"
-            className="rounded-full border border-white/20 px-7 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
+            className="ibpa-button ibpa-button-white"
           >
             {t.home.cta.judge}
           </Link>

@@ -16,10 +16,10 @@ export default function FormFieldShell({
   return (
     <div className="space-y-2.5">
       <div className="flex items-center gap-2">
-        <label className="text-sm font-medium text-white">{label}</label>
+        <label className="text-[clamp(0.68rem,1vw,0.78rem)] font-medium uppercase tracking-[0.08em] text-(--color-navy)">{label}</label>
         {required ? (
-          <span className="rounded-full border border-[#d8c27a]/30 bg-[#d8c27a]/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#d8c27a]">
-            Required
+          <span className="py-0.5 text-[1rem] font-medium uppercase tracking-widest text-(--color-gold)">
+            *
           </span>
         ) : null}
       </div>
@@ -27,9 +27,9 @@ export default function FormFieldShell({
       {children}
 
       {error ? (
-        <p className="text-xs leading-5 text-[#f5aaaa]">{error}</p>
+        <p className="text-xs leading-5 text-(--color-gold)">{error}</p>
       ) : description ? (
-        <p className="text-xs leading-5 text-white/45">{description}</p>
+        <p className="text-xs leading-5 text-(--color-steel)">{description}</p>
       ) : null}
     </div>
   );

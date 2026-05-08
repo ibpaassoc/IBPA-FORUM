@@ -11,7 +11,7 @@ import {
   getScoreableApplicationsWhere,
   getSubmittedJudgeCount,
   ScoringHttpError,
-} from "@/features/scoring/server/shared";
+} from "@/features/admin/server/shared";
 
 export type AdminScoringSort = "averageScore" | "category" | "status";
 export type AdminScoringFilterStatus = "NOT_STARTED" | "IN_PROGRESS" | "COMPLETE";

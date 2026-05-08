@@ -2,7 +2,7 @@ import { prisma } from "@/shared/lib/prisma";
 
 export async function getPublicJuryMembers() {
   try {
-    return await prisma.juryApplication.findMany({
+    const members = await prisma.juryApplication.findMany({
       where: {
         status: "PAID",
         paymentStatus: "PAID",
@@ -29,6 +29,17 @@ export async function getPublicJuryMembers() {
         },
       },
     });
+
+    return members.map((member) => ({
+      id: member.id,
+      fullName: member.fullName,
+      professionalTitle: member.professionalTitle,
+      city: member.city,
+      country: member.country,
+      expertise: member.expertiseAreas,
+      bio: member.professionalBio,
+      profilePhotoFileId: member.files[0]?.id ?? null,
+    }));
   } catch (error) {
     console.warn("Failed to load public jury members.", error);
     return [];

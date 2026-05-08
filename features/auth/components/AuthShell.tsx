@@ -21,45 +21,45 @@ export default function AuthShell({
   const { t } = useLanguage();
 
   return (
-    <PageShell className="px-6 py-16 md:px-10 md:py-20">
-      <div className="mx-auto max-w-6xl pt-10">
-        <div className="grid gap-8 lg:grid-cols-[1.08fr_0.92fr]">
-          <section className="page-panel rounded-3xl p-8 md:p-10">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d8c27a]">
+    <PageShell className="px-[var(--page-gutter)] py-[var(--space-2xl)]">
+      <div className="mx-auto max-w-[var(--content-width)] pt-[clamp(60px,8vh,72px)]">
+        <div className="grid gap-[var(--space-lg)] lg:grid-cols-[1.08fr_0.92fr]">
+          <section className="page-card p-[var(--space-lg)]">
+            <p className="page-eyebrow">
               {eyebrow}
             </p>
-            <h1 className="mt-5 max-w-3xl text-4xl font-semibold leading-tight sm:text-5xl">
+            <h1 className="mt-[var(--space-md)] max-w-3xl font-[var(--font-display)] text-[clamp(2.2rem,5vw,4.2rem)] font-light leading-[1.1] text-[var(--color-navy)]">
               {title}
             </h1>
-            <p className="mt-5 max-w-2xl text-sm leading-7 text-[#d9d4ca] sm:text-base">
+            <p className="mt-[var(--space-md)] max-w-2xl text-sm leading-[1.7] text-[var(--color-steel)] sm:text-base">
               {description}
             </p>
 
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
+            <div className="mt-[var(--space-lg)] grid gap-[var(--space-sm)] sm:grid-cols-3">
               {t.auth.shellCards.map((item) => (
-                <div key={item} className="page-card rounded-2xl bg-white/4.5 p-4">
-                  <p className="text-sm font-medium text-[#f1ecde]">{item}</p>
+                <div key={item} className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-off-white)] p-[var(--space-sm)]">
+                  <p className="text-sm font-medium text-[var(--color-navy)]">{item}</p>
                 </div>
               ))}
             </div>
 
-            <div className="mt-8 rounded-3xl border border-white/10 bg-black/20 p-6">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
+            <div className="mt-[var(--space-lg)] rounded-[var(--radius)] border border-[var(--border-default)] bg-[var(--color-mist)] p-[var(--space-md)]">
+              <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-[var(--color-gold)]">
                 {t.auth.access}
               </p>
-              <p className="mt-4 text-sm leading-7 text-[#d9d4ca]/90">
+              <p className="mt-[var(--space-sm)] text-sm leading-[1.7] text-[var(--color-steel)]">
                 {t.auth.accessText}
               </p>
-              <div className="mt-5 flex flex-wrap gap-3">
+              <div className="mt-[var(--space-md)] flex flex-wrap gap-[var(--space-sm)]">
                 <Link
                   href="/jury/login"
-                  className="inline-flex items-center justify-center rounded-full border border-[#d8c27a]/35 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#f5f1e8] transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
+                  className="ibpa-button ibpa-button-ghost"
                 >
                   {t.auth.loginLink}
                 </Link>
                 <Link
                   href="/jury/register"
-                  className="inline-flex items-center justify-center rounded-full bg-[#d8c27a] px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#111111] transition hover:opacity-90"
+                  className="ibpa-button ibpa-button-gold"
                 >
                   {t.auth.registerLink}
                 </Link>
@@ -67,9 +67,9 @@ export default function AuthShell({
             </div>
           </section>
 
-          <section className="page-card rounded-3xl p-8 md:p-10">
+          <section className="page-card p-[var(--space-lg)]">
             {children}
-            {footer ? <div className="mt-6">{footer}</div> : null}
+            {footer ? <div className="mt-[var(--space-md)]">{footer}</div> : null}
           </section>
         </div>
       </div>

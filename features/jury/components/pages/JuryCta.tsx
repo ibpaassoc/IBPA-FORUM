@@ -7,24 +7,24 @@ export default function JuryCta() {
   const { t } = useLanguage();
 
   return (
-    <section className="bg-[#0f0f10]">
-      <div className="mx-auto max-w-7xl px-6 py-14 md:px-10">
-        <div className="rounded-[1.25rem] border border-white/10 bg-[linear-gradient(to_right,rgba(255,255,255,0.04),rgba(216,194,122,0.12))] p-6 md:p-8">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d8c27a]">
+    <section className="bg-[linear-gradient(160deg,var(--color-navy-deep)_0%,var(--color-navy)_50%,var(--color-navy-mid)_100%)]">
+      <div className="mx-auto max-w-[var(--content-width)] px-[var(--page-gutter)] py-[var(--space-2xl)]">
+        <div>
+          <p className="page-eyebrow">
             {t.juryPage.cta.label}
           </p>
 
-          <h2 className="mt-4 max-w-2xl text-3xl font-semibold leading-tight sm:text-4xl">
+          <h2 className="mt-[var(--space-sm)] max-w-2xl font-[var(--font-display)] text-[clamp(1.8rem,3.5vw,3rem)] font-light leading-[1.15] text-white">
             {t.juryPage.cta.title}
           </h2>
 
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-[#d9d4ca]">
+          <p className="mt-[var(--space-sm)] max-w-2xl text-sm leading-[1.7] text-[rgba(255,255,255,0.65)]">
             {t.juryPage.cta.text}
           </p>
 
           <Link
             href="/apply/jury"
-            className="mt-7 inline-flex items-center justify-center rounded-full bg-[#d8c27a] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-black transition hover:opacity-90"
+            className="ibpa-button ibpa-button-gold mt-[var(--space-lg)]"
           >
             {t.juryPage.cta.button}
           </Link>

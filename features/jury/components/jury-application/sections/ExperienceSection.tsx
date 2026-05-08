@@ -22,12 +22,12 @@ export default function ExperienceSection({
   onExpertiseChange: ChangeEventHandler<HTMLInputElement>;
 }) {
   return (
-    <div className="border-b border-white/10 pb-8">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
+    <div className="border-b border-[var(--border-default)] pb-[var(--space-lg)]">
+      <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-[var(--color-gold)]">
         Experience
       </p>
 
-      <div className="mt-5 space-y-5">
+      <div className="mt-[var(--space-md)] space-y-[var(--space-md)]">
         <FieldShell
           label="Previous Judging Experience"
           hint="If yes, tell us where, when, and in what format you served."
@@ -40,7 +40,7 @@ export default function ExperienceSection({
             ].map((item) => (
               <label
                 key={item.value}
-                className="flex cursor-pointer items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white transition hover:border-[#d8c27a]"
+                className="flex cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-white)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-navy)] transition hover:border-[var(--color-navy)] hover:bg-[var(--color-mist)]"
               >
                 <input
                   type="radio"
@@ -48,7 +48,7 @@ export default function ExperienceSection({
                   value={item.value}
                   checked={hasPreviousJudging === item.value}
                   onChange={() => onPreviousJudgingChange(item.value)}
-                  className="h-4 w-4 accent-[#d8c27a]"
+                  className="h-4 w-4 accent-[var(--color-gold)]"
                 />
                 <span>{item.label}</span>
               </label>
@@ -76,7 +76,7 @@ export default function ExperienceSection({
             ].map((item) => (
               <label
                 key={item.value}
-                className="flex cursor-pointer items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white transition hover:border-[#d8c27a]"
+                className="flex cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-white)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-navy)] transition hover:border-[var(--color-navy)] hover:bg-[var(--color-mist)]"
               >
                 <input
                   type="radio"
@@ -84,7 +84,7 @@ export default function ExperienceSection({
                   value={item.value}
                   checked={isPastWinner === item.value}
                   onChange={() => onPastWinnerChange(item.value)}
-                  className="h-4 w-4 accent-[#d8c27a]"
+                  className="h-4 w-4 accent-[var(--color-gold)]"
                 />
                 <span>{item.label}</span>
               </label>
@@ -112,7 +112,7 @@ export default function ExperienceSection({
             {categories.map((category) => (
               <label
                 key={category}
-                className="flex cursor-pointer items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white transition hover:border-[#d8c27a]"
+                className="flex cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-white)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-navy)] transition hover:border-[var(--color-navy)] hover:bg-[var(--color-mist)]"
               >
                 <input
                   type="checkbox"
@@ -120,7 +120,7 @@ export default function ExperienceSection({
                   value={category}
                   checked={selectedExpertise.includes(category)}
                   onChange={onExpertiseChange}
-                  className="h-4 w-4 rounded accent-[#d8c27a]"
+                  className="h-4 w-4 rounded accent-[var(--color-gold)]"
                 />
                 <span>{category}</span>
               </label>

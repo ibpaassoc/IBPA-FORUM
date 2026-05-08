@@ -12,20 +12,20 @@ export default function FormSection({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-[1.7rem] border border-white/10 bg-white/[0.045] p-5 backdrop-blur-sm md:p-7">
-      <div className="border-b border-white/10 pb-5">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
+    <section className="rounded-(--radius) border border-(--border-default) bg-(--color-off-white) p-(--space-lg) shadow-(--shadow-lg)">
+      <div className="border-b border-(--border-default) pb-(--space-md)">
+        <p className="text-[clamp(0.75rem,1.3vw,1.5rem)] font-medium uppercase tracking-[0.2em] text-(--color-gold)">
           {eyebrow}
         </p>
-        <h2 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">
+        <h2 className="mt-(--space-sm) font-(--font-display) text-[clamp(1.1rem,2vw,1.6rem)] text-(--color-navy)">
           {title}
         </h2>
-        <p className="mt-3 max-w-3xl text-sm leading-7 text-[#d9d4ca]">
+        <p className="mt-(--space-sm) max-w-3xl text-sm leading-[1.7] text-(--color-steel)">
           {description}
         </p>
       </div>
 
-      <div className="mt-6">{children}</div>
+      <div className="mt-(--space-md)">{children}</div>
     </section>
   );
 }

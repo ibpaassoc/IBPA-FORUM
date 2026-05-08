@@ -3,7 +3,11 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { formatAdminDate } from "@/features/admin/server/view-models";
-import ScoreStatusBadge from "@/features/scoring/components/ScoreStatusBadge";
+import ScoreStatusBadge from "@/features/admin/components/scoring/ScoreStatusBadge";
+import {
+  AdminSection,
+  AdminToolbarButton,
+} from "@/shared/components/admin/AdminDashboard";
 
 type ScoreFormValue = "" | `${number}`;
 
@@ -105,19 +109,17 @@ export default function JuryScoreForm({
   }
 
   return (
-    <section className="page-card rounded-3xl p-6">
+    <AdminSection>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
-            Judge Scorecard
-          </p>
-          <h2 className="mt-3 text-2xl font-semibold text-white">Scoring</h2>
+          <p className="admin-eyebrow">Judge Scorecard</p>
+          <h2 className="admin-heading mt-3 text-2xl font-semibold">Scoring</h2>
         </div>
 
         <div className="text-right">
           <ScoreStatusBadge status={initialScore?.status ?? "NOT_STARTED"} />
           {initialScore?.submittedAt ? (
-            <p className="mt-2 text-xs text-[#d9d4ca]/75">
+            <p className="admin-muted mt-2 text-xs">
               Submitted {formatAdminDate(new Date(initialScore.submittedAt))}
             </p>
           ) : null}
@@ -125,13 +127,13 @@ export default function JuryScoreForm({
       </div>
 
       {initialScore?.status === "REOPENED" ? (
-        <div className="mt-5 rounded-2xl border border-[#5577a8]/40 bg-[#2c3d5a]/25 px-4 py-3 text-sm text-[#d7e7ff]">
+        <div className="admin-detail-card mt-5 rounded-2xl px-4 py-3 text-sm">
           An admin reopened this score. You can update your draft and submit again.
         </div>
       ) : null}
 
       {isSubmitted ? (
-        <div className="mt-5 rounded-2xl border border-[#3e8f62]/45 bg-[#1b4d34]/25 px-4 py-3 text-sm text-[#cdebd6]">
+        <div className="mt-5 rounded-2xl border border-[rgba(184,148,83,0.34)] bg-(--admin-gold-soft) px-4 py-3 text-sm admin-label">
           This score has been submitted and is now read-only. Only an admin can reopen
           it.
         </div>
@@ -161,7 +163,7 @@ export default function JuryScoreForm({
             <div key={criterion.key}>
               <label
                 htmlFor={criterion.key}
-                className="mb-2 block text-sm font-medium text-white"
+                className="admin-label mb-2 block text-sm font-semibold"
               >
                 {criterion.label}
               </label>
@@ -175,14 +177,14 @@ export default function JuryScoreForm({
                 value={valueMap[criterion.key]}
                 disabled={isSubmitted || isPending}
                 onChange={(event) => setterMap[criterion.key](event.target.value as ScoreFormValue)}
-                className="w-full rounded-2xl border border-white/12 bg-white/5 px-4 py-3 text-sm text-white outline-none transition focus:border-[#d8c27a] focus:bg-white/7 disabled:cursor-not-allowed disabled:opacity-65"
+                className="admin-field w-full rounded-2xl px-4 py-3 text-sm outline-none transition disabled:cursor-not-allowed disabled:opacity-65"
               />
             </div>
           );
         })}
 
         <div>
-          <label htmlFor="comment" className="mb-2 block text-sm font-medium text-white">
+          <label htmlFor="comment" className="admin-label mb-2 block text-sm font-semibold">
             Judge Comment (Optional)
           </label>
           <textarea
@@ -191,54 +193,49 @@ export default function JuryScoreForm({
             disabled={isSubmitted || isPending}
             onChange={(event) => setComment(event.target.value)}
             rows={5}
-            className="w-full rounded-2xl border border-white/12 bg-white/5 px-4 py-3 text-sm text-white outline-none transition focus:border-[#d8c27a] focus:bg-white/7 disabled:cursor-not-allowed disabled:opacity-65"
+            className="admin-field w-full rounded-2xl px-4 py-3 text-sm outline-none transition disabled:cursor-not-allowed disabled:opacity-65"
           />
         </div>
 
-        <div className="rounded-2xl border border-white/12 bg-white/[0.035] p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
-            Total
-          </p>
-          <p className="mt-3 text-3xl font-semibold text-white">{total} / 50</p>
+        <div className="admin-detail-card rounded-2xl p-4">
+          <p className="admin-eyebrow">Total</p>
+          <p className="admin-heading mt-3 text-3xl font-semibold">{total} / 50</p>
         </div>
 
         {error ? (
-          <p className="rounded-2xl border border-[#9d4a4a]/35 bg-[#5c2323]/25 px-4 py-3 text-sm text-[#f3c7c7]">
+          <p className="admin-alert-danger rounded-2xl px-4 py-3 text-sm">
             {error}
           </p>
         ) : null}
 
         {notice ? (
-          <p className="rounded-2xl border border-[#3e8f62]/45 bg-[#1b4d34]/25 px-4 py-3 text-sm text-[#cdebd6]">
+          <p className="admin-alert-note rounded-2xl px-4 py-3 text-sm">
             {notice}
           </p>
         ) : null}
 
         {!isSubmitted ? (
           <div className="flex flex-col gap-3 sm:flex-row">
-            <button
-              type="button"
+            <AdminToolbarButton
               disabled={isPending}
               onClick={() => {
                 void sendScoreRequest("draft");
               }}
-              className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a] disabled:cursor-not-allowed disabled:opacity-65"
             >
               Save Draft
-            </button>
-            <button
-              type="button"
+            </AdminToolbarButton>
+            <AdminToolbarButton
               disabled={isPending}
               onClick={() => {
                 void sendScoreRequest("submit");
               }}
-              className="inline-flex items-center justify-center rounded-full bg-[#d8c27a] px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-[#e2d093] disabled:cursor-not-allowed disabled:opacity-65"
+              variant="primary"
             >
               Submit Final Score
-            </button>
+            </AdminToolbarButton>
           </div>
         ) : null}
       </div>
-    </section>
+    </AdminSection>
   );
 }

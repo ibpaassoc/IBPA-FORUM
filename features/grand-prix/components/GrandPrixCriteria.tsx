@@ -7,25 +7,25 @@ export default function GrandPrixCriteria() {
   const { t } = useLanguage();
 
   return (
-    <PageSection className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-      <PageCard className="p-8">
-        <p className="page-eyebrow text-[10px]">{t.grandPrixPage.criteria.label}</p>
-        <h2 className="mt-4 text-3xl font-semibold text-white sm:text-4xl">
+    <PageSection className="grid gap-(--space-md) lg:grid-cols-[1.05fr_0.95fr]">
+      <PageCard>
+        <p className="page-eyebrow">{t.grandPrixPage.criteria.label}</p>
+        <h2 className="mt-(--space-sm) font-(--font-display) text-[clamp(1.8rem,3.5vw,3rem)] text-(--color-navy)">
           {t.grandPrixPage.criteria.title}
         </h2>
-        <p className="page-copy mt-4 text-sm">
+        <p className="mt-(--space-sm) text-sm leading-[1.7] text-(--color-steel)">
           {t.grandPrixPage.criteria.text}
         </p>
       </PageCard>
 
-      <PageCard className="p-8">
-        <p className="page-eyebrow text-[10px]">
+      <PageCard>
+        <p className="page-eyebrow">
           {t.grandPrixPage.criteria.listLabel}
         </p>
-        <div className="mt-5 space-y-4">
+        <div className="mt-(--space-md) space-y-(--space-sm)">
           {t.grandPrixPage.criteria.items.map((item) => (
-            <div key={item} className="rounded-2xl border border-white/10 bg-black/20 p-4">
-              <p className="text-sm leading-6 text-[#d9d4ca]">{item}</p>
+            <div key={item} className="rounded-sm border border-(--border-default) bg-(--color-off-white) p-(--space-sm)">
+              <p className="text-sm leading-[1.65] text-(--color-steel)">{item}</p>
             </div>
           ))}
         </div>

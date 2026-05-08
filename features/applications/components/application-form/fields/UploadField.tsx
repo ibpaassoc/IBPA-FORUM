@@ -35,18 +35,18 @@ export default function UploadField({
       error={error}
     >
       <label
-        className={`flex cursor-pointer flex-col rounded-[1.6rem] border border-dashed px-4 py-5 transition ${
+        className={`flex cursor-pointer flex-col rounded-[var(--radius-sm)] border-[1.5px] border-dashed p-[var(--space-lg)] text-center transition ${
           error
-            ? "border-[#8a3f3f] bg-[#2a1717]/50"
-            : "border-[#d8c27a]/22 bg-[linear-gradient(135deg,rgba(216,194,122,0.09),rgba(255,255,255,0.03))] hover:border-[#d8c27a]/42 hover:bg-[linear-gradient(135deg,rgba(216,194,122,0.12),rgba(255,255,255,0.05))]"
+            ? "border-[var(--color-gold)] bg-[rgba(201,169,110,0.15)]"
+            : "border-[var(--border-default)] bg-[var(--color-white)] hover:border-[var(--color-navy)] hover:bg-[var(--color-mist)]"
         }`}
       >
-        <span className="text-sm font-medium text-white">
+        <span className="text-sm font-medium text-[var(--color-navy)]">
           {files.length > 0
             ? `${files.length} file${files.length === 1 ? "" : "s"} selected`
             : "Select files"}
         </span>
-        <span className="mt-2 text-xs leading-6 text-[#d9d4ca]/72">
+        <span className="mt-[var(--space-xs)] text-xs leading-6 text-[var(--color-steel)]">
           JPG, PNG, and PDF supported where applicable. Max 5MB per file.
         </span>
 
@@ -63,14 +63,14 @@ export default function UploadField({
       </label>
 
       {files.length > 0 ? (
-        <div className="space-y-2 rounded-2xl border border-white/10 bg-black/20 p-3">
+        <div className="space-y-2 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-white)] p-[var(--space-sm)]">
           {files.map((file, index) => (
             <div
               key={`${file.name}-${file.size}-${index}`}
-              className="flex items-center justify-between gap-3 rounded-2xl border border-white/8 bg-white/[0.03] px-3 py-2 text-sm text-[#efe6d0]"
+              className="flex items-center justify-between gap-3 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-off-white)] px-[var(--space-sm)] py-[var(--space-xs)] text-sm text-[var(--color-navy)]"
             >
               <span className="truncate">{file.name}</span>
-              <span className="shrink-0 text-xs text-white/45">
+              <span className="shrink-0 text-xs text-[var(--color-steel)]">
                 {formatFileSize(file.size)}
               </span>
             </div>

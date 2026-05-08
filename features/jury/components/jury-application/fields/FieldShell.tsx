@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 
 export const inputClassName =
-  "w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#d8c27a] focus:bg-white/[0.07]";
+  "w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] text-[var(--color-navy)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-navy)] focus:shadow-[0_0_0_3px_rgba(26,38,64,0.07)]";
 
 export default function FieldShell({
   label,
@@ -19,15 +19,15 @@ export default function FieldShell({
   return (
     <div>
       <div className="mb-2 flex items-center gap-2">
-        <label className="text-sm font-medium text-white">{label}</label>
+        <label className="text-[clamp(0.68rem,1vw,0.78rem)] font-medium uppercase tracking-[0.08em] text-(--color-navy)">{label}</label>
         {required ? (
-          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#d8c27a]">
-            Required
+          <span className="py-0.5 text-[1rem] font-medium uppercase tracking-widest text-(--color-gold)">
+            *
           </span>
         ) : null}
       </div>
       {children}
-      {hint ? <p className="mt-2 text-xs leading-5 text-white/45">{hint}</p> : null}
+      {hint ? <p className="mt-(--space-xs) text-xs leading-5 text-(--color-steel)">{hint}</p> : null}
     </div>
   );
 }

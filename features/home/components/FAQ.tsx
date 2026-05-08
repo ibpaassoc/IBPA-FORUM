@@ -7,22 +7,22 @@ export default function FAQ() {
   const { t } = useLanguage();
 
   return (
-    <section className="border-y border-white/10 bg-[#141415]">
-      <div className="mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12">
+    <section className="bg-[var(--color-white)]">
+      <div className="mx-auto max-w-[var(--content-width)] px-[var(--page-gutter)] py-[var(--space-2xl)]">
         <SectionTitle
           label={t.home.faq.label}
           title={t.home.faq.title}
           className="max-w-2xl"
         />
 
-        <div className="mt-12 grid gap-6 lg:grid-cols-2">
+        <div className="mt-[var(--space-xl)] grid gap-[var(--space-md)] lg:grid-cols-2">
           {t.home.faq.items.map((item) => (
             <div
               key={item.q}
-              className="rounded-3xl border border-white/10 bg-[#171718] p-7"
+              className="page-card p-[var(--space-lg)]"
             >
-              <h3 className="text-xl font-semibold text-white">{item.q}</h3>
-              <p className="mt-4 text-sm leading-7 text-[#c8c2b5]">{item.a}</p>
+              <h3 className="font-[var(--font-display)] text-[clamp(1.1rem,2vw,1.6rem)] font-normal text-[var(--color-navy)]">{item.q}</h3>
+              <p className="mt-[var(--space-sm)] text-sm leading-[1.7] text-[var(--color-steel)]">{item.a}</p>
             </div>
           ))}
         </div>

@@ -6,31 +6,31 @@ export default function JurySection() {
   const { t } = useLanguage();
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12">
-      <div className="rounded-4xl border border-white/10 bg-white/5 p-8">
-        <p className="text-xs uppercase tracking-[0.32em] text-[#d8c27a]">
+    <section className="mx-auto max-w-(--content-width) px-(--page-gutter) page-section-pad">
+      <div className="page-card p-(--space-lg)">
+        <p className="page-eyebrow">
           {t.home.juryCta.label}
         </p>
 
-        <h2 className="mt-4 text-3xl font-semibold text-white">
+        <h2 className="mt-(--space-sm) font-(--font-display) text-[clamp(1.8rem,3.5vw,3rem)] text-(--color-navy)">
           {t.home.juryCta.title}
         </h2>
 
-        <p className="mt-5 text-sm leading-8 text-[#d9d4ca]">
+        <p className="mt-(--space-md) text-sm leading-[1.7] text-(--color-steel)">
           {t.home.juryCta.text1}
         </p>
 
-        <p className="mt-4 text-sm leading-8 text-[#d9d4ca]">
+        <p className="mt-(--space-sm) text-sm leading-[1.7] text-(--color-steel)">
           {t.home.juryCta.text2}
         </p>
 
-        <p className="mt-4 text-sm leading-8 text-[#d9d4ca]">
+        <p className="mt-(--space-sm) text-sm leading-[1.7] text-(--color-steel)">
           {t.home.juryCta.text3}
         </p>
 
         <a
           href="/jury"
-          className="mt-8 inline-block rounded-full bg-[#d8c27a] px-6 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-[#111111] transition hover:opacity-90"
+          className="ibpa-button ibpa-button-gold mt-(--space-lg)"
         >
           {t.home.juryCta.button}
         </a>

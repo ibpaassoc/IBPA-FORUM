@@ -13,13 +13,13 @@ export default function JuryRegisterContent() {
       title={t.auth.registerPage.title}
       description={t.auth.registerPage.description}
     >
-      <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
+      <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-[var(--color-gold)]">
         {t.auth.registerPage.cardEyebrow}
       </p>
-      <h2 className="mt-4 text-2xl font-semibold">
+      <h2 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(1.1rem,2vw,1.6rem)] font-normal text-[var(--color-navy)]">
         {t.auth.registerPage.cardTitle}
       </h2>
-      <p className="mt-3 text-sm leading-6 text-[#d9d4ca]/85">
+      <p className="mt-[var(--space-sm)] text-sm leading-[1.65] text-[var(--color-steel)]">
         {t.auth.registerPage.cardText}
       </p>
       <RegisterForm />

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { reopenJudgeScore } from "@/features/scoring/server/admin";
+import { reopenJudgeScore } from "@/features/admin/server/admin";
 import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
 
 export async function POST(request: Request) {

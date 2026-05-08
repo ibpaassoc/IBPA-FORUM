@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type {
   Application,
   ApplicationAnswer,
@@ -8,9 +7,12 @@ import type {
 } from "@prisma/client";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import { logoutAdminAction } from "@/features/admin/actions/auth.actions";
-import { updateParticipantApplicationStatus } from "@/features/admin/actions/participant.actions";
-import { formatAdminDate } from "@/features/admin/server/view-models";
-import { PageShell } from "@/shared/components/layout/PageShell";
+import {
+  AdminDashboardShell,
+  AdminDetailCard,
+  AdminHeroCard,
+  AdminToolbarButton,
+} from "@/shared/components/admin/AdminDashboard";
 
 type ParticipantApplicationDetail = Application & {
   category: Category;
@@ -34,14 +36,7 @@ function DetailItem({
   label: string;
   value: string;
 }) {
-  return (
-    <div className="rounded-2xl border border-white/12 bg-white/4.5 p-4">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
-        {label}
-      </p>
-      <p className="mt-3 text-sm leading-6 text-[#f1ecde]">{value}</p>
-    </div>
-  );
+  return <AdminDetailCard label={label} value={value} />;
 }
 
 function formatAnswerValue(answer: {
@@ -89,55 +84,22 @@ export default function ApplicationDetailPage({
   }
 
   return (
-    <PageShell className="px-6 py-10 text-white md:px-10 md:py-12">
-      <div className="mx-auto max-w-7xl pt-16">
-        <div className="page-panel flex flex-col gap-5 rounded-3xl p-6 md:flex-row md:items-end md:justify-between md:p-8">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d8c27a]">
-              Participant Admin
-            </p>
-            <h1 className="mt-4 text-3xl font-semibold sm:text-4xl">
-              {application.fullName}
-            </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-[#d9d4ca]">
-              {application.category.name} / {application.award.name}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href="/admin/applications"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
-            >
-              Back to List
-            </Link>
-            <Link
-              href="/admin/jury-applications"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
-            >
-              Jury Dashboard
-            </Link>
-            <Link
-              href="/admin/scoring"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
-            >
-              Scoring Dashboard
-            </Link>
-            <form action={logoutAdminAction}>
-              <button
-                type="submit"
-                className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
-              >
-                Log Out
-              </button>
-            </form>
-          </div>
-        </div>
+    <AdminDashboardShell>
+      <AdminHeroCard
+        eyebrow="Participant Admin"
+        title={application.fullName}
+        subtitle={`${application.category.name} / ${application.award.name}`}
+        actions={
+          <>
+            <AdminToolbarButton href="/admin/applications">Back to List</AdminToolbarButton>
+          </>
+        }
+      />
 
         <div className="mt-6 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-6">
-            <section className="page-card rounded-3xl p-6">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
+            <section className="admin-card rounded-3xl p-6">
+              <p className="admin-eyebrow">
                 Block A
               </p>
               <div className="mt-5 grid gap-4 md:grid-cols-2">
@@ -193,8 +155,8 @@ export default function ApplicationDetailPage({
               </div>
             </section>
 
-            <section className="page-card rounded-3xl p-6">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
+            <section className="admin-card rounded-3xl p-6">
+              <p className="admin-eyebrow">
                 Block B Answers
               </p>
               <div className="mt-5 space-y-4">
@@ -219,7 +181,7 @@ export default function ApplicationDetailPage({
                 {categoryFields.every(
                   (field) => field.type === "file" || !answerMap.get(field.key)
                 ) ? (
-                  <p className="text-sm text-[#d9d4ca]/75">
+                  <p className="admin-muted text-sm">
                     No text-based Block B answers were saved for this application.
                   </p>
                 ) : null}
@@ -228,90 +190,14 @@ export default function ApplicationDetailPage({
           </div>
 
           <div className="space-y-6">
-            <section className="page-card rounded-3xl p-6">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
-                Review Status
-              </p>
-
-              <form
-                action={updateParticipantApplicationStatus}
-                className="mt-5 space-y-5"
-              >
-                <input type="hidden" name="id" value={application.id} />
-
-                <div>
-                  <label
-                    htmlFor="status"
-                    className="mb-2 block text-sm font-medium text-white"
-                  >
-                    Application status
-                  </label>
-                  <select
-                    id="status"
-                    name="status"
-                    defaultValue={application.status}
-                    className="w-full rounded-2xl border border-white/12 bg-white/5 px-4 py-3 text-sm text-white outline-none transition focus:border-[#d8c27a] focus:bg-white/7"
-                  >
-                    {statusOptions.map((status) => (
-                      <option
-                        key={status}
-                        value={status}
-                        className="bg-[#101010] text-white"
-                      >
-                        {status.replaceAll("_", " ")}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <button
-                  type="submit"
-                  className="inline-flex items-center justify-center rounded-full bg-[#d8c27a] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-[#e2d093]"
-                >
-                  Save Status
-                </button>
-              </form>
-
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                <DetailItem
-                  label="Payment Status"
-                  value={application.paymentStatus.replaceAll("_", " ")}
-                />
-                <DetailItem
-                  label="Amount"
-                  value={`${(application.amount / 100).toFixed(2)} ${application.currency.toUpperCase()}`}
-                />
-                <DetailItem
-                  label="Checkout Session"
-                  value={application.stripeCheckoutSessionId || "Not set"}
-                />
-                <DetailItem
-                  label="Payment Intent"
-                  value={application.stripePaymentIntentId || "Not set"}
-                />
-                <DetailItem
-                  label="Paid At"
-                  value={formatAdminDate(application.paidAt)}
-                />
-                <DetailItem
-                  label="Submitted"
-                  value={formatAdminDate(application.submittedAt)}
-                />
-                <DetailItem
-                  label="Updated"
-                  value={formatAdminDate(application.updatedAt)}
-                />
-              </div>
-            </section>
-
-            <section className="page-card rounded-3xl p-6">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
+            <section className="admin-card rounded-3xl p-6">
+              <p className="admin-eyebrow">
                 Uploaded Files
               </p>
 
               <div className="mt-5 space-y-5">
                 <div>
-                  <p className="text-sm font-medium text-white">
+                  <p className="text-sm font-semibold text-(--admin-ink)">
                     Professional License / Certification
                   </p>
                   <div className="mt-3 space-y-3">
@@ -321,10 +207,10 @@ export default function ApplicationDetailPage({
                         href={`/api/admin/application-files/${file.id}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="flex items-center justify-between rounded-2xl border border-white/12 bg-white/[0.035] px-4 py-3 text-sm text-[#d9d4ca] transition hover:border-[#d8c27a] hover:text-white"
+                        className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-(--admin-gold)"
                       >
                         <span>{file.fileName}</span>
-                        <span className="text-xs text-white/45">
+                        <span className="admin-muted text-xs">
                           {(file.fileSize / 1024 / 1024).toFixed(2)} MB
                         </span>
                       </a>
@@ -339,7 +225,7 @@ export default function ApplicationDetailPage({
 
                     return (
                       <div key={field.key}>
-                        <p className="text-sm font-medium text-white">{field.label}</p>
+                        <p className="text-sm font-semibold text-(--admin-ink)">{field.label}</p>
                         <div className="mt-3 space-y-3">
                           {files.map((file) => (
                             <a
@@ -347,16 +233,16 @@ export default function ApplicationDetailPage({
                               href={`/api/admin/application-files/${file.id}`}
                               target="_blank"
                               rel="noreferrer"
-                              className="flex items-center justify-between rounded-2xl border border-white/12 bg-white/[0.035] px-4 py-3 text-sm text-[#d9d4ca] transition hover:border-[#d8c27a] hover:text-white"
+                              className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-(--admin-gold)"
                             >
                               <span>{file.fileName}</span>
-                              <span className="text-xs text-white/45">
+                              <span className="admin-muted text-xs">
                                 {(file.fileSize / 1024 / 1024).toFixed(2)} MB
                               </span>
                             </a>
                           ))}
                           {files.length === 0 ? (
-                            <p className="text-sm text-[#d9d4ca]/75">
+                            <p className="admin-muted text-sm">
                               No files uploaded for this field.
                             </p>
                           ) : null}
@@ -368,7 +254,6 @@ export default function ApplicationDetailPage({
             </section>
           </div>
         </div>
-      </div>
-    </PageShell>
+    </AdminDashboardShell>
   );
 }

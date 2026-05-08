@@ -23,28 +23,28 @@ const responsibilities = [
 
 export default function JuryResponsibilities() {
   return (
-    <section className="border-b border-white/10 bg-[#0f0f10]">
-      <div className="mx-auto max-w-7xl px-6 py-14 md:px-10">
-        <div className="mb-8 max-w-3xl">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d8c27a]">
+    <section className="bg-[var(--color-white)]">
+      <div className="mx-auto max-w-[var(--content-width)] px-[var(--page-gutter)] py-[var(--space-2xl)]">
+        <div className="mb-[var(--space-lg)] max-w-3xl">
+          <p className="page-eyebrow">
             Responsibilities
           </p>
-          <h2 className="mt-3 text-3xl font-semibold leading-tight sm:text-4xl">
+          <h2 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(1.8rem,3.5vw,3rem)] font-light leading-[1.15] text-[var(--color-navy)]">
             What official judges are expected to do
           </h2>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-4">
+        <div className="grid gap-[var(--space-md)] lg:grid-cols-4">
           {responsibilities.map((item) => (
             <div
               key={item.number}
-              className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm"
+              className="page-card p-[var(--space-md)]"
             >
-              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
+              <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-[var(--color-gold)]">
                 {item.number}
               </p>
-              <h3 className="mt-4 text-lg font-semibold">{item.title}</h3>
-              <p className="mt-3 text-sm leading-6 text-[#d9d4ca]">{item.text}</p>
+              <h3 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(1.1rem,2vw,1.6rem)] font-normal text-[var(--color-navy)]">{item.title}</h3>
+              <p className="mt-[var(--space-sm)] text-sm leading-[1.65] text-[var(--color-steel)]">{item.text}</p>
             </div>
           ))}
         </div>

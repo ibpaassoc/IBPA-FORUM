@@ -1,82 +1,61 @@
 "use client";
 
-import Link from "next/link"
+import Link from "next/link";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { PageHero } from "@/shared/components/layout/PageShell";
 
 export default function JuryHero() {
   const { t } = useLanguage();
 
   return (
-    <section className="border-b border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(216,194,122,0.18),transparent_35%),linear-gradient(to_right,#151515,#0f0f10_55%)]">
-      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-32 md:px-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
-        <div className="max-w-3xl">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d8c27a]">
-            {t.juryPage.hero.eyebrow}
-          </p>
-
-          <h1 className="mt-5 max-w-3xl text-4xl font-semibold leading-tight sm:text-5xl lg:text-6xl">
-            {t.juryPage.hero.title}
-          </h1>
-
-          <p className="mt-5 max-w-2xl text-sm leading-7 text-[#d9d4ca] sm:text-base">
-            {t.juryPage.hero.description}
-          </p>
-
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link
-              href="/apply/jury"
-              className="inline-flex items-center justify-center rounded-full bg-[#d8c27a] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-black transition hover:opacity-90"
-            >
-              {t.common.applyAsJudge}
-            </Link>
-
-            <a
-              href="#requirements"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
-            >
-              {t.juryPage.hero.requirements}
-            </a>
-          </div>
-        </div>
-
-        <div className="rounded-[1.35rem] border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/45">
+    <PageHero
+      eyebrow={t.juryPage.hero.eyebrow}
+      title={t.juryPage.hero.title}
+      description={t.juryPage.hero.description}
+      aside={
+        <div className="space-y-4">
+          <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-gold)">
             {t.juryPage.hero.overview}
           </p>
 
-          <div className="mt-5 grid gap-5 sm:grid-cols-3 lg:grid-cols-1">
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.22em] text-white/40">
-                {t.juryPage.hero.experience}
-              </p>
-              <p className="mt-2 text-2xl font-semibold">
-                {t.juryPage.hero.experienceValue}
-              </p>
-            </div>
+          <div className="rounded-sm border border-border-footer bg-[rgba(255,255,255,0.07)] p-(--space-md) font-light">
+            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-[rgba(255,255,255,0.45)]">
+              {t.juryPage.hero.experience}
+            </p>
+            <p className="mt-(--space-xs) font-(--font-display) text-[clamp(1.8rem,4vw,2.8rem)]">
+              {t.juryPage.hero.experienceValue}
+            </p>
+          </div>
 
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.22em] text-white/40">
-                {t.juryPage.hero.review}
-              </p>
-              <p className="mt-2 text-2xl font-semibold">
-                {t.juryPage.hero.reviewValue}
-              </p>
-            </div>
+          <div className="rounded-sm border border-border-footer bg-[rgba(255,255,255,0.07)] p-(--space-md) font-light">
+            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-[rgba(255,255,255,0.45)]">
+              {t.juryPage.hero.review}
+            </p>
+            <p className="mt-(--space-xs) font-(--font-display) text-[clamp(1.8rem,4vw,2.8rem)]">
+              {t.juryPage.hero.reviewValue}
+            </p>
+          </div>
 
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.22em] text-white/40">
-                {t.juryPage.hero.fee}
-              </p>
-              <p className="mt-2 text-2xl font-semibold">
-                {t.juryPage.hero.feeValue}
-              </p>
-              <p className="mt-1 text-xs text-white/55">
-                {t.juryPage.hero.feeNote}
-              </p>
-            </div>
+          <div className="rounded-sm border border-border-footer bg-[rgba(255,255,255,0.07)] p-(--space-md) font-light">
+            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-[rgba(255,255,255,0.45)]">
+              {t.juryPage.hero.fee}
+            </p>
+            <p className="mt-(--space-xs) font-(--font-display) text-[clamp(1.8rem,4vw,2.8rem)]">
+              {t.juryPage.hero.feeValue}
+            </p>
           </div>
         </div>
+      }
+    >
+      <div className="flex flex-wrap gap-4">
+        <Link href="/apply/jury" className="ibpa-button ibpa-button-gold">
+          {t.common.applyAsJudge}
+        </Link>
+
+        <a href="#requirements" className="ibpa-button ibpa-button-white">
+          {t.juryPage.hero.requirements}
+        </a>
       </div>
-    </section>
-  )
+    </PageHero>
+  );
 }

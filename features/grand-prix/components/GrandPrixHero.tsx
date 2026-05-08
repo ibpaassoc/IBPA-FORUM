@@ -14,43 +14,43 @@ export default function GrandPrixHero() {
       description={t.grandPrixPage.hero.description}
       aside={
         <div className="space-y-4">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/45">
+          <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-gold)">
             {t.grandPrixPage.hero.snapshot}
           </p>
-          <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-            <p className="text-[10px] uppercase tracking-[0.22em] text-white/40">
+          <div className="rounded-sm border border-border-footer bg-[rgba(255,255,255,0.07)] p-(--space-md) font-light">
+            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-[rgba(255,255,255,0.45)]">
               {t.grandPrixPage.hero.eligibility}
             </p>
-            <p className="mt-2 text-lg font-semibold">
+            <p className="mt-(--space-xs) font-(--font-display) text-[clamp(1.1rem,2vw,1.6rem)]">
               {t.grandPrixPage.hero.eligibilityValue}
             </p>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-            <p className="text-[10px] uppercase tracking-[0.22em] text-white/40">
+          <div className="rounded-sm border border-border-footer bg-[rgba(255,255,255,0.07)] p-(--space-md) font-light">
+            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-[rgba(255,255,255,0.45)]">
               {t.grandPrixPage.hero.evaluation}
             </p>
-            <p className="mt-2 text-2xl font-semibold">
+            <p className="mt-(--space-xs) font-(--font-display) text-[clamp(1.8rem,4vw,2.8rem)]">
               {t.grandPrixPage.hero.evaluationValue}
             </p>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-            <p className="text-[10px] uppercase tracking-[0.22em] text-white/40">
+          <div className="rounded-sm border border-border-footer bg-[rgba(255,255,255,0.07)] p-(--space-md) font-light">
+            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-[rgba(255,255,255,0.45)]">
               {t.grandPrixPage.hero.decision}
             </p>
-            <p className="mt-2 text-lg font-semibold">
+            <p className="mt-(--space-xs) font-(--font-display) text-[clamp(1.1rem,2vw,1.6rem)]">
               {t.grandPrixPage.hero.decisionValue}
             </p>
           </div>
         </div>
       }
     >
-      <p className="page-copy mb-8 max-w-2xl text-sm">
+      <p className="mb-(--space-lg) max-w-2xl text-sm leading-[1.7] text-[rgba(255,255,255,0.65)]">
         {t.grandPrixPage.hero.body}
       </p>
       <div className="flex flex-wrap gap-4">
         <Link
           href="/categories"
-          className="rounded-full border border-white/20 px-7 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-white hover:border-[#d8c27a] hover:text-[#d8c27a]"
+          className="ibpa-button ibpa-button-white"
         >
           {t.grandPrixPage.hero.cta}
         </Link>

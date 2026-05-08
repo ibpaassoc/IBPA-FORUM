@@ -11,10 +11,10 @@ export default function SectionTitle({
 }: SectionTitleProps) {
   return (
     <div className={className}>
-      <p className="text-xs uppercase tracking-[0.32em] text-[#d8c27a]">
+      <p className="page-eyebrow">
         {label}
       </p>
-      <h2 className="mt-4 text-3xl font-semibold text-white md:text-5xl">
+      <h2 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(1.8rem,3.5vw,3rem)] font-light leading-[1.15] text-[var(--color-navy)]">
         {title}
       </h2>
     </div>
