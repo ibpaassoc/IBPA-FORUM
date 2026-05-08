@@ -87,7 +87,6 @@ export default function JuryApplicationListPage({
               <AdminDataRow
                 key={application.id}
                 href={`/admin/jury-applications/${application.id}`}
-
               >
                 <div>
                   <p className="justify-self-center text-sm font-semibold text-(--admin-ink)">

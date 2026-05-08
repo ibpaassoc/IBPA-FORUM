@@ -272,7 +272,7 @@ export function AdminDataRow({ children, gridClassName, href }: AdminDataRowProp
   const row = (
     <div
       className={adminCn(
-        "grid gap-3 px-4 py-4 transition hover:bg-[rgba(184,148,83,0.08)] lg:items-center ",
+        "grid gap-3 px-4 py-4 transition hover:bg-[rgba(184,148,83,0.08)] items-center ",
         gridClassName ?? autoGrid
       )}
     >

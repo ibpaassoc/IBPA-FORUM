@@ -103,7 +103,7 @@ export default function ApplicationListPage({
         </div>
 
         <AdminSection className="mt-5">
-          <div className="mb-5 flex flex-wrap gap-3">
+          <div className="justify-self-center mt-2 mb-10 flex flex-wrap gap-3">
             {filters.map((item) => (
               <AdminFilterChip key={item.label} href={item.href} active={item.active}>
                 {item.label}

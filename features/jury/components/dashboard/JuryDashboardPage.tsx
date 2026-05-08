@@ -94,7 +94,7 @@ export default function JuryDashboardPage({
       </div>
 
       <AdminSection className="mt-5">
-          <div className="mb-5 flex flex-wrap gap-3">
+          <div className="justify-self-center mt-2 mb-10 flex flex-wrap gap-3">
             {[
               { label: t.juryDashboard.allCategories, href: "/jury/dashboard", active: !activeCategory },
               ...expertiseAreas.map((area) => ({
@@ -120,49 +120,33 @@ export default function JuryDashboardPage({
               t.juryDashboard.award,
               t.juryDashboard.status,
               t.juryDashboard.submitted,
-              t.juryDashboard.open,
             ]}
-            gridClassName="lg:grid-cols-[1.25fr_0.95fr_1.05fr_0.8fr_0.85fr_0.8fr]"
           >
             {applications.map((application) => (
               <AdminDataRow
                 key={application.id}
-                gridClassName="lg:grid-cols-[1.25fr_0.95fr_1.05fr_0.8fr_0.85fr_0.8fr]"
+                href={`/jury/dashboard/applications/${application.id}`}
               >
                 <div>
-                  <p className="text-sm font-semibold text-(--admin-ink)">
+                  <p className="justify-self-center text-sm font-semibold text-(--admin-ink)">
                     {application.fullName}
                   </p>
-                  <p className="admin-muted mt-1 text-sm">{application.email}</p>
-                  <p className="admin-muted mt-1 text-sm">
+                  <p className="justify-self-center admin-muted mt-1 text-sm">{application.email}</p>
+                  <p className="justify-self-center admin-muted mt-1 text-sm">
                     {application.city}, {application.country}
                   </p>
                 </div>
 
-                <div className="text-sm text-(--admin-ink)">{application.category.name}</div>
+                <div className="justify-self-center text-sm text-(--admin-ink)">{application.category.name}</div>
 
-                <div className="text-sm text-(--admin-ink)">{application.award.name}</div>
+                <div className="justify-self-center text-sm text-(--admin-ink)">{application.award.name}</div>
 
-                <div>
+                <div className="justify-self-center">
                   <ScoreStatusBadge status={application.scoreStatus} />
                 </div>
 
-                <div className="admin-muted text-sm">
+                <div className="justify-self-center admin-muted text-sm">
                   {formatAdminDate(application.submittedAt ?? application.createdAt)}
-                </div>
-
-                <div>
-                  <AdminToolbarButton
-                    href={`/jury/dashboard/applications/${application.id}`}
-                    variant="primary"
-                    className="px-4 py-2"
-                  >
-                    {application.scoreStatus === "NOT_STARTED"
-                      ? t.juryDashboard.reviewScore
-                      : application.scoreStatus === "DRAFT"
-                        ? t.juryDashboard.continueDraft
-                        : t.juryDashboard.viewSubmitted}
-                  </AdminToolbarButton>
                 </div>
               </AdminDataRow>
             ))}
