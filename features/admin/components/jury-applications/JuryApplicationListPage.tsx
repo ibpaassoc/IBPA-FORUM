@@ -79,17 +79,15 @@ export default function JuryApplicationListPage({
               t.admin.common.candidate,
               t.admin.common.title,
               t.admin.common.expertise,
-              t.admin.common.application,
-              t.admin.common.payment,
+              t.admin.common.status,
               t.admin.common.date,
-              t.admin.common.open,
             ]}
-            gridClassName="lg:grid-cols-[1.15fr_0.95fr_0.95fr_0.75fr_0.75fr_0.8fr_0.65fr]"
           >
             {applications.map((application) => (
               <AdminDataRow
                 key={application.id}
-                gridClassName="lg:grid-cols-[1.15fr_0.95fr_0.95fr_0.75fr_0.75fr_0.8fr_0.65fr]"
+                href={`/admin/jury-applications/${application.id}`}
+
               >
                 <div>
                   <p className="text-sm font-semibold text-(--admin-ink)">
@@ -127,24 +125,10 @@ export default function JuryApplicationListPage({
                   <ApplicationStatusBadge status={application.status} />
                 </div>
 
-                <div>
-                  <PaymentStatusBadge status={application.paymentStatus} />
-                </div>
-
                 <div className="admin-muted text-sm">
                   {application.paidAt
                     ? formatAdminDate(application.paidAt)
                     : formatAdminDate(application.submittedAt)}
-                </div>
-
-                <div>
-                  <AdminToolbarButton
-                    href={`/admin/jury-applications/${application.id}`}
-                    variant="primary"
-                    className="px-4 py-2"
-                  >
-                    {t.admin.common.review}
-                  </AdminToolbarButton>
                 </div>
               </AdminDataRow>
             ))}

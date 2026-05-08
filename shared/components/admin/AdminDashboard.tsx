@@ -51,13 +51,13 @@ type AdminStatusBadgeProps = {
 type AdminDataTableProps = {
   headers: ReactNode[];
   children: ReactNode;
-  gridClassName: string;
+  gridClassName?: string;
   className?: string;
 };
 
 type AdminDataRowProps = {
   children: ReactNode;
-  gridClassName: string;
+  gridClassName?: string;
   href?: string;
 };
 
@@ -238,48 +238,55 @@ export function AdminDataTable({
   gridClassName,
   className,
 }: AdminDataTableProps) {
+  const autoGrid =
+    "grid-cols-[repeat(var(--admin-table-cols),minmax(0,1fr))]";
+
   return (
-    <div className={className}>
+    <div
+      className={className}
+      style={
+        {
+          "--admin-table-cols": headers.length,
+        } as React.CSSProperties
+      }
+    >
       <div
         className={adminCn(
           "admin-table-head hidden gap-4 border-b px-4 pb-3 text-[10px] font-semibold uppercase tracking-[0.2em] lg:grid",
-          gridClassName
+          gridClassName ?? autoGrid
         )}
       >
         {headers.map((header, index) => (
           <span key={index}>{header}</span>
         ))}
       </div>
+
       <div className="divide-y divide-(--admin-border)">{children}</div>
     </div>
   );
 }
 
-export function AdminDataRow({
-  children,
-  gridClassName,
-  href,
-}: AdminDataRowProps) {
-  const content = (
+export function AdminDataRow({ children, gridClassName, href }: AdminDataRowProps) {
+ const autoGrid = "grid-cols-[repeat(var(--admin-table-cols),minmax(0,1fr))]";
+
+  const row = (
     <div
       className={adminCn(
         "grid gap-3 px-4 py-4 transition hover:bg-[rgba(184,148,83,0.08)] lg:items-center",
-        gridClassName
+        gridClassName ?? autoGrid
       )}
     >
       {children}
     </div>
   );
 
-  if (href) {
-    return (
-      <Link href={href} className="block">
-        {content}
-      </Link>
-    );
-  }
-
-  return content;
+  return href ? (
+    <Link href={href} className="block">
+      {row}
+    </Link>
+  ) : (
+    row
+  );
 }
 
 export function AdminEmptyState({ title, text }: AdminEmptyStateProps) {

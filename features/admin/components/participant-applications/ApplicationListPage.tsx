@@ -1,8 +1,6 @@
 "use client";
 
 import ApplicationStatusBadge from "@/features/admin/components/badges/ApplicationStatusBadge";
-import PaymentStatusBadge from "@/features/admin/components/badges/PaymentStatusBadge";
-import { logoutAdminAction } from "@/features/admin/actions/auth.actions";
 import { formatAdminDate } from "@/features/admin/server/view-models";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import {
@@ -118,17 +116,14 @@ export default function ApplicationListPage({
               t.admin.common.applicant,
               t.admin.common.category,
               t.admin.common.award,
-              t.admin.participants.appStatus,
-              t.admin.common.payment,
+              t.admin.common.status,
               t.admin.common.created,
-              t.admin.common.open,
             ]}
-            gridClassName="lg:grid-cols-[1.1fr_0.9fr_1fr_0.8fr_0.8fr_0.9fr_0.7fr]"
           >
             {applications.map((application) => (
               <AdminDataRow
                 key={application.id}
-                gridClassName="lg:grid-cols-[1.1fr_0.9fr_1fr_0.8fr_0.8fr_0.9fr_0.7fr]"
+                href={`/admin/applications/${application.id}`}
               >
                 <div>
                   <p className="text-sm font-semibold text-(--admin-ink)">
@@ -154,22 +149,8 @@ export default function ApplicationListPage({
                   <ApplicationStatusBadge status={application.status} />
                 </div>
 
-                <div>
-                  <PaymentStatusBadge status={application.paymentStatus} />
-                </div>
-
                 <div className="admin-muted text-sm">
                   {formatAdminDate(application.createdAt)}
-                </div>
-
-                <div>
-                  <AdminToolbarButton
-                    href={`/admin/applications/${application.id}`}
-                    variant="primary"
-                    className="px-4 py-2"
-                  >
-                    {t.admin.common.review}
-                  </AdminToolbarButton>
                 </div>
               </AdminDataRow>
             ))}
