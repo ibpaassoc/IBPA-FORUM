@@ -3,11 +3,11 @@
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 const paymentStatusStyles = {
-  PENDING: "bg-white/8 text-white/85 border-white/12",
-  PAID: "bg-[#1b4d34]/45 text-[#9fe0b4] border-[#3e8f62]/45",
-  FAILED: "bg-[#5c2323]/45 text-[#f1aaaa] border-[#9d4a4a]/45",
-  EXPIRED: "bg-[#523b19]/45 text-[#f3cb8a] border-[#9e7a43]/45",
-  REFUNDED: "bg-[#2c3d5a]/45 text-[#bfd7ff] border-[#5577a8]/45",
+  PENDING: "bg-blue-50 text-blue-900 border-blue-200",
+  PAID: "bg-emerald-100 text-emerald-900 border-emerald-300",
+  FAILED: "bg-red-100 text-red-900 border-red-300",
+  EXPIRED: "bg-orange-100 text-orange-900 border-orange-300",
+  REFUNDED: "bg-slate-100 text-slate-700 border-slate-200",
 } as const;
 
 export default function PaymentStatusBadge({

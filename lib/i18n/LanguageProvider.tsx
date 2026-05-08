@@ -25,15 +25,18 @@ function isLanguage(value: string | null): value is Language {
 }
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<Language>("en");
-
-  useEffect(() => {
-    const savedLanguage = window.localStorage.getItem(STORAGE_KEY);
-
-    if (isLanguage(savedLanguage)) {
-      setLanguageState(savedLanguage);
+  const [language, setLanguageState] = useState<Language>(() => {
+    if (typeof window === "undefined") {
+      return "en";
     }
-  }, []);
+
+    const savedLanguage = window.localStorage.getItem(STORAGE_KEY);
+    if (isLanguage(savedLanguage)) {
+      return savedLanguage;
+    }
+
+    return "en";
+  });
 
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEY, language);

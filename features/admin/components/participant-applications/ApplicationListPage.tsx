@@ -72,17 +72,17 @@ export default function ApplicationListPage({
   ];
 
   return (
-    <PageShell className="px-6 py-10 text-white md:px-10 md:py-12">
+    <PageShell className="admin-page px-6 py-10 md:px-10 md:py-12">
       <div className="mx-auto max-w-7xl pt-16">
-        <div className="page-panel flex flex-col gap-5 rounded-3xl p-6 md:flex-row md:items-end md:justify-between md:p-8">
+        <div className="admin-panel flex flex-col gap-5 rounded-3xl p-6 md:flex-row md:items-end md:justify-between md:p-8">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d8c27a]">
+            <p className="admin-eyebrow">
               {t.admin.participants.eyebrow}
             </p>
-            <h1 className="mt-4 text-3xl font-semibold sm:text-4xl">
+            <h1 className="admin-heading mt-4 text-3xl font-semibold sm:text-4xl">
               {t.admin.participants.title}
             </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-[#d9d4ca]">
+            <p className="admin-copy mt-3 max-w-2xl text-sm leading-7">
               {t.admin.participants.text}
             </p>
           </div>
@@ -90,13 +90,13 @@ export default function ApplicationListPage({
           <div className="flex flex-wrap gap-3">
             <Link
               href="/admin/jury-applications"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
+              className="admin-action-secondary inline-flex items-center justify-center rounded-full px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
             >
               {t.admin.participants.juryDashboard}
             </Link>
             <Link
               href="/admin/scoring"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
+              className="admin-action-secondary inline-flex items-center justify-center rounded-full px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
             >
               {t.admin.participants.scoringDashboard}
             </Link>
@@ -104,7 +104,7 @@ export default function ApplicationListPage({
             <form action={logoutAdminAction}>
               <button
                 type="submit"
-                className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
+                className="admin-action-secondary inline-flex items-center justify-center rounded-full px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
               >
                 {t.admin.common.logout}
               </button>
@@ -116,19 +116,19 @@ export default function ApplicationListPage({
           {summaryItems.map((item) => (
             <div
               key={item.label}
-              className="page-card rounded-2xl bg-white/4.5 p-5"
+              className="admin-card rounded-2xl p-5"
             >
-              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
+              <p className="admin-eyebrow">
                 {item.label}
               </p>
-              <p className="mt-3 text-3xl font-semibold text-white">
+              <p className="admin-heading mt-3 text-3xl font-semibold">
                 {item.value}
               </p>
             </div>
           ))}
         </div>
 
-        <section className="page-card mt-6 rounded-3xl p-4 md:p-6">
+        <section className="admin-card mt-6 rounded-3xl p-4 md:p-6">
           <div className="mb-5 flex flex-wrap gap-3">
             {filters.map((item) => (
               <Link
@@ -136,8 +136,8 @@ export default function ApplicationListPage({
                 href={item.href}
                 className={`inline-flex rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] transition ${
                   item.active
-                    ? "border-[#d8c27a]/45 bg-[#d8c27a]/10 text-[#f2df9c]"
-                    : "border-white/12 bg-white/3 text-white/75 hover:border-[#d8c27a]/25 hover:text-[#d8c27a]"
+                    ? "border-[#c9a96e]/60 bg-[#f4ead4] text-[#6e521f]"
+                    : "border-[rgba(26,38,64,0.14)] bg-white text-[#40516a] hover:border-[#c9a96e]/60 hover:text-[#8b682b]"
                 }`}
               >
                 {item.label}
@@ -145,7 +145,7 @@ export default function ApplicationListPage({
             ))}
           </div>
 
-          <div className="hidden grid-cols-[1.1fr_0.9fr_1fr_0.8fr_0.8fr_0.9fr_0.7fr] gap-4 border-b border-white/10 px-4 pb-4 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d9d4ca]/65 lg:grid">
+          <div className="admin-table-head hidden grid-cols-[1.1fr_0.9fr_1fr_0.8fr_0.8fr_0.9fr_0.7fr] gap-4 border-b px-4 pb-4 text-[10px] font-semibold uppercase tracking-[0.24em] lg:grid">
             <span>{t.admin.common.applicant}</span>
             <span>{t.admin.common.category}</span>
             <span>{t.admin.common.award}</span>
@@ -155,29 +155,29 @@ export default function ApplicationListPage({
             <span>{t.admin.common.open}</span>
           </div>
 
-          <div className="divide-y divide-white/10">
+          <div className="divide-y divide-[rgba(26,38,64,0.1)]">
             {applications.map((application) => (
               <div
                 key={application.id}
-                className="grid gap-4 px-4 py-5 transition hover:bg-white/2 lg:grid-cols-[1.1fr_0.9fr_1fr_0.8fr_0.8fr_0.9fr_0.7fr] lg:items-center"
+                className="grid gap-4 px-4 py-5 transition hover:bg-[rgba(201,169,110,0.07)] lg:grid-cols-[1.1fr_0.9fr_1fr_0.8fr_0.8fr_0.9fr_0.7fr] lg:items-center"
               >
                 <div>
-                  <p className="text-sm font-semibold text-white">
+                  <p className="text-sm font-semibold text-[var(--color-navy-deep)]">
                     {application.fullName}
                   </p>
-                  <p className="mt-1 text-sm text-[#d9d4ca]/80">
+                  <p className="admin-muted mt-1 text-sm">
                     {application.email}
                   </p>
-                  <p className="mt-1 text-sm text-[#d9d4ca]/80">
+                  <p className="admin-muted mt-1 text-sm">
                     {application.city}, {application.country}
                   </p>
                 </div>
 
-                <div className="text-sm text-[#d9d4ca]">
+                <div className="text-sm text-[var(--color-navy)]">
                   {application.category.name}
                 </div>
 
-                <div className="text-sm text-[#d9d4ca]">
+                <div className="text-sm text-[var(--color-navy)]">
                   {application.award.name}
                 </div>
 
@@ -189,14 +189,14 @@ export default function ApplicationListPage({
                   <PaymentStatusBadge status={application.paymentStatus} />
                 </div>
 
-                <div className="text-sm text-[#d9d4ca]/75">
+                <div className="admin-muted text-sm">
                   {formatAdminDate(application.createdAt)}
                 </div>
 
                 <div>
                   <Link
                     href={`/admin/applications/${application.id}`}
-                    className="inline-flex items-center justify-center rounded-full bg-[#d8c27a] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-black transition hover:bg-[#e2d093]"
+                    className="admin-action-primary inline-flex items-center justify-center rounded-full px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] transition"
                   >
                     {t.admin.common.review}
                   </Link>
@@ -205,7 +205,7 @@ export default function ApplicationListPage({
             ))}
 
             {applications.length === 0 ? (
-              <div className="px-4 py-12 text-center text-sm text-[#d9d4ca]/75">
+              <div className="admin-empty px-4 py-12 text-center text-sm">
                 {t.admin.participants.empty}
               </div>
             ) : null}

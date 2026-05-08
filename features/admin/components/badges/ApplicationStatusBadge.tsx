@@ -3,13 +3,13 @@
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 const statusStyles = {
-  DRAFT: "bg-white/5 text-white/65 border-white/10",
-  PAYMENT_PENDING: "bg-[#3c3214]/35 text-[#f1d98a] border-[#d8c27a]/30",
-  SUBMITTED: "bg-white/8 text-white/85 border-white/12",
-  UNDER_REVIEW: "bg-[#7a5a14]/25 text-[#f1d98a] border-[#d8c27a]/35",
-  APPROVED: "bg-[#1b4d34]/45 text-[#9fe0b4] border-[#3e8f62]/45",
-  REJECTED: "bg-[#5c2323]/45 text-[#f1aaaa] border-[#9d4a4a]/45",
-  PAID: "bg-[#0f4d5d]/45 text-[#95dfea] border-[#4196aa]/45",
+  DRAFT: "bg-slate-100 text-slate-700 border-slate-200",
+  PAYMENT_PENDING: "bg-amber-100 text-amber-900 border-amber-300",
+  SUBMITTED: "bg-blue-50 text-blue-900 border-blue-200",
+  UNDER_REVIEW: "bg-yellow-100 text-yellow-900 border-yellow-300",
+  APPROVED: "bg-emerald-100 text-emerald-900 border-emerald-300",
+  REJECTED: "bg-red-100 text-red-900 border-red-300",
+  PAID: "bg-cyan-100 text-cyan-900 border-cyan-300",
 } as const;
 
 export default function ApplicationStatusBadge({

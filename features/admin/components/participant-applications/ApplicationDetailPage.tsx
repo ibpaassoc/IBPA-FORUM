@@ -35,11 +35,11 @@ function DetailItem({
   value: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/12 bg-white/4.5 p-4">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
+    <div className="admin-detail-card rounded-2xl p-4">
+      <p className="admin-eyebrow">
         {label}
       </p>
-      <p className="mt-3 text-sm leading-6 text-[#f1ecde]">{value}</p>
+      <p className="mt-3 text-sm leading-6 text-[var(--color-navy)]">{value}</p>
     </div>
   );
 }
@@ -89,17 +89,17 @@ export default function ApplicationDetailPage({
   }
 
   return (
-    <PageShell className="px-6 py-10 text-white md:px-10 md:py-12">
+    <PageShell className="admin-page px-6 py-10 md:px-10 md:py-12">
       <div className="mx-auto max-w-7xl pt-16">
-        <div className="page-panel flex flex-col gap-5 rounded-3xl p-6 md:flex-row md:items-end md:justify-between md:p-8">
+        <div className="admin-panel flex flex-col gap-5 rounded-3xl p-6 md:flex-row md:items-end md:justify-between md:p-8">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d8c27a]">
+            <p className="admin-eyebrow">
               Participant Admin
             </p>
-            <h1 className="mt-4 text-3xl font-semibold sm:text-4xl">
+            <h1 className="admin-heading mt-4 text-3xl font-semibold sm:text-4xl">
               {application.fullName}
             </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-[#d9d4ca]">
+            <p className="admin-copy mt-3 max-w-2xl text-sm leading-7">
               {application.category.name} / {application.award.name}
             </p>
           </div>
@@ -107,26 +107,26 @@ export default function ApplicationDetailPage({
           <div className="flex flex-wrap gap-3">
             <Link
               href="/admin/applications"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
+              className="admin-action-secondary inline-flex items-center justify-center rounded-full px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
             >
               Back to List
             </Link>
             <Link
               href="/admin/jury-applications"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
+              className="admin-action-secondary inline-flex items-center justify-center rounded-full px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
             >
               Jury Dashboard
             </Link>
             <Link
               href="/admin/scoring"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
+              className="admin-action-secondary inline-flex items-center justify-center rounded-full px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
             >
               Scoring Dashboard
             </Link>
             <form action={logoutAdminAction}>
               <button
                 type="submit"
-                className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
+                className="admin-action-secondary inline-flex items-center justify-center rounded-full px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
               >
                 Log Out
               </button>
@@ -136,8 +136,8 @@ export default function ApplicationDetailPage({
 
         <div className="mt-6 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-6">
-            <section className="page-card rounded-3xl p-6">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
+            <section className="admin-card rounded-3xl p-6">
+              <p className="admin-eyebrow">
                 Block A
               </p>
               <div className="mt-5 grid gap-4 md:grid-cols-2">
@@ -193,8 +193,8 @@ export default function ApplicationDetailPage({
               </div>
             </section>
 
-            <section className="page-card rounded-3xl p-6">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
+            <section className="admin-card rounded-3xl p-6">
+              <p className="admin-eyebrow">
                 Block B Answers
               </p>
               <div className="mt-5 space-y-4">
@@ -219,7 +219,7 @@ export default function ApplicationDetailPage({
                 {categoryFields.every(
                   (field) => field.type === "file" || !answerMap.get(field.key)
                 ) ? (
-                  <p className="text-sm text-[#d9d4ca]/75">
+                  <p className="admin-muted text-sm">
                     No text-based Block B answers were saved for this application.
                   </p>
                 ) : null}
@@ -228,8 +228,8 @@ export default function ApplicationDetailPage({
           </div>
 
           <div className="space-y-6">
-            <section className="page-card rounded-3xl p-6">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
+            <section className="admin-card rounded-3xl p-6">
+              <p className="admin-eyebrow">
                 Review Status
               </p>
 
@@ -242,7 +242,7 @@ export default function ApplicationDetailPage({
                 <div>
                   <label
                     htmlFor="status"
-                    className="mb-2 block text-sm font-medium text-white"
+                    className="admin-label mb-2 block text-sm font-semibold"
                   >
                     Application status
                   </label>
@@ -250,13 +250,13 @@ export default function ApplicationDetailPage({
                     id="status"
                     name="status"
                     defaultValue={application.status}
-                    className="w-full rounded-2xl border border-white/12 bg-white/5 px-4 py-3 text-sm text-white outline-none transition focus:border-[#d8c27a] focus:bg-white/7"
+                    className="admin-field w-full rounded-2xl px-4 py-3 text-sm outline-none transition"
                   >
                     {statusOptions.map((status) => (
                       <option
                         key={status}
                         value={status}
-                        className="bg-[#101010] text-white"
+                        className="bg-white text-[var(--color-navy)]"
                       >
                         {status.replaceAll("_", " ")}
                       </option>
@@ -266,7 +266,7 @@ export default function ApplicationDetailPage({
 
                 <button
                   type="submit"
-                  className="inline-flex items-center justify-center rounded-full bg-[#d8c27a] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-[#e2d093]"
+                  className="admin-action-primary inline-flex items-center justify-center rounded-full px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
                 >
                   Save Status
                 </button>
@@ -304,14 +304,14 @@ export default function ApplicationDetailPage({
               </div>
             </section>
 
-            <section className="page-card rounded-3xl p-6">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
+            <section className="admin-card rounded-3xl p-6">
+              <p className="admin-eyebrow">
                 Uploaded Files
               </p>
 
               <div className="mt-5 space-y-5">
                 <div>
-                  <p className="text-sm font-medium text-white">
+                  <p className="text-sm font-semibold text-[var(--color-navy)]">
                     Professional License / Certification
                   </p>
                   <div className="mt-3 space-y-3">
@@ -321,10 +321,10 @@ export default function ApplicationDetailPage({
                         href={`/api/admin/application-files/${file.id}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="flex items-center justify-between rounded-2xl border border-white/12 bg-white/[0.035] px-4 py-3 text-sm text-[#d9d4ca] transition hover:border-[#d8c27a] hover:text-white"
+                        className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-[#c9a96e]"
                       >
                         <span>{file.fileName}</span>
-                        <span className="text-xs text-white/45">
+                        <span className="admin-muted text-xs">
                           {(file.fileSize / 1024 / 1024).toFixed(2)} MB
                         </span>
                       </a>
@@ -339,7 +339,7 @@ export default function ApplicationDetailPage({
 
                     return (
                       <div key={field.key}>
-                        <p className="text-sm font-medium text-white">{field.label}</p>
+                        <p className="text-sm font-semibold text-[var(--color-navy)]">{field.label}</p>
                         <div className="mt-3 space-y-3">
                           {files.map((file) => (
                             <a
@@ -347,16 +347,16 @@ export default function ApplicationDetailPage({
                               href={`/api/admin/application-files/${file.id}`}
                               target="_blank"
                               rel="noreferrer"
-                              className="flex items-center justify-between rounded-2xl border border-white/12 bg-white/[0.035] px-4 py-3 text-sm text-[#d9d4ca] transition hover:border-[#d8c27a] hover:text-white"
+                              className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-[#c9a96e]"
                             >
                               <span>{file.fileName}</span>
-                              <span className="text-xs text-white/45">
+                              <span className="admin-muted text-xs">
                                 {(file.fileSize / 1024 / 1024).toFixed(2)} MB
                               </span>
                             </a>
                           ))}
                           {files.length === 0 ? (
-                            <p className="text-sm text-[#d9d4ca]/75">
+                            <p className="admin-muted text-sm">
                               No files uploaded for this field.
                             </p>
                           ) : null}

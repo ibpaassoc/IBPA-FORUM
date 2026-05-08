@@ -18,7 +18,7 @@ export default function AdminLoginForm() {
       <div>
         <label
           htmlFor="password"
-          className="mb-2 block text-sm font-medium text-[#f1ecde]"
+          className="admin-label mb-2 block text-sm font-semibold"
         >
           {t.admin.login.password}
         </label>
@@ -27,7 +27,7 @@ export default function AdminLoginForm() {
           name="password"
           type="password"
           required
-          className="w-full rounded-2xl border border-white/12 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-[#d9d4ca]/45 focus:border-[#d8c27a] focus:bg-white/[0.07]"
+          className="admin-field w-full rounded-2xl px-4 py-3 text-sm outline-none transition"
           placeholder={t.admin.login.placeholder}
         />
       </div>
@@ -41,7 +41,7 @@ export default function AdminLoginForm() {
       <button
         type="submit"
         disabled={pending}
-        className="inline-flex w-full items-center justify-center rounded-full bg-[#d8c27a] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-[#e2d093] disabled:cursor-not-allowed disabled:opacity-60"
+        className="admin-action-primary inline-flex w-full items-center justify-center rounded-full px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition disabled:cursor-not-allowed disabled:opacity-60"
       >
         {pending ? t.admin.login.opening : t.admin.login.open}
       </button>

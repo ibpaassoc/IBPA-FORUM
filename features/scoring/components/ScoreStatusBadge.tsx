@@ -7,12 +7,12 @@ type ScoreStatusBadgeProps = {
 };
 
 const statusStyles: Record<ScoreStatusBadgeProps["status"], string> = {
-  NOT_STARTED: "bg-white/5 text-white/65 border-white/10",
-  DRAFT: "bg-[#57411d]/35 text-[#f3d695] border-[#b89552]/35",
-  SUBMITTED: "bg-[#1b4d34]/45 text-[#9fe0b4] border-[#3e8f62]/45",
-  REOPENED: "bg-[#2c3d5a]/45 text-[#bfd7ff] border-[#5577a8]/45",
-  IN_PROGRESS: "bg-[#7a5a14]/25 text-[#f1d98a] border-[#d8c27a]/35",
-  COMPLETE: "bg-[#1b4d34]/45 text-[#9fe0b4] border-[#3e8f62]/45",
+  NOT_STARTED: "bg-slate-100 text-slate-700 border-slate-200",
+  DRAFT: "bg-amber-100 text-amber-900 border-amber-300",
+  SUBMITTED: "bg-emerald-100 text-emerald-900 border-emerald-300",
+  REOPENED: "bg-blue-100 text-blue-900 border-blue-300",
+  IN_PROGRESS: "bg-yellow-100 text-yellow-900 border-yellow-300",
+  COMPLETE: "bg-emerald-100 text-emerald-900 border-emerald-300",
 };
 
 export default function ScoreStatusBadge({ status }: ScoreStatusBadgeProps) {

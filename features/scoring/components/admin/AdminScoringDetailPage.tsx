@@ -21,11 +21,11 @@ function DetailItem({
   value: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/12 bg-white/4.5 p-4">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
+    <div className="admin-detail-card rounded-2xl p-4">
+      <p className="admin-eyebrow">
         {label}
       </p>
-      <p className="mt-3 text-sm leading-6 text-[#f1ecde]">{value}</p>
+      <p className="mt-3 text-sm leading-6 text-[var(--color-navy)]">{value}</p>
     </div>
   );
 }
@@ -100,17 +100,17 @@ export default function AdminScoringDetailPage({
   }
 
   return (
-    <PageShell className="px-6 py-10 text-white md:px-10 md:py-12">
+    <PageShell className="admin-page px-6 py-10 md:px-10 md:py-12">
       <div className="mx-auto max-w-7xl pt-16">
-        <div className="page-panel flex flex-col gap-5 rounded-3xl p-6 md:flex-row md:items-end md:justify-between md:p-8">
+        <div className="admin-panel flex flex-col gap-5 rounded-3xl p-6 md:flex-row md:items-end md:justify-between md:p-8">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d8c27a]">
+            <p className="admin-eyebrow">
               Scoring Admin
             </p>
-            <h1 className="mt-4 text-3xl font-semibold sm:text-4xl">
+            <h1 className="admin-heading mt-4 text-3xl font-semibold sm:text-4xl">
               {application.fullName}
             </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-[#d9d4ca]">
+            <p className="admin-copy mt-3 max-w-2xl text-sm leading-7">
               {application.category.name} / {application.award.name}
             </p>
           </div>
@@ -118,20 +118,20 @@ export default function AdminScoringDetailPage({
           <div className="flex flex-wrap gap-3">
             <Link
               href="/admin/scoring"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
+              className="admin-action-secondary inline-flex items-center justify-center rounded-full px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
             >
               Back to Scoring
             </Link>
             <a
               href={`/api/admin/scoring/${application.id}/export`}
-              className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
+              className="admin-action-secondary inline-flex items-center justify-center rounded-full px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
             >
               Export CSV
             </a>
             <form action={logoutAdminAction}>
               <button
                 type="submit"
-                className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
+                className="admin-action-secondary inline-flex items-center justify-center rounded-full px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
               >
                 Log Out
               </button>
@@ -141,8 +141,8 @@ export default function AdminScoringDetailPage({
 
         <div className="mt-6 grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
           <div className="space-y-6">
-            <section className="page-card rounded-3xl p-6">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
+            <section className="admin-card rounded-3xl p-6">
+              <p className="admin-eyebrow">
                 Participant Details
               </p>
               <div className="mt-5 grid gap-4 md:grid-cols-2">
@@ -182,8 +182,8 @@ export default function AdminScoringDetailPage({
               </div>
             </section>
 
-            <section className="page-card rounded-3xl p-6">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
+            <section className="admin-card rounded-3xl p-6">
+              <p className="admin-eyebrow">
                 Statement and Application Answers
               </p>
               <div className="mt-5 space-y-4">
@@ -209,8 +209,8 @@ export default function AdminScoringDetailPage({
           </div>
 
           <div className="space-y-6">
-            <section className="page-card rounded-3xl p-6">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
+            <section className="admin-card rounded-3xl p-6">
+              <p className="admin-eyebrow">
                 Scoring Summary
               </p>
 
@@ -235,20 +235,20 @@ export default function AdminScoringDetailPage({
                 />
               </div>
 
-              <div className="mt-5 rounded-2xl border border-dashed border-[#d8c27a]/25 bg-white/[0.025] p-4 text-sm text-[#d9d4ca]/75">
+              <div className="admin-empty mt-5 rounded-2xl border border-dashed border-[#c9a96e]/35 bg-[#f4ead4]/55 p-4 text-sm">
                 TODO: Mark category winner here if a dedicated winner/status field is added to
                 the project schema.
               </div>
             </section>
 
-            <section className="page-card rounded-3xl p-6">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
+            <section className="admin-card rounded-3xl p-6">
+              <p className="admin-eyebrow">
                 Uploaded Files
               </p>
 
               <div className="mt-5 space-y-5">
                 <div>
-                  <p className="text-sm font-medium text-white">
+                  <p className="text-sm font-semibold text-[var(--color-navy)]">
                     Professional License / Certification
                   </p>
                   <div className="mt-3 space-y-3">
@@ -258,10 +258,10 @@ export default function AdminScoringDetailPage({
                         href={`/api/admin/application-files/${file.id}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="flex items-center justify-between rounded-2xl border border-white/12 bg-white/[0.035] px-4 py-3 text-sm text-[#d9d4ca] transition hover:border-[#d8c27a] hover:text-white"
+                        className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-[#c9a96e]"
                       >
                         <span>{file.fileName}</span>
-                        <span className="text-xs text-white/45">
+                        <span className="admin-muted text-xs">
                           {(file.fileSize / 1024 / 1024).toFixed(2)} MB
                         </span>
                       </a>
@@ -276,7 +276,7 @@ export default function AdminScoringDetailPage({
 
                     return (
                       <div key={field.key}>
-                        <p className="text-sm font-medium text-white">{field.label}</p>
+                        <p className="text-sm font-semibold text-[var(--color-navy)]">{field.label}</p>
                         <div className="mt-3 space-y-3">
                           {files.map((file) => (
                             <a
@@ -284,16 +284,16 @@ export default function AdminScoringDetailPage({
                               href={`/api/admin/application-files/${file.id}`}
                               target="_blank"
                               rel="noreferrer"
-                              className="flex items-center justify-between rounded-2xl border border-white/12 bg-white/[0.035] px-4 py-3 text-sm text-[#d9d4ca] transition hover:border-[#d8c27a] hover:text-white"
+                              className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-[#c9a96e]"
                             >
                               <span>{file.fileName}</span>
-                              <span className="text-xs text-white/45">
+                              <span className="admin-muted text-xs">
                                 {(file.fileSize / 1024 / 1024).toFixed(2)} MB
                               </span>
                             </a>
                           ))}
                           {files.length === 0 ? (
-                            <p className="text-sm text-[#d9d4ca]/75">
+                            <p className="admin-muted text-sm">
                               No files uploaded for this field.
                             </p>
                           ) : null}
@@ -306,17 +306,17 @@ export default function AdminScoringDetailPage({
           </div>
         </div>
 
-        <section className="page-card mt-6 rounded-3xl p-4 md:p-6">
+        <section className="admin-card mt-6 rounded-3xl p-4 md:p-6">
           <div className="mb-5 flex items-center justify-between gap-4">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
+              <p className="admin-eyebrow">
                 Judge Breakdown
               </p>
-              <h2 className="mt-3 text-2xl font-semibold text-white">All judge scores</h2>
+              <h2 className="admin-heading mt-3 text-2xl font-semibold">All judge scores</h2>
             </div>
           </div>
 
-          <div className="hidden grid-cols-[1fr_0.7fr_0.7fr_0.7fr_0.7fr_0.7fr_0.7fr_0.85fr_0.95fr_0.9fr] gap-4 border-b border-white/10 px-4 pb-4 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d9d4ca]/65 xl:grid">
+          <div className="admin-table-head hidden grid-cols-[1fr_0.7fr_0.7fr_0.7fr_0.7fr_0.7fr_0.7fr_0.85fr_0.95fr_0.9fr] gap-4 border-b px-4 pb-4 text-[10px] font-semibold uppercase tracking-[0.24em] xl:grid">
             <span>Judge</span>
             <span>Technical</span>
             <span>Aesthetic</span>
@@ -329,37 +329,37 @@ export default function AdminScoringDetailPage({
             <span>Action</span>
           </div>
 
-          <div className="divide-y divide-white/10">
+          <div className="divide-y divide-[rgba(26,38,64,0.1)]">
             {judgeRows.map((row) => (
               <div
                 key={row.judgeId}
                 className="grid gap-4 px-4 py-5 xl:grid-cols-[1fr_0.7fr_0.7fr_0.7fr_0.7fr_0.7fr_0.7fr_0.85fr_0.95fr_0.9fr] xl:items-center"
               >
                 <div>
-                  <p className="text-sm font-semibold text-white">{row.judgeName}</p>
-                  <p className="mt-1 text-sm text-[#d9d4ca]/80">{row.judgeEmail}</p>
+                  <p className="text-sm font-semibold text-[var(--color-navy-deep)]">{row.judgeName}</p>
+                  <p className="admin-muted mt-1 text-sm">{row.judgeEmail}</p>
                   {row.comment ? (
-                    <p className="mt-2 text-sm text-[#d9d4ca]/75">{row.comment}</p>
+                    <p className="admin-muted mt-2 text-sm">{row.comment}</p>
                   ) : null}
                 </div>
 
-                <div className="text-sm text-[#d9d4ca]">{row.technical ?? "-"}</div>
-                <div className="text-sm text-[#d9d4ca]">{row.aesthetic ?? "-"}</div>
-                <div className="text-sm text-[#d9d4ca]">{row.creativity ?? "-"}</div>
-                <div className="text-sm text-[#d9d4ca]">{row.impact ?? "-"}</div>
-                <div className="text-sm text-[#d9d4ca]">{row.presentation ?? "-"}</div>
-                <div className="text-sm text-[#d9d4ca]">{row.totalScore ?? "-"}</div>
+                <div className="text-sm text-[var(--color-navy)]">{row.technical ?? "-"}</div>
+                <div className="text-sm text-[var(--color-navy)]">{row.aesthetic ?? "-"}</div>
+                <div className="text-sm text-[var(--color-navy)]">{row.creativity ?? "-"}</div>
+                <div className="text-sm text-[var(--color-navy)]">{row.impact ?? "-"}</div>
+                <div className="text-sm text-[var(--color-navy)]">{row.presentation ?? "-"}</div>
+                <div className="text-sm text-[var(--color-navy)]">{row.totalScore ?? "-"}</div>
                 <div>
                   <ScoreStatusBadge status={row.scoreStatus} />
                 </div>
-                <div className="text-sm text-[#d9d4ca]/75">
+                <div className="admin-muted text-sm">
                   {formatAdminDate(row.submittedAt)}
                 </div>
                 <div>
                   {row.scoreId && row.scoreStatus === "SUBMITTED" ? (
                     <AdminReopenScoreButton scoreId={row.scoreId} />
                   ) : (
-                    <span className="text-xs text-[#d9d4ca]/60">No action</span>
+                    <span className="admin-muted text-xs">No action</span>
                   )}
                 </div>
               </div>
