@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type {
   Application,
   ApplicationAnswer,
@@ -10,7 +9,12 @@ import { categoryFieldConfigs } from "@/features/applications/config/category-fi
 import { logoutAdminAction } from "@/features/admin/actions/auth.actions";
 import { updateParticipantApplicationStatus } from "@/features/admin/actions/participant.actions";
 import { formatAdminDate } from "@/features/admin/server/view-models";
-import { PageShell } from "@/shared/components/layout/PageShell";
+import {
+  AdminDashboardShell,
+  AdminDetailCard,
+  AdminHeroCard,
+  AdminToolbarButton,
+} from "@/shared/components/admin/AdminDashboard";
 
 type ParticipantApplicationDetail = Application & {
   category: Category;
@@ -34,14 +38,7 @@ function DetailItem({
   label: string;
   value: string;
 }) {
-  return (
-    <div className="admin-detail-card rounded-2xl p-4">
-      <p className="admin-eyebrow">
-        {label}
-      </p>
-      <p className="mt-3 text-sm leading-6 text-[var(--color-navy)]">{value}</p>
-    </div>
-  );
+  return <AdminDetailCard label={label} value={value} />;
 }
 
 function formatAnswerValue(answer: {
@@ -89,50 +86,22 @@ export default function ApplicationDetailPage({
   }
 
   return (
-    <PageShell className="admin-page px-6 py-10 md:px-10 md:py-12">
-      <div className="mx-auto max-w-7xl pt-16">
-        <div className="admin-panel flex flex-col gap-5 rounded-3xl p-6 md:flex-row md:items-end md:justify-between md:p-8">
-          <div>
-            <p className="admin-eyebrow">
-              Participant Admin
-            </p>
-            <h1 className="admin-heading mt-4 text-3xl font-semibold sm:text-4xl">
-              {application.fullName}
-            </h1>
-            <p className="admin-copy mt-3 max-w-2xl text-sm leading-7">
-              {application.category.name} / {application.award.name}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href="/admin/applications"
-              className="admin-action-secondary inline-flex items-center justify-center rounded-full px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
-            >
-              Back to List
-            </Link>
-            <Link
-              href="/admin/jury-applications"
-              className="admin-action-secondary inline-flex items-center justify-center rounded-full px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
-            >
-              Jury Dashboard
-            </Link>
-            <Link
-              href="/admin/scoring"
-              className="admin-action-secondary inline-flex items-center justify-center rounded-full px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
-            >
-              Scoring Dashboard
-            </Link>
+    <AdminDashboardShell>
+      <AdminHeroCard
+        eyebrow="Participant Admin"
+        title={application.fullName}
+        subtitle={`${application.category.name} / ${application.award.name}`}
+        actions={
+          <>
+            <AdminToolbarButton href="/admin/applications">Back to List</AdminToolbarButton>
+            <AdminToolbarButton href="/admin/jury-applications">Jury Dashboard</AdminToolbarButton>
+            <AdminToolbarButton href="/admin/scoring">Scoring Dashboard</AdminToolbarButton>
             <form action={logoutAdminAction}>
-              <button
-                type="submit"
-                className="admin-action-secondary inline-flex items-center justify-center rounded-full px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
-              >
-                Log Out
-              </button>
+              <AdminToolbarButton type="submit">Log Out</AdminToolbarButton>
             </form>
-          </div>
-        </div>
+          </>
+        }
+      />
 
         <div className="mt-6 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-6">
@@ -256,7 +225,7 @@ export default function ApplicationDetailPage({
                       <option
                         key={status}
                         value={status}
-                        className="bg-white text-[var(--color-navy)]"
+                        className="bg-white text-[var(--admin-ink)]"
                       >
                         {status.replaceAll("_", " ")}
                       </option>
@@ -311,7 +280,7 @@ export default function ApplicationDetailPage({
 
               <div className="mt-5 space-y-5">
                 <div>
-                  <p className="text-sm font-semibold text-[var(--color-navy)]">
+                  <p className="text-sm font-semibold text-[var(--admin-ink)]">
                     Professional License / Certification
                   </p>
                   <div className="mt-3 space-y-3">
@@ -321,7 +290,7 @@ export default function ApplicationDetailPage({
                         href={`/api/admin/application-files/${file.id}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-[#c9a96e]"
+                        className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-[var(--admin-gold)]"
                       >
                         <span>{file.fileName}</span>
                         <span className="admin-muted text-xs">
@@ -339,7 +308,7 @@ export default function ApplicationDetailPage({
 
                     return (
                       <div key={field.key}>
-                        <p className="text-sm font-semibold text-[var(--color-navy)]">{field.label}</p>
+                        <p className="text-sm font-semibold text-[var(--admin-ink)]">{field.label}</p>
                         <div className="mt-3 space-y-3">
                           {files.map((file) => (
                             <a
@@ -347,7 +316,7 @@ export default function ApplicationDetailPage({
                               href={`/api/admin/application-files/${file.id}`}
                               target="_blank"
                               rel="noreferrer"
-                              className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-[#c9a96e]"
+                              className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-[var(--admin-gold)]"
                             >
                               <span>{file.fileName}</span>
                               <span className="admin-muted text-xs">
@@ -368,7 +337,6 @@ export default function ApplicationDetailPage({
             </section>
           </div>
         </div>
-      </div>
-    </PageShell>
+    </AdminDashboardShell>
   );
 }

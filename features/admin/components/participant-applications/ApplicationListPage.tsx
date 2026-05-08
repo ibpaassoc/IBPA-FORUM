@@ -1,12 +1,21 @@
 "use client";
 
-import Link from "next/link";
 import ApplicationStatusBadge from "@/features/admin/components/badges/ApplicationStatusBadge";
 import PaymentStatusBadge from "@/features/admin/components/badges/PaymentStatusBadge";
 import { logoutAdminAction } from "@/features/admin/actions/auth.actions";
 import { formatAdminDate } from "@/features/admin/server/view-models";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { PageShell } from "@/shared/components/layout/PageShell";
+import {
+  AdminDashboardShell,
+  AdminDataRow,
+  AdminDataTable,
+  AdminEmptyState,
+  AdminFilterChip,
+  AdminHeroCard,
+  AdminSection,
+  AdminStatCard,
+  AdminToolbarButton,
+} from "@/shared/components/admin/AdminDashboard";
 
 export default function ApplicationListPage({
   applications,
@@ -72,97 +81,60 @@ export default function ApplicationListPage({
   ];
 
   return (
-    <PageShell className="admin-page px-6 py-10 md:px-10 md:py-12">
-      <div className="mx-auto max-w-7xl pt-16">
-        <div className="admin-panel flex flex-col gap-5 rounded-3xl p-6 md:flex-row md:items-end md:justify-between md:p-8">
-          <div>
-            <p className="admin-eyebrow">
-              {t.admin.participants.eyebrow}
-            </p>
-            <h1 className="admin-heading mt-4 text-3xl font-semibold sm:text-4xl">
-              {t.admin.participants.title}
-            </h1>
-            <p className="admin-copy mt-3 max-w-2xl text-sm leading-7">
-              {t.admin.participants.text}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href="/admin/jury-applications"
-              className="admin-action-secondary inline-flex items-center justify-center rounded-full px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
-            >
+    <AdminDashboardShell>
+      <AdminHeroCard
+        eyebrow={t.admin.participants.eyebrow}
+        title={t.admin.participants.title}
+        subtitle={t.admin.participants.text}
+        actions={
+          <>
+            <AdminToolbarButton href="/admin/jury-applications">
               {t.admin.participants.juryDashboard}
-            </Link>
-            <Link
-              href="/admin/scoring"
-              className="admin-action-secondary inline-flex items-center justify-center rounded-full px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
-            >
+            </AdminToolbarButton>
+            <AdminToolbarButton href="/admin/scoring">
               {t.admin.participants.scoringDashboard}
-            </Link>
-
+            </AdminToolbarButton>
             <form action={logoutAdminAction}>
-              <button
-                type="submit"
-                className="admin-action-secondary inline-flex items-center justify-center rounded-full px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
-              >
-                {t.admin.common.logout}
-              </button>
+              <AdminToolbarButton type="submit">{t.admin.common.logout}</AdminToolbarButton>
             </form>
-          </div>
-        </div>
+          </>
+        }
+      />
 
-        <div className="mt-6 grid gap-4 md:grid-cols-5">
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {summaryItems.map((item) => (
-            <div
-              key={item.label}
-              className="admin-card rounded-2xl p-5"
-            >
-              <p className="admin-eyebrow">
-                {item.label}
-              </p>
-              <p className="admin-heading mt-3 text-3xl font-semibold">
-                {item.value}
-              </p>
-            </div>
+            <AdminStatCard key={item.label} label={item.label} value={item.value} />
           ))}
         </div>
 
-        <section className="admin-card mt-6 rounded-3xl p-4 md:p-6">
+        <AdminSection className="mt-5">
           <div className="mb-5 flex flex-wrap gap-3">
             {filters.map((item) => (
-              <Link
-                key={item.label}
-                href={item.href}
-                className={`inline-flex rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] transition ${
-                  item.active
-                    ? "border-[#c9a96e]/60 bg-[#f4ead4] text-[#6e521f]"
-                    : "border-[rgba(26,38,64,0.14)] bg-white text-[#40516a] hover:border-[#c9a96e]/60 hover:text-[#8b682b]"
-                }`}
-              >
+              <AdminFilterChip key={item.label} href={item.href} active={item.active}>
                 {item.label}
-              </Link>
+              </AdminFilterChip>
             ))}
           </div>
 
-          <div className="admin-table-head hidden grid-cols-[1.1fr_0.9fr_1fr_0.8fr_0.8fr_0.9fr_0.7fr] gap-4 border-b px-4 pb-4 text-[10px] font-semibold uppercase tracking-[0.24em] lg:grid">
-            <span>{t.admin.common.applicant}</span>
-            <span>{t.admin.common.category}</span>
-            <span>{t.admin.common.award}</span>
-            <span>{t.admin.participants.appStatus}</span>
-            <span>{t.admin.common.payment}</span>
-            <span>{t.admin.common.created}</span>
-            <span>{t.admin.common.open}</span>
-          </div>
-
-          <div className="divide-y divide-[rgba(26,38,64,0.1)]">
+          <AdminDataTable
+            headers={[
+              t.admin.common.applicant,
+              t.admin.common.category,
+              t.admin.common.award,
+              t.admin.participants.appStatus,
+              t.admin.common.payment,
+              t.admin.common.created,
+              t.admin.common.open,
+            ]}
+            gridClassName="lg:grid-cols-[1.1fr_0.9fr_1fr_0.8fr_0.8fr_0.9fr_0.7fr]"
+          >
             {applications.map((application) => (
-              <div
+              <AdminDataRow
                 key={application.id}
-                className="grid gap-4 px-4 py-5 transition hover:bg-[rgba(201,169,110,0.07)] lg:grid-cols-[1.1fr_0.9fr_1fr_0.8fr_0.8fr_0.9fr_0.7fr] lg:items-center"
+                gridClassName="lg:grid-cols-[1.1fr_0.9fr_1fr_0.8fr_0.8fr_0.9fr_0.7fr]"
               >
                 <div>
-                  <p className="text-sm font-semibold text-[var(--color-navy-deep)]">
+                  <p className="text-sm font-semibold text-[var(--admin-ink)]">
                     {application.fullName}
                   </p>
                   <p className="admin-muted mt-1 text-sm">
@@ -173,11 +145,11 @@ export default function ApplicationListPage({
                   </p>
                 </div>
 
-                <div className="text-sm text-[var(--color-navy)]">
+                <div className="text-sm text-[var(--admin-ink)]">
                   {application.category.name}
                 </div>
 
-                <div className="text-sm text-[var(--color-navy)]">
+                <div className="text-sm text-[var(--admin-ink)]">
                   {application.award.name}
                 </div>
 
@@ -194,24 +166,24 @@ export default function ApplicationListPage({
                 </div>
 
                 <div>
-                  <Link
+                  <AdminToolbarButton
                     href={`/admin/applications/${application.id}`}
-                    className="admin-action-primary inline-flex items-center justify-center rounded-full px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] transition"
+                    variant="primary"
+                    className="px-4 py-2"
                   >
                     {t.admin.common.review}
-                  </Link>
+                  </AdminToolbarButton>
                 </div>
-              </div>
+              </AdminDataRow>
             ))}
 
             {applications.length === 0 ? (
-              <div className="admin-empty px-4 py-12 text-center text-sm">
-                {t.admin.participants.empty}
+              <div className="px-4 py-5">
+                <AdminEmptyState title={t.admin.participants.empty} />
               </div>
             ) : null}
-          </div>
-        </section>
-      </div>
-    </PageShell>
+          </AdminDataTable>
+        </AdminSection>
+    </AdminDashboardShell>
   );
 }

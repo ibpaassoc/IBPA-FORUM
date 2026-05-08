@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import type { JuryApplication, JuryApplicationFile } from "@prisma/client";
 import ApplicationStatusBadge from "@/features/admin/components/badges/ApplicationStatusBadge";
 import PaymentStatusBadge from "@/features/admin/components/badges/PaymentStatusBadge";
@@ -11,7 +10,12 @@ import {
   updateJuryApplicationStatusAction,
 } from "@/features/admin/actions/jury.actions";
 import { formatAdminDate } from "@/features/admin/server/view-models";
-import { PageShell } from "@/shared/components/layout/PageShell";
+import {
+  AdminDashboardShell,
+  AdminDetailCard,
+  AdminHeroCard,
+  AdminToolbarButton,
+} from "@/shared/components/admin/AdminDashboard";
 
 type JuryApplicationDetail = JuryApplication & {
   files: JuryApplicationFile[];
@@ -24,14 +28,7 @@ function DetailItem({
   label: string;
   value: string;
 }) {
-  return (
-    <div className="admin-detail-card rounded-2xl p-4">
-      <p className="admin-eyebrow">
-        {label}
-      </p>
-      <p className="mt-3 text-sm leading-6 text-[var(--color-navy)]">{value}</p>
-    </div>
-  );
+  return <AdminDetailCard label={label} value={value} />;
 }
 
 export default function JuryApplicationDetailPage({
@@ -51,57 +48,32 @@ export default function JuryApplicationDetailPage({
   );
 
   return (
-    <PageShell className="admin-page px-6 py-10 md:px-10 md:py-12">
-      <div className="mx-auto max-w-7xl pt-16">
-        <div className="admin-panel flex flex-col gap-5 rounded-3xl p-6 md:flex-row md:items-end md:justify-between md:p-8">
-          <div>
-            <p className="admin-eyebrow">
-              Jury Admin
-            </p>
-            <h1 className="admin-heading mt-4 text-3xl font-semibold sm:text-4xl">
-              {application.fullName}
-            </h1>
-            <p className="admin-copy mt-3 max-w-2xl text-sm leading-7">
-              {application.professionalTitle} from {application.city},{" "}
-              {application.country}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href="/admin/jury-applications"
-              className="admin-action-secondary inline-flex items-center justify-center rounded-full px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
-            >
-              Back to List
-            </Link>
-            <Link
-              href="/admin/applications"
-              className="admin-action-secondary inline-flex items-center justify-center rounded-full px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
-            >
-              Participant Dashboard
-            </Link>
-
+    <AdminDashboardShell>
+      <AdminHeroCard
+        eyebrow="Jury Admin"
+        title={application.fullName}
+        subtitle={`${application.professionalTitle} from ${application.city}, ${application.country}`}
+        actions={
+          <>
+            <AdminToolbarButton href="/admin/jury-applications">Back to List</AdminToolbarButton>
+            <AdminToolbarButton href="/admin/applications">Participant Dashboard</AdminToolbarButton>
             <form action={logoutAdminAction}>
-              <button
-                type="submit"
-                className="admin-action-secondary inline-flex items-center justify-center rounded-full px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
-              >
-                Log Out
-              </button>
+              <AdminToolbarButton type="submit">Log Out</AdminToolbarButton>
             </form>
-          </div>
-        </div>
+          </>
+        }
+      />
 
         <div className="mt-6 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-6">
             {error ? (
-              <div className="rounded-2xl border border-red-300 bg-red-50 px-5 py-4 text-sm leading-7 text-red-900">
+              <div className="admin-alert-danger rounded-2xl px-5 py-4 text-sm leading-7">
                 {error}
               </div>
             ) : null}
 
             {notice ? (
-              <div className="rounded-2xl border border-[#c9a96e]/45 bg-[#f4ead4] px-5 py-4 text-sm leading-7 text-[#6e521f]">
+              <div className="rounded-2xl border admin-alert-note px-5 py-4 text-sm leading-7">
                 {notice}
               </div>
             ) : null}
@@ -286,16 +258,16 @@ export default function JuryApplicationDetailPage({
                     defaultValue={application.status}
                     className="admin-field w-full rounded-full px-4 py-3 text-sm outline-none transition sm:max-w-60"
                   >
-                    <option value="SUBMITTED" className="bg-white text-[var(--color-navy)]">
+                    <option value="SUBMITTED" className="bg-white text-[var(--admin-ink)]">
                       Submitted
                     </option>
-                    <option value="APPROVED" className="bg-white text-[var(--color-navy)]">
+                    <option value="APPROVED" className="bg-white text-[var(--admin-ink)]">
                       Approved
                     </option>
-                    <option value="REJECTED" className="bg-white text-[var(--color-navy)]">
+                    <option value="REJECTED" className="bg-white text-[var(--admin-ink)]">
                       Rejected
                     </option>
-                    <option value="PAID" className="bg-white text-[var(--color-navy)]" disabled>
+                    <option value="PAID" className="bg-white text-[var(--admin-ink)]" disabled>
                       Paid (webhook only)
                     </option>
                   </select>
@@ -348,7 +320,7 @@ export default function JuryApplicationDetailPage({
                     <input type="hidden" name="id" value={application.id} />
                     <button
                       type="submit"
-                      className="inline-flex items-center justify-center rounded-full border border-red-300 bg-red-50 px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-red-900 transition hover:border-red-500 hover:bg-red-100"
+                      className="admin-alert-danger inline-flex items-center justify-center rounded-full px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition hover:border-[var(--admin-gold)] hover:text-[var(--admin-gold-strong)]"
                     >
                       Reject Application
                     </button>
@@ -364,7 +336,7 @@ export default function JuryApplicationDetailPage({
 
               {profilePhoto ? (
                 <div className="mt-5">
-                  <p className="text-sm font-semibold text-[var(--color-navy)]">Profile Photo</p>
+                  <p className="text-sm font-semibold text-[var(--admin-ink)]">Profile Photo</p>
                   <div className="mt-4 overflow-hidden rounded-2xl border border-[rgba(26,38,64,0.12)] bg-white">
                     <Image
                       src={`/api/admin/jury-files/${profilePhoto.id}`}
@@ -383,7 +355,7 @@ export default function JuryApplicationDetailPage({
               )}
 
               <div className="mt-6">
-                <p className="text-sm font-semibold text-[var(--color-navy)]">Certifications</p>
+                <p className="text-sm font-semibold text-[var(--admin-ink)]">Certifications</p>
 
                 <div className="mt-4 space-y-3">
                   {certifications.map((file) => (
@@ -392,7 +364,7 @@ export default function JuryApplicationDetailPage({
                       href={`/api/admin/jury-files/${file.id}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-[#c9a96e]"
+                      className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-[var(--admin-gold)]"
                     >
                       <span>{file.fileName}</span>
                       <span className="admin-muted text-xs">
@@ -411,7 +383,6 @@ export default function JuryApplicationDetailPage({
             </section>
           </div>
         </div>
-      </div>
-    </PageShell>
+    </AdminDashboardShell>
   );
 }

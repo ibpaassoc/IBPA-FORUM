@@ -33,7 +33,7 @@ export default function AdminLoginForm() {
       </div>
 
       {state?.error ? (
-        <p className="rounded-2xl border border-[#a64b4b]/45 bg-[#4d1d1d]/35 px-4 py-3 text-sm text-[#f8efef]">
+        <p className="admin-alert-danger rounded-2xl px-4 py-3 text-sm">
           {state.error}
         </p>
       ) : null}

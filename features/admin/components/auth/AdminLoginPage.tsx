@@ -2,14 +2,14 @@
 
 import AdminLoginForm from "@/features/admin/components/auth/AdminLoginForm";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { PageShell } from "@/shared/components/layout/PageShell";
+import { AdminDashboardShell } from "@/shared/components/admin/AdminDashboard";
 
 export default function AdminLoginPage() {
   const { t } = useLanguage();
 
   return (
-    <PageShell className="admin-page px-6 py-16 md:px-10 md:py-20">
-      <div className="mx-auto max-w-6xl pt-10">
+    <AdminDashboardShell className="px-6 py-16 md:px-10 md:py-20">
+      <div className="mx-auto max-w-6xl">
         <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
           <section className="admin-panel rounded-3xl p-8 md:p-10">
             <p className="admin-eyebrow">
@@ -25,7 +25,7 @@ export default function AdminLoginPage() {
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
               {t.admin.login.cards.map((item) => (
                 <div key={item} className="admin-detail-card rounded-2xl p-4">
-                  <p className="text-sm font-semibold text-[var(--color-navy)]">
+                  <p className="text-sm font-semibold text-[var(--admin-ink)]">
                     {item}
                   </p>
                 </div>
@@ -48,6 +48,6 @@ export default function AdminLoginPage() {
           </section>
         </div>
       </div>
-    </PageShell>
+    </AdminDashboardShell>
   );
 }

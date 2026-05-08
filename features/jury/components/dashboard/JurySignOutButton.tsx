@@ -2,17 +2,17 @@
 
 import { signOut } from "next-auth/react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { AdminToolbarButton } from "@/shared/components/admin/AdminDashboard";
 
 export default function JurySignOutButton() {
   const { t } = useLanguage();
 
   return (
-    <button
-      type="button"
+    <AdminToolbarButton
       onClick={() => void signOut({ callbackUrl: "/jury/login" })}
-      className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
+      variant="secondary"
     >
       {t.juryDashboard.signOut}
-    </button>
+    </AdminToolbarButton>
   );
 }

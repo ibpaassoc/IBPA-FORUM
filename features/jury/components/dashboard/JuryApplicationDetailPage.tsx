@@ -1,10 +1,15 @@
-import Link from "next/link";
 import type { ApplicationAnswer, ApplicationFile } from "@prisma/client";
 import { formatAdminDate } from "@/features/admin/server/view-models";
 import JurySignOutButton from "@/features/jury/components/dashboard/JurySignOutButton";
 import JuryScoreForm from "@/features/scoring/components/jury/JuryScoreForm";
 import type { JuryScoringApplicationRecord } from "@/features/scoring/server/jury";
-import { PageShell } from "@/shared/components/layout/PageShell";
+import {
+  AdminDashboardShell,
+  AdminDetailCard,
+  AdminHeroCard,
+  AdminSection,
+  AdminToolbarButton,
+} from "@/shared/components/admin/AdminDashboard";
 
 type JuryApplicationDetail = JuryScoringApplicationRecord & {
   answers: ApplicationAnswer[];
@@ -18,14 +23,7 @@ function DetailItem({
   label: string;
   value: string;
 }) {
-  return (
-    <div className="rounded-2xl border border-white/12 bg-white/4.5 p-4">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#d8c27a]">
-        {label}
-      </p>
-      <p className="mt-3 text-sm leading-6 text-[#f1ecde]">{value}</p>
-    </div>
-  );
+  return <AdminDetailCard label={label} value={value} />;
 }
 
 function formatAnswerValue(answer: {
@@ -92,38 +90,22 @@ export default function JuryApplicationDetailPage({
   }
 
   return (
-    <PageShell className="px-6 py-10 text-white md:px-10 md:py-12">
-      <div className="mx-auto max-w-7xl pt-16">
-        <div className="page-panel flex flex-col gap-5 rounded-3xl p-6 md:flex-row md:items-end md:justify-between md:p-8">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#d8c27a]">
-              Jury Review
-            </p>
-            <h1 className="mt-4 text-3xl font-semibold sm:text-4xl">
-              {application.fullName}
-            </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-[#d9d4ca]">
-              {application.category.name} / {application.award.name}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href="/jury/dashboard"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
-            >
-              Back to Dashboard
-            </Link>
+    <AdminDashboardShell>
+      <AdminHeroCard
+        eyebrow="Jury Review"
+        title={application.fullName}
+        subtitle={`${application.category.name} / ${application.award.name}`}
+        actions={
+          <>
+            <AdminToolbarButton href="/jury/dashboard">Back to Dashboard</AdminToolbarButton>
             <JurySignOutButton />
-          </div>
-        </div>
+          </>
+        }
+      />
 
         <div className="mt-6 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-6">
-            <section className="page-card rounded-3xl p-6">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
-                Block A
-              </p>
+            <AdminSection eyebrow="Block A">
               <div className="mt-5 grid gap-4 md:grid-cols-2">
                 <DetailItem label="Full Legal Name" value={application.fullName} />
                 <DetailItem label="Email Address" value={application.email} />
@@ -175,12 +157,9 @@ export default function JuryApplicationDetailPage({
                   }
                 />
               </div>
-            </section>
+            </AdminSection>
 
-            <section className="page-card rounded-3xl p-6">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
-                Block B Answers
-              </p>
+            <AdminSection eyebrow="Block B Answers">
               <div className="mt-5 space-y-4">
                 {categoryFields
                   .filter((field) => field.type !== "file")
@@ -203,22 +182,18 @@ export default function JuryApplicationDetailPage({
                 {categoryFields.every(
                   (field) => field.type === "file" || !answerMap.get(field.key)
                 ) ? (
-                  <p className="text-sm text-[#d9d4ca]/75">
+                  <p className="admin-muted text-sm">
                     No text-based Block B answers were saved for this application.
                   </p>
                 ) : null}
               </div>
-            </section>
+            </AdminSection>
           </div>
 
           <div className="space-y-6">
             <JuryScoreForm applicationId={application.id} initialScore={score} />
 
-            <section className="page-card rounded-3xl p-6">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
-                Review Status
-              </p>
-
+            <AdminSection eyebrow="Review Status">
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
                 <DetailItem
                   label="Application Status"
@@ -245,16 +220,12 @@ export default function JuryApplicationDetailPage({
                   value={formatAdminDate(application.updatedAt)}
                 />
               </div>
-            </section>
+            </AdminSection>
 
-            <section className="page-card rounded-3xl p-6">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
-                Uploaded Files
-              </p>
-
+            <AdminSection eyebrow="Uploaded Files">
               <div className="mt-5 space-y-5">
                 <div>
-                  <p className="text-sm font-medium text-white">
+                  <p className="text-sm font-semibold text-[var(--admin-ink)]">
                     Professional License / Certification
                   </p>
                   <div className="mt-3 space-y-3">
@@ -264,10 +235,10 @@ export default function JuryApplicationDetailPage({
                         href={`/api/jury/application-files/${file.id}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="flex items-center justify-between rounded-2xl border border-white/12 bg-white/[0.035] px-4 py-3 text-sm text-[#d9d4ca] transition hover:border-[#d8c27a] hover:text-white"
+                        className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-[var(--admin-gold)]"
                       >
                         <span>{file.fileName}</span>
-                        <span className="text-xs text-white/45">
+                        <span className="admin-muted text-xs">
                           {(file.fileSize / 1024 / 1024).toFixed(2)} MB
                         </span>
                       </a>
@@ -282,7 +253,7 @@ export default function JuryApplicationDetailPage({
 
                     return (
                       <div key={field.key}>
-                        <p className="text-sm font-medium text-white">{field.label}</p>
+                        <p className="text-sm font-semibold text-[var(--admin-ink)]">{field.label}</p>
                         <div className="mt-3 space-y-3">
                           {files.map((file) => (
                             <a
@@ -290,16 +261,16 @@ export default function JuryApplicationDetailPage({
                               href={`/api/jury/application-files/${file.id}`}
                               target="_blank"
                               rel="noreferrer"
-                              className="flex items-center justify-between rounded-2xl border border-white/12 bg-white/[0.035] px-4 py-3 text-sm text-[#d9d4ca] transition hover:border-[#d8c27a] hover:text-white"
+                              className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-[var(--admin-gold)]"
                             >
                               <span>{file.fileName}</span>
-                              <span className="text-xs text-white/45">
+                              <span className="admin-muted text-xs">
                                 {(file.fileSize / 1024 / 1024).toFixed(2)} MB
                               </span>
                             </a>
                           ))}
                           {files.length === 0 ? (
-                            <p className="text-sm text-[#d9d4ca]/75">
+                            <p className="admin-muted text-sm">
                               No files uploaded for this field.
                             </p>
                           ) : null}
@@ -308,10 +279,9 @@ export default function JuryApplicationDetailPage({
                     );
                   })}
               </div>
-            </section>
+            </AdminSection>
           </div>
         </div>
-      </div>
-    </PageShell>
+    </AdminDashboardShell>
   );
 }
