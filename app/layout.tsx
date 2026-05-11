@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Jost } from "next/font/google";
+import { Cormorant_Garamond, Inter, Marck_Script } from "next/font/google";
 import "./globals.css";
 import Footer from "@/shared/components/layout/Footer";
 import Header from "@/shared/components/layout/Header";
@@ -12,10 +12,16 @@ const cormorant = Cormorant_Garamond({
   variable: "--font-display",
 });
 
-const jost = Jost({
+const inter = Inter({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["300", "400", "500", "600", "700"],
   variable: "--font-body",
+});
+
+const marckScript = Marck_Script({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-accent",
 });
 
 export const metadata: Metadata = {
@@ -32,7 +38,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${jost.variable}`}>
+    <html
+      lang="en"
+      className={`${cormorant.variable} ${inter.variable} ${marckScript.variable}`}
+    >
       <body>
         <LanguageProvider>
           <Header />
