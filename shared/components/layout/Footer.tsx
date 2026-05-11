@@ -34,13 +34,13 @@ const footerColumns = [
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-(--color-navy-deep) py-(--space-xl) pb-(--space-lg) text-[rgba(255,255,255,0.58)]">
+    <footer className="w-full border-t border-(--border-default) bg-(--color-blue-wash) py-(--space-xl) pb-(--space-lg) text-(--color-ink-soft)">
       <div className="mx-auto max-w-(--content-width) px-(--page-gutter)">
         <div className="grid grid-cols-1 gap-(--space-lg) border-b border-border-footer pb-(--space-lg) md:grid-cols-2 xl:grid-cols-[1.45fr_1fr_1fr_1fr_1fr]">
           <div className="max-w-sm">
             <Link href="/" className="inline-flex items-center">
               <Image
-                src="/logo_white.png"
+                src="/logo_black.png"
                 alt="IBPA Logo"
                 width={320}
                 height={80}
@@ -48,7 +48,7 @@ export default function Footer() {
               />
             </Link>
 
-            <p className="mt-(--space-md) text-[clamp(0.875rem,1.5vw,1rem)] leading-[1.7] text-[rgba(255,255,255,0.5)]">
+            <p className="mt-(--space-md) text-[clamp(0.875rem,1.5vw,1rem)] leading-[1.7] text-(--color-ink-soft)">
               Celebrating excellence in the global beauty industry and
               recognizing professionals shaping the future of beauty.
             </p>
@@ -75,7 +75,7 @@ export default function Footer() {
                     <a
                       key={link.label}
                       href={link.href}
-                      className="text-sm text-[rgba(255,255,255,0.58)] transition hover:text-(--color-hover)"
+                      className="text-sm text-(--color-ink-soft) transition hover:text-(--color-hover)"
                     >
                       {link.label}
                     </a>
@@ -83,7 +83,7 @@ export default function Footer() {
                     <Link
                       key={link.label}
                       href={link.href}
-                      className="text-sm text-[rgba(255,255,255,0.58)] transition hover:text-(--color-hover)"
+                      className="text-sm text-(--color-ink-soft) transition hover:text-(--color-hover)"
                     >
                       {link.label}
                     </Link>
@@ -99,14 +99,14 @@ export default function Footer() {
             </h4>
             <a
               href="mailto:info@ibpa-awards.com"
-              className="text-sm text-[rgba(255,255,255,0.58)] transition hover:text-(--color-hover)"
+              className="text-sm text-(--color-ink-soft) transition hover:text-(--color-hover)"
             >
               info@ibpa-awards.com
             </a>
           </div>
         </div>
 
-        <div className="mt-(--space-md) flex flex-col gap-(--space-sm) text-[0.75rem] text-[rgba(255,255,255,0.5)] sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-(--space-md) flex flex-col gap-(--space-sm) text-[0.75rem] text-(--color-ink-muted) sm:flex-row sm:items-center sm:justify-between">
           <p>Copyright 2026 IBPA Beauty Awards. All rights reserved.</p>
           <p className="script-accent text-[1.4rem]">Open to global participants.</p>
         </div>

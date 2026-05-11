@@ -79,7 +79,7 @@ export default function JuryMenu({
               setOpen(false);
               onNavigate?.();
             }}
-            className="block rounded-sm px-(--space-sm) py-(--space-sm) text-sm font-medium text-(--color-navy) transition hover:bg-(--color-mist) hover:text-(--color-hover)"
+            className="block rounded-sm px-(--space-sm) py-(--space-sm) text-sm font-medium text-(--color-ink) transition hover:bg-(--color-mist) hover:text-(--color-hover)"
           >
             {t.common.applyAsJury}
           </Link>
@@ -89,7 +89,7 @@ export default function JuryMenu({
               setOpen(false);
               onNavigate?.();
             }}
-            className="mt-(--space-xs) block rounded-sm px-(--space-sm) py-(--space-sm) text-sm font-medium text-(--color-navy) transition hover:bg-(--color-mist) hover:text-(--color-hover)"
+            className="mt-(--space-xs) block rounded-sm px-(--space-sm) py-(--space-sm) text-sm font-medium text-(--color-ink) transition hover:bg-(--color-mist) hover:text-(--color-hover)"
           >
             {t.common.juryAccount}
           </Link>

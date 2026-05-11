@@ -6,7 +6,7 @@ import { AdminStatusBadge } from "@/shared/components/admin/AdminDashboard";
 const statusStyles = {
   DRAFT: "muted",
   PAYMENT_PENDING: "gold",
-  SUBMITTED: "navy",
+  SUBMITTED: "blue",
   UNDER_REVIEW: "gold",
   APPROVED: "success",
   REJECTED: "danger",

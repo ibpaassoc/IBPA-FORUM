@@ -50,7 +50,7 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="font-[var(--font-sans)] text-[clamp(0.7rem,1vw,0.8rem)] font-medium uppercase tracking-[0.1em] text-[var(--color-navy)] opacity-75 transition hover:text-[var(--color-hover)] hover:opacity-100"
+                className="font-[var(--font-sans)] text-[clamp(0.7rem,1vw,0.8rem)] font-medium uppercase tracking-[0.1em] text-[var(--color-ink)] opacity-75 transition hover:text-[var(--color-hover)] hover:opacity-100"
               >
                 {item.label}
               </Link>
@@ -74,7 +74,7 @@ export default function Header() {
             aria-label={open ? t.header.closeMenu : t.header.openMenu}
             aria-expanded={open}
             onClick={() => setOpen((prev) => !prev)}
-            className="relative ml-auto flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--border-default)] bg-[var(--color-white)] text-[var(--color-navy)] shadow-[var(--shadow-sm)] transition hover:border-[var(--color-hover)] hover:text-[var(--color-hover)] sm:h-11 sm:w-11 lg:hidden"
+            className="relative ml-auto flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--border-default)] bg-[var(--color-white)] text-[var(--color-ink)] shadow-[var(--shadow-sm)] transition hover:border-[var(--color-hover)] hover:text-[var(--color-hover)] sm:h-11 sm:w-11 lg:hidden"
           >
             <span className="sr-only">
               {open ? t.header.closeMenu : t.header.openMenu}
@@ -110,7 +110,7 @@ export default function Header() {
                   key={item.href}
                   href={item.href}
                   onClick={handleLinkClick}
-                  className="rounded-[var(--radius-sm)] border border-transparent bg-[var(--color-mist)] px-[var(--space-md)] py-[var(--space-sm)] text-sm font-medium uppercase tracking-[0.16em] text-[var(--color-navy)] transition hover:border-[var(--color-hover)] hover:text-[var(--color-hover)]"
+                  className="rounded-[var(--radius-sm)] border border-transparent bg-[var(--color-mist)] px-[var(--space-md)] py-[var(--space-sm)] text-sm font-medium uppercase tracking-[0.16em] text-[var(--color-ink)] transition hover:border-[var(--color-hover)] hover:text-[var(--color-hover)]"
                 >
                   {item.label}
                 </Link>
