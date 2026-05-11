@@ -40,7 +40,7 @@ export default function JuryResponsibilities() {
               key={item.number}
               className="page-card p-[var(--space-md)]"
             >
-              <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-[var(--color-gold)]">
+              <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-[var(--color-hover)]">
                 {item.number}
               </p>
               <h3 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(1.1rem,2vw,1.6rem)] font-normal text-[var(--color-navy)]">{item.title}</h3>

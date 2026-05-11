@@ -13,9 +13,9 @@ export default function CategoriesGrid() {
         {categories.map((category, index) => (
           <PageCard
             key={category}
-            className="group bg-[var(--color-off-white)] transition hover:border-[var(--color-navy)] hover:bg-[var(--color-navy)]"
+            className="group bg-[var(--color-off-white)] transition hover:border-[var(--color-hover)] hover:bg-[var(--color-navy)]"
           >
-            <p className="text-sm font-medium tracking-[0.12em] text-[var(--color-gold)] group-hover:text-[var(--color-gold-light)]">
+            <p className="text-sm font-medium tracking-[0.12em] text-[var(--color-hover)] group-hover:text-[var(--color-title-accent)]">
               {String(index + 1).padStart(2, "0")}
             </p>
             <p className="mt-[var(--space-xs)] font-[var(--font-display)] text-[clamp(1.1rem,2vw,1.6rem)] font-normal text-[var(--color-navy)] group-hover:text-white">

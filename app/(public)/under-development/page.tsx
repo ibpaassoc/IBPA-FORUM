@@ -14,8 +14,8 @@ export default function UnderDevelopmentPage() {
         description="We are still refining this part of the IBPA Beauty Championship website."
       />
       <PageSection>
-        <PageCard className="rounded-3xl p-8">
-          <p className="text-sm leading-7 text-[#d9d4ca]">
+        <PageCard className="rounded-[var(--radius)] p-8">
+          <p className="text-sm leading-7 text-[var(--color-steel)]">
             Check back soon for updated details and finalized content.
           </p>
         </PageCard>

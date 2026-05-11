@@ -21,9 +21,9 @@ export default function PublicJuryGrid({
       {members.map((member) => (
         <article
           key={member.id}
-          className="group overflow-hidden rounded-4xlrder border-black/10 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+          className="group overflow-hidden rounded-[var(--radius)] border border-[var(--border-default)] bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[var(--color-hover)] hover:shadow-xl"
         >
-          <div className="relative aspect-4/5 overflow-hidden bg-[#f7efe4]">
+          <div className="relative aspect-4/5 overflow-hidden bg-[var(--color-mist)]">
             {member.profilePhotoFileId ? (
               <img
                 src={`/api/jury/profile-photo/${member.profilePhotoFileId}`}
@@ -31,7 +31,7 @@ export default function PublicJuryGrid({
                 className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-sm uppercase tracking-[0.25em] text-(--color-gold)">
+              <div className="flex h-full w-full items-center justify-center text-sm uppercase tracking-[0.25em] text-(--color-hover)">
                 No Photo
               </div>
             )}
@@ -39,7 +39,7 @@ export default function PublicJuryGrid({
 
           <div className="space-y-4 p-(--space-md)">
             <div>
-              <p className="text-xs uppercase tracking-[0.22em] text-(--color-gold)">
+              <p className="text-xs uppercase tracking-[0.22em] text-(--color-hover)">
                 Active Jury Member
               </p>
 
@@ -65,7 +65,7 @@ export default function PublicJuryGrid({
                 {member.expertise.map((item) => (
                   <span
                     key={item}
-                    className="rounded-full border border-black/10 bg-[#fbf7f0] px-3 py-1 text-xs text-(--color-navy)"
+                    className="rounded-full border border-(--border-default) bg-(--color-off-white) px-3 py-1 text-xs text-(--color-navy)"
                   >
                     {item}
                   </span>

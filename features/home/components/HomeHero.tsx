@@ -9,13 +9,17 @@ export default function HomeHero() {
 
   return (
     <section className="relative flex min-h-[92vh] items-center overflow-hidden bg-[linear-gradient(160deg,var(--color-navy-deep)_0%,var(--color-navy)_50%,var(--color-navy-mid)_100%)] pt-[clamp(60px,8vh,72px)]">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_80%_40%,rgba(124,168,200,0.15)_0%,transparent_70%),radial-gradient(ellipse_40%_40%_at_20%_80%,rgba(201,169,110,0.08)_0%,transparent_60%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_80%_40%,rgba(114,160,193,0.18)_0%,transparent_70%),radial-gradient(ellipse_40%_40%_at_20%_80%,rgba(185,217,235,0.1)_0%,transparent_60%)]" />
       <div className="absolute inset-0 bg-[linear-gradient(white_1px,transparent_1px),linear-gradient(90deg,white_1px,transparent_1px)] bg-size-[clamp(40px,5vw,60px)_clamp(40px,5vw,60px)] opacity-[0.04]" />
 
       <div className="relative z-10 mx-auto flex max-w-(--content-width) flex-col gap-(--space-xl) px-(--page-gutter) page-section-pad lg:flex-row lg:items-center lg:justify-between">
         <div className="max-w-3xl">
           <p className="page-eyebrow mb-(--space-md) animate-[fadeUp_0.7s_ease_both]">
             {t.home.hero.eyebrow}
+          </p>
+
+          <p className="script-accent animate-[fadeUp_0.7s_ease_0.05s_both] text-[clamp(1.7rem,3vw,2.7rem)] text-(--color-title-accent)">
+            Beauty reimagined
           </p>
 
           <h1 className="animate-[fadeUp_0.7s_ease_0.1s_both] font-(--font-display) text-[clamp(2.2rem,5vw,4.2rem)] leading-[1.1] text-white">

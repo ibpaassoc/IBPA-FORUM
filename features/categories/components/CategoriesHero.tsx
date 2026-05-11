@@ -14,7 +14,7 @@ export default function CategoriesHero() {
       description={t.categoriesPage.hero.description}
       aside={
         <div className="space-y-4">
-          <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-[var(--color-gold)]">
+          <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-[var(--color-title-accent)]">
             {t.categoriesPage.hero.entryRules}
           </p>
           <div className="rounded-[var(--radius-sm)] border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.07)] p-[var(--space-md)]">

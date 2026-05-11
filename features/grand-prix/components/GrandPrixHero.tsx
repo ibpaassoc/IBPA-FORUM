@@ -14,7 +14,7 @@ export default function GrandPrixHero() {
       description={t.grandPrixPage.hero.description}
       aside={
         <div className="space-y-4">
-          <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-gold)">
+          <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-title-accent)">
             {t.grandPrixPage.hero.snapshot}
           </p>
           <div className="rounded-sm border border-border-footer bg-[rgba(255,255,255,0.07)] p-(--space-md) font-light">

@@ -36,7 +36,7 @@ export default function JuryFaq() {
                   <span className="text-sm font-medium text-(--color-navy) sm:text-base">
                     {faq.question}
                   </span>
-                  <span className="text-xl text-(--color-gold)">{isOpen ? "-" : "+"}</span>
+                  <span className="text-xl text-(--color-hover)">{isOpen ? "-" : "+"}</span>
                 </button>
 
                 {isOpen && (

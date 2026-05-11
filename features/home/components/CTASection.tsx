@@ -9,7 +9,7 @@ export default function CTASection() {
   return (
     <section className="bg-[linear-gradient(160deg,var(--color-navy-deep)_0%,var(--color-navy)_50%,var(--color-navy-mid)_100%)]">
       <div className="mx-auto max-w-[var(--content-width)] px-[var(--page-gutter)] py-[var(--space-2xl)] text-center">
-        <p className="mx-auto inline-flex items-center gap-[var(--space-sm)] text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-[var(--color-gold)]">
+        <p className="mx-auto inline-flex items-center gap-[var(--space-sm)] text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-[var(--color-title-accent)]">
           {t.home.cta.label}
         </p>
 

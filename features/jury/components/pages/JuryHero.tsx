@@ -14,7 +14,7 @@ export default function JuryHero() {
       description={t.juryPage.hero.description}
       aside={
         <div className="space-y-4">
-          <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-gold)">
+          <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-title-accent)">
             {t.juryPage.hero.overview}
           </p>
 

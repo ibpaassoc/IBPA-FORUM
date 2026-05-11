@@ -11,7 +11,7 @@ export default function JuryApplyPage() {
     <PageShell>
       <PageSection className="pt-28 pb-8">
         <div className="mx-auto mb-[var(--space-lg)] max-w-3xl rounded-t-[var(--radius)] bg-[var(--color-navy)] px-[var(--space-xl)] py-[var(--space-lg)]">
-          <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-[var(--color-gold)]">
+          <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-[var(--color-title-accent)]">
             {t.juryPage.apply.eyebrow}
           </p>
           <h1 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(2.2rem,5vw,4.2rem)] font-light leading-[1.1] text-white">
