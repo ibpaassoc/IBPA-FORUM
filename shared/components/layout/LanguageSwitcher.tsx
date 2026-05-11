@@ -50,7 +50,7 @@ export default function LanguageSwitcher({
               onClick={() => chooseLanguage(item)}
               className={`rounded-[var(--radius-sm)] border px-[var(--space-sm)] py-[var(--space-sm)] text-sm font-medium uppercase tracking-[0.14em] transition ${
                 item === language
-                  ? "border-[var(--color-gold)] bg-[var(--color-gold)] text-[var(--color-navy-deep)]"
+                  ? "border-[var(--color-hover)] bg-[var(--color-title-accent)] text-[var(--color-navy-deep)]"
                   : "border-[var(--border-default)] bg-[var(--color-white)] text-[var(--color-navy)] hover:border-[var(--color-hover)] hover:text-[var(--color-hover)]"
               }`}
             >
@@ -83,7 +83,7 @@ export default function LanguageSwitcher({
               onClick={() => chooseLanguage(item)}
               className={`block w-full rounded-[var(--radius-sm)] px-[var(--space-sm)] py-[var(--space-sm)] text-left text-sm font-medium transition ${
                 item === language
-                  ? "bg-[var(--color-gold)] text-[var(--color-navy-deep)]"
+                  ? "bg-[var(--color-title-accent)] text-[var(--color-navy-deep)]"
                   : "text-[var(--color-navy)] hover:bg-[var(--color-mist)] hover:text-[var(--color-hover)]"
               }`}
             >

@@ -160,7 +160,7 @@ a:hover {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  color: var(--color-gold);
+  color: var(--color-hover);
   font-family: var(--font-sans);
   font-size: clamp(0.65rem, 1vw, 0.75rem);
   font-weight: 500;
@@ -212,7 +212,7 @@ a:hover {
 }
 
 @utility ibpa-button-gold {
-  background: var(--color-gold);
+  background: var(--color-title-accent);
   border: 0;
   color: var(--color-navy-deep);
 }
@@ -391,7 +391,7 @@ a:hover {
   right: 0;
   left: 0;
   height: 3px;
-  background: var(--color-gold);
+  background: var(--color-hover);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.3s ease;
@@ -411,7 +411,7 @@ a:hover {
   display: block;
   width: clamp(16px, 2vw, 28px);
   height: 1px;
-  background: var(--color-gold);
+  background: var(--color-hover);
 }
 
 .ibpa-button-primary:hover {

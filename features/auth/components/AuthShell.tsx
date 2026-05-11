@@ -44,7 +44,7 @@ export default function AuthShell({
             </div>
 
             <div className="mt-[var(--space-lg)] rounded-[var(--radius)] border border-[var(--border-default)] bg-[var(--color-mist)] p-[var(--space-md)]">
-              <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-[var(--color-gold)]">
+              <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-[var(--color-hover)]">
                 {t.auth.access}
               </p>
               <p className="mt-[var(--space-sm)] text-sm leading-[1.7] text-[var(--color-steel)]">
