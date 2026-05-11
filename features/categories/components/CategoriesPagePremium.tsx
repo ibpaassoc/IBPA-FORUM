@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpen, Camera, GraduationCap, HeartHandshake, Sparkles, Trophy } from "lucide-react";
+import { BookOpen, Camera, GraduationCap, HeartHandshake, Trophy } from "lucide-react";
 import { categoryCatalog } from "@/features/applications/config/category-catalog";
 import {
   CTASection,
@@ -69,7 +69,12 @@ export default function CategoriesPagePremium() {
         description="Submit your best work with a clear category strategy and premium portfolio presentation."
         primary={{ href: "/apply", label: "Open Application" }}
         secondary={{ href: "/grand-prix", label: "Explore Grand Prix" }}
-        extra={<div className="inline-flex items-center gap-2 text-sm text-(--color-ink-soft)><IconBadge icon={Camera} size={20} /> Strong imagery matters for every discipline.</div>}
+        extra={
+          <div className="inline-flex items-center gap-2 text-sm text-[var(--color-ink-soft)]">
+            <IconBadge icon={Camera} size={20} />
+            Strong imagery matters for every discipline.
+          </div>
+        }
       />
     </main>
   );

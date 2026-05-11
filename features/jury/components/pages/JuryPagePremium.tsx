@@ -96,7 +96,12 @@ export default async function JuryPagePremium() {
         description="Apply to become an official judge and contribute to fair, professional award decisions."
         primary={{ href: "/apply/jury", label: "Start Jury Application" }}
         secondary={{ href: "/jury/login", label: "Jury Login" }}
-        extra={<div className="inline-flex items-center gap-2 text-sm text-(--color-ink-soft)><IconBadge icon={ClipboardCheck} size={20} /> Approval required before registration payment.</div>}
+        extra={
+          <div className="inline-flex items-center gap-2 text-sm text-[var(--color-ink-soft)]">
+            <IconBadge icon={ClipboardCheck} size={20} />
+            Approval required before registration payment.
+          </div>
+        }
       />
     </main>
   );
