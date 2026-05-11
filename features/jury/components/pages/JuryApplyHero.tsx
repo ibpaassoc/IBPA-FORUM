@@ -1,4 +1,5 @@
 import Link from "next/link"
+import EditorialImageCard from "@/shared/components/media/EditorialImageCard"
 
 const highlights = [
   {
@@ -60,38 +61,43 @@ export default function JuryApplyHero() {
           </div>
         </div>
 
-        <div className="rounded-[1.35rem] border border-(--border-default) bg-white/70 p-6 shadow-(--shadow-sm) backdrop-blur-sm">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-(--color-ink-muted)">
-            Before You Apply
-          </p>
-
-          <div className="mt-5 grid gap-4">
+        <EditorialImageCard
+          src="/images/editorial/accending.jpg"
+          alt="Professional beauty excellence image for jury application"
+          eyebrow="Before you apply"
+          title="Expert eyes, elevated standards"
+          text="The jury application flow now feels more connected to the editorial side of the site."
+          aspectClassName="aspect-[4/5]"
+          objectPosition="center 20%"
+          sizes="(max-width: 1024px) 100vw, 40vw"
+          className="shadow-[0_22px_64px_rgba(12,16,20,0.14)]"
+        >
+          <div className="grid gap-3">
             {highlights.map((item) => (
               <div
                 key={item.label}
-                className="rounded-2xl border border-(--border-default) bg-(--color-white) p-4"
+                className="rounded-[calc(var(--radius)-4px)] border border-white/12 bg-white/10 px-4 py-3 backdrop-blur-[8px]"
               >
-                <p className="text-[10px] uppercase tracking-[0.22em] text-(--color-ink-muted)">
+                <p className="text-[10px] uppercase tracking-[0.22em] text-[var(--color-title-accent)]">
                   {item.label}
                 </p>
-                <p className="mt-2 font-(--font-display) text-xl font-light sm:text-2xl">
+                <p className="mt-2 font-(--font-display) text-[clamp(1rem,2vw,1.35rem)] font-light text-white">
                   {item.value}
                 </p>
-                <p className="mt-2 text-sm leading-6 text-(--color-ink-soft)">{item.text}</p>
+                <p className="mt-2 text-sm leading-6 text-white/80">{item.text}</p>
               </div>
             ))}
+            <div className="rounded-[calc(var(--radius)-4px)] border border-white/12 bg-white/10 px-4 py-3 backdrop-blur-[8px]">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--color-title-accent)]">
+                Ethics
+              </p>
+              <p className="mt-2 text-sm leading-6 text-white/80">
+                Jury candidates must disclose conflicts of interest and agree to
+                keep all judging deliberations confidential.
+              </p>
+            </div>
           </div>
-
-          <div className="mt-5 rounded-2xl border border-[rgba(185,217,235,0.55)] bg-(--color-blue-wash) p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-(--color-title-accent)">
-              Ethics
-            </p>
-            <p className="mt-3 text-sm leading-6 text-(--color-ink-soft)">
-              Jury candidates must disclose conflicts of interest and agree to
-              keep all judging deliberations confidential.
-            </p>
-          </div>
-        </div>
+        </EditorialImageCard>
       </div>
     </section>
   )

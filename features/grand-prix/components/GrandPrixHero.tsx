@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import EditorialImageCard from "@/shared/components/media/EditorialImageCard";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { PageHero } from "@/shared/components/layout/PageShell";
 
@@ -12,36 +13,46 @@ export default function GrandPrixHero() {
       eyebrow={t.grandPrixPage.hero.eyebrow}
       title={t.grandPrixPage.hero.title}
       description={t.grandPrixPage.hero.description}
+      asideShellClassName="overflow-hidden border-0 bg-transparent p-0 shadow-none"
       aside={
-        <div className="space-y-4">
-          <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-title-accent)">
-            {t.grandPrixPage.hero.snapshot}
-          </p>
-          <div className="rounded-sm border border-(--border-default) bg-(--color-white) p-(--space-md) font-light">
-            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-ink-muted)">
-              {t.grandPrixPage.hero.eligibility}
-            </p>
-            <p className="mt-(--space-xs) font-(--font-display) text-[clamp(1.1rem,2vw,1.6rem)]">
-              {t.grandPrixPage.hero.eligibilityValue}
-            </p>
+        <EditorialImageCard
+          src="/images/events/DSC00452.jpg"
+          alt="Award trophies and recognition at the IBPA ceremony"
+          eyebrow={t.grandPrixPage.hero.snapshot}
+          title="A ceremonial frame for the Grand Prix story"
+          text="The awards page now carries a stronger premium event feel with real ceremony photography."
+          aspectClassName="aspect-[4/5]"
+          objectPosition="center 28%"
+          sizes="(max-width: 1024px) 100vw, 40vw"
+          className="shadow-[0_22px_64px_rgba(12,16,20,0.14)]"
+        >
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+            <div className="rounded-[calc(var(--radius)-4px)] border border-white/12 bg-white/10 px-4 py-3 backdrop-blur-[8px]">
+              <p className="text-[10px] uppercase tracking-[0.22em] text-[var(--color-title-accent)]">
+                {t.grandPrixPage.hero.eligibility}
+              </p>
+              <p className="mt-2 font-[var(--font-display)] text-[clamp(1rem,2vw,1.35rem)] font-light text-white">
+                {t.grandPrixPage.hero.eligibilityValue}
+              </p>
+            </div>
+            <div className="rounded-[calc(var(--radius)-4px)] border border-white/12 bg-white/10 px-4 py-3 backdrop-blur-[8px]">
+              <p className="text-[10px] uppercase tracking-[0.22em] text-[var(--color-title-accent)]">
+                {t.grandPrixPage.hero.evaluation}
+              </p>
+              <p className="mt-2 font-[var(--font-display)] text-[clamp(1.5rem,3vw,2.1rem)] font-light text-white">
+                {t.grandPrixPage.hero.evaluationValue}
+              </p>
+            </div>
+            <div className="rounded-[calc(var(--radius)-4px)] border border-white/12 bg-white/10 px-4 py-3 backdrop-blur-[8px]">
+              <p className="text-[10px] uppercase tracking-[0.22em] text-[var(--color-title-accent)]">
+                {t.grandPrixPage.hero.decision}
+              </p>
+              <p className="mt-2 font-[var(--font-display)] text-[clamp(1rem,2vw,1.35rem)] font-light text-white">
+                {t.grandPrixPage.hero.decisionValue}
+              </p>
+            </div>
           </div>
-          <div className="rounded-sm border border-(--border-default) bg-(--color-white) p-(--space-md) font-light">
-            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-ink-muted)">
-              {t.grandPrixPage.hero.evaluation}
-            </p>
-            <p className="mt-(--space-xs) font-(--font-display) text-[clamp(1.8rem,4vw,2.8rem)]">
-              {t.grandPrixPage.hero.evaluationValue}
-            </p>
-          </div>
-          <div className="rounded-sm border border-(--border-default) bg-(--color-white) p-(--space-md) font-light">
-            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-ink-muted)">
-              {t.grandPrixPage.hero.decision}
-            </p>
-            <p className="mt-(--space-xs) font-(--font-display) text-[clamp(1.1rem,2vw,1.6rem)]">
-              {t.grandPrixPage.hero.decisionValue}
-            </p>
-          </div>
-        </div>
+        </EditorialImageCard>
       }
     >
       <p className="mb-(--space-lg) max-w-2xl text-sm leading-[1.7] text-(--color-ink-soft)">

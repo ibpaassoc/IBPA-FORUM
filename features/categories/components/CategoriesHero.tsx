@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import EditorialImageCard from "@/shared/components/media/EditorialImageCard";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { PageHero } from "@/shared/components/layout/PageShell";
 
@@ -12,28 +13,38 @@ export default function CategoriesHero() {
       eyebrow={t.categoriesPage.hero.eyebrow}
       title={t.categoriesPage.hero.title}
       description={t.categoriesPage.hero.description}
+      asideShellClassName="overflow-hidden border-0 bg-transparent p-0 shadow-none"
       aside={
-        <div className="space-y-4">
-          <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-[var(--color-title-accent)]">
-            {t.categoriesPage.hero.entryRules}
-          </p>
-          <div className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-white)] p-[var(--space-md)]">
-            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-ink-muted)">
-              {t.categoriesPage.hero.feeLabel}
-            </p>
-            <p className="mt-[var(--space-xs)] font-[var(--font-display)] text-[clamp(1.8rem,4vw,2.8rem)] font-light">
-              {t.categoriesPage.hero.feeValue}
-            </p>
+        <EditorialImageCard
+          src="/images/editorial/makeup.jpg"
+          alt="Luxury beauty editorial portrait for the categories page"
+          eyebrow={t.categoriesPage.hero.entryRules}
+          title="Editorial energy for the entry journey"
+          text="A premium visual that sets the tone for applying across IBPA categories."
+          aspectClassName="aspect-[4/5]"
+          objectPosition="center 18%"
+          sizes="(max-width: 1024px) 100vw, 40vw"
+          className="shadow-[0_22px_64px_rgba(12,16,20,0.14)]"
+        >
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="rounded-[calc(var(--radius)-4px)] border border-white/12 bg-white/10 px-4 py-3 backdrop-blur-[8px]">
+              <p className="text-[10px] uppercase tracking-[0.22em] text-[var(--color-title-accent)]">
+                {t.categoriesPage.hero.feeLabel}
+              </p>
+              <p className="mt-2 font-[var(--font-display)] text-[clamp(1.5rem,3vw,2.2rem)] font-light text-white">
+                {t.categoriesPage.hero.feeValue}
+              </p>
+            </div>
+            <div className="rounded-[calc(var(--radius)-4px)] border border-white/12 bg-white/10 px-4 py-3 backdrop-blur-[8px]">
+              <p className="text-[10px] uppercase tracking-[0.22em] text-[var(--color-title-accent)]">
+                {t.categoriesPage.hero.eligibilityLabel}
+              </p>
+              <p className="mt-2 font-[var(--font-display)] text-[clamp(1rem,2vw,1.35rem)] font-light text-white">
+                {t.categoriesPage.hero.eligibilityValue}
+              </p>
+            </div>
           </div>
-          <div className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-white)] p-[var(--space-md)]">
-            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-ink-muted)">
-              {t.categoriesPage.hero.eligibilityLabel}
-            </p>
-            <p className="mt-[var(--space-xs)] font-[var(--font-display)] text-[clamp(1.1rem,2vw,1.6rem)] font-normal">
-              {t.categoriesPage.hero.eligibilityValue}
-            </p>
-          </div>
-        </div>
+        </EditorialImageCard>
       }
     >
       <div className="flex flex-wrap gap-4">
