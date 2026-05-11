@@ -4,9 +4,9 @@ import FormFieldShell from "@/features/applications/components/application-form/
 import type { FieldOption } from "@/features/applications/types/application.types";
 
 const inputClassName =
-  "w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] text-[var(--color-navy)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-navy)] focus:shadow-[0_0_0_3px_rgba(26,38,64,0.07)]";
+  "w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] text-[var(--color-navy)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-hover)] focus:shadow-[0_0_0_3px_rgba(114,160,193,0.16)]";
 
-const errorClassName = "border-[var(--color-gold)] focus:border-[var(--color-gold)]";
+const errorClassName = "border-[var(--color-hover)] focus:border-[var(--color-hover)]";
 
 export function TextField({
   label,
@@ -99,7 +99,7 @@ export function TextareaField({
         value={value}
         placeholder={placeholder}
         onChange={(event) => onChange(name, event.target.value)}
-        className={`min-h-36 w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] leading-6 text-[var(--color-navy)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-navy)] focus:shadow-[0_0_0_3px_rgba(26,38,64,0.07)] ${
+        className={`min-h-36 w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] leading-6 text-[var(--color-navy)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-hover)] focus:shadow-[0_0_0_3px_rgba(114,160,193,0.16)] ${
           error ? errorClassName : ""
         }`}
       />
@@ -207,8 +207,8 @@ export function ChoiceGroupField({
               key={option.value}
               className={`flex cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] border px-[var(--space-sm)] py-[var(--space-sm)] text-sm transition ${
                 checked
-                  ? "border-[var(--color-gold)] bg-[rgba(201,169,110,0.15)] text-[var(--color-navy)]"
-                  : "border-[var(--border-default)] bg-[var(--color-white)] text-[var(--color-navy)] hover:border-[var(--color-navy)] hover:bg-[var(--color-mist)]"
+                  ? "border-[var(--color-hover)] bg-[rgba(185,217,235,0.26)] text-[var(--color-navy)]"
+                  : "border-[var(--border-default)] bg-[var(--color-white)] text-[var(--color-navy)] hover:border-[var(--color-hover)] hover:bg-[var(--color-mist)]"
               }`}
             >
               <input
@@ -227,7 +227,7 @@ export function ChoiceGroupField({
 
                   onChange(name, option.value);
                 }}
-                className="h-4 w-4 accent-[var(--color-gold)]"
+                className="h-4 w-4 accent-[var(--color-hover)]"
               />
               <span>{option.label}</span>
             </label>

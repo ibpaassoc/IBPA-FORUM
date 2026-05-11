@@ -7,7 +7,7 @@ import TextInput from "@/features/jury/components/jury-application/fields/TextIn
 export default function ProfessionalProfileSection() {
   return (
     <div className="border-b border-[var(--border-default)] pb-[var(--space-lg)]">
-      <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-[var(--color-gold)]">
+      <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-[var(--color-hover)]">
         Professional Profile
       </p>
       <div className="mt-[var(--space-md)] grid gap-[var(--space-md)] md:grid-cols-2">

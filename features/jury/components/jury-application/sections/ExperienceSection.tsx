@@ -23,7 +23,7 @@ export default function ExperienceSection({
 }) {
   return (
     <div className="border-b border-[var(--border-default)] pb-[var(--space-lg)]">
-      <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-[var(--color-gold)]">
+      <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-[var(--color-hover)]">
         Experience
       </p>
 
@@ -40,7 +40,7 @@ export default function ExperienceSection({
             ].map((item) => (
               <label
                 key={item.value}
-                className="flex cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-white)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-navy)] transition hover:border-[var(--color-navy)] hover:bg-[var(--color-mist)]"
+                className="flex cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-white)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-navy)] transition hover:border-[var(--color-hover)] hover:bg-[var(--color-mist)]"
               >
                 <input
                   type="radio"
@@ -48,7 +48,7 @@ export default function ExperienceSection({
                   value={item.value}
                   checked={hasPreviousJudging === item.value}
                   onChange={() => onPreviousJudgingChange(item.value)}
-                  className="h-4 w-4 accent-[var(--color-gold)]"
+                  className="h-4 w-4 accent-[var(--color-hover)]"
                 />
                 <span>{item.label}</span>
               </label>
@@ -76,7 +76,7 @@ export default function ExperienceSection({
             ].map((item) => (
               <label
                 key={item.value}
-                className="flex cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-white)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-navy)] transition hover:border-[var(--color-navy)] hover:bg-[var(--color-mist)]"
+                className="flex cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-white)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-navy)] transition hover:border-[var(--color-hover)] hover:bg-[var(--color-mist)]"
               >
                 <input
                   type="radio"
@@ -84,7 +84,7 @@ export default function ExperienceSection({
                   value={item.value}
                   checked={isPastWinner === item.value}
                   onChange={() => onPastWinnerChange(item.value)}
-                  className="h-4 w-4 accent-[var(--color-gold)]"
+                  className="h-4 w-4 accent-[var(--color-hover)]"
                 />
                 <span>{item.label}</span>
               </label>
@@ -112,7 +112,7 @@ export default function ExperienceSection({
             {categories.map((category) => (
               <label
                 key={category}
-                className="flex cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-white)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-navy)] transition hover:border-[var(--color-navy)] hover:bg-[var(--color-mist)]"
+                className="flex cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-white)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-navy)] transition hover:border-[var(--color-hover)] hover:bg-[var(--color-mist)]"
               >
                 <input
                   type="checkbox"
@@ -120,7 +120,7 @@ export default function ExperienceSection({
                   value={category}
                   checked={selectedExpertise.includes(category)}
                   onChange={onExpertiseChange}
-                  className="h-4 w-4 rounded accent-[var(--color-gold)]"
+                  className="h-4 w-4 rounded accent-[var(--color-hover)]"
                 />
                 <span>{category}</span>
               </label>

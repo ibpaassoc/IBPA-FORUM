@@ -241,7 +241,7 @@ export default function ApplyForm({
         <section className="rounded-(--radius) border border-(--border-default) bg-(--color-off-white) p-(--space-lg) shadow-(--shadow-lg)">
           <div className="flex flex-col gap-(--space-sm) border-b border-(--border-default) pb-(--space-md) md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-(--color-gold)">
+              <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-(--color-hover)">
                 {t.applyPage.form.progress}
               </p>
               <p className="mt-(--space-xs) text-sm text-(--color-steel)">
@@ -253,7 +253,7 @@ export default function ApplyForm({
             <div className="w-full max-w-sm">
               <div className="h-2 rounded-full bg-(--color-mist)">
                 <div
-                  className="h-2 rounded-full bg-(--color-gold) transition-all"
+                  className="h-2 rounded-full bg-(--color-hover) transition-all"
                   style={{ width: `${progressPercentage}%` }}
                 />
               </div>
@@ -264,8 +264,8 @@ export default function ApplyForm({
             <div
               className={`mt-5 rounded-[1.4rem] border px-4 py-4 text-sm leading-7 ${
                 submissionState.type === "success"
-                  ? "border-(--color-gold) bg-[rgba(201,169,110,0.15)] text-(--color-navy)"
-                  : "border-(--color-gold) bg-[rgba(201,169,110,0.15)] text-(--color-navy)"
+                  ? "border-(--color-hover) bg-[rgba(185,217,235,0.26)] text-(--color-navy)"
+                  : "border-(--color-hover) bg-[rgba(185,217,235,0.26)] text-(--color-navy)"
               }`}
               aria-live="polite"
             >

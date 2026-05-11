@@ -7,7 +7,7 @@ import TextareaField from "@/features/jury/components/jury-application/fields/Te
 export default function MaterialsSection() {
   return (
     <div className="border-b border-(--border-default) pb-(--space-lg)">
-      <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-(--color-gold)">
+      <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-(--color-hover)">
         Materials & Disclosure
       </p>
 
@@ -23,7 +23,7 @@ export default function MaterialsSection() {
             accept=".pdf,.jpg,.jpeg,.png"
             multiple
             required
-            className="block w-full rounded-sm border-[1.5px] border-dashed border-(--border-default) bg-(--color-white) px-(--space-sm) py-(--space-sm) text-sm text-(--color-navy) file:mr-(--space-sm) file:rounded-full file:border-0 file:bg-(--color-gold) file:px-(--space-sm) file:py-(--space-xs) file:text-xs file:font-medium file:uppercase file:tracking-[0.16em] file:text-(--color-cream)"
+            className="block w-full rounded-sm border-[1.5px] border-dashed border-(--border-default) bg-(--color-white) px-(--space-sm) py-(--space-sm) text-sm text-(--color-navy) file:mr-(--space-sm) file:rounded-full file:border-0 file:bg-(--color-hover) file:px-(--space-sm) file:py-(--space-xs) file:text-xs file:font-medium file:uppercase file:tracking-[0.16em] file:text-white"
           />
         </FieldShell>
 
@@ -46,7 +46,7 @@ export default function MaterialsSection() {
             name="profilePhoto"
             accept=".jpg,.jpeg,.png"
             required
-            className="block w-full rounded-sm border-[1.5px] border-dashed border-(--border-default) bg-(--color-white) px-(--space-sm) py-(--space-sm) text-sm text-(--color-navy) file:mr-(--space-sm) file:rounded-full file:border-0 file:bg-(--color-gold) file:px-(--space-sm) file:py-(--space-xs) file:text-xs file:font-medium file:uppercase file:tracking-[0.16em] file:text-(--color-cream)"
+            className="block w-full rounded-sm border-[1.5px] border-dashed border-(--border-default) bg-(--color-white) px-(--space-sm) py-(--space-sm) text-sm text-(--color-navy) file:mr-(--space-sm) file:rounded-full file:border-0 file:bg-(--color-hover) file:px-(--space-sm) file:py-(--space-xs) file:text-xs file:font-medium file:uppercase file:tracking-[0.16em] file:text-white"
           />
         </FieldShell>
 
@@ -79,7 +79,7 @@ export default function MaterialsSection() {
             name="confidentialityAgreement"
             value="yes"
             required
-            className="mt-1 h-4 w-4 rounded accent-(--color-gold)"
+            className="mt-1 h-4 w-4 rounded accent-(--color-hover)"
           />
           <span className="leading-6 text-(--color-steel)">
             I agree to keep all jury deliberations, candidate information,

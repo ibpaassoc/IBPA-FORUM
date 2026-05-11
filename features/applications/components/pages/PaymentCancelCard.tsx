@@ -17,10 +17,10 @@ export default function PaymentCancelCard({
 
       <PageSection className="pb-20">
         <PageCard className="mx-auto max-w-3xl rounded-[1.75rem] p-8 text-center">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--color-hover)]">
             Next Step
           </p>
-          <p className="mt-5 text-base leading-8 text-[#e7ddc9]">
+          <p className="mt-5 text-base leading-8 text-[var(--color-steel)]">
             You can return to secure Stripe Checkout using the saved application,
             or go back to the application page if you need to start over.
           </p>
@@ -30,7 +30,7 @@ export default function PaymentCancelCard({
 
             <Link
               href="/apply"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:border-[#d8c27a] hover:text-[#d8c27a]"
+              className="ibpa-button ibpa-button-ghost"
             >
               Back to Application Form
             </Link>

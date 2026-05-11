@@ -12,14 +12,14 @@ export default function ApplyHero({
       description="Submit your official participant entry with category-specific supporting materials and production-ready files for the championship review team."
       aside={
         <div className="space-y-4">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d8c27a]">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--color-title-accent)]">
             2026 Timeline
           </p>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
             {heroStats.map((item) => (
               <div
                 key={item.label}
-                className="rounded-2xl border border-white/10 bg-white/4 px-4 py-4"
+                className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4"
               >
                 <p className="text-[10px] uppercase tracking-[0.22em] text-white/40">
                   {item.label}
@@ -37,7 +37,7 @@ export default function ApplyHero({
         {heroStats.map((item) => (
           <div
             key={item.label}
-            className="rounded-full border border-[#d8c27a]/22 bg-white/4 px-4 py-2 text-xs uppercase tracking-[0.18em] text-[#efe6d0]"
+            className="rounded-full border border-[rgba(185,217,235,0.24)] bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.18em] text-[var(--color-title-accent)]"
           >
             {item.label}: {item.value}
           </div>
