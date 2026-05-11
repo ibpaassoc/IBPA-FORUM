@@ -8,7 +8,7 @@ import Process from "@/features/home/components/Process";
 
 export default function Home() {
   return (
-    <main className="bg-(--color-off-white) text-(--color-navy)">
+    <main className="bg-(--color-off-white) text-(--color-ink)">
       <HomeHero />
       <CategoriesPreview />
       <Process />

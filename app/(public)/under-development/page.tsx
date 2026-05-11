@@ -15,7 +15,7 @@ export default function UnderDevelopmentPage() {
       />
       <PageSection>
         <PageCard className="rounded-[var(--radius)] p-8">
-          <p className="text-sm leading-7 text-[var(--color-steel)]">
+          <p className="text-sm leading-7 text-[var(--color-ink-soft)]">
             Check back soon for updated details and finalized content.
           </p>
         </PageCard>

@@ -14,7 +14,7 @@ export default function JuryRegisterStatus({ sessionId }: { sessionId?: string }
           <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-(--color-hover)">
             Jury Registration Status
           </p>
-          <p className="mt-5 text-base leading-8 text-(--color-steel)">
+          <p className="mt-5 text-base leading-8 text-(--color-ink-soft)">
             {sessionId
               ? "Your Stripe Checkout session completed successfully. We are waiting for the webhook to confirm the registration."
               : "If you recently completed payment, please allow a moment for Stripe to finalize your registration."}

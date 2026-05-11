@@ -43,18 +43,18 @@ export default function PublicJuryGrid({
                 Active Jury Member
               </p>
 
-              <h3 className="mt-2 font-(--font-display) text-2xl text-(--color-navy)">
+              <h3 className="mt-2 font-(--font-display) text-2xl text-(--color-ink)">
                 {member.fullName}
               </h3>
 
               {member.professionalTitle ? (
-                <p className="mt-1 text-sm font-medium text-(--color-steel)">
+                <p className="mt-1 text-sm font-medium text-(--color-ink-soft)">
                   {member.professionalTitle}
                 </p>
               ) : null}
 
               {member.city || member.country ? (
-                <p className="mt-1 text-sm text-(--color-steel)">
+                <p className="mt-1 text-sm text-(--color-ink-soft)">
                   {[member.city, member.country].filter(Boolean).join(", ")}
                 </p>
               ) : null}
@@ -65,7 +65,7 @@ export default function PublicJuryGrid({
                 {member.expertise.map((item) => (
                   <span
                     key={item}
-                    className="rounded-full border border-(--border-default) bg-(--color-off-white) px-3 py-1 text-xs text-(--color-navy)"
+                    className="rounded-full border border-(--border-default) bg-(--color-off-white) px-3 py-1 text-xs text-(--color-ink)"
                   >
                     {item}
                   </span>

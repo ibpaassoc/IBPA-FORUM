@@ -29,7 +29,7 @@ export default function JuryResponsibilities() {
           <p className="page-eyebrow">
             Responsibilities
           </p>
-          <h2 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(1.8rem,3.5vw,3rem)] font-light leading-[1.15] text-[var(--color-navy)]">
+          <h2 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(1.8rem,3.5vw,3rem)] font-light leading-[1.15] text-[var(--color-ink)]">
             What official judges are expected to do
           </h2>
         </div>
@@ -43,8 +43,8 @@ export default function JuryResponsibilities() {
               <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-[var(--color-hover)]">
                 {item.number}
               </p>
-              <h3 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(1.1rem,2vw,1.6rem)] font-normal text-[var(--color-navy)]">{item.title}</h3>
-              <p className="mt-[var(--space-sm)] text-sm leading-[1.65] text-[var(--color-steel)]">{item.text}</p>
+              <h3 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(1.1rem,2vw,1.6rem)] font-normal text-[var(--color-ink)]">{item.title}</h3>
+              <p className="mt-[var(--space-sm)] text-sm leading-[1.65] text-[var(--color-ink-soft)]">{item.text}</p>
             </div>
           ))}
         </div>

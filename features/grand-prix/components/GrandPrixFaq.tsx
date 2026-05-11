@@ -10,7 +10,7 @@ export default function GrandPrixFaq() {
     <PageSection>
       <div className="mb-[var(--space-lg)] max-w-3xl">
         <p className="page-eyebrow">{t.grandPrixPage.faq.label}</p>
-        <h2 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(1.8rem,3.5vw,3rem)] font-light text-[var(--color-navy)]">
+        <h2 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(1.8rem,3.5vw,3rem)] font-light text-[var(--color-ink)]">
           {t.grandPrixPage.faq.title}
         </h2>
       </div>
@@ -18,8 +18,8 @@ export default function GrandPrixFaq() {
       <div className="space-y-[var(--space-sm)]">
         {t.grandPrixPage.faq.items.map((faq) => (
           <PageCard key={faq.question}>
-            <p className="font-[var(--font-display)] text-[clamp(1.1rem,2vw,1.6rem)] font-normal text-[var(--color-navy)]">{faq.question}</p>
-            <p className="mt-[var(--space-sm)] text-sm leading-[1.7] text-[var(--color-steel)]">{faq.answer}</p>
+            <p className="font-[var(--font-display)] text-[clamp(1.1rem,2vw,1.6rem)] font-normal text-[var(--color-ink)]">{faq.question}</p>
+            <p className="mt-[var(--space-sm)] text-sm leading-[1.7] text-[var(--color-ink-soft)]">{faq.answer}</p>
           </PageCard>
         ))}
       </div>

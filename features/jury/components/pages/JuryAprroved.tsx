@@ -16,7 +16,7 @@ export default async function JuryApproved() {
           <div className="max-w-3xl">
             <p className="page-eyebrow">Approved Jury</p>
 
-            <h2 className="mt-(--space-sm) font-(--font-display) text-[clamp(2rem,4vw,3.6rem)] leading-[1.05] text-(--color-navy)">
+            <h2 className="mt-(--space-sm) font-(--font-display) text-[clamp(2rem,4vw,3.6rem)] leading-[1.05] text-(--color-ink)">
               Meet the IBPA Jury
             </h2>
           </div>

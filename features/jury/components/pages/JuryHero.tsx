@@ -18,8 +18,8 @@ export default function JuryHero() {
             {t.juryPage.hero.overview}
           </p>
 
-          <div className="rounded-sm border border-border-footer bg-[rgba(255,255,255,0.07)] p-(--space-md) font-light">
-            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-[rgba(255,255,255,0.45)]">
+          <div className="rounded-sm border border-(--border-default) bg-(--color-white) p-(--space-md) font-light">
+            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-ink-muted)">
               {t.juryPage.hero.experience}
             </p>
             <p className="mt-(--space-xs) font-(--font-display) text-[clamp(1.8rem,4vw,2.8rem)]">
@@ -27,8 +27,8 @@ export default function JuryHero() {
             </p>
           </div>
 
-          <div className="rounded-sm border border-border-footer bg-[rgba(255,255,255,0.07)] p-(--space-md) font-light">
-            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-[rgba(255,255,255,0.45)]">
+          <div className="rounded-sm border border-(--border-default) bg-(--color-white) p-(--space-md) font-light">
+            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-ink-muted)">
               {t.juryPage.hero.review}
             </p>
             <p className="mt-(--space-xs) font-(--font-display) text-[clamp(1.8rem,4vw,2.8rem)]">
@@ -36,8 +36,8 @@ export default function JuryHero() {
             </p>
           </div>
 
-          <div className="rounded-sm border border-border-footer bg-[rgba(255,255,255,0.07)] p-(--space-md) font-light">
-            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-[rgba(255,255,255,0.45)]">
+          <div className="rounded-sm border border-(--border-default) bg-(--color-white) p-(--space-md) font-light">
+            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-ink-muted)">
               {t.juryPage.hero.fee}
             </p>
             <p className="mt-(--space-xs) font-(--font-display) text-[clamp(1.8rem,4vw,2.8rem)]">

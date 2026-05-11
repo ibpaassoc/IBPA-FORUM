@@ -21,8 +21,8 @@ export default function FAQ() {
               key={item.q}
               className="page-card p-[var(--space-lg)]"
             >
-              <h3 className="font-[var(--font-display)] text-[clamp(1.1rem,2vw,1.6rem)] font-normal text-[var(--color-navy)]">{item.q}</h3>
-              <p className="mt-[var(--space-sm)] text-sm leading-[1.7] text-[var(--color-steel)]">{item.a}</p>
+              <h3 className="font-[var(--font-display)] text-[clamp(1.1rem,2vw,1.6rem)] font-normal text-[var(--color-ink)]">{item.q}</h3>
+              <p className="mt-[var(--space-sm)] text-sm leading-[1.7] text-[var(--color-ink-soft)]">{item.a}</p>
             </div>
           ))}
         </div>

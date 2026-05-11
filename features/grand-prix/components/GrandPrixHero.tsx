@@ -17,24 +17,24 @@ export default function GrandPrixHero() {
           <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-title-accent)">
             {t.grandPrixPage.hero.snapshot}
           </p>
-          <div className="rounded-sm border border-border-footer bg-[rgba(255,255,255,0.07)] p-(--space-md) font-light">
-            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-[rgba(255,255,255,0.45)]">
+          <div className="rounded-sm border border-(--border-default) bg-(--color-white) p-(--space-md) font-light">
+            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-ink-muted)">
               {t.grandPrixPage.hero.eligibility}
             </p>
             <p className="mt-(--space-xs) font-(--font-display) text-[clamp(1.1rem,2vw,1.6rem)]">
               {t.grandPrixPage.hero.eligibilityValue}
             </p>
           </div>
-          <div className="rounded-sm border border-border-footer bg-[rgba(255,255,255,0.07)] p-(--space-md) font-light">
-            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-[rgba(255,255,255,0.45)]">
+          <div className="rounded-sm border border-(--border-default) bg-(--color-white) p-(--space-md) font-light">
+            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-ink-muted)">
               {t.grandPrixPage.hero.evaluation}
             </p>
             <p className="mt-(--space-xs) font-(--font-display) text-[clamp(1.8rem,4vw,2.8rem)]">
               {t.grandPrixPage.hero.evaluationValue}
             </p>
           </div>
-          <div className="rounded-sm border border-border-footer bg-[rgba(255,255,255,0.07)] p-(--space-md) font-light">
-            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-[rgba(255,255,255,0.45)]">
+          <div className="rounded-sm border border-(--border-default) bg-(--color-white) p-(--space-md) font-light">
+            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-ink-muted)">
               {t.grandPrixPage.hero.decision}
             </p>
             <p className="mt-(--space-xs) font-(--font-display) text-[clamp(1.1rem,2vw,1.6rem)]">
@@ -44,7 +44,7 @@ export default function GrandPrixHero() {
         </div>
       }
     >
-      <p className="mb-(--space-lg) max-w-2xl text-sm leading-[1.7] text-[rgba(255,255,255,0.65)]">
+      <p className="mb-(--space-lg) max-w-2xl text-sm leading-[1.7] text-(--color-ink-soft)">
         {t.grandPrixPage.hero.body}
       </p>
       <div className="flex flex-wrap gap-4">

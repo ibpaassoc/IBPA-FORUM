@@ -23,10 +23,10 @@ export default function Process() {
             <div className="mx-auto flex size-14 items-center justify-center rounded-full border border-(--border-default) bg-(--color-white) text-sm font-medium tracking-widest text-(--color-hover) transition">
               {step.number}
             </div>
-            <h3 className="mt-(--space-sm) font-(--font-display) text-[clamp(1.1rem,2vw,1.6rem)] text-(--color-navy)">
+            <h3 className="mt-(--space-sm) font-(--font-display) text-[clamp(1.1rem,2vw,1.6rem)] text-(--color-ink)">
               {step.title}
             </h3>
-            <p className="mt-(--space-sm) text-sm leading-[1.65] text-(--color-steel)">
+            <p className="mt-(--space-sm) text-sm leading-[1.65] text-(--color-ink-soft)">
               {step.text}
             </p>
           </div>

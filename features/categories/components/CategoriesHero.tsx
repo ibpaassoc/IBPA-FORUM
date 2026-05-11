@@ -17,16 +17,16 @@ export default function CategoriesHero() {
           <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-[var(--color-title-accent)]">
             {t.categoriesPage.hero.entryRules}
           </p>
-          <div className="rounded-[var(--radius-sm)] border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.07)] p-[var(--space-md)]">
-            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-[rgba(255,255,255,0.45)]">
+          <div className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-white)] p-[var(--space-md)]">
+            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-ink-muted)">
               {t.categoriesPage.hero.feeLabel}
             </p>
             <p className="mt-[var(--space-xs)] font-[var(--font-display)] text-[clamp(1.8rem,4vw,2.8rem)] font-light">
               {t.categoriesPage.hero.feeValue}
             </p>
           </div>
-          <div className="rounded-[var(--radius-sm)] border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.07)] p-[var(--space-md)]">
-            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-[rgba(255,255,255,0.45)]">
+          <div className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-white)] p-[var(--space-md)]">
+            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-ink-muted)">
               {t.categoriesPage.hero.eligibilityLabel}
             </p>
             <p className="mt-[var(--space-xs)] font-[var(--font-display)] text-[clamp(1.1rem,2vw,1.6rem)] font-normal">

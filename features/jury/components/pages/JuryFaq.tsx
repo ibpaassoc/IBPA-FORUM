@@ -14,7 +14,7 @@ export default function JuryFaq() {
           <p className="page-eyebrow">
             {t.juryPage.faq.label}
           </p>
-          <h2 className="mt-(--space-sm) font-(--font-display) text-[clamp(1.8rem,3.5vw,3rem)] leading-[1.15] text-(--color-navy)">
+          <h2 className="mt-(--space-sm) font-(--font-display) text-[clamp(1.8rem,3.5vw,3rem)] leading-[1.15] text-(--color-ink)">
             {t.juryPage.faq.title}
           </h2>
         </div>
@@ -33,7 +33,7 @@ export default function JuryFaq() {
                   onClick={() => setOpenIndex(isOpen ? null : index)}
                   className="flex w-full items-center justify-between gap-(--space-md) px-(--space-md) py-(--space-md) text-left"
                 >
-                  <span className="text-sm font-medium text-(--color-navy) sm:text-base">
+                  <span className="text-sm font-medium text-(--color-ink) sm:text-base">
                     {faq.question}
                   </span>
                   <span className="text-xl text-(--color-hover)">{isOpen ? "-" : "+"}</span>
@@ -41,7 +41,7 @@ export default function JuryFaq() {
 
                 {isOpen && (
                   <div className="px-5 pb-5">
-                    <p className="max-w-3xl text-sm leading-[1.65] text-(--color-steel)">
+                    <p className="max-w-3xl text-sm leading-[1.65] text-(--color-ink-soft)">
                       {faq.answer}
                     </p>
                   </div>

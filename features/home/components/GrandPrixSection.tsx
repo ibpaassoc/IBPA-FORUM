@@ -13,15 +13,15 @@ export default function GrandPrixSection() {
             {t.home.grandPrix.label}
           </p>
 
-          <h2 className="mt-(--space-sm) font-(--font-display) text-[clamp(1.8rem,3.5vw,3rem)] text-(--color-navy)">
+          <h2 className="mt-(--space-sm) font-(--font-display) text-[clamp(1.8rem,3.5vw,3rem)] text-(--color-ink)">
             {t.home.grandPrix.title}
           </h2>
 
-          <p className="mt-(--space-md) text-sm leading-[1.7] text-(--color-steel)">
+          <p className="mt-(--space-md) text-sm leading-[1.7] text-(--color-ink-soft)">
             {t.home.grandPrix.text1}
           </p>
 
-          <p className="mt-(--space-sm) text-sm leading-[1.7] text-(--color-steel)">
+          <p className="mt-(--space-sm) text-sm leading-[1.7] text-(--color-ink-soft)">
             {t.home.grandPrix.text2}
           </p>
 

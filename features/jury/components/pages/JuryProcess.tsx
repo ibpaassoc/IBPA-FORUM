@@ -15,7 +15,7 @@ export default function JuryProcess() {
               {t.juryPage.process.label}
             </p>
 
-            <h2 className="mt-(--space-sm) font-(--font-display) text-[clamp(1.8rem,3.5vw,3rem)] leading-[1.15] text-(--color-navy)">
+            <h2 className="mt-(--space-sm) font-(--font-display) text-[clamp(1.8rem,3.5vw,3rem)] leading-[1.15] text-(--color-ink)">
               {t.juryPage.process.title}
             </h2>
           </div>
@@ -30,11 +30,11 @@ export default function JuryProcess() {
                   {step.number}
                 </p>
 
-                <h3 className="mt-(--space-sm) font-(--font-display) text-[clamp(1.1rem,2vw,1.6rem)] text-(--color-navy)">
+                <h3 className="mt-(--space-sm) font-(--font-display) text-[clamp(1.1rem,2vw,1.6rem)] text-(--color-ink)">
                   {step.title}
                 </h3>
 
-                <p className="mt-(--space-sm) text-sm leading-[1.65] text-(--color-steel)">
+                <p className="mt-(--space-sm) text-sm leading-[1.65] text-(--color-ink-soft)">
                   {step.text}
                 </p>
               </div>
@@ -64,7 +64,7 @@ export default function JuryProcess() {
                     {label}
                   </p>
 
-                  <p className="mt-(--space-xs) text-sm font-medium text-(--color-navy)">
+                  <p className="mt-(--space-xs) text-sm font-medium text-(--color-ink)">
                     {value}
                   </p>
                 </div>

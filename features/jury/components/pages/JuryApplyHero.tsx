@@ -20,7 +20,7 @@ const highlights = [
 
 export default function JuryApplyHero() {
   return (
-    <section className="border-b border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(185,217,235,0.2),transparent_35%),linear-gradient(135deg,var(--color-navy-deep),var(--color-navy)_58%,var(--color-navy-mid))] text-white">
+    <section className="border-b border-(--border-default) bg-[radial-gradient(circle_at_top_left,rgba(185,217,235,0.32),transparent_35%),linear-gradient(135deg,var(--color-white),var(--color-blue-wash)_58%,var(--color-blue-soft))] text-(--color-ink)">
       <div className="mx-auto grid max-w-7xl gap-10 px-6 py-32 md:px-10 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
         <div className="max-w-3xl">
           <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-(--color-title-accent)">
@@ -35,7 +35,7 @@ export default function JuryApplyHero() {
             Submit your candidacy for the IBPA jury panel
           </h1>
 
-          <p className="mt-5 max-w-2xl text-sm leading-7 text-white/72 sm:text-base">
+          <p className="mt-5 max-w-2xl text-sm leading-7 text-(--color-ink-soft) sm:text-base">
             This application is designed for experienced beauty professionals,
             educators, salon leaders, and brand experts who want to serve on the
             official IBPA Beauty Championship jury panel. Approved judges receive
@@ -53,15 +53,15 @@ export default function JuryApplyHero() {
 
             <Link
               href="/jury"
-              className="ibpa-button ibpa-button-white"
+              className="ibpa-button ibpa-button-ghost"
             >
               Review Jury Page
             </Link>
           </div>
         </div>
 
-        <div className="rounded-[1.35rem] border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/45">
+        <div className="rounded-[1.35rem] border border-(--border-default) bg-white/70 p-6 shadow-(--shadow-sm) backdrop-blur-sm">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-(--color-ink-muted)">
             Before You Apply
           </p>
 
@@ -69,24 +69,24 @@ export default function JuryApplyHero() {
             {highlights.map((item) => (
               <div
                 key={item.label}
-                className="rounded-2xl border border-white/10 bg-black/20 p-4"
+                className="rounded-2xl border border-(--border-default) bg-(--color-white) p-4"
               >
-                <p className="text-[10px] uppercase tracking-[0.22em] text-white/40">
+                <p className="text-[10px] uppercase tracking-[0.22em] text-(--color-ink-muted)">
                   {item.label}
                 </p>
                 <p className="mt-2 font-(--font-display) text-xl font-light sm:text-2xl">
                   {item.value}
                 </p>
-                <p className="mt-2 text-sm leading-6 text-white/72">{item.text}</p>
+                <p className="mt-2 text-sm leading-6 text-(--color-ink-soft)">{item.text}</p>
               </div>
             ))}
           </div>
 
-          <div className="mt-5 rounded-2xl border border-[rgba(185,217,235,0.25)] bg-white/5 p-4">
+          <div className="mt-5 rounded-2xl border border-[rgba(185,217,235,0.55)] bg-(--color-blue-wash) p-4">
             <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-(--color-title-accent)">
               Ethics
             </p>
-            <p className="mt-3 text-sm leading-6 text-white/75">
+            <p className="mt-3 text-sm leading-6 text-(--color-ink-soft)">
               Jury candidates must disclose conflicts of interest and agree to
               keep all judging deliberations confidential.
             </p>
