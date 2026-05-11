@@ -12,7 +12,7 @@ export default function ApplyIntroCards() {
         <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--color-hover)]">
           {t.applyPage.introCards.eligibility}
         </p>
-        <div className="mt-5 space-y-4 text-sm leading-7 text-[var(--color-steel)]">
+        <div className="mt-5 space-y-4 text-sm leading-7 text-[var(--color-ink-soft)]">
           <p dangerouslySetInnerHTML={{ __html: t.applyPage.introCards.feeHtml }} />
           <p>{t.applyPage.introCards.separate}</p>
           <p>{t.applyPage.introCards.juryNote}</p>
@@ -27,7 +27,7 @@ export default function ApplyIntroCards() {
           {t.applyPage.introCards.items.map((item) => (
             <div
               key={item}
-              className="rounded-2xl border border-[var(--border-default)] bg-[var(--color-off-white)] p-4 text-sm leading-6 text-[var(--color-navy)]"
+              className="rounded-2xl border border-[var(--border-default)] bg-[var(--color-off-white)] p-4 text-sm leading-6 text-[var(--color-ink)]"
             >
               {item}
             </div>

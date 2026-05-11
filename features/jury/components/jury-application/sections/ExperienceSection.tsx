@@ -40,7 +40,7 @@ export default function ExperienceSection({
             ].map((item) => (
               <label
                 key={item.value}
-                className="flex cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-white)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-navy)] transition hover:border-[var(--color-hover)] hover:bg-[var(--color-mist)]"
+                className="flex cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-white)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-ink)] transition hover:border-[var(--color-hover)] hover:bg-[var(--color-mist)]"
               >
                 <input
                   type="radio"
@@ -76,7 +76,7 @@ export default function ExperienceSection({
             ].map((item) => (
               <label
                 key={item.value}
-                className="flex cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-white)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-navy)] transition hover:border-[var(--color-hover)] hover:bg-[var(--color-mist)]"
+                className="flex cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-white)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-ink)] transition hover:border-[var(--color-hover)] hover:bg-[var(--color-mist)]"
               >
                 <input
                   type="radio"
@@ -112,7 +112,7 @@ export default function ExperienceSection({
             {categories.map((category) => (
               <label
                 key={category}
-                className="flex cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-white)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-navy)] transition hover:border-[var(--color-hover)] hover:bg-[var(--color-mist)]"
+                className="flex cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-white)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-ink)] transition hover:border-[var(--color-hover)] hover:bg-[var(--color-mist)]"
               >
                 <input
                   type="checkbox"

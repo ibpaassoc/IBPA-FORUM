@@ -23,7 +23,7 @@ export default function MaterialsSection() {
             accept=".pdf,.jpg,.jpeg,.png"
             multiple
             required
-            className="block w-full rounded-sm border-[1.5px] border-dashed border-(--border-default) bg-(--color-white) px-(--space-sm) py-(--space-sm) text-sm text-(--color-navy) file:mr-(--space-sm) file:rounded-full file:border-0 file:bg-(--color-hover) file:px-(--space-sm) file:py-(--space-xs) file:text-xs file:font-medium file:uppercase file:tracking-[0.16em] file:text-white"
+            className="block w-full rounded-sm border-[1.5px] border-dashed border-(--border-default) bg-(--color-white) px-(--space-sm) py-(--space-sm) text-sm text-(--color-ink) file:mr-(--space-sm) file:rounded-full file:border-0 file:bg-(--color-hover) file:px-(--space-sm) file:py-(--space-xs) file:text-xs file:font-medium file:uppercase file:tracking-[0.16em] file:text-white"
           />
         </FieldShell>
 
@@ -46,7 +46,7 @@ export default function MaterialsSection() {
             name="profilePhoto"
             accept=".jpg,.jpeg,.png"
             required
-            className="block w-full rounded-sm border-[1.5px] border-dashed border-(--border-default) bg-(--color-white) px-(--space-sm) py-(--space-sm) text-sm text-(--color-navy) file:mr-(--space-sm) file:rounded-full file:border-0 file:bg-(--color-hover) file:px-(--space-sm) file:py-(--space-xs) file:text-xs file:font-medium file:uppercase file:tracking-[0.16em] file:text-white"
+            className="block w-full rounded-sm border-[1.5px] border-dashed border-(--border-default) bg-(--color-white) px-(--space-sm) py-(--space-sm) text-sm text-(--color-ink) file:mr-(--space-sm) file:rounded-full file:border-0 file:bg-(--color-hover) file:px-(--space-sm) file:py-(--space-xs) file:text-xs file:font-medium file:uppercase file:tracking-[0.16em] file:text-white"
           />
         </FieldShell>
 
@@ -73,7 +73,7 @@ export default function MaterialsSection() {
           required
         />
 
-        <label className="flex items-start gap-3 rounded-sm border border-(--border-default) bg-(--color-white) px-(--space-sm) py-(--space-sm) text-sm text-(--color-navy)">
+        <label className="flex items-start gap-3 rounded-sm border border-(--border-default) bg-(--color-white) px-(--space-sm) py-(--space-sm) text-sm text-(--color-ink)">
           <input
             type="checkbox"
             name="confidentialityAgreement"
@@ -81,7 +81,7 @@ export default function MaterialsSection() {
             required
             className="mt-1 h-4 w-4 rounded accent-(--color-hover)"
           />
-          <span className="leading-6 text-(--color-steel)">
+          <span className="leading-6 text-(--color-ink-soft)">
             I agree to keep all jury deliberations, candidate information,
             and judging materials confidential.
           </span>

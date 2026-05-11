@@ -41,14 +41,14 @@ export default function ProfessionalProfileSection() {
             required
             className={inputClassName}
           >
-            <option value="" className="bg-[var(--color-white)] text-[var(--color-navy)]">
+            <option value="" className="bg-[var(--color-white)] text-[var(--color-ink)]">
               Select country
             </option>
             {countryOptions.map((country) => (
               <option
                 key={country.value}
                 value={country.value}
-                className="bg-[var(--color-white)] text-[var(--color-navy)]"
+                className="bg-[var(--color-white)] text-[var(--color-ink)]"
               >
                 {country.label}
               </option>

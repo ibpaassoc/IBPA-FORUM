@@ -20,7 +20,7 @@ export default function PaymentCancelCard({
           <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--color-hover)]">
             Next Step
           </p>
-          <p className="mt-5 text-base leading-8 text-[var(--color-steel)]">
+          <p className="mt-5 text-base leading-8 text-[var(--color-ink-soft)]">
             You can return to secure Stripe Checkout using the saved application,
             or go back to the application page if you need to start over.
           </p>

@@ -56,7 +56,7 @@ export default function RegisterForm() {
   return (
     <form action={action} className="mt-[var(--space-lg)] space-y-[var(--space-md)]">
       <div>
-        <label htmlFor="email" className="mb-[var(--space-xs)] block text-[clamp(0.68rem,1vw,0.78rem)] font-medium uppercase tracking-[0.08em] text-[var(--color-navy)]">
+        <label htmlFor="email" className="mb-[var(--space-xs)] block text-[clamp(0.68rem,1vw,0.78rem)] font-medium uppercase tracking-[0.08em] text-[var(--color-ink)]">
           {t.auth.form.email}
         </label>
         <input
@@ -65,13 +65,13 @@ export default function RegisterForm() {
           type="email"
           required
           defaultValue={state?.email ?? ""}
-          className="w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] text-[var(--color-navy)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-hover)] focus:shadow-[0_0_0_3px_rgba(114,160,193,0.16)]"
+          className="w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] text-[var(--color-ink)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-hover)] focus:shadow-[0_0_0_3px_rgba(114,160,193,0.16)]"
           placeholder={t.auth.form.emailPlaceholder}
         />
       </div>
 
       <div>
-        <label htmlFor="password" className="mb-[var(--space-xs)] block text-[clamp(0.68rem,1vw,0.78rem)] font-medium uppercase tracking-[0.08em] text-[var(--color-navy)]">
+        <label htmlFor="password" className="mb-[var(--space-xs)] block text-[clamp(0.68rem,1vw,0.78rem)] font-medium uppercase tracking-[0.08em] text-[var(--color-ink)]">
           {t.auth.form.password}
         </label>
         <input
@@ -81,7 +81,7 @@ export default function RegisterForm() {
           required
           minLength={8}
           ref={passwordRef}
-          className="w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] text-[var(--color-navy)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-hover)] focus:shadow-[0_0_0_3px_rgba(114,160,193,0.16)]"
+          className="w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] text-[var(--color-ink)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-hover)] focus:shadow-[0_0_0_3px_rgba(114,160,193,0.16)]"
           placeholder={t.auth.form.passwordRegisterPlaceholder}
         />
       </div>
@@ -89,7 +89,7 @@ export default function RegisterForm() {
       <div>
         <label
           htmlFor="confirmPassword"
-          className="mb-[var(--space-xs)] block text-[clamp(0.68rem,1vw,0.78rem)] font-medium uppercase tracking-[0.08em] text-[var(--color-navy)]"
+          className="mb-[var(--space-xs)] block text-[clamp(0.68rem,1vw,0.78rem)] font-medium uppercase tracking-[0.08em] text-[var(--color-ink)]"
         >
           {t.auth.form.confirmPassword}
         </label>
@@ -99,13 +99,13 @@ export default function RegisterForm() {
           type="password"
           required
           minLength={8}
-          className="w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] text-[var(--color-navy)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-hover)] focus:shadow-[0_0_0_3px_rgba(114,160,193,0.16)]"
+          className="w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] text-[var(--color-ink)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-hover)] focus:shadow-[0_0_0_3px_rgba(114,160,193,0.16)]"
           placeholder={t.auth.form.confirmPasswordPlaceholder}
         />
       </div>
 
       {state?.error ? (
-        <p className="rounded-[var(--radius-sm)] border border-[var(--color-hover)] bg-[rgba(185,217,235,0.26)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-navy)]">
+        <p className="rounded-[var(--radius-sm)] border border-[var(--color-hover)] bg-[rgba(185,217,235,0.26)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-ink)]">
           {state.error}
         </p>
       ) : null}
@@ -122,9 +122,9 @@ export default function RegisterForm() {
             : t.auth.form.register}
       </button>
 
-      <p className="text-sm leading-6 text-[var(--color-steel)]">
+      <p className="text-sm leading-6 text-[var(--color-ink-soft)]">
         {t.auth.form.haveAccount}{" "}
-        <Link href="/jury/login" className="text-[var(--color-hover)] hover:text-[var(--color-navy)]">
+        <Link href="/jury/login" className="text-[var(--color-hover)] hover:text-[var(--color-blue)] hover:underline">
           {t.auth.form.backToLogin}
         </Link>
         .

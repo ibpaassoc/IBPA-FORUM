@@ -28,17 +28,17 @@ export default function AuthShell({
             <p className="page-eyebrow">
               {eyebrow}
             </p>
-            <h1 className="mt-[var(--space-md)] max-w-3xl font-[var(--font-display)] text-[clamp(2.2rem,5vw,4.2rem)] font-light leading-[1.1] text-[var(--color-navy)]">
+            <h1 className="mt-[var(--space-md)] max-w-3xl font-[var(--font-display)] text-[clamp(2.2rem,5vw,4.2rem)] font-light leading-[1.1] text-[var(--color-ink)]">
               {title}
             </h1>
-            <p className="mt-[var(--space-md)] max-w-2xl text-sm leading-[1.7] text-[var(--color-steel)] sm:text-base">
+            <p className="mt-[var(--space-md)] max-w-2xl text-sm leading-[1.7] text-[var(--color-ink-soft)] sm:text-base">
               {description}
             </p>
 
             <div className="mt-[var(--space-lg)] grid gap-[var(--space-sm)] sm:grid-cols-3">
               {t.auth.shellCards.map((item) => (
                 <div key={item} className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-off-white)] p-[var(--space-sm)]">
-                  <p className="text-sm font-medium text-[var(--color-navy)]">{item}</p>
+                  <p className="text-sm font-medium text-[var(--color-ink)]">{item}</p>
                 </div>
               ))}
             </div>
@@ -47,7 +47,7 @@ export default function AuthShell({
               <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-[var(--color-hover)]">
                 {t.auth.access}
               </p>
-              <p className="mt-[var(--space-sm)] text-sm leading-[1.7] text-[var(--color-steel)]">
+              <p className="mt-[var(--space-sm)] text-sm leading-[1.7] text-[var(--color-ink-soft)]">
                 {t.auth.accessText}
               </p>
               <div className="mt-[var(--space-md)] flex flex-wrap gap-[var(--space-sm)]">

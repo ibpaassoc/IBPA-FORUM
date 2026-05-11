@@ -244,7 +244,7 @@ export default function ApplyForm({
               <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-(--color-hover)">
                 {t.applyPage.form.progress}
               </p>
-              <p className="mt-(--space-xs) text-sm text-(--color-steel)">
+              <p className="mt-(--space-xs) text-sm text-(--color-ink-soft)">
                 {completedRequiredCount} of {requiredFieldKeys.length}{" "}
                 {t.applyPage.form.requiredComplete}
               </p>
@@ -264,8 +264,8 @@ export default function ApplyForm({
             <div
               className={`mt-5 rounded-[1.4rem] border px-4 py-4 text-sm leading-7 ${
                 submissionState.type === "success"
-                  ? "border-(--color-hover) bg-[rgba(185,217,235,0.26)] text-(--color-navy)"
-                  : "border-(--color-hover) bg-[rgba(185,217,235,0.26)] text-(--color-navy)"
+                  ? "border-(--color-hover) bg-[rgba(185,217,235,0.26)] text-(--color-ink)"
+                  : "border-(--color-hover) bg-[rgba(185,217,235,0.26)] text-(--color-ink)"
               }`}
               aria-live="polite"
             >

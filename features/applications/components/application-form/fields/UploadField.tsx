@@ -41,12 +41,12 @@ export default function UploadField({
             : "border-[var(--border-default)] bg-[var(--color-white)] hover:border-[var(--color-hover)] hover:bg-[var(--color-mist)]"
         }`}
       >
-        <span className="text-sm font-medium text-[var(--color-navy)]">
+        <span className="text-sm font-medium text-[var(--color-ink)]">
           {files.length > 0
             ? `${files.length} file${files.length === 1 ? "" : "s"} selected`
             : "Select files"}
         </span>
-        <span className="mt-[var(--space-xs)] text-xs leading-6 text-[var(--color-steel)]">
+        <span className="mt-[var(--space-xs)] text-xs leading-6 text-[var(--color-ink-soft)]">
           JPG, PNG, and PDF supported where applicable. Max 5MB per file.
         </span>
 
@@ -67,10 +67,10 @@ export default function UploadField({
           {files.map((file, index) => (
             <div
               key={`${file.name}-${file.size}-${index}`}
-              className="flex items-center justify-between gap-3 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-off-white)] px-[var(--space-sm)] py-[var(--space-xs)] text-sm text-[var(--color-navy)]"
+              className="flex items-center justify-between gap-3 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-off-white)] px-[var(--space-sm)] py-[var(--space-xs)] text-sm text-[var(--color-ink)]"
             >
               <span className="truncate">{file.name}</span>
-              <span className="shrink-0 text-xs text-[var(--color-steel)]">
+              <span className="shrink-0 text-xs text-[var(--color-ink-soft)]">
                 {formatFileSize(file.size)}
               </span>
             </div>

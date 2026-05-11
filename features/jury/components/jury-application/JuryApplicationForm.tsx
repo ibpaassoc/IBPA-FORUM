@@ -122,8 +122,8 @@ export default function JuryApplicationForm() {
               <div
                 className={`rounded-sm border px-(--space-sm) py-(--space-sm) text-sm leading-[1.65] ${
                   submissionState.type === "success"
-                    ? "border-(--color-hover) bg-[rgba(185,217,235,0.26)] text-(--color-navy)"
-                    : "border-(--color-hover) bg-[rgba(185,217,235,0.26)] text-(--color-navy)"
+                    ? "border-(--color-hover) bg-[rgba(185,217,235,0.26)] text-(--color-ink)"
+                    : "border-(--color-hover) bg-[rgba(185,217,235,0.26)] text-(--color-ink)"
                 }`}
                 aria-live="polite"
               >
@@ -141,13 +141,13 @@ export default function JuryApplicationForm() {
                     <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-hover)">
                       Candidate
                     </p>
-                    <p className="mt-(--space-xs) text-sm font-medium text-(--color-navy)">{summary.name}</p>
+                    <p className="mt-(--space-xs) text-sm font-medium text-(--color-ink)">{summary.name}</p>
                   </div>
                   <div>
                     <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-hover)">
                       Location
                     </p>
-                    <p className="mt-(--space-xs) text-sm font-medium text-(--color-navy)">
+                    <p className="mt-(--space-xs) text-sm font-medium text-(--color-ink)">
                       {summary.location}
                     </p>
                   </div>
@@ -155,7 +155,7 @@ export default function JuryApplicationForm() {
                     <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-hover)">
                       Expertise
                     </p>
-                    <p className="mt-(--space-xs) text-sm font-medium text-(--color-navy)">
+                    <p className="mt-(--space-xs) text-sm font-medium text-(--color-ink)">
                       {summary.expertise.join(", ")}
                     </p>
                   </div>
@@ -169,7 +169,7 @@ export default function JuryApplicationForm() {
                   <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-hover)">
                     Expertise Selected
                   </p>
-                  <p className="mt-(--space-xs) text-sm text-(--color-steel)">
+                  <p className="mt-(--space-xs) text-sm text-(--color-ink-soft)">
                     {selectedExpertise.length}
                   </p>
                 </div>
