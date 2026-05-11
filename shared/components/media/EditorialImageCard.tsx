@@ -57,7 +57,7 @@ export default function EditorialImageCard({
   return (
     <article
       className={clsx(
-        "group relative overflow-hidden rounded-[var(--radius)] border border-[var(--border-default)] bg-[var(--color-white)] shadow-[var(--shadow-md)] transform-gpu transition duration-500",
+        "group relative overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface)] shadow-[var(--shadow-sm)] transform-gpu transition duration-500",
         "motion-safe:animate-[fadeUp_0.8s_ease_both]",
         className
       )}
@@ -83,15 +83,15 @@ export default function EditorialImageCard({
           className={clsx(
             "absolute inset-0 transition duration-500",
             tone === "dark"
-              ? "bg-[linear-gradient(to_top,rgba(12,16,20,0.66),rgba(12,16,20,0.1)_48%,rgba(12,16,20,0.04))] group-hover:bg-[linear-gradient(to_top,rgba(12,16,20,0.76),rgba(12,16,20,0.14)_48%,rgba(12,16,20,0.08))]"
-              : "bg-[linear-gradient(to_top,rgba(255,255,255,0.55),rgba(255,255,255,0.12)_48%,rgba(255,255,255,0.02))]"
+              ? "bg-[rgba(12,16,20,0.24)] group-hover:bg-[rgba(12,16,20,0.32)]"
+              : "bg-[rgba(255,255,255,0.2)]"
           )}
         />
       </div>
 
       {(eyebrow || title || text || children) && (
         <div className="absolute inset-x-0 bottom-0 p-[var(--space-md)] text-white">
-          <div className="max-w-[26rem] rounded-[calc(var(--radius)-2px)] border border-white/14 bg-[rgba(12,16,20,0.38)] p-[var(--space-md)] shadow-[0_16px_48px_rgba(12,16,20,0.18)] backdrop-blur-[10px] transition duration-500 group-hover:bg-[rgba(12,16,20,0.48)]">
+          <div className="max-w-[26rem] rounded-[calc(var(--radius)-2px)] border border-white/18 bg-[rgba(12,16,20,0.28)] p-[var(--space-md)] shadow-[0_10px_24px_rgba(12,16,20,0.16)] backdrop-blur-[6px] transition duration-500 group-hover:bg-[rgba(12,16,20,0.38)]">
             {eyebrow ? (
               <p className="text-[0.64rem] font-medium uppercase tracking-[0.24em] text-[var(--color-title-accent)]">
                 {eyebrow}
