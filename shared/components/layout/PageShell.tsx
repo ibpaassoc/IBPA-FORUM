@@ -12,6 +12,7 @@ type PageHeroProps = {
   children?: ReactNode;
   aside?: ReactNode;
   className?: string;
+  asideShellClassName?: string;
 };
 
 type PageSectionProps = {
@@ -39,6 +40,7 @@ export function PageHero({
   children,
   aside,
   className,
+  asideShellClassName,
 }: PageHeroProps) {
   return (
     <section
@@ -60,7 +62,14 @@ export function PageHero({
         </div>
 
         {aside ? (
-          <div className="rounded-(--radius) border border-(--border-default) bg-[rgba(255,255,255,0.72)] p-(--space-lg) text-(--color-ink) shadow-(--shadow-sm) backdrop-blur-md">{aside}</div>
+          <div
+            className={joinClasses(
+              "rounded-(--radius) border border-(--border-default) bg-[rgba(255,255,255,0.72)] p-(--space-lg) text-(--color-ink) shadow-(--shadow-sm) backdrop-blur-md",
+              asideShellClassName
+            )}
+          >
+            {aside}
+          </div>
         ) : null}
       </div>
     </section>
