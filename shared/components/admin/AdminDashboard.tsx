@@ -87,11 +87,11 @@ const badgeTones = {
   neutral:
     "border-[color:var(--admin-border)] bg-[var(--admin-surface-soft)] text-[var(--admin-slate-strong)]",
   gold:
-    "border-[rgba(184,148,83,0.34)] bg-[var(--admin-gold-soft)] text-[var(--admin-gold-strong)]",
+    "border-[rgba(114,160,193,0.34)] bg-[var(--admin-gold-soft)] text-[var(--admin-gold-strong)]",
   navy:
     "border-[rgba(26,38,64,0.18)] bg-[rgba(26,38,64,0.08)] text-[var(--admin-navy)]",
   success:
-    "border-[rgba(184,148,83,0.36)] bg-[rgba(241,231,210,0.86)] text-[var(--admin-navy)]",
+    "border-[rgba(114,160,193,0.36)] bg-[rgba(234,245,251,0.9)] text-[var(--admin-navy)]",
   danger:
     "border-[color:var(--admin-danger-border)] bg-[var(--admin-danger-soft)] text-[var(--admin-danger)]",
   muted:
@@ -207,7 +207,7 @@ export function AdminFilterChip({ children, href, active }: AdminFilterChipProps
       className={adminCn(
         "inline-flex rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] transition",
         active
-          ? "border-[rgba(184,148,83,0.38)] bg-(--admin-gold-soft) text-(--admin-ink)"
+          ? "border-[rgba(114,160,193,0.38)] bg-(--admin-gold-soft) text-(--admin-ink)"
           : "border-(--admin-border) bg-(--admin-surface) admin-copy hover:border-(--admin-gold) hover:text-(--admin-gold-strong)"
       )}
     >
@@ -272,7 +272,7 @@ export function AdminDataRow({ children, gridClassName, href }: AdminDataRowProp
   const row = (
     <div
       className={adminCn(
-        "grid gap-3 px-4 py-4 transition hover:bg-[rgba(184,148,83,0.08)] items-center ",
+        "grid gap-3 px-4 py-4 transition hover:bg-[rgba(185,217,235,0.16)] items-center ",
         gridClassName ?? autoGrid
       )}
     >

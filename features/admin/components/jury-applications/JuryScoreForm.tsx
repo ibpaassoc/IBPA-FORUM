@@ -133,7 +133,7 @@ export default function JuryScoreForm({
       ) : null}
 
       {isSubmitted ? (
-        <div className="mt-5 rounded-2xl border border-[rgba(184,148,83,0.34)] bg-(--admin-gold-soft) px-4 py-3 text-sm admin-label">
+        <div className="mt-5 rounded-2xl border border-[rgba(114,160,193,0.34)] bg-(--admin-gold-soft) px-4 py-3 text-sm admin-label">
           This score has been submitted and is now read-only. Only an admin can reopen
           it.
         </div>
