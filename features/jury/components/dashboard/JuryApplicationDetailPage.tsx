@@ -206,7 +206,7 @@ export default function JuryApplicationDetailPage({
                         href={`/api/jury/application-files/${file.id}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-(--admin-gold)"
+                        className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-(--admin-blue)"
                       >
                         <span>{file.fileName}</span>
                         <span className="admin-muted text-xs">
@@ -232,7 +232,7 @@ export default function JuryApplicationDetailPage({
                               href={`/api/jury/application-files/${file.id}`}
                               target="_blank"
                               rel="noreferrer"
-                              className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-(--admin-gold)"
+                              className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-(--admin-blue)"
                             >
                               <span>{file.fileName}</span>
                               <span className="admin-muted text-xs">

@@ -86,7 +86,7 @@ export default function AdminScoringOverviewPage({
                 <span className="transition group-open:rotate-180">⌄</span>
             </summary>
 
-            <form className="mt-3 grid gap-2 rounded-2xl border border-[rgba(13,27,54,0.08)] bg-white/70 p-3">
+            <form className="mt-3 grid gap-2 rounded-2xl border border-[rgba(37,42,45,0.08)] bg-white/70 p-3">
                 <input
                 type="text"
                 name="q"

@@ -165,7 +165,7 @@ export default function AdminScoringDetailPage({
                 key={row.judgeId}
               >
                 <div className="justify-self-center">
-                  <p className="justify-self-center text-sm font-semibold text-(--color-navy-deep)">{row.judgeName}</p>
+                  <p className="justify-self-center text-sm font-semibold text-(--color-ink)">{row.judgeName}</p>
                   <p className="justify-self-center admin-muted mt-1 text-sm">{row.judgeEmail}</p>
                   {row.comment ? (
                     <p className="justify-self-center admin-muted mt-2 text-sm">{row.comment}</p>
