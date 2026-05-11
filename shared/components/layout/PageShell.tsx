@@ -43,7 +43,7 @@ export function PageHero({
   return (
     <section
       className={joinClasses(
-        "relative overflow-hidden bg-[linear-gradient(160deg,var(--color-navy-deep)_0%,var(--color-navy)_50%,var(--color-navy-mid)_100%)] pt-[clamp(60px,8vh,72px)] before:absolute before:inset-0 before:bg-[radial-gradient(ellipse_70%_60%_at_80%_40%,rgba(124,168,200,0.15)_0%,transparent_70%),radial-gradient(ellipse_40%_40%_at_20%_80%,rgba(201,169,110,0.08)_0%,transparent_60%)] after:absolute after:inset-0 after:bg-[linear-gradient(white_1px,transparent_1px),linear-gradient(90deg,white_1px,transparent_1px)] after:bg-size-[clamp(40px,5vw,60px)_clamp(40px,5vw,60px)] after:opacity-[0.04]",
+        "relative overflow-hidden bg-[linear-gradient(160deg,var(--color-navy-deep)_0%,var(--color-navy)_50%,var(--color-navy-mid)_100%)] pt-[clamp(60px,8vh,72px)] before:absolute before:inset-0 before:bg-[radial-gradient(ellipse_70%_60%_at_80%_40%,rgba(114,160,193,0.18)_0%,transparent_70%),radial-gradient(ellipse_40%_40%_at_20%_80%,rgba(185,217,235,0.1)_0%,transparent_60%)] after:absolute after:inset-0 after:bg-[linear-gradient(white_1px,transparent_1px),linear-gradient(90deg,white_1px,transparent_1px)] after:bg-size-[clamp(40px,5vw,60px)_clamp(40px,5vw,60px)] after:opacity-[0.04]",
         className
       )}
     >

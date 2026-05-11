@@ -176,6 +176,19 @@ a:hover {
   line-height: 1.7;
 }
 
+@utility title-accent {
+  color: var(--color-title-accent);
+  text-shadow: 0 8px 28px rgba(15, 24, 37, 0.18);
+}
+
+@utility script-accent {
+  color: var(--color-hover);
+  font-family: var(--font-accent-family);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
 @utility ibpa-button {
   display: inline-flex;
   align-items: center;
@@ -406,6 +419,7 @@ a:hover {
 
 .ibpa-button-gold:hover {
   background: var(--color-hover);
+  color: var(--color-white);
   box-shadow: 0 8px 32px rgba(114, 160, 193, 0.28);
   transform: translateY(-2px);
 }

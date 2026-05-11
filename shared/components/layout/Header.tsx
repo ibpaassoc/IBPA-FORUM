@@ -32,7 +32,7 @@ export default function Header() {
   const handleLinkClick = () => setOpen(false);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-100 w-full border-b border-[var(--border-default)] bg-[rgba(255,255,255,0.92)] px-[var(--page-gutter)] shadow-[var(--shadow-sm)] backdrop-blur-[16px]">
+    <header className="fixed inset-x-0 top-0 z-100 w-full border-b border-[var(--border-default)] bg-[rgba(255,255,255,0.94)] px-[var(--page-gutter)] shadow-[var(--shadow-sm)] backdrop-blur-[16px]">
       <div className="mx-auto max-w-[var(--content-width)]">
         <div className="relative flex h-[clamp(60px,8vh,72px)] items-center gap-[var(--space-sm)]">
           <Link href="/" aria-label="IBPA home" className="min-w-0 shrink">
@@ -50,7 +50,7 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="font-[var(--font-body)] text-[clamp(0.7rem,1vw,0.8rem)] font-medium uppercase tracking-[0.1em] text-[var(--color-navy)] opacity-70 transition-opacity hover:opacity-100"
+                className="font-[var(--font-sans)] text-[clamp(0.7rem,1vw,0.8rem)] font-medium uppercase tracking-[0.1em] text-[var(--color-navy)] opacity-75 transition hover:text-[var(--color-hover)] hover:opacity-100"
               >
                 {item.label}
               </Link>
@@ -74,7 +74,7 @@ export default function Header() {
             aria-label={open ? t.header.closeMenu : t.header.openMenu}
             aria-expanded={open}
             onClick={() => setOpen((prev) => !prev)}
-            className="relative ml-auto flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--border-default)] bg-[var(--color-white)] text-[var(--color-navy)] shadow-[var(--shadow-sm)] transition hover:border-[var(--color-navy)] sm:h-11 sm:w-11 lg:hidden"
+            className="relative ml-auto flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--border-default)] bg-[var(--color-white)] text-[var(--color-navy)] shadow-[var(--shadow-sm)] transition hover:border-[var(--color-hover)] hover:text-[var(--color-hover)] sm:h-11 sm:w-11 lg:hidden"
           >
             <span className="sr-only">
               {open ? t.header.closeMenu : t.header.openMenu}
@@ -110,7 +110,7 @@ export default function Header() {
                   key={item.href}
                   href={item.href}
                   onClick={handleLinkClick}
-                  className="rounded-[var(--radius-sm)] border border-transparent bg-[var(--color-mist)] px-[var(--space-md)] py-[var(--space-sm)] text-sm font-medium uppercase tracking-[0.16em] text-[var(--color-navy)] transition hover:border-[var(--color-gold)]"
+                  className="rounded-[var(--radius-sm)] border border-transparent bg-[var(--color-mist)] px-[var(--space-md)] py-[var(--space-sm)] text-sm font-medium uppercase tracking-[0.16em] text-[var(--color-navy)] transition hover:border-[var(--color-hover)] hover:text-[var(--color-hover)]"
                 >
                   {item.label}
                 </Link>

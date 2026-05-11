@@ -35,7 +35,7 @@ export default function JuryMenu({
   if (mobile) {
     return (
       <div className="grid gap-3">
-        <p className="px-1 text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-(--color-gold)">
+        <p className="px-1 text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-(--color-hover)">
           {t.common.jury}
         </p>
         <Link
@@ -79,7 +79,7 @@ export default function JuryMenu({
               setOpen(false);
               onNavigate?.();
             }}
-            className="block rounded-sm px-(--space-sm) py-(--space-sm) text-sm font-medium text-(--color-navy) transition hover:bg-(--color-mist) hover:text-(--color-gold)"
+            className="block rounded-sm px-(--space-sm) py-(--space-sm) text-sm font-medium text-(--color-navy) transition hover:bg-(--color-mist) hover:text-(--color-hover)"
           >
             {t.common.applyAsJury}
           </Link>
@@ -89,7 +89,7 @@ export default function JuryMenu({
               setOpen(false);
               onNavigate?.();
             }}
-            className="mt-(--space-xs) block rounded-sm px-(--space-sm) py-(--space-sm) text-sm font-medium text-(--color-navy) transition hover:bg-(--color-mist) hover:text-(--color-gold)"
+            className="mt-(--space-xs) block rounded-sm px-(--space-sm) py-(--space-sm) text-sm font-medium text-(--color-navy) transition hover:bg-(--color-mist) hover:text-(--color-hover)"
           >
             {t.common.juryAccount}
           </Link>
