@@ -1,12 +1,5 @@
-import CategoriesGrid from "@/features/categories/components/CategoriesGrid";
-import CategoriesHero from "@/features/categories/components/CategoriesHero";
-import { PageShell } from "@/shared/components/layout/PageShell";
+import CategoriesPagePremium from "@/features/categories/components/CategoriesPagePremium";
 
 export default function CategoriesPage() {
-  return (
-    <PageShell>
-      <CategoriesHero />
-      <CategoriesGrid />
-    </PageShell>
-  );
+  return <CategoriesPagePremium />;
 }
