@@ -1,21 +1,42 @@
 "use client";
 
+import { ClipboardCheck, CreditCard, FileText, Search } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { FeatureCard, IconBadge, SectionHeading } from "@/shared/components/public";
 
 export default function ApplyPageIntro() {
   const { t } = useLanguage();
 
   return (
-    <div className="mx-auto mb-[var(--space-lg)] max-w-3xl rounded-t-[var(--radius)] border border-[var(--border-default)] bg-[var(--color-blue-wash)] px-[var(--space-xl)] py-[var(--space-lg)]">
-      <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-[var(--color-title-accent)]">
-        {t.applyPage.intro.eyebrow}
-      </p>
-      <h1 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(2.2rem,5vw,4.2rem)] font-light leading-[1.1] text-[var(--color-ink)]">
-        {t.applyPage.intro.title}
-      </h1>
-      <p className="mt-[var(--space-sm)] max-w-2xl text-sm leading-[1.7] text-[var(--color-ink-soft)] sm:text-base">
-        {t.applyPage.intro.text}
-      </p>
+    <div className="space-y-(--space-lg)">
+      <SectionHeading
+        eyebrow={t.applyPage.intro.eyebrow}
+        title={t.applyPage.intro.title}
+        description={t.applyPage.intro.text}
+      />
+
+      <div className="grid gap-(--space-md) md:grid-cols-2 xl:grid-cols-4">
+        <FeatureCard
+          icon={<IconBadge icon={FileText} />}
+          title="Choose category"
+          description="Select your category and award track before uploading materials."
+        />
+        <FeatureCard
+          icon={<IconBadge icon={Search} />}
+          title="Prepare portfolio"
+          description="Upload category-relevant media and supporting documents."
+        />
+        <FeatureCard
+          icon={<IconBadge icon={ClipboardCheck} />}
+          title="Review details"
+          description="Confirm all fields and files before final submission."
+        />
+        <FeatureCard
+          icon={<IconBadge icon={CreditCard} />}
+          title="Complete fee"
+          description="Finalize participation through secure Stripe checkout."
+        />
+      </div>
     </div>
   );
 }

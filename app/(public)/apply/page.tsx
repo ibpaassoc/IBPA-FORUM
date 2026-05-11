@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import ApplicationFormLoader from "@/features/applications/components/application-form/ApplicationFormLoader";
 import ApplicationFormSkeleton from "@/features/applications/components/application-form/ApplicationFormSkeleton";
 import ApplyPageIntro from "@/features/applications/components/pages/ApplyPageIntro";
-import { PageSection, PageShell } from "@/shared/components/layout/PageShell";
+import { PageSection } from "@/shared/components/public";
 
 export const metadata: Metadata = {
   title: "Apply | IBPA Beauty Championship",
@@ -13,8 +13,8 @@ export const metadata: Metadata = {
 
 export default function ApplyPage() {
   return (
-    <PageShell>
-      <PageSection className="pt-28 pb-8">
+    <main className="page-shell">
+      <PageSection className="pt-[clamp(76px,10vh,96px)]" surface="tint">
         <ApplyPageIntro />
       </PageSection>
 
@@ -23,6 +23,6 @@ export default function ApplyPage() {
           <ApplicationFormLoader />
         </Suspense>
       </PageSection>
-    </PageShell>
+    </main>
   );
 }

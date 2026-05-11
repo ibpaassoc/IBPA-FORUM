@@ -1,8 +1,9 @@
-import { PageCard, PageHero, PageSection, PageShell } from "@/shared/components/layout/PageShell";
+import { CheckCircle2 } from "lucide-react";
+import { IconBadge, PageHero, PageSection } from "@/shared/components/public";
 
 export default function PaymentSuccessCard({ sessionId }: { sessionId?: string }) {
   return (
-    <PageShell>
+    <main className="page-shell">
       <PageHero
         eyebrow="Payment Return"
         title="Your payment is being confirmed"
@@ -10,7 +11,8 @@ export default function PaymentSuccessCard({ sessionId }: { sessionId?: string }
       />
 
       <PageSection className="pb-20">
-        <PageCard className="mx-auto max-w-3xl rounded-[1.75rem] p-8 text-center">
+        <div className="page-card mx-auto flex max-w-3xl flex-col items-center rounded-(--radius-lg) p-8 text-center">
+          <IconBadge icon={CheckCircle2} size={28} />
           <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--color-hover)]">
             Competitor Application Status
           </p>
@@ -24,8 +26,8 @@ export default function PaymentSuccessCard({ sessionId }: { sessionId?: string }
             your application is complete, and it will be reviewed by the judges and
             admin team.
           </p>
-        </PageCard>
+        </div>
       </PageSection>
-    </PageShell>
+    </main>
   );
 }
