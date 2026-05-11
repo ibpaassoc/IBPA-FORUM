@@ -45,7 +45,7 @@ export function PageHero({
   return (
     <section
       className={joinClasses(
-        "relative overflow-hidden bg-[linear-gradient(160deg,var(--color-white)_0%,var(--color-blue-wash)_52%,var(--color-blue-soft)_100%)] pt-[clamp(60px,8vh,72px)] before:absolute before:inset-0 before:bg-[radial-gradient(ellipse_70%_60%_at_80%_40%,rgba(114,160,193,0.2)_0%,transparent_70%),radial-gradient(ellipse_40%_40%_at_20%_80%,rgba(185,217,235,0.3)_0%,transparent_60%)]",
+        "relative overflow-hidden bg-(--surface-tint) pt-[clamp(60px,8vh,72px)]",
         className
       )}
     >
