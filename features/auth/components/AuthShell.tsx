@@ -2,8 +2,9 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { BadgeCheck, Lock, Sparkles } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { PageShell } from "@/shared/components/layout/PageShell";
+import { IconBadge } from "@/shared/components/public";
 
 export default function AuthShell({
   eyebrow,
@@ -19,12 +20,13 @@ export default function AuthShell({
   footer?: ReactNode;
 }) {
   const { t } = useLanguage();
+  const cardIcons = [Sparkles, BadgeCheck, Lock];
 
   return (
-    <PageShell className="px-[var(--page-gutter)] py-[var(--space-2xl)]">
+    <main className="page-shell px-[var(--page-gutter)] py-[var(--space-2xl)]">
       <div className="mx-auto max-w-[var(--content-width)] pt-[clamp(60px,8vh,72px)]">
         <div className="grid gap-[var(--space-lg)] lg:grid-cols-[1.08fr_0.92fr]">
-          <section className="page-card p-[var(--space-lg)]">
+          <section className="page-card rounded-(--radius-lg) p-[var(--space-lg)]">
             <p className="page-eyebrow">
               {eyebrow}
             </p>
@@ -36,9 +38,10 @@ export default function AuthShell({
             </p>
 
             <div className="mt-[var(--space-lg)] grid gap-[var(--space-sm)] sm:grid-cols-3">
-              {t.auth.shellCards.map((item) => (
-                <div key={item} className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-off-white)] p-[var(--space-sm)]">
-                  <p className="text-sm font-medium text-[var(--color-ink)]">{item}</p>
+              {t.auth.shellCards.map((item, index) => (
+                <div key={item} className="rounded-[var(--radius-sm)] border border-[var(--border-soft)] bg-[var(--surface-tint)] p-[var(--space-sm)]">
+                  <IconBadge icon={cardIcons[index] ?? Sparkles} size={20} />
+                  <p className="mt-2 text-sm font-medium text-[var(--color-ink)]">{item}</p>
                 </div>
               ))}
             </div>
@@ -67,12 +70,12 @@ export default function AuthShell({
             </div>
           </section>
 
-          <section className="page-card p-[var(--space-lg)]">
+          <section className="page-card rounded-(--radius-lg) p-[var(--space-lg)]">
             {children}
             {footer ? <div className="mt-[var(--space-md)]">{footer}</div> : null}
           </section>
         </div>
       </div>
-    </PageShell>
+    </main>
   );
 }

@@ -54,7 +54,7 @@ export default function Footer() {
             </p>
 
             <div className="mt-(--space-md) flex flex-wrap gap-3">
-              <JuryMenu className="ibpa-button-white" />
+              <JuryMenu className="ibpa-button-ghost" />
               <Link
                 href="/apply"
                 className="ibpa-button ibpa-button-gold"
