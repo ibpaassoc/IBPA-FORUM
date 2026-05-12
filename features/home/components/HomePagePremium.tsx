@@ -37,8 +37,8 @@ export default function HomePagePremium() {
     icon: <IconBadge icon={categoryIconMap[(Number(step.number) || 1) % categoryIconMap.length]} />,
     title: step.title,
     text: step.text,
-    tone: step.number === "01" || step.number === "03" ? "tint" : "default",
-    span: step.number === "01" ? "wide" : "normal",
+    tone: step.number === "01" || step.number === "03" ? ("tint" as const) : ("default" as const),
+    span: step.number === "01" ? ("wide" as const) : ("normal" as const),
   }));
 
   return (
