@@ -15,14 +15,14 @@ const en = {
     applyAsJury: "Apply as Jury",
     juryAccount: "Jury Account",
     jury: "Jury",
-    categories: "Categories",
+    categories: "Directions",
     grandPrix: "Grand Prix",
     home: "Home",
   },
   header: {
     navigation: {
       home: "Home",
-      categories: "Categories",
+      categories: "Directions",
       jury: "Jury",
       grandPrix: "Grand Prix",
     },
@@ -32,18 +32,18 @@ const en = {
   },
   home: {
     hero: {
-      eyebrow: "IBPA Beauty Championship 2026",
+      eyebrow: "IBPA Beauty Award 2026",
       title:
         "Recognition of outstanding achievements in beauty, beauty education, health, and innovation in branding",
       description:
-        "A premium championship experience for licensed professionals, educators, salons, and brands. Apply in your category, submit your portfolio, and be reviewed by the official IBPA jury panel.",
-      categoriesCta: "Explore Categories",
+        "A premium championship experience for licensed professionals, educators, salons, and brands. Apply in your direction, submit your portfolio, and be reviewed by the official IBPA jury panel.",
+      categoriesCta: "Explore Directions",
     },
     stats: [
       {
         title: "Registration Fee",
-        value: "$50 per category",
-        text: "The participation fee is calculated for each selected category separately. It is possible to select multiple categories and pay for them in a single payment.",
+        value: "$50 per direction",
+        text: "The participation fee is calculated for each selected direction separately. It is possible to select multiple directions and pay for them in a single payment.",
       },
       {
         title: "Judge Registration",
@@ -57,14 +57,14 @@ const en = {
       },
       {
         title: "Grand Prix",
-        value: "5+ disciplines",
-        text: "Participants who submit applications in 5 or more disciplines are automatically entered into the Grand Prix. The winner is determined by the highest total score received from judges across all submitted disciplines.",
+        value: "5+ directions",
+        text: "Participants who submit applications in 5 or more directions are automatically entered into the Grand Prix. The winner is determined by the highest total score received from judges across all submitted directions.",
       },
     ],
     categoriesPreview: {
-      label: "Categories",
-      title: "11 Categories of Excellence in the Beauty Industry",
-      viewAll: "View all categories",
+      label: "Directions",
+      title: "11 Directions of Excellence in the Beauty Industry",
+      viewAll: "View all directions",
       items: [
         "Hair Stylist",
         "Nail Technician",
@@ -85,8 +85,8 @@ const en = {
       steps: [
         {
           number: "01",
-          title: "Choose a Category",
-          text: "Select one of the 11 professional categories and a specific direction within that category.",
+          title: "Choose a Direction",
+          text: "Select one of the 11 professional directions and a specific direction within that direction.",
         },
         {
           number: "02",
@@ -96,7 +96,7 @@ const en = {
         {
           number: "03",
           title: "Complete Submission",
-          text: "Fill out the main application and upload materials relevant to the selected category and direction.",
+          text: "Fill out the main application and upload materials relevant to the selected direction and direction.",
         },
         {
           number: "04",
@@ -106,7 +106,7 @@ const en = {
         {
           number: "05",
           title: "Jury Evaluation",
-          text: "Applications proceed to the official evaluation stage conducted by the jury, prior to the awards ceremony.",
+          text: "Applications proceed to the official evaluation stage conducted by the jury, prior to the nominations ceremony.",
         },
       ],
     },
@@ -114,14 +114,14 @@ const en = {
       label: "Grand Prix",
       title: "IBPA Grand Prix 2026",
       text1:
-        "The highest award for outstanding performance, granted to participants with the best combined results across 5 or more disciplines.",
+        "The highest award for outstanding performance, granted to participants with the best combined results across 5 or more directions.",
       text2:
-        "The Grand Prix recognizes overall performance across multiple disciplines. A participant becomes a nominee by competing in 5 or more disciplines - within one or across multiple categories.",
+        "The Grand Prix recognizes overall performance across multiple directions. A participant becomes a nominee by competing in 5 or more directions - within one or across multiple directions.",
       cta: "Learn About Grand Prix",
     },
     juryCta: {
       label: "Jury",
-      title: "Apply to Become an Official Judge of the IBPA 2026 Awards",
+      title: "Apply to Become an Official Judge of the IBPA 2026 Award",
       text1: "Candidates for the judging panel go through a professional selection process.",
       text2:
         "First, an application is submitted and reviewed by the expert panel. If approved, the candidate receives an invitation and a payment link for the $250 registration fee.",
@@ -135,7 +135,7 @@ const en = {
       items: [
         {
           q: "How much does it cost to apply?",
-          a: "Participant applications cost $50 per selected category.",
+          a: "Participant applications cost $50 per selected direction.",
         },
         {
           q: "Who can participate?",
@@ -147,37 +147,37 @@ const en = {
         },
         {
           q: "How does Grand Prix work?",
-          a: "Qualification happens automatically when a participant competes in 5 or more disciplines.",
+          a: "Qualification happens automatically when a participant competes in 5 or more directions.",
         },
       ],
     },
     cta: {
       label: "Ready to participate?",
-      title: "Start your IBPA Beauty Championship application today.",
+      title: "Start your IBPA Beauty Award application today.",
       text: "Build your professional case, upload your portfolio, and compete for one of the industry's premier recognitions.",
       judge: "Become a Judge",
     },
   },
   categoriesPage: {
     hero: {
-      eyebrow: "Award Categories",
-      title: "11 Categories of Excellence in the Beauty Industry",
+      eyebrow: "Award Directions",
+      title: "11 Directions of Excellence in the Beauty Industry",
       description:
-        "Each category is built for a different discipline, from artistry and skin to salon leadership, education, and brand excellence. Applicants choose the category that best matches their work and submit a dedicated entry.",
+        "Each direction is built for a different direction, from artistry and skin to salon leadership, education, and brand excellence. Applicants choose the direction that best matches their work and submit a dedicated entry.",
       entryRules: "Entry Rules",
       feeLabel: "Registration Fee",
-      feeValue: "$50 per category",
+      feeValue: "$50 per direction",
       eligibilityLabel: "Participation",
       eligibilityValue: "For IBPA Members",
-      cta: "Apply In A Category",
+      cta: "Apply In A Direction",
     },
     cardText:
-      "Professional submissions are reviewed within the official IBPA championship framework.",
+      "Professional submissions are reviewed within the official IBPA award framework.",
   },
   juryPage: {
     hero: {
-      eyebrow: "IBPA Beauty Championship 2026",
-      title: "Apply to Become an Official Judge of the IBPA 2026 Awards",
+      eyebrow: "IBPA Beauty Award 2026",
+      title: "Apply to Become an Official Judge of the IBPA 2026 Award",
       description:
         "Candidates for the judging panel go through a professional selection process. First, an application is submitted and reviewed by the expert panel. If approved, the candidate receives an invitation and a payment link for the $250 registration fee.",
       requirements: "View Requirements",
@@ -201,7 +201,7 @@ const en = {
         },
         {
           label: "Expertise",
-          value: "11 Categories",
+          value: "11 Directions",
           text: "Judges are selected based on their expertise in relevant championship areas.",
         },
         {
@@ -275,13 +275,13 @@ const en = {
     },
     cta: {
       label: "Jury",
-      title: "Apply to Become an Official Judge of the IBPA 2026 Awards",
+      title: "Apply to Become an Official Judge of the IBPA 2026 Award",
       text: "Candidates for the judging panel go through a professional selection process. After approval, judges receive official confirmation, supporting documents, and a public profile on the jury page.",
       button: "Apply as a Judge",
     },
     apply: {
       eyebrow: "Jury Application",
-      title: "Apply to Become a Judge of the IBPA 2026 Awards",
+      title: "Apply to Become a Judge of the IBPA 2026 Award",
       text: "Submit your professional profile, experience, and areas of expertise to be considered for the judging panel.",
     },
   },
@@ -290,40 +290,40 @@ const en = {
       eyebrow: "Grand Prix",
       title: "IBPA Grand Prix 2026",
       description:
-        "The highest award for outstanding performance, granted to participants with the best combined results across 5 or more disciplines.",
+        "The highest award for outstanding performance, granted to participants with the best combined results across 5 or more directions.",
       body:
-        "The Grand Prix recognizes overall performance across multiple disciplines. A participant becomes a nominee by competing in 5 or more disciplines - within one or across multiple categories.",
+        "The Grand Prix recognizes overall performance across multiple directions. A participant becomes a nominee by competing in 5 or more directions - within one or across multiple directions.",
       snapshot: "Selection Snapshot",
       eligibility: "Eligibility",
-      eligibilityValue: "Minimum 5 disciplines",
+      eligibilityValue: "Minimum 5 directions",
       evaluation: "Evaluation",
       evaluationValue: "Total combined score",
       decision: "Decision",
       decisionValue: "Full judging panel",
-      cta: "Review Categories",
+      cta: "Review Directions",
     },
     pillars: [
       {
         title: "How to Become a Grand Prix Nominee",
-        text: "A participant automatically becomes a Grand Prix nominee by competing in at least 5 disciplines. Disciplines can be within one category or across multiple categories.",
+        text: "A participant automatically becomes a Grand Prix nominee by competing in at least 5 directions. Disciplines can be within one direction or across multiple directions.",
       },
       {
         title: "Example",
-        text: "3 disciplines in Brows + 2 disciplines in Lashes qualifies a participant for Grand Prix consideration.",
+        text: "3 directions in Brows + 2 directions in Lashes qualifies a participant for Grand Prix consideration.",
       },
       {
         title: "How the Grand Prix Winner is Determined",
-        text: "Each discipline is judged separately. All scores are combined into a total result, and the participant with the highest total score among all nominees wins.",
+        text: "Each direction is judged separately. All scores are combined into a total result, and the participant with the highest total score among all nominees wins.",
       },
     ],
     criteria: {
       label: "Important",
-      title: "5 disciplines, not categories",
-      text: "Grand Prix qualification is based on participation in at least 5 directions or disciplines. Those disciplines may be inside one category or spread across several categories.",
+      title: "5 directions, not directions",
+      text: "Grand Prix qualification is based on participation in at least 5 directions or directions. Those directions may be inside one direction or spread across several directions.",
       listLabel: "Core Criteria",
       items: [
-        "Eligibility: minimum 5 disciplines",
-        "Evaluation: total combined score across all disciplines",
+        "Eligibility: minimum 5 directions",
+        "Evaluation: total combined score across all directions",
         "Decision: full judging panel",
       ],
     },
@@ -334,17 +334,17 @@ const en = {
         {
           number: "01",
           title: "Participation",
-          text: "Participants compete in multiple disciplines across one or several categories.",
+          text: "Participants compete in multiple directions across one or several directions.",
         },
         {
           number: "02",
           title: "Nomination",
-          text: "Competing in 5 or more disciplines automatically qualifies a participant for the Grand Prix.",
+          text: "Competing in 5 or more directions automatically qualifies a participant for the Grand Prix.",
         },
         {
           number: "03",
           title: "Judging",
-          text: "Each discipline is evaluated independently by the judges.",
+          text: "Each direction is evaluated independently by the judges.",
         },
         {
           number: "04",
@@ -362,12 +362,12 @@ const en = {
           answer: "No. Qualification happens automatically through participation.",
         },
         {
-          question: "Do I need to compete in different categories?",
-          answer: "No. Disciplines can belong to one or multiple categories.",
+          question: "Do I need to compete in different directions?",
+          answer: "No. Disciplines can belong to one or multiple directions.",
         },
         {
           question: "How is the winner selected?",
-          answer: "Based on the total combined score across all disciplines.",
+          answer: "Based on the total combined score across all directions.",
         },
       ],
     },
@@ -375,20 +375,20 @@ const en = {
   applyPage: {
     intro: {
       eyebrow: "Candidate Application",
-      title: "Submit your championship entry.",
-      text: "Complete the form below with your professional details and category materials.",
+      title: "Submit your award entry.",
+      text: "Complete the form below with your professional details and direction materials.",
     },
     form: {
       blockA: "Block A",
       blockATitle: "Professional Profile & Eligibility",
       blockADescription:
-        "Complete the shared championship application section before moving into the category-specific evaluation materials.",
+        "Complete the shared championship application section before moving into the direction-specific evaluation materials.",
       blockB: "Block B",
-      blockBTitle: "Category-Specific Championship Materials",
-      blockBDescription: "Block B changes based on the category you select.",
+      blockBTitle: "Direction-Specific Championship Materials",
+      blockBDescription: "Block B changes based on the direction you select.",
       progress: "Application Progress",
       requiredComplete: "required items complete",
-      submit: "Submit Championship Application",
+      submit: "Submit Award Application",
       submitting: "Submitting Application...",
       validationError:
         "Please review the highlighted fields before submitting your championship entry.",
@@ -399,13 +399,13 @@ const en = {
     },
     introCards: {
       eligibility: "Eligibility & Important Notes",
-      feeHtml: "Participation fee: <strong>$50 per category</strong>.",
-      separate: "Each category is submitted as a separate application.",
+      feeHtml: "Participation fee: <strong>$50 per direction</strong>.",
+      separate: "Each direction is submitted as a separate application.",
       juryNote: "Jury fee rules do not apply to this participant application page.",
       before: "Before You Start",
       items: [
         "Prepare your license or certification file.",
-        "Choose one category and one specific award.",
+        "Choose one direction and one specific nomination.",
         "Gather all portfolio and supporting files for Block B.",
         "Review your portfolio files before uploading.",
       ],
@@ -424,7 +424,7 @@ const en = {
       rejected: "Rejected",
       applicant: "Applicant",
       candidate: "Candidate",
-      category: "Category",
+      category: "Direction",
       award: "Award",
       status: "Status",
       payment: "Payment",
@@ -450,9 +450,9 @@ const en = {
     },
     participants: {
       eyebrow: "Participant Admin",
-      title: "Championship participant applications",
+      title: "Award participant applications",
       text:
-        "Review applicant profiles, category entries, supporting files, and current review status in one private workspace.",
+        "Review applicant profiles, direction entries, supporting files, and current review status in one private workspace.",
       juryDashboard: "Jurys",
       scoringDashboard: "Scorings",
       appStatus: "App Status",
@@ -471,14 +471,14 @@ const en = {
   },
   juryDashboard: {
     dashboard: "Jury Dashboard",
-    accessText: "Review access is limited to the categories you were approved to judge.",
-    approvedCategories: "Approved Categories",
+    accessText: "Review access is limited to the directions you were approved to judge.",
+    approvedCategories: "Approved Directions",
     assigned: "Assigned Applications",
     scored: "Scored",
     remaining: "Remaining",
-    allCategories: "All Categories",
+    allCategories: "All Directions",
     applicant: "Applicant",
-    category: "Category",
+    category: "Direction",
     award: "Award",
     status: "Status",
     submitted: "Submitted",
@@ -486,14 +486,14 @@ const en = {
     reviewScore: "Review & Score",
     continueDraft: "Continue Draft",
     viewSubmitted: "View Submitted",
-    empty: "No participant applications matched your category access.",
+    empty: "No participant applications matched your direction access.",
     signOut: "Log Out",
   },
   auth: {
     shellCards: [
       "Private member access",
       "Luxury IBPA styling",
-      "Protected championship pages",
+      "Protected award pages",
     ],
     access: "Access",
     accessText:
@@ -580,7 +580,7 @@ const ru: typeof en = {
   },
   home: {
     hero: {
-      eyebrow: "IBPA Beauty Championship 2026",
+      eyebrow: "IBPA Beauty Award 2026",
       title:
         "Признание выдающихся достижений в сфере красоты, обучения в бьюти-индустрии, здоровья и инноваций в брендинге.",
       description:
@@ -701,7 +701,7 @@ const ru: typeof en = {
     },
     cta: {
       label: "Готовы участвовать?",
-      title: "Начните заявку на IBPA Beauty Championship уже сегодня.",
+      title: "Начните заявку на IBPA Beauty Award уже сегодня.",
       text: "Подготовьте профессиональное портфолио, загрузите материалы и поборитесь за одно из ведущих признаний индустрии.",
       judge: "Стать судьёй",
     },
@@ -724,7 +724,7 @@ const ru: typeof en = {
   },
   juryPage: {
     hero: {
-      eyebrow: "IBPA Beauty Championship 2026",
+      eyebrow: "IBPA Beauty Award 2026",
       title: "Подайте заявку, чтобы стать официальным судьёй премии IBPA 2026",
       description:
         "Кандидаты на роль судей проходят профессиональный отбор. Сначала подаётся заявка, после чего она рассматривается экспертной комиссией. В случае одобрения кандидат получает приглашение и ссылку для оплаты регистрационного взноса $250.",
@@ -1131,7 +1131,7 @@ const ua: typeof en = {
   },
   home: {
     hero: {
-      eyebrow: "IBPA Beauty Championship 2026",
+      eyebrow: "IBPA Beauty Award 2026",
       title:
         "Визнання видатних досягнень у сфері краси, beauty-освіти, здоров'я та інновацій у брендингу.",
       description:
@@ -1252,7 +1252,7 @@ const ua: typeof en = {
     },
     cta: {
       label: "Готові брати участь?",
-      title: "Почніть заявку на IBPA Beauty Championship уже сьогодні.",
+      title: "Почніть заявку на IBPA Beauty Award уже сьогодні.",
       text: "Підготуйте професійне портфоліо, завантажте матеріали та змагайтеся за одне з провідних визнань індустрії.",
       judge: "Стати суддею",
     },
@@ -1275,7 +1275,7 @@ const ua: typeof en = {
   },
   juryPage: {
     hero: {
-      eyebrow: "IBPA Beauty Championship 2026",
+      eyebrow: "IBPA Beauty Award 2026",
       title: "Подайте заявку, щоб стати офіційним суддею премії IBPA 2026",
       description:
         "Кандидати до складу журі проходять професійний відбір. Спочатку подається заявка, після чого її розглядає експертна комісія. У разі схвалення кандидат отримує запрошення та посилання для оплати реєстраційного внеску $250.",
