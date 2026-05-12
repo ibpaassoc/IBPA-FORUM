@@ -159,7 +159,6 @@ export default async function JuryPagePremium() {
             alt="Jury leadership and community photo"
             aspect="landscape"
             overlay="soft"
-            className="h-full"
           />
         }
       />

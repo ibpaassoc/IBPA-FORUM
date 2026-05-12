@@ -1,8 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { BadgeCheck } from "lucide-react";
-import { HoverCard, IconBadge, StaggerContainer } from "@/shared/components/public";
+import { HoverCard, IconBadge, SafeImage, StaggerContainer } from "@/shared/components/public";
 
 type PublicJuryMember = {
   id: string;
@@ -39,8 +38,8 @@ export default function PublicJuryGrid({
         return (
           <HoverCard key={member.id} className="h-full">
             <article className="page-card flex h-full flex-col rounded-[var(--radius)]">
-              <div className="editorial-image-frame aspect-[4/5] rounded-b-none border-x-0 border-t-0">
-                <Image
+              <div className="editorial-image-frame relative aspect-[4/5] rounded-b-none border-x-0 border-t-0 bg-[var(--surface-muted)]">
+                <SafeImage
                   src={photoSrc}
                   alt={`${member.fullName} jury portrait`}
                   fill
