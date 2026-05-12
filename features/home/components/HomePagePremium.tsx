@@ -6,158 +6,220 @@ import {
   BadgeCheck,
   Calendar,
   Camera,
+  ClipboardCheck,
   Globe,
   HeartHandshake,
-  Sparkles,
+  Search,
   Trophy,
   Users,
 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import {
-  AnimatedReveal,
-  CTASection,
+  BentoFeatureGrid,
+  EditorialHero,
   EditorialPhotoCard,
-  FeatureCard,
+  EditorialPhotoSection,
+  FeaturedStorySection,
+  FullBleedPhotoBreak,
   IconBadge,
-  PageHero,
-  PageSection,
-  SectionHeading,
-  StatCard,
+  PremiumCTA,
+  ProcessTimeline,
+  StaggerContainer,
 } from "@/shared/components/public";
 
-const stats = [
-  { label: "Categories", value: "11", description: "Professional tracks in beauty and wellness." },
-  { label: "Grand Prix", value: "5+", description: "Disciplines required for automatic nomination." },
-  { label: "Jury Review", value: "14 Days", description: "Transparent panel review timeline." },
-  { label: "Global Reach", value: "Worldwide", description: "Artists, educators, salons, and brands." },
-];
-
-const whyItems = [
-  { icon: Trophy, title: "Prestige-led recognition", description: "A championship format built for serious professional achievement." },
-  { icon: BadgeCheck, title: "Trusted judging", description: "Independent experts evaluate entries with clear scoring standards." },
-  { icon: Users, title: "Professional community", description: "Connect with peers, mentors, and respected beauty leaders." },
-  { icon: Globe, title: "International credibility", description: "A global platform for visibility across markets and disciplines." },
-];
-
-const categories = ["Hair", "Makeup", "Nails", "Brows", "Lashes", "Education", "Wellness", "Brand"];
+const categoryIconMap = [Camera, Trophy, Award, BadgeCheck, Globe, Users, HeartHandshake, Calendar];
 
 export default function HomePagePremium() {
+  const { t } = useLanguage();
+
+  const leadershipItems = t.home.process.steps.slice(0, 4).map((step) => ({
+    id: step.number,
+    icon: <IconBadge icon={categoryIconMap[(Number(step.number) || 1) % categoryIconMap.length]} />,
+    title: step.title,
+    text: step.text,
+    tone: step.number === "01" || step.number === "03" ? "tint" : "default",
+    span: step.number === "01" ? "wide" : "normal",
+  }));
+
   return (
     <main className="page-shell">
-      <PageHero
-        eyebrow="IBPA Beauty Championship"
-        title="A luxury editorial stage for global beauty excellence."
-        description="IBPA brings together artistry, education, and professional credibility through one elegant championship platform."
+      <EditorialHero
+        eyebrow={t.home.hero.eyebrow}
+        title={t.home.hero.title}
+        description={t.home.hero.description}
         actions={
           <div className="flex flex-wrap gap-3">
             <Link href="/apply" className="ibpa-button ibpa-button-primary">
-              Apply Now
+              {t.common.applyNow}
             </Link>
             <Link href="/categories" className="ibpa-button ibpa-button-ghost">
-              Explore Categories
+              {t.home.hero.categoriesCta}
             </Link>
           </div>
         }
         media={
-          <EditorialPhotoCard
-            src="/images/editorial/makeup.jpg"
-            alt="IBPA editorial model portrait"
-            title="Editorial Quality. Professional Credibility."
-            description="A championship identity built around real imagery and real achievement."
-            aspect="portrait"
-            overlay="medium"
-            priority
-          />
+          <div className="grid gap-[var(--space-md)] lg:grid-cols-[1.2fr_0.8fr]">
+            <EditorialPhotoCard
+              src="/images/editorial/makeup.jpg"
+              alt="IBPA lead editorial beauty image"
+              title="Luxury Editorial Presence"
+              description="Professional beauty excellence staged with international credibility."
+              overlay="medium"
+              aspect="portrait"
+              className="h-full"
+              priority
+            />
+            <div className="grid gap-[var(--space-md)]">
+              <EditorialPhotoCard
+                src="/images/curated/home_hero_support.jpg"
+                alt="Beauty artist preparing a model backstage"
+                overlay="soft"
+                aspect="square"
+                priority
+              />
+              <EditorialPhotoCard
+                src="/images/events/DSC01460.jpg"
+                alt="IBPA event detail closeup"
+                overlay="soft"
+                aspect="square"
+              />
+            </div>
+          </div>
+        }
+        floatingCard={
+          <article className="page-card rounded-[var(--radius)] bg-[var(--surface)] p-[var(--space-md)]">
+            <p className="text-[0.68rem] uppercase tracking-[0.2em] text-[var(--color-hover)]">
+              {t.home.stats[0].title}
+            </p>
+            <p className="mt-1 font-[var(--font-title-family)] text-[clamp(1.6rem,2vw,2.2rem)] leading-[1.1] text-[var(--color-ink)]">
+              {t.home.stats[0].value}
+            </p>
+            <p className="mt-2 text-sm leading-[1.7] text-[var(--color-ink-soft)]">{t.home.stats[0].text}</p>
+          </article>
         }
       />
 
-      <PageSection>
-        <div className="grid gap-(--space-md) sm:grid-cols-2 xl:grid-cols-4">
-          {stats.map((item, idx) => (
-            <AnimatedReveal key={item.label} delayMs={idx * 70}>
-              <StatCard {...item} />
-            </AnimatedReveal>
-          ))}
+      <section className="section-rhythm-tight">
+        <div className="page-section">
+          <div className="editorial-soft-divider rounded-[var(--radius)] px-[var(--space-md)] py-[var(--space-md)]">
+            <StaggerContainer className="grid gap-[var(--space-md)] md:grid-cols-2 xl:grid-cols-4" stagger={0.1}>
+              {t.home.stats.map((item) => (
+                <article key={item.title} className="px-[var(--space-sm)]">
+                  <p className="text-[0.66rem] uppercase tracking-[0.17em] text-[var(--color-hover)]">{item.title}</p>
+                  <p className="mt-1 font-[var(--font-title-family)] text-[clamp(1.55rem,2.8vw,2.3rem)] leading-[1.1] text-[var(--color-ink)]">
+                    {item.value}
+                  </p>
+                  <p className="mt-2 text-sm leading-[1.7] text-[var(--color-ink-soft)]">{item.text}</p>
+                </article>
+              ))}
+            </StaggerContainer>
+          </div>
         </div>
-      </PageSection>
+      </section>
 
-      <PageSection surface="tint">
-        <SectionHeading
-          eyebrow="Why IBPA"
-          title="Designed for professional beauty leadership"
-          description="A premium structure that balances artistry, fairness, and global exposure."
-        />
-        <div className="mt-(--space-lg) grid gap-(--space-md) md:grid-cols-2">
-          {whyItems.map((item, idx) => (
-            <AnimatedReveal key={item.title} delayMs={idx * 80}>
-              <FeatureCard
-                icon={<IconBadge icon={item.icon} />}
-                title={item.title}
-                description={item.description}
-              />
-            </AnimatedReveal>
-          ))}
+      <BentoFeatureGrid
+        eyebrow="Why IBPA"
+        title="Designed for professional beauty leadership"
+        description="Structured selection, transparent judging, and global brand-level presentation."
+        items={leadershipItems}
+      />
+
+      <section className="section-rhythm-tight">
+        <div className="page-section">
+          <div className="flex flex-wrap items-center gap-3">
+            {t.home.categoriesPreview.items.slice(0, 8).map((item, index) => {
+              const Icon = categoryIconMap[index % categoryIconMap.length];
+              return (
+                <span
+                  key={item}
+                  className="inline-flex items-center gap-2 rounded-full border border-[var(--border-soft)] bg-[var(--surface-tint)] px-4 py-2 text-sm text-[var(--color-ink-soft)]"
+                >
+                  <Icon size={18} strokeWidth={1.5} className="text-[var(--color-hover)]" />
+                  {item}
+                </span>
+              );
+            })}
+          </div>
         </div>
-      </PageSection>
+      </section>
 
-      <PageSection>
-        <SectionHeading
-          eyebrow="Championship Tracks"
-          title="Category Preview"
-          description="Select your strongest discipline and build your entry with intention."
-        />
-        <div className="mt-(--space-md) flex flex-wrap gap-2">
-          {categories.map((category) => (
-            <span key={category} className="rounded-full border border-(--border-soft) bg-(--surface-tint) px-4 py-2 text-sm text-(--color-ink-soft)">
-              {category}
-            </span>
-          ))}
-        </div>
-      </PageSection>
-
-      <PageSection surface="mist">
-        <SectionHeading
-          eyebrow="Credibility"
-          title="Jury and Professional Standards"
-          description="Each submission is evaluated by experienced judges with category-specific expertise."
-        />
-        <div className="mt-(--space-lg) grid gap-(--space-md) lg:grid-cols-2">
-          <FeatureCard
-            icon={<IconBadge icon={HeartHandshake} />}
-            title="Independent review integrity"
-            description="A structured judging flow from submission validation to final scoring."
+      <FeaturedStorySection
+        eyebrow="Jury Standards"
+        title="Official judging with trust, structure, and transparency."
+        description={t.home.juryCta.text2}
+        quote={t.home.juryCta.text3}
+        media={
+          <EditorialPhotoCard
+            src="/images/curated/jury_editorial.jpg"
+            alt="Professional jury leadership and community moment"
+            aspect="landscape"
+            overlay="soft"
+            className="h-full"
           />
-          <FeatureCard
-            icon={<IconBadge icon={Calendar} />}
-            title="Clear timeline and outcomes"
-            description="Defined review windows and transparent advancement through each stage."
-          />
-        </div>
-      </PageSection>
+        }
+        actions={
+          <Link href="/jury" className="ibpa-button ibpa-button-ghost">
+            {t.home.juryCta.button}
+          </Link>
+        }
+      />
 
-      <PageSection>
-        <SectionHeading
-          eyebrow="Event Atmosphere"
-          title="A photo-driven championship experience"
-          description="Real moments from the IBPA ecosystem, captured with editorial clarity."
-        />
-        <div className="mt-(--space-lg) grid gap-(--space-md) md:grid-cols-3">
-          <EditorialPhotoCard src="/images/events/DSC09822.jpg" alt="IBPA event atmosphere" aspect="portrait" overlay="soft" />
-          <EditorialPhotoCard src="/images/events/DSC01430.jpg" alt="IBPA runway and judging moment" aspect="portrait" overlay="soft" />
-          <EditorialPhotoCard src="/images/events/DSC00962.jpg" alt="IBPA award stage detail" aspect="portrait" overlay="soft" />
-        </div>
-      </PageSection>
+      <ProcessTimeline
+        eyebrow={t.home.process.label}
+        title={t.home.process.title}
+        steps={t.home.process.steps.map((step, index) => ({
+          id: step.number,
+          title: step.title,
+          text: step.text,
+          icon: <IconBadge icon={[Search, ClipboardCheck, Award, Trophy, Users][index % 5]} />,
+        }))}
+      />
 
-      <CTASection
-        eyebrow="Next Step"
-        title="Ready to enter IBPA 2026?"
-        description="Submit your best work, join the international stage, and compete with confidence."
-        primary={{ href: "/apply", label: "Start Application" }}
-        secondary={{ href: "/jury", label: "Become a Judge" }}
-        extra={
-          <div className="flex flex-wrap gap-4 text-sm text-(--color-ink-soft)">
-            <span className="inline-flex items-center gap-2"><IconBadge icon={Sparkles} size={20} /> Elegant presentation</span>
-            <span className="inline-flex items-center gap-2"><IconBadge icon={Camera} size={20} /> Editorial imagery</span>
-            <span className="inline-flex items-center gap-2"><IconBadge icon={Award} size={20} /> Professional recognition</span>
+      <EditorialPhotoSection
+        eyebrow="Event Experience"
+        title="Photography integrated into every stage."
+        description="One dominant visual frame, supported by two contextual moments."
+        primary={{
+          src: "/images/events/DSC09822.jpg",
+          alt: "IBPA event stage atmosphere",
+          title: "A premium ceremony environment",
+        }}
+        secondary={[
+          {
+            src: "/images/events/DSC00313.jpg",
+            alt: "IBPA backstage artist moment",
+          },
+          {
+            src: "/images/events/DSC00934.jpg",
+            alt: "IBPA winner and audience reaction",
+          },
+        ]}
+      />
+
+      <FullBleedPhotoBreak
+        src="/images/curated/home_photo_break.jpg"
+        alt="Cinematic beauty portrait for IBPA visual break"
+        eyebrow="IBPA 2026"
+        title="Global beauty artistry deserves a world-class stage."
+        description="A calm, premium platform for artists, educators, salons, and brands."
+      />
+
+      <PremiumCTA
+        eyebrow={t.home.cta.label}
+        title={t.home.cta.title}
+        description={t.home.cta.text}
+        primary={{ href: "/apply", label: t.common.applyNow }}
+        secondary={{ href: "/jury", label: t.home.cta.judge }}
+        aside={
+          <div className="space-y-3">
+            <div className="inline-flex items-center gap-2 text-sm text-[var(--color-ink-soft)]">
+              <IconBadge icon={Trophy} size={20} />
+              International recognition
+            </div>
+            <div className="inline-flex items-center gap-2 text-sm text-[var(--color-ink-soft)]">
+              <IconBadge icon={BadgeCheck} size={20} />
+              Structured judging integrity
+            </div>
           </div>
         }
       />
