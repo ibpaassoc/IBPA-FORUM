@@ -42,8 +42,9 @@ export default function EditorialHero({
 
         <FadeUp className="relative">
           {media}
+          {floatingCard ? <div className="mt-[var(--space-md)] md:hidden">{floatingCard}</div> : null}
           {floatingCard ? (
-            <FloatingElement className="absolute -right-4 -bottom-4 z-10 w-[min(280px,70%)] md:-right-6 md:-bottom-6">
+            <FloatingElement className="absolute -right-6 -bottom-6 z-10 hidden w-[min(320px,58%)] md:block">
               {floatingCard}
             </FloatingElement>
           ) : null}

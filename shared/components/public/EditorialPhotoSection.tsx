@@ -38,7 +38,7 @@ export default function EditorialPhotoSection({
   return (
     <PageSection className={className}>
       <SectionHeading eyebrow={eyebrow} title={title} description={description} />
-      <div className="mt-[var(--space-lg)] grid gap-[var(--space-md)] xl:grid-cols-[1.3fr_0.7fr]">
+      <div className="mt-[var(--space-lg)] grid gap-[var(--space-md)] xl:grid-cols-[1.3fr_0.7fr] xl:items-stretch">
         <FadeUp>
           <EditorialPhotoCard
             src={primary.src}
@@ -46,14 +46,14 @@ export default function EditorialPhotoSection({
             title={primary.title}
             description={primary.description}
             eyebrow={primary.eyebrow}
-            aspect="landscape"
+            aspect="portrait"
             overlay="soft"
-            className="h-full"
+            className="h-full xl:aspect-auto xl:min-h-[clamp(420px,54vw,720px)]"
           />
         </FadeUp>
 
-        <div className="grid gap-[var(--space-md)]">
-          <StaggerContainer stagger={0.12}>
+        <div className="grid gap-[var(--space-md)] xl:grid-rows-2">
+          <StaggerContainer className="grid gap-[var(--space-md)] xl:grid-rows-2" stagger={0.12}>
             {secondary.slice(0, 2).map((item) => (
               <EditorialPhotoCard
                 key={item.src}
@@ -62,8 +62,9 @@ export default function EditorialPhotoSection({
                 title={item.title}
                 description={item.description}
                 eyebrow={item.eyebrow}
-                aspect="portrait"
+                aspect="square"
                 overlay="soft"
+                className="h-full"
               />
             ))}
           </StaggerContainer>

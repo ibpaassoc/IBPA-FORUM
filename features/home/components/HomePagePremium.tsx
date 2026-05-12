@@ -66,7 +66,6 @@ export default function HomePagePremium() {
               description="Professional beauty excellence staged with international credibility."
               overlay="medium"
               aspect="portrait"
-              className="h-full"
               priority
             />
             <div className="grid gap-[var(--space-md)]">
@@ -154,7 +153,6 @@ export default function HomePagePremium() {
             alt="Professional jury leadership and community moment"
             aspect="landscape"
             overlay="soft"
-            className="h-full"
           />
         }
         actions={
