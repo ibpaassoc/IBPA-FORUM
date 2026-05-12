@@ -1,10 +1,11 @@
 "use client"
 
 import type { ChangeEvent, FormEvent } from "react"
-import { useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import ExperienceSection from "@/features/jury/components/jury-application/sections/ExperienceSection"
 import MaterialsSection from "@/features/jury/components/jury-application/sections/MaterialsSection"
 import ProfessionalProfileSection from "@/features/jury/components/jury-application/sections/ProfessionalProfileSection"
+import { FadeUp, FormProgressSidebar } from "@/shared/components/public"
 
 type SubmissionSummary = {
   name: string
@@ -23,10 +24,12 @@ type SubmissionState =
     }
 
 export default function JuryApplicationForm() {
+  const formRef = useRef<HTMLFormElement | null>(null)
   const [hasPreviousJudging, setHasPreviousJudging] = useState("no")
   const [isPastWinner, setIsPastWinner] = useState("no")
   const [selectedExpertise, setSelectedExpertise] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [progressValue, setProgressValue] = useState(0)
   const [submissionState, setSubmissionState] = useState<SubmissionState>({
     type: "idle",
     message: "",
@@ -44,6 +47,71 @@ export default function JuryApplicationForm() {
       return current.filter((item) => item !== value)
     })
   }
+
+  const updateProgress = useCallback(() => {
+    const form = formRef.current
+    if (!form) {
+      return
+    }
+
+    const profileFields = [
+      "fullName",
+      "email",
+      "phone",
+      "country",
+      "city",
+      "professionalTitle",
+      "yearsExperience",
+      "employerAffiliation",
+    ]
+    const materialsFields = [
+      "professionalBio",
+      "conflictDisclosure",
+      "motivation",
+      "professionalWebsite",
+    ]
+
+    const filledProfile = profileFields.filter((name) => {
+      const input = form.elements.namedItem(name) as HTMLInputElement | null
+      return Boolean(input?.value?.trim())
+    }).length
+
+    const filledMaterials = materialsFields.filter((name) => {
+      const input = form.elements.namedItem(name) as HTMLInputElement | null
+      return Boolean(input?.value?.trim())
+    }).length
+
+    const certificationsInput = form.elements.namedItem("certifications") as HTMLInputElement | null
+    const profilePhotoInput = form.elements.namedItem("profilePhoto") as HTMLInputElement | null
+    const confidentialityInput = form.elements.namedItem("confidentialityAgreement") as HTMLInputElement | null
+
+    const hasCertifications = Boolean(certificationsInput?.files?.length)
+    const hasProfilePhoto = Boolean(profilePhotoInput?.files?.length)
+    const confidentialityChecked = Boolean(confidentialityInput?.checked)
+    const expertiseDone = selectedExpertise.length > 0
+
+    const judgingDetailsInput = form.elements.namedItem("previousJudgingDetails") as HTMLInputElement | null
+    const winnerYearInput = form.elements.namedItem("pastWinnerYear") as HTMLInputElement | null
+    const conditionalDone =
+      (hasPreviousJudging === "no" || Boolean(judgingDetailsInput?.value?.trim())) &&
+      (isPastWinner === "no" || Boolean(winnerYearInput?.value?.trim()))
+
+    const totalChecks = 8 + 4 + 5
+    const completedChecks =
+      filledProfile +
+      filledMaterials +
+      (hasCertifications ? 1 : 0) +
+      (hasProfilePhoto ? 1 : 0) +
+      (confidentialityChecked ? 1 : 0) +
+      (expertiseDone ? 1 : 0) +
+      (conditionalDone ? 1 : 0)
+
+    setProgressValue(Math.round((completedChecks / totalChecks) * 100))
+  }, [hasPreviousJudging, isPastWinner, selectedExpertise.length])
+
+  useEffect(() => {
+    updateProgress()
+  }, [updateProgress])
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -101,10 +169,44 @@ export default function JuryApplicationForm() {
 
   return (
     <section id="jury-application-form">
-      <div className="mx-auto max-w-5xl">
+      <div className="mx-auto max-w-[var(--content-width)]">
+        <div className="mb-[var(--space-md)] xl:hidden">
+          <FormProgressSidebar
+            title="Jury Application Progress"
+            subtitle="Track your profile, experience, and required materials."
+            progressLabel="Completion"
+            progressValue={progressValue}
+            steps={[
+              {
+                id: "profile",
+                label: "Professional profile",
+                hint: "Identity, location, and title fields",
+                complete: progressValue >= 30,
+              },
+              {
+                id: "experience",
+                label: "Experience details",
+                hint: "Judging history and expertise areas",
+                complete: progressValue >= 60,
+              },
+              {
+                id: "materials",
+                label: "Materials and disclosure",
+                hint: "Uploads, bio, and confidentiality",
+                complete: progressValue >= 90,
+              },
+            ]}
+          />
+        </div>
+
+        <div className="grid gap-[var(--space-md)] xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
+          <FadeUp>
         <form
+          ref={formRef}
+          onInput={updateProgress}
+          onChange={updateProgress}
           onSubmit={handleSubmit}
-          className="rounded-(--radius) border border-(--border-default) bg-(--color-off-white) p-(--space-lg) shadow-(--shadow-lg)"
+          className="rounded-(--radius) border border-(--border-default) bg-(--surface) p-(--space-lg) shadow-(--shadow-lg)"
         >
           <div className="space-y-(--space-lg)">
             <ProfessionalProfileSection />
@@ -170,7 +272,7 @@ export default function JuryApplicationForm() {
                     Expertise Selected
                   </p>
                   <p className="mt-(--space-xs) text-sm text-(--color-ink-soft)">
-                    {selectedExpertise.length}
+                    {selectedExpertise.length} | {progressValue}% complete
                   </p>
                 </div>
 
@@ -185,6 +287,36 @@ export default function JuryApplicationForm() {
             </div>
           </div>
         </form>
+          </FadeUp>
+
+          <FormProgressSidebar
+            className="hidden xl:block"
+            title="Jury Application Progress"
+            subtitle="Track your profile, experience, and required materials."
+            progressLabel="Completion"
+            progressValue={progressValue}
+            steps={[
+              {
+                id: "profile",
+                label: "Professional profile",
+                hint: "Identity, location, and title fields",
+                complete: progressValue >= 30,
+              },
+              {
+                id: "experience",
+                label: "Experience details",
+                hint: "Judging history and expertise areas",
+                complete: progressValue >= 60,
+              },
+              {
+                id: "materials",
+                label: "Materials and disclosure",
+                hint: "Uploads, bio, and confidentiality",
+                complete: progressValue >= 90,
+              },
+            ]}
+          />
+        </div>
       </div>
     </section>
   )
