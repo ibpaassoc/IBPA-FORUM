@@ -40,6 +40,8 @@
   --surface-elevated: var(--color-white);
   --surface-strong: #f6fafd;
   --surface-tint: #f8fbfe;
+  --surface-muted: #f4f7fa;
+  --surface-cool: #eff4f8;
   --overlay-soft: rgba(255, 255, 255, 0.68);
   --overlay-dark: rgba(17, 26, 34, 0.38);
   --accent: var(--color-hover);
@@ -49,6 +51,7 @@
   --motion-fast: 180ms ease;
   --motion-base: 260ms ease;
   --motion-slow: 420ms ease;
+  --motion-editorial: cubic-bezier(0.22, 1, 0.36, 1);
   --admin-bg: #f7f9fb;
   --admin-surface: #ffffff;
   --admin-surface-soft: #fbfdff;
@@ -139,6 +142,14 @@ a:hover {
   padding-block: var(--space-2xl);
 }
 
+@utility section-rhythm-tight {
+  padding-block: clamp(2rem, 4vw, 3rem);
+}
+
+@utility section-rhythm-loose {
+  padding-block: clamp(3.5rem, 8vw, 7rem);
+}
+
 @utility page-card {
   position: relative;
   overflow: hidden;
@@ -148,8 +159,9 @@ a:hover {
   box-shadow: var(--shadow-sm);
   color: var(--color-ink);
   transition:
-    box-shadow var(--motion-base),
-    transform var(--motion-base);
+    box-shadow 0.6s var(--motion-editorial),
+    transform 0.6s var(--motion-editorial),
+    border-color 0.45s var(--motion-editorial);
 }
 
 @utility page-panel {
@@ -203,7 +215,7 @@ a:hover {
   letter-spacing: 0.08em;
   padding: clamp(0.6rem, 1.2vw, 0.75rem) clamp(1.2rem, 2.5vw, 2rem);
   text-transform: uppercase;
-  transition: all 0.25s ease;
+  transition: all 0.36s var(--motion-editorial);
 }
 
 @utility ibpa-button-primary {
@@ -396,12 +408,13 @@ a:hover {
   background: var(--color-hover);
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform var(--motion-base);
+  transition: transform 0.55s var(--motion-editorial);
 }
 
 .page-card:hover {
   box-shadow: var(--shadow-md);
-  transform: translateY(-3px);
+  border-color: var(--border-strong);
+  transform: translateY(-4px);
 }
 
 .page-card:hover::before {
@@ -419,7 +432,7 @@ a:hover {
 .ibpa-button-primary:hover {
   background: var(--color-hover);
   box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .ibpa-button-gold:hover {
@@ -437,6 +450,31 @@ a:hover {
 .ibpa-button-white:hover {
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.7);
+}
+
+.editorial-image-frame {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  background: var(--surface);
+}
+
+.editorial-image-frame img {
+  transition:
+    transform 0.72s var(--motion-editorial),
+    filter 0.6s var(--motion-editorial);
+}
+
+.editorial-image-frame:hover img {
+  transform: scale(1.035);
+}
+
+.editorial-soft-divider {
+  border-top: 1px solid var(--border-default);
+  border-bottom: 1px solid var(--border-default);
+  background: var(--surface-muted);
 }
 
 @keyframes fadeUp {
