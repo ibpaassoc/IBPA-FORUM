@@ -1,6 +1,8 @@
 "use client";
 
-import EditorialImageCard from "@/shared/components/media/EditorialImageCard";
+import Image from "next/image";
+import { BadgeCheck } from "lucide-react";
+import { HoverCard, IconBadge, StaggerContainer } from "@/shared/components/public";
 
 type PublicJuryMember = {
   id: string;
@@ -13,11 +15,11 @@ type PublicJuryMember = {
   profilePhotoFileId?: string | null;
 };
 
-const juryPhotos = [
+const juryFallbackPhotos = [
   "/images/team/sitting_group.jpg",
-  "/images/editorial/accending.jpg",
+  "/images/community/DSC09818.jpg",
   "/images/community/items.jpg",
-  "/images/community/funny.jpg",
+  "/images/events/DSC00947.jpg",
 ];
 
 export default function PublicJuryGrid({
@@ -26,45 +28,53 @@ export default function PublicJuryGrid({
   members: PublicJuryMember[];
 }) {
   return (
-    <div className="grid gap-(--space-lg) sm:grid-cols-2 lg:grid-cols-3">
-      {members.map((member, index) => (
-        <EditorialImageCard
-          key={member.id}
-          src={juryPhotos[index % juryPhotos.length]}
-          alt={`${member.fullName} jury portrait`}
-          eyebrow="Active jury member"
-          title={member.fullName}
-          text={[
-            member.professionalTitle,
-            member.city || member.country
-              ? [member.city, member.country].filter(Boolean).join(", ")
-              : null,
-          ]
-            .filter(Boolean)
-            .join(" | ")}
-          aspectClassName="aspect-[4/5]"
-          objectPosition={index % 2 === 0 ? "center top" : "center 18%"}
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="group overflow-hidden rounded-[var(--radius)] border border-[var(--border-default)] bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[var(--color-hover)] hover:shadow-xl"
-        >
-          <div className="flex flex-wrap gap-2">
-            {(member.expertise ?? []).length ? (
-              member.expertise!.map((item) => (
-                <span
-                  key={item}
-                  className="rounded-full border border-white/16 bg-white/10 px-3 py-1 text-xs text-white"
-                >
-                  {item}
-                </span>
-              ))
-            ) : (
-              <span className="rounded-full border border-white/16 bg-white/10 px-3 py-1 text-xs text-white">
-                Jury profile
-              </span>
-            )}
-          </div>
-        </EditorialImageCard>
-      ))}
-    </div>
+    <StaggerContainer className="grid gap-[var(--space-md)] sm:grid-cols-2 xl:grid-cols-3" stagger={0.1}>
+      {members.map((member, index) => {
+        const photoSrc =
+          member.profilePhotoFileId
+            ? `/api/jury/profile-photo/${member.profilePhotoFileId}`
+            : juryFallbackPhotos[index % juryFallbackPhotos.length];
+        const memberLocation = [member.city, member.country].filter(Boolean).join(", ");
+
+        return (
+          <HoverCard key={member.id} className="h-full">
+            <article className="page-card flex h-full flex-col rounded-[var(--radius)]">
+              <div className="editorial-image-frame aspect-[4/5] rounded-b-none border-x-0 border-t-0">
+                <Image
+                  src={photoSrc}
+                  alt={`${member.fullName} jury portrait`}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                  className="object-cover object-center"
+                  unoptimized={Boolean(member.profilePhotoFileId)}
+                />
+              </div>
+              <div className="flex flex-1 flex-col gap-3 p-[var(--space-md)]">
+                <div className="inline-flex items-center gap-2 text-[0.68rem] uppercase tracking-[0.17em] text-[var(--color-hover)]">
+                  <IconBadge icon={BadgeCheck} size={20} />
+                  Approved Jury Member
+                </div>
+                <h3 className="text-[clamp(1.25rem,2.2vw,1.7rem)] leading-[1.15] text-[var(--color-ink)]">
+                  {member.fullName}
+                </h3>
+                <p className="text-sm leading-[1.6] text-[var(--color-ink-soft)]">
+                  {[member.professionalTitle, memberLocation].filter(Boolean).join(" | ") || "IBPA Jury Council"}
+                </p>
+                <div className="mt-auto flex flex-wrap gap-2">
+                  {(member.expertise ?? []).slice(0, 3).map((item) => (
+                    <span
+                      key={item}
+                      className="rounded-full border border-[var(--border-soft)] bg-[var(--surface-tint)] px-3 py-1 text-xs text-[var(--color-ink-soft)]"
+                    >
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </article>
+          </HoverCard>
+        );
+      })}
+    </StaggerContainer>
   );
 }
