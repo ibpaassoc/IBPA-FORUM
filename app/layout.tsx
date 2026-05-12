@@ -25,7 +25,7 @@ const marckScript = Marck_Script({
 });
 
 export const metadata: Metadata = {
-  title: "IBPA Beauty Championship 2026",
+  title: "IBPA Beauty Award 2026",
   description: "Official IBPA website",
   icons: {
     icon: "/logo.svg", // or "/favicon.ico"

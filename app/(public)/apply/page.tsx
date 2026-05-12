@@ -6,9 +6,9 @@ import ApplyPageIntro from "@/features/applications/components/pages/ApplyPageIn
 import { PageSection } from "@/shared/components/public";
 
 export const metadata: Metadata = {
-  title: "Apply | IBPA Beauty Championship",
+  title: "Apply | IBPA Beauty Award",
   description:
-    "Submit your official participant application for the IBPA Beauty Championship.",
+    "Submit your official participant application for the IBPA Beauty Award.",
 };
 
 export default function ApplyPage() {

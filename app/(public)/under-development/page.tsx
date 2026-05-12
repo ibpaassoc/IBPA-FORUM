@@ -10,7 +10,7 @@ export default function UnderDevelopmentPage() {
       <PageHero
         eyebrow="In Progress"
         title="This section is under development"
-        description="We are still refining this part of the IBPA Beauty Championship website."
+        description="We are still refining this part of the IBPA Beauty Award website."
       />
       <PageSection>
         <div className="page-card rounded-(--radius-lg) p-8">
@@ -20,10 +20,10 @@ export default function UnderDevelopmentPage() {
         </div>
       </PageSection>
       <CTASection
-        title="Explore active championship pages"
-        description="You can continue with categories, jury, applications, and Grand Prix sections."
+        title="Explore active award pages"
+        description="You can continue with directions, jury, applications, and Grand Prix sections."
         primary={{ href: "/", label: "Back Home" }}
-        secondary={{ href: "/categories", label: "View Categories" }}
+        secondary={{ href: "/directions", label: "View Directions" }}
       />
     </main>
   );
