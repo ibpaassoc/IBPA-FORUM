@@ -1,5 +1,5 @@
-import Image from "next/image";
 import clsx from "clsx";
+import SafeImage from "./SafeImage";
 
 type EditorialPhotoCardProps = {
   src: string;
@@ -40,9 +40,9 @@ export default function EditorialPhotoCard({
         : "bg-[rgba(15,24,32,0.24)]";
 
   return (
-    <article className={clsx("group page-card rounded-(--radius-lg)", className)}>
+    <article className={clsx("group page-card h-fit rounded-(--radius-lg)", className)}>
       <div className={clsx("relative overflow-hidden", aspectClassMap[aspect])}>
-        <Image
+        <SafeImage
           src={src}
           alt={alt}
           fill

@@ -18,6 +18,7 @@ export { default as PageSection } from "./PageSection";
 export { default as PremiumCTA } from "./PremiumCTA";
 export { default as ProcessTimeline } from "./ProcessTimeline";
 export { default as Reveal } from "./Reveal";
+export { default as SafeImage } from "./SafeImage";
 export { default as SectionHeading } from "./SectionHeading";
 export { default as StaggerContainer } from "./StaggerContainer";
 export { default as StatCard } from "./StatCard";
