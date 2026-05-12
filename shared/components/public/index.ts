@@ -1,9 +1,15 @@
 export { default as AnimatedReveal } from "./AnimatedReveal";
+export { default as AnimatedImage } from "./AnimatedImage";
 export { default as CTASection } from "./CTASection";
 export { default as EditorialPhotoCard } from "./EditorialPhotoCard";
+export { default as FadeUp } from "./FadeUp";
 export { default as FeatureCard } from "./FeatureCard";
+export { default as FloatingElement } from "./FloatingElement";
+export { default as HoverCard } from "./HoverCard";
 export { default as IconBadge } from "./IconBadge";
 export { default as PageHero } from "./PageHero";
 export { default as PageSection } from "./PageSection";
+export { default as Reveal } from "./Reveal";
 export { default as SectionHeading } from "./SectionHeading";
+export { default as StaggerContainer } from "./StaggerContainer";
 export { default as StatCard } from "./StatCard";
