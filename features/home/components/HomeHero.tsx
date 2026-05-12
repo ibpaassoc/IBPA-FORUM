@@ -39,7 +39,7 @@ export default function HomeHero() {
             </Link>
 
             <Link
-              href="/categories"
+              href="/directions"
               className="ibpa-button ibpa-button-ghost"
             >
               {t.home.hero.categoriesCta}

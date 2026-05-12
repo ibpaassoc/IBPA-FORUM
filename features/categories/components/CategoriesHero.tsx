@@ -17,10 +17,10 @@ export default function CategoriesHero() {
       aside={
         <EditorialImageCard
           src="/images/editorial/makeup.jpg"
-          alt="Luxury beauty editorial portrait for the categories page"
+          alt="Luxury beauty editorial portrait for the directions page"
           eyebrow={t.categoriesPage.hero.entryRules}
           title="Editorial energy for the entry journey"
-          text="A premium visual that sets the tone for applying across IBPA categories."
+          text="A premium visual that sets the tone for applying across IBPA directions."
           aspectClassName="aspect-[4/5]"
           objectPosition="center 18%"
           sizes="(max-width: 1024px) 100vw, 40vw"

@@ -138,11 +138,11 @@ export default function BlockAFields({
       </div>
 
       <SelectField
-        label="Award Category"
-        name="categoryId"
+        label="Award Direction"
+        name="directionId"
         value={String(values.categoryId ?? "")}
         required
-        placeholder="Select category"
+        placeholder="Select direction"
         options={categories.map((category) => ({
           label: category.name,
           value: category.id,
@@ -152,13 +152,13 @@ export default function BlockAFields({
       />
 
       <SelectField
-        label="Specific Award (within category)"
+        label="Specific Award (within direction)"
         name="awardId"
         value={String(values.awardId ?? "")}
         required
         disabled={!selectedCategory}
         placeholder={
-          selectedCategory ? "Select specific award" : "Select category first"
+          selectedCategory ? "Select specific nomination" : "Select direction first"
         }
         options={
           selectedCategory?.awards.map((award) => ({

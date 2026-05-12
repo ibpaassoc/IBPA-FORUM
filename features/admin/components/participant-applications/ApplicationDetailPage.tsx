@@ -5,7 +5,7 @@ import type {
   Award,
   Category,
 } from "@prisma/client";
-import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
+import { categoryFieldConfigs } from "@/features/applications/config/direction-field-configs";
 import { logoutAdminAction } from "@/features/admin/actions/auth.actions";
 import {
   AdminDashboardShell,
@@ -130,7 +130,7 @@ export default function ApplicationDetailPage({
                   label="Membership Level"
                   value={application.membershipLevel || "Not available"}
                 />
-                <DetailItem label="Category" value={application.category.name} />
+                <DetailItem label="Direction" value={application.category.name} />
                 <DetailItem label="Specific Award" value={application.award.name} />
                 <DetailItem
                   label="Professional Website"

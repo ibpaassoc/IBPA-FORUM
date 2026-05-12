@@ -34,13 +34,13 @@ export default function ApplyPageIntro() {
         <StaggerContainer className="grid gap-(--space-md) md:grid-cols-2" stagger={0.1}>
           <FeatureCard
             icon={<IconBadge icon={FileText} />}
-            title="Choose category"
-            description="Select your category and award track before uploading materials."
+            title="Choose direction"
+            description="Select your direction and nomination before uploading materials."
           />
           <FeatureCard
             icon={<IconBadge icon={Search} />}
             title="Prepare portfolio"
-            description="Upload category-relevant media and supporting documents."
+            description="Upload direction-relevant media and supporting documents."
           />
           <FeatureCard
             icon={<IconBadge icon={ClipboardCheck} />}

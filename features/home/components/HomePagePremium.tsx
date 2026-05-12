@@ -49,7 +49,7 @@ export default function HomePagePremium() {
             <Link href="/apply" className="ibpa-button ibpa-button-primary">
               {t.common.applyNow}
             </Link>
-            <Link href="/categories" className="ibpa-button ibpa-button-ghost">
+            <Link href="/directions" className="ibpa-button ibpa-button-ghost">
               {t.home.hero.categoriesCta}
             </Link>
           </div>

@@ -7,15 +7,15 @@ const footerColumns = [
     title: "About",
     links: [
       { href: "https://ibpassociations.org/about", label: "Association" },
-      { href: "/", label: "About Awards" },
+      { href: "/", label: "About Nominations" },
       { href: "/grand-prix", label: "Timeline" },
       { href: "/jury", label: "Jury Council" },
     ],
   },
   {
-    title: "Awards",
+    title: "Nominations",
     links: [
-      { href: "/categories", label: "Categories" },
+      { href: "/directions", label: "Directions" },
       { href: "/jury", label: "Jury" },
       { href: "/grand-prix", label: "Grand Prix" },
       { href: "/apply", label: "Apply" },
@@ -24,8 +24,8 @@ const footerColumns = [
   {
     title: "Resources",
     links: [
-      { href: "/categories", label: "Media Centre" },
-      { href: "mailto:info@ibpa-awards.com", label: "Contact" },
+      { href: "/directions", label: "Media Centre" },
+      { href: "mailto:info@ibpa-nominations.com", label: "Contact" },
       { href: "/", label: "Terms & Conditions" },
       { href: "/", label: "Privacy Policy" },
     ],
@@ -108,7 +108,7 @@ export default function Footer() {
               Contact
             </h4>
             <a
-              href="mailto:info@ibpa-awards.com"
+              href="mailto:info@ibpa-nominations.com"
               className="text-sm text-(--color-ink-soft) transition hover:text-(--color-hover)"
             >
               info@ibpa-awards.com

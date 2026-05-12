@@ -4,7 +4,7 @@ import { useState } from "react";
 import BlockAFields from "@/features/applications/components/application-form/blocks/BlockAFields";
 import BlockBRenderer from "@/features/applications/components/application-form/blocks/BlockBRenderer";
 import FormSection from "@/features/applications/components/application-form/FormSection";
-import { getVisibleCategoryFields, validateApplicationValues } from "@/features/applications/schemas/category-field-validation";
+import { getVisibleCategoryFields, validateApplicationValues } from "@/features/applications/schemas/direction-field-validation";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { FadeUp, FormProgressSidebar } from "@/shared/components/public";
 import type {
@@ -66,7 +66,7 @@ export default function ApplyForm({
     "professionalTitle",
     "yearsExperience",
     "licenseCertification",
-    "categoryId",
+    "directionId",
     "awardId",
     ...visibleCategoryFields.filter((field) => field.required).map((field) => field.key),
   ];
@@ -91,7 +91,7 @@ export default function ApplyForm({
     "professionalTitle",
     "yearsExperience",
     "licenseCertification",
-    "categoryId",
+    "directionId",
     "awardId",
   ];
   const profileComplete = profileFieldKeys.every((fieldKey) =>
@@ -112,7 +112,7 @@ export default function ApplyForm({
         [name]: value,
       };
 
-      if (name === "categoryId") {
+      if (name === "directionId") {
         next.awardId = "";
       }
 
@@ -123,7 +123,7 @@ export default function ApplyForm({
       const next = { ...current };
       delete next[name];
 
-      if (name === "categoryId") {
+      if (name === "directionId") {
         delete next.awardId;
       }
 
@@ -244,7 +244,7 @@ export default function ApplyForm({
               complete: profileComplete,
             },
             {
-              id: "category",
+              id: "direction",
               label: t.applyPage.form.blockBTitle,
               hint: t.applyPage.form.blockBDescription,
               complete: categoryComplete,
@@ -357,7 +357,7 @@ export default function ApplyForm({
               complete: profileComplete,
             },
             {
-              id: "category",
+              id: "direction",
               label: t.applyPage.form.blockBTitle,
               hint: t.applyPage.form.blockBDescription,
               complete: categoryComplete,

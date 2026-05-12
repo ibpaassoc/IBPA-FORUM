@@ -16,7 +16,7 @@ import {
   Trophy,
   Users,
 } from "lucide-react";
-import { categoryCatalog } from "@/features/applications/config/category-catalog";
+import { categoryCatalog } from "@/features/applications/config/direction-catalog";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import {
   BentoFeatureGrid,
@@ -59,23 +59,23 @@ export default function CategoriesPagePremium() {
         media={
           <div className="grid gap-[var(--space-md)]">
             <EditorialPhotoCard
-              src="/images/curated/categories_editorial.jpg"
-              alt="Editorial beauty category hero image"
+              src="/images/curated/directions_editorial.jpg"
+              alt="Editorial beauty direction hero image"
               aspect="landscape"
               overlay="soft"
-              title="Category depth meets real event energy"
+              title="Direction depth meets real event energy"
               priority
             />
             <div className="grid gap-[var(--space-md)] md:grid-cols-2">
               <EditorialPhotoCard
                 src="/images/events/DSC01248.jpg"
-                alt="Category competition closeup"
+                alt="Direction competition closeup"
                 aspect="square"
                 overlay="soft"
               />
               <EditorialPhotoCard
                 src="/images/events/DSC00173.jpg"
-                alt="Beauty category winner portrait"
+                alt="Beauty direction winner portrait"
                 aspect="square"
                 overlay="soft"
               />
@@ -95,7 +95,7 @@ export default function CategoriesPagePremium() {
             id: category.slug,
             icon: <IconBadge icon={Icon} />,
             title: category.name,
-            text: `${category.awards.length} award tracks`,
+            text: `${category.awards.length} nominations`,
             tone: index % 3 === 0 ? "tint" : "default",
             span,
           };
@@ -104,13 +104,13 @@ export default function CategoriesPagePremium() {
 
       <FeaturedStorySection
         eyebrow="Association"
-        title="Every category is tied to real-world artistry and professional standards."
-        description="The IBPA championship structure is designed to highlight discipline-specific excellence while preserving a cohesive global event identity."
-        quote="A category is not only a label. It is the context for fair judging and meaningful recognition."
+        title="Every direction is tied to real-world artistry and professional standards."
+        description="The IBPA championship structure is designed to highlight direction-specific excellence while preserving a cohesive global event identity."
+        quote="A direction is not only a label. It is the context for fair judging and meaningful recognition."
         media={
           <EditorialPhotoCard
             src="/images/events/DSC09821.jpg"
-            alt="Editorial category story from the event floor"
+            alt="Editorial direction story from the event floor"
             aspect="landscape"
             overlay="soft"
             className="h-full"
@@ -129,9 +129,9 @@ export default function CategoriesPagePremium() {
       />
 
       <PremiumCTA
-        eyebrow="Category Entry"
-        title="Choose your strongest category and submit with confidence."
-        description="From artistry to education and brand leadership, every category is built for high-quality professional presentation."
+        eyebrow="Direction Entry"
+        title="Choose your strongest direction and submit with confidence."
+        description="From artistry to education and brand leadership, every direction is built for high-quality professional presentation."
         primary={{ href: "/apply", label: t.common.applyNow }}
         secondary={{ href: "/grand-prix", label: t.common.grandPrix }}
       />

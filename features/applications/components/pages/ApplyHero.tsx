@@ -9,8 +9,8 @@ export default function ApplyHero({
   return (
     <PageHero
       eyebrow="Participant Applications"
-      title="Apply for the IBPA Beauty Championship"
-      description="Submit your official participant entry with category-specific supporting materials and production-ready files for the championship review team."
+      title="Apply for the IBPA Beauty Award"
+      description="Submit your official participant entry with direction-specific supporting materials and production-ready files for the championship review team."
       asideShellClassName="overflow-hidden border-0 bg-transparent p-0 shadow-none"
       aside={
         <EditorialImageCard

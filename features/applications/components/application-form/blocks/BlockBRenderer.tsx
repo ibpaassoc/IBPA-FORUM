@@ -2,8 +2,8 @@
 
 import { ChoiceGroupField, SelectField, TextField, TextareaField } from "@/features/applications/components/application-form/fields/FormControls";
 import UploadField from "@/features/applications/components/application-form/fields/UploadField";
-import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
-import { getFieldVisibility } from "@/features/applications/schemas/category-field-validation";
+import { categoryFieldConfigs } from "@/features/applications/config/direction-field-configs";
+import { getFieldVisibility } from "@/features/applications/schemas/direction-field-validation";
 import type { ApplicationValues, ValidationErrors } from "@/features/applications/types/application.types";
 
 export default function BlockBRenderer({
@@ -37,7 +37,7 @@ export default function BlockBRenderer({
   return (
     <div className="space-y-5">
       <div className="rounded-3xl border border-[rgba(185,217,235,0.36)] bg-[linear-gradient(135deg,rgba(185,217,235,0.18),rgba(255,255,255,0.7))] px-4 py-4 text-sm text-(--color-ink)">
-        Block B is tailored for <strong>{categoryName ?? "this category"}</strong>.
+        Block B is tailored for <strong>{categoryName ?? "this direction"}</strong>.
         Complete every required item to submit a review-ready application.
       </div>
 

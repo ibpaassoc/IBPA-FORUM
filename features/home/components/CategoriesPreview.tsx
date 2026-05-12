@@ -19,7 +19,7 @@ export default function CategoriesPreview() {
           />
 
           <Link
-            href="/categories"
+            href="/directions"
             className="font-(--font-sans) text-[clamp(0.72rem,1vw,0.85rem)] uppercase tracking-widest text-(--color-ink) transition hover:text-(--color-hover)"
           >
             {t.home.categoriesPreview.viewAll} {"->"}
@@ -30,7 +30,7 @@ export default function CategoriesPreview() {
           {categories.map((category, index) => (
             <Link
               key={category}
-              href="/categories"
+              href="/directions"
               className="page-card group bg-(--color-off-white) p-(--space-md) transition hover:border-(--color-hover) hover:bg-(--color-hover)"
             >
               <div className="text-sm font-medium tracking-widest text-(--color-hover) group-hover:text-(--color-title-accent)">
