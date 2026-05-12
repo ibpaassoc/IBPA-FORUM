@@ -46,9 +46,8 @@ export default function EditorialPhotoSection({
             title={primary.title}
             description={primary.description}
             eyebrow={primary.eyebrow}
-            aspect="portrait"
+            aspect="landscape"
             overlay="soft"
-            className="h-full xl:aspect-auto xl:min-h-[clamp(420px,54vw,720px)]"
           />
         </FadeUp>
 
