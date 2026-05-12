@@ -1,1 +1,1 @@
-export * from "@/features/applications/schemas/direction-field-validation";
+export * from "@/features/applications/schemas/category-field-validation";

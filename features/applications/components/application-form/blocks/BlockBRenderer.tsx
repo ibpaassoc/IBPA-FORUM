@@ -2,8 +2,8 @@
 
 import { ChoiceGroupField, SelectField, TextField, TextareaField } from "@/features/applications/components/application-form/fields/FormControls";
 import UploadField from "@/features/applications/components/application-form/fields/UploadField";
-import { categoryFieldConfigs } from "@/features/applications/config/direction-field-configs";
-import { getFieldVisibility } from "@/features/applications/schemas/direction-field-validation";
+import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
+import { getFieldVisibility } from "@/features/applications/schemas/category-field-validation";
 import type { ApplicationValues, ValidationErrors } from "@/features/applications/types/application.types";
 
 export default function BlockBRenderer({

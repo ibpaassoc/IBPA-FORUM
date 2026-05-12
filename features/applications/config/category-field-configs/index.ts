@@ -6,7 +6,7 @@ import {
   optionalTestimonials,
   pdfOnly,
   pressFields,
-} from "@/features/applications/config/direction-field-configs/common";
+} from "@/features/applications/config/category-field-configs/common";
 import type { ApplyFieldConfig } from "@/features/applications/types/application.types";
 
 export const categoryFieldConfigs: Record<string, ApplyFieldConfig[]> = {

@@ -1,6 +1,6 @@
 import { sendApplicationReceivedNotificationEmail } from "@/features/email/server/application-email.workflow";
-import { categoryFieldConfigs } from "@/features/applications/config/direction-field-configs";
-import { validateApplicationValues } from "@/features/applications/schemas/direction-field-validation";
+import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
+import { validateApplicationValues } from "@/features/applications/schemas/category-field-validation";
 import { extractApplicationValues } from "@/features/applications/server/form-mapping";
 import { getApplicationCategories } from "@/features/applications/server/queries";
 import { uploadApplicationFile } from "@/features/applications/server/uploads";

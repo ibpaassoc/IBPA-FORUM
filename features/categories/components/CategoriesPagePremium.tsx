@@ -16,7 +16,7 @@ import {
   Trophy,
   Users,
 } from "lucide-react";
-import { categoryCatalog } from "@/features/applications/config/direction-catalog";
+import { categoryCatalog } from "@/features/applications/config/category-catalog";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import {
   BentoFeatureGrid,

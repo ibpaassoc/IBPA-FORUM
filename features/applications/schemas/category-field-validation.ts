@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { categoryFieldConfigs } from "@/features/applications/config/direction-field-configs";
+import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import { baseApplicationSchema } from "@/features/applications/schemas/application.schema";
 import type {
   ApplicationValues,

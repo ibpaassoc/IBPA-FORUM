@@ -4,7 +4,7 @@ import { useState } from "react";
 import BlockAFields from "@/features/applications/components/application-form/blocks/BlockAFields";
 import BlockBRenderer from "@/features/applications/components/application-form/blocks/BlockBRenderer";
 import FormSection from "@/features/applications/components/application-form/FormSection";
-import { getVisibleCategoryFields, validateApplicationValues } from "@/features/applications/schemas/direction-field-validation";
+import { getVisibleCategoryFields, validateApplicationValues } from "@/features/applications/schemas/category-field-validation";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { FadeUp, FormProgressSidebar } from "@/shared/components/public";
 import type {

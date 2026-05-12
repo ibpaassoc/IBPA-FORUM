@@ -1,1 +1,1 @@
-export { categoryFieldConfigs } from "@/features/applications/config/direction-field-configs";
+export { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";

@@ -1,4 +1,4 @@
-import { categoryCatalog } from "@/features/applications/config/direction-catalog";
+import { categoryCatalog } from "@/features/applications/config/category-catalog";
 import { prisma } from "@/shared/lib/prisma";
 
 export async function syncApplicationCatalog() {

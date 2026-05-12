@@ -1,5 +1,5 @@
 import { unstable_cache } from "next/cache";
-import { categoryCatalog } from "@/features/applications/config/direction-catalog";
+import { categoryCatalog } from "@/features/applications/config/category-catalog";
 import type { CategoryOption } from "@/features/applications/types/application.types";
 import { prisma } from "@/shared/lib/prisma";
 

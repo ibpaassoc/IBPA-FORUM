@@ -1,4 +1,4 @@
-import { categoryFieldConfigs } from "@/features/applications/config/direction-field-configs";
+import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import type {
   ApplicationValues,
   CategoryOption,

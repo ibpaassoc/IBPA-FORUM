@@ -1,5 +1,5 @@
 import type { ApplicationAnswer, ApplicationFile } from "@prisma/client";
-import { categoryFieldConfigs } from "@/features/applications/config/direction-field-configs";
+import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import { logoutAdminAction } from "@/features/admin/actions/auth.actions";
 import { formatAdminDate } from "@/features/admin/server/view-models";
 import AdminReopenScoreButton from "@/features/admin/components/scoring/AdminReopenScoreButton";
