@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import LanguageSwitcher from "@/shared/components/layout/LanguageSwitcher";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import JuryMenu from "@/shared/components/layout/JuryMenu";
@@ -10,6 +11,7 @@ import JuryMenu from "@/shared/components/layout/JuryMenu";
 export default function Header() {
   const [open, setOpen] = useState(false);
   const { t } = useLanguage();
+  const pathname = usePathname();
 
   const navigation = [
     { href: "/", label: t.header.navigation.home },
@@ -31,6 +33,8 @@ export default function Header() {
   }, []);
 
   const handleLinkClick = () => setOpen(false);
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <header className="fixed inset-x-0 top-0 z-100 w-full border-b border-[var(--border-default)] bg-[rgba(255,255,255,0.94)] px-[var(--page-gutter)] shadow-[var(--shadow-sm)] backdrop-blur-[16px]">
@@ -54,7 +58,7 @@ export default function Header() {
                   href={item.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="font-[var(--font-sans)] text-[clamp(0.7rem,1vw,0.8rem)] font-medium uppercase tracking-[0.1em] text-[var(--color-ink)] opacity-75 transition hover:text-[var(--color-hover)] hover:opacity-100"
+                  className="relative font-[var(--font-sans)] text-[clamp(0.7rem,1vw,0.8rem)] font-medium uppercase tracking-[0.1em] text-[var(--color-ink)] opacity-75 transition hover:text-[var(--color-hover)] hover:opacity-100 after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[var(--color-hover)] after:transition-transform after:duration-300 hover:after:scale-x-100"
                 >
                   {item.label}
                 </a>
@@ -62,7 +66,11 @@ export default function Header() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="font-[var(--font-sans)] text-[clamp(0.7rem,1vw,0.8rem)] font-medium uppercase tracking-[0.1em] text-[var(--color-ink)] opacity-75 transition hover:text-[var(--color-hover)] hover:opacity-100"
+                  className={`relative font-[var(--font-sans)] text-[clamp(0.7rem,1vw,0.8rem)] font-medium uppercase tracking-[0.1em] transition after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:bg-[var(--color-hover)] after:transition-transform after:duration-300 ${
+                    isActive(item.href)
+                      ? "text-[var(--color-hover)] opacity-100 after:scale-x-100"
+                      : "text-[var(--color-ink)] opacity-75 after:scale-x-0 hover:text-[var(--color-hover)] hover:opacity-100 hover:after:scale-x-100"
+                  }`}
                 >
                   {item.label}
                 </Link>
@@ -135,7 +143,11 @@ export default function Header() {
                     key={item.href}
                     href={item.href}
                     onClick={handleLinkClick}
-                    className="rounded-[var(--radius-sm)] border border-transparent bg-[var(--color-mist)] px-[var(--space-md)] py-[var(--space-sm)] text-sm font-medium uppercase tracking-[0.16em] text-[var(--color-ink)] transition hover:border-[var(--color-hover)] hover:text-[var(--color-hover)]"
+                    className={`rounded-[var(--radius-sm)] border px-[var(--space-md)] py-[var(--space-sm)] text-sm font-medium uppercase tracking-[0.16em] transition ${
+                      isActive(item.href)
+                        ? "border-[var(--border-strong)] bg-[var(--surface-tint)] text-[var(--color-hover)]"
+                        : "border-transparent bg-[var(--color-mist)] text-[var(--color-ink)] hover:border-[var(--color-hover)] hover:text-[var(--color-hover)]"
+                    }`}
                   >
                     {item.label}
                   </Link>

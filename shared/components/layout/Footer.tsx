@@ -6,10 +6,10 @@ const footerColumns = [
   {
     title: "About",
     links: [
+      { href: "https://ibpassociations.org/about", label: "Association" },
       { href: "/", label: "About Awards" },
-      { href: "/", label: "How It Works" },
       { href: "/grand-prix", label: "Timeline" },
-      { href: "/", label: "FAQ" },
+      { href: "/jury", label: "Jury Council" },
     ],
   },
   {
@@ -34,7 +34,7 @@ const footerColumns = [
 
 export default function Footer() {
   return (
-    <footer className="w-full border-t border-(--border-default) bg-(--color-blue-wash) py-(--space-xl) pb-(--space-lg) text-(--color-ink-soft)">
+    <footer className="w-full border-t border-(--border-default) bg-(--surface-muted) py-(--space-xl) pb-(--space-lg) text-(--color-ink-soft)">
       <div className="mx-auto max-w-(--content-width) px-(--page-gutter)">
         <div className="grid grid-cols-1 gap-(--space-lg) border-b border-border-footer pb-(--space-lg) md:grid-cols-2 xl:grid-cols-[1.45fr_1fr_1fr_1fr_1fr]">
           <div className="max-w-sm">
@@ -75,6 +75,16 @@ export default function Footer() {
                     <a
                       key={link.label}
                       href={link.href}
+                      className="text-sm text-(--color-ink-soft) transition hover:text-(--color-hover)"
+                    >
+                      {link.label}
+                    </a>
+                  ) : link.href.startsWith("http") ? (
+                    <a
+                      key={link.label}
+                      href={link.href}
+                      target="_blank"
+                      rel="noreferrer"
                       className="text-sm text-(--color-ink-soft) transition hover:text-(--color-hover)"
                     >
                       {link.label}
