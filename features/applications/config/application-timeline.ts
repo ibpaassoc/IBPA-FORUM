@@ -3,7 +3,7 @@ export const applicationTimeline = {
   judgingLabel: "August 5-20, 2026",
   ceremonyLabel: "September 4-5, 2026",
   membershipMinimum: "Trainer / Coach",
-  feeLabel: "$50 per category",
+  feeLabel: "$50 per direction",
 };
 
 export const heardAboutOptions = [

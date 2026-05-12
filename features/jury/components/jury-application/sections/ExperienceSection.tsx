@@ -105,7 +105,7 @@ export default function ExperienceSection({
 
         <FieldShell
           label="Areas of Expertise"
-          hint="Choose every category you are qualified to evaluate."
+          hint="Choose every direction you are qualified to evaluate."
           required
         >
           <div className="grid gap-3 sm:grid-cols-2">

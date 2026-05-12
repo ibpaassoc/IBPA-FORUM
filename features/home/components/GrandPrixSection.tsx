@@ -35,8 +35,8 @@ export default function GrandPrixSection() {
 
         <EditorialImageCard
           src="/images/events/DSC01430.jpg"
-          alt="Winners celebration at the IBPA awards event"
-          eyebrow="Awards showcase"
+          alt="Winners celebration at the IBPA nominations event"
+          eyebrow="Nominations showcase"
           title="Celebrating winners with editorial polish"
           text="A strong trophy and winner image helps the Grand Prix story feel celebratory and real."
           aspectClassName="aspect-[4/5] lg:aspect-[5/6]"

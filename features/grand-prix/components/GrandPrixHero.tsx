@@ -20,7 +20,7 @@ export default function GrandPrixHero() {
           alt="Award trophies and recognition at the IBPA ceremony"
           eyebrow={t.grandPrixPage.hero.snapshot}
           title="A ceremonial frame for the Grand Prix story"
-          text="The awards page now carries a stronger premium event feel with real ceremony photography."
+          text="The nominations page now carries a stronger premium event feel with real ceremony photography."
           aspectClassName="aspect-[4/5]"
           objectPosition="center 28%"
           sizes="(max-width: 1024px) 100vw, 40vw"
@@ -60,7 +60,7 @@ export default function GrandPrixHero() {
       </p>
       <div className="flex flex-wrap gap-4">
         <Link
-          href="/categories"
+          href="/directions"
           className="ibpa-button ibpa-button-white"
         >
           {t.grandPrixPage.hero.cta}

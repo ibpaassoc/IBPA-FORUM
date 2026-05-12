@@ -7,12 +7,12 @@ export default function HomeEventGallery() {
     <EditorialMasonryGallery
       label="Editorial Gallery"
       title="Real event photography, not placeholders"
-      text="A rotating mix of awards, backstage moments, judging, and community scenes helps the platform feel rooted in the live IBPA world."
+      text="A rotating mix of nominations, backstage moments, judging, and community scenes helps the platform feel rooted in the live IBPA world."
       items={[
         {
           src: "/images/events/DSC00060.jpg",
           alt: "IBPA event atmosphere with a red-carpet presentation",
-          title: "Awards night energy",
+          title: "Nominations night energy",
           eyebrow: "Ceremony",
           text: "A cinematic stage and crowd moment that brings the event presence forward.",
           aspectClassName: "aspect-[4/5]",

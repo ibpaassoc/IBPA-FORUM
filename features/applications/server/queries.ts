@@ -1,5 +1,5 @@
 import { unstable_cache } from "next/cache";
-import { categoryCatalog } from "@/features/applications/config/category-catalog";
+import { categoryCatalog } from "@/features/applications/config/direction-catalog";
 import type { CategoryOption } from "@/features/applications/types/application.types";
 import { prisma } from "@/shared/lib/prisma";
 
@@ -42,7 +42,7 @@ async function readApplicationCategoriesFromDb(): Promise<CategoryOption[]> {
 
 const getCachedApplicationCategories = unstable_cache(
   async () => readApplicationCategoriesFromDb(),
-  ["application-categories"],
+  ["application-directions"],
   {
     revalidate: 60 * 60 * 6,
   }

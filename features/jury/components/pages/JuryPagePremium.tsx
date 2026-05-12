@@ -95,7 +95,7 @@ export default async function JuryPagePremium() {
             id: "2",
             icon: <IconBadge icon={Search} />,
             title: "Get approved",
-            text: "IBPA evaluates your expertise and confirms your fit for designated categories.",
+            text: "IBPA evaluates your expertise and confirms your fit for designated directions.",
           },
           {
             id: "3",

@@ -25,13 +25,13 @@ export default function GrandPrixPagePremium() {
       <EditorialHero
         eyebrow="IBPA Grand Prix"
         title="IBPA Grand Prix 2026"
-        description="The highest championship distinction for multi-discipline performance across the IBPA event platform."
+        description="The highest championship distinction for multi-direction performance across the IBPA event platform."
         actions={
           <div className="flex flex-wrap gap-3">
             <Link href="/apply" className="ibpa-button ibpa-button-primary">
               Apply to Compete
             </Link>
-            <Link href="/categories" className="ibpa-button ibpa-button-ghost">
+            <Link href="/directions" className="ibpa-button ibpa-button-ghost">
               Review Categories
             </Link>
           </div>
@@ -84,13 +84,13 @@ export default function GrandPrixPagePremium() {
           {
             id: "1",
             title: "Nomination",
-            text: "Participants become nominees by competing in 5 or more disciplines.",
+            text: "Participants become nominees by competing in 5 or more directions.",
             icon: <IconBadge icon={Medal} />,
           },
           {
             id: "2",
             title: "Judging",
-            text: "Each discipline is reviewed independently through the official panel process.",
+            text: "Each direction is reviewed independently through the official panel process.",
             icon: <IconBadge icon={Users} />,
           },
           {
@@ -107,19 +107,19 @@ export default function GrandPrixPagePremium() {
           <SectionHeading
             eyebrow="Timeline Highlights"
             title="Designed for clarity at each championship stage"
-            description="Visual emphasis across nomination, review, and awards presentation."
+            description="Visual emphasis across nomination, review, and nominations presentation."
           />
           <StaggerContainer className="mt-[var(--space-lg)] grid gap-[var(--space-md)] md:grid-cols-3">
             {[
               {
                 icon: Calendar,
                 title: "Application window",
-                text: "Participants submit discipline entries within official campaign dates.",
+                text: "Participants submit direction entries within official campaign dates.",
               },
               {
                 icon: Star,
                 title: "Panel scoring period",
-                text: "Judges evaluate entries and finalize discipline-level scores.",
+                text: "Judges evaluate entries and finalize direction-level scores.",
               },
               {
                 icon: Sparkles,
@@ -143,16 +143,16 @@ export default function GrandPrixPagePremium() {
         src="/images/events/DSC09821.jpg"
         alt="Grand Prix full-width event moment"
         eyebrow="Grand Prix Atmosphere"
-        title="A final stage built for standout multi-discipline performance."
-        description="A premium awards environment where cumulative excellence is visibly recognized."
+        title="A final stage built for standout multi-direction performance."
+        description="A premium nominations environment where cumulative excellence is visibly recognized."
       />
 
       <PremiumCTA
         eyebrow="Grand Prix Entry"
         title="Build your path to the highest distinction."
-        description="Enter multiple disciplines, elevate your profile, and compete for IBPA's top honor."
+        description="Enter multiple directions, elevate your profile, and compete for IBPA's top honor."
         primary={{ href: "/apply", label: "Start Entry" }}
-        secondary={{ href: "/categories", label: "View Disciplines" }}
+        secondary={{ href: "/directions", label: "View Disciplines" }}
         aside={
           <div className="inline-flex items-center gap-2 text-sm text-[var(--color-ink-soft)]">
             <IconBadge icon={Award} size={20} />

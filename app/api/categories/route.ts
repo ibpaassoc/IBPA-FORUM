@@ -7,10 +7,10 @@ export async function GET() {
 
     return NextResponse.json(categories);
   } catch (error) {
-    console.error("GET /api/categories error:", error);
+    console.error("GET /api/directions error:", error);
 
     return NextResponse.json(
-      { error: "Failed to fetch categories" },
+      { error: "Failed to fetch directions" },
       { status: 500 }
     );
   }

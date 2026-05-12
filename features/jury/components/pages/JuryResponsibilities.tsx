@@ -1,8 +1,8 @@
 const responsibilities = [
   {
     number: "01",
-    title: "Review category entries",
-    text: "Evaluate submissions only within approved areas of expertise and according to championship standards.",
+    title: "Review direction entries",
+    text: "Evaluate submissions only within approved areas of expertise and according to award standards.",
   },
   {
     number: "02",

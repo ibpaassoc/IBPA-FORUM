@@ -1,4 +1,4 @@
-import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
+import { categoryFieldConfigs } from "@/features/applications/config/direction-field-configs";
 import type {
   ApplicationValues,
   CategoryOption,
@@ -25,7 +25,7 @@ export function extractApplicationValues(
     city: getTextValue(formData, "city"),
     professionalTitle: getTextValue(formData, "professionalTitle"),
     yearsExperience: getTextValue(formData, "yearsExperience"),
-    categoryId: getTextValue(formData, "categoryId"),
+    categoryId: getTextValue(formData, "directionId"),
     awardId: getTextValue(formData, "awardId"),
     websiteUrl: getTextValue(formData, "websiteUrl"),
     socialUrl: getTextValue(formData, "socialUrl"),

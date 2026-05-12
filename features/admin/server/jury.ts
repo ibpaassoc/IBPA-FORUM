@@ -3,7 +3,7 @@ import "server-only";
 import { revalidatePath } from "next/cache";
 import type { Prisma } from "@prisma/client";
 import { getAppSession } from "@/auth";
-import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
+import { categoryFieldConfigs } from "@/features/applications/config/direction-field-configs";
 import { normalizeJuryEmail } from "@/features/jury/server/auth";
 import type { DraftScoreInput, SubmitScoreInput } from "@/features/admin/actions/scoring_schemas";
 import { prisma } from "@/shared/lib/prisma";

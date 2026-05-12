@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
+import { categoryFieldConfigs } from "@/features/applications/config/direction-field-configs";
 import { baseApplicationSchema } from "@/features/applications/schemas/application.schema";
 import type {
   ApplicationValues,
@@ -191,7 +191,7 @@ export function validateApplicationValues({
     city: getStringValue(values, "city"),
     professionalTitle: getStringValue(values, "professionalTitle"),
     yearsExperience: getStringValue(values, "yearsExperience"),
-    categoryId: getStringValue(values, "categoryId"),
+    categoryId: getStringValue(values, "directionId"),
     awardId: getStringValue(values, "awardId"),
     websiteUrl: getStringValue(values, "websiteUrl"),
     socialUrl: getStringValue(values, "socialUrl"),
@@ -221,11 +221,11 @@ export function validateApplicationValues({
   }
 
   const selectedCategory = categories.find(
-    (category) => category.id === getStringValue(values, "categoryId")
+    (category) => category.id === getStringValue(values, "directionId")
   );
 
   if (!selectedCategory) {
-    errors.categoryId = "Please select a valid award category.";
+    errors.categoryId = "Please select a valid award direction.";
   }
 
   const selectedAward = selectedCategory?.awards.find(
@@ -233,7 +233,7 @@ export function validateApplicationValues({
   );
 
   if (!selectedAward) {
-    errors.awardId = "Please select a valid specific award.";
+    errors.awardId = "Please select a valid specific nomination.";
   }
 
   validateConfigField(
