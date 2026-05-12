@@ -121,7 +121,7 @@ textarea {
   font-family: var(--font-sans);
 }
 
-a:hover {
+a:hover:not(.ibpa-button) {
   color: var(--color-hover);
 }
 
@@ -430,9 +430,11 @@ a:hover {
 }
 
 .ibpa-button-primary:hover {
-  background: var(--color-hover);
+  background: var(--color-white);
+  border: 1.5px solid var(--color-hover);
+  color: var(--color-hover);
   box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 .ibpa-button-gold:hover {
@@ -443,6 +445,7 @@ a:hover {
 }
 
 .ibpa-button-ghost:hover {
+  background: var(--color-white);
   border-color: var(--color-hover);
   color: var(--color-hover);
 }
@@ -450,6 +453,10 @@ a:hover {
 .ibpa-button-white:hover {
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.7);
+}
+
+.ibpa-button:hover {
+  text-decoration: none;
 }
 
 .editorial-image-frame {
