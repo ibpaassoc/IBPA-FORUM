@@ -10,15 +10,17 @@ import JuryMenu from "@/shared/components/layout/JuryMenu";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const pathname = usePathname();
+  const associationLabel =
+    language === "ru" ? "Ассоциация" : language === "ua" ? "Асоціація" : "Association";
 
   const navigation = [
     { href: "/", label: t.header.navigation.home },
     { href: "/directions", label: t.header.navigation.categories },
     { href: "/jury", label: t.header.navigation.jury },
     { href: "/grand-prix", label: t.header.navigation.grandPrix },
-    { href: "https://ibpassociations.org/about", label: "Association", external: true },
+    { href: "https://ibpassociations.org/about", label: associationLabel, external: true },
   ];
 
   useEffect(() => {
