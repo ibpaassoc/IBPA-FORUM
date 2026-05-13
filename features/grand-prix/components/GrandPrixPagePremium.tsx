@@ -139,6 +139,8 @@ export default function GrandPrixPagePremium() {
               overlay="soft"
               title={copy.mediaTitle}
               description={copy.mediaDescription}
+              objectPosition="center 30%"
+              mobileObjectPosition="center 24%"
               priority
             />
             <div className="grid gap-[var(--space-md)] md:grid-cols-2">
@@ -147,12 +149,16 @@ export default function GrandPrixPagePremium() {
                 alt="Grand Prix nominee backstage moment"
                 aspect="square"
                 overlay="soft"
+                objectPosition="center 30%"
+                mobileObjectPosition="center 22%"
               />
               <EditorialPhotoCard
                 src="/images/community/DSC09818.jpg"
                 alt="Grand Prix finalist portrait"
                 aspect="square"
                 overlay="soft"
+                objectPosition="center 30%"
+                mobileObjectPosition="center 24%"
               />
             </div>
           </div>
@@ -223,6 +229,8 @@ export default function GrandPrixPagePremium() {
         eyebrow={copy.breakEyebrow}
         title={copy.breakTitle}
         description={copy.breakText}
+        objectPosition="center 30%"
+        mobileObjectPosition="center 24%"
       />
 
       <PremiumCTA

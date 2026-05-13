@@ -117,6 +117,8 @@ export default function CategoriesPagePremium() {
               aspect="landscape"
               overlay="soft"
               title={copy.heroMediaTitle}
+              objectPosition="center 28%"
+              mobileObjectPosition="center 22%"
               priority
             />
             <div className="grid gap-[var(--space-md)] md:grid-cols-2">
@@ -125,12 +127,16 @@ export default function CategoriesPagePremium() {
                 alt="Direction competition closeup"
                 aspect="square"
                 overlay="soft"
+                objectPosition="center 32%"
+                mobileObjectPosition="center 24%"
               />
               <EditorialPhotoCard
                 src="/images/events/DSC00173.jpg"
                 alt="Beauty direction winner portrait"
                 aspect="square"
                 overlay="soft"
+                objectPosition="center 30%"
+                mobileObjectPosition="center 24%"
               />
             </div>
           </div>
@@ -170,6 +176,8 @@ export default function CategoriesPagePremium() {
             alt="Editorial direction story from the event floor"
             aspect="landscape"
             overlay="soft"
+            objectPosition="center 30%"
+            mobileObjectPosition="center 24%"
             className="h-full"
           />
         }

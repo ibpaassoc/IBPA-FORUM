@@ -57,8 +57,12 @@ export default function BentoFeatureGrid({
             )}
           >
             {item.icon ? <div className="mb-[var(--space-sm)]">{item.icon}</div> : null}
-            <h3 className="text-[clamp(1.15rem,1.8vw,1.6rem)] leading-[1.2] text-[var(--color-ink)]">{item.title}</h3>
-            <p className="mt-[var(--space-sm)] text-sm leading-[1.8] text-[var(--color-ink-soft)]">{item.text}</p>
+            <h3 className="text-[clamp(1.15rem,1.8vw,1.6rem)] leading-[1.2] text-[var(--color-ink)] text-pretty">
+              {item.title}
+            </h3>
+            <p className="mt-[var(--space-sm)] break-words text-sm leading-[1.8] text-[var(--color-ink-soft)]">
+              {item.text}
+            </p>
           </HoverCard>
         ))}
       </StaggerContainer>

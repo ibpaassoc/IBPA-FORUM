@@ -82,10 +82,10 @@ export default function PublicJuryGrid({
                   <IconBadge icon={BadgeCheck} size={20} />
                   {copy.approvedMember}
                 </div>
-                <h3 className="text-[clamp(1.25rem,2.2vw,1.7rem)] leading-[1.15] text-[var(--color-ink)]">
+                <h3 className="text-[clamp(1.25rem,2.2vw,1.7rem)] leading-[1.15] text-[var(--color-ink)] text-pretty">
                   {member.fullName}
                 </h3>
-                <p className="text-sm leading-[1.6] text-[var(--color-ink-soft)]">
+                <p className="break-words text-sm leading-[1.6] text-[var(--color-ink-soft)]">
                   {[member.professionalTitle, memberLocation].filter(Boolean).join(copy.separator) ||
                     copy.council}
                 </p>

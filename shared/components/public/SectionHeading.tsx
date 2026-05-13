@@ -22,11 +22,13 @@ export default function SectionHeading({
   return (
     <div className={clsx(center && "mx-auto text-center", className)}>
       {eyebrow ? <p className={clsx("page-eyebrow", center && "justify-center")}>{eyebrow}</p> : null}
-      <h2 className="mt-(--space-sm) font-(--font-title-family) text-[clamp(1.8rem,4vw,3.4rem)] leading-[1.05] text-(--color-ink)">
+      <h2 className="mt-(--space-sm) font-(--font-title-family) text-[clamp(1.8rem,4vw,3.4rem)] leading-[1.05] text-(--color-ink) text-pretty">
         {title}
       </h2>
       {description ? (
-        <p className={clsx("mt-(--space-sm) page-copy max-w-2xl", center && "mx-auto")}>{description}</p>
+        <p className={clsx("mt-(--space-sm) page-copy max-w-2xl break-words", center && "mx-auto")}>
+          {description}
+        </p>
       ) : null}
       {actions ? <div className="mt-(--space-md)">{actions}</div> : null}
     </div>

@@ -193,6 +193,8 @@ export default function JuryPagePremium({ juryMembers }: { juryMembers: JuryMemb
               aspect="landscape"
               overlay="soft"
               title={copy.leadershipTitle}
+              objectPosition="center 30%"
+              mobileObjectPosition="center 24%"
               priority
             />
             <div className="grid gap-[var(--space-md)] md:grid-cols-2">
@@ -201,12 +203,16 @@ export default function JuryPagePremium({ juryMembers }: { juryMembers: JuryMemb
                 alt="Jury collaboration close-up"
                 aspect="square"
                 overlay="soft"
+                objectPosition="center 30%"
+                mobileObjectPosition="center 24%"
               />
               <EditorialPhotoCard
                 src="/images/events/DSC00947.jpg"
                 alt="Judge reviewing application materials"
                 aspect="square"
                 overlay="soft"
+                objectPosition="center 30%"
+                mobileObjectPosition="center 24%"
               />
             </div>
           </div>
@@ -301,6 +307,8 @@ export default function JuryPagePremium({ juryMembers }: { juryMembers: JuryMemb
             alt="Jury leadership and community photo"
             aspect="landscape"
             overlay="soft"
+            objectPosition="center 30%"
+            mobileObjectPosition="center 24%"
           />
         }
       />

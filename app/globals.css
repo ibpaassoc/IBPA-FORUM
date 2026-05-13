@@ -103,6 +103,7 @@ h4 {
   font-weight: 400;
   letter-spacing: 0;
   line-height: 1.15;
+  text-wrap: balance;
 }
 
 a,
@@ -173,6 +174,7 @@ a:hover:not(.ibpa-button) {
 @utility page-eyebrow {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: var(--space-sm);
   color: var(--color-hover);
   font-family: var(--font-sans);
@@ -188,6 +190,8 @@ a:hover:not(.ibpa-button) {
   font-size: clamp(0.875rem, 1.5vw, 1rem);
   font-weight: 400;
   line-height: 1.7;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
 }
 
 @utility title-accent {
@@ -207,14 +211,20 @@ a:hover:not(.ibpa-button) {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  max-width: 100%;
   border-radius: var(--radius-pill);
   cursor: pointer;
   font-family: var(--font-sans);
   font-size: clamp(0.72rem, 1vw, 0.85rem);
   font-weight: 500;
+  line-height: 1.25;
   letter-spacing: 0.08em;
+  min-height: 44px;
   padding: clamp(0.6rem, 1.2vw, 0.75rem) clamp(1.2rem, 2.5vw, 2rem);
+  text-align: center;
+  text-wrap: balance;
   text-transform: uppercase;
+  white-space: normal;
   transition: all 0.36s var(--motion-editorial);
 }
 
@@ -482,6 +492,10 @@ a:hover:not(.ibpa-button) {
   object-position: var(--safe-image-desktop-position, center);
 }
 
+.full-bleed-image {
+  object-position: var(--full-bleed-desktop-position, center);
+}
+
 .editorial-soft-divider {
   border-top: 1px solid var(--border-default);
   border-bottom: 1px solid var(--border-default);
@@ -520,6 +534,13 @@ a:hover:not(.ibpa-button) {
     object-position: var(
       --safe-image-mobile-position,
       var(--safe-image-desktop-position, center)
+    );
+  }
+
+  .full-bleed-image {
+    object-position: var(
+      --full-bleed-mobile-position,
+      var(--full-bleed-desktop-position, center)
     );
   }
 }

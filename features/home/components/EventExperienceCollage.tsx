@@ -1,10 +1,8 @@
 "use client";
 
 import clsx from "clsx";
-import { Camera, Sparkles } from "lucide-react";
 import {
   FadeUp,
-  IconBadge,
   PageSection,
   SafeImage,
   SectionHeading,
@@ -91,7 +89,7 @@ export default function EventExperienceCollage({
   liveLabel,
 }: EventExperienceCollageProps) {
   return (
-    <PageSection>
+    <PageSection padded={false} className="pt-[clamp(2.4rem,5vw,4rem)] pb-[clamp(1.25rem,2.6vw,2.2rem)]">
       <SectionHeading eyebrow={eyebrow} title={title} description={description} />
 
       <div className="mt-[var(--space-lg)] hidden lg:grid lg:auto-rows-[minmax(7.2rem,1fr)] lg:grid-cols-12 lg:gap-[var(--space-md)]">
@@ -121,41 +119,26 @@ export default function EventExperienceCollage({
           />
         </FadeUp>
 
-        <FadeUp className="col-span-3 row-span-1">
-          <CollageCard
-            src="/images/events/DSC00934.jpg"
-            alt="IBPA award trophies and ceremony details"
-            caption={detailCaption}
-            className="h-full"
-            sizes="(max-width: 1400px) 24vw, 20vw"
-            objectPosition="center 34%"
-            mobileObjectPosition="center 22%"
-          />
-        </FadeUp>
-
-        <FadeUp className="col-span-2 row-span-1">
-          <CollageCard
-            src="/images/events/DSC00192.jpg"
-            alt="Stage atmosphere and live award coverage at IBPA"
-            caption={stageCaption}
-            className="h-full"
-            sizes="(max-width: 1400px) 16vw, 14vw"
-            objectPosition="center 28%"
-            mobileObjectPosition="center 21%"
-          />
-        </FadeUp>
-
-        <FadeUp className="col-span-2 row-span-1">
-          <div className="page-card flex h-full flex-col justify-between rounded-[var(--radius-lg)] border-[var(--border-strong)] bg-[linear-gradient(165deg,#f8fbfe_0%,#eef6fb_100%)] p-[var(--space-md)]">
-            <div className="inline-flex items-center gap-2 text-[0.7rem] uppercase tracking-[0.16em] text-[var(--color-hover)]">
-              <IconBadge icon={Camera} size={20} />
-              {eyebrow}
-            </div>
-            <p className="mt-3 text-sm leading-[1.72] text-[var(--color-ink-soft)]">{description}</p>
-            <div className="mt-4 inline-flex items-center gap-2 text-sm text-[var(--color-ink)]">
-              <IconBadge icon={Sparkles} size={20} />
-              {ambienceLabel}
-            </div>
+        <FadeUp className="col-span-5 row-span-1">
+          <div className="grid h-full grid-cols-2 gap-[var(--space-md)]">
+            <CollageCard
+              src="/images/events/DSC00934.jpg"
+              alt="IBPA award trophies and ceremony details"
+              caption={detailCaption}
+              className="h-full"
+              sizes="(max-width: 1400px) 18vw, 16vw"
+              objectPosition="center 34%"
+              mobileObjectPosition="center 22%"
+            />
+            <CollageCard
+              src="/images/events/DSC00192.jpg"
+              alt="Stage atmosphere and live award coverage at IBPA"
+              caption={stageCaption}
+              className="h-full"
+              sizes="(max-width: 1400px) 18vw, 16vw"
+              objectPosition="center 28%"
+              mobileObjectPosition="center 21%"
+            />
           </div>
         </FadeUp>
       </div>

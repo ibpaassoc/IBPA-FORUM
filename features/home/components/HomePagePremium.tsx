@@ -134,6 +134,8 @@ export default function HomePagePremium() {
               description={copy.heroMediaDescription}
               overlay="medium"
               aspect="portrait"
+              objectPosition="center 16%"
+              mobileObjectPosition="center 12%"
               priority
             />
             <div className="grid gap-[var(--space-md)]">
@@ -142,6 +144,8 @@ export default function HomePagePremium() {
                 alt="Beauty artist preparing a model backstage"
                 overlay="soft"
                 aspect="square"
+                objectPosition="center 28%"
+                mobileObjectPosition="center 22%"
                 priority
               />
               <EditorialPhotoCard
@@ -149,6 +153,8 @@ export default function HomePagePremium() {
                 alt="IBPA event detail closeup"
                 overlay="soft"
                 aspect="square"
+                objectPosition="center 30%"
+                mobileObjectPosition="center 24%"
               />
             </div>
           </div>
@@ -245,6 +251,8 @@ export default function HomePagePremium() {
             alt="Professional jury leadership and community moment"
             aspect="landscape"
             overlay="soft"
+            objectPosition="center 30%"
+            mobileObjectPosition="center 24%"
           />
         }
         actions={
@@ -283,6 +291,9 @@ export default function HomePagePremium() {
         eyebrow={copy.fullBleedEyebrow}
         title={copy.fullBleedTitle}
         description={copy.fullBleedText}
+        className="mt-[clamp(1.6rem,3vw,2.4rem)] mb-[var(--space-2xl)]"
+        objectPosition="center 38%"
+        mobileObjectPosition="center 28%"
       />
 
       <PremiumCTA

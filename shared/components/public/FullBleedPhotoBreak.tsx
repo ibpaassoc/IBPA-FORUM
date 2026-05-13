@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import clsx from "clsx";
 import FadeUp from "./FadeUp";
 
@@ -15,6 +15,8 @@ type FullBleedPhotoBreakProps = {
   className?: string;
   children?: ReactNode;
   priority?: boolean;
+  objectPosition?: string;
+  mobileObjectPosition?: string;
 };
 
 export default function FullBleedPhotoBreak({
@@ -27,7 +29,14 @@ export default function FullBleedPhotoBreak({
   className,
   children,
   priority,
+  objectPosition,
+  mobileObjectPosition,
 }: FullBleedPhotoBreakProps) {
+  const imageStyle = {
+    "--full-bleed-desktop-position": objectPosition ?? "center",
+    "--full-bleed-mobile-position": mobileObjectPosition ?? objectPosition ?? "center",
+  } as CSSProperties;
+
   return (
     <section
       className={clsx(
@@ -40,8 +49,9 @@ export default function FullBleedPhotoBreak({
         alt={alt}
         fill
         priority={priority}
-        className="object-cover object-center"
+        className="full-bleed-image object-cover"
         sizes="100vw"
+        style={imageStyle}
       />
       <div className="absolute inset-0 bg-[rgba(15,23,32,0.22)]" />
       <div className="page-section relative z-10 flex min-h-[52vh] items-end py-[var(--space-xl)]">

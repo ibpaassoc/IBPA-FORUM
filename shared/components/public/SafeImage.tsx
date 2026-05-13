@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { ImageOff } from "lucide-react";
 import clsx from "clsx";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 
 type SafeImageProps = {
@@ -47,11 +47,13 @@ export default function SafeImage({
     return Array.from(deduped);
   }, [src, fallbackSrc, fallbackSrcs]);
 
-  const [activeSourceIndex, setActiveSourceIndex] = useState(0);
+  const sourceSignature = normalizedSources.join("|");
+  const [sourceState, setSourceState] = useState(() => ({
+    signature: sourceSignature,
+    index: 0,
+  }));
 
-  useEffect(() => {
-    setActiveSourceIndex(0);
-  }, [normalizedSources]);
+  const activeSourceIndex = sourceState.signature === sourceSignature ? sourceState.index : 0;
 
   const activeSrc = normalizedSources[activeSourceIndex] ?? null;
   const showFallback = !activeSrc;
@@ -70,7 +72,15 @@ export default function SafeImage({
           fill={fill}
           sizes={sizes}
           priority={priority}
-          onError={() => setActiveSourceIndex((current) => current + 1)}
+          onError={() =>
+            setSourceState((current) => {
+              if (current.signature !== sourceSignature) {
+                return { signature: sourceSignature, index: 1 };
+              }
+
+              return { signature: current.signature, index: current.index + 1 };
+            })
+          }
           className={clsx("safe-image-asset", className)}
           unoptimized={unoptimized}
           style={imageStyle}
