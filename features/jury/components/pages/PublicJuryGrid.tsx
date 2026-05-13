@@ -1,5 +1,9 @@
 "use client";
 
+import { BadgeCheck } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { HoverCard, IconBadge, SafeImage, StaggerContainer } from "@/shared/components/public";
+
 type PublicJuryMember = {
   id: string;
   fullName: string;
@@ -11,70 +15,95 @@ type PublicJuryMember = {
   profilePhotoFileId?: string | null;
 };
 
+const juryFallbackPhotos = [
+  "/images/team/sitting_group.jpg",
+  "/images/community/DSC09818.jpg",
+  "/images/community/items.jpg",
+  "/images/events/DSC00947.jpg",
+];
+
 export default function PublicJuryGrid({
   members,
 }: {
   members: PublicJuryMember[];
 }) {
+  const { language } = useLanguage();
+  const copy = {
+    en: {
+      approvedMember: "Approved Jury Member",
+      council: "IBPA Jury Council",
+      portraitSuffix: "jury portrait",
+      separator: " | ",
+    },
+    ru: {
+      approvedMember: "Одобренный член жюри",
+      council: "Совет жюри IBPA",
+      portraitSuffix: "портрет члена жюри",
+      separator: " | ",
+    },
+    ua: {
+      approvedMember: "Схвалений член журі",
+      council: "Рада журі IBPA",
+      portraitSuffix: "портрет члена журі",
+      separator: " | ",
+    },
+  }[language];
+
   return (
-    <div className="grid gap-(--space-lg) sm:grid-cols-2 lg:grid-cols-3">
-      {members.map((member) => (
-        <article
-          key={member.id}
-          className="group overflow-hidden rounded-4xlrder border-black/10 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
-        >
-          <div className="relative aspect-4/5 overflow-hidden bg-[#f7efe4]">
-            {member.profilePhotoFileId ? (
-              <img
-                src={`/api/jury/profile-photo/${member.profilePhotoFileId}`}
-                alt={`${member.fullName} jury profile photo`}
-                className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center text-sm uppercase tracking-[0.25em] text-(--color-gold)">
-                No Photo
+    <StaggerContainer className="grid gap-[var(--space-md)] sm:grid-cols-2 xl:grid-cols-3" stagger={0.1}>
+      {members.map((member, index) => {
+        const primaryFallback = juryFallbackPhotos[index % juryFallbackPhotos.length];
+        const secondaryFallback = juryFallbackPhotos[(index + 1) % juryFallbackPhotos.length];
+        const photoSrc =
+          member.profilePhotoFileId
+            ? `/api/jury/profile-photo/${member.profilePhotoFileId}`
+            : primaryFallback;
+        const memberLocation = [member.city, member.country].filter(Boolean).join(", ");
+
+        return (
+          <HoverCard key={member.id} className="h-full">
+            <article className="page-card flex h-full flex-col rounded-[var(--radius)]">
+              <div className="editorial-image-frame relative aspect-[4/5] rounded-b-none border-x-0 border-t-0 bg-[var(--surface-muted)]">
+                <SafeImage
+                  src={photoSrc}
+                  fallbackSrc={primaryFallback}
+                  fallbackSrcs={[secondaryFallback]}
+                  alt={`${member.fullName} ${copy.portraitSuffix}`}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                  objectPosition="center 22%"
+                  mobileObjectPosition="center 16%"
+                  className="object-cover"
+                  unoptimized={Boolean(member.profilePhotoFileId)}
+                />
               </div>
-            )}
-          </div>
-
-          <div className="space-y-4 p-(--space-md)">
-            <div>
-              <p className="text-xs uppercase tracking-[0.22em] text-(--color-gold)">
-                Active Jury Member
-              </p>
-
-              <h3 className="mt-2 font-(--font-display) text-2xl text-(--color-navy)">
-                {member.fullName}
-              </h3>
-
-              {member.professionalTitle ? (
-                <p className="mt-1 text-sm font-medium text-(--color-steel)">
-                  {member.professionalTitle}
+              <div className="flex flex-1 flex-col gap-3 p-[var(--space-md)]">
+                <div className="inline-flex items-center gap-2 text-[0.68rem] uppercase tracking-[0.17em] text-[var(--color-hover)]">
+                  <IconBadge icon={BadgeCheck} size={20} />
+                  {copy.approvedMember}
+                </div>
+                <h3 className="text-[clamp(1.25rem,2.2vw,1.7rem)] leading-[1.15] text-[var(--color-ink)] text-pretty">
+                  {member.fullName}
+                </h3>
+                <p className="break-words text-sm leading-[1.6] text-[var(--color-ink-soft)]">
+                  {[member.professionalTitle, memberLocation].filter(Boolean).join(copy.separator) ||
+                    copy.council}
                 </p>
-              ) : null}
-
-              {member.city || member.country ? (
-                <p className="mt-1 text-sm text-(--color-steel)">
-                  {[member.city, member.country].filter(Boolean).join(", ")}
-                </p>
-              ) : null}
-            </div>
-
-            {member.expertise?.length ? (
-              <div className="flex flex-wrap gap-2">
-                {member.expertise.map((item) => (
-                  <span
-                    key={item}
-                    className="rounded-full border border-black/10 bg-[#fbf7f0] px-3 py-1 text-xs text-(--color-navy)"
-                  >
-                    {item}
-                  </span>
-                ))}
+                <div className="mt-auto flex flex-wrap gap-2">
+                  {(member.expertise ?? []).slice(0, 3).map((item) => (
+                    <span
+                      key={item}
+                      className="rounded-full border border-[var(--border-soft)] bg-[var(--surface-tint)] px-3 py-1 text-xs text-[var(--color-ink-soft)]"
+                    >
+                      {item}
+                    </span>
+                  ))}
+                </div>
               </div>
-            ) : null}
-          </div>
-        </article>
-      ))}
-    </div>
+            </article>
+          </HoverCard>
+        );
+      })}
+    </StaggerContainer>
   );
 }

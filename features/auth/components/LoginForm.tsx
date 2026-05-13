@@ -43,7 +43,7 @@ export default function LoginForm() {
   return (
     <form action={handleSubmit} className="mt-[var(--space-lg)] space-y-[var(--space-md)]">
       <div>
-        <label htmlFor="email" className="mb-[var(--space-xs)] block text-[clamp(0.68rem,1vw,0.78rem)] font-medium uppercase tracking-[0.08em] text-[var(--color-navy)]">
+        <label htmlFor="email" className="mb-[var(--space-xs)] block text-[clamp(0.68rem,1vw,0.78rem)] font-medium uppercase tracking-[0.08em] text-[var(--color-ink)]">
           {t.auth.form.email}
         </label>
         <input
@@ -51,13 +51,13 @@ export default function LoginForm() {
           name="email"
           type="email"
           required
-          className="w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] text-[var(--color-navy)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-navy)] focus:shadow-[0_0_0_3px_rgba(26,38,64,0.07)]"
+          className="w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] text-[var(--color-ink)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-hover)] focus:shadow-[0_0_0_3px_rgba(114,160,193,0.16)]"
           placeholder={t.auth.form.emailPlaceholder}
         />
       </div>
 
       <div>
-        <label htmlFor="password" className="mb-[var(--space-xs)] block text-[clamp(0.68rem,1vw,0.78rem)] font-medium uppercase tracking-[0.08em] text-[var(--color-navy)]">
+        <label htmlFor="password" className="mb-[var(--space-xs)] block text-[clamp(0.68rem,1vw,0.78rem)] font-medium uppercase tracking-[0.08em] text-[var(--color-ink)]">
           {t.auth.form.password}
         </label>
         <input
@@ -65,13 +65,13 @@ export default function LoginForm() {
           name="password"
           type="password"
           required
-          className="w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] text-[var(--color-navy)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-navy)] focus:shadow-[0_0_0_3px_rgba(26,38,64,0.07)]"
+          className="w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] text-[var(--color-ink)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-hover)] focus:shadow-[0_0_0_3px_rgba(114,160,193,0.16)]"
           placeholder={t.auth.form.passwordPlaceholder}
         />
       </div>
 
       {error ? (
-        <p className="rounded-[var(--radius-sm)] border border-[var(--color-gold)] bg-[rgba(201,169,110,0.15)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-navy)]">
+        <p className="rounded-[var(--radius-sm)] border border-[var(--color-hover)] bg-[rgba(185,217,235,0.26)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-ink)]">
           {error}
         </p>
       ) : null}
@@ -84,9 +84,9 @@ export default function LoginForm() {
         {isSubmitting ? t.auth.form.openingSite : t.auth.form.login}
       </button>
 
-      <p className="text-sm leading-6 text-[var(--color-steel)]">
+      <p className="text-sm leading-6 text-[var(--color-ink-soft)]">
         {t.auth.form.noAccount}{" "}
-        <Link href="/jury/register" className="text-[var(--color-gold)] hover:text-[var(--color-navy)]">
+        <Link href="/jury/register" className="text-[var(--color-hover)] hover:text-[var(--color-blue)] hover:underline">
           {t.auth.form.register}
         </Link>
         .

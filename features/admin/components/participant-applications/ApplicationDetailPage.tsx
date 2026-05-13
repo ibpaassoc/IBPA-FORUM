@@ -130,8 +130,8 @@ export default function ApplicationDetailPage({
                   label="Membership Level"
                   value={application.membershipLevel || "Not available"}
                 />
-                <DetailItem label="Category" value={application.category.name} />
-                <DetailItem label="Specific Award" value={application.award.name} />
+                <DetailItem label="Direction" value={application.category.name} />
+                <DetailItem label="Nomination" value={application.award.name} />
                 <DetailItem
                   label="Professional Website"
                   value={application.websiteUrl || "Not provided"}
@@ -207,7 +207,7 @@ export default function ApplicationDetailPage({
                         href={`/api/admin/application-files/${file.id}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-(--admin-gold)"
+                        className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-(--admin-blue)"
                       >
                         <span>{file.fileName}</span>
                         <span className="admin-muted text-xs">
@@ -233,7 +233,7 @@ export default function ApplicationDetailPage({
                               href={`/api/admin/application-files/${file.id}`}
                               target="_blank"
                               rel="noreferrer"
-                              className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-(--admin-gold)"
+                              className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-(--admin-blue)"
                             >
                               <span>{file.fileName}</span>
                               <span className="admin-muted text-xs">

@@ -14,7 +14,7 @@ export default function SectionTitle({
       <p className="page-eyebrow">
         {label}
       </p>
-      <h2 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(1.8rem,3.5vw,3rem)] font-light leading-[1.15] text-[var(--color-navy)]">
+      <h2 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(1.8rem,3.5vw,3rem)] font-light leading-[1.15] text-[var(--color-ink)]">
         {title}
       </h2>
     </div>

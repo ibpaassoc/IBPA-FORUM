@@ -13,7 +13,7 @@ import {
   ScoringHttpError,
 } from "@/features/admin/server/shared";
 
-export type AdminScoringSort = "averageScore" | "category" | "status";
+export type AdminScoringSort = "averageScore" | "direction" | "status";
 export type AdminScoringFilterStatus = "NOT_STARTED" | "IN_PROGRESS" | "COMPLETE";
 export type AdminScoringApplicationRecord = Prisma.ApplicationGetPayload<{
   include: {
@@ -33,7 +33,7 @@ function getSafeStatusFilter(status?: string): AdminScoringFilterStatus | undefi
 }
 
 function getSafeSort(sort?: string): AdminScoringSort {
-  if (sort === "category" || sort === "status") {
+  if (sort === "direction" || sort === "status") {
     return sort;
   }
 
@@ -173,7 +173,7 @@ export async function getAdminScoringOverview({
     );
 
   filteredApplications.sort((left, right) => {
-    if (activeSort === "category") {
+    if (activeSort === "direction") {
       const categoryComparison = left.categoryName.localeCompare(right.categoryName);
       if (categoryComparison !== 0) {
         return categoryComparison;
@@ -423,7 +423,7 @@ export async function exportApplicationScoresCsv(applicationId: string) {
 
   const headers = [
     "Participant Name",
-    "Category",
+    "Direction",
     "Award",
     "Judge Name",
     "Judge Email",

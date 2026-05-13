@@ -42,7 +42,7 @@ async function readApplicationCategoriesFromDb(): Promise<CategoryOption[]> {
 
 const getCachedApplicationCategories = unstable_cache(
   async () => readApplicationCategoriesFromDb(),
-  ["application-categories"],
+  ["application-directions"],
   {
     revalidate: 60 * 60 * 6,
   }

@@ -6,6 +6,7 @@ import BlockBRenderer from "@/features/applications/components/application-form/
 import FormSection from "@/features/applications/components/application-form/FormSection";
 import { getVisibleCategoryFields, validateApplicationValues } from "@/features/applications/schemas/category-field-validation";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { FadeUp, FormProgressSidebar } from "@/shared/components/public";
 import type {
   ApplicationValues,
   CategoryOption,
@@ -80,6 +81,29 @@ export default function ApplyForm({
     requiredFieldKeys.length === 0
       ? 0
       : Math.round((completedRequiredCount / requiredFieldKeys.length) * 100);
+  const profileFieldKeys = [
+    "fullName",
+    "email",
+    "phone",
+    "country",
+    ...(String(values.country ?? "") === "USA" ? ["stateProvince"] : []),
+    "city",
+    "professionalTitle",
+    "yearsExperience",
+    "licenseCertification",
+    "categoryId",
+    "awardId",
+  ];
+  const profileComplete = profileFieldKeys.every((fieldKey) =>
+    isFieldComplete(values[fieldKey])
+  );
+  const categoryRequiredKeys = visibleCategoryFields
+    .filter((field) => field.required)
+    .map((field) => field.key);
+  const categoryComplete =
+    Boolean(selectedCategory) &&
+    categoryRequiredKeys.every((fieldKey) => isFieldComplete(values[fieldKey]));
+  const readyComplete = progressPercentage >= 100;
 
   function handleChange(name: string, value: string | string[]) {
     setValues((current) => {
@@ -205,82 +229,147 @@ export default function ApplyForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-(--space-lg)">
-      <div className="space-y-(--space-md)">
-        <FormSection
-          eyebrow={t.applyPage.form.blockA}
-          title={t.applyPage.form.blockATitle}
-          description={t.applyPage.form.blockADescription}
-        >
-          <BlockAFields
-            values={values}
-            errors={errors}
-            categories={categories}
-            onChange={handleChange}
-            onFilesChange={handleFilesChange}
-          />
-        </FormSection>
+    <form onSubmit={handleSubmit}>
+      <div className="mb-[var(--space-md)] xl:hidden">
+        <FormProgressSidebar
+          title={t.applyPage.form.progress}
+          subtitle={`${completedRequiredCount} of ${requiredFieldKeys.length} ${t.applyPage.form.requiredComplete}`}
+          progressLabel={t.applyPage.form.progress}
+          progressValue={progressPercentage}
+          steps={[
+            {
+              id: "profile",
+              label: t.applyPage.form.blockATitle,
+              hint: t.applyPage.form.blockADescription,
+              complete: profileComplete,
+            },
+            {
+              id: "direction",
+              label: t.applyPage.form.blockBTitle,
+              hint: t.applyPage.form.blockBDescription,
+              complete: categoryComplete,
+            },
+            {
+              id: "submit",
+              label: t.applyPage.form.submit,
+              hint: t.applyPage.form.redirecting,
+              complete: readyComplete,
+            },
+          ]}
+        />
+      </div>
 
-        <FormSection
-          eyebrow={t.applyPage.form.blockB}
-          title={t.applyPage.form.blockBTitle}
-          description={t.applyPage.form.blockBDescription}
-        >
-          <div className="transition-all duration-300 ease-out">
-            <BlockBRenderer
-              categorySlug={selectedCategory?.slug ?? null}
-              categoryName={selectedCategory?.name}
-              values={values}
-              errors={errors}
-              onChange={handleChange}
-              onFilesChange={handleFilesChange}
-            />
-          </div>
-        </FormSection>
+      <div className="grid gap-[var(--space-md)] xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
+        <div className="space-y-[var(--space-md)]">
+          <FadeUp>
+            <FormSection
+              eyebrow={t.applyPage.form.blockA}
+              title={t.applyPage.form.blockATitle}
+              description={t.applyPage.form.blockADescription}
+            >
+              <BlockAFields
+                values={values}
+                errors={errors}
+                categories={categories}
+                onChange={handleChange}
+                onFilesChange={handleFilesChange}
+              />
+            </FormSection>
+          </FadeUp>
 
-        <section className="rounded-(--radius) border border-(--border-default) bg-(--color-off-white) p-(--space-lg) shadow-(--shadow-lg)">
-          <div className="flex flex-col gap-(--space-sm) border-b border-(--border-default) pb-(--space-md) md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-(--color-gold)">
-                {t.applyPage.form.progress}
-              </p>
-              <p className="mt-(--space-xs) text-sm text-(--color-steel)">
-                {completedRequiredCount} of {requiredFieldKeys.length}{" "}
-                {t.applyPage.form.requiredComplete}
-              </p>
-            </div>
-
-            <div className="w-full max-w-sm">
-              <div className="h-2 rounded-full bg-(--color-mist)">
-                <div
-                  className="h-2 rounded-full bg-(--color-gold) transition-all"
-                  style={{ width: `${progressPercentage}%` }}
+          <FadeUp delay={0.06}>
+            <FormSection
+              eyebrow={t.applyPage.form.blockB}
+              title={t.applyPage.form.blockBTitle}
+              description={t.applyPage.form.blockBDescription}
+            >
+              <div className="transition-all duration-500 [transition-timing-function:var(--motion-editorial)]">
+                <BlockBRenderer
+                  categorySlug={selectedCategory?.slug ?? null}
+                  categoryName={selectedCategory?.name}
+                  values={values}
+                  errors={errors}
+                  onChange={handleChange}
+                  onFilesChange={handleFilesChange}
                 />
               </div>
-            </div>
-          </div>
+            </FormSection>
+          </FadeUp>
 
-          {submissionState.message ? (
-            <div
-              className={`mt-5 rounded-[1.4rem] border px-4 py-4 text-sm leading-7 ${
-                submissionState.type === "success"
-                  ? "border-(--color-gold) bg-[rgba(201,169,110,0.15)] text-(--color-navy)"
-                  : "border-(--color-gold) bg-[rgba(201,169,110,0.15)] text-(--color-navy)"
-              }`}
-              aria-live="polite"
-            >
-              {submissionState.message}
-            </div>
-          ) : null}
+          <FadeUp delay={0.1}>
+            <section className="rounded-(--radius) border border-(--border-default) bg-(--surface) p-(--space-lg) shadow-(--shadow-lg)">
+              <div className="flex flex-col gap-(--space-sm) border-b border-(--border-default) pb-(--space-md) md:flex-row md:items-center md:justify-between">
+                <div>
+                  <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-(--color-hover)">
+                    {t.applyPage.form.progress}
+                  </p>
+                  <p className="mt-(--space-xs) text-sm text-(--color-ink-soft)">
+                    {completedRequiredCount} of {requiredFieldKeys.length}{" "}
+                    {t.applyPage.form.requiredComplete}
+                  </p>
+                </div>
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="ibpa-button ibpa-button-primary mt-(--space-md) w-full disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isSubmitting ? t.applyPage.form.submitting : t.applyPage.form.submit}
-          </button>
-        </section>
+                <div className="w-full max-w-sm">
+                  <div className="h-2 rounded-full bg-(--color-mist)">
+                    <div
+                      className="h-2 rounded-full bg-(--color-hover) transition-all duration-500 [transition-timing-function:var(--motion-editorial)]"
+                      style={{ width: `${progressPercentage}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {submissionState.message ? (
+                <div
+                  className={`mt-5 rounded-[1.4rem] border px-4 py-4 text-sm leading-7 ${
+                    submissionState.type === "success"
+                      ? "border-(--color-hover) bg-[rgba(185,217,235,0.26)] text-(--color-ink)"
+                      : "border-(--color-hover) bg-[rgba(185,217,235,0.26)] text-(--color-ink)"
+                  }`}
+                  aria-live="polite"
+                >
+                  {submissionState.message}
+                </div>
+              ) : null}
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="ibpa-button ibpa-button-primary mt-(--space-md) w-full disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isSubmitting ? t.applyPage.form.submitting : t.applyPage.form.submit}
+              </button>
+            </section>
+          </FadeUp>
+        </div>
+
+        <FormProgressSidebar
+          className="hidden xl:block"
+          title={t.applyPage.form.progress}
+          subtitle={`${completedRequiredCount} of ${requiredFieldKeys.length} ${t.applyPage.form.requiredComplete}`}
+          progressLabel={t.applyPage.form.progress}
+          progressValue={progressPercentage}
+          steps={[
+            {
+              id: "profile",
+              label: t.applyPage.form.blockATitle,
+              hint: t.applyPage.form.blockADescription,
+              complete: profileComplete,
+            },
+            {
+              id: "direction",
+              label: t.applyPage.form.blockBTitle,
+              hint: t.applyPage.form.blockBDescription,
+              complete: categoryComplete,
+            },
+            {
+              id: "submit",
+              label: t.applyPage.form.submit,
+              hint: t.applyPage.form.redirecting,
+              complete: readyComplete,
+            },
+          ]}
+        />
       </div>
     </form>
   );

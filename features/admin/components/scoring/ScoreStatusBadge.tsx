@@ -9,12 +9,12 @@ type ScoreStatusBadgeProps = {
 
 const statusStyles: Record<
   ScoreStatusBadgeProps["status"],
-  "muted" | "gold" | "success" | "navy"
+  "muted" | "gold" | "success" | "blue"
 > = {
   NOT_STARTED: "muted",
   DRAFT: "gold",
   SUBMITTED: "success",
-  REOPENED: "navy",
+  REOPENED: "blue",
   IN_PROGRESS: "gold",
   COMPLETE: "success",
 };

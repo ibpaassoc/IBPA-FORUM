@@ -254,7 +254,7 @@ export default function JuryApplicationDetailPage({
                     <input type="hidden" name="id" value={application.id} />
                     <button
                       type="submit"
-                      className="admin-alert-danger inline-flex items-center justify-center rounded-full px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition hover:border-(--admin-gold) hover:text-(--admin-gold-strong)"
+                      className="admin-alert-danger inline-flex items-center justify-center rounded-full px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition hover:border-(--admin-blue) hover:text-(--admin-blue-strong)"
                     >
                       Reject Application
                     </button>
@@ -271,7 +271,7 @@ export default function JuryApplicationDetailPage({
               {profilePhoto ? (
                 <div className="mt-5">
                   <p className="text-sm font-semibold text-(--admin-ink)">Profile Photo</p>
-                  <div className="mt-4 overflow-hidden rounded-2xl border border-[rgba(26,38,64,0.12)] bg-white">
+                  <div className="mt-4 overflow-hidden rounded-2xl border border-[rgba(37,42,45,0.12)] bg-white">
                     <Image
                       src={`/api/admin/jury-files/${profilePhoto.id}`}
                       alt={application.fullName}
@@ -298,7 +298,7 @@ export default function JuryApplicationDetailPage({
                       href={`/api/admin/jury-files/${file.id}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-(--admin-gold)"
+                      className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-(--admin-blue)"
                     >
                       <span>{file.fileName}</span>
                       <span className="admin-muted text-xs">

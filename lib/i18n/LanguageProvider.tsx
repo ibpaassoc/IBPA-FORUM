@@ -8,7 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { languages, translations, type Language } from "@/lib/i18n/translations";
+import { translations, type Language } from "@/lib/i18n/translations";
 
 const STORAGE_KEY = "ibpa-language";
 
@@ -20,26 +20,19 @@ type LanguageContextValue = {
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
-function isLanguage(value: string | null): value is Language {
-  return languages.includes(value as Language);
-}
+type LanguageProviderProps = {
+  children: ReactNode;
+  initialLanguage?: Language;
+};
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<Language>(() => {
-    if (typeof window === "undefined") {
-      return "en";
-    }
+const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
 
-    const savedLanguage = window.localStorage.getItem(STORAGE_KEY);
-    if (isLanguage(savedLanguage)) {
-      return savedLanguage;
-    }
-
-    return "en";
-  });
+export function LanguageProvider({ children, initialLanguage = "en" }: LanguageProviderProps) {
+  const [language, setLanguageState] = useState<Language>(initialLanguage);
 
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEY, language);
+    document.cookie = `${STORAGE_KEY}=${language}; path=/; max-age=${COOKIE_MAX_AGE_SECONDS}; samesite=lax`;
     document.documentElement.lang = language === "ua" ? "uk" : language;
   }, [language]);
 

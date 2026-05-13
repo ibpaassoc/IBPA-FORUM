@@ -13,7 +13,7 @@ export async function GET(request: Request) {
 
     const url = new URL(request.url);
     const data = await getAdminScoringOverview({
-      category: url.searchParams.get("category") ?? undefined,
+      category: url.searchParams.get("direction") ?? undefined,
       status: url.searchParams.get("status") ?? undefined,
       q: url.searchParams.get("q") ?? undefined,
       sort: url.searchParams.get("sort") ?? undefined,

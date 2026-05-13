@@ -39,7 +39,7 @@ export default function LanguageSwitcher({
   if (mobile) {
     return (
       <div className="grid gap-2">
-        <p className="px-1 text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-[var(--color-gold)]">
+        <p className="px-1 text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-[var(--color-hover)]">
           {t.header.language}
         </p>
         <div className="grid grid-cols-3 gap-2">
@@ -50,8 +50,8 @@ export default function LanguageSwitcher({
               onClick={() => chooseLanguage(item)}
               className={`rounded-[var(--radius-sm)] border px-[var(--space-sm)] py-[var(--space-sm)] text-sm font-medium uppercase tracking-[0.14em] transition ${
                 item === language
-                  ? "border-[var(--color-gold)] bg-[var(--color-gold)] text-[var(--color-navy-deep)]"
-                  : "border-[var(--border-default)] bg-[var(--color-white)] text-[var(--color-navy)] hover:border-[var(--color-gold)]"
+                  ? "border-[var(--color-hover)] bg-[var(--color-title-accent)] text-[var(--color-ink)]"
+                  : "border-[var(--border-default)] bg-[var(--color-white)] text-[var(--color-ink)] hover:border-[var(--color-hover)] hover:text-[var(--color-hover)]"
               }`}
             >
               {languageLabels[item].short}
@@ -83,8 +83,8 @@ export default function LanguageSwitcher({
               onClick={() => chooseLanguage(item)}
               className={`block w-full rounded-[var(--radius-sm)] px-[var(--space-sm)] py-[var(--space-sm)] text-left text-sm font-medium transition ${
                 item === language
-                  ? "bg-[var(--color-gold)] text-[var(--color-navy-deep)]"
-                  : "text-[var(--color-navy)] hover:bg-[var(--color-mist)] hover:text-[var(--color-gold)]"
+                  ? "bg-[var(--color-title-accent)] text-[var(--color-ink)]"
+                  : "text-[var(--color-ink)] hover:bg-[var(--color-mist)] hover:text-[var(--color-hover)]"
               }`}
             >
               {languageLabels[item].label}

@@ -8,7 +8,7 @@ export async function GET(request: Request) {
   try {
     const judge = await getAuthenticatedJudgeScoringApiContext();
     const url = new URL(request.url);
-    const category = url.searchParams.get("category") ?? undefined;
+    const category = url.searchParams.get("direction") ?? undefined;
     const data = await getJudgeAssignedApplications({
       judge,
       category,

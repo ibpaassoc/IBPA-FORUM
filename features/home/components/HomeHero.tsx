@@ -1,52 +1,51 @@
 "use client";
 
-import Link from "next/link";
-import Countdown from "@/features/home/components/Countdown";
+import {
+  EditorialHero,
+  EditorialPhotoCard,
+} from "@/shared/components/public";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 export default function HomeHero() {
   const { t } = useLanguage();
 
   return (
-    <section className="relative flex min-h-[92vh] items-center overflow-hidden bg-[linear-gradient(160deg,var(--color-navy-deep)_0%,var(--color-navy)_50%,var(--color-navy-mid)_100%)] pt-[clamp(60px,8vh,72px)]">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_80%_40%,rgba(124,168,200,0.15)_0%,transparent_70%),radial-gradient(ellipse_40%_40%_at_20%_80%,rgba(201,169,110,0.08)_0%,transparent_60%)]" />
-      <div className="absolute inset-0 bg-[linear-gradient(white_1px,transparent_1px),linear-gradient(90deg,white_1px,transparent_1px)] bg-size-[clamp(40px,5vw,60px)_clamp(40px,5vw,60px)] opacity-[0.04]" />
-
-      <div className="relative z-10 mx-auto flex max-w-(--content-width) flex-col gap-(--space-xl) px-(--page-gutter) page-section-pad lg:flex-row lg:items-center lg:justify-between">
-        <div className="max-w-3xl">
-          <p className="page-eyebrow mb-(--space-md) animate-[fadeUp_0.7s_ease_both]">
-            {t.home.hero.eyebrow}
-          </p>
-
-          <h1 className="animate-[fadeUp_0.7s_ease_0.1s_both] font-(--font-display) text-[clamp(2.2rem,5vw,4.2rem)] leading-[1.1] text-white">
-            {t.home.hero.title}
-          </h1>
-
-          <p className="mt-(--space-md) max-w-2xl animate-[fadeUp_0.7s_ease_0.22s_both] text-[clamp(0.875rem,1.5vw,1rem)] leading-[1.75] text-[rgba(255,255,255,0.65)]">
-            {t.home.hero.description}
-          </p>
-
-          <div className="mt-(--space-lg) flex animate-[fadeUp_0.7s_ease_0.34s_both] flex-wrap gap-(--space-sm)">
-            <Link
-              href="/apply"
-              className="ibpa-button ibpa-button-gold"
-            >
-              {t.common.applyNow}
-            </Link>
-
-            <Link
-              href="/categories"
-              className="ibpa-button ibpa-button-white"
-            >
-              {t.home.hero.categoriesCta}
-            </Link>
-          </div>
-
-          <div className="animate-[fadeUp_0.7s_ease_0.46s_both]">
-            <Countdown />
-          </div>
-        </div>
-      </div>
-    </section>
+    <EditorialHero
+            title={t.home.hero.title}
+            description={t.home.hero.description}
+            media={
+              <div className="grid gap-[var(--space-md)] lg:grid-cols-[1.2fr_0.8fr]">
+                <EditorialPhotoCard
+                  src="/images/editorial/makeup.jpg"
+                  alt="IBPA lead editorial beauty image"
+                  title={t.home.copy.heroMediaTitle}
+                  overlay="medium"
+                  aspect="portrait"
+                  objectPosition="center 16%"
+                  mobileObjectPosition="center 12%"
+                  priority
+                />
+                <div className="grid gap-[var(--space-md)]">
+                  <EditorialPhotoCard
+                    src="/images/curated/home_hero_support.jpg"
+                    alt="Beauty artist preparing a model backstage"
+                    overlay="soft"
+                    aspect="square"
+                    objectPosition="center 28%"
+                    mobileObjectPosition="center 22%"
+                    priority
+                  />
+                  <EditorialPhotoCard
+                    src="/images/events/DSC01460.jpg"
+                    alt="IBPA event detail closeup"
+                    overlay="soft"
+                    aspect="square"
+                    objectPosition="center 30%"
+                    mobileObjectPosition="center 24%"
+                  />
+                </div>
+              </div>
+            }
+          />
   );
 }

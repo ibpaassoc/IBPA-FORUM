@@ -2,59 +2,61 @@
 
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { PageHero } from "@/shared/components/layout/PageShell";
+import {
+  EditorialHero,
+  EditorialPhotoCard,
+} from "@/shared/components/public";
 
-export default function GrandPrixHero() {
+export default function GrandPrixPagePremium() {
   const { t } = useLanguage();
-
+  
   return (
-    <PageHero
+    <EditorialHero
       eyebrow={t.grandPrixPage.hero.eyebrow}
       title={t.grandPrixPage.hero.title}
       description={t.grandPrixPage.hero.description}
-      aside={
-        <div className="space-y-4">
-          <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-gold)">
-            {t.grandPrixPage.hero.snapshot}
-          </p>
-          <div className="rounded-sm border border-border-footer bg-[rgba(255,255,255,0.07)] p-(--space-md) font-light">
-            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-[rgba(255,255,255,0.45)]">
-              {t.grandPrixPage.hero.eligibility}
-            </p>
-            <p className="mt-(--space-xs) font-(--font-display) text-[clamp(1.1rem,2vw,1.6rem)]">
-              {t.grandPrixPage.hero.eligibilityValue}
-            </p>
-          </div>
-          <div className="rounded-sm border border-border-footer bg-[rgba(255,255,255,0.07)] p-(--space-md) font-light">
-            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-[rgba(255,255,255,0.45)]">
-              {t.grandPrixPage.hero.evaluation}
-            </p>
-            <p className="mt-(--space-xs) font-(--font-display) text-[clamp(1.8rem,4vw,2.8rem)]">
-              {t.grandPrixPage.hero.evaluationValue}
-            </p>
-          </div>
-          <div className="rounded-sm border border-border-footer bg-[rgba(255,255,255,0.07)] p-(--space-md) font-light">
-            <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-[rgba(255,255,255,0.45)]">
-              {t.grandPrixPage.hero.decision}
-            </p>
-            <p className="mt-(--space-xs) font-(--font-display) text-[clamp(1.1rem,2vw,1.6rem)]">
-              {t.grandPrixPage.hero.decisionValue}
-            </p>
+      media={
+        <div className="grid gap-[var(--space-md)]">
+          <EditorialPhotoCard
+            src="/images/curated/grandprix_editorial.jpg"
+            alt="Grand Prix cinematic hero image"
+            aspect="landscape"
+            overlay="soft"
+            title={t.grandPrixPage.copy.mediaTitle}
+            description={t.grandPrixPage.copy.mediaDescription}
+            objectPosition="center 30%"
+            mobileObjectPosition="center 24%"
+            priority
+          />
+          <div className="grid gap-[var(--space-md)] md:grid-cols-2">
+            <EditorialPhotoCard
+              src="/images/events/DSC00551.jpg"
+              alt="Grand Prix nominee backstage moment"
+              aspect="square"
+              overlay="soft"
+              objectPosition="center 30%"
+              mobileObjectPosition="center 22%"
+            />
+            <EditorialPhotoCard
+              src="/images/community/DSC09818.jpg"
+              alt="Grand Prix finalist portrait"
+              aspect="square"
+              overlay="soft"
+              objectPosition="center 30%"
+              mobileObjectPosition="center 24%"
+            />
           </div>
         </div>
       }
-    >
-      <p className="mb-(--space-lg) max-w-2xl text-sm leading-[1.7] text-[rgba(255,255,255,0.65)]">
-        {t.grandPrixPage.hero.body}
-      </p>
-      <div className="flex flex-wrap gap-4">
-        <Link
-          href="/categories"
-          className="ibpa-button ibpa-button-white"
-        >
-          {t.grandPrixPage.hero.cta}
-        </Link>
-      </div>
-    </PageHero>
+      floatingCard={
+        <article className="page-card rounded-[var(--radius)] p-[var(--space-md)]">
+          <p className="text-[0.66rem] uppercase tracking-[0.2em] text-[var(--color-hover)]">{t.grandPrixPage.copy.rule}</p>
+          <p className="mt-1 font-[var(--font-title-family)] text-[clamp(1.55rem,2vw,2.1rem)] leading-[1.1] text-[var(--color-ink)]">
+            {t.grandPrixPage.copy.fiveDirections}
+          </p>
+          <p className="mt-2 text-sm leading-[1.7] text-[var(--color-ink-soft)]">{t.grandPrixPage.copy.qualificationRule}</p>
+        </article>
+      }
+    />
   );
 }

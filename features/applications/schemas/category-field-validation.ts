@@ -225,7 +225,7 @@ export function validateApplicationValues({
   );
 
   if (!selectedCategory) {
-    errors.categoryId = "Please select a valid award category.";
+    errors.categoryId = "Please select a valid direction.";
   }
 
   const selectedAward = selectedCategory?.awards.find(
@@ -233,7 +233,7 @@ export function validateApplicationValues({
   );
 
   if (!selectedAward) {
-    errors.awardId = "Please select a valid specific award.";
+    errors.awardId = "Please select a valid specific nomination.";
   }
 
   validateConfigField(

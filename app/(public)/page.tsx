@@ -1,21 +1,29 @@
-import CategoriesPreview from "@/features/home/components/CategoriesPreview";
-import CTASection from "@/features/home/components/CTASection";
-import FAQ from "@/features/home/components/FAQ";
-import GrandPrixSection from "@/features/home/components/GrandPrixSection";
-import HomeHero from "@/features/home/components/HomeHero";
-import JurySection from "@/features/home/components/JurySection";
-import Process from "@/features/home/components/Process";
+"use client";
 
-export default function Home() {
+import { 
+    HomeCategoriesRow, 
+    HomeHero,
+    HomeWelcome,
+    HomeWhy,
+    HomeJuryStandards,
+    HomeTimeline,
+    HomeEvent,
+    HomeFullBleed,
+    HomeCta,
+} from "@/features/home/components";
+
+export default function HomePagePremium() {
   return (
-    <main className="bg-(--color-off-white) text-(--color-navy)">
+    <main className="page-shell">
       <HomeHero />
-      <CategoriesPreview />
-      <Process />
-      <GrandPrixSection />
-      <JurySection />
-      <FAQ />
-      <CTASection />
+      <HomeWelcome />
+      <HomeWhy />
+      <HomeCategoriesRow />
+      <HomeJuryStandards />
+      <HomeTimeline />
+      <HomeEvent />
+      <HomeFullBleed />
+      <HomeCta />
     </main>
   );
 }

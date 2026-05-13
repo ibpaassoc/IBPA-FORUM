@@ -2,30 +2,62 @@
 
 import JuryApplicationForm from "@/features/jury/components/jury-application/JuryApplicationForm";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { PageSection, PageShell } from "@/shared/components/layout/PageShell";
+import {
+  EditorialPhotoCard,
+  PageSection,
+  SectionHeading,
+  StaggerContainer,
+} from "@/shared/components/public";
 
 export default function JuryApplyPage() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
+  const copy = {
+    en: {
+      cardTitle: "Apply as an expert",
+      cardText: "Structured, serious, and transparent from the first step.",
+    },
+    ru: {
+      cardTitle: "Подача как эксперт",
+      cardText: "Структурированно, серьезно и прозрачно с первого шага.",
+    },
+    ua: {
+      cardTitle: "Подача як експерт",
+      cardText: "Структуровано, серйозно й прозоро з першого кроку.",
+    },
+  }[language];
 
   return (
-    <PageShell>
-      <PageSection className="pt-28 pb-8">
-        <div className="mx-auto mb-[var(--space-lg)] max-w-3xl rounded-t-[var(--radius)] bg-[var(--color-navy)] px-[var(--space-xl)] py-[var(--space-lg)]">
-          <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-[var(--color-gold)]">
-            {t.juryPage.apply.eyebrow}
-          </p>
-          <h1 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(2.2rem,5vw,4.2rem)] font-light leading-[1.1] text-white">
-            {t.juryPage.apply.title}
-          </h1>
-          <p className="mt-[var(--space-sm)] max-w-2xl text-sm leading-[1.7] text-[rgba(255,255,255,0.55)] sm:text-base">
-            {t.juryPage.apply.text}
-          </p>
+    <main className="page-shell">
+      <PageSection className="pt-[clamp(76px,10vh,96px)]" surface="tint">
+        <div className="grid gap-[var(--space-lg)] xl:grid-cols-[0.95fr_1.05fr] xl:items-center">
+          <SectionHeading
+            eyebrow={t.juryPage.apply.eyebrow}
+            title={t.juryPage.apply.title}
+            description={t.juryPage.apply.text}
+          />
+          <StaggerContainer className="grid gap-[var(--space-md)] md:grid-cols-2">
+            <EditorialPhotoCard
+              src="/images/curated/jury_editorial.jpg"
+              alt="Jury application onboarding visual"
+              aspect="portrait"
+              overlay="soft"
+              title={copy.cardTitle}
+              description={copy.cardText}
+              priority
+            />
+            <EditorialPhotoCard
+              src="/images/events/DSC00932.jpg"
+              alt="Jury process support image"
+              aspect="portrait"
+              overlay="soft"
+            />
+          </StaggerContainer>
         </div>
       </PageSection>
 
       <PageSection className="pt-0 pb-16">
         <JuryApplicationForm />
       </PageSection>
-    </PageShell>
+    </main>
   );
 }

@@ -1,24 +1,26 @@
-import JuryApproved from "@/features/jury/components/pages/JuryAprroved";
-import JuryBenefits from "@/features/jury/components/pages/JuryBenefits";
-import JuryCta from "@/features/jury/components/pages/JuryCta";
-import JuryFaq from "@/features/jury/components/pages/JuryFaq";
-import JuryHero from "@/features/jury/components/pages/JuryHero";
-import JuryProcess from "@/features/jury/components/pages/JuryProcess";
-import JuryRequirements from "@/features/jury/components/pages/JuryRequirements";
-import JuryResponsibilities from "@/features/jury/components/pages/JuryResponsibilities";
-import { PageShell } from "@/shared/components/layout/PageShell";
+import { getPublicJuryMembers } from "@/features/jury/server/queries";
+
+import {
+  JuryHero,
+  JuryTimeline,
+  JuryBenefits,
+  JuryCredibility,
+  JuryActiveMembers,
+  JuryCta,
+} from "@/features/jury/components/pages";
+
+
 
 export default async function JuryPage() {
+  const juryMembers = await getPublicJuryMembers();
   return (
-    <PageShell>
+    <main className="page-shell">
       <JuryHero />
-      <JuryApproved />
+      <JuryTimeline />
       <JuryBenefits />
-      <JuryResponsibilities />
-      <JuryRequirements />
-      <JuryProcess />
-      <JuryFaq />
+      <JuryCredibility />
+      <JuryActiveMembers juryMembers={juryMembers} />
       <JuryCta />
-    </PageShell>
+    </main>
   );
 }

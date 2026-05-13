@@ -1,10 +1,12 @@
 "use client"
 
 import type { ChangeEvent, FormEvent } from "react"
-import { useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import ExperienceSection from "@/features/jury/components/jury-application/sections/ExperienceSection"
 import MaterialsSection from "@/features/jury/components/jury-application/sections/MaterialsSection"
 import ProfessionalProfileSection from "@/features/jury/components/jury-application/sections/ProfessionalProfileSection"
+import { useLanguage } from "@/lib/i18n/LanguageProvider"
+import { FadeUp, FormProgressSidebar } from "@/shared/components/public"
 
 type SubmissionSummary = {
   name: string
@@ -23,15 +25,92 @@ type SubmissionState =
     }
 
 export default function JuryApplicationForm() {
+  const { language } = useLanguage()
+  const formRef = useRef<HTMLFormElement | null>(null)
   const [hasPreviousJudging, setHasPreviousJudging] = useState("no")
   const [isPastWinner, setIsPastWinner] = useState("no")
   const [selectedExpertise, setSelectedExpertise] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [progressValue, setProgressValue] = useState(0)
   const [submissionState, setSubmissionState] = useState<SubmissionState>({
     type: "idle",
     message: "",
   })
   const [summary, setSummary] = useState<SubmissionSummary | null>(null)
+  const copy = {
+    en: {
+      validationError:
+        "We could not validate the form. Please review your information and try again.",
+      received: "Your jury application has been received for review.",
+      submitException:
+        "Something went wrong while sending the application. Please try again.",
+      progressTitle: "Jury Application Progress",
+      progressSubtitle: "Track your profile, experience, and required materials.",
+      progressLabel: "Completion",
+      stepProfile: "Professional profile",
+      stepProfileHint: "Identity, location, and title fields",
+      stepExperience: "Experience details",
+      stepExperienceHint: "Judging history and expertise areas",
+      stepMaterials: "Materials and disclosure",
+      stepMaterialsHint: "Uploads, bio, and confidentiality",
+      summaryTitle: "Application Summary",
+      summaryCandidate: "Candidate",
+      summaryLocation: "Location",
+      summaryExpertise: "Expertise",
+      expertiseSelected: "Expertise Selected",
+      sending: "Sending Application...",
+      submit: "Submit Jury Application",
+      completeSuffix: "complete",
+    },
+    ru: {
+      validationError:
+        "Не удалось проверить форму. Проверьте данные и попробуйте снова.",
+      received: "Ваша заявка в жюри получена и принята на рассмотрение.",
+      submitException:
+        "Во время отправки заявки произошла ошибка. Попробуйте еще раз.",
+      progressTitle: "Прогресс заявки в жюри",
+      progressSubtitle: "Отслеживайте профиль, опыт и обязательные материалы.",
+      progressLabel: "Заполнение",
+      stepProfile: "Профиль",
+      stepProfileHint: "Личные данные, локация и профессиональный статус",
+      stepExperience: "Детали опыта",
+      stepExperienceHint: "Опыт судейства и области экспертизы",
+      stepMaterials: "Материалы и раскрытие",
+      stepMaterialsHint: "Файлы, биография и конфиденциальность",
+      summaryTitle: "Сводка заявки",
+      summaryCandidate: "Кандидат",
+      summaryLocation: "Локация",
+      summaryExpertise: "Экспертиза",
+      expertiseSelected: "Выбрано направлений",
+      sending: "Отправка заявки...",
+      submit: "Отправить заявку в жюри",
+      completeSuffix: "заполнено",
+    },
+    ua: {
+      validationError:
+        "Не вдалося перевірити форму. Перевірте дані та спробуйте ще раз.",
+      received: "Вашу заявку до журі отримано та передано на розгляд.",
+      submitException:
+        "Під час надсилання заявки сталася помилка. Спробуйте ще раз.",
+      progressTitle: "Прогрес заявки до журі",
+      progressSubtitle: "Відстежуйте профіль, досвід і обов’язкові матеріали.",
+      progressLabel: "Заповнення",
+      stepProfile: "Профіль",
+      stepProfileHint: "Особисті дані, локація та професійний статус",
+      stepExperience: "Деталі досвіду",
+      stepExperienceHint: "Досвід суддівства та сфери експертизи",
+      stepMaterials: "Матеріали та розкриття",
+      stepMaterialsHint: "Файли, біографія та конфіденційність",
+      summaryTitle: "Підсумок заявки",
+      summaryCandidate: "Кандидат",
+      summaryLocation: "Локація",
+      summaryExpertise: "Експертиза",
+      expertiseSelected: "Обрано напрямків",
+      sending: "Надсилання заявки...",
+      submit: "Надіслати заявку до журі",
+      completeSuffix: "заповнено",
+    },
+  }[language]
 
   const handleExpertiseChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = event.target
@@ -44,6 +123,71 @@ export default function JuryApplicationForm() {
       return current.filter((item) => item !== value)
     })
   }
+
+  const updateProgress = useCallback(() => {
+    const form = formRef.current
+    if (!form) {
+      return
+    }
+
+    const profileFields = [
+      "fullName",
+      "email",
+      "phone",
+      "country",
+      "city",
+      "professionalTitle",
+      "yearsExperience",
+      "employerAffiliation",
+    ]
+    const materialsFields = [
+      "professionalBio",
+      "conflictDisclosure",
+      "motivation",
+      "professionalWebsite",
+    ]
+
+    const filledProfile = profileFields.filter((name) => {
+      const input = form.elements.namedItem(name) as HTMLInputElement | null
+      return Boolean(input?.value?.trim())
+    }).length
+
+    const filledMaterials = materialsFields.filter((name) => {
+      const input = form.elements.namedItem(name) as HTMLInputElement | null
+      return Boolean(input?.value?.trim())
+    }).length
+
+    const certificationsInput = form.elements.namedItem("certifications") as HTMLInputElement | null
+    const profilePhotoInput = form.elements.namedItem("profilePhoto") as HTMLInputElement | null
+    const confidentialityInput = form.elements.namedItem("confidentialityAgreement") as HTMLInputElement | null
+
+    const hasCertifications = Boolean(certificationsInput?.files?.length)
+    const hasProfilePhoto = Boolean(profilePhotoInput?.files?.length)
+    const confidentialityChecked = Boolean(confidentialityInput?.checked)
+    const expertiseDone = selectedExpertise.length > 0
+
+    const judgingDetailsInput = form.elements.namedItem("previousJudgingDetails") as HTMLInputElement | null
+    const winnerYearInput = form.elements.namedItem("pastWinnerYear") as HTMLInputElement | null
+    const conditionalDone =
+      (hasPreviousJudging === "no" || Boolean(judgingDetailsInput?.value?.trim())) &&
+      (isPastWinner === "no" || Boolean(winnerYearInput?.value?.trim()))
+
+    const totalChecks = 8 + 4 + 5
+    const completedChecks =
+      filledProfile +
+      filledMaterials +
+      (hasCertifications ? 1 : 0) +
+      (hasProfilePhoto ? 1 : 0) +
+      (confidentialityChecked ? 1 : 0) +
+      (expertiseDone ? 1 : 0) +
+      (conditionalDone ? 1 : 0)
+
+    setProgressValue(Math.round((completedChecks / totalChecks) * 100))
+  }, [hasPreviousJudging, isPastWinner, selectedExpertise.length])
+
+  useEffect(() => {
+    updateProgress()
+  }, [updateProgress])
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -71,7 +215,7 @@ export default function JuryApplicationForm() {
           type: "error",
           message:
             data.message ??
-            "We could not validate the form. Please review your information and try again.",
+            copy.validationError,
         })
         return
       }
@@ -81,7 +225,7 @@ export default function JuryApplicationForm() {
         type: "success",
         message:
           data.message ??
-          "Your jury application has been received for review.",
+          copy.received,
       })
 
       form.reset()
@@ -91,8 +235,7 @@ export default function JuryApplicationForm() {
     } catch {
       setSubmissionState({
         type: "error",
-        message:
-          "Something went wrong while sending the application. Please try again.",
+        message: copy.submitException,
       })
     } finally {
       setIsSubmitting(false)
@@ -101,10 +244,44 @@ export default function JuryApplicationForm() {
 
   return (
     <section id="jury-application-form">
-      <div className="mx-auto max-w-5xl">
+      <div className="mx-auto max-w-[var(--content-width)]">
+        <div className="mb-[var(--space-md)] xl:hidden">
+          <FormProgressSidebar
+            title={copy.progressTitle}
+            subtitle={copy.progressSubtitle}
+            progressLabel={copy.progressLabel}
+            progressValue={progressValue}
+            steps={[
+              {
+                id: "profile",
+                label: copy.stepProfile,
+                hint: copy.stepProfileHint,
+                complete: progressValue >= 30,
+              },
+              {
+                id: "experience",
+                label: copy.stepExperience,
+                hint: copy.stepExperienceHint,
+                complete: progressValue >= 60,
+              },
+              {
+                id: "materials",
+                label: copy.stepMaterials,
+                hint: copy.stepMaterialsHint,
+                complete: progressValue >= 90,
+              },
+            ]}
+          />
+        </div>
+
+        <div className="grid gap-[var(--space-md)] xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
+          <FadeUp>
         <form
+          ref={formRef}
+          onInput={updateProgress}
+          onChange={updateProgress}
           onSubmit={handleSubmit}
-          className="rounded-(--radius) border border-(--border-default) bg-(--color-off-white) p-(--space-lg) shadow-(--shadow-lg)"
+          className="rounded-(--radius) border border-(--border-default) bg-(--surface) p-(--space-lg) shadow-(--shadow-lg)"
         >
           <div className="space-y-(--space-lg)">
             <ProfessionalProfileSection />
@@ -122,8 +299,8 @@ export default function JuryApplicationForm() {
               <div
                 className={`rounded-sm border px-(--space-sm) py-(--space-sm) text-sm leading-[1.65] ${
                   submissionState.type === "success"
-                    ? "border-(--color-gold) bg-[rgba(201,169,110,0.15)] text-(--color-navy)"
-                    : "border-(--color-gold) bg-[rgba(201,169,110,0.15)] text-(--color-navy)"
+                    ? "border-(--color-hover) bg-[rgba(185,217,235,0.26)] text-(--color-ink)"
+                    : "border-(--color-hover) bg-[rgba(185,217,235,0.26)] text-(--color-ink)"
                 }`}
                 aria-live="polite"
               >
@@ -133,29 +310,29 @@ export default function JuryApplicationForm() {
 
             {summary ? (
               <div className="rounded-sm border border-(--border-default) bg-(--color-white) p-(--space-md)">
-                <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-gold)">
-                  Application Summary
+                <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-hover)">
+                  {copy.summaryTitle}
                 </p>
                 <div className="mt-4 grid gap-4 sm:grid-cols-3">
                   <div>
-                    <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-gold)">
-                      Candidate
+                    <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-hover)">
+                      {copy.summaryCandidate}
                     </p>
-                    <p className="mt-(--space-xs) text-sm font-medium text-(--color-navy)">{summary.name}</p>
+                    <p className="mt-(--space-xs) text-sm font-medium text-(--color-ink)">{summary.name}</p>
                   </div>
                   <div>
-                    <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-gold)">
-                      Location
+                    <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-hover)">
+                      {copy.summaryLocation}
                     </p>
-                    <p className="mt-(--space-xs) text-sm font-medium text-(--color-navy)">
+                    <p className="mt-(--space-xs) text-sm font-medium text-(--color-ink)">
                       {summary.location}
                     </p>
                   </div>
                   <div>
-                    <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-gold)">
-                      Expertise
+                    <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-hover)">
+                      {copy.summaryExpertise}
                     </p>
-                    <p className="mt-(--space-xs) text-sm font-medium text-(--color-navy)">
+                    <p className="mt-(--space-xs) text-sm font-medium text-(--color-ink)">
                       {summary.expertise.join(", ")}
                     </p>
                   </div>
@@ -166,11 +343,11 @@ export default function JuryApplicationForm() {
             <div className="flex flex-col gap-(--space-sm) border-t border-(--border-default) pt-(--space-md)">
               <div className="flex items-center justify-between gap-4">
                 <div className="min-w-0">
-                  <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-gold)">
-                    Expertise Selected
+                  <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-hover)">
+                    {copy.expertiseSelected}
                   </p>
-                  <p className="mt-(--space-xs) text-sm text-(--color-steel)">
-                    {selectedExpertise.length}
+                  <p className="mt-(--space-xs) text-sm text-(--color-ink-soft)">
+                    {selectedExpertise.length} | {progressValue}% {copy.completeSuffix}
                   </p>
                 </div>
 
@@ -179,12 +356,42 @@ export default function JuryApplicationForm() {
                   disabled={isSubmitting}
                   className="ibpa-button ibpa-button-primary disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {isSubmitting ? "Sending Application..." : "Submit Jury Application"}
+                  {isSubmitting ? copy.sending : copy.submit}
                 </button>
               </div>
             </div>
           </div>
         </form>
+          </FadeUp>
+
+          <FormProgressSidebar
+            className="hidden xl:block"
+            title={copy.progressTitle}
+            subtitle={copy.progressSubtitle}
+            progressLabel={copy.progressLabel}
+            progressValue={progressValue}
+            steps={[
+              {
+                id: "profile",
+                label: copy.stepProfile,
+                hint: copy.stepProfileHint,
+                complete: progressValue >= 30,
+              },
+              {
+                id: "experience",
+                label: copy.stepExperience,
+                hint: copy.stepExperienceHint,
+                complete: progressValue >= 60,
+              },
+              {
+                id: "materials",
+                label: copy.stepMaterials,
+                hint: copy.stepMaterialsHint,
+                complete: progressValue >= 90,
+              },
+            ]}
+          />
+        </div>
       </div>
     </section>
   )
