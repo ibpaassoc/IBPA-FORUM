@@ -112,7 +112,7 @@ export default function CategoriesPagePremium() {
         media={
           <div className="grid gap-[var(--space-md)]">
             <EditorialPhotoCard
-              src="/images/curated/directions_editorial.jpg"
+              src="/images/curated/categories_editorial.jpg"
               alt="Editorial beauty direction hero image"
               aspect="landscape"
               overlay="soft"

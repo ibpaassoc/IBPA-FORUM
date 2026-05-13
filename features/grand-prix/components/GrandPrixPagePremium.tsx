@@ -149,7 +149,7 @@ export default function GrandPrixPagePremium() {
                 overlay="soft"
               />
               <EditorialPhotoCard
-                src="/images/events/DSC09818.jpg"
+                src="/images/community/DSC09818.jpg"
                 alt="Grand Prix finalist portrait"
                 aspect="square"
                 overlay="soft"

@@ -4,12 +4,16 @@ import SafeImage from "./SafeImage";
 type EditorialPhotoCardProps = {
   src: string;
   alt: string;
+  fallbackSrc?: string;
+  fallbackSrcs?: string[];
   eyebrow?: string;
   title?: string;
   description?: string;
   aspect?: "portrait" | "landscape" | "square";
   overlay?: "none" | "soft" | "medium";
   align?: "left" | "right";
+  objectPosition?: string;
+  mobileObjectPosition?: string;
   className?: string;
   priority?: boolean;
 };
@@ -23,12 +27,16 @@ const aspectClassMap = {
 export default function EditorialPhotoCard({
   src,
   alt,
+  fallbackSrc,
+  fallbackSrcs,
   eyebrow,
   title,
   description,
   aspect = "portrait",
   overlay = "soft",
   align = "left",
+  objectPosition,
+  mobileObjectPosition,
   className,
   priority,
 }: EditorialPhotoCardProps) {
@@ -44,10 +52,14 @@ export default function EditorialPhotoCard({
       <div className={clsx("relative overflow-hidden", aspectClassMap[aspect])}>
         <SafeImage
           src={src}
+          fallbackSrc={fallbackSrc}
+          fallbackSrcs={fallbackSrcs}
           alt={alt}
           fill
           priority={priority}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          objectPosition={objectPosition}
+          mobileObjectPosition={mobileObjectPosition}
           className="object-cover transition duration-500 group-hover:scale-[1.03]"
         />
         <div className={clsx("absolute inset-0 transition duration-300", overlayClass)} />

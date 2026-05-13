@@ -478,6 +478,10 @@ a:hover:not(.ibpa-button) {
   transform: scale(1.035);
 }
 
+.safe-image-asset {
+  object-position: var(--safe-image-desktop-position, center);
+}
+
 .editorial-soft-divider {
   border-top: 1px solid var(--border-default);
   border-bottom: 1px solid var(--border-default);
@@ -509,6 +513,15 @@ a:hover:not(.ibpa-button) {
 
 .reveal-soft {
   animation: revealSoft var(--motion-slow) both;
+}
+
+@media (width < 48rem) {
+  .safe-image-asset {
+    object-position: var(
+      --safe-image-mobile-position,
+      var(--safe-image-desktop-position, center)
+    );
+  }
 }
 
 @media (width >= 48rem) {

@@ -3,43 +3,77 @@
 import Image from "next/image";
 import { ImageOff } from "lucide-react";
 import clsx from "clsx";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import type { CSSProperties } from "react";
 
 type SafeImageProps = {
   src?: string | null;
+  fallbackSrc?: string | null;
+  fallbackSrcs?: Array<string | null | undefined>;
   alt: string;
   fill?: boolean;
   sizes?: string;
   priority?: boolean;
   className?: string;
   unoptimized?: boolean;
+  objectPosition?: string;
+  mobileObjectPosition?: string;
 };
 
 export default function SafeImage({
   src,
+  fallbackSrc,
+  fallbackSrcs,
   alt,
   fill = true,
   sizes,
   priority,
   className,
   unoptimized,
+  objectPosition,
+  mobileObjectPosition,
 }: SafeImageProps) {
-  const [failed, setFailed] = useState(false);
-  const validSrc = useMemo(() => (src && src.trim().length > 0 ? src : null), [src]);
-  const showFallback = failed || !validSrc;
+  const normalizedSources = useMemo(() => {
+    const candidates = [src, fallbackSrc, ...(fallbackSrcs ?? [])];
+    const deduped = new Set<string>();
+
+    for (const candidate of candidates) {
+      if (!candidate) continue;
+      const normalized = candidate.trim();
+      if (!normalized) continue;
+      deduped.add(normalized);
+    }
+
+    return Array.from(deduped);
+  }, [src, fallbackSrc, fallbackSrcs]);
+
+  const [activeSourceIndex, setActiveSourceIndex] = useState(0);
+
+  useEffect(() => {
+    setActiveSourceIndex(0);
+  }, [normalizedSources]);
+
+  const activeSrc = normalizedSources[activeSourceIndex] ?? null;
+  const showFallback = !activeSrc;
+  const imageStyle = {
+    "--safe-image-desktop-position": objectPosition ?? "center",
+    "--safe-image-mobile-position": mobileObjectPosition ?? objectPosition ?? "center",
+  } as CSSProperties;
 
   return (
     <>
       {!showFallback ? (
         <Image
-          src={validSrc}
+          key={activeSrc}
+          src={activeSrc}
           alt={alt}
           fill={fill}
           sizes={sizes}
           priority={priority}
-          onError={() => setFailed(true)}
-          className={className}
+          onError={() => setActiveSourceIndex((current) => current + 1)}
+          className={clsx("safe-image-asset", className)}
           unoptimized={unoptimized}
+          style={imageStyle}
         />
       ) : null}
       <div

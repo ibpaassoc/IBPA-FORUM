@@ -52,10 +52,12 @@ export default function PublicJuryGrid({
   return (
     <StaggerContainer className="grid gap-[var(--space-md)] sm:grid-cols-2 xl:grid-cols-3" stagger={0.1}>
       {members.map((member, index) => {
+        const primaryFallback = juryFallbackPhotos[index % juryFallbackPhotos.length];
+        const secondaryFallback = juryFallbackPhotos[(index + 1) % juryFallbackPhotos.length];
         const photoSrc =
           member.profilePhotoFileId
             ? `/api/jury/profile-photo/${member.profilePhotoFileId}`
-            : juryFallbackPhotos[index % juryFallbackPhotos.length];
+            : primaryFallback;
         const memberLocation = [member.city, member.country].filter(Boolean).join(", ");
 
         return (
@@ -64,10 +66,14 @@ export default function PublicJuryGrid({
               <div className="editorial-image-frame relative aspect-[4/5] rounded-b-none border-x-0 border-t-0 bg-[var(--surface-muted)]">
                 <SafeImage
                   src={photoSrc}
+                  fallbackSrc={primaryFallback}
+                  fallbackSrcs={[secondaryFallback]}
                   alt={`${member.fullName} ${copy.portraitSuffix}`}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                  className="object-cover object-center"
+                  objectPosition="center 22%"
+                  mobileObjectPosition="center 16%"
+                  className="object-cover"
                   unoptimized={Boolean(member.profilePhotoFileId)}
                 />
               </div>
