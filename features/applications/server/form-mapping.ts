@@ -25,7 +25,7 @@ export function extractApplicationValues(
     city: getTextValue(formData, "city"),
     professionalTitle: getTextValue(formData, "professionalTitle"),
     yearsExperience: getTextValue(formData, "yearsExperience"),
-    categoryId: getTextValue(formData, "directionId"),
+    categoryId: getTextValue(formData, "categoryId"),
     awardId: getTextValue(formData, "awardId"),
     websiteUrl: getTextValue(formData, "websiteUrl"),
     socialUrl: getTextValue(formData, "socialUrl"),

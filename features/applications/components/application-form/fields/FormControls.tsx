@@ -2,6 +2,7 @@
 
 import FormFieldShell from "@/features/applications/components/application-form/fields/FormFieldShell";
 import type { FieldOption } from "@/features/applications/types/application.types";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 const inputClassName =
   "w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] text-[var(--color-ink)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-hover)] focus:shadow-[0_0_0_3px_rgba(114,160,193,0.16)]";
@@ -130,6 +131,14 @@ export function SelectField({
   disabled?: boolean;
   onChange: (name: string, value: string) => void;
 }) {
+  const { language } = useLanguage();
+  const selectOptionLabel =
+    language === "ru"
+      ? "Выберите вариант"
+      : language === "ua"
+        ? "Оберіть варіант"
+        : "Select an option";
+
   return (
     <FormFieldShell
       label={label}
@@ -148,7 +157,7 @@ export function SelectField({
           } ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
         >
           <option value="" className="bg-[var(--color-white)] text-[var(--color-ink)]">
-            {placeholder ?? "Select an option"}
+            {placeholder ?? selectOptionLabel}
           </option>
           {options.map((option) => (
             <option
@@ -237,3 +246,4 @@ export function ChoiceGroupField({
     </FormFieldShell>
   );
 }
+

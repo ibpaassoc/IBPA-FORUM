@@ -43,7 +43,60 @@ const categoryIconBySlug: Record<string, LucideIcon> = {
 };
 
 export default function CategoriesPagePremium() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
+  const copy = {
+    en: {
+      nominationSingular: "nomination",
+      nominationPlural: "nominations",
+      heroMediaTitle: "Direction depth meets real event energy",
+      association: "Association",
+      associationTitle:
+        "Every direction is tied to real-world artistry and professional standards.",
+      associationText:
+        "The IBPA award structure is designed to highlight direction-specific excellence while preserving a cohesive global event identity.",
+      associationQuote:
+        "A direction is not only a label. It is the context for fair judging and meaningful recognition.",
+      associationButton: "Visit IBPA Association",
+      ctaEyebrow: "Direction Entry",
+      ctaTitle: "Choose your strongest direction and submit with confidence.",
+      ctaText:
+        "From artistry to education and brand leadership, every direction is built for high-quality professional presentation.",
+    },
+    ru: {
+      nominationSingular: "номинация",
+      nominationPlural: "номинации",
+      heroMediaTitle: "Глубина направления и живая энергия события",
+      association: "Ассоциация",
+      associationTitle:
+        "Каждое направление связано с реальным мастерством и профессиональными стандартами.",
+      associationText:
+        "Структура премии IBPA подчеркивает высокий стандарт в каждом направлении и сохраняет целостность глобального события.",
+      associationQuote:
+        "Направление - это не только ярлык. Это контекст для справедливого судейства и значимого признания.",
+      associationButton: "Перейти в ассоциацию IBPA",
+      ctaEyebrow: "Подача по направлению",
+      ctaTitle: "Выберите сильнейшее направление и подайте заявку уверенно.",
+      ctaText:
+        "От артистизма до образования и бренд-лидерства: каждое направление создано для профессиональной подачи.",
+    },
+    ua: {
+      nominationSingular: "номінація",
+      nominationPlural: "номінації",
+      heroMediaTitle: "Глибина напрямку та жива енергія події",
+      association: "Асоціація",
+      associationTitle:
+        "Кожен напрямок пов'язаний з реальним професійним мистецтвом і стандартами.",
+      associationText:
+        "Структура премії IBPA підкреслює високий стандарт у кожному напрямку та зберігає цілісність глобальної події.",
+      associationQuote:
+        "Напрямок - це не лише ярлик. Це контекст для справедливого суддівства та змістовного визнання.",
+      associationButton: "Перейти до асоціації IBPA",
+      ctaEyebrow: "Подача за напрямком",
+      ctaTitle: "Оберіть найсильніший напрямок і подайте заявку впевнено.",
+      ctaText:
+        "Від артистизму до освіти та бренд-лідерства: кожен напрямок створений для професійної подачі.",
+    },
+  }[language];
 
   return (
     <main className="page-shell">
@@ -63,7 +116,7 @@ export default function CategoriesPagePremium() {
               alt="Editorial beauty direction hero image"
               aspect="landscape"
               overlay="soft"
-              title="Direction depth meets real event energy"
+              title={copy.heroMediaTitle}
               priority
             />
             <div className="grid gap-[var(--space-md)] md:grid-cols-2">
@@ -95,7 +148,11 @@ export default function CategoriesPagePremium() {
             id: category.slug,
             icon: <IconBadge icon={Icon} />,
             title: category.name,
-            text: `${category.awards.length} nominations`,
+            text: `${category.awards.length} ${
+              category.awards.length === 1
+                ? copy.nominationSingular
+                : copy.nominationPlural
+            }`,
             tone: index % 3 === 0 ? "tint" : "default",
             span,
           };
@@ -103,10 +160,10 @@ export default function CategoriesPagePremium() {
       />
 
       <FeaturedStorySection
-        eyebrow="Association"
-        title="Every direction is tied to real-world artistry and professional standards."
-        description="The IBPA championship structure is designed to highlight direction-specific excellence while preserving a cohesive global event identity."
-        quote="A direction is not only a label. It is the context for fair judging and meaningful recognition."
+        eyebrow={copy.association}
+        title={copy.associationTitle}
+        description={copy.associationText}
+        quote={copy.associationQuote}
         media={
           <EditorialPhotoCard
             src="/images/events/DSC09821.jpg"
@@ -123,15 +180,15 @@ export default function CategoriesPagePremium() {
             rel="noreferrer"
             className="ibpa-button ibpa-button-ghost"
           >
-            Visit IBPA Association
+            {copy.associationButton}
           </a>
         }
       />
 
       <PremiumCTA
-        eyebrow="Direction Entry"
-        title="Choose your strongest direction and submit with confidence."
-        description="From artistry to education and brand leadership, every direction is built for high-quality professional presentation."
+        eyebrow={copy.ctaEyebrow}
+        title={copy.ctaTitle}
+        description={copy.ctaText}
         primary={{ href: "/apply", label: t.common.applyNow }}
         secondary={{ href: "/grand-prix", label: t.common.grandPrix }}
       />

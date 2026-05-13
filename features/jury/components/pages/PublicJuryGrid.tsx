@@ -1,6 +1,7 @@
 "use client";
 
 import { BadgeCheck } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { HoverCard, IconBadge, SafeImage, StaggerContainer } from "@/shared/components/public";
 
 type PublicJuryMember = {
@@ -26,6 +27,28 @@ export default function PublicJuryGrid({
 }: {
   members: PublicJuryMember[];
 }) {
+  const { language } = useLanguage();
+  const copy = {
+    en: {
+      approvedMember: "Approved Jury Member",
+      council: "IBPA Jury Council",
+      portraitSuffix: "jury portrait",
+      separator: " | ",
+    },
+    ru: {
+      approvedMember: "Одобренный член жюри",
+      council: "Совет жюри IBPA",
+      portraitSuffix: "портрет члена жюри",
+      separator: " | ",
+    },
+    ua: {
+      approvedMember: "Схвалений член журі",
+      council: "Рада журі IBPA",
+      portraitSuffix: "портрет члена журі",
+      separator: " | ",
+    },
+  }[language];
+
   return (
     <StaggerContainer className="grid gap-[var(--space-md)] sm:grid-cols-2 xl:grid-cols-3" stagger={0.1}>
       {members.map((member, index) => {
@@ -41,7 +64,7 @@ export default function PublicJuryGrid({
               <div className="editorial-image-frame relative aspect-[4/5] rounded-b-none border-x-0 border-t-0 bg-[var(--surface-muted)]">
                 <SafeImage
                   src={photoSrc}
-                  alt={`${member.fullName} jury portrait`}
+                  alt={`${member.fullName} ${copy.portraitSuffix}`}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
                   className="object-cover object-center"
@@ -51,13 +74,14 @@ export default function PublicJuryGrid({
               <div className="flex flex-1 flex-col gap-3 p-[var(--space-md)]">
                 <div className="inline-flex items-center gap-2 text-[0.68rem] uppercase tracking-[0.17em] text-[var(--color-hover)]">
                   <IconBadge icon={BadgeCheck} size={20} />
-                  Approved Jury Member
+                  {copy.approvedMember}
                 </div>
                 <h3 className="text-[clamp(1.25rem,2.2vw,1.7rem)] leading-[1.15] text-[var(--color-ink)]">
                   {member.fullName}
                 </h3>
                 <p className="text-sm leading-[1.6] text-[var(--color-ink-soft)]">
-                  {[member.professionalTitle, memberLocation].filter(Boolean).join(" | ") || "IBPA Jury Council"}
+                  {[member.professionalTitle, memberLocation].filter(Boolean).join(copy.separator) ||
+                    copy.council}
                 </p>
                 <div className="mt-auto flex flex-wrap gap-2">
                   {(member.expertise ?? []).slice(0, 3).map((item) => (

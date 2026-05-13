@@ -66,7 +66,7 @@ export default function ApplyForm({
     "professionalTitle",
     "yearsExperience",
     "licenseCertification",
-    "directionId",
+    "categoryId",
     "awardId",
     ...visibleCategoryFields.filter((field) => field.required).map((field) => field.key),
   ];
@@ -91,7 +91,7 @@ export default function ApplyForm({
     "professionalTitle",
     "yearsExperience",
     "licenseCertification",
-    "directionId",
+    "categoryId",
     "awardId",
   ];
   const profileComplete = profileFieldKeys.every((fieldKey) =>
@@ -112,7 +112,7 @@ export default function ApplyForm({
         [name]: value,
       };
 
-      if (name === "directionId") {
+      if (name === "categoryId") {
         next.awardId = "";
       }
 
@@ -123,7 +123,7 @@ export default function ApplyForm({
       const next = { ...current };
       delete next[name];
 
-      if (name === "directionId") {
+      if (name === "categoryId") {
         delete next.awardId;
       }
 

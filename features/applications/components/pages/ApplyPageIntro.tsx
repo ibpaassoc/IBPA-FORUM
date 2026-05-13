@@ -11,7 +11,45 @@ import {
 } from "@/shared/components/public";
 
 export default function ApplyPageIntro() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
+  const copy = {
+    en: {
+      cardTitle: "Enter with confidence",
+      cardDescription: "A guided form designed for high-quality professional submissions.",
+      chooseDirection: "Choose direction",
+      chooseDirectionText: "Select your direction and nomination before uploading materials.",
+      preparePortfolio: "Prepare portfolio",
+      preparePortfolioText: "Upload direction-relevant media and supporting documents.",
+      reviewDetails: "Review details",
+      reviewDetailsText: "Confirm all fields and files before final submission.",
+      completeFee: "Complete fee",
+      completeFeeText: "Finalize participation through secure Stripe checkout.",
+    },
+    ru: {
+      cardTitle: "Подавайте уверенно",
+      cardDescription: "Пошаговая форма для качественной профессиональной заявки.",
+      chooseDirection: "Выберите направление",
+      chooseDirectionText: "Выберите направление и номинацию до загрузки материалов.",
+      preparePortfolio: "Подготовьте портфолио",
+      preparePortfolioText: "Загрузите релевантные медиафайлы и подтверждающие документы.",
+      reviewDetails: "Проверьте детали",
+      reviewDetailsText: "Проверьте все поля и файлы перед финальной отправкой.",
+      completeFee: "Оплатите взнос",
+      completeFeeText: "Завершите участие через защищенный Stripe checkout.",
+    },
+    ua: {
+      cardTitle: "Подавайте впевнено",
+      cardDescription: "Покрокова форма для якісної професійної заявки.",
+      chooseDirection: "Оберіть напрямок",
+      chooseDirectionText: "Оберіть напрямок і номінацію перед завантаженням матеріалів.",
+      preparePortfolio: "Підготуйте портфоліо",
+      preparePortfolioText: "Завантажте релевантні медіафайли та підтвердні документи.",
+      reviewDetails: "Перевірте деталі",
+      reviewDetailsText: "Перевірте всі поля й файли перед фінальним надсиланням.",
+      completeFee: "Сплатіть внесок",
+      completeFeeText: "Завершіть участь через захищений Stripe checkout.",
+    },
+  }[language];
 
   return (
     <div className="space-y-(--space-lg)">
@@ -27,30 +65,30 @@ export default function ApplyPageIntro() {
           alt="Apply page onboarding editorial photo"
           aspect="portrait"
           overlay="soft"
-          title="Enter with confidence"
-          description="A guided form designed for high-quality professional submissions."
+          title={copy.cardTitle}
+          description={copy.cardDescription}
           priority
         />
         <StaggerContainer className="grid gap-(--space-md) md:grid-cols-2" stagger={0.1}>
           <FeatureCard
             icon={<IconBadge icon={FileText} />}
-            title="Choose direction"
-            description="Select your direction and nomination before uploading materials."
+            title={copy.chooseDirection}
+            description={copy.chooseDirectionText}
           />
           <FeatureCard
             icon={<IconBadge icon={Search} />}
-            title="Prepare portfolio"
-            description="Upload direction-relevant media and supporting documents."
+            title={copy.preparePortfolio}
+            description={copy.preparePortfolioText}
           />
           <FeatureCard
             icon={<IconBadge icon={ClipboardCheck} />}
-            title="Review details"
-            description="Confirm all fields and files before final submission."
+            title={copy.reviewDetails}
+            description={copy.reviewDetailsText}
           />
           <FeatureCard
             icon={<IconBadge icon={CreditCard} />}
-            title="Complete fee"
-            description="Finalize participation through secure Stripe checkout."
+            title={copy.completeFee}
+            description={copy.completeFeeText}
           />
         </StaggerContainer>
       </div>

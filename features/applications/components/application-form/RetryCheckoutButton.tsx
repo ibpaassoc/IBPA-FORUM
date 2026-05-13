@@ -1,12 +1,32 @@
 "use client";
 
 import { useState } from "react";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 export default function RetryCheckoutButton({
   applicationId,
 }: {
   applicationId: string;
 }) {
+  const { language } = useLanguage();
+  const copy = {
+    en: {
+      retryError: "We could not restart Stripe Checkout right now.",
+      opening: "Opening Checkout...",
+      retry: "Retry Secure Payment",
+    },
+    ru: {
+      retryError: "Сейчас не удалось перезапустить Stripe Checkout.",
+      opening: "Открываем Checkout...",
+      retry: "Повторить защищенную оплату",
+    },
+    ua: {
+      retryError: "Зараз не вдалося перезапустити Stripe Checkout.",
+      opening: "Відкриваємо Checkout...",
+      retry: "Повторити захищену оплату",
+    },
+  }[language];
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -30,14 +50,14 @@ export default function RetryCheckoutButton({
 
       if (!response.ok || !data.checkoutUrl) {
         setError(
-          data.message ?? "We could not restart Stripe Checkout right now."
+          data.message ?? copy.retryError
         );
         return;
       }
 
       window.location.assign(data.checkoutUrl);
     } catch {
-      setError("We could not restart Stripe Checkout right now.");
+      setError(copy.retryError);
     } finally {
       setIsLoading(false);
     }
@@ -57,7 +77,7 @@ export default function RetryCheckoutButton({
         disabled={isLoading}
         className="ibpa-button ibpa-button-primary disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {isLoading ? "Opening Checkout..." : "Retry Secure Payment"}
+        {isLoading ? copy.opening : copy.retry}
       </button>
     </div>
   );

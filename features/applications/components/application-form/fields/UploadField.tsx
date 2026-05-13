@@ -1,6 +1,7 @@
 "use client";
 
 import FormFieldShell from "@/features/applications/components/application-form/fields/FormFieldShell";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 function formatFileSize(size: number) {
   return `${(size / 1024 / 1024).toFixed(2)} MB`;
@@ -27,6 +28,28 @@ export default function UploadField({
   accept?: string[];
   onChange: (name: string, files: File[]) => void;
 }) {
+  const { language } = useLanguage();
+  const copy = {
+    en: {
+      selectedSingular: "file selected",
+      selectedPlural: "files selected",
+      select: "Select files",
+      hint: "JPG, PNG, and PDF supported where applicable. Max 5MB per file.",
+    },
+    ru: {
+      selectedSingular: "файл выбран",
+      selectedPlural: "файлов выбрано",
+      select: "Выберите файлы",
+      hint: "Поддерживаются JPG, PNG и PDF, где это применимо. Максимум 5MB на файл.",
+    },
+    ua: {
+      selectedSingular: "файл обрано",
+      selectedPlural: "файлів обрано",
+      select: "Оберіть файли",
+      hint: "Підтримуються JPG, PNG і PDF, де це застосовно. Максимум 5MB на файл.",
+    },
+  }[language];
+
   return (
     <FormFieldShell
       label={label}
@@ -43,11 +66,13 @@ export default function UploadField({
       >
         <span className="text-sm font-medium text-[var(--color-ink)]">
           {files.length > 0
-            ? `${files.length} file${files.length === 1 ? "" : "s"} selected`
-            : "Select files"}
+            ? `${files.length} ${
+                files.length === 1 ? copy.selectedSingular : copy.selectedPlural
+              }`
+            : copy.select}
         </span>
         <span className="mt-[var(--space-xs)] text-xs leading-6 text-[var(--color-ink-soft)]">
-          JPG, PNG, and PDF supported where applicable. Max 5MB per file.
+          {copy.hint}
         </span>
 
         <input

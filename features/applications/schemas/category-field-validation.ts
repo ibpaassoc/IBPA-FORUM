@@ -191,7 +191,7 @@ export function validateApplicationValues({
     city: getStringValue(values, "city"),
     professionalTitle: getStringValue(values, "professionalTitle"),
     yearsExperience: getStringValue(values, "yearsExperience"),
-    categoryId: getStringValue(values, "directionId"),
+    categoryId: getStringValue(values, "categoryId"),
     awardId: getStringValue(values, "awardId"),
     websiteUrl: getStringValue(values, "websiteUrl"),
     socialUrl: getStringValue(values, "socialUrl"),
@@ -221,11 +221,11 @@ export function validateApplicationValues({
   }
 
   const selectedCategory = categories.find(
-    (category) => category.id === getStringValue(values, "directionId")
+    (category) => category.id === getStringValue(values, "categoryId")
   );
 
   if (!selectedCategory) {
-    errors.categoryId = "Please select a valid award direction.";
+    errors.categoryId = "Please select a valid direction.";
   }
 
   const selectedAward = selectedCategory?.awards.find(

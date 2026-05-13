@@ -29,7 +29,63 @@ import {
 const categoryIconMap = [Camera, Trophy, Award, BadgeCheck, Globe, Users, HeartHandshake, Calendar];
 
 export default function HomePagePremium() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
+  const copy = {
+    en: {
+      whyEyebrow: "Why IBPA",
+      whyTitle: "Designed for professional beauty leadership",
+      whyText: "Structured selection, transparent judging, and global brand-level presentation.",
+      heroMediaTitle: "Luxury Editorial Presence",
+      heroMediaDescription: "Professional beauty excellence staged with international credibility.",
+      juryStandards: "Jury Standards",
+      juryStandardsTitle: "Official judging with trust, structure, and transparency.",
+      eventExperience: "Event Experience",
+      eventTitle: "Photography integrated into every stage.",
+      eventText: "One dominant visual frame, supported by two contextual moments.",
+      eventPrimaryTitle: "A premium ceremony environment",
+      fullBleedEyebrow: "IBPA 2026",
+      fullBleedTitle: "Global beauty artistry deserves a world-class stage.",
+      fullBleedText: "A calm, premium platform for artists, educators, salons, and brands.",
+      intlRecognition: "International recognition",
+      judgingIntegrity: "Structured judging integrity",
+    },
+    ru: {
+      whyEyebrow: "Почему IBPA",
+      whyTitle: "Создано для профессионального лидерства в beauty-сфере",
+      whyText: "Структурированный отбор, прозрачное судейство и международный уровень представления.",
+      heroMediaTitle: "Премиальное редакционное присутствие",
+      heroMediaDescription: "Профессиональное мастерство в сфере красоты на международном уровне.",
+      juryStandards: "Стандарты жюри",
+      juryStandardsTitle: "Официальное судейство с доверием, структурой и прозрачностью.",
+      eventExperience: "Атмосфера события",
+      eventTitle: "Фотографии интегрированы в каждый этап.",
+      eventText: "Один главный визуальный акцент и два контекстных кадра.",
+      eventPrimaryTitle: "Премиальная атмосфера церемонии",
+      fullBleedEyebrow: "IBPA 2026",
+      fullBleedTitle: "Мировое мастерство в сфере красоты заслуживает мировой сцены.",
+      fullBleedText: "Премиальная платформа для мастеров, преподавателей, салонов и брендов.",
+      intlRecognition: "Международное признание",
+      judgingIntegrity: "Прозрачность и целостность судейства",
+    },
+    ua: {
+      whyEyebrow: "Чому IBPA",
+      whyTitle: "Створено для професійного лідерства у beauty-сфері",
+      whyText: "Структурований відбір, прозоре суддівство та міжнародний рівень представлення.",
+      heroMediaTitle: "Преміальна редакційна подача",
+      heroMediaDescription: "Професійна майстерність у сфері краси на міжнародному рівні.",
+      juryStandards: "Стандарти журі",
+      juryStandardsTitle: "Офіційне суддівство з довірою, структурою та прозорістю.",
+      eventExperience: "Атмосфера події",
+      eventTitle: "Фотографії інтегровані в кожен етап.",
+      eventText: "Один головний візуальний акцент і два контекстні кадри.",
+      eventPrimaryTitle: "Преміальна атмосфера церемонії",
+      fullBleedEyebrow: "IBPA 2026",
+      fullBleedTitle: "Світова майстерність у сфері краси заслуговує на світову сцену.",
+      fullBleedText: "Преміальна платформа для майстрів, викладачів, салонів і брендів.",
+      intlRecognition: "Міжнародне визнання",
+      judgingIntegrity: "Прозорість і цілісність суддівства",
+    },
+  }[language];
 
   const leadershipItems = t.home.process.steps.slice(0, 4).map((step) => ({
     id: step.number,
@@ -59,8 +115,8 @@ export default function HomePagePremium() {
             <EditorialPhotoCard
               src="/images/editorial/makeup.jpg"
               alt="IBPA lead editorial beauty image"
-              title="Luxury Editorial Presence"
-              description="Professional beauty excellence staged with international credibility."
+              title={copy.heroMediaTitle}
+              description={copy.heroMediaDescription}
               overlay="medium"
               aspect="portrait"
               priority
@@ -117,13 +173,9 @@ export default function HomePagePremium() {
         <div className="page-section">
           <div className="rounded-[var(--radius)] border border-[var(--border-default)] bg-[linear-gradient(180deg,var(--surface-tint)_0%,var(--surface)_100%)] p-[clamp(1.1rem,2.8vw,2rem)]">
             <div className="max-w-3xl">
-              <p className="page-eyebrow">Why IBPA</p>
-              <h2 className="mt-[var(--space-sm)] text-[clamp(2rem,4.6vw,4.3rem)] leading-[1.05] text-[var(--color-ink)]">
-                Designed for professional beauty leadership
-              </h2>
-              <p className="mt-[var(--space-sm)] text-[clamp(0.95rem,1.7vw,1.12rem)] leading-[1.75] text-[var(--color-ink-soft)]">
-                Structured selection, transparent judging, and global brand-level presentation.
-              </p>
+              <p className="page-eyebrow">{copy.whyEyebrow}</p>
+              <h2 className="mt-[var(--space-sm)] text-[clamp(2rem,4.6vw,4.3rem)] leading-[1.05] text-[var(--color-ink)]">{copy.whyTitle}</h2>
+              <p className="mt-[var(--space-sm)] text-[clamp(0.95rem,1.7vw,1.12rem)] leading-[1.75] text-[var(--color-ink-soft)]">{copy.whyText}</p>
             </div>
 
             <StaggerContainer className="mt-[var(--space-lg)] grid gap-[var(--space-md)] md:grid-cols-2" stagger={0.09}>
@@ -168,8 +220,8 @@ export default function HomePagePremium() {
       </section>
 
       <FeaturedStorySection
-        eyebrow="Jury Standards"
-        title="Official judging with trust, structure, and transparency."
+        eyebrow={copy.juryStandards}
+        title={copy.juryStandardsTitle}
         description={t.home.juryCta.text2}
         quote={t.home.juryCta.text3}
         media={
@@ -199,13 +251,13 @@ export default function HomePagePremium() {
       />
 
       <EditorialPhotoSection
-        eyebrow="Event Experience"
-        title="Photography integrated into every stage."
-        description="One dominant visual frame, supported by two contextual moments."
+        eyebrow={copy.eventExperience}
+        title={copy.eventTitle}
+        description={copy.eventText}
         primary={{
           src: "/images/events/DSC09822.jpg",
           alt: "IBPA event stage atmosphere",
-          title: "A premium ceremony environment",
+          title: copy.eventPrimaryTitle,
         }}
         secondary={[
           {
@@ -222,9 +274,9 @@ export default function HomePagePremium() {
       <FullBleedPhotoBreak
         src="/images/curated/home_photo_break.jpg"
         alt="Cinematic beauty portrait for IBPA visual break"
-        eyebrow="IBPA 2026"
-        title="Global beauty artistry deserves a world-class stage."
-        description="A calm, premium platform for artists, educators, salons, and brands."
+        eyebrow={copy.fullBleedEyebrow}
+        title={copy.fullBleedTitle}
+        description={copy.fullBleedText}
       />
 
       <PremiumCTA
@@ -237,11 +289,11 @@ export default function HomePagePremium() {
           <div className="space-y-3">
             <div className="inline-flex items-center gap-2 text-sm text-[var(--color-ink-soft)]">
               <IconBadge icon={Trophy} size={20} />
-              International recognition
+              {copy.intlRecognition}
             </div>
             <div className="inline-flex items-center gap-2 text-sm text-[var(--color-ink-soft)]">
               <IconBadge icon={BadgeCheck} size={20} />
-              Structured judging integrity
+              {copy.judgingIntegrity}
             </div>
           </div>
         }

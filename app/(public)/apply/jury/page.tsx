@@ -10,7 +10,21 @@ import {
 } from "@/shared/components/public";
 
 export default function JuryApplyPage() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
+  const copy = {
+    en: {
+      cardTitle: "Apply as an expert",
+      cardText: "Structured, serious, and transparent from the first step.",
+    },
+    ru: {
+      cardTitle: "Подача как эксперт",
+      cardText: "Структурированно, серьезно и прозрачно с первого шага.",
+    },
+    ua: {
+      cardTitle: "Подача як експерт",
+      cardText: "Структуровано, серйозно й прозоро з першого кроку.",
+    },
+  }[language];
 
   return (
     <main className="page-shell">
@@ -27,8 +41,8 @@ export default function JuryApplyPage() {
               alt="Jury application onboarding visual"
               aspect="portrait"
               overlay="soft"
-              title="Apply as an expert"
-              description="Structured, serious, and transparent from the first step."
+              title={copy.cardTitle}
+              description={copy.cardText}
               priority
             />
             <EditorialPhotoCard

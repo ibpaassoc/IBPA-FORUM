@@ -1,38 +1,109 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import JuryMenu from "@/shared/components/layout/JuryMenu";
-
-const footerColumns = [
-  {
-    title: "About",
-    links: [
-      { href: "https://ibpassociations.org/about", label: "Association" },
-      { href: "/", label: "About Nominations" },
-      { href: "/grand-prix", label: "Timeline" },
-      { href: "/jury", label: "Jury Council" },
-    ],
-  },
-  {
-    title: "Nominations",
-    links: [
-      { href: "/directions", label: "Directions" },
-      { href: "/jury", label: "Jury" },
-      { href: "/grand-prix", label: "Grand Prix" },
-      { href: "/apply", label: "Apply" },
-    ],
-  },
-  {
-    title: "Resources",
-    links: [
-      { href: "/directions", label: "Media Centre" },
-      { href: "mailto:info@ibpa-nominations.com", label: "Contact" },
-      { href: "/", label: "Terms & Conditions" },
-      { href: "/", label: "Privacy Policy" },
-    ],
-  },
-];
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 export default function Footer() {
+  const { language, t } = useLanguage();
+
+  const copy = {
+    en: {
+      about: "About",
+      association: "Association",
+      aboutAward: "About the Award",
+      timeline: "Timeline",
+      juryCouncil: "Jury Council",
+      award: "Award",
+      directions: "Directions",
+      jury: "Jury",
+      grandPrix: "Grand Prix",
+      apply: "Apply",
+      resources: "Resources",
+      mediaCentre: "Media Centre",
+      contact: "Contact",
+      terms: "Terms & Conditions",
+      privacy: "Privacy Policy",
+      summary:
+        "Celebrating excellence in the global beauty industry and recognizing professionals shaping the future of beauty.",
+      copyright: "Copyright 2026 IBPA Beauty Award. All rights reserved.",
+      global: "Open to global participants.",
+    },
+    ru: {
+      about: "О проекте",
+      association: "Ассоциация",
+      aboutAward: "О премии",
+      timeline: "Таймлайн",
+      juryCouncil: "Совет жюри",
+      award: "Премия",
+      directions: "Направления",
+      jury: "Жюри",
+      grandPrix: "Гран-при",
+      apply: "Подать заявку",
+      resources: "Ресурсы",
+      mediaCentre: "Медиацентр",
+      contact: "Контакт",
+      terms: "Условия использования",
+      privacy: "Политика конфиденциальности",
+      summary:
+        "Мы отмечаем достижения в мировой индустрии красоты и поддерживаем специалистов, формирующих ее будущее.",
+      copyright: "© 2026 IBPA Beauty Award. Все права защищены.",
+      global: "Открыто для участников со всего мира.",
+    },
+    ua: {
+      about: "Про проєкт",
+      association: "Асоціація",
+      aboutAward: "Про премію",
+      timeline: "Таймлайн",
+      juryCouncil: "Рада журі",
+      award: "Премія",
+      directions: "Напрямки",
+      jury: "Журі",
+      grandPrix: "Гран-прі",
+      apply: "Подати заявку",
+      resources: "Ресурси",
+      mediaCentre: "Медіацентр",
+      contact: "Контакт",
+      terms: "Умови використання",
+      privacy: "Політика конфіденційності",
+      summary:
+        "Ми відзначаємо досягнення у світовій індустрії краси та підтримуємо фахівців, які формують її майбутнє.",
+      copyright: "© 2026 IBPA Beauty Award. Усі права захищені.",
+      global: "Відкрито для учасників з усього світу.",
+    },
+  }[language];
+
+  const footerColumns = [
+    {
+      title: copy.about,
+      links: [
+        { href: "https://ibpassociations.org/about", label: copy.association },
+        { href: "/", label: copy.aboutAward },
+        { href: "/grand-prix", label: copy.timeline },
+        { href: "/jury", label: copy.juryCouncil },
+      ],
+    },
+    {
+      title: copy.award,
+      links: [
+        { href: "/directions", label: copy.directions },
+        { href: "/jury", label: copy.jury },
+        { href: "/grand-prix", label: copy.grandPrix },
+        { href: "/apply", label: copy.apply },
+      ],
+    },
+    {
+      title: copy.resources,
+      links: [
+        { href: "/directions", label: copy.mediaCentre },
+        { href: "mailto:info@ibpa-awards.com", label: copy.contact },
+        { href: "/", label: copy.terms },
+        { href: "/", label: copy.privacy },
+      ],
+    },
+  ];
+
   return (
     <footer className="w-full border-t border-(--border-default) bg-(--surface-muted) py-(--space-xl) pb-(--space-lg) text-(--color-ink-soft)">
       <div className="mx-auto max-w-(--content-width) px-(--page-gutter)">
@@ -49,17 +120,13 @@ export default function Footer() {
             </Link>
 
             <p className="mt-(--space-md) text-[clamp(0.875rem,1.5vw,1rem)] leading-[1.7] text-(--color-ink-soft)">
-              Celebrating excellence in the global beauty industry and
-              recognizing professionals shaping the future of beauty.
+              {copy.summary}
             </p>
 
             <div className="mt-(--space-md) flex flex-wrap gap-3">
               <JuryMenu className="ibpa-button-ghost" />
-              <Link
-                href="/apply"
-                className="ibpa-button ibpa-button-gold"
-              >
-                Apply Now
+              <Link href="/apply" className="ibpa-button ibpa-button-gold">
+                {t.common.applyNow}
               </Link>
             </div>
           </div>
@@ -105,10 +172,10 @@ export default function Footer() {
 
           <div>
             <h4 className="mb-(--space-sm) font-(--font-sans) text-[0.72rem] uppercase tracking-[0.18em] text-(--color-title-accent)">
-              Contact
+              {copy.contact}
             </h4>
             <a
-              href="mailto:info@ibpa-nominations.com"
+              href="mailto:info@ibpa-awards.com"
               className="text-sm text-(--color-ink-soft) transition hover:text-(--color-hover)"
             >
               info@ibpa-awards.com
@@ -117,8 +184,8 @@ export default function Footer() {
         </div>
 
         <div className="mt-(--space-md) flex flex-col gap-(--space-sm) text-[0.75rem] text-(--color-ink-muted) sm:flex-row sm:items-center sm:justify-between">
-          <p>Copyright 2026 IBPA Beauty Awards. All rights reserved.</p>
-          <p className="script-accent text-[1.4rem]">Open to global participants.</p>
+          <p>{copy.copyright}</p>
+          <p className="script-accent text-[1.4rem]">{copy.global}</p>
         </div>
       </div>
     </footer>
