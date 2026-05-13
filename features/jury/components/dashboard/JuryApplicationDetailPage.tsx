@@ -135,7 +135,7 @@ export default function JuryApplicationDetailPage({
                   value={application.membershipLevel || "Not available"}
                 />
                 <DetailItem label="Direction" value={application.category.name} />
-                <DetailItem label="Specific Award" value={application.award.name} />
+                <DetailItem label="Nomination" value={application.award.name} />
                 <DetailItem
                   label="Professional Website"
                   value={application.websiteUrl || "Not provided"}

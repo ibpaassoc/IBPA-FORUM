@@ -36,7 +36,7 @@ const en = {
       title:
         "Recognition of outstanding achievements in beauty, beauty education, health, and innovation in branding",
       description:
-        "A premium championship experience for licensed professionals, educators, salons, and brands. Apply in your direction, submit your portfolio, and be reviewed by the official IBPA jury panel.",
+        "A premium award experience for licensed professionals, educators, salons, and brands. Apply in your direction, submit your portfolio, and be reviewed by the official IBPA jury panel.",
       categoriesCta: "Explore Directions",
     },
     stats: [
@@ -57,8 +57,8 @@ const en = {
       },
       {
         title: "Grand Prix",
-        value: "5+ directions",
-        text: "Participants who submit applications in 5 or more directions are automatically entered into the Grand Prix. The winner is determined by the highest total score received from judges across all submitted directions.",
+        value: "5+ nominations",
+        text: "Participants who submit applications in 5 or more nominations are automatically entered into the Grand Prix. The winner is determined by the highest total score received from judges across all submitted nominations.",
       },
     ],
     categoriesPreview: {
@@ -86,7 +86,7 @@ const en = {
         {
           number: "01",
           title: "Choose a Direction",
-          text: "Select one of the 11 professional directions and a specific direction within that direction.",
+          text: "Select one of the 11 professional directions and a specific nomination within that direction.",
         },
         {
           number: "02",
@@ -96,7 +96,7 @@ const en = {
         {
           number: "03",
           title: "Complete Submission",
-          text: "Fill out the main application and upload materials relevant to the selected direction and direction.",
+          text: "Fill out the main application and upload materials relevant to the selected direction and nomination.",
         },
         {
           number: "04",
@@ -114,9 +114,9 @@ const en = {
       label: "Grand Prix",
       title: "IBPA Grand Prix 2026",
       text1:
-        "The highest award for outstanding performance, granted to participants with the best combined results across 5 or more directions.",
+        "The highest award for outstanding performance, granted to participants with the best combined results across 5 or more nominations.",
       text2:
-        "The Grand Prix recognizes overall performance across multiple directions. A participant becomes a nominee by competing in 5 or more directions - within one or across multiple directions.",
+        "The Grand Prix recognizes overall performance across multiple nominations. A participant becomes a nominee by competing in 5 or more nominations, within one or across multiple directions.",
       cta: "Learn About Grand Prix",
     },
     juryCta: {
@@ -147,7 +147,7 @@ const en = {
         },
         {
           q: "How does Grand Prix work?",
-          a: "Qualification happens automatically when a participant competes in 5 or more directions.",
+          a: "Qualification happens automatically when a participant competes in 5 or more nominations.",
         },
       ],
     },
@@ -163,7 +163,7 @@ const en = {
       eyebrow: "Award Directions",
       title: "11 Directions of Excellence in the Beauty Industry",
       description:
-        "Each direction is built for a different direction, from artistry and skin to salon leadership, education, and brand excellence. Applicants choose the direction that best matches their work and submit a dedicated entry.",
+        "Each direction is built for a different beauty profession, from artistry and skin to salon leadership, education, and brand excellence. Applicants choose the direction that best matches their work and submit a dedicated entry.",
       entryRules: "Entry Rules",
       feeLabel: "Registration Fee",
       feeValue: "$50 per direction",
@@ -202,7 +202,7 @@ const en = {
         {
           label: "Expertise",
           value: "11 Directions",
-          text: "Judges are selected based on their expertise in relevant championship areas.",
+          text: "Judges are selected based on their expertise in relevant award areas.",
         },
         {
           label: "Documents",
@@ -290,12 +290,12 @@ const en = {
       eyebrow: "Grand Prix",
       title: "IBPA Grand Prix 2026",
       description:
-        "The highest award for outstanding performance, granted to participants with the best combined results across 5 or more directions.",
+        "The highest award for outstanding performance, granted to participants with the best combined results across 5 or more nominations.",
       body:
-        "The Grand Prix recognizes overall performance across multiple directions. A participant becomes a nominee by competing in 5 or more directions - within one or across multiple directions.",
+        "The Grand Prix recognizes overall performance across multiple nominations. A participant becomes a nominee by competing in 5 or more nominations, within one or across multiple directions.",
       snapshot: "Selection Snapshot",
       eligibility: "Eligibility",
-      eligibilityValue: "Minimum 5 directions",
+      eligibilityValue: "Minimum 5 nominations",
       evaluation: "Evaluation",
       evaluationValue: "Total combined score",
       decision: "Decision",
@@ -305,11 +305,11 @@ const en = {
     pillars: [
       {
         title: "How to Become a Grand Prix Nominee",
-        text: "A participant automatically becomes a Grand Prix nominee by competing in at least 5 directions. Disciplines can be within one direction or across multiple directions.",
+        text: "A participant automatically becomes a Grand Prix nominee by competing in at least 5 nominations. Nominations can be within one direction or across multiple directions.",
       },
       {
         title: "Example",
-        text: "3 directions in Brows + 2 directions in Lashes qualifies a participant for Grand Prix consideration.",
+        text: "3 nominations in Brows + 2 nominations in Lashes qualifies a participant for Grand Prix consideration.",
       },
       {
         title: "How the Grand Prix Winner is Determined",
@@ -318,12 +318,12 @@ const en = {
     ],
     criteria: {
       label: "Important",
-      title: "5 directions, not directions",
-      text: "Grand Prix qualification is based on participation in at least 5 directions or directions. Those directions may be inside one direction or spread across several directions.",
+      title: "5 nominations for qualification",
+      text: "Grand Prix qualification is based on participation in at least 5 nominations. Those nominations may be inside one direction or spread across several directions.",
       listLabel: "Core Criteria",
       items: [
-        "Eligibility: minimum 5 directions",
-        "Evaluation: total combined score across all directions",
+        "Eligibility: minimum 5 nominations",
+        "Evaluation: total combined score across all nominations",
         "Decision: full judging panel",
       ],
     },
@@ -334,17 +334,17 @@ const en = {
         {
           number: "01",
           title: "Participation",
-          text: "Participants compete in multiple directions across one or several directions.",
+          text: "Participants compete in multiple nominations within one or across multiple directions.",
         },
         {
           number: "02",
           title: "Nomination",
-          text: "Competing in 5 or more directions automatically qualifies a participant for the Grand Prix.",
+          text: "Competing in 5 or more nominations automatically qualifies a participant for the Grand Prix.",
         },
         {
           number: "03",
           title: "Judging",
-          text: "Each direction is evaluated independently by the judges.",
+          text: "Each nomination is evaluated independently by the judges.",
         },
         {
           number: "04",
@@ -362,12 +362,12 @@ const en = {
           answer: "No. Qualification happens automatically through participation.",
         },
         {
-          question: "Do I need to compete in different directions?",
-          answer: "No. Disciplines can belong to one or multiple directions.",
+          question: "Do I need to compete in different directions or nominations?",
+          answer: "No. Nominations can be within one direction or across multiple directions.",
         },
         {
           question: "How is the winner selected?",
-          answer: "Based on the total combined score across all directions.",
+          answer: "Based on the total combined score across all nominations.",
         },
       ],
     },
@@ -382,16 +382,16 @@ const en = {
       blockA: "Block A",
       blockATitle: "Professional Profile & Eligibility",
       blockADescription:
-        "Complete the shared championship application section before moving into the direction-specific evaluation materials.",
+        "Complete the shared award application section before moving into the direction-specific evaluation materials.",
       blockB: "Block B",
-      blockBTitle: "Direction-Specific Championship Materials",
+      blockBTitle: "Direction-Specific Nomination Materials",
       blockBDescription: "Block B changes based on the direction you select.",
       progress: "Application Progress",
       requiredComplete: "required items complete",
       submit: "Submit Award Application",
       submitting: "Submitting Application...",
       validationError:
-        "Please review the highlighted fields before submitting your championship entry.",
+        "Please review the highlighted fields before submitting your award entry.",
       submitError: "We could not submit the application. Please try again.",
       submitException:
         "Something went wrong during submission. Please try again in a moment.",
@@ -425,7 +425,7 @@ const en = {
       applicant: "Applicant",
       candidate: "Candidate",
       category: "Direction",
-      award: "Award",
+      award: "Nomination",
       status: "Status",
       payment: "Payment",
       created: "Created",
@@ -479,7 +479,7 @@ const en = {
     allCategories: "All Directions",
     applicant: "Applicant",
     category: "Direction",
-    award: "Award",
+    award: "Nomination",
     status: "Status",
     submitted: "Submitted",
     open: "Open",
@@ -563,14 +563,14 @@ const ru: typeof en = {
     applyAsJury: "Подать заявку в жюри",
     juryAccount: "Кабинет жюри",
     jury: "Жюри",
-    categories: "Категории",
+    categories: "Направления",
     grandPrix: "Гран-при",
     home: "Главная",
   },
   header: {
     navigation: {
       home: "Главная",
-      categories: "Категории",
+      categories: "Направления",
       jury: "Жюри",
       grandPrix: "Гран-при",
     },
@@ -584,14 +584,14 @@ const ru: typeof en = {
       title:
         "Признание выдающихся достижений в сфере красоты, обучения в бьюти-индустрии, здоровья и инноваций в брендинге.",
       description:
-        "Премиальный чемпионат для лицензированных специалистов, преподавателей, салонов и брендов. Выберите категорию, отправьте портфолио и пройдите оценку официального жюри IBPA.",
-      categoriesCta: "Смотреть категории",
+        "Премиальная платформа для лицензированных специалистов, преподавателей, салонов и брендов. Выберите направление, отправьте портфолио и пройдите оценку официального жюри IBPA.",
+      categoriesCta: "Смотреть направления",
     },
     stats: [
       {
         title: "Регистрационный взнос",
-        value: "$50 за категорию",
-        text: "Стоимость участия рассчитывается за каждую выбранную категорию отдельно. Доступна возможность выбора нескольких категорий с оплатой одним платежом.",
+        value: "$50 за направление",
+        text: "Стоимость участия рассчитывается за каждое выбранное направление отдельно. Можно выбрать несколько направлений и оплатить их одним платежом.",
       },
       {
         title: "Регистрация судьи",
@@ -605,14 +605,14 @@ const ru: typeof en = {
       },
       {
         title: "Гран-при",
-        value: "5+ направлений",
-        text: "Участники, подавшие заявки в 5 и более направлениях, автоматически участвуют в Гран-при. Победитель определяется по наибольшей сумме баллов, полученных от судей по всем заявленным направлениям.",
+        value: "5+ номинаций",
+        text: "Участники, подавшие заявки в 5 и более номинациях, автоматически участвуют в Гран-при. Победитель определяется по наибольшей сумме баллов, полученных от судей по всем заявленным номинациям.",
       },
     ],
     categoriesPreview: {
-      label: "Категории",
-      title: "11 категорий превосходства в индустрии красоты",
-      viewAll: "Все категории",
+      label: "Направления",
+      title: "11 направлений превосходства в индустрии красоты",
+      viewAll: "Все направления",
       items: [
         "Парикмахер / стилист по волосам",
         "Нейл-мастер",
@@ -633,8 +633,8 @@ const ru: typeof en = {
       steps: [
         {
           number: "01",
-          title: "Выберите категорию",
-          text: "Выберите одну из 11 профессиональных категорий и конкретное направление внутри неё.",
+          title: "Выберите направление",
+          text: "Выберите одно из 11 профессиональных направлений и конкретную номинацию внутри него.",
         },
         {
           number: "02",
@@ -644,7 +644,7 @@ const ru: typeof en = {
         {
           number: "03",
           title: "Завершите подачу",
-          text: "Заполните основную заявку и загрузите материалы, соответствующие выбранной категории и направлению.",
+          text: "Заполните основную заявку и загрузите материалы, соответствующие выбранным направлению и номинации.",
         },
         {
           number: "04",
@@ -662,9 +662,9 @@ const ru: typeof en = {
       label: "Гран-при",
       title: "Гран-при IBPA 2026",
       text1:
-        "Высшая награда за выдающийся результат, присуждаемая участникам, показавшим лучший суммарный результат в 5 и более направлениях.",
+        "Высшая награда за выдающийся результат, присуждаемая участникам, показавшим лучший суммарный результат в 5 и более номинациях.",
       text2:
-        "Гран-при - это абсолютная победа, основанная на суммарных результатах участия в нескольких направлениях. Участник становится номинантом при участии в 5 и более направлениях - как в одной, так и в разных категориях.",
+        "Гран-при - это абсолютная победа, основанная на суммарных результатах участия в нескольких номинациях. Участник становится номинантом при участии в 5 и более номинациях - в одном или нескольких направлениях.",
       cta: "Подробнее о Гран-при",
     },
     juryCta: {
@@ -683,7 +683,7 @@ const ru: typeof en = {
       items: [
         {
           q: "Сколько стоит участие?",
-          a: "Регистрационный взнос составляет $50 за каждую выбранную категорию.",
+          a: "Регистрационный взнос составляет $50 за каждое выбранное направление.",
         },
         {
           q: "Кто может участвовать?",
@@ -695,7 +695,7 @@ const ru: typeof en = {
         },
         {
           q: "Как работает Гран-при?",
-          a: "Участие формируется автоматически при участии в 5 и более направлениях.",
+          a: "Участие формируется автоматически при участии в 5 и более номинациях.",
         },
       ],
     },
@@ -708,19 +708,19 @@ const ru: typeof en = {
   },
   categoriesPage: {
     hero: {
-      eyebrow: "Категории премии",
-      title: "11 категорий превосходства в индустрии красоты",
+      eyebrow: "Направления премии",
+      title: "11 направлений превосходства в индустрии красоты",
       description:
-        "Каждая категория создана для отдельного направления: от артистизма и ухода за кожей до управления салоном, образования и брендов. Участники выбирают категорию, которая лучше всего соответствует их работе, и отправляют отдельную заявку.",
+        "Каждое направление представляет отдельную профессиональную сферу: от артистизма и ухода за кожей до управления салоном, образования и брендов. Участники выбирают направление, которое лучше всего соответствует их работе, и отправляют отдельную заявку.",
       entryRules: "Правила участия",
       feeLabel: "Регистрационный взнос",
-      feeValue: "$50 за категорию",
+      feeValue: "$50 за направление",
       eligibilityLabel: "Участие",
       eligibilityValue: "Для членов IBPA",
-      cta: "Подать заявку в категории",
+      cta: "Подать заявку по направлению",
     },
     cardText:
-      "Профессиональные заявки рассматриваются в рамках официального чемпионата IBPA.",
+      "Профессиональные заявки рассматриваются в рамках официальной премии IBPA.",
   },
   juryPage: {
     hero: {
@@ -749,8 +749,8 @@ const ru: typeof en = {
         },
         {
           label: "Экспертиза",
-          value: "11 категорий",
-          text: "Судьи отбираются с учетом экспертизы в соответствующих направлениях чемпионата.",
+          value: "11 направлений",
+          text: "Судьи отбираются с учетом экспертизы в соответствующих направлениях премии.",
         },
         {
           label: "Документы",
@@ -838,40 +838,40 @@ const ru: typeof en = {
       eyebrow: "Гран-при",
       title: "Гран-при IBPA 2026",
       description:
-        "Высшая награда за выдающийся результат, присуждаемая участникам, показавшим лучший суммарный результат в 5 и более направлениях.",
+        "Высшая награда за выдающийся результат, присуждаемая участникам, показавшим лучший суммарный результат в 5 и более номинациях.",
       body:
-        "Гран-при - это абсолютная победа, основанная на суммарных результатах участия в нескольких направлениях. Участник становится номинантом при участии в 5 и более направлениях - как в одной, так и в разных категориях.",
+        "Гран-при - это абсолютная победа, основанная на суммарных результатах участия в нескольких номинациях. Участник становится номинантом при участии в 5 и более номинациях - в одном или нескольких направлениях.",
       snapshot: "Ключевые условия",
       eligibility: "Критерии участия",
-      eligibilityValue: "Минимум 5 направлений",
+      eligibilityValue: "Минимум 5 номинаций",
       evaluation: "Оценка",
-      evaluationValue: "Суммарный балл по всем направлениям",
+      evaluationValue: "Суммарный балл по всем номинациям",
       decision: "Решение",
       decisionValue: "Полный состав жюри",
-      cta: "Смотреть категории",
+      cta: "Смотреть направления",
     },
     pillars: [
       {
         title: "Как стать номинантом на Гран-при",
-        text: "Участник автоматически становится номинантом на Гран-при, если принимает участие минимум в 5 направлениях. Направления могут быть в одной категории или в нескольких категориях.",
+        text: "Участник автоматически становится номинантом на Гран-при, если принимает участие минимум в 5 номинациях. Номинации могут быть в одном направлении или в нескольких направлениях.",
       },
       {
         title: "Пример",
-        text: "3 направления в категории «Брови» + 2 направления в категории «Ресницы» дают право на участие в Гран-при.",
+        text: "3 номинации в направлении «Брови» + 2 номинации в направлении «Ресницы» дают право на участие в Гран-при.",
       },
       {
         title: "Как определяется победитель Гран-при",
-        text: "Каждое направление оценивается судьями отдельно. Все баллы суммируются в общий результат, и побеждает участник с наибольшей суммой баллов среди всех номинантов.",
+        text: "Каждая номинация оценивается судьями отдельно. Все баллы суммируются в общий результат, и побеждает участник с наибольшей суммой баллов среди всех номинантов.",
       },
     ],
     criteria: {
       label: "Важно",
-      title: "5 направлений, а не категорий",
-      text: "Квалификация на Гран-при основана на участии минимум в 5 направлениях. Эти направления могут быть внутри одной категории или распределены по нескольким категориям.",
+      title: "5 номинаций для квалификации",
+      text: "Квалификация на Гран-при основана на участии минимум в 5 номинациях. Эти номинации могут быть внутри одного направления или распределены по нескольким направлениям.",
       listLabel: "Ключевые критерии",
       items: [
-        "Критерии участия: минимум 5 направлений",
-        "Оценка: суммарный балл по всем направлениям",
+        "Критерии участия: минимум 5 номинаций",
+        "Оценка: суммарный балл по всем номинациям",
         "Решение: полный состав жюри",
       ],
     },
@@ -882,17 +882,17 @@ const ru: typeof en = {
         {
           number: "01",
           title: "Участие",
-          text: "Участник выбирает и участвует в нескольких направлениях в рамках одной или разных категорий.",
+          text: "Участник выбирает и участвует в нескольких номинациях в рамках одного или разных направлений.",
         },
         {
           number: "02",
           title: "Формирование номинации",
-          text: "При участии в 5 и более направлениях участник автоматически становится номинантом на Гран-при.",
+          text: "При участии в 5 и более номинациях участник автоматически становится номинантом на Гран-при.",
         },
         {
           number: "03",
           title: "Оценка судьями",
-          text: "Каждое направление оценивается судьями независимо.",
+          text: "Каждая номинация оценивается судьями независимо.",
         },
         {
           number: "04",
@@ -908,17 +908,17 @@ const ru: typeof en = {
         {
           question: "Можно ли подать заявку на Гран-при отдельно?",
           answer:
-            "Нет. Участие формируется автоматически при участии в 5 и более направлениях.",
+            "Нет. Участие формируется автоматически при участии в 5 и более номинациях.",
         },
         {
-          question: "Обязательно ли участвовать в разных категориях?",
+          question: "Обязательно ли участвовать в разных направлениях?",
           answer:
-            "Нет. Все направления могут быть как в одной категории, так и в разных.",
+            "Нет. Номинации могут быть как в одном направлении, так и в разных.",
         },
         {
           question: "Как выбирается победитель?",
           answer:
-            "По сумме всех баллов, полученных за каждое направление.",
+            "По сумме всех баллов, полученных за каждую номинацию.",
         },
       ],
     },
@@ -926,20 +926,20 @@ const ru: typeof en = {
   applyPage: {
     intro: {
       eyebrow: "Заявка участника",
-      title: "Отправьте заявку на участие в чемпионате.",
-      text: "Заполните форму ниже, указав профессиональные данные и материалы по выбранной категории.",
+      title: "Отправьте заявку на участие в премии.",
+      text: "Заполните форму ниже, указав профессиональные данные и материалы по выбранному направлению и номинации.",
     },
     form: {
       blockA: "Блок A",
       blockATitle: "Профессиональный профиль и право на участие",
       blockADescription:
-        "Заполните общий раздел заявки перед переходом к материалам для оценки по категории.",
+        "Заполните общий раздел заявки перед переходом к материалам для оценки по направлению.",
       blockB: "Блок B",
-      blockBTitle: "Материалы по выбранной категории",
-      blockBDescription: "Блок B меняется в зависимости от выбранной категории.",
+      blockBTitle: "Материалы по выбранному направлению и номинации",
+      blockBDescription: "Блок B меняется в зависимости от выбранного направления и номинации.",
       progress: "Прогресс заявки",
       requiredComplete: "обязательных пунктов заполнено",
-      submit: "Отправить заявку на чемпионат",
+      submit: "Отправить заявку на премию",
       submitting: "Отправка заявки...",
       validationError:
         "Пожалуйста, проверьте выделенные поля перед отправкой заявки.",
@@ -950,13 +950,13 @@ const ru: typeof en = {
     },
     introCards: {
       eligibility: "Право на участие и важные примечания",
-      feeHtml: "Взнос за участие: <strong>$50 за категорию</strong>.",
-      separate: "Каждая категория подаётся как отдельная заявка.",
+      feeHtml: "Взнос за участие: <strong>$50 за направление</strong>.",
+      separate: "Каждое направление подаётся как отдельная заявка.",
       juryNote: "Правила оплаты для жюри не относятся к этой странице заявки участника.",
       before: "Перед началом",
       items: [
         "Подготовьте файл лицензии или сертификата.",
-        "Выберите одну категорию и одну конкретную награду.",
+        "Выберите одно направление и одну конкретную номинацию.",
         "Соберите портфолио и дополнительные файлы для Блока B.",
         "Проверьте файлы портфолио перед загрузкой.",
       ],
@@ -975,8 +975,8 @@ const ru: typeof en = {
       rejected: "Отклонено",
       applicant: "Участник",
       candidate: "Кандидат",
-      category: "Категория",
-      award: "Награда",
+      category: "Направление",
+      award: "Номинация",
       status: "Статус",
       payment: "Оплата",
       created: "Создано",
@@ -1001,9 +1001,9 @@ const ru: typeof en = {
     },
     participants: {
       eyebrow: "Администрирование участников",
-      title: "Заявки участников чемпионата",
+      title: "Заявки участников премии",
       text:
-        "Проверяйте профили участников, категории, файлы и текущие статусы в одном закрытом рабочем пространстве.",
+        "Проверяйте профили участников, направления, файлы и текущие статусы в одном закрытом рабочем пространстве.",
       juryDashboard: "Жюри",
       scoringDashboard: "Оценки",
       appStatus: "Статус заявки",
@@ -1022,29 +1022,29 @@ const ru: typeof en = {
   },
   juryDashboard: {
     dashboard: "Панель жюри",
-    accessText: "Доступ к проверке ограничен категориями, для которых вы одобрены.",
-    approvedCategories: "Одобренные категории",
+    accessText: "Доступ к проверке ограничен направлениями, для которых вы одобрены.",
+    approvedCategories: "Одобренные направления",
     assigned: "Назначенные заявки",
     scored: "Оценено",
     remaining: "Осталось",
-    allCategories: "Все категории",
+    allCategories: "Все направления",
     applicant: "Участник",
-    category: "Категория",
-    award: "Награда",
+    category: "Направление",
+    award: "Номинация",
     status: "Статус",
     submitted: "Отправлено",
     open: "Открыть",
     reviewScore: "Проверить и оценить",
     continueDraft: "Продолжить черновик",
     viewSubmitted: "Смотреть отправленное",
-    empty: "Нет заявок участников для вашего доступа по категориям.",
+    empty: "Нет заявок участников для вашего доступа по направлениям.",
     signOut: "Выйти",
   },
   auth: {
     shellCards: [
       "Закрытый доступ для участников",
       "Премиальный стиль IBPA",
-      "Защищённые страницы чемпионата",
+      "Защищённые страницы премии",
     ],
     access: "Доступ",
     accessText:
@@ -1114,14 +1114,14 @@ const ua: typeof en = {
     applyAsJury: "Подати заявку до журі",
     juryAccount: "Кабінет журі",
     jury: "Журі",
-    categories: "Категорії",
+    categories: "Напрямки",
     grandPrix: "Гран-прі",
     home: "Головна",
   },
   header: {
     navigation: {
       home: "Головна",
-      categories: "Категорії",
+      categories: "Напрямки",
       jury: "Журі",
       grandPrix: "Гран-прі",
     },
@@ -1135,14 +1135,14 @@ const ua: typeof en = {
       title:
         "Визнання видатних досягнень у сфері краси, beauty-освіти, здоров'я та інновацій у брендингу.",
       description:
-        "Преміальний чемпіонат для ліцензованих фахівців, викладачів, салонів і брендів. Оберіть категорію, надішліть портфоліо та пройдіть оцінювання офіційного журі IBPA.",
-      categoriesCta: "Переглянути категорії",
+        "Преміальна платформа для ліцензованих фахівців, викладачів, салонів і брендів. Оберіть напрямок, надішліть портфоліо та пройдіть оцінювання офіційного журі IBPA.",
+      categoriesCta: "Переглянути напрямки",
     },
     stats: [
       {
         title: "Реєстраційний внесок",
-        value: "$50 за категорію",
-        text: "Вартість участі розраховується окремо для кожної вибраної категорії. Можна вибрати кілька категорій і оплатити їх одним платежем.",
+        value: "$50 за напрямок",
+        text: "Вартість участі розраховується окремо для кожного вибраного напрямку. Можна вибрати кілька напрямків і оплатити їх одним платежем.",
       },
       {
         title: "Реєстрація судді",
@@ -1156,14 +1156,14 @@ const ua: typeof en = {
       },
       {
         title: "Гран-прі",
-        value: "5+ напрямів",
-        text: "Учасники, які подають заявки у 5 або більше напрямах, автоматично беруть участь у Гран-прі. Переможець визначається за найбільшою сумою балів від суддів за всіма заявленими напрямами.",
+        value: "5+ номінацій",
+        text: "Учасники, які подають заявки у 5 або більше номінаціях, автоматично беруть участь у Гран-прі. Переможець визначається за найбільшою сумою балів від суддів за всіма заявленими номінаціями.",
       },
     ],
     categoriesPreview: {
-      label: "Категорії",
-      title: "11 категорій досконалості в індустрії краси",
-      viewAll: "Усі категорії",
+      label: "Напрямки",
+      title: "11 напрямків досконалості в індустрії краси",
+      viewAll: "Усі напрямки",
       items: [
         "Перукар / стиліст із волосся",
         "Нейл-майстер",
@@ -1184,8 +1184,8 @@ const ua: typeof en = {
       steps: [
         {
           number: "01",
-          title: "Оберіть категорію",
-          text: "Оберіть одну з 11 професійних категорій і конкретний напрям усередині неї.",
+          title: "Оберіть напрямок",
+          text: "Оберіть один з 11 професійних напрямків і конкретну номінацію в ньому.",
         },
         {
           number: "02",
@@ -1195,7 +1195,7 @@ const ua: typeof en = {
         {
           number: "03",
           title: "Завершіть подання",
-          text: "Заповніть основну заявку та завантажте матеріали, що відповідають вибраній категорії й напряму.",
+          text: "Заповніть основну заявку та завантажте матеріали, що відповідають вибраним напрямку й номінації.",
         },
         {
           number: "04",
@@ -1213,9 +1213,9 @@ const ua: typeof en = {
       label: "Гран-прі",
       title: "Гран-прі IBPA 2026",
       text1:
-        "Найвища нагорода за видатний результат, яку отримують учасники з найкращим сумарним результатом у 5 або більше напрямах.",
+        "Найвища нагорода за видатний результат, яку отримують учасники з найкращим сумарним результатом у 5 або більше номінаціях.",
       text2:
-        "Гран-прі визнає загальний результат у кількох напрямах. Учасник стає номінантом, якщо бере участь у 5 або більше напрямах - в одній чи в різних категоріях.",
+        "Гран-прі визнає загальний результат у кількох номінаціях. Учасник стає номінантом, якщо бере участь у 5 або більше номінаціях - в одному або кількох напрямках.",
       cta: "Докладніше про Гран-прі",
     },
     juryCta: {
@@ -1234,7 +1234,7 @@ const ua: typeof en = {
       items: [
         {
           q: "Скільки коштує участь?",
-          a: "Реєстраційний внесок становить $50 за кожну вибрану категорію.",
+          a: "Реєстраційний внесок становить $50 за кожен вибраний напрямок.",
         },
         {
           q: "Хто може брати участь?",
@@ -1246,7 +1246,7 @@ const ua: typeof en = {
         },
         {
           q: "Як працює Гран-прі?",
-          a: "Участь формується автоматично, якщо учасник бере участь у 5 або більше напрямах.",
+          a: "Участь формується автоматично, якщо учасник бере участь у 5 або більше номінаціях.",
         },
       ],
     },
@@ -1259,19 +1259,19 @@ const ua: typeof en = {
   },
   categoriesPage: {
     hero: {
-      eyebrow: "Категорії премії",
-      title: "11 категорій досконалості в індустрії краси",
+      eyebrow: "Напрямки премії",
+      title: "11 напрямків досконалості в індустрії краси",
       description:
-        "Кожна категорія створена для окремого напряму: від artistry та догляду за шкірою до керування салоном, освіти й брендів. Учасники обирають категорію, що найкраще відповідає їхній роботі, і подають окрему заявку.",
+        "Кожен напрямок створений для окремої професійної сфери: від артистизму та догляду за шкірою до керування салоном, освіти й брендів. Учасники обирають напрямок, що найкраще відповідає їхній роботі, і подають окрему заявку.",
       entryRules: "Правила участі",
       feeLabel: "Реєстраційний внесок",
-      feeValue: "$50 за категорію",
+      feeValue: "$50 за напрямок",
       eligibilityLabel: "Участь",
       eligibilityValue: "Для членів IBPA",
-      cta: "Подати заявку в категорії",
+      cta: "Подати заявку за напрямком",
     },
     cardText:
-      "Професійні заявки розглядаються в межах офіційного чемпіонату IBPA.",
+      "Професійні заявки розглядаються в межах офіційної премії IBPA.",
   },
   juryPage: {
     hero: {
@@ -1300,8 +1300,8 @@ const ua: typeof en = {
         },
         {
           label: "Експертиза",
-          value: "11 категорій",
-          text: "Суддів відбирають з урахуванням експертизи у відповідних напрямах чемпіонату.",
+          value: "11 напрямків",
+          text: "Суддів відбирають з урахуванням експертизи у відповідних напрямах премії.",
         },
         {
           label: "Документи",
@@ -1389,40 +1389,40 @@ const ua: typeof en = {
       eyebrow: "Гран-прі",
       title: "Гран-прі IBPA 2026",
       description:
-        "Найвища нагорода за видатний результат, яку отримують учасники з найкращим сумарним результатом у 5 або більше напрямах.",
+        "Найвища нагорода за видатний результат, яку отримують учасники з найкращим сумарним результатом у 5 або більше номінаціях.",
       body:
-        "Гран-прі визнає загальний результат у кількох напрямах. Учасник стає номінантом, якщо бере участь у 5 або більше напрямах - в одній чи в різних категоріях.",
+        "Гран-прі визнає загальний результат у кількох номінаціях. Учасник стає номінантом, якщо бере участь у 5 або більше номінаціях - в одному або кількох напрямках.",
       snapshot: "Ключові умови",
       eligibility: "Критерії участі",
-      eligibilityValue: "Мінімум 5 напрямів",
+      eligibilityValue: "Мінімум 5 номінацій",
       evaluation: "Оцінювання",
-      evaluationValue: "Сумарний бал за всіма напрямами",
+      evaluationValue: "Сумарний бал за всіма номінаціями",
       decision: "Рішення",
       decisionValue: "Повний склад журі",
-      cta: "Переглянути категорії",
+      cta: "Переглянути напрямки",
     },
     pillars: [
       {
         title: "Як стати номінантом на Гран-прі",
-        text: "Учасник автоматично стає номінантом на Гран-прі, якщо бере участь мінімум у 5 напрямах. Напрями можуть бути в одній категорії або в кількох категоріях.",
+        text: "Учасник автоматично стає номінантом на Гран-прі, якщо бере участь мінімум у 5 номінаціях. Номінації можуть бути в одному напрямку або в кількох напрямках.",
       },
       {
         title: "Приклад",
-        text: "3 напрями в категорії «Брови» + 2 напрями в категорії «Вії» дають право на участь у Гран-прі.",
+        text: "3 номінації в напрямку «Брови» + 2 номінації в напрямку «Вії» дають право на участь у Гран-прі.",
       },
       {
         title: "Як визначається переможець Гран-прі",
-        text: "Кожен напрям оцінюється суддями окремо. Усі бали підсумовуються, і перемагає учасник із найвищою сумою балів серед усіх номінантів.",
+        text: "Кожна номінація оцінюється суддями окремо. Усі бали підсумовуються, і перемагає учасник із найвищою сумою балів серед усіх номінантів.",
       },
     ],
     criteria: {
       label: "Важливо",
-      title: "5 напрямів, а не категорій",
-      text: "Кваліфікація на Гран-прі базується на участі щонайменше у 5 напрямах. Ці напрями можуть бути в одній категорії або розподілені між кількома категоріями.",
+      title: "5 номінацій для кваліфікації",
+      text: "Кваліфікація на Гран-прі базується на участі щонайменше у 5 номінаціях. Ці номінації можуть бути в одному напрямку або розподілені між кількома напрямками.",
       listLabel: "Ключові критерії",
       items: [
-        "Критерії участі: мінімум 5 напрямів",
-        "Оцінювання: сумарний бал за всіма напрямами",
+        "Критерії участі: мінімум 5 номінацій",
+        "Оцінювання: сумарний бал за всіма номінаціями",
         "Рішення: повний склад журі",
       ],
     },
@@ -1433,17 +1433,17 @@ const ua: typeof en = {
         {
           number: "01",
           title: "Участь",
-          text: "Учасник обирає та бере участь у кількох напрямах у межах однієї або різних категорій.",
+          text: "Учасник обирає та бере участь у кількох номінаціях у межах одного або різних напрямків.",
         },
         {
           number: "02",
           title: "Формування номінації",
-          text: "Участь у 5 або більше напрямах автоматично кваліфікує учасника на Гран-прі.",
+          text: "Участь у 5 або більше номінаціях автоматично кваліфікує учасника на Гран-прі.",
         },
         {
           number: "03",
           title: "Оцінювання суддями",
-          text: "Кожен напрям оцінюється суддями незалежно.",
+          text: "Кожна номінація оцінюється суддями незалежно.",
         },
         {
           number: "04",
@@ -1459,17 +1459,17 @@ const ua: typeof en = {
         {
           question: "Чи можна подати заявку на Гран-прі окремо?",
           answer:
-            "Ні. Участь формується автоматично за участі у 5 або більше напрямах.",
+            "Ні. Участь формується автоматично за участі у 5 або більше номінаціях.",
         },
         {
-          question: "Чи обов'язково брати участь у різних категоріях?",
+          question: "Чи обов'язково брати участь у різних напрямках?",
           answer:
-            "Ні. Усі напрями можуть бути як в одній категорії, так і в різних.",
+            "Ні. Номінації можуть бути як в одному напрямку, так і в різних.",
         },
         {
           question: "Як обирається переможець?",
           answer:
-            "За сумою всіх балів, отриманих за кожен напрям.",
+            "За сумою всіх балів, отриманих за кожну номінацію.",
         },
       ],
     },
@@ -1477,20 +1477,20 @@ const ua: typeof en = {
   applyPage: {
     intro: {
       eyebrow: "Заявка учасника",
-      title: "Надішліть заявку на участь у чемпіонаті.",
-      text: "Заповніть форму нижче, вказавши професійні дані та матеріали для вибраної категорії.",
+      title: "Надішліть заявку на участь у премії.",
+      text: "Заповніть форму нижче, вказавши професійні дані та матеріали для вибраного напрямку та номінації.",
     },
     form: {
       blockA: "Блок A",
       blockATitle: "Професійний профіль і право на участь",
       blockADescription:
-        "Заповніть загальний розділ заявки перед переходом до матеріалів для оцінювання за категорією.",
+        "Заповніть загальний розділ заявки перед переходом до матеріалів для оцінювання за напрямком.",
       blockB: "Блок B",
-      blockBTitle: "Матеріали для вибраної категорії",
-      blockBDescription: "Блок B змінюється залежно від вибраної категорії.",
+      blockBTitle: "Матеріали для вибраного напрямку та номінації",
+      blockBDescription: "Блок B змінюється залежно від вибраного напрямку та номінації.",
       progress: "Прогрес заявки",
       requiredComplete: "обов'язкових пунктів заповнено",
-      submit: "Надіслати заявку на чемпіонат",
+      submit: "Надіслати заявку на премію",
       submitting: "Надсилання заявки...",
       validationError:
         "Будь ласка, перевірте виділені поля перед надсиланням заявки.",
@@ -1501,13 +1501,13 @@ const ua: typeof en = {
     },
     introCards: {
       eligibility: "Право на участь і важливі примітки",
-      feeHtml: "Внесок за участь: <strong>$50 за категорію</strong>.",
-      separate: "Кожна категорія подається як окрема заявка.",
+      feeHtml: "Внесок за участь: <strong>$50 за напрямок</strong>.",
+      separate: "Кожен напрямок подається як окрема заявка.",
       juryNote: "Правила оплати для журі не застосовуються до цієї сторінки заявки учасника.",
       before: "Перед початком",
       items: [
         "Підготуйте файл ліцензії або сертифіката.",
-        "Оберіть одну категорію та одну конкретну нагороду.",
+        "Оберіть один напрямок та одну конкретну номінацію.",
         "Зберіть портфоліо та додаткові файли для Блока B.",
         "Перевірте файли портфоліо перед завантаженням.",
       ],
@@ -1526,8 +1526,8 @@ const ua: typeof en = {
       rejected: "Відхилено",
       applicant: "Учасник",
       candidate: "Кандидат",
-      category: "Категорія",
-      award: "Нагорода",
+      category: "Напрямок",
+      award: "Номінація",
       status: "Статус",
       payment: "Оплата",
       created: "Створено",
@@ -1552,9 +1552,9 @@ const ua: typeof en = {
     },
     participants: {
       eyebrow: "Адміністрування учасників",
-      title: "Заявки учасників чемпіонату",
+      title: "Заявки учасників премії",
       text:
-        "Перевіряйте профілі учасників, категорії, файли та поточні статуси в одному закритому робочому просторі.",
+        "Перевіряйте профілі учасників, напрямки, файли та поточні статуси в одному закритому робочому просторі.",
       juryDashboard: "Журі",
       scoringDashboard: "Оцінки",
       appStatus: "Статус заявки",
@@ -1573,29 +1573,29 @@ const ua: typeof en = {
   },
   juryDashboard: {
     dashboard: "Панель журі",
-    accessText: "Доступ до перевірки обмежений категоріями, для яких вас схвалено.",
-    approvedCategories: "Схвалені категорії",
+    accessText: "Доступ до перевірки обмежений напрямками, для яких вас схвалено.",
+    approvedCategories: "Схвалені напрямки",
     assigned: "Призначені заявки",
     scored: "Оцінено",
     remaining: "Залишилось",
-    allCategories: "Усі категорії",
+    allCategories: "Усі напрямки",
     applicant: "Учасник",
-    category: "Категорія",
-    award: "Нагорода",
+    category: "Напрямок",
+    award: "Номінація",
     status: "Статус",
     submitted: "Надіслано",
     open: "Відкрити",
     reviewScore: "Перевірити й оцінити",
     continueDraft: "Продовжити чернетку",
     viewSubmitted: "Переглянути надіслане",
-    empty: "Немає заявок учасників для вашого доступу за категоріями.",
+    empty: "Немає заявок учасників для вашого доступу за напрямками.",
     signOut: "Вийти",
   },
   auth: {
     shellCards: [
       "Закритий доступ для учасників",
       "Преміальний стиль IBPA",
-      "Захищені сторінки чемпіонату",
+      "Захищені сторінки премії",
     ],
     access: "Доступ",
     accessText:
@@ -1665,3 +1665,4 @@ export const translations: Record<Language, typeof en> = {
 };
 
 export type Translations = typeof en;
+

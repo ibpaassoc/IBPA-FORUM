@@ -130,7 +130,7 @@ export async function validateMembershipNumber(
           qualified,
           message: qualified
             ? null
-            : "Your current membership level does not qualify for Championship participation.\n\nUpgrade to Trainer / Coach or higher at ibpa-usa.org to apply.",
+            : "Your current membership level does not qualify for Award participation.\n\nUpgrade to Trainer / Coach or higher at ibpa-usa.org to apply.",
           source: "api",
         };
       }
@@ -160,7 +160,7 @@ export async function validateMembershipNumber(
     qualified,
     message: qualified
       ? null
-      : "Your current membership level does not qualify for Championship participation.\n\nUpgrade to Trainer / Coach or higher at ibpa-usa.org to apply.",
+      : "Your current membership level does not qualify for Award participation.\n\nUpgrade to Trainer / Coach or higher at ibpa-usa.org to apply.",
     source: "stub",
   };
 }

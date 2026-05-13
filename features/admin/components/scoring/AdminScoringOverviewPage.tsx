@@ -49,14 +49,14 @@ export default function AdminScoringOverviewPage({
       <AdminHeroCard
         eyebrow="Scoring Admin"
         title="Participant scoring overview"
-        subtitle="Monitor judging progress, submitted scores, direction rankings, and score completion across the championship."
+        subtitle="Monitor judging progress, submitted scores, direction rankings, and score completion across the award."
         actions={
           <>
             <AdminToolbarButton href="/admin/applications">
               Participants
             </AdminToolbarButton>
             <AdminToolbarButton href="/admin/jury-applications">
-              Jurys
+              Juries
             </AdminToolbarButton>
           </>
         }
@@ -100,7 +100,7 @@ export default function AdminScoringOverviewPage({
                 defaultValue={filters.category ?? ""}
                 className="admin-field rounded-xl px-3 py-2 text-sm outline-none"
                 >
-                <option value="">All Categories</option>
+                <option value="">All Directions</option>
 
                 {categories.map((category) => (
                     <option key={category} value={category}>
@@ -126,7 +126,7 @@ export default function AdminScoringOverviewPage({
                 className="admin-field rounded-xl px-3 py-2 text-sm outline-none"
                 >
                 <option value="averageScore">Average Score</option>
-                <option value="direction">Category</option>
+                <option value="direction">Direction</option>
                 <option value="status">Status</option>
                 </select>
 
@@ -154,7 +154,7 @@ export default function AdminScoringOverviewPage({
                 defaultValue={filters.category ?? ""}
                 className="admin-field rounded-xl px-3 py-2 text-sm outline-none"
             >
-                <option value="">All Categories</option>
+                <option value="">All Directions</option>
 
                 {categories.map((category) => (
                 <option key={category} value={category}>
@@ -180,7 +180,7 @@ export default function AdminScoringOverviewPage({
                 className="admin-field rounded-xl px-3 py-2 text-sm outline-none"
             >
                 <option value="averageScore">Average Score</option>
-                <option value="direction">Category</option>
+                <option value="direction">Direction</option>
                 <option value="status">Status</option>
             </select>
 
@@ -194,7 +194,7 @@ export default function AdminScoringOverviewPage({
 
         <AdminDataTable
           className="mt-5"
-          headers={["Participant", "Direction", "Award", "Average"]}
+          headers={["Participant", "Direction", "Nomination", "Average"]}
           gridClassName={scoringGrid}
         >
           {applications.map((application) => (

@@ -39,7 +39,7 @@ export default function JuryApplyHero() {
           <p className="mt-5 max-w-2xl text-sm leading-7 text-(--color-ink-soft) sm:text-base">
             This application is designed for experienced beauty professionals,
             educators, salon leaders, and brand experts who want to serve on the
-            official IBPA Beauty Championship jury panel. Approved judges receive
+            official IBPA Beauty Award jury panel. Approved judges receive
             formal recognition, supporting documents, and a public jury profile
             after payment confirmation.
           </p>

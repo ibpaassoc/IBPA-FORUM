@@ -2,7 +2,7 @@ export const stats = [
   {
     title: "Entry Fee",
     value: "$50",
-    text: "Per category application. Each category is submitted separately.",
+    text: "Per direction application. Each direction and nomination entry is submitted separately.",
   },
   {
     title: "Judge Fee",
@@ -16,8 +16,8 @@ export const stats = [
   },
   {
     title: "Grand Prix",
-    value: "5+ Categories",
-    text: "Awarded only if at least 5 categories produce winners.",
+    value: "5+ Nominations",
+    text: "Awarded only if at least 5 nominations produce qualified winners.",
   },
 ];
 
@@ -39,8 +39,8 @@ export const categories = [
 export const steps = [
   {
     number: "01",
-    title: "Choose Your Category",
-    text: "Select one of 12 professional categories and the specific award inside that category.",
+    title: "Choose Your Direction",
+    text: "Select one of 11 professional directions and the specific nomination inside that direction.",
   },
   {
     number: "02",
@@ -50,7 +50,7 @@ export const steps = [
   {
     number: "03",
     title: "Complete Your Entry",
-    text: "Fill in the main application and upload category-specific materials.",
+    text: "Fill in the main application and upload direction-specific nomination materials.",
   },
   {
     number: "04",
@@ -67,11 +67,11 @@ export const steps = [
 export const faqs = [
   {
     q: "How much does it cost to apply?",
-    a: "Participant applications cost $50 per category.",
+    a: "Participant applications cost $50 per direction.",
   },
   {
-    q: "Do members get free category entry?",
-    a: "No. Membership and championship participation are separate.",
+    q: "Do members get free direction entry?",
+    a: "No. Membership and award participation are separate.",
   },
   {
     q: "Can anyone apply to become a judge?",
@@ -79,6 +79,6 @@ export const faqs = [
   },
   {
     q: "How does Grand Prix work?",
-    a: "The full jury selects the Grand Prix recipient from category winners in years with at least 5 active winning categories.",
+    a: "The full jury selects the Grand Prix recipient from top-scoring nominations when at least 5 qualifying nominations are active.",
   },
 ];

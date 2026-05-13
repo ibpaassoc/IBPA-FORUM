@@ -14,14 +14,14 @@ export default function JuryBenefits() {
               </h2>
               <p className="mt-[var(--space-sm)] max-w-2xl text-sm leading-[1.7] text-[var(--color-ink-soft)]">
                 After approval and payment, official judges receive formal recognition,
-                supporting documents, and public listing as part of the championship jury panel.
+                supporting documents, and public listing as part of the award jury panel.
               </p>
             </div>
 
             <div className="space-y-[var(--space-sm)]">
               {[
                 "Official invitation to serve on the IBPA jury panel.",
-                "Personalized jury certificate for the championship year.",
+                "Personalized jury certificate for the award year.",
                 "Official letter of appreciation from the IBPA President.",
                 "Professional contribution letter for industry recognition.",
                 "Public jury profile with photo and biography.",
