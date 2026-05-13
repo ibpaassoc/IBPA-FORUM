@@ -175,10 +175,10 @@ export default function Footer() {
               {copy.contact}
             </h4>
             <a
-              href="mailto:info@ibpa-awards.com"
+              href="mailto:forum-support@ibpassociations.org"
               className="text-sm text-(--color-ink-soft) transition hover:text-(--color-hover)"
             >
-              info@ibpa-awards.com
+              forum-support@ibpassociations.org
             </a>
           </div>
         </div>
