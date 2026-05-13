@@ -107,7 +107,7 @@ export default function Footer() {
   return (
     <footer className="w-full border-t border-(--border-default) bg-(--surface-muted) py-(--space-xl) pb-(--space-lg) text-(--color-ink-soft)">
       <div className="mx-auto max-w-(--content-width) px-(--page-gutter)">
-        <div className="grid grid-cols-1 gap-(--space-lg) border-b border-border-footer pb-(--space-lg) md:grid-cols-2 xl:grid-cols-[1.45fr_1fr_1fr_1fr_1fr]">
+        <div className="grid grid-cols-1 gap-(--space-lg) border-b border-border-footer pb-(--space-lg) md:grid-cols-2 xl:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
           <div className="max-w-sm">
             <Link href="/" className="inline-flex items-center">
               <Image
@@ -119,7 +119,7 @@ export default function Footer() {
               />
             </Link>
 
-            <p className="mt-(--space-md) text-[clamp(0.875rem,1.5vw,1rem)] leading-[1.7] text-(--color-ink-soft)">
+            <p className="mt-(--space-md) text-[clamp(0.92rem,1.45vw,1.04rem)] leading-[1.78] text-(--color-ink-soft)">
               {copy.summary}
             </p>
 
@@ -133,16 +133,16 @@ export default function Footer() {
 
           {footerColumns.map((column) => (
             <div key={column.title}>
-              <h4 className="mb-(--space-sm) font-(--font-sans) text-[0.72rem] font-medium uppercase tracking-[0.18em] text-(--color-title-accent)">
+              <h4 className="mb-(--space-sm) font-(--font-sans) text-[0.72rem] font-semibold uppercase tracking-[0.17em] text-(--color-hover)">
                 {column.title}
               </h4>
-              <div className="flex flex-col gap-(--space-sm)">
+              <div className="flex flex-col gap-2">
                 {column.links.map((link) =>
                   link.href.startsWith("mailto:") ? (
                     <a
                       key={link.label}
                       href={link.href}
-                      className="text-sm text-(--color-ink-soft) transition hover:text-(--color-hover)"
+                      className="text-[0.95rem] leading-[1.75] text-(--color-ink-soft) transition hover:text-(--color-hover)"
                     >
                       {link.label}
                     </a>
@@ -152,7 +152,7 @@ export default function Footer() {
                       href={link.href}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-sm text-(--color-ink-soft) transition hover:text-(--color-hover)"
+                      className="text-[0.95rem] leading-[1.75] text-(--color-ink-soft) transition hover:text-(--color-hover)"
                     >
                       {link.label}
                     </a>
@@ -160,7 +160,7 @@ export default function Footer() {
                     <Link
                       key={link.label}
                       href={link.href}
-                      className="text-sm text-(--color-ink-soft) transition hover:text-(--color-hover)"
+                      className="text-[0.95rem] leading-[1.75] text-(--color-ink-soft) transition hover:text-(--color-hover)"
                     >
                       {link.label}
                     </Link>
@@ -171,21 +171,21 @@ export default function Footer() {
           ))}
 
           <div>
-            <h4 className="mb-(--space-sm) font-(--font-sans) text-[0.72rem] uppercase tracking-[0.18em] text-(--color-title-accent)">
+            <h4 className="mb-(--space-sm) font-(--font-sans) text-[0.72rem] font-semibold uppercase tracking-[0.17em] text-(--color-hover)">
               {copy.contact}
             </h4>
             <a
               href="mailto:forum-support@ibpassociations.org"
-              className="text-sm text-(--color-ink-soft) transition hover:text-(--color-hover)"
+              className="break-words text-[0.95rem] leading-[1.75] text-(--color-ink-soft) transition hover:text-(--color-hover)"
             >
               forum-support@ibpassociations.org
             </a>
           </div>
         </div>
 
-        <div className="mt-(--space-md) flex flex-col gap-(--space-sm) text-[0.75rem] text-(--color-ink-muted) sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-(--space-md) flex flex-col gap-(--space-sm) text-[0.78rem] text-(--color-ink-muted) sm:flex-row sm:items-center sm:justify-between">
           <p>{copy.copyright}</p>
-          <p className="script-accent text-[1.4rem]">{copy.global}</p>
+          <p className="script-accent text-[1.35rem] leading-[1.2]">{copy.global}</p>
         </div>
       </div>
     </footer>
