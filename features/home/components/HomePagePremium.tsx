@@ -17,7 +17,6 @@ import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import {
   EditorialHero,
   EditorialPhotoCard,
-  EditorialPhotoSection,
   FeaturedStorySection,
   FullBleedPhotoBreak,
   IconBadge,
@@ -25,6 +24,7 @@ import {
   ProcessTimeline,
   StaggerContainer,
 } from "@/shared/components/public";
+import EventExperienceCollage from "@/features/home/components/EventExperienceCollage";
 
 const categoryIconMap = [Camera, Trophy, Award, BadgeCheck, Globe, Users, HeartHandshake, Calendar];
 
@@ -42,7 +42,12 @@ export default function HomePagePremium() {
       eventExperience: "Event Experience",
       eventTitle: "Photography integrated into every stage.",
       eventText: "One dominant visual frame, supported by two contextual moments.",
-      eventPrimaryTitle: "A premium ceremony environment",
+      eventPrimaryCaption: "Premium ceremony credentials that set the visual tone from arrival.",
+      eventAudienceCaption: "Live audience focus and jury attention throughout each stage.",
+      eventDetailCaption: "Trophies and award details reinforce craft-level prestige.",
+      eventStageCaption: "Stage energy and direction highlights captured in real time.",
+      eventAmbienceLabel: "Ceremony atmosphere",
+      eventLiveLabel: "Live audience",
       fullBleedEyebrow: "IBPA 2026",
       fullBleedTitle: "Global beauty artistry deserves a world-class stage.",
       fullBleedText: "A calm, premium platform for artists, educators, salons, and brands.",
@@ -60,7 +65,12 @@ export default function HomePagePremium() {
       eventExperience: "Атмосфера события",
       eventTitle: "Фотографии интегрированы в каждый этап.",
       eventText: "Один главный визуальный акцент и два контекстных кадра.",
-      eventPrimaryTitle: "Премиальная атмосфера церемонии",
+      eventPrimaryCaption: "Премиальные аккредитации церемонии создают нужное впечатление с момента прибытия.",
+      eventAudienceCaption: "Живое внимание аудитории и фокус жюри на каждом этапе.",
+      eventDetailCaption: "Кубки и детали премии подчеркивают статус и уровень мастерства.",
+      eventStageCaption: "Сценическая энергия и ключевые моменты направлений в реальном времени.",
+      eventAmbienceLabel: "Атмосфера церемонии",
+      eventLiveLabel: "Живая аудитория",
       fullBleedEyebrow: "IBPA 2026",
       fullBleedTitle: "Мировое мастерство в сфере красоты заслуживает мировой сцены.",
       fullBleedText: "Премиальная платформа для мастеров, преподавателей, салонов и брендов.",
@@ -78,7 +88,12 @@ export default function HomePagePremium() {
       eventExperience: "Атмосфера події",
       eventTitle: "Фотографії інтегровані в кожен етап.",
       eventText: "Один головний візуальний акцент і два контекстні кадри.",
-      eventPrimaryTitle: "Преміальна атмосфера церемонії",
+      eventPrimaryCaption: "Преміальні акредитації церемонії задають візуальний тон від перших хвилин.",
+      eventAudienceCaption: "Жива увага аудиторії та фокус журі впродовж усього програмного шляху.",
+      eventDetailCaption: "Трофеї та деталі премії підкреслюють статус і рівень майстерності.",
+      eventStageCaption: "Сценічна енергія та ключові моменти напрямків у реальному часі.",
+      eventAmbienceLabel: "Атмосфера церемонії",
+      eventLiveLabel: "Жива аудиторія",
       fullBleedEyebrow: "IBPA 2026",
       fullBleedTitle: "Світова майстерність у сфері краси заслуговує на світову сцену.",
       fullBleedText: "Преміальна платформа для майстрів, викладачів, салонів і брендів.",
@@ -250,25 +265,16 @@ export default function HomePagePremium() {
         }))}
       />
 
-      <EditorialPhotoSection
+      <EventExperienceCollage
         eyebrow={copy.eventExperience}
         title={copy.eventTitle}
         description={copy.eventText}
-        primary={{
-          src: "/images/events/DSC09822.jpg",
-          alt: "IBPA event stage atmosphere",
-          title: copy.eventPrimaryTitle,
-        }}
-        secondary={[
-          {
-            src: "/images/events/DSC00313.jpg",
-            alt: "IBPA backstage artist moment",
-          },
-          {
-            src: "/images/events/DSC00934.jpg",
-            alt: "IBPA winner and audience reaction",
-          },
-        ]}
+        primaryCaption={copy.eventPrimaryCaption}
+        audienceCaption={copy.eventAudienceCaption}
+        detailCaption={copy.eventDetailCaption}
+        stageCaption={copy.eventStageCaption}
+        ambienceLabel={copy.eventAmbienceLabel}
+        liveLabel={copy.eventLiveLabel}
       />
 
       <FullBleedPhotoBreak
