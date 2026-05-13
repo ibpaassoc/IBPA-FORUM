@@ -12,7 +12,7 @@ import {
 type EventExperienceCollageProps = {
   eyebrow: string;
   title: string;
-  description: string;
+  description?: string;
   primaryCaption: string;
   audienceCaption: string;
   detailCaption: string;

@@ -1,69 +1,72 @@
 "use client";
 
 import Link from "next/link";
-import EditorialImageCard from "@/shared/components/media/EditorialImageCard";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { PageHero } from "@/shared/components/layout/PageShell";
+import {
+  EditorialHero,
+  EditorialPhotoCard,
+} from "@/shared/components/public";
+
 
 export default function JuryHero() {
   const { t } = useLanguage();
 
   return (
-    <PageHero
-      eyebrow={t.juryPage.hero.eyebrow}
-      title={t.juryPage.hero.title}
-      description={t.juryPage.hero.description}
-      asideShellClassName="overflow-hidden border-0 bg-transparent p-0 shadow-none"
-      aside={
-        <EditorialImageCard
-          src="/images/team/sitting_group.jpg"
-          alt="IBPA jury and leadership group portrait"
-          eyebrow={t.juryPage.hero.overview}
-          title="A trusted jury presented with editorial calm"
-          text="The jury page now feels connected to real leadership and professional community."
-          aspectClassName="aspect-[4/5]"
-          objectPosition="center top"
-          sizes="(max-width: 1024px) 100vw, 40vw"
-          className="shadow-[0_22px_64px_rgba(12,16,20,0.14)]"
-        >
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-            <div className="rounded-[calc(var(--radius)-4px)] border border-white/12 bg-white/10 px-4 py-3 backdrop-blur-[8px]">
-              <p className="text-[10px] uppercase tracking-[0.22em] text-[var(--color-title-accent)]">
-                {t.juryPage.hero.experience}
-              </p>
-              <p className="mt-2 font-[var(--font-display)] text-[clamp(1.5rem,3vw,2.1rem)] font-light text-white">
-                {t.juryPage.hero.experienceValue}
-              </p>
-            </div>
-            <div className="rounded-[calc(var(--radius)-4px)] border border-white/12 bg-white/10 px-4 py-3 backdrop-blur-[8px]">
-              <p className="text-[10px] uppercase tracking-[0.22em] text-[var(--color-title-accent)]">
-                {t.juryPage.hero.review}
-              </p>
-              <p className="mt-2 font-[var(--font-display)] text-[clamp(1.5rem,3vw,2.1rem)] font-light text-white">
-                {t.juryPage.hero.reviewValue}
-              </p>
-            </div>
-            <div className="rounded-[calc(var(--radius)-4px)] border border-white/12 bg-white/10 px-4 py-3 backdrop-blur-[8px]">
-              <p className="text-[10px] uppercase tracking-[0.22em] text-[var(--color-title-accent)]">
-                {t.juryPage.hero.fee}
-              </p>
-              <p className="mt-2 font-[var(--font-display)] text-[clamp(1.5rem,3vw,2.1rem)] font-light text-white">
-                {t.juryPage.hero.feeValue}
-              </p>
+    <EditorialHero
+        eyebrow={t.juryPage.copy.heroEyebrow}
+        title={t.juryPage.copy.heroTitle}
+        description={t.juryPage.copy.heroText}
+        actions={
+          <div className="flex flex-wrap gap-3">
+            <Link href="/apply/jury" className="ibpa-button ibpa-button-primary">
+              {t.common.applyNow}
+            </Link>
+            <Link href="/jury/register" className="ibpa-button ibpa-button-ghost">
+              {t.common.juryAccount}
+            </Link>
+          </div>
+        }
+        media={
+          <div className="grid gap-[var(--space-md)]">
+            <EditorialPhotoCard
+              src="/images/curated/jury_editorial.jpg"
+              alt="Jury hero leadership portrait"
+              aspect="landscape"
+              overlay="soft"
+              title={t.juryPage.copy.leadershipTitle}
+              objectPosition="center 30%"
+              mobileObjectPosition="center 24%"
+              priority
+            />
+            <div className="grid gap-[var(--space-md)] md:grid-cols-2">
+              <EditorialPhotoCard
+                src="/images/events/DSC00452.jpg"
+                alt="Jury collaboration close-up"
+                aspect="square"
+                overlay="soft"
+                objectPosition="center 30%"
+                mobileObjectPosition="center 24%"
+              />
+              <EditorialPhotoCard
+                src="/images/events/DSC00947.jpg"
+                alt="Judge reviewing application materials"
+                aspect="square"
+                overlay="soft"
+                objectPosition="center 30%"
+                mobileObjectPosition="center 24%"
+              />
             </div>
           </div>
-        </EditorialImageCard>
-      }
-    >
-      <div className="flex flex-wrap gap-4">
-        <Link href="/apply/jury" className="ibpa-button ibpa-button-gold">
-          {t.common.applyAsJudge}
-        </Link>
-
-        <a href="#requirements" className="ibpa-button ibpa-button-white">
-          {t.juryPage.hero.requirements}
-        </a>
-      </div>
-    </PageHero>
+        }
+        floatingCard={
+          <article className="page-card rounded-[var(--radius)] p-[var(--space-md)]">
+            <p className="text-[0.67rem] uppercase tracking-[0.2em] text-[var(--color-hover)]">{t.juryPage.copy.credibility}</p>
+            <p className="mt-1 font-[var(--font-title-family)] text-[clamp(1.6rem,2.1vw,2.2rem)] leading-[1.1] text-[var(--color-ink)]">
+              {t.juryPage.hero.experienceValue}
+            </p>
+            <p className="mt-2 text-sm leading-[1.7] text-[var(--color-ink-soft)]">{t.juryPage.copy.credibilityText}</p>
+          </article>
+        }
+      />
   );
 }

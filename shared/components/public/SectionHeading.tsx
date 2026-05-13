@@ -26,7 +26,7 @@ export default function SectionHeading({
         {title}
       </h2>
       {description ? (
-        <p className={clsx("mt-(--space-sm) page-copy max-w-2xl break-words", center && "mx-auto")}>
+        <p className={clsx(" mt-(--space-sm) page-copy max-w-2xl break-words", center && "mx-auto")}>
           {description}
         </p>
       ) : null}

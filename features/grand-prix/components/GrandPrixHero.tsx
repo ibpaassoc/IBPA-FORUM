@@ -1,71 +1,62 @@
 "use client";
 
 import Link from "next/link";
-import EditorialImageCard from "@/shared/components/media/EditorialImageCard";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { PageHero } from "@/shared/components/layout/PageShell";
+import {
+  EditorialHero,
+  EditorialPhotoCard,
+} from "@/shared/components/public";
 
-export default function GrandPrixHero() {
+export default function GrandPrixPagePremium() {
   const { t } = useLanguage();
-
+  
   return (
-    <PageHero
+    <EditorialHero
       eyebrow={t.grandPrixPage.hero.eyebrow}
       title={t.grandPrixPage.hero.title}
       description={t.grandPrixPage.hero.description}
-      asideShellClassName="overflow-hidden border-0 bg-transparent p-0 shadow-none"
-      aside={
-        <EditorialImageCard
-          src="/images/events/DSC00452.jpg"
-          alt="Award trophies and recognition at the IBPA ceremony"
-          eyebrow={t.grandPrixPage.hero.snapshot}
-          title="A ceremonial frame for the Grand Prix story"
-          text="The nominations page now carries a stronger premium event feel with real ceremony photography."
-          aspectClassName="aspect-[4/5]"
-          objectPosition="center 28%"
-          sizes="(max-width: 1024px) 100vw, 40vw"
-          className="shadow-[0_22px_64px_rgba(12,16,20,0.14)]"
-        >
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-            <div className="rounded-[calc(var(--radius)-4px)] border border-white/12 bg-white/10 px-4 py-3 backdrop-blur-[8px]">
-              <p className="text-[10px] uppercase tracking-[0.22em] text-[var(--color-title-accent)]">
-                {t.grandPrixPage.hero.eligibility}
-              </p>
-              <p className="mt-2 font-[var(--font-display)] text-[clamp(1rem,2vw,1.35rem)] font-light text-white">
-                {t.grandPrixPage.hero.eligibilityValue}
-              </p>
-            </div>
-            <div className="rounded-[calc(var(--radius)-4px)] border border-white/12 bg-white/10 px-4 py-3 backdrop-blur-[8px]">
-              <p className="text-[10px] uppercase tracking-[0.22em] text-[var(--color-title-accent)]">
-                {t.grandPrixPage.hero.evaluation}
-              </p>
-              <p className="mt-2 font-[var(--font-display)] text-[clamp(1.5rem,3vw,2.1rem)] font-light text-white">
-                {t.grandPrixPage.hero.evaluationValue}
-              </p>
-            </div>
-            <div className="rounded-[calc(var(--radius)-4px)] border border-white/12 bg-white/10 px-4 py-3 backdrop-blur-[8px]">
-              <p className="text-[10px] uppercase tracking-[0.22em] text-[var(--color-title-accent)]">
-                {t.grandPrixPage.hero.decision}
-              </p>
-              <p className="mt-2 font-[var(--font-display)] text-[clamp(1rem,2vw,1.35rem)] font-light text-white">
-                {t.grandPrixPage.hero.decisionValue}
-              </p>
-            </div>
+      media={
+        <div className="grid gap-[var(--space-md)]">
+          <EditorialPhotoCard
+            src="/images/curated/grandprix_editorial.jpg"
+            alt="Grand Prix cinematic hero image"
+            aspect="landscape"
+            overlay="soft"
+            title={t.grandPrixPage.copy.mediaTitle}
+            description={t.grandPrixPage.copy.mediaDescription}
+            objectPosition="center 30%"
+            mobileObjectPosition="center 24%"
+            priority
+          />
+          <div className="grid gap-[var(--space-md)] md:grid-cols-2">
+            <EditorialPhotoCard
+              src="/images/events/DSC00551.jpg"
+              alt="Grand Prix nominee backstage moment"
+              aspect="square"
+              overlay="soft"
+              objectPosition="center 30%"
+              mobileObjectPosition="center 22%"
+            />
+            <EditorialPhotoCard
+              src="/images/community/DSC09818.jpg"
+              alt="Grand Prix finalist portrait"
+              aspect="square"
+              overlay="soft"
+              objectPosition="center 30%"
+              mobileObjectPosition="center 24%"
+            />
           </div>
-        </EditorialImageCard>
+        </div>
       }
-    >
-      <p className="mb-(--space-lg) max-w-2xl text-sm leading-[1.7] text-(--color-ink-soft)">
-        {t.grandPrixPage.hero.body}
-      </p>
-      <div className="flex flex-wrap gap-4">
-        <Link
-          href="/directions"
-          className="ibpa-button ibpa-button-white"
-        >
-          {t.grandPrixPage.hero.cta}
-        </Link>
-      </div>
-    </PageHero>
+      floatingCard={
+        <article className="page-card rounded-[var(--radius)] p-[var(--space-md)]">
+          <p className="text-[0.66rem] uppercase tracking-[0.2em] text-[var(--color-hover)]">{t.grandPrixPage.copy.rule}</p>
+          <p className="mt-1 font-[var(--font-title-family)] text-[clamp(1.55rem,2vw,2.1rem)] leading-[1.1] text-[var(--color-ink)]">
+            {t.grandPrixPage.copy.fiveDirections}
+          </p>
+          <p className="mt-2 text-sm leading-[1.7] text-[var(--color-ink-soft)]">{t.grandPrixPage.copy.qualificationRule}</p>
+        </article>
+      }
+    />
   );
 }

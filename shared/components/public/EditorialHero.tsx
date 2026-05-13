@@ -34,7 +34,7 @@ export default function EditorialHero({
           <h1 className="mt-[var(--space-sm)] text-[clamp(2.2rem,5vw,5rem)] leading-[1.02] text-[var(--color-ink)] text-pretty">
             {title}
           </h1>
-          <p className="mt-[var(--space-md)] max-w-xl break-words text-[clamp(0.95rem,1.8vw,1.12rem)] leading-[1.8] text-[var(--color-ink-soft)]">
+          <p className="mt-[var(--space-md)] script-accent max-w-xl break-words text-[clamp(0.95rem,1.8vw,1.12rem)] leading-[1.8] text-[var(--color-ink-soft)]">
             {description}
           </p>
           {actions ? <div className="mt-[var(--space-lg)] flex flex-wrap gap-3">{actions}</div> : null}

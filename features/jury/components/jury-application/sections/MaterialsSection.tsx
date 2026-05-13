@@ -1,9 +1,11 @@
 "use client";
 
+import UploadField from "@/features/applications/components/application-form/fields/UploadField";
 import FieldShell from "@/features/jury/components/jury-application/fields/FieldShell";
 import TextInput from "@/features/jury/components/jury-application/fields/TextInput";
 import TextareaField from "@/features/jury/components/jury-application/fields/TextareaField";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { Upload } from "lucide-react";
 
 export default function MaterialsSection() {
   const { language } = useLanguage();

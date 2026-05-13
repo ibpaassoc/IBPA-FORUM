@@ -1,5 +1,19 @@
-import CategoriesPagePremium from "@/features/categories/components/CategoriesPagePremium";
+"use client";
 
-export default function DirectionsPage() {
-  return <CategoriesPagePremium />;
+import { 
+  DirectionsHero,
+  DirectionsFeatures,
+  DirectionsAbout,
+  DirectionsCTA,
+} from "@/features/directions/components";
+
+export default function CategoriesPagePremium() {
+  return (
+    <main className="page-shell">
+      <DirectionsHero />
+      <DirectionsFeatures />
+      <DirectionsAbout />
+      <DirectionsCTA />
+    </main>
+  );
 }

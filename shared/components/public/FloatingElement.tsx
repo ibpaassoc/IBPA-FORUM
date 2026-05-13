@@ -16,7 +16,7 @@ export default function FloatingElement({
   children,
   className,
   amplitude = 10,
-  duration = 7,
+  duration = 3,
 }: FloatingElementProps) {
   const reducedMotion = useReducedMotion();
 

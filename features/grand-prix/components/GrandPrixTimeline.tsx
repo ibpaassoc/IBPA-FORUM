@@ -1,10 +1,9 @@
 "use client";
 
 import {
-  Award,
-  BadgeCheck,
-  ShieldCheck,
-  Users,
+  Calendar,
+  Sparkles,
+  Star,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import {
@@ -14,37 +13,32 @@ import {
 } from "@/shared/components/public";
 
 
-export default function JuryBenefits() {
+export default function GrandPrixPagePremium() {
   const { t } = useLanguage();
-
+  
   return (
     <section className="section-rhythm-tight">
       <div className="page-section">
         <SectionHeading
-          eyebrow={t.juryPage.copy.benefitsEyebrow}
-          title={t.juryPage.copy.benefitsTitle}
+          eyebrow={t.grandPrixPage.copy.timelineEyebrow}
+          title={t.grandPrixPage.copy.timelineTitle}
         />
-        <StaggerContainer className="mt-[var(--space-lg)] grid gap-[var(--space-md)] md:grid-cols-2">
+        <StaggerContainer className="mt-[var(--space-lg)] grid gap-[var(--space-md)] md:grid-cols-3">
           {[
             {
-              title: t.juryPage.copy.b1Title,
-              text: t.juryPage.copy.b1Text,
-              icon: Award,
+              icon: Calendar,
+              title: t.grandPrixPage.copy.appWindow,
+              text: t.grandPrixPage.copy.appWindowText,
             },
             {
-              title: t.juryPage.copy.b2Title,
-              text: t.juryPage.copy.b2Text,
-              icon: ShieldCheck,
+              icon: Star,
+              title: t.grandPrixPage.copy.scorePeriod,
+              text: t.grandPrixPage.copy.scorePeriodText,
             },
             {
-              title: t.juryPage.copy.b3Title,
-              text: t.juryPage.copy.b3Text,
-              icon: Users,
-            },
-            {
-              title: t.juryPage.copy.b4Title,
-              text: t.juryPage.copy.b4Text,
-              icon: BadgeCheck,
+              icon: Sparkles,
+              title: t.grandPrixPage.copy.reveal,
+              text: t.grandPrixPage.copy.revealText,
             },
           ].map((item) => (
             <article key={item.title} className="page-card rounded-[var(--radius)] p-[var(--space-lg)]">

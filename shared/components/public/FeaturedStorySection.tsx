@@ -40,11 +40,11 @@ export default function FeaturedStorySection({
         <FadeUp className={clsx("max-w-xl", reverse && "lg:order-1 lg:justify-self-start")}>
           <SectionHeading eyebrow={eyebrow} title={title} description={description} />
           {quote ? (
-            <blockquote className="mt-[var(--space-md)] border-l border-[var(--border-strong)] pl-[var(--space-md)] font-[var(--font-title-family)] text-[clamp(1.2rem,2vw,1.8rem)] leading-[1.35] text-[var(--color-ink-soft)]">
+            <blockquote className="script-accent mt-[var(--space-md)] border-l border-[var(--border-strong)] pl-[var(--space-md)] text-[clamp(1.2rem,2vw,1.8rem)] leading-[1.35] text-[var(--color-ink-soft)]">
               {quote}
             </blockquote>
           ) : null}
-          {actions ? <div className="mt-[var(--space-lg)]">{actions}</div> : null}
+          {actions ? <div className="script-accent mt-[var(--space-lg)]">{actions}</div> : null}
         </FadeUp>
       </div>
     </PageSection>

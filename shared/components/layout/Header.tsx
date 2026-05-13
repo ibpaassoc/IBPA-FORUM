@@ -12,42 +12,65 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const { language, t } = useLanguage();
   const pathname = usePathname();
+
   const associationLabel =
-    language === "ru" ? "Ассоциация" : language === "ua" ? "Асоціація" : "Association";
+    language === "ru"
+      ? "Ассоциация"
+      : language === "ua"
+        ? "Асоціація"
+        : "Association";
 
   const navigation = [
     { href: "/", label: t.header.navigation.home },
     { href: "/directions", label: t.header.navigation.categories },
     { href: "/jury", label: t.header.navigation.jury },
     { href: "/grand-prix", label: t.header.navigation.grandPrix },
-    { href: "https://ibpassociations.org/about", label: associationLabel, external: true },
+    {
+      href: "https://ibpassociations.org/about",
+      label: associationLabel,
+      external: true,
+    },
   ];
 
   useEffect(() => {
     const closeOnResize = () => {
-      if (window.innerWidth >= 1024) {
-        setOpen(false);
-      }
+      if (window.innerWidth >= 1024) setOpen(false);
     };
 
     window.addEventListener("resize", closeOnResize);
     return () => window.removeEventListener("resize", closeOnResize);
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
   const handleLinkClick = () => setOpen(false);
+
   const isActive = (href: string) =>
-    href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
+    href === "/"
+      ? pathname === "/"
+      : pathname === href || pathname.startsWith(`${href}/`);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-100 w-full border-b border-[var(--border-default)] bg-[rgba(255,255,255,0.94)] px-[var(--page-gutter)] shadow-[var(--shadow-sm)] backdrop-blur-[16px]">
+    <header className="fixed inset-x-0 top-0 z-[100] w-full border-b border-[var(--border-default)] bg-white/95 px-[var(--page-gutter)] shadow-[var(--shadow-sm)] backdrop-blur-[16px]">
       <div className="mx-auto max-w-[var(--content-width)]">
         <div className="relative flex h-[clamp(60px,8vh,72px)] items-center gap-[var(--space-sm)]">
-          <Link href="/" aria-label="IBPA home" className="min-w-0 shrink">
+          <Link
+            href="/"
+            aria-label="IBPA home"
+            onClick={handleLinkClick}
+            className="min-w-0 shrink"
+          >
             <Image
               src="/logo_black.png"
               alt="IBPA Logo"
               width={320}
               height={80}
+              priority
               className="h-10 w-auto max-w-42.5 object-contain sm:h-12 sm:max-w-none"
             />
           </Link>
@@ -60,7 +83,7 @@ export default function Header() {
                   href={item.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="relative font-[var(--font-sans)] text-[clamp(0.7rem,1vw,0.8rem)] font-medium uppercase tracking-[0.1em] text-[var(--color-ink)] opacity-75 transition hover:text-[var(--color-hover)] hover:opacity-100 after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[var(--color-hover)] after:transition-transform after:duration-300 hover:after:scale-x-100"
+                  className="relative font-[var(--font-sans)] text-[clamp(0.7rem,1vw,0.8rem)] font-medium uppercase tracking-[0.1em] text-[var(--color-ink)] opacity-75 transition after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[var(--color-hover)] after:transition-transform after:duration-300 hover:text-[var(--color-hover)] hover:opacity-100 hover:after:scale-x-100"
                 >
                   {item.label}
                 </a>
@@ -84,10 +107,7 @@ export default function Header() {
             <LanguageSwitcher />
             <JuryMenu />
 
-            <Link
-              href="/apply"
-              className="ibpa-button ibpa-button-primary"
-            >
+            <Link href="/apply" className="ibpa-button ibpa-button-primary">
               {t.common.applyNow}
             </Link>
           </div>
@@ -122,52 +142,58 @@ export default function Header() {
         </div>
 
         <div
-          className={`relative overflow-hidden border-t border-[var(--border-default)] transition-all duration-300 ease-in-out lg:hidden ${
-            open ? "max-h-128 opacity-100" : "max-h-0 opacity-0"
+          className={`grid transition-[grid-template-rows,opacity] duration-300 ease-in-out lg:hidden ${
+            open
+              ? "grid-rows-[1fr] opacity-100"
+              : "grid-rows-[0fr] opacity-0"
           }`}
         >
-          <div className="space-y-4 py-[var(--space-md)]">
-            <div className="grid gap-2">
-              {navigation.map((item) =>
-                item.external ? (
-                  <a
-                    key={item.href}
-                    href={item.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    onClick={handleLinkClick}
-                    className="rounded-[var(--radius-sm)] border border-transparent bg-[var(--color-mist)] px-[var(--space-md)] py-[var(--space-sm)] text-sm font-medium uppercase tracking-[0.16em] text-[var(--color-ink)] transition hover:border-[var(--color-hover)] hover:text-[var(--color-hover)]"
-                  >
-                    {item.label}
-                  </a>
-                ) : (
+          <div className="min-h-0 overflow-hidden">
+            <div className="max-h-[calc(100dvh-72px)] overflow-y-auto border-t border-[var(--border-default)] py-[var(--space-md)] pb-[max(2rem,env(safe-area-inset-bottom))]">
+              <div className="space-y-4">
+                <div className="grid gap-2">
+                  {navigation.map((item) =>
+                    item.external ? (
+                      <a
+                        key={item.href}
+                        href={item.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={handleLinkClick}
+                        className="rounded-[var(--radius-sm)] border border-transparent bg-[var(--color-mist)] px-[var(--space-md)] py-[var(--space-sm)] text-sm font-medium uppercase tracking-[0.16em] text-[var(--color-ink)] transition hover:border-[var(--color-hover)] hover:text-[var(--color-hover)]"
+                      >
+                        {item.label}
+                      </a>
+                    ) : (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={handleLinkClick}
+                        className={`rounded-[var(--radius-sm)] border px-[var(--space-md)] py-[var(--space-sm)] text-sm font-medium uppercase tracking-[0.16em] transition ${
+                          isActive(item.href)
+                            ? "border-[var(--border-strong)] bg-[var(--surface-tint)] text-[var(--color-hover)]"
+                            : "border-transparent bg-[var(--color-mist)] text-[var(--color-ink)] hover:border-[var(--color-hover)] hover:text-[var(--color-hover)]"
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                    )
+                  )}
+                </div>
+
+                <div className="grid gap-3 border-t border-[var(--border-default)] pt-[var(--space-md)]">
+                  <LanguageSwitcher mobile />
+                  <JuryMenu mobile onNavigate={handleLinkClick} />
+
                   <Link
-                    key={item.href}
-                    href={item.href}
+                    href="/apply"
                     onClick={handleLinkClick}
-                    className={`rounded-[var(--radius-sm)] border px-[var(--space-md)] py-[var(--space-sm)] text-sm font-medium uppercase tracking-[0.16em] transition ${
-                      isActive(item.href)
-                        ? "border-[var(--border-strong)] bg-[var(--surface-tint)] text-[var(--color-hover)]"
-                        : "border-transparent bg-[var(--color-mist)] text-[var(--color-ink)] hover:border-[var(--color-hover)] hover:text-[var(--color-hover)]"
-                    }`}
+                    className="ibpa-button ibpa-button-primary"
                   >
-                    {item.label}
+                    {t.common.applyNow}
                   </Link>
-                )
-              )}
-            </div>
-
-            <div className="grid gap-3 border-t border-[var(--border-default)] pt-[var(--space-md)]">
-              <LanguageSwitcher mobile />
-              <JuryMenu mobile onNavigate={handleLinkClick} />
-
-              <Link
-                href="/apply"
-                onClick={handleLinkClick}
-                className="ibpa-button ibpa-button-primary"
-              >
-                {t.common.applyNow}
-              </Link>
+                </div>
+              </div>
             </div>
           </div>
         </div>
