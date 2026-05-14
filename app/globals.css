@@ -13,27 +13,35 @@
   --color-mist: #eef6fb;
   --color-hover: #6a98ba;
   --color-title-accent: #b9d9eb;
-  --font-title-family: var(--font-display), "Cormorant Garamond", "Cormorant Garamond Fallback", serif;
-  --font-accent-family: var(--font-accent), "Marck Script", "Marck Script Fallback", cursive;
-  --font-sans: var(--font-body), "Inter", "Inter Fallback", sans-serif;
+
+  --font-title-family: var(--font-display), "Bodoni Moda", serif;
+  --font-body-family: var(--font-body), "Lora", serif;
+  --font-ui-family: var(--font-ui), var(--font-sans), "Raleway", sans-serif;
+  --font-accent-family: var(--font-accent), "Cormorant Garamond", italic;
+
   --border-default: rgba(37, 42, 45, 0.1);
   --border-soft: rgba(37, 42, 45, 0.08);
   --border-strong: rgba(114, 160, 193, 0.34);
+
   --shadow-sm: 0 8px 20px rgba(37, 42, 45, 0.04);
   --shadow-md: 0 18px 40px rgba(37, 42, 45, 0.09);
   --shadow-lg: 0 30px 60px rgba(37, 42, 45, 0.12);
+
   --radius: 24px;
   --radius-lg: 32px;
   --radius-sm: 12px;
   --radius-pill: 40px;
+
   --space-xs: clamp(0.5rem, 1vw, 0.75rem);
   --space-sm: clamp(0.75rem, 1.5vw, 1rem);
   --space-md: clamp(1rem, 2vw, 1.5rem);
   --space-lg: clamp(1.5rem, 3vw, 2.5rem);
   --space-xl: clamp(2.5rem, 5vw, 4rem);
   --space-2xl: clamp(3.5rem, 7vw, 6.5rem);
+
   --page-gutter: clamp(1rem, 5vw, 4rem);
   --content-width: 1200px;
+
   --background: var(--color-off-white);
   --foreground: var(--color-ink);
   --surface: var(--color-white);
@@ -42,16 +50,20 @@
   --surface-tint: #f8fbfe;
   --surface-muted: #f4f7fa;
   --surface-cool: #eff4f8;
+
   --overlay-soft: rgba(255, 255, 255, 0.68);
   --overlay-dark: rgba(17, 26, 34, 0.38);
+
   --accent: var(--color-hover);
   --accent-strong: var(--color-title-accent);
   --text-soft: var(--color-ink-soft);
   --text-muted: var(--color-ink-muted);
+
   --motion-fast: 180ms ease;
   --motion-base: 260ms ease;
   --motion-slow: 420ms ease;
   --motion-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+
   --admin-bg: #f7f9fb;
   --admin-surface: #ffffff;
   --admin-surface-soft: #fbfdff;
@@ -87,23 +99,47 @@ html {
 }
 
 body {
-  background: var(--color-off-white);
-  color: var(--color-ink);
-  font-family: var(--font-sans);
   min-height: 100vh;
   overflow-x: hidden;
+  background: var(--color-off-white);
+  color: var(--color-ink);
+  font-family: var(--font-body-family);
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-h1,
-h2,
+h1 {
+  font-family: var(--font-title-family);
+  font-weight: 300;
+  font-style: normal;
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+h2 {
+  font-family: var(--font-title-family);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
 h3,
 h4 {
   font-family: var(--font-title-family);
   font-weight: 400;
-  letter-spacing: 0;
+  font-style: normal;
   line-height: 1.15;
+  letter-spacing: -0.01em;
   text-wrap: balance;
+}
+
+p,
+li {
+  font-family: var(--font-body-family);
 }
 
 a,
@@ -111,15 +147,16 @@ button {
   transition: all var(--motion-fast);
 }
 
-::selection {
-  background: rgba(185, 217, 235, 0.55);
-  color: var(--color-ink);
-}
-
+button,
 input,
 select,
 textarea {
-  font-family: var(--font-sans);
+  font-family: var(--font-ui-family);
+}
+
+::selection {
+  background: rgba(185, 217, 235, 0.55);
+  color: var(--color-ink);
 }
 
 a:hover:not(.ibpa-button) {
@@ -177,7 +214,7 @@ a:hover:not(.ibpa-button) {
   flex-wrap: wrap;
   gap: var(--space-sm);
   color: var(--color-hover);
-  font-family: var(--font-sans);
+  font-family: var(--font-ui-family);
   font-size: clamp(0.65rem, 1vw, 0.75rem);
   font-weight: 500;
   letter-spacing: 0.2em;
@@ -186,10 +223,10 @@ a:hover:not(.ibpa-button) {
 
 @utility page-copy {
   color: var(--color-ink-soft);
-  font-family: var(--font-sans);
-  font-size: clamp(0.875rem, 1.5vw, 1rem);
+  font-family: var(--font-body-family);
+  font-size: clamp(0.95rem, 1.5vw, 1.05rem);
   font-weight: 400;
-  line-height: 1.7;
+  line-height: 1.75;
   overflow-wrap: anywhere;
   text-wrap: pretty;
 }
@@ -201,8 +238,9 @@ a:hover:not(.ibpa-button) {
 @utility script-accent {
   color: var(--color-hover);
   font-family: var(--font-accent-family);
+  font-style: italic;
   font-weight: 400;
-  letter-spacing: 0;
+  letter-spacing: -0.015em;
   text-transform: none;
 }
 
@@ -212,14 +250,14 @@ a:hover:not(.ibpa-button) {
   justify-content: center;
   gap: 0.5rem;
   max-width: 100%;
+  min-height: 44px;
   border-radius: var(--radius-pill);
   cursor: pointer;
-  font-family: var(--font-sans);
+  font-family: var(--font-ui-family);
   font-size: clamp(0.72rem, 1vw, 0.85rem);
   font-weight: 500;
   line-height: 1.25;
   letter-spacing: 0.08em;
-  min-height: 44px;
   padding: clamp(0.6rem, 1.2vw, 0.75rem) clamp(1.2rem, 2.5vw, 2rem);
   text-align: center;
   text-wrap: balance;
@@ -256,6 +294,7 @@ a:hover:not(.ibpa-button) {
   min-height: 100vh;
   background: var(--admin-bg);
   color: var(--admin-ink);
+  font-family: var(--font-ui-family);
 }
 
 @utility admin-panel {
@@ -283,6 +322,7 @@ a:hover:not(.ibpa-button) {
 
 @utility admin-eyebrow {
   color: var(--admin-blue-strong);
+  font-family: var(--font-ui-family);
   font-size: 0.625rem;
   font-weight: 700;
   letter-spacing: 0.24em;
@@ -293,11 +333,12 @@ a:hover:not(.ibpa-button) {
   color: var(--admin-ink);
   font-family: var(--font-title-family);
   font-weight: 400;
-  letter-spacing: 0;
+  letter-spacing: -0.015em;
 }
 
 @utility admin-copy {
   color: var(--admin-muted-strong);
+  font-family: var(--font-ui-family);
 }
 
 @utility admin-muted {
@@ -307,11 +348,13 @@ a:hover:not(.ibpa-button) {
 @utility admin-table-head {
   border-color: var(--admin-border);
   color: var(--admin-muted-strong);
+  font-family: var(--font-ui-family);
 }
 
 @utility admin-row {
   border-color: var(--admin-border);
   color: var(--admin-ink);
+  font-family: var(--font-ui-family);
 }
 
 @utility admin-row-hover {
@@ -340,12 +383,14 @@ a:hover:not(.ibpa-button) {
   border: 1px solid var(--admin-border-strong);
   background: var(--admin-surface);
   color: var(--admin-ink);
+  font-family: var(--font-ui-family);
 }
 
 @utility admin-chip {
   border: 1px solid var(--admin-border);
   background: var(--admin-surface-soft);
   color: var(--admin-muted-strong);
+  font-family: var(--font-ui-family);
 }
 
 @utility admin-empty {
@@ -354,6 +399,7 @@ a:hover:not(.ibpa-button) {
 
 @utility admin-label {
   color: var(--admin-ink);
+  font-family: var(--font-ui-family);
 }
 
 @utility admin-alert-note {
@@ -519,6 +565,7 @@ a:hover:not(.ibpa-button) {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -530,6 +577,16 @@ a:hover:not(.ibpa-button) {
 }
 
 @media (width < 48rem) {
+  h1 {
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+  }
+
+  h2 {
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+  }
+
   .safe-image-asset {
     object-position: var(
       --safe-image-mobile-position,

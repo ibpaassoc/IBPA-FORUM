@@ -1,30 +1,11 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Inter, Marck_Script } from "next/font/google";
+import { Cormorant_Garamond, Inter, Marck_Script, Lora, Raleway, Bodoni_Moda } from "next/font/google";
 import { cookies } from "next/headers";
 import "./globals.css";
 import Footer from "@/shared/components/layout/Footer";
 import Header from "@/shared/components/layout/Header";
 import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
 import { languages, type Language } from "@/lib/i18n/translations";
-
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["300", "400", "600", "700"],
-  style: ["normal", "italic"],
-  variable: "--font-display",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-body",
-});
-
-const marckScript = Marck_Script({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-accent",
-});
 
 export const metadata: Metadata = {
   title: "IBPA Beauty Award 2026",
@@ -33,6 +14,31 @@ export const metadata: Metadata = {
     icon: "/logo.svg", // or "/favicon.ico"
   },
 };
+
+export const bodoniModa = Bodoni_Moda({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  variable: "--font-display",
+});
+
+export const lora = Lora({
+  subsets: ["latin", "cyrillic"],
+  weight: ["400"],
+  variable: "--font-body",
+});
+
+export const raleway = Raleway({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-sans",
+});
+
+export const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["300", "400", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-accent",
+});
 
 function resolveLanguage(value: string | undefined): Language {
   if (!value) return "en";
@@ -55,7 +61,7 @@ export default async function RootLayout({
   return (
     <html
       lang={htmlLanguage}
-      className={`${cormorant.variable} ${inter.variable} ${marckScript.variable}`}
+      className={`${cormorant.variable} ${lora.variable} ${raleway.variable} ${bodoniModa.variable}`}
     >
       <body>
         <LanguageProvider initialLanguage={initialLanguage}>
