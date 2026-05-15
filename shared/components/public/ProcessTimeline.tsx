@@ -13,6 +13,7 @@ type ProcessStep = {
 };
 
 type ProcessTimelineProps = {
+  id_section?: string;
   eyebrow: string;
   title: string;
   description?: string;
@@ -21,6 +22,7 @@ type ProcessTimelineProps = {
 };
 
 export default function ProcessTimeline({
+  id_section,
   eyebrow,
   title,
   description,
@@ -28,7 +30,7 @@ export default function ProcessTimeline({
   className,
 }: ProcessTimelineProps) {
   return (
-    <PageSection className={className}>
+    <PageSection id={id_section} className={className}>
       <SectionHeading eyebrow={eyebrow} title={title} description={description} />
       <StaggerContainer className="relative mt-[var(--space-lg)]">
         <ol className="relative space-y-[var(--space-md)] before:absolute before:top-4 before:bottom-4 before:left-[15px] before:w-px before:bg-[var(--border-strong)] md:before:left-1/2">

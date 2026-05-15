@@ -33,10 +33,8 @@ const en = {
   },
   home: {
     hero: {
-      title:
-        "IBPA Beauty Award 2026",
-      description:
-        "A premium award experience for licensed professionals, educators, salons, and brands. Apply in your direction, submit your portfolio, and be reviewed by the official IBPA jury panel.",
+      title: "IBPA Beauty Award 2026",
+      description: "Recognition of outstanding achievements in beauty, beauty education, health, and innovationin branding",
       categoriesCta: "Explore Directions",
     },
     copy: {
@@ -66,22 +64,22 @@ const en = {
       {
         title: "Registration Fee",
         value: "$50",
-        text: "The participation fee is calculated for each selected direction separately.",
+        text: "The participation fee is paid separately for each selected category.",
       },
       {
         title: "Judge Registration",
         value: "$250",
-        text: "The registration fee is paid only after the candidate is approved.",
+        text: "Specialists with at least five years of professional experience may apply to join the panel of judges. The registration fee is payable only after the candidacy has been approved.",
       },
       {
         title: "Participation",
         value: "IBPA",
-        text: "All active members of the IBPA association may apply to participate in the award.",
+        text: "Current members of the IBPA association may submit an application to participate.",
       },
       {
         title: "Grand Prix",
         value: "5+",
-        text: "Participants who submit applications in 5 or more nominations are automatically entered into the Grand Prix.",
+        text: "Participants who have submitted entries in five or more categories automatically compete in the Grand Prix category.",
       },
     ],
     categoriesPreview: {
@@ -184,8 +182,8 @@ const en = {
   categoriesPage: {
     hero: {
       eyebrow: "Award Directions",
-      title: "11 Directions in the Beauty Industry",
-      description: "Each direction is built for a different beauty profession, from artistry and skin to salon leadership, education, and brand excellence. Applicants choose the direction that best matches their work and submit a dedicated entry.",
+      title: "11 Categories of Excellence in the Beauty Industry",
+      description: "The beauty industry is not merely a single profession, but an entire ecosystem of craftsmanship. We have established 11 categories to ensure that every specialization receives a fair, professional evaluation. Artistry, education, skincare, and brand management—each discipline is assessed by a dedicated jury based on clear-cut criteria. Choose your category and submit your application.",
       entryRules: "Entry Rules",
       feeLabel: "Registration Fee",
       feeValue: "$50 per direction",
@@ -199,9 +197,9 @@ const en = {
         nominationPlural: "nominations",
         heroMediaTitle: "Direction depth meets real event energy",
         association: "Association",
-        associationTitle: "Every direction is tied to real-world artistry and professional standards.",
-        associationText: "The IBPA award structure is designed to highlight direction-specific excellence while preserving a cohesive global event identity.",
-        associationQuote: "A direction is not only a label. It is the context for fair judging and meaningful recognition.",
+        associationTitle: "IBPA — an international community of beauty industry professionals",
+        associationText: "IBPA brings together strong and ambitious beauty professionals from around the world. Our mission is to support the growth of professional standards and cultivate a culture of responsibility, ethics, and excellence within the industry.",
+        associationQuote: "The association works with artists, educators, salon owners, and brands — those who strive to uphold quality, integrity, and professionalism.",
         associationButton: "Visit IBPA Association",
         ctaEyebrow: "Direction Entry",
         ctaTitle: "Choose your strongest direction and submit with confidence.",
@@ -681,11 +679,9 @@ const ru: typeof en = {
   },
   home: {
     hero: {
-      title:
-        "IBPA Beauty Award 2026",
-      description:
-        "Премиальная платформа для лицензированных специалистов, преподавателей, салонов и брендов. Выберите направление, отправьте портфолио и пройдите оценку официального жюри IBPA.",
-      categoriesCta: "Смотреть направления",
+      title: "IBPA Beauty Award 2026",
+      description: "Признание выдающихся достижений в сфере красоты, обучения в бьюти-индустрии, здоровья и инноваций вбрендинге",
+      categoriesCta: "Изучить направления",
     },
     copy: {
       whyEyebrow: "Почему IBPA",
@@ -714,22 +710,22 @@ const ru: typeof en = {
       {
         title: "Регистрационный взнос",
         value: "$50",
-        text: "Стоимость участия рассчитывается за каждое выбранное направление отдельно. ",
+        text: "Стоимость участия оплачивается отдельно за каждую выбранную номинацию.",
       },
       {
         title: "Регистрация судьи",
         value: "$250",
-        text: "Регистрационный взнос оплачивается только после одобрения кандидатуры.",
+        text: "Подать заявку в судейскую коллегию могут специалисты с опытом работы от 5 лет. Регистрационный взнос оплачивается только после одобрения кандидатуры.",
       },
       {
         title: "Участие",
         value: "IBPA",
-        text: "Подать заявку на участие в премии могут все действующие члены ассоциации IBPA.",
+        text: "Подать заявку на участие могут действующие члены ассоциации IBPA.",
       },
       {
         title: "Гран-при",
         value: "5+",
-        text: "Участники, подавшие заявки в 5 и более номинациях, автоматически участвуют в Гран-при.",
+        text: "Участники, подавшие заявки в 5 и более номинациях, автоматически участвуют в категории Гран-при.",
       },
     ],
     categoriesPreview: {
@@ -832,8 +828,8 @@ const ru: typeof en = {
   categoriesPage: {
     hero: {
       eyebrow: "Направления премии",
-      title: "11 Направлений в индустрии красоты",
-      description: "Каждое направление представляет отдельную профессиональную сферу: от артистизма и ухода за кожей до управления салоном, образования и брендов. Участники выбирают направление, которое лучше всего соответствует их работе, и отправляют отдельную заявку.",
+      title: "11 категорий превосходства в индустрии красоты",
+      description: "Индустрия красоты - это не одна профессия, а целая экосистема мастерства. Мы выделили 11 категорий, чтобы каждая специализация получила честную, профессиональную оценку. Артистизм, образование, уход за кожей, управление брендом - каждое направление оценивается отдельным жюри по чётким критериям. Выберите свою категорию и подайте заявку.",
       entryRules: "Правила участия",
       feeLabel: "Регистрационный взнос",
       feeValue: "$50 за направление",
@@ -847,9 +843,9 @@ const ru: typeof en = {
         nominationPlural: "номинации",
         heroMediaTitle: "Глубина направления и живая энергия события",
         association: "Ассоциация",
-        associationTitle: "Каждое направление связано с реальным мастерством и профессиональными стандартами.",
-        associationText: "Структура премии IBPA подчеркивает высокий стандарт в каждом направлении и сохраняет целостность глобального события.",
-        associationQuote: "Направление - это не только ярлык. Это контекст для справедливого судейства и значимого признания.",
+        associationTitle: "IBPA — международное сообщество профессионалов индустрии красоты",
+        associationText: "IBPA объединяет сильных и перспективных специалистов индустрии красоты по всему миру. Наша миссия — поддерживать рост профессиональных стандартов и формировать культуру ответственности, этики и профессионализма в профессии.",
+        associationQuote: "Ассоциация работает с мастерами, педагогами, салонами и брендами — всеми, кто стремится соответствовать высокой планке качества и профессиональной культуры.",
         associationButton: "Перейти в ассоциацию IBPA",
         ctaEyebrow: "Подача по направлению",
         ctaTitle: "Выберите сильнейшее направление и подайте заявку уверенно.",
@@ -1332,10 +1328,8 @@ const ua: typeof en = {
   },
   home: {
     hero: {
-      title:
-        "IBPA Beauty Award 2026",
-      description:
-        "Преміальна платформа для ліцензованих фахівців, викладачів, салонів і брендів. Оберіть напрямок, надішліть портфоліо та пройдіть оцінювання офіційного журі IBPA.",
+      title: "IBPA Beauty Award 2026",
+      description: "Визнання видатних досягнень у сфері краси, освіти у сфері краси, здоров'я та інновацій у брендингу",
       categoriesCta: "Переглянути напрямки",
     },
     copy: {
@@ -1365,22 +1359,22 @@ const ua: typeof en = {
       {
         title: "Реєстраційний внесок",
         value: "$50",
-        text: "Вартість участі розраховується окремо для кожного вибраного напрямку.",
+        text: "Вартість участі оплачується окремо за кожну вибрану номінацію.",
       },
       {
         title: "Реєстрація судді",
         value: "$250",
-        text: "Реєстраційний внесок сплачується тільки після схвалення кандидатури.",
+        text: "Подати заявку до суддівської колегії можуть спеціалісти з досвідом роботи від 5 років. Реєстраційний внесок сплачується лише після схвалення кандидатури.",
       },
       {
         title: "Участь",
         value: "IBPA",
-        text: "Подати заявку на участь у премії можуть усі активні члени асоціації IBPA.",
+        text: "Подати заявку на участь можуть члени асоціації IBPA.",
       },
       {
         title: "Гран-прі",
         value: "5+",
-        text: "Учасники, які подають заявки у 5 або більше номінаціях, автоматично беруть участь у Гран-прі.",
+        text: "Учасники, які подали заявки у 5 та більше номінаціях, автоматично беруть участь у категорії Гран-прі.",
       },
     ],
     categoriesPreview: {
@@ -1483,8 +1477,8 @@ const ua: typeof en = {
   categoriesPage: {
     hero: {
       eyebrow: "Напрямки премії",
-      title: "11 Напрямків в індустрії краси",
-      description: "Кожен напрямок створений для окремої професійної сфери: від артистизму та догляду за шкірою до керування салоном, освіти й брендів. Учасники обирають напрямок, що найкраще відповідає їхній роботі, і подають окрему заявку.",
+      title: "11 категорій переваги в промисловості краси",
+      description: "Промисловість краси - це не одна професія, а ціла екосистема майстерності. Ми виділили 11 категорій, щоби кожна спеціалізація отримала чесну, професійну оцінку. Артистизм, освіта, догляд за шкірою, управління брендом - кожен напрямок оцінюється окремим журі за чіткими критеріями. Виберіть свою категорію та подайте заявку.",
       entryRules: "Правила участі",
       feeLabel: "Реєстраційний внесок",
       feeValue: "$50 за напрямок",
@@ -1498,9 +1492,9 @@ const ua: typeof en = {
         nominationPlural: "номінації",
         heroMediaTitle: "Глибина напрямку та жива енергія події",
         association: "Асоціація",
-        associationTitle: "Кожен напрямок пов'язаний з реальним майстерством та професійними стандартами.",
-        associationText: "Структура премії IBPA підкреслює високий стандарт у кожному напрямку та зберігає цілісність глобальної події.",
-        associationQuote: "Напрямок - це не лише ярлик. Це контекст для справедливого судочинства та значущого визнання.",
+        associationTitle: "IBPA — міжнародна спільнота професіоналів індустрії краси",
+        associationText: "IBPA об’єднує сильних і перспективних фахівців індустрії краси з усього світу. Наша місія — підтримувати розвиток професійних стандартів та формувати культуру відповідальності, етики й професіоналізму у сфері краси.",
+        associationQuote: "Асоціація співпрацює з майстрами, викладачами, салонами та брендами — усіма, хто прагне відповідати високим стандартам якості та професійної культури.",
         associationButton: "Перейти до асоціації IBPA",
         ctaEyebrow: "Подача за напрямком",
         ctaTitle: "Виберіть найсильніший напрямок і подайте заявку впевнено.",

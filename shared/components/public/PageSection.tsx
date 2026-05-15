@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import clsx from "clsx";
 
 type PageSectionProps = {
+  id?: string;
   children: ReactNode;
   className?: string;
   surface?: "default" | "tint" | "mist";
@@ -9,6 +10,7 @@ type PageSectionProps = {
 };
 
 export default function PageSection({
+  id,
   children,
   className,
   surface = "default",
@@ -22,7 +24,7 @@ export default function PageSection({
         : "bg-transparent";
 
   return (
-    <section className={clsx(surfaceClass, className)}>
+    <section id={id} className={clsx(surfaceClass, className)}>
       <div className={clsx("page-section", padded && "page-section-pad")}>{children}</div>
     </section>
   );

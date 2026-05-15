@@ -12,7 +12,7 @@ export default function Footer() {
     en: {
       about: "About",
       association: "Association",
-      aboutAward: "About the Award",
+      aboutAward: "Award",
       timeline: "Timeline",
       juryCouncil: "Jury Council",
       award: "Award",
@@ -33,7 +33,7 @@ export default function Footer() {
     ru: {
       about: "О проекте",
       association: "Ассоциация",
-      aboutAward: "О премии",
+      aboutAward: "Премия",
       timeline: "Таймлайн",
       juryCouncil: "Совет жюри",
       award: "Премия",
@@ -54,7 +54,7 @@ export default function Footer() {
     ua: {
       about: "Про проєкт",
       association: "Асоціація",
-      aboutAward: "Про премію",
+      aboutAward: "Премія",
       timeline: "Таймлайн",
       juryCouncil: "Рада журі",
       award: "Премія",
@@ -80,8 +80,8 @@ export default function Footer() {
       links: [
         { href: "https://ibpassociations.org/about", label: copy.association },
         { href: "/", label: copy.aboutAward },
-        { href: "/grand-prix", label: copy.timeline },
-        { href: "/jury", label: copy.juryCouncil },
+        { href: "/#timeline", label: copy.timeline },
+        { href: "/jury#JuryCouncil", label: copy.juryCouncil },
       ],
     },
     {

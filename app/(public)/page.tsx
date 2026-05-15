@@ -21,8 +21,6 @@ export default function HomePagePremium() {
       <HomeCategoriesRow />
       <HomeJuryStandards />
       <HomeTimeline />
-      <HomeEvent />
-      <HomeFullBleed />
       <HomeCta />
     </main>
   );
