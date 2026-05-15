@@ -15,6 +15,7 @@ export default function HomeTimeline() {
 
     return (
         <ProcessTimeline
+        id_section="timeline"
         eyebrow={t.home.process.label}
         title={t.home.process.title}
         steps={t.home.process.steps.map((step, index) => ({

@@ -49,7 +49,7 @@ export default function EditorialPhotoCard({
 
   return (
     <article className={clsx("group page-card h-fit rounded-(--radius-lg)", className)}>
-      <div className={clsx("relative overflow-hidden", aspectClassMap[aspect])}>
+      <div className={clsx("relative overflow-hidden rounded-[inherit]", aspectClassMap[aspect])}>
         <SafeImage
           src={src}
           fallbackSrc={fallbackSrc}
