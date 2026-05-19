@@ -3,6 +3,7 @@
 import { 
     HomeCategoriesRow, 
     HomeHero,
+    HomeSlidingGallery,
     HomeWelcome,
     HomeWhy,
     HomeJuryStandards,
@@ -17,6 +18,7 @@ export default function HomePagePremium() {
     <main className="page-shell">
       <HomeHero />
       <HomeWelcome />
+      <HomeSlidingGallery />
       <HomeWhy />
       <HomeCategoriesRow />
       <HomeJuryStandards />
