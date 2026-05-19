@@ -572,8 +572,57 @@ a:hover:not(.ibpa-button) {
   }
 }
 
+@keyframes marquee-left {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-right {
+  from {
+    transform: translateX(-50%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
 .reveal-soft {
   animation: revealSoft var(--motion-slow) both;
+}
+
+.sliding-gallery-row {
+  overflow: hidden;
+}
+
+.sliding-gallery-track {
+  display: flex;
+  gap: clamp(0.6rem, 1.4vw, 1rem);
+  width: max-content;
+  will-change: transform;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.sliding-gallery-card img {
+  transition: transform 0.65s var(--motion-editorial);
+}
+
+.sliding-gallery-card:hover img {
+  transform: scale(1.035);
+}
+
+.marquee-left {
+  animation-name: marquee-left;
+}
+
+.marquee-right {
+  animation-name: marquee-right;
 }
 
 @media (width < 48rem) {
