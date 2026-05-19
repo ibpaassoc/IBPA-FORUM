@@ -52,7 +52,7 @@ export default function GrandPrixPagePremium() {
         <article className="page-card rounded-[var(--radius)] p-[var(--space-md)]">
           <p className="text-[0.66rem] uppercase tracking-[0.2em] text-[var(--color-hover)]">{t.grandPrixPage.copy.rule}</p>
           <p className="mt-1 font-[var(--font-title-family)] text-[clamp(1.55rem,2vw,2.1rem)] leading-[1.1] text-[var(--color-ink)]">
-            {t.grandPrixPage.copy.fiveDirections}
+            {t.grandPrixPage.copy.fiveCategories}
           </p>
           <p className="mt-2 text-sm leading-[1.7] text-[var(--color-ink-soft)]">{t.grandPrixPage.copy.qualificationRule}</p>
         </article>

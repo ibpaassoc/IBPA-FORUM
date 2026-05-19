@@ -100,7 +100,7 @@ export default function AdminScoringOverviewPage({
                 defaultValue={filters.category ?? ""}
                 className="admin-field rounded-xl px-3 py-2 text-sm outline-none"
                 >
-                <option value="">All Directions</option>
+                <option value="">All Categories</option>
 
                 {categories.map((category) => (
                     <option key={category} value={category}>
@@ -154,7 +154,7 @@ export default function AdminScoringOverviewPage({
                 defaultValue={filters.category ?? ""}
                 className="admin-field rounded-xl px-3 py-2 text-sm outline-none"
             >
-                <option value="">All Directions</option>
+                <option value="">All Categories</option>
 
                 {categories.map((category) => (
                 <option key={category} value={category}>

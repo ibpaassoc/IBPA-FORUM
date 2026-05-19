@@ -40,7 +40,7 @@ export const steps = [
   {
     number: "01",
     title: "Choose Your Direction",
-    text: "Select one of 11 professional directions and the specific nomination inside that direction.",
+    text: "Select one of 11 professional categories and the specific nomination inside that direction.",
   },
   {
     number: "02",

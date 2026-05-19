@@ -16,7 +16,7 @@ export default function Footer() {
       timeline: "Timeline",
       juryCouncil: "Jury Council",
       award: "Award",
-      directions: "Directions",
+      categories: "Categories",
       jury: "Jury",
       grandPrix: "Grand Prix",
       apply: "Apply",
@@ -37,7 +37,7 @@ export default function Footer() {
       timeline: "Таймлайн",
       juryCouncil: "Совет жюри",
       award: "Премия",
-      directions: "Направления",
+      categories: "Категории",
       jury: "Жюри",
       grandPrix: "Гран-при",
       apply: "Подать заявку",
@@ -58,7 +58,7 @@ export default function Footer() {
       timeline: "Таймлайн",
       juryCouncil: "Рада журі",
       award: "Премія",
-      directions: "Напрямки",
+      categories: "Категорії",
       jury: "Журі",
       grandPrix: "Гран-прі",
       apply: "Подати заявку",
@@ -87,7 +87,7 @@ export default function Footer() {
     {
       title: copy.award,
       links: [
-        { href: "/directions", label: copy.directions },
+        { href: "/categories", label: copy.categories },
         { href: "/jury", label: copy.jury },
         { href: "/grand-prix", label: copy.grandPrix },
         { href: "/apply", label: copy.apply },
@@ -96,7 +96,7 @@ export default function Footer() {
     {
       title: copy.resources,
       links: [
-        { href: "/directions", label: copy.mediaCentre },
+        { href: "/categories", label: copy.mediaCentre },
         { href: "mailto:info@ibpa-awards.com", label: copy.contact },
         { href: "/", label: copy.terms },
         { href: "/", label: copy.privacy },
