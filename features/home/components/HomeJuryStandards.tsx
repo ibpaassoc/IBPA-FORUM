@@ -15,7 +15,7 @@ export default function HomeJuryStandards() {
         quote={t.home.juryCta.text3}
         media={
           <EditorialPhotoCard
-            src="/images/curated/jury_editorial.jpg"
+            src="/images/curated/jury_standards.jpg"
             alt="Professional jury leadership and community moment"
             aspect="landscape"
             overlay="soft"

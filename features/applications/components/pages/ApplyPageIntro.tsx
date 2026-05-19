@@ -60,15 +60,6 @@ export default function ApplyPageIntro() {
       />
 
       <div className="grid gap-(--space-md) xl:grid-cols-[0.95fr_1.05fr]">
-        <EditorialPhotoCard
-          src="/images/curated/apply_editorial.jpg"
-          alt="Apply page onboarding editorial photo"
-          aspect="portrait"
-          overlay="soft"
-          title={copy.cardTitle}
-          description={copy.cardDescription}
-          priority
-        />
         <StaggerContainer className="grid gap-(--space-md) md:grid-cols-2" stagger={0.1}>
           <FeatureCard
             icon={<IconBadge icon={FileText} />}
