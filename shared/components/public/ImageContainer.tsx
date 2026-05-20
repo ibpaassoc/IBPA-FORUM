@@ -19,6 +19,7 @@ export default function ImageContainer({
   enableLightbox = true,
   ...imageProps
 }: ImageContainerProps) {
+  const usesFill = Boolean(imageProps.fill);
   const [isOpen, setIsOpen] = useState(false);
   const titleId = useId();
 
@@ -54,7 +55,8 @@ export default function ImageContainer({
     <>
       <div
         className={clsx(
-          "relative block w-full transition duration-300",
+          "relative block transition duration-300",
+          usesFill && "h-full w-full",
           enableLightbox && "cursor-zoom-in hover:opacity-95",
           !enableLightbox && "cursor-default",
           className
@@ -98,7 +100,7 @@ export default function ImageContainer({
               width={typeof imageProps.width === "number" ? imageProps.width : 1600}
               height={typeof imageProps.height === "number" ? imageProps.height : 1000}
               fill={false}
-              priority
+              loading="eager"
               className="h-auto max-h-[86vh] w-auto max-w-[min(92vw,1200px)] rounded-[var(--radius-lg)] object-contain shadow-[var(--shadow-lg)]"
             />
           </div>
