@@ -192,6 +192,108 @@ const en = {
       cta: "Apply In A Category",
     },
     cardText: "Professional submissions are reviewed within the official IBPA award framework.",
+    directions: [
+      {
+        slug: "hair",
+        title: "Hair Category",
+        nominations: [
+          "Award of Excellence in Hair Color Technique",
+          "Barbering Excellence Award",
+          "Hair Restoration Mastery Award",
+        ],
+      },
+      {
+        slug: "nail",
+        title: "Nail Category",
+        nominations: [
+          "Award of Excellence in Manicure",
+          "Award of Excellence in Nail Extension",
+          "Award of Excellence in Podology",
+        ],
+      },
+      {
+        slug: "brow",
+        title: "Brow Category",
+        nominations: [
+          "Award of Excellence in Brow Lamination",
+          "Award of Excellence in Brow Styling & Design",
+        ],
+      },
+      {
+        slug: "lash",
+        title: "Lash Extension & Lift",
+        nominations: [
+          "Award of Excellence in Classic Lash Extension",
+          "Award of Excellence in Volume Lash Extension",
+          "Award of Excellence in Creative Lash Extension Design",
+          "Award of Excellence in Lash Lift",
+        ],
+      },
+      {
+        slug: "skin-cosmetology-facial",
+        title: "Skin Care, Cosmetology & Facial Treatments",
+        nominations: [
+          "Award of Excellence in Non-Invasive Rejuvenation",
+          "Award of Excellence in Anti-Aging Facial Treatment",
+          "Award of Excellence in Acne Treatment",
+        ],
+      },
+      {
+        slug: "makeup-artistry",
+        title: "Makeup Artistry",
+        nominations: [
+          "Award of Excellence in Bridal Makeup Artistry",
+          "Award of Excellence in Creative Makeup Artistry",
+          "Award of Excellence in Mature Makeup Artistry",
+          "Award of Excellence in Daytime Makeup Artistry",
+        ],
+      },
+      {
+        slug: "permanent-makeup",
+        title: "Permanent Makeup",
+        nominations: [
+          "Award of Excellence in PMU Brows",
+          "Award of Excellence in Eyeliner Precision",
+          "Award of Excellence in Lips PMU",
+          "Award of Excellence in Camouflage & Correction",
+        ],
+      },
+      {
+        slug: "body-wellness-nutrition",
+        title: "Body, Wellness & Nutrition",
+        nominations: [
+          "Award of Excellence in Body Transformation",
+          "Award of Excellence in Sculpting Massage",
+          "Award of Excellence in Nutrition & Diet Correction",
+          "Award of Excellence in Anti-Cellulite Treatment",
+        ],
+      },
+      {
+        slug: "education",
+        title: "Education Category",
+        nominations: [
+          "Award of Excellence in Professional Beauty Training",
+          "Award of Excellence in Online Beauty Education",
+        ],
+      },
+      {
+        slug: "salon",
+        title: "Salon Category",
+        nominations: [
+          "Award of Excellence in Beauty Salon Innovation",
+          "Award for Outstanding Achievement in Beauty Business Development",
+        ],
+      },
+      {
+        slug: "brand",
+        title: "Brand Category",
+        nominations: [
+          "Award of Excellence in Professional Beauty Product Development",
+          "Award of Excellence in Beauty Brand Development",
+          "Innovation in Beauty Award",
+        ],
+      },
+    ],
     copy: {
         nominationSingular: "nomination",
         nominationPlural: "nominations",
@@ -838,6 +940,108 @@ const ru: typeof en = {
       cta: "Подать заявку по категории",
     },
     cardText: "Профессиональные заявки рассматриваются в рамках официальной премии IBPA.",
+    directions: [
+      {
+        slug: "hair",
+        title: "КАТЕГОРИЯ ВОЛОС",
+        nominations: [
+          "Премия за выдающиеся достижения в технике окрашивания волос",
+          "Премия за выдающиеся достижения в барберинге",
+          "Премия за выдающиеся достижения в восстановлении волос",
+        ],
+      },
+      {
+        slug: "nail",
+        title: "КАТЕГОРИЯ НОГТЕЙ",
+        nominations: [
+          "Премия за выдающиеся достижения в маникюре",
+          "Премия за выдающиеся достижения в наращивании ногтей",
+          "Премия за выдающиеся достижения в подологии",
+        ],
+      },
+      {
+        slug: "brow",
+        title: "КАТЕГОРИЯ БРОВЕЙ",
+        nominations: [
+          "Премия за выдающиеся достижения в ламинировании бровей",
+          "Премия за выдающиеся достижения в стайлинге и дизайне бровей",
+        ],
+      },
+      {
+        slug: "lash",
+        title: "НАРАЩИВАНИЕ И ЛАМИНИРОВАНИЕ РЕСНИЦ",
+        nominations: [
+          "Премия за выдающиеся достижения в классическом наращивании ресниц",
+          "Премия за выдающиеся достижения в объёмном наращивании ресниц",
+          "Премия за выдающиеся достижения в креативном дизайне наращивания ресниц",
+          "Премия за выдающиеся достижения в ламинировании ресниц",
+        ],
+      },
+      {
+        slug: "skin-cosmetology-facial",
+        title: "УХОД ЗА КОЖЕЙ, КОСМЕТОЛОГИЯ И ЛИЦО",
+        nominations: [
+          "Премия за выдающиеся достижения в неинвазивном омоложении",
+          "Премия за выдающиеся достижения в антивозрастном уходе за лицом",
+          "Премия за выдающиеся достижения в лечении акне",
+        ],
+      },
+      {
+        slug: "makeup-artistry",
+        title: "ИСКУССТВО МАКИЯЖА",
+        nominations: [
+          "Премия за выдающиеся достижения в свадебном макияже",
+          "Премия за выдающиеся достижения в креативном макияже",
+          "Премия за выдающиеся достижения в возрастном макияже",
+          "Премия за выдающиеся достижения в дневном макияже",
+        ],
+      },
+      {
+        slug: "permanent-makeup",
+        title: "ПЕРМАНЕНТНЫЙ МАКИЯЖ",
+        nominations: [
+          "Премия за выдающиеся достижения в перманентном макияже бровей",
+          "Премия за выдающиеся достижения в технике перманентной подводки век",
+          "Премия за выдающиеся достижения в перманентном макияже губ",
+          "Премия за выдающиеся достижения в камуфляже и коррекции",
+        ],
+      },
+      {
+        slug: "body-wellness-nutrition",
+        title: "ТЕЛО, ВЕЛНЕС И НУТРИЦИОЛОГИЯ",
+        nominations: [
+          "Премия за выдающиеся достижения в трансформации тела",
+          "Премия за выдающиеся достижения в скульптурирующем массаже",
+          "Премия за выдающиеся достижения в нутрициологии и коррекции питания",
+          "Премия за выдающиеся достижения в антицеллюлитном уходе",
+        ],
+      },
+      {
+        slug: "education",
+        title: "ОБРАЗОВАТЕЛЬНАЯ КАТЕГОРИЯ",
+        nominations: [
+          "Премия за выдающиеся достижения в профессиональном обучении в индустрии красоты",
+          "Премия за выдающиеся достижения в онлайн-обучении в индустрии красоты",
+        ],
+      },
+      {
+        slug: "salon",
+        title: "КАТЕГОРИЯ САЛОНОВ",
+        nominations: [
+          "Премия за выдающиеся достижения в инновациях бьюти-салона",
+          "Премия за выдающиеся достижения в развитии бьюти-бизнеса",
+        ],
+      },
+      {
+        slug: "brand",
+        title: "КАТЕГОРИЯ БРЕНДА",
+        nominations: [
+          "Премия за выдающиеся достижения в разработке профессиональной бьюти-продукции",
+          "Премия за выдающиеся достижения в развитии бьюти-бренда",
+          "Инновационная премия в индустрии красоты",
+        ],
+      },
+    ],
     copy: {
         nominationSingular: "номинация",
         nominationPlural: "номинации",
@@ -1487,6 +1691,108 @@ const ua: typeof en = {
       cta: "Подати заявку за категорією",
     },
     cardText: "Професійні заявки розглядаються в межах офіційної премії IBPA.",
+    directions: [
+      {
+        slug: "hair",
+        title: "КАТЕГОРІЯ ВОЛОССЯ",
+        nominations: [
+          "Премія за видатні досягнення у техніці фарбування волосся",
+          "Премія за видатні досягнення у барберингу",
+          "Премія за видатні досягнення у відновленні волосся",
+        ],
+      },
+      {
+        slug: "nail",
+        title: "КАТЕГОРІЯ НІГТІВ",
+        nominations: [
+          "Премія за видатні досягнення у манікюрі",
+          "Премія за видатні досягнення у нарощуванні нігтів",
+          "Премія за видатні досягнення у подології",
+        ],
+      },
+      {
+        slug: "brow",
+        title: "КАТЕГОРІЯ БРІВ",
+        nominations: [
+          "Премія за видатні досягнення у ламінуванні брів",
+          "Премія за видатні досягнення у стайлінгу та дизайні брів",
+        ],
+      },
+      {
+        slug: "lash",
+        title: "НАРОЩУВАННЯ ТА ЛАМІНУВАННЯ ВІЙ",
+        nominations: [
+          "Премія за видатні досягнення в класичному нарощуванні вій",
+          "Премія за видатні досягнення в об’ємному нарощуванні вій",
+          "Премія за видатні досягнення в креативному дизайні нарощування вій",
+          "Премія за видатні досягнення в ламінуванні вій",
+        ],
+      },
+      {
+        slug: "skin-cosmetology-facial",
+        title: "ДОГЛЯД ЗА ШКІРОЮ, КОСМЕТОЛОГІЯ ТА ОБЛИЧЧЯ",
+        nominations: [
+          "Премія за видатні досягнення в неінвазивному омолодженні",
+          "Премія за видатні досягнення в антивіковому догляді за обличчям",
+          "Премія за видатні досягнення в лікуванні акне",
+        ],
+      },
+      {
+        slug: "makeup-artistry",
+        title: "МИСТЕЦТВО МАКІЯЖУ",
+        nominations: [
+          "Премія за видатні досягнення у весільному макіяжі",
+          "Премія за видатні досягнення у креативному макіяжі",
+          "Премія за видатні досягнення у віковому макіяжі",
+          "Премія за видатні досягнення у денному макіяжі",
+        ],
+      },
+      {
+        slug: "permanent-makeup",
+        title: "ПЕРМАНЕНТНИЙ МАКІЯЖ",
+        nominations: [
+          "Премія за видатні досягнення у перманентному макіяжі брів",
+          "Премія за видатні досягнення у техніці перманентної стрілки повік",
+          "Премія за видатні досягнення у перманентному макіяжі губ",
+          "Премія за видатні досягнення у камуфляжі та корекції",
+        ],
+      },
+      {
+        slug: "body-wellness-nutrition",
+        title: "ТІЛО, ВЕЛНЕС І НУТРИЦІОЛОГІЯ",
+        nominations: [
+          "Премія за видатні досягнення у трансформації тіла",
+          "Премія за видатні досягнення у скульптурному масажі",
+          "Премія за видатні досягнення у нутриціології та корекції харчування",
+          "Премія за видатні досягнення в антицелюлітному догляді",
+        ],
+      },
+      {
+        slug: "education",
+        title: "ОСВІТНЯ КАТЕГОРІЯ",
+        nominations: [
+          "Премія за видатні досягнення у професійному навчанні в індустрії краси",
+          "Премія за видатні досягнення в онлайн-навчанні в індустрії краси",
+        ],
+      },
+      {
+        slug: "salon",
+        title: "КАТЕГОРІЯ САЛОНІВ",
+        nominations: [
+          "Премія за видатні досягнення в інноваціях б’юті-салону",
+          "Премія за видатні досягнення у розвитку б’юті-бізнесу",
+        ],
+      },
+      {
+        slug: "brand",
+        title: "КАТЕГОРІЯ БРЕНДУ",
+        nominations: [
+          "Премія за видатні досягнення у розробці професійної б’юті-продукції",
+          "Премія за видатні досягнення у розвитку б’юті-бренду",
+          "Інноваційна премія в індустрії краси",
+        ],
+      },
+    ],
     copy: {
         nominationSingular: "номінація",
         nominationPlural: "номінації",
