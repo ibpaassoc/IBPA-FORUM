@@ -31,7 +31,7 @@ export default function HomeWhy() {
     }));
 
     return (
-        <section className="section-rhythm-tight">
+        <section key="gallery" className="section-rhythm-tight">
                 <div className="page-section">
                 <div className="rounded-[var(--radius)] border border-[var(--border-default)] bg-[linear-gradient(180deg,var(--surface-tint)_0%,var(--surface)_100%)] p-[clamp(1.1rem,2.8vw,2rem)]">
                     <div className="max-w-3xl">

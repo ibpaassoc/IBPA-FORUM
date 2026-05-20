@@ -208,11 +208,14 @@ export default function Footer() {
             ? currentLegalCopy.privacy.sections
             : currentLegalCopy.terms.sections
           ).map((section) => (
-            <section key={section.heading} className="space-y-2">
-              <h3 className="text-[1.02rem] tracking-[0.01em] text-(--color-ink) [font-family:var(--font-accent-family)]">
+            <section
+              key={section.heading}
+              className="rounded-[var(--radius-sm)] border border-transparent px-[clamp(0.05rem,0.6vw,0.5rem)] py-[clamp(0.2rem,0.7vw,0.55rem)] transition hover:border-(--border-soft) hover:bg-(--surface-tint)"
+            >
+              <h3 className="mb-1 text-[clamp(1.08rem,1.5vw,1.25rem)] leading-[1.25] tracking-[0.005em] text-(--color-ink) [font-family:var(--font-accent-family)]">
                 {section.heading}
               </h3>
-              <p>{section.body}</p>
+              <p className="text-(--color-ink-soft)">{section.body}</p>
             </section>
           ))}
         </div>
