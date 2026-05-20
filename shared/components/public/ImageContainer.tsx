@@ -52,20 +52,24 @@ export default function ImageContainer({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={open}
-        disabled={!enableLightbox}
-        aria-label={enableLightbox ? `Open larger image: ${alt}` : undefined}
+      <div
         className={clsx(
-          "relative block w-full text-left transition duration-300",
-          enableLightbox && "cursor-zoom-in hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-hover)] focus-visible:ring-offset-2",
+          "relative block w-full transition duration-300",
+          enableLightbox && "cursor-zoom-in hover:opacity-95",
           !enableLightbox && "cursor-default",
           className
         )}
       >
         <Image {...imageProps} src={src} alt={alt} className={imageClassName} />
-      </button>
+        {enableLightbox ? (
+          <button
+            type="button"
+            aria-label={`Open larger image: ${alt}`}
+            onClick={open}
+            className="absolute inset-0 z-[2] appearance-none border-0 bg-transparent p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-hover)] focus-visible:ring-offset-2"
+          />
+        ) : null}
+      </div>
 
       {isOpen ? (
         <div

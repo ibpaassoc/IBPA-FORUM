@@ -82,7 +82,7 @@ export default function EditorialImageCard({
         />
         <div
           className={clsx(
-            "absolute inset-0 transition duration-500",
+            "pointer-events-none absolute inset-0 transition duration-500",
             tone === "dark"
               ? "bg-[rgba(12,16,20,0.24)] group-hover:bg-[rgba(12,16,20,0.32)]"
               : "bg-[rgba(255,255,255,0.2)]"

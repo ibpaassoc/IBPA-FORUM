@@ -62,7 +62,7 @@ function CollageCard({
           mobileObjectPosition={mobileObjectPosition}
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(11,18,24,0.03)_36%,rgba(11,18,24,0.5)_100%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(11,18,24,0.03)_36%,rgba(11,18,24,0.5)_100%)]" />
       </div>
 
       <div className="absolute inset-x-0 bottom-0 p-[var(--space-md)] text-white">
