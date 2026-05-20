@@ -18,6 +18,7 @@
   --font-body-family: var(--font-body), "Lora", serif;
   --font-ui-family: var(--font-ui), var(--font-sans), "Raleway", sans-serif;
   --font-accent-family: var(--font-accent), "Cormorant Garamond", italic;
+  --font-legal-family: var(--font-inter), "Inter", sans-serif;
 
   --border-default: rgba(37, 42, 45, 0.1);
   --border-soft: rgba(37, 42, 45, 0.08);

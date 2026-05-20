@@ -40,6 +40,12 @@ export const cormorant = Cormorant_Garamond({
   variable: "--font-accent",
 });
 
+export const inter = Inter({
+  subsets: ["latin", "cyrillic"],
+  weight: ["400", "500", "600"],
+  variable: "--font-inter",
+});
+
 function resolveLanguage(value: string | undefined): Language {
   if (!value) return "en";
   if (languages.includes(value as Language)) {
@@ -61,7 +67,7 @@ export default async function RootLayout({
   return (
     <html
       lang={htmlLanguage}
-      className={`${cormorant.variable} ${lora.variable} ${raleway.variable} ${bodoniModa.variable}`}
+      className={`${cormorant.variable} ${inter.variable} ${lora.variable} ${raleway.variable} ${bodoniModa.variable}`}
     >
       <body>
         <LanguageProvider initialLanguage={initialLanguage}>
