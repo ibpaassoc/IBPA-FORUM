@@ -196,15 +196,16 @@ export default function ImageContainer({
             >
               &times;
             </button>
-            <div className="relative h-[min(92vh,1150px)] w-[min(98vw,1800px)] overflow-hidden rounded-[28px] border border-white/18 bg-[linear-gradient(145deg,rgba(250,252,255,0.08),rgba(250,252,255,0.02))] shadow-[0_36px_96px_rgba(4,10,18,0.55)]">
+            <div className="relative inline-flex overflow-hidden rounded-[24px] border border-white/20 bg-[rgba(10,16,24,0.35)] shadow-[0_30px_84px_rgba(4,10,18,0.52)]">
               <Image
                 {...imageProps}
                 src={src}
                 alt={alt}
-                fill
+                width={typeof imageProps.width === "number" ? imageProps.width : 1600}
+                height={typeof imageProps.height === "number" ? imageProps.height : 1000}
                 loading="eager"
-                sizes="98vw"
-                className="object-contain p-[clamp(0.35rem,1vw,0.9rem)]"
+                sizes="(max-width: 768px) 94vw, 88vw"
+                className="block h-auto max-h-[86vh] w-auto max-w-[94vw] object-contain"
               />
             </div>
           </div>
