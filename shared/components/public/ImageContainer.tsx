@@ -192,20 +192,21 @@ export default function ImageContainer({
               type="button"
               aria-label="Close image preview"
               onClick={close}
-              className="absolute right-2 top-2 z-[1] inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-[rgba(10,15,20,0.58)] text-2xl leading-none text-white shadow-[var(--shadow-sm)] transition hover:bg-[rgba(10,15,20,0.8)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+              className="absolute right-3 top-3 z-[3] inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/25 bg-[rgba(12,18,24,0.55)] text-2xl leading-none text-white shadow-[0_10px_24px_rgba(0,0,0,0.35)] transition hover:bg-[rgba(12,18,24,0.8)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
             >
               &times;
             </button>
-            <Image
-              {...imageProps}
-              src={src}
-              alt={alt}
-              width={typeof imageProps.width === "number" ? imageProps.width : 1600}
-              height={typeof imageProps.height === "number" ? imageProps.height : 1000}
-              fill={false}
-              loading="eager"
-              className="h-auto max-h-[96vh] w-auto max-w-[min(99vw,1800px)] rounded-[var(--radius-lg)] object-contain shadow-[0_30px_80px_rgba(5,10,16,0.5)]"
-            />
+            <div className="relative h-[min(92vh,1150px)] w-[min(98vw,1800px)] overflow-hidden rounded-[28px] border border-white/18 bg-[linear-gradient(145deg,rgba(250,252,255,0.08),rgba(250,252,255,0.02))] shadow-[0_36px_96px_rgba(4,10,18,0.55)]">
+              <Image
+                {...imageProps}
+                src={src}
+                alt={alt}
+                fill
+                loading="eager"
+                sizes="98vw"
+                className="object-contain p-[clamp(0.35rem,1vw,0.9rem)]"
+              />
+            </div>
           </div>
         </div>,
             document.body
