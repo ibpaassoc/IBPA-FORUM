@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import { createPortal } from "react-dom";
 import type { ComponentProps, MouseEvent, PointerEvent } from "react";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import clsx from "clsx";
 
 type ImageContainerProps = Omit<ComponentProps<typeof Image>, "className"> & {
@@ -21,7 +22,19 @@ export default function ImageContainer({
 }: ImageContainerProps) {
   const usesFill = Boolean(imageProps.fill);
   const [isOpen, setIsOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const titleId = useId();
+  const pointerStateRef = useRef<{
+    pointerId: number;
+    startX: number;
+    startY: number;
+    moved: boolean;
+  } | null>(null);
+  const TRAVEL_THRESHOLD_PX = 6;
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -44,15 +57,51 @@ export default function ImageContainer({
   }, [isOpen]);
 
   const close = () => setIsOpen(false);
-  const open = () => {
-    if (!enableLightbox) return;
-    setIsOpen(true);
-  };
-  const openOnPointerDown = (event: PointerEvent<HTMLButtonElement>) => {
+  const open = () => setIsOpen(true);
+
+  const onTriggerPointerDown = (event: PointerEvent<HTMLButtonElement>) => {
     if (!enableLightbox) return;
     if (event.button !== 0) return;
-    event.preventDefault();
-    setIsOpen(true);
+    pointerStateRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      moved: false,
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const onTriggerPointerMove = (event: PointerEvent<HTMLButtonElement>) => {
+    const state = pointerStateRef.current;
+    if (!state || state.pointerId !== event.pointerId) return;
+    const dx = Math.abs(event.clientX - state.startX);
+    const dy = Math.abs(event.clientY - state.startY);
+    if (dx > TRAVEL_THRESHOLD_PX || dy > TRAVEL_THRESHOLD_PX) {
+      state.moved = true;
+    }
+  };
+
+  const onTriggerPointerUp = (event: PointerEvent<HTMLButtonElement>) => {
+    const state = pointerStateRef.current;
+    if (!state || state.pointerId !== event.pointerId) return;
+    pointerStateRef.current = null;
+    event.currentTarget.releasePointerCapture(event.pointerId);
+
+    if (!state.moved) {
+      event.preventDefault();
+      open();
+    }
+  };
+
+  const onTriggerPointerCancel = () => {
+    pointerStateRef.current = null;
+  };
+
+  const onTriggerClick = () => {
+    if (!enableLightbox) return;
+    // Keyboard activation fallback. Pointer flow is handled by pointer events.
+    if (pointerStateRef.current) return;
+    open();
   };
 
   const stopModalClick = (event: MouseEvent<HTMLDivElement>) => event.stopPropagation();
@@ -73,14 +122,18 @@ export default function ImageContainer({
           <button
             type="button"
             aria-label={`Open larger image: ${alt}`}
-            onPointerDown={openOnPointerDown}
-            onClick={open}
+            onPointerDown={onTriggerPointerDown}
+            onPointerMove={onTriggerPointerMove}
+            onPointerUp={onTriggerPointerUp}
+            onPointerCancel={onTriggerPointerCancel}
+            onClick={onTriggerClick}
             className="absolute inset-0 z-[2] appearance-none border-0 bg-transparent p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-hover)] focus-visible:ring-offset-2"
           />
         ) : null}
       </div>
 
-      {isOpen ? (
+      {isClient && isOpen
+        ? createPortal(
         <div
           className="fixed inset-0 z-[70] flex items-center justify-center bg-[rgba(8,14,20,0.72)] px-4 py-6 backdrop-blur-[4px]"
           role="dialog"
@@ -111,8 +164,10 @@ export default function ImageContainer({
               className="h-auto max-h-[86vh] w-auto max-w-[min(92vw,1200px)] rounded-[var(--radius-lg)] object-contain shadow-[var(--shadow-lg)]"
             />
           </div>
-        </div>
-      ) : null}
+        </div>,
+            document.body
+          )
+        : null}
     </>
   );
 }
