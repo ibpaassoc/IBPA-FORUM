@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { ImageOff } from "lucide-react";
 import clsx from "clsx";
 import { useMemo, useState } from "react";
 import type { CSSProperties } from "react";
+import ImageContainer from "./ImageContainer";
 
 type SafeImageProps = {
   src?: string | null;
@@ -18,6 +18,7 @@ type SafeImageProps = {
   unoptimized?: boolean;
   objectPosition?: string;
   mobileObjectPosition?: string;
+  enableLightbox?: boolean;
 };
 
 export default function SafeImage({
@@ -32,6 +33,7 @@ export default function SafeImage({
   unoptimized,
   objectPosition,
   mobileObjectPosition,
+  enableLightbox = true,
 }: SafeImageProps) {
   const normalizedSources = useMemo(() => {
     const candidates = [src, fallbackSrc, ...(fallbackSrcs ?? [])];
@@ -65,13 +67,14 @@ export default function SafeImage({
   return (
     <>
       {!showFallback ? (
-        <Image
+        <ImageContainer
           key={activeSrc}
           src={activeSrc}
           alt={alt}
           fill={fill}
           sizes={sizes}
           priority={priority}
+          enableLightbox={enableLightbox}
           onError={() =>
             setSourceState((current) => {
               if (current.signature !== sourceSignature) {
@@ -81,7 +84,8 @@ export default function SafeImage({
               return { signature: current.signature, index: current.index + 1 };
             })
           }
-          className={clsx("safe-image-asset", className)}
+          className="absolute inset-0"
+          imageClassName={clsx("safe-image-asset", className)}
           unoptimized={unoptimized}
           style={imageStyle}
         />

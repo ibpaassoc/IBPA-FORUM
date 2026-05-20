@@ -13,6 +13,7 @@ export { default as FormProgressSidebar } from "./FormProgressSidebar";
 export { default as FullBleedPhotoBreak } from "./FullBleedPhotoBreak";
 export { default as HoverCard } from "./HoverCard";
 export { default as IconBadge } from "./IconBadge";
+export { default as ImageContainer } from "./ImageContainer";
 export { default as PageHero } from "./PageHero";
 export { default as PageSection } from "./PageSection";
 export { default as PremiumCTA } from "./PremiumCTA";

@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ImageContainer } from "@/shared/components/public";
 
 const HorizontalGalleryImages = [
   "/images/gallery/0K9A3130.JPG",
@@ -103,13 +103,14 @@ function GalleryRow({
             key={`${src}-${index}`}
             className={`sliding-gallery-card relative shrink-0 overflow-hidden rounded-[var(--radius)] border border-[var(--border-soft)] bg-[var(--surface)] shadow-[var(--shadow-sm)] ${cardClassName}`}
           >
-            <Image
+            <ImageContainer
               src={src}
               alt="IBPA gallery photo"
               fill
               loading="lazy"
               sizes="(max-width: 640px) 256px, (max-width: 1024px) 320px, (max-width: 1280px) 384px, 432px"
-              className="object-cover"
+              className="absolute inset-0"
+              imageClassName="object-cover"
             />
           </figure>
         ))}
