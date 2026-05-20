@@ -168,7 +168,7 @@ export default function ImageContainer({
         ? createPortal(
         <div
           className={clsx(
-            "fixed inset-0 z-[70] flex items-center justify-center px-4 py-6 backdrop-blur-[6px] transition-[background-color,backdrop-filter,opacity] duration-[260ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
+            "fixed inset-0 z-[70] flex items-center justify-center px-2 py-2 backdrop-blur-[6px] transition-[background-color,backdrop-filter,opacity] duration-[260ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
             isVisible
               ? "bg-[rgba(8,14,20,0.74)] opacity-100"
               : "bg-[rgba(8,14,20,0)] opacity-0"
@@ -204,7 +204,7 @@ export default function ImageContainer({
               height={typeof imageProps.height === "number" ? imageProps.height : 1000}
               fill={false}
               loading="eager"
-              className="h-auto max-h-[92vh] w-auto max-w-[min(96vw,1480px)] rounded-[var(--radius-lg)] object-contain shadow-[0_30px_80px_rgba(5,10,16,0.5)]"
+              className="h-auto max-h-[96vh] w-auto max-w-[min(99vw,1800px)] rounded-[var(--radius-lg)] object-contain shadow-[0_30px_80px_rgba(5,10,16,0.5)]"
             />
           </div>
         </div>,
