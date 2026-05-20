@@ -20,6 +20,12 @@ export default function ImageContainer({
   enableLightbox = true,
   ...imageProps
 }: ImageContainerProps) {
+  const {
+    fill: _modalFill,
+    width: modalWidth,
+    height: modalHeight,
+    ...modalImageProps
+  } = imageProps;
   const CLOSE_ANIMATION_MS = 260;
   const usesFill = Boolean(imageProps.fill);
   const [isMounted, setIsMounted] = useState(false);
@@ -198,11 +204,11 @@ export default function ImageContainer({
             </button>
             <div className="relative inline-flex overflow-hidden rounded-[24px] border border-white/20 bg-[rgba(10,16,24,0.35)] shadow-[0_30px_84px_rgba(4,10,18,0.52)]">
               <Image
-                {...imageProps}
+                {...modalImageProps}
                 src={src}
                 alt={alt}
-                width={typeof imageProps.width === "number" ? imageProps.width : 1600}
-                height={typeof imageProps.height === "number" ? imageProps.height : 1000}
+                width={typeof modalWidth === "number" ? modalWidth : 1600}
+                height={typeof modalHeight === "number" ? modalHeight : 1000}
                 loading="eager"
                 sizes="(max-width: 768px) 94vw, 88vw"
                 className="block h-auto max-h-[86vh] w-auto max-w-[94vw] object-contain"
