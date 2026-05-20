@@ -20,10 +20,13 @@ export default function ImageContainer({
   enableLightbox = true,
   ...imageProps
 }: ImageContainerProps) {
+  const CLOSE_ANIMATION_MS = 260;
   const usesFill = Boolean(imageProps.fill);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const titleId = useId();
+  const closeTimerRef = useRef<number | null>(null);
   const pointerStateRef = useRef<{
     pointerId: number;
     startX: number;
@@ -34,17 +37,22 @@ export default function ImageContainer({
 
   useEffect(() => {
     setIsClient(true);
+    return () => {
+      if (closeTimerRef.current) {
+        window.clearTimeout(closeTimerRef.current);
+      }
+    };
   }, []);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isMounted) return;
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setIsOpen(false);
+        setIsVisible(false);
       }
     };
 
@@ -54,10 +62,33 @@ export default function ImageContainer({
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [isOpen]);
+  }, [isMounted]);
 
-  const close = () => setIsOpen(false);
-  const open = () => setIsOpen(true);
+  useEffect(() => {
+    if (isMounted && !isVisible) {
+      closeTimerRef.current = window.setTimeout(() => {
+        setIsMounted(false);
+      }, CLOSE_ANIMATION_MS);
+    }
+    return () => {
+      if (closeTimerRef.current) {
+        window.clearTimeout(closeTimerRef.current);
+        closeTimerRef.current = null;
+      }
+    };
+  }, [isMounted, isVisible]);
+
+  const close = () => setIsVisible(false);
+  const open = () => {
+    if (closeTimerRef.current) {
+      window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+    setIsMounted(true);
+    requestAnimationFrame(() => {
+      setIsVisible(true);
+    });
+  };
 
   const onTriggerPointerDown = (event: PointerEvent<HTMLButtonElement>) => {
     if (!enableLightbox) return;
@@ -97,8 +128,9 @@ export default function ImageContainer({
     pointerStateRef.current = null;
   };
 
-  const onTriggerClick = () => {
+  const onTriggerClick = (event: MouseEvent<HTMLButtonElement>) => {
     if (!enableLightbox) return;
+    if (event.detail > 0) return;
     // Keyboard activation fallback. Pointer flow is handled by pointer events.
     if (pointerStateRef.current) return;
     open();
@@ -132,16 +164,27 @@ export default function ImageContainer({
         ) : null}
       </div>
 
-      {isClient && isOpen
+      {isClient && isMounted
         ? createPortal(
         <div
-          className="fixed inset-0 z-[70] flex items-center justify-center bg-[rgba(8,14,20,0.72)] px-4 py-6 backdrop-blur-[4px]"
+          className={clsx(
+            "fixed inset-0 z-[70] flex items-center justify-center px-4 py-6 backdrop-blur-[6px] transition-[background-color,backdrop-filter,opacity] duration-[260ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
+            isVisible
+              ? "bg-[rgba(8,14,20,0.74)] opacity-100"
+              : "bg-[rgba(8,14,20,0)] opacity-0"
+          )}
           role="dialog"
           aria-modal="true"
           aria-labelledby={titleId}
           onClick={close}
         >
-          <div className="relative max-w-[min(92vw,1200px)]" onClick={stopModalClick}>
+          <div
+            className={clsx(
+              "relative transition-[opacity,transform] duration-[260ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
+              isVisible ? "scale-100 opacity-100" : "scale-[0.93] opacity-0"
+            )}
+            onClick={stopModalClick}
+          >
             <p id={titleId} className="sr-only">
               {alt}
             </p>
@@ -161,7 +204,7 @@ export default function ImageContainer({
               height={typeof imageProps.height === "number" ? imageProps.height : 1000}
               fill={false}
               loading="eager"
-              className="h-auto max-h-[86vh] w-auto max-w-[min(92vw,1200px)] rounded-[var(--radius-lg)] object-contain shadow-[var(--shadow-lg)]"
+              className="h-auto max-h-[92vh] w-auto max-w-[min(96vw,1480px)] rounded-[var(--radius-lg)] object-contain shadow-[0_30px_80px_rgba(5,10,16,0.5)]"
             />
           </div>
         </div>,
