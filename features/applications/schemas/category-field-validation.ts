@@ -183,7 +183,8 @@ export function validateApplicationValues({
 }) {
   const errors: ValidationErrors = {};
   const result = baseApplicationSchema.safeParse({
-    fullName: getStringValue(values, "fullName"),
+    firstName: getStringValue(values, "firstName"),
+    lastName: getStringValue(values, "lastName"),
     email: getStringValue(values, "email"),
     phone: getStringValue(values, "phone"),
     country: getStringValue(values, "country"),

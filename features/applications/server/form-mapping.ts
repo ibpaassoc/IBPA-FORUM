@@ -17,7 +17,8 @@ export function extractApplicationValues(
   categories: CategoryOption[]
 ): ApplicationValues {
   const values: ApplicationValues = {
-    fullName: getTextValue(formData, "fullName"),
+    firstName: getTextValue(formData, "firstName"),
+    lastName: getTextValue(formData, "lastName"),
     email: getTextValue(formData, "email"),
     phone: getTextValue(formData, "phone"),
     country: getTextValue(formData, "country"),

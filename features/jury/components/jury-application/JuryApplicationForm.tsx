@@ -131,7 +131,8 @@ export default function JuryApplicationForm() {
     }
 
     const profileFields = [
-      "fullName",
+      "firstName",
+      "lastName",
       "email",
       "phone",
       "country",

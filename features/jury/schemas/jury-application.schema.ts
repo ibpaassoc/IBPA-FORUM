@@ -5,7 +5,8 @@ function isValidEmail(email: string) {
 }
 
 export function buildJuryFieldErrors(formData: FormData) {
-  const fullName = getText(formData, "fullName");
+  const firstName = getText(formData, "firstName");
+  const lastName = getText(formData, "lastName");
   const email = getText(formData, "email");
   const phone = getText(formData, "phone");
   const country = getText(formData, "country");
@@ -30,7 +31,8 @@ export function buildJuryFieldErrors(formData: FormData) {
 
   const fieldErrors: Record<string, string> = {};
 
-  if (!fullName) fieldErrors.fullName = "Full legal name is required.";
+  if (!firstName) fieldErrors.firstName = "First name is required.";
+  if (!lastName) fieldErrors.lastName = "Last name is required.";
   if (!email || !isValidEmail(email)) {
     fieldErrors.email = "A valid email address is required.";
   }

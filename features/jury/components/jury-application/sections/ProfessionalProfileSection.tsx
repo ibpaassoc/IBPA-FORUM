@@ -65,9 +65,16 @@ export default function ProfessionalProfileSection() {
       </p>
       <div className="mt-[var(--space-md)] grid gap-[var(--space-md)] md:grid-cols-2">
         <TextInput
-          label={copy.fullName}
-          name="fullName"
-          placeholder={copy.fullNamePlaceholder}
+          label="First Name"
+          name="firstName"
+          placeholder="As shown on official documents"
+          required
+        />
+
+        <TextInput
+          label="Last Name"
+          name="lastName"
+          placeholder="As shown on official documents"
           required
         />
 

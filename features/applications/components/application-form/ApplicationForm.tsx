@@ -57,7 +57,8 @@ export default function ApplyForm({
     values
   );
   const requiredFieldKeys = [
-    "fullName",
+    "firstName",
+    "lastName",
     "email",
     "phone",
     "country",
@@ -82,7 +83,8 @@ export default function ApplyForm({
       ? 0
       : Math.round((completedRequiredCount / requiredFieldKeys.length) * 100);
   const profileFieldKeys = [
-    "fullName",
+    "firstName",
+    "lastName",
     "email",
     "phone",
     "country",

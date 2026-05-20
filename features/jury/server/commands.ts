@@ -30,7 +30,9 @@ export async function submitJuryApplication(formData: FormData) {
     };
   }
 
-  const fullName = getText(formData, "fullName");
+  const firstName = getText(formData, "firstName");
+  const lastName = getText(formData, "lastName");
+  const fullName = `${firstName} ${lastName}`.trim();
   const email = getText(formData, "email");
   const normalizedEmail = email.toLowerCase();
   const phone = getText(formData, "phone");

@@ -11,7 +11,8 @@ export const optionalUrlSchema = z
   );
 
 export const baseApplicationSchema = z.object({
-  fullName: z.string().trim().min(1, "Full Legal Name is required."),
+  firstName: z.string().trim().min(1, "First Name is required."),
+  lastName: z.string().trim().min(1, "Last Name is required."),
   email: z.email("Please enter a valid email address."),
   phone: z.string().trim().min(1, "Phone / WhatsApp is required."),
   country: z.string().trim().min(1, "Country of Residence is required."),

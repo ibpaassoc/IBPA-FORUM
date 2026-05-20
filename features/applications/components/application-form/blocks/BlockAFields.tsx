@@ -146,12 +146,22 @@ export default function BlockAFields({
   return (
     <div className="grid gap-5 md:grid-cols-2">
       <TextField
-        label={copy.fullLegalName}
-        name="fullName"
-        value={String(values.fullName ?? "")}
+        label="First Name"
+        name="firstName"
+        value={String(values.firstName ?? "")}
         required
-        placeholder={copy.fullLegalNamePlaceholder}
-        error={errors.fullName}
+        placeholder="As shown on official documents"
+        error={errors.firstName}
+        onChange={onChange}
+      />
+
+      <TextField
+        label="Last Name"
+        name="lastName"
+        value={String(values.lastName ?? "")}
+        required
+        placeholder="As shown on official documents"
+        error={errors.lastName}
         onChange={onChange}
       />
 
