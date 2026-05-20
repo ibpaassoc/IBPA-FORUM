@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import type { ComponentProps, MouseEvent } from "react";
+import type { ComponentProps, MouseEvent, PointerEvent } from "react";
 import { useEffect, useId, useState } from "react";
 import clsx from "clsx";
 
@@ -48,6 +48,12 @@ export default function ImageContainer({
     if (!enableLightbox) return;
     setIsOpen(true);
   };
+  const openOnPointerDown = (event: PointerEvent<HTMLButtonElement>) => {
+    if (!enableLightbox) return;
+    if (event.button !== 0) return;
+    event.preventDefault();
+    setIsOpen(true);
+  };
 
   const stopModalClick = (event: MouseEvent<HTMLDivElement>) => event.stopPropagation();
 
@@ -55,9 +61,9 @@ export default function ImageContainer({
     <>
       <div
         className={clsx(
-          "relative block transition duration-300",
+          "relative block",
           usesFill && "h-full w-full",
-          enableLightbox && "cursor-zoom-in hover:opacity-95",
+          enableLightbox && "cursor-zoom-in",
           !enableLightbox && "cursor-default",
           className
         )}
@@ -67,6 +73,7 @@ export default function ImageContainer({
           <button
             type="button"
             aria-label={`Open larger image: ${alt}`}
+            onPointerDown={openOnPointerDown}
             onClick={open}
             className="absolute inset-0 z-[2] appearance-none border-0 bg-transparent p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-hover)] focus-visible:ring-offset-2"
           />
@@ -91,7 +98,7 @@ export default function ImageContainer({
               onClick={close}
               className="absolute right-2 top-2 z-[1] inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-[rgba(10,15,20,0.58)] text-2xl leading-none text-white shadow-[var(--shadow-sm)] transition hover:bg-[rgba(10,15,20,0.8)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
             >
-              ×
+              &times;
             </button>
             <Image
               {...imageProps}
@@ -109,3 +116,4 @@ export default function ImageContainer({
     </>
   );
 }
+
