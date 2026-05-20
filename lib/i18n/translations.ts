@@ -195,7 +195,7 @@ const en = {
     directions: [
       {
         slug: "hair",
-        title: "Hair Category",
+        title: "Hair",
         nominations: [
           "Award of Excellence in Hair Color Technique",
           "Barbering Excellence Award",
@@ -204,7 +204,7 @@ const en = {
       },
       {
         slug: "nail",
-        title: "Nail Category",
+        title: "Nail",
         nominations: [
           "Award of Excellence in Manicure",
           "Award of Excellence in Nail Extension",
@@ -213,7 +213,7 @@ const en = {
       },
       {
         slug: "brow",
-        title: "Brow Category",
+        title: "Brow",
         nominations: [
           "Award of Excellence in Brow Lamination",
           "Award of Excellence in Brow Styling & Design",
@@ -221,7 +221,7 @@ const en = {
       },
       {
         slug: "lash",
-        title: "Lash Extension & Lift",
+        title: "Lash",
         nominations: [
           "Award of Excellence in Classic Lash Extension",
           "Award of Excellence in Volume Lash Extension",
@@ -231,7 +231,7 @@ const en = {
       },
       {
         slug: "skin-cosmetology-facial",
-        title: "Skin Care, Cosmetology & Facial Treatments",
+        title: "Skin Care, Cosmetology & Facial",
         nominations: [
           "Award of Excellence in Non-Invasive Rejuvenation",
           "Award of Excellence in Anti-Aging Facial Treatment",
@@ -270,7 +270,7 @@ const en = {
       },
       {
         slug: "education",
-        title: "Education Category",
+        title: "Education",
         nominations: [
           "Award of Excellence in Professional Beauty Training",
           "Award of Excellence in Online Beauty Education",
@@ -278,7 +278,7 @@ const en = {
       },
       {
         slug: "salon",
-        title: "Salon Category",
+        title: "Salon",
         nominations: [
           "Award of Excellence in Beauty Salon Innovation",
           "Award for Outstanding Achievement in Beauty Business Development",
@@ -286,7 +286,7 @@ const en = {
       },
       {
         slug: "brand",
-        title: "Brand Category",
+        title: "Brand",
         nominations: [
           "Award of Excellence in Professional Beauty Product Development",
           "Award of Excellence in Beauty Brand Development",
@@ -569,8 +569,8 @@ const en = {
       startEntry: "Start Entry",
       viewCategories: "View Categories",
       strategy: "Multi-categories strategy matters.",
-      fiveCategories: "5+ Categories",
-      qualificationRule: "Qualification is based on participation in 5 or more categories.",
+      fiveCategories: "5+ Nominations — and you're in the Grand Prix",
+      qualificationRule: "Submit entries in 5 or more categories, and you automatically become a nominee for the IBPA Grand Prix—no additional applications required.",
       decision: "Award Decision",
     },
   },
@@ -943,7 +943,7 @@ const ru: typeof en = {
     directions: [
       {
         slug: "hair",
-        title: "КАТЕГОРИЯ ВОЛОС",
+        title: "Волосы",
         nominations: [
           "Премия за выдающиеся достижения в технике окрашивания волос",
           "Премия за выдающиеся достижения в барберинге",
@@ -952,7 +952,7 @@ const ru: typeof en = {
       },
       {
         slug: "nail",
-        title: "КАТЕГОРИЯ НОГТЕЙ",
+        title: "Ногти",
         nominations: [
           "Премия за выдающиеся достижения в маникюре",
           "Премия за выдающиеся достижения в наращивании ногтей",
@@ -961,7 +961,7 @@ const ru: typeof en = {
       },
       {
         slug: "brow",
-        title: "КАТЕГОРИЯ БРОВЕЙ",
+        title: "Брови",
         nominations: [
           "Премия за выдающиеся достижения в ламинировании бровей",
           "Премия за выдающиеся достижения в стайлинге и дизайне бровей",
@@ -969,7 +969,7 @@ const ru: typeof en = {
       },
       {
         slug: "lash",
-        title: "НАРАЩИВАНИЕ И ЛАМИНИРОВАНИЕ РЕСНИЦ",
+        title: "Наращивание и Ламинирование Ресниц",
         nominations: [
           "Премия за выдающиеся достижения в классическом наращивании ресниц",
           "Премия за выдающиеся достижения в объёмном наращивании ресниц",
@@ -979,7 +979,7 @@ const ru: typeof en = {
       },
       {
         slug: "skin-cosmetology-facial",
-        title: "УХОД ЗА КОЖЕЙ, КОСМЕТОЛОГИЯ И ЛИЦО",
+        title: "Уход за Кожей, Косметология и Лицо",
         nominations: [
           "Премия за выдающиеся достижения в неинвазивном омоложении",
           "Премия за выдающиеся достижения в антивозрастном уходе за лицом",
@@ -988,7 +988,7 @@ const ru: typeof en = {
       },
       {
         slug: "makeup-artistry",
-        title: "ИСКУССТВО МАКИЯЖА",
+        title: "Исскуство Макияжа",
         nominations: [
           "Премия за выдающиеся достижения в свадебном макияже",
           "Премия за выдающиеся достижения в креативном макияже",
@@ -998,7 +998,7 @@ const ru: typeof en = {
       },
       {
         slug: "permanent-makeup",
-        title: "ПЕРМАНЕНТНЫЙ МАКИЯЖ",
+        title: "Перманетный Макияж",
         nominations: [
           "Премия за выдающиеся достижения в перманентном макияже бровей",
           "Премия за выдающиеся достижения в технике перманентной подводки век",
@@ -1008,7 +1008,7 @@ const ru: typeof en = {
       },
       {
         slug: "body-wellness-nutrition",
-        title: "ТЕЛО, ВЕЛНЕС И НУТРИЦИОЛОГИЯ",
+        title: "Тело, Велнес и Нутрициология",
         nominations: [
           "Премия за выдающиеся достижения в трансформации тела",
           "Премия за выдающиеся достижения в скульптурирующем массаже",
@@ -1018,7 +1018,7 @@ const ru: typeof en = {
       },
       {
         slug: "education",
-        title: "ОБРАЗОВАТЕЛЬНАЯ КАТЕГОРИЯ",
+        title: "Обучение",
         nominations: [
           "Премия за выдающиеся достижения в профессиональном обучении в индустрии красоты",
           "Премия за выдающиеся достижения в онлайн-обучении в индустрии красоты",
@@ -1026,7 +1026,7 @@ const ru: typeof en = {
       },
       {
         slug: "salon",
-        title: "КАТЕГОРИЯ САЛОНОВ",
+        title: "Салон",
         nominations: [
           "Премия за выдающиеся достижения в инновациях бьюти-салона",
           "Премия за выдающиеся достижения в развитии бьюти-бизнеса",
@@ -1034,7 +1034,7 @@ const ru: typeof en = {
       },
       {
         slug: "brand",
-        title: "КАТЕГОРИЯ БРЕНДА",
+        title: "Бренд",
         nominations: [
           "Премия за выдающиеся достижения в разработке профессиональной бьюти-продукции",
           "Премия за выдающиеся достижения в развитии бьюти-бренда",
@@ -1320,8 +1320,8 @@ const ru: typeof en = {
       startEntry: "Начать подачу",
       viewCategories: "Смотреть категории",
       strategy: "Стратегия нескольких категорий имеет значение.",
-      fiveCategories: "5+ категорий",
-      qualificationRule: "Квалификация основана на участии в 5 и более категориях.",
+      fiveCategories: "5+ номинаций - и вы в Гран-при",
+      qualificationRule: "Подайте заявки в 5 и более номинаций - и вы автоматически становитесь номинантом на Гран-при IBPA. Без дополнительных заявок.",
       decision: "Решение премии",
     },
   },
@@ -1694,7 +1694,7 @@ const ua: typeof en = {
     directions: [
       {
         slug: "hair",
-        title: "КАТЕГОРІЯ ВОЛОССЯ",
+        title: "Волосся",
         nominations: [
           "Премія за видатні досягнення у техніці фарбування волосся",
           "Премія за видатні досягнення у барберингу",
@@ -1703,7 +1703,7 @@ const ua: typeof en = {
       },
       {
         slug: "nail",
-        title: "КАТЕГОРІЯ НІГТІВ",
+        title: "Нігті",
         nominations: [
           "Премія за видатні досягнення у манікюрі",
           "Премія за видатні досягнення у нарощуванні нігтів",
@@ -1712,7 +1712,7 @@ const ua: typeof en = {
       },
       {
         slug: "brow",
-        title: "КАТЕГОРІЯ БРІВ",
+        title: "Брови",
         nominations: [
           "Премія за видатні досягнення у ламінуванні брів",
           "Премія за видатні досягнення у стайлінгу та дизайні брів",
@@ -1720,7 +1720,7 @@ const ua: typeof en = {
       },
       {
         slug: "lash",
-        title: "НАРОЩУВАННЯ ТА ЛАМІНУВАННЯ ВІЙ",
+        title: "Нарощування та Ламінування Вій",
         nominations: [
           "Премія за видатні досягнення в класичному нарощуванні вій",
           "Премія за видатні досягнення в об’ємному нарощуванні вій",
@@ -1730,7 +1730,7 @@ const ua: typeof en = {
       },
       {
         slug: "skin-cosmetology-facial",
-        title: "ДОГЛЯД ЗА ШКІРОЮ, КОСМЕТОЛОГІЯ ТА ОБЛИЧЧЯ",
+        title: "Догляд за Шкірою, Косметологія та Обличчя",
         nominations: [
           "Премія за видатні досягнення в неінвазивному омолодженні",
           "Премія за видатні досягнення в антивіковому догляді за обличчям",
@@ -1739,7 +1739,7 @@ const ua: typeof en = {
       },
       {
         slug: "makeup-artistry",
-        title: "МИСТЕЦТВО МАКІЯЖУ",
+        title: "Мистецтво Макіяжу",
         nominations: [
           "Премія за видатні досягнення у весільному макіяжі",
           "Премія за видатні досягнення у креативному макіяжі",
@@ -1749,7 +1749,7 @@ const ua: typeof en = {
       },
       {
         slug: "permanent-makeup",
-        title: "ПЕРМАНЕНТНИЙ МАКІЯЖ",
+        title: "Перманетний Макіяж",
         nominations: [
           "Премія за видатні досягнення у перманентному макіяжі брів",
           "Премія за видатні досягнення у техніці перманентної стрілки повік",
@@ -1759,7 +1759,7 @@ const ua: typeof en = {
       },
       {
         slug: "body-wellness-nutrition",
-        title: "ТІЛО, ВЕЛНЕС І НУТРИЦІОЛОГІЯ",
+        title: "Тіло, Велнес і Нутріціологія",
         nominations: [
           "Премія за видатні досягнення у трансформації тіла",
           "Премія за видатні досягнення у скульптурному масажі",
@@ -1769,7 +1769,7 @@ const ua: typeof en = {
       },
       {
         slug: "education",
-        title: "ОСВІТНЯ КАТЕГОРІЯ",
+        title: "Навчання",
         nominations: [
           "Премія за видатні досягнення у професійному навчанні в індустрії краси",
           "Премія за видатні досягнення в онлайн-навчанні в індустрії краси",
@@ -1777,7 +1777,7 @@ const ua: typeof en = {
       },
       {
         slug: "salon",
-        title: "КАТЕГОРІЯ САЛОНІВ",
+        title: "Салон",
         nominations: [
           "Премія за видатні досягнення в інноваціях б’юті-салону",
           "Премія за видатні досягнення у розвитку б’юті-бізнесу",
@@ -1785,7 +1785,7 @@ const ua: typeof en = {
       },
       {
         slug: "brand",
-        title: "КАТЕГОРІЯ БРЕНДУ",
+        title: "Бренд",
         nominations: [
           "Премія за видатні досягнення у розробці професійної б’юті-продукції",
           "Премія за видатні досягнення у розвитку б’юті-бренду",
@@ -2071,8 +2071,8 @@ const ua: typeof en = {
       startEntry: "Почати подання",
       viewCategories: "Переглянути категорії",
       strategy: "Стратегія кількох категоріях має значення.",
-      fiveCategories: "5+ категорій",
-      qualificationRule: "Кваліфікація базується на участі у 5 і більше категоріях.",
+      fiveCategories: "5+ номінацій - і ви в Гран-прі",
+      qualificationRule: "Подайте заявки в 5 і більше номінацій - і ви автоматично стаєте номінантом на Гран-прі IBPA. Без додаткових заявок.",
       decision: "Рішення премії",
     },
   },
