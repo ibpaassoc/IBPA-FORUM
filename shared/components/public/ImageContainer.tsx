@@ -197,6 +197,10 @@ export default function ImageContainer({
   const showModalImage = hasStatusForCurrentSource && isModalImageLoaded && !didModalImageFail;
   const showModalLoading = !showModalImage && !showModalError;
   const canUseDOM = typeof document !== "undefined";
+  const modalAspectRatio =
+    typeof modalWidth === "number" && typeof modalHeight === "number"
+      ? `${modalWidth} / ${modalHeight}`
+      : "16 / 10";
 
   return (
     <>
@@ -248,15 +252,18 @@ export default function ImageContainer({
             <p id={titleId} className="sr-only">
               {alt}
             </p>
-            <button
-              type="button"
-              aria-label="Close image preview"
-              onClick={close}
-              className="absolute right-3 top-3 z-[3] inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/25 bg-[rgba(12,18,24,0.55)] text-2xl leading-none text-white shadow-[0_10px_24px_rgba(0,0,0,0.35)] transition hover:bg-[rgba(12,18,24,0.8)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+            <div
+              className="relative w-[min(92vw,1180px)] max-h-[82vh] overflow-hidden rounded-[24px] border border-white/20 bg-[rgba(10,16,24,0.35)] shadow-[0_30px_84px_rgba(4,10,18,0.52)]"
+              style={{ aspectRatio: modalAspectRatio }}
             >
-              &times;
-            </button>
-            <div className="relative inline-flex overflow-hidden rounded-[24px] border border-white/20 bg-[rgba(10,16,24,0.35)] shadow-[0_30px_84px_rgba(4,10,18,0.52)]">
+              <button
+                type="button"
+                aria-label="Close image preview"
+                onClick={close}
+                className="absolute right-3 top-3 z-[4] inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/25 bg-[rgba(12,18,24,0.55)] text-2xl leading-none text-white shadow-[0_10px_24px_rgba(0,0,0,0.35)] transition hover:bg-[rgba(12,18,24,0.8)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+              >
+                &times;
+              </button>
               {showModalLoading ? (
                 <div className="absolute inset-0 z-[2] flex items-center justify-center bg-[linear-gradient(155deg,rgba(22,31,40,0.64)_0%,rgba(14,22,30,0.82)_100%)]">
                   <span
@@ -276,15 +283,14 @@ export default function ImageContainer({
                 {...modalImagePropsWithoutHandlers}
                 src={src}
                 alt={alt}
-                width={typeof modalWidth === "number" ? modalWidth : 1600}
-                height={typeof modalHeight === "number" ? modalHeight : 1000}
+                fill
                 loading="eager"
                 quality={75}
                 sizes="(max-width: 768px) 92vw, 88vw"
                 onLoad={handleModalImageLoad}
                 onError={handleModalImageError}
                 className={clsx(
-                  "block h-auto max-h-[82vh] w-auto max-w-[92vw] object-contain transition-opacity duration-300",
+                  "object-contain transition-opacity duration-300",
                   showModalImage ? "opacity-100" : "opacity-0"
                 )}
               />
