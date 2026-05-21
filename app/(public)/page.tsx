@@ -18,11 +18,11 @@ export default function HomePagePremium() {
     <main className="page-shell">
       <HomeHero />
       <HomeWelcome />
-      <HomeSlidingGallery />
       <HomeWhy />
       <HomeCategoriesRow />
       <HomeJuryStandards />
       <HomeTimeline />
+      <HomeSlidingGallery />
       <HomeCta />
     </main>
   );

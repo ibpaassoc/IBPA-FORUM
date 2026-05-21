@@ -11,10 +11,8 @@ export default function GrandPrixPagePremium() {
   
   return (
     <FullBleedPhotoBreak
-      src="/images/events/DSC09821.jpg"
+      src="/images/events/badges.jpg"
       alt="Grand Prix full-width event moment"
-      eyebrow={t.grandPrixPage.copy.breakEyebrow}
-      title={t.grandPrixPage.copy.breakTitle}
       objectPosition="center 30%"
       mobileObjectPosition="center 24%"
     />
