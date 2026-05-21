@@ -183,10 +183,12 @@ export function validateApplicationValues({
 }) {
   const errors: ValidationErrors = {};
   const result = baseApplicationSchema.safeParse({
-    fullName: getStringValue(values, "fullName"),
+    firstName: getStringValue(values, "firstName"),
+    lastName: getStringValue(values, "lastName"),
     email: getStringValue(values, "email"),
     phone: getStringValue(values, "phone"),
     country: getStringValue(values, "country"),
+    countryOther: getStringValue(values, "countryOther"),
     stateProvince: getStringValue(values, "stateProvince"),
     city: getStringValue(values, "city"),
     professionalTitle: getStringValue(values, "professionalTitle"),
@@ -211,6 +213,9 @@ export function validateApplicationValues({
 
   if (getStringValue(values, "country") === "USA" && !getStringValue(values, "stateProvince")) {
     errors.stateProvince = "State / Province is required when country is USA.";
+  }
+  if (getStringValue(values, "country") === "Other" && !getStringValue(values, "countryOther")) {
+    errors.countryOther = "Please enter your country.";
   }
 
   if (

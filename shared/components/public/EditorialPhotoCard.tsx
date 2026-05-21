@@ -62,7 +62,7 @@ export default function EditorialPhotoCard({
           mobileObjectPosition={mobileObjectPosition}
           className="object-cover transition duration-500 group-hover:scale-[1.03]"
         />
-        <div className={clsx("absolute inset-0 transition duration-300", overlayClass)} />
+        <div className={clsx("pointer-events-none absolute inset-0 transition duration-300", overlayClass)} />
         {(eyebrow || title || description) && (
           <div
             className={clsx(

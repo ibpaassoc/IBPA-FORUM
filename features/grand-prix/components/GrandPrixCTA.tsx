@@ -20,7 +20,7 @@ export default function GrandPrixPagePremium() {
       title={t.grandPrixPage.copy.ctaTitle}
       description={t.grandPrixPage.copy.ctaText}
       primary={{ href: "/apply", label: t.grandPrixPage.copy.startEntry }}
-      secondary={{ href: "/directions", label: t.grandPrixPage.copy.viewDirections }}
+      secondary={{ href: "/categories", label: t.grandPrixPage.copy.viewCategories }}
       aside={
         <div className="inline-flex items-center gap-2 text-sm text-[var(--color-ink-soft)]">
           <IconBadge icon={Award} size={20} />

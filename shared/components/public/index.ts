@@ -13,6 +13,7 @@ export { default as FormProgressSidebar } from "./FormProgressSidebar";
 export { default as FullBleedPhotoBreak } from "./FullBleedPhotoBreak";
 export { default as HoverCard } from "./HoverCard";
 export { default as IconBadge } from "./IconBadge";
+export { default as ImageContainer } from "./ImageContainer";
 export { default as PageHero } from "./PageHero";
 export { default as PageSection } from "./PageSection";
 export { default as PremiumCTA } from "./PremiumCTA";
@@ -21,4 +22,5 @@ export { default as Reveal } from "./Reveal";
 export { default as SafeImage } from "./SafeImage";
 export { default as SectionHeading } from "./SectionHeading";
 export { default as StaggerContainer } from "./StaggerContainer";
+export { default as PageMotionShell } from "./PageMotionShell"
 export { default as StatCard } from "./StatCard";

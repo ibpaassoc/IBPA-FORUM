@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { countryOptions } from "@/features/applications/config/countries";
 import FieldShell, { inputClassName } from "@/features/jury/components/jury-application/fields/FieldShell";
 import TextInput from "@/features/jury/components/jury-application/fields/TextInput";
@@ -7,6 +8,7 @@ import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 export default function ProfessionalProfileSection() {
   const { language } = useLanguage();
+  const [selectedCountry, setSelectedCountry] = useState("");
   const copy = {
     en: {
       section: "Professional Profile",
@@ -65,9 +67,16 @@ export default function ProfessionalProfileSection() {
       </p>
       <div className="mt-[var(--space-md)] grid gap-[var(--space-md)] md:grid-cols-2">
         <TextInput
-          label={copy.fullName}
-          name="fullName"
-          placeholder={copy.fullNamePlaceholder}
+          label="First Name"
+          name="firstName"
+          placeholder="As shown on official documents"
+          required
+        />
+
+        <TextInput
+          label="Last Name"
+          name="lastName"
+          placeholder="As shown on official documents"
           required
         />
 
@@ -92,6 +101,7 @@ export default function ProfessionalProfileSection() {
             name="country"
             defaultValue=""
             required
+            onChange={(event) => setSelectedCountry(event.target.value)}
             className={inputClassName}
           >
             <option value="" className="bg-[var(--color-white)] text-[var(--color-ink)]">
@@ -108,6 +118,15 @@ export default function ProfessionalProfileSection() {
             ))}
           </select>
         </FieldShell>
+
+        {selectedCountry === "Other" ? (
+          <TextInput
+            label="Country (Other)"
+            name="countryOther"
+            placeholder="Enter your country"
+            required
+          />
+        ) : null}
 
         <TextInput
           label={copy.city}

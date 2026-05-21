@@ -5,7 +5,6 @@ import clsx from "clsx";
 import PageSection from "./PageSection";
 import FadeUp from "./FadeUp";
 import StaggerContainer from "./StaggerContainer";
-import FloatingElement from "./FloatingElement";
 
 type EditorialHeroProps = {
   eyebrow?: string;
@@ -44,8 +43,8 @@ export default function EditorialHero({
         className={clsx(
           "grid items-center",
           isHome
-            ? "gap-[clamp(2rem,6vw,5rem)] xl:grid-cols-[0.62fr_1.38fr]"
-            : "gap-[var(--space-xl)] xl:grid-cols-[1fr_1.06fr]"
+            ? "gap-[clamp(2rem,6vw,5rem)] lg:grid-cols-[0.62fr_1.38fr]"
+            : "gap-[var(--space-xl)] lg:grid-cols-[1fr_1.06fr]"
         )}
       >
         <StaggerContainer
@@ -100,13 +99,9 @@ export default function EditorialHero({
           {media}
 
           {floatingCard ? (
-            <div className="mt-[var(--space-md)] md:hidden">{floatingCard}</div>
-          ) : null}
-
-          {floatingCard ? (
-            <FloatingElement className="absolute -right-6 -bottom-6 z-10 hidden w-[min(320px,58%)] md:block">
+            <div className="relative z-30 mx-auto mt-[var(--space-md)] w-[88%] max-w-[760px]">
               {floatingCard}
-            </FloatingElement>
+            </div>
           ) : null}
         </FadeUp>
       </div>

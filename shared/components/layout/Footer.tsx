@@ -1,12 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import JuryMenu from "@/shared/components/layout/JuryMenu";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import Modal from "@/shared/components/ui/Modal";
+import { legalContent } from "@/shared/components/layout/legal-content";
 
 export default function Footer() {
   const { language, t } = useLanguage();
+  const [activeLegalModal, setActiveLegalModal] = useState<"terms" | "privacy" | null>(null);
 
   const copy = {
     en: {
@@ -16,7 +20,7 @@ export default function Footer() {
       timeline: "Timeline",
       juryCouncil: "Jury Council",
       award: "Award",
-      directions: "Directions",
+      categories: "Categories",
       jury: "Jury",
       grandPrix: "Grand Prix",
       apply: "Apply",
@@ -37,7 +41,7 @@ export default function Footer() {
       timeline: "Таймлайн",
       juryCouncil: "Совет жюри",
       award: "Премия",
-      directions: "Направления",
+      categories: "Категории",
       jury: "Жюри",
       grandPrix: "Гран-при",
       apply: "Подать заявку",
@@ -58,7 +62,7 @@ export default function Footer() {
       timeline: "Таймлайн",
       juryCouncil: "Рада журі",
       award: "Премія",
-      directions: "Напрямки",
+      categories: "Категорії",
       jury: "Журі",
       grandPrix: "Гран-прі",
       apply: "Подати заявку",
@@ -87,7 +91,7 @@ export default function Footer() {
     {
       title: copy.award,
       links: [
-        { href: "/directions", label: copy.directions },
+        { href: "/categories", label: copy.categories },
         { href: "/jury", label: copy.jury },
         { href: "/grand-prix", label: copy.grandPrix },
         { href: "/apply", label: copy.apply },
@@ -96,98 +100,126 @@ export default function Footer() {
     {
       title: copy.resources,
       links: [
-        { href: "/directions", label: copy.mediaCentre },
-        { href: "mailto:info@ibpa-awards.com", label: copy.contact },
-        { href: "/", label: copy.terms },
-        { href: "/", label: copy.privacy },
+        { href: "/#gallery", label: copy.mediaCentre },
+        { href: "mailto:forum-support@ibpassociations.org", label: copy.contact },
+        { href: "#", label: copy.terms, legalType: "terms" as const },
+        { href: "#", label: copy.privacy, legalType: "privacy" as const },
       ],
     },
   ];
 
+  const currentLegalCopy = legalContent[language];
+
   return (
-    <footer className="w-full border-t border-(--border-default) bg-(--surface-muted) py-(--space-xl) pb-(--space-lg) text-(--color-ink-soft)">
-      <div className="mx-auto max-w-(--content-width) px-(--page-gutter)">
-        <div className="grid grid-cols-1 gap-(--space-lg) border-b border-border-footer pb-(--space-lg) md:grid-cols-2 xl:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
-          <div className="max-w-sm">
-            <Link href="/" className="inline-flex items-center">
-              <Image
-                src="/logo_black.png"
-                alt="IBPA Logo"
-                width={320}
-                height={80}
-                className="h-14 w-auto object-contain"
-              />
-            </Link>
-
-            <p className="mt-(--space-md) text-[clamp(0.92rem,1.45vw,1.04rem)] leading-[1.78] text-(--color-ink-soft)">
-              {copy.summary}
-            </p>
-
-            <div className="mt-(--space-md) flex flex-wrap gap-3">
-              <JuryMenu className="ibpa-button-ghost" />
-              <Link href="/apply" className="ibpa-button ibpa-button-gold">
-                {t.common.applyNow}
+    <>
+      <footer className="w-full border-t border-(--border-default) bg-(--surface-muted) py-(--space-xl) pb-(--space-lg) text-(--color-ink-soft)">
+        <div className="mx-auto max-w-(--content-width) px-(--page-gutter)">
+          <div className="grid grid-cols-1 gap-(--space-lg) border-b border-border-footer pb-(--space-lg) md:grid-cols-2 xl:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
+            <div className="max-w-sm">
+              <Link href="/" className="inline-flex items-center">
+                <Image
+                  src="/logo_black.png"
+                  alt="IBPA Logo"
+                  width={320}
+                  height={80}
+                  className="h-14 w-auto object-contain"
+                />
               </Link>
-            </div>
-          </div>
 
-          {footerColumns.map((column) => (
-            <div key={column.title}>
-              <h4 className="mb-(--space-sm) font-(--font-sans) text-[0.72rem] font-semibold uppercase tracking-[0.17em] text-(--color-hover)">
-                {column.title}
-              </h4>
-              <div className="flex flex-col gap-2">
-                {column.links.map((link) =>
-                  link.href.startsWith("mailto:") ? (
-                    <a
-                      key={link.label}
-                      href={link.href}
-                      className="text-[0.95rem] leading-[1.75] text-(--color-ink-soft) transition hover:text-(--color-hover)"
-                    >
-                      {link.label}
-                    </a>
-                  ) : link.href.startsWith("http") ? (
-                    <a
-                      key={link.label}
-                      href={link.href}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-[0.95rem] leading-[1.75] text-(--color-ink-soft) transition hover:text-(--color-hover)"
-                    >
-                      {link.label}
-                    </a>
-                  ) : (
-                    <Link
-                      key={link.label}
-                      href={link.href}
-                      className="text-[0.95rem] leading-[1.75] text-(--color-ink-soft) transition hover:text-(--color-hover)"
-                    >
-                      {link.label}
-                    </Link>
-                  )
-                )}
+              <p className="mt-(--space-md) text-[clamp(0.92rem,1.45vw,1.04rem)] leading-[1.78] text-(--color-ink-soft)">
+                {copy.summary}
+              </p>
+
+              <div className="mt-(--space-md) flex flex-wrap gap-3">
+                <JuryMenu className="ibpa-button-ghost" />
+                <Link href="/apply" className="ibpa-button ibpa-button-primary">
+                  {t.common.applyNow}
+                </Link>
               </div>
             </div>
-          ))}
 
-          <div>
-            <h4 className="mb-(--space-sm) font-(--font-sans) text-[0.72rem] font-semibold uppercase tracking-[0.17em] text-(--color-hover)">
-              {copy.contact}
-            </h4>
-            <a
-              href="mailto:forum-support@ibpassociations.org"
-              className="break-words text-[0.95rem] leading-[1.75] text-(--color-ink-soft) transition hover:text-(--color-hover)"
-            >
-              forum-support@ibpassociations.org
-            </a>
+            {footerColumns.map((column) => (
+              <div key={column.title}>
+                <h4 className="mb-(--space-sm) font-(--font-sans) text-[0.72rem] font-semibold uppercase tracking-[0.17em] text-(--color-hover)">
+                  {column.title}
+                </h4>
+                <div className="flex flex-col gap-2">
+                  {column.links.map((link) =>
+                    link.legalType ? (
+                      <button
+                        key={link.label}
+                        type="button"
+                        onClick={() => setActiveLegalModal(link.legalType)}
+                        className="w-fit text-left text-[0.95rem] leading-[1.75] text-(--color-ink-soft) transition hover:text-(--color-hover)"
+                      >
+                        {link.label}
+                      </button>
+                    ) : link.href.startsWith("mailto:") ? (
+                      <a
+                        key={link.label}
+                        href={link.href}
+                        className="text-[0.95rem] leading-[1.75] text-(--color-ink-soft) transition hover:text-(--color-hover)"
+                      >
+                        {link.label}
+                      </a>
+                    ) : link.href.startsWith("http") ? (
+                      <a
+                        key={link.label}
+                        href={link.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-[0.95rem] leading-[1.75] text-(--color-ink-soft) transition hover:text-(--color-hover)"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link
+                        key={link.label}
+                        href={link.href}
+                        className="text-[0.95rem] leading-[1.75] text-(--color-ink-soft) transition hover:text-(--color-hover)"
+                      >
+                        {link.label}
+                      </Link>
+                    )
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-(--space-md) flex flex-col gap-(--space-sm) text-[0.78rem] text-(--color-ink-muted) sm:flex-row sm:items-center sm:justify-between">
+            <p>{copy.copyright}</p>
+            <p className="script-accent text-[1.35rem] leading-[1.2]">{copy.global}</p>
           </div>
         </div>
-
-        <div className="mt-(--space-md) flex flex-col gap-(--space-sm) text-[0.78rem] text-(--color-ink-muted) sm:flex-row sm:items-center sm:justify-between">
-          <p>{copy.copyright}</p>
-          <p className="script-accent text-[1.35rem] leading-[1.2]">{copy.global}</p>
+      </footer>
+      <Modal
+        isOpen={activeLegalModal !== null}
+        onClose={() => setActiveLegalModal(null)}
+        labelledById="legal-modal-title"
+        title={
+          activeLegalModal === "privacy"
+            ? currentLegalCopy.privacy.modalTitle
+            : currentLegalCopy.terms.modalTitle
+        }
+      >
+        <div className="space-y-(--space-md)">
+          {(activeLegalModal === "privacy"
+            ? currentLegalCopy.privacy.sections
+            : currentLegalCopy.terms.sections
+          ).map((section) => (
+            <section
+              key={section.heading}
+              className="rounded-[var(--radius-sm)] border border-transparent px-[clamp(0.05rem,0.6vw,0.5rem)] py-[clamp(0.2rem,0.7vw,0.55rem)] transition hover:border-(--border-soft) hover:bg-(--surface-tint)"
+            >
+              <h3 className="mb-1 text-[clamp(1.08rem,1.5vw,1.25rem)] leading-[1.25] tracking-[0.005em] text-(--color-ink) [font-family:var(--font-accent-family)]">
+                {section.heading}
+              </h3>
+              <p className="text-(--color-ink-soft)">{section.body}</p>
+            </section>
+          ))}
         </div>
-      </div>
-    </footer>
+      </Modal>
+    </>
   );
 }

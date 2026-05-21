@@ -57,10 +57,12 @@ export default function ApplyForm({
     values
   );
   const requiredFieldKeys = [
-    "fullName",
+    "firstName",
+    "lastName",
     "email",
     "phone",
     "country",
+    ...(String(values.country ?? "") === "Other" ? ["countryOther"] : []),
     ...(String(values.country ?? "") === "USA" ? ["stateProvince"] : []),
     "city",
     "professionalTitle",
@@ -82,10 +84,12 @@ export default function ApplyForm({
       ? 0
       : Math.round((completedRequiredCount / requiredFieldKeys.length) * 100);
   const profileFieldKeys = [
-    "fullName",
+    "firstName",
+    "lastName",
     "email",
     "phone",
     "country",
+    ...(String(values.country ?? "") === "Other" ? ["countryOther"] : []),
     ...(String(values.country ?? "") === "USA" ? ["stateProvince"] : []),
     "city",
     "professionalTitle",
@@ -115,6 +119,9 @@ export default function ApplyForm({
       if (name === "categoryId") {
         next.awardId = "";
       }
+      if (name === "country" && value !== "Other") {
+        next.countryOther = "";
+      }
 
       return next;
     });
@@ -125,6 +132,9 @@ export default function ApplyForm({
 
       if (name === "categoryId") {
         delete next.awardId;
+      }
+      if (name === "country" && value !== "Other") {
+        delete next.countryOther;
       }
 
       return next;

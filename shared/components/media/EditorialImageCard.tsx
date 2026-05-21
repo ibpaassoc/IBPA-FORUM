@@ -1,6 +1,6 @@
-import Image from "next/image";
 import type { ReactNode } from "react";
 import clsx from "clsx";
+import { ImageContainer } from "@/shared/components/public";
 
 type EditorialImageCardProps = {
   src: string;
@@ -63,7 +63,7 @@ export default function EditorialImageCard({
       )}
     >
       <div className={clsx("relative overflow-hidden", aspectClassName)}>
-        <Image
+        <ImageContainer
           src={src}
           alt={alt}
           fill
@@ -73,7 +73,8 @@ export default function EditorialImageCard({
           placeholder="blur"
           blurDataURL={blurDataURL}
           onError={onImageError}
-          className={clsx(
+          className="absolute inset-0"
+          imageClassName={clsx(
             "object-cover transition duration-700 ease-out group-hover:scale-[1.04]",
             imageClassName
           )}
@@ -81,7 +82,7 @@ export default function EditorialImageCard({
         />
         <div
           className={clsx(
-            "absolute inset-0 transition duration-500",
+            "pointer-events-none absolute inset-0 transition duration-500",
             tone === "dark"
               ? "bg-[rgba(12,16,20,0.24)] group-hover:bg-[rgba(12,16,20,0.32)]"
               : "bg-[rgba(255,255,255,0.2)]"

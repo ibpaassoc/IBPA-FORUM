@@ -18,7 +18,7 @@ export default function JuryBenefits() {
       quote={t.juryPage.copy.statementQuote}
       media={
         <EditorialPhotoCard
-          src="/images/community/DSC00365.jpg"
+          src="/images/gallery/DSC00598.jpg"
           alt="Jury leadership and community photo"
           aspect="landscape"
           overlay="soft"

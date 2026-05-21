@@ -38,18 +38,17 @@ export default function HomeCategoriesRow() {
               const Icon = categoryIconMap[index % categoryIconMap.length];
 
               return (
-                <a href="/apply">
-                    <span
-                    key={`${item}-${index}`}
+                <a key={`${item}-${index}`} href="/apply">
+                  <span
                     className="group inline-flex shrink-0 items-center gap-2 rounded-full border border-[var(--border-soft)] bg-[var(--surface-tint)] px-4 py-2 text-sm text-[var(--color-ink-soft)] transition hover:border-[var(--color-hover)] hover:bg-[var(--color-hover)] hover:text-white"
-                    >
+                  >
                     <Icon
-                        size={18}
-                        strokeWidth={1.5}
-                        className="text-[var(--color-hover)] transition group-hover:text-white"
+                      size={18}
+                      strokeWidth={1.5}
+                      className="text-[var(--color-hover)] transition group-hover:text-white"
                     />
-                        {item}
-                    </span>
+                    {item}
+                  </span>
                 </a>
               );
             })}

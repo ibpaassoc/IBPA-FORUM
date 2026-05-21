@@ -27,7 +27,8 @@ async function main() {
   }
 
   const formData = new FormData();
-  formData.set("fullName", "Local Smoke Test");
+  formData.set("firstName", "Local");
+  formData.set("lastName", "Smoke Test");
   formData.set("email", `smoke+${Date.now()}@example.com`);
   formData.set("phone", "555-0100");
   formData.set("country", "Canada");

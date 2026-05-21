@@ -13,7 +13,7 @@ export async function GET(
 
     return NextResponse.json(awards);
   } catch (error) {
-    console.error("GET /api/directions/[id]/nominations error:", error);
+    console.error("GET /api/categories/[id]/nominations error:", error);
 
     return NextResponse.json(
       { error: "Failed to fetch nominations" },

@@ -104,16 +104,23 @@ export async function saveApplicationSubmission(formData: FormData) {
   }
 
   const normalizedEmail = String(values.email).trim().toLowerCase();
+  const fullName = `${String(values.firstName ?? "").trim()} ${String(
+    values.lastName ?? ""
+  ).trim()}`.trim();
+  const country =
+    String(values.country ?? "") === "Other"
+      ? String(values.countryOther ?? "").trim()
+      : String(values.country ?? "").trim();
 
   let application: { id: string };
 
   try {
     application = await prisma.application.create({
       data: {
-        fullName: String(values.fullName),
+        fullName,
         email: normalizedEmail,
         phone: String(values.phone),
-        country: String(values.country),
+        country,
         stateProvince: String(values.stateProvince || "") || null,
         city: String(values.city),
         professionalTitle: String(values.professionalTitle),
@@ -279,7 +286,7 @@ export async function saveApplicationSubmission(formData: FormData) {
   try {
     await sendApplicationReceivedNotificationEmail({
       applicationType: "Competitor",
-      applicantName: String(values.fullName),
+      applicantName: fullName,
       applicantEmail: normalizedEmail,
       details: [
         `Direction: ${validation.selectedCategory.name}`,

@@ -30,11 +30,15 @@ export async function submitJuryApplication(formData: FormData) {
     };
   }
 
-  const fullName = getText(formData, "fullName");
+  const firstName = getText(formData, "firstName");
+  const lastName = getText(formData, "lastName");
+  const fullName = `${firstName} ${lastName}`.trim();
   const email = getText(formData, "email");
   const normalizedEmail = email.toLowerCase();
   const phone = getText(formData, "phone");
-  const country = getText(formData, "country");
+  const countryValue = getText(formData, "country");
+  const countryOther = getText(formData, "countryOther");
+  const country = countryValue === "Other" ? countryOther : countryValue;
   const city = getText(formData, "city");
   const professionalTitle = getText(formData, "professionalTitle");
   const employerAffiliation = getText(formData, "employerAffiliation");

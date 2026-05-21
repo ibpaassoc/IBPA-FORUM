@@ -22,7 +22,7 @@ export default function Header() {
 
   const navigation = [
     { href: "/", label: t.header.navigation.home },
-    { href: "/directions", label: t.header.navigation.categories },
+    { href: "/categories", label: t.header.navigation.categories },
     { href: "/jury", label: t.header.navigation.jury },
     { href: "/grand-prix", label: t.header.navigation.grandPrix },
     {

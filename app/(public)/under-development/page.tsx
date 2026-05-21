@@ -16,9 +16,9 @@ export default function UnderDevelopmentPage() {
       description: "We are still refining this part of the IBPA Beauty Award website.",
       body: "Check back soon for updated details and finalized content.",
       ctaTitle: "Explore active award pages",
-      ctaDescription: "You can continue with directions, jury, applications, and Grand Prix sections.",
+      ctaDescription: "You can continue with categories, jury, applications, and Grand Prix sections.",
       backHome: "Back Home",
-      viewDirections: "View Directions",
+      viewCategories: "View Categories",
     },
     ru: {
       eyebrow: "В процессе",
@@ -26,9 +26,9 @@ export default function UnderDevelopmentPage() {
       description: "Мы продолжаем дорабатывать эту часть сайта IBPA Beauty Award.",
       body: "Скоро здесь появятся обновленные детали и финальный контент.",
       ctaTitle: "Перейти к активным страницам премии",
-      ctaDescription: "Вы можете продолжить с разделами направлений, жюри, заявок и Гран-при.",
+      ctaDescription: "Вы можете продолжить с разделами категорий, жюри, заявок и Гран-при.",
       backHome: "На главную",
-      viewDirections: "Смотреть направления",
+      viewCategories: "Смотреть категории",
     },
     ua: {
       eyebrow: "У процесі",
@@ -36,9 +36,9 @@ export default function UnderDevelopmentPage() {
       description: "Ми продовжуємо вдосконалювати цю частину сайту IBPA Beauty Award.",
       body: "Незабаром тут з’являться оновлені деталі та фінальний контент.",
       ctaTitle: "Перейти до активних сторінок премії",
-      ctaDescription: "Ви можете продовжити з розділами напрямків, журі, заявок і Гран-прі.",
+      ctaDescription: "Ви можете продовжити з розділами категорій, журі, заявок і Гран-прі.",
       backHome: "На головну",
-      viewDirections: "Переглянути напрямки",
+      viewCategories: "Переглянути категорії",
     },
   }[language];
 
@@ -60,7 +60,7 @@ export default function UnderDevelopmentPage() {
         title={copy.ctaTitle}
         description={copy.ctaDescription}
         primary={{ href: "/", label: copy.backHome }}
-        secondary={{ href: "/directions", label: copy.viewDirections }}
+        secondary={{ href: "/categories", label: copy.viewCategories }}
       />
     </main>
   );
