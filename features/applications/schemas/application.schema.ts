@@ -16,6 +16,7 @@ export const baseApplicationSchema = z.object({
   email: z.email("Please enter a valid email address."),
   phone: z.string().trim().min(1, "Phone / WhatsApp is required."),
   country: z.string().trim().min(1, "Country of Residence is required."),
+  countryOther: z.string().optional(),
   stateProvince: z.string().optional(),
   city: z.string().trim().min(1, "City is required."),
   professionalTitle: z

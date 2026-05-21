@@ -62,6 +62,7 @@ export default function ApplyForm({
     "email",
     "phone",
     "country",
+    ...(String(values.country ?? "") === "Other" ? ["countryOther"] : []),
     ...(String(values.country ?? "") === "USA" ? ["stateProvince"] : []),
     "city",
     "professionalTitle",
@@ -88,6 +89,7 @@ export default function ApplyForm({
     "email",
     "phone",
     "country",
+    ...(String(values.country ?? "") === "Other" ? ["countryOther"] : []),
     ...(String(values.country ?? "") === "USA" ? ["stateProvince"] : []),
     "city",
     "professionalTitle",
@@ -117,6 +119,9 @@ export default function ApplyForm({
       if (name === "categoryId") {
         next.awardId = "";
       }
+      if (name === "country" && value !== "Other") {
+        next.countryOther = "";
+      }
 
       return next;
     });
@@ -127,6 +132,9 @@ export default function ApplyForm({
 
       if (name === "categoryId") {
         delete next.awardId;
+      }
+      if (name === "country" && value !== "Other") {
+        delete next.countryOther;
       }
 
       return next;

@@ -36,7 +36,9 @@ export async function submitJuryApplication(formData: FormData) {
   const email = getText(formData, "email");
   const normalizedEmail = email.toLowerCase();
   const phone = getText(formData, "phone");
-  const country = getText(formData, "country");
+  const countryValue = getText(formData, "country");
+  const countryOther = getText(formData, "countryOther");
+  const country = countryValue === "Other" ? countryOther : countryValue;
   const city = getText(formData, "city");
   const professionalTitle = getText(formData, "professionalTitle");
   const employerAffiliation = getText(formData, "employerAffiliation");

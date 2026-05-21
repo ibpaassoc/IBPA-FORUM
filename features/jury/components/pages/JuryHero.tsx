@@ -29,18 +29,17 @@ export default function JuryHero() {
         media={
           <div className="grid gap-[var(--space-md)]">
             <EditorialPhotoCard
-              src="/images/curated/jury_editorial.jpg"
+              src="/images/events/JuryHero1.jpg"
               alt="Jury hero leadership portrait"
               aspect="landscape"
               overlay="soft"
-              title={t.juryPage.copy.leadershipTitle}
               objectPosition="center 30%"
               mobileObjectPosition="center 24%"
               priority
             />
             <div className="grid gap-[var(--space-md)] md:grid-cols-2">
               <EditorialPhotoCard
-                src="/images/events/DSC00452.jpg"
+                src="/images/DSC01460.jpg"
                 alt="Jury collaboration close-up"
                 aspect="square"
                 overlay="soft"
@@ -48,7 +47,7 @@ export default function JuryHero() {
                 mobileObjectPosition="center 24%"
               />
               <EditorialPhotoCard
-                src="/images/events/DSC00947.jpg"
+                src="/images/gallery/DSC00659.jpg"
                 alt="Judge reviewing application materials"
                 aspect="square"
                 overlay="soft"

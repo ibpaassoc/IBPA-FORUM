@@ -10,6 +10,7 @@ export function buildJuryFieldErrors(formData: FormData) {
   const email = getText(formData, "email");
   const phone = getText(formData, "phone");
   const country = getText(formData, "country");
+  const countryOther = getText(formData, "countryOther");
   const city = getText(formData, "city");
   const professionalTitle = getText(formData, "professionalTitle");
   const employerAffiliation = getText(formData, "employerAffiliation");
@@ -38,6 +39,9 @@ export function buildJuryFieldErrors(formData: FormData) {
   }
   if (!phone) fieldErrors.phone = "Phone or WhatsApp is required.";
   if (!country) fieldErrors.country = "Country is required.";
+  if (country === "Other" && !countryOther) {
+    fieldErrors.countryOther = "Please enter your country.";
+  }
   if (!city) fieldErrors.city = "City is required.";
   if (!professionalTitle) {
     fieldErrors.professionalTitle = "Professional title is required.";

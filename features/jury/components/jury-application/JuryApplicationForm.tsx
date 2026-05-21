@@ -161,11 +161,15 @@ export default function JuryApplicationForm() {
     const certificationsInput = form.elements.namedItem("certifications") as HTMLInputElement | null
     const profilePhotoInput = form.elements.namedItem("profilePhoto") as HTMLInputElement | null
     const confidentialityInput = form.elements.namedItem("confidentialityAgreement") as HTMLInputElement | null
+    const countryInput = form.elements.namedItem("country") as HTMLInputElement | null
+    const countryOtherInput = form.elements.namedItem("countryOther") as HTMLInputElement | null
 
     const hasCertifications = Boolean(certificationsInput?.files?.length)
     const hasProfilePhoto = Boolean(profilePhotoInput?.files?.length)
     const confidentialityChecked = Boolean(confidentialityInput?.checked)
     const expertiseDone = selectedExpertise.length > 0
+    const countryOtherDone =
+      countryInput?.value !== "Other" || Boolean(countryOtherInput?.value?.trim())
 
     const judgingDetailsInput = form.elements.namedItem("previousJudgingDetails") as HTMLInputElement | null
     const winnerYearInput = form.elements.namedItem("pastWinnerYear") as HTMLInputElement | null
@@ -173,7 +177,7 @@ export default function JuryApplicationForm() {
       (hasPreviousJudging === "no" || Boolean(judgingDetailsInput?.value?.trim())) &&
       (isPastWinner === "no" || Boolean(winnerYearInput?.value?.trim()))
 
-    const totalChecks = 8 + 4 + 5
+    const totalChecks = 8 + 4 + 6
     const completedChecks =
       filledProfile +
       filledMaterials +
@@ -181,6 +185,7 @@ export default function JuryApplicationForm() {
       (hasProfilePhoto ? 1 : 0) +
       (confidentialityChecked ? 1 : 0) +
       (expertiseDone ? 1 : 0) +
+      (countryOtherDone ? 1 : 0) +
       (conditionalDone ? 1 : 0)
 
     setProgressValue(Math.round((completedChecks / totalChecks) * 100))

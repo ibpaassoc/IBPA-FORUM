@@ -22,6 +22,7 @@ export function extractApplicationValues(
     email: getTextValue(formData, "email"),
     phone: getTextValue(formData, "phone"),
     country: getTextValue(formData, "country"),
+    countryOther: getTextValue(formData, "countryOther"),
     stateProvince: getTextValue(formData, "stateProvince"),
     city: getTextValue(formData, "city"),
     professionalTitle: getTextValue(formData, "professionalTitle"),

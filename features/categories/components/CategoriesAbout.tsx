@@ -1,15 +1,35 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { EditorialPhotoCard } from "@/shared/components/public";
+
+const lowerSectionTransition = {
+  type: "spring",
+  stiffness: 520,
+  damping: 48,
+  mass: 0.65,
+} as const;
 
 export default function CategoriesAbout() {
   const { t } = useLanguage();
 
   return (
-    <section className="bg-[var(--surface-tint)] py-[clamp(4rem,9vw,8rem)]">
-      <div className="mx-auto grid max-w-[1120px] gap-[clamp(2rem,5vw,4rem)] px-[var(--page-gutter)] lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
-        <div className="mx-auto w-full max-w-[520px] lg:order-2">
+    <motion.section
+      layout
+      transition={lowerSectionTransition}
+      className="bg-[var(--surface-tint)] py-[clamp(4rem,9vw,8rem)]"
+    >
+      <motion.div
+        layout
+        transition={lowerSectionTransition}
+        className="mx-auto grid max-w-[1120px] gap-[clamp(2rem,5vw,4rem)] px-[var(--page-gutter)] lg:grid-cols-[0.82fr_1.18fr] lg:items-center"
+      >
+        <motion.div
+          layout
+          transition={lowerSectionTransition}
+          className="mx-auto w-full max-w-[520px] lg:order-2"
+        >
           <EditorialPhotoCard
             src="/images/events/CategoriesAbout.jpeg"
             alt="Editorial direction story from the event floor"
@@ -19,9 +39,13 @@ export default function CategoriesAbout() {
             mobileObjectPosition="center 22%"
             className="overflow-hidden rounded-[var(--radius-lg)] shadow-[0_28px_80px_rgba(37,42,45,0.12)]"
           />
-        </div>
+        </motion.div>
 
-        <div className="text-center lg:order-1 lg:text-left">
+        <motion.div
+          layout
+          transition={lowerSectionTransition}
+          className="text-center lg:order-1 lg:text-left"
+        >
           <p className="page-eyebrow justify-center lg:justify-start">
             {t.categoriesPage.copy.association}
           </p>
@@ -48,8 +72,8 @@ export default function CategoriesAbout() {
               {t.categoriesPage.copy.associationButton}
             </a>
           </div>
-        </div>
-      </div>
-    </section>
+        </motion.div>
+      </motion.div>
+    </motion.section>
   );
 }

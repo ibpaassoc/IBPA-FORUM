@@ -1,5 +1,6 @@
 "use client";
 
+import { PageMotionShell } from "@/shared/components/public";
 import { 
   CategoriesHero,
   CategoriesFeatures,
@@ -11,8 +12,10 @@ export default function CategoriesPage() {
   return (
     <main className="page-shell">
       <CategoriesHero />
-      <CategoriesFeatures />
-      <CategoriesAbout />
+      <PageMotionShell layoutId="categories-page-layout">
+        <CategoriesFeatures />
+        <CategoriesAbout />
+      </PageMotionShell>
       <CategoriesCTA />
     </main>
   );

@@ -198,6 +198,18 @@ export default function BlockAFields({
         onChange={onChange}
       />
 
+      {String(values.country ?? "") === "Other" ? (
+        <TextField
+          label="Country (Other)"
+          name="countryOther"
+          value={String(values.countryOther ?? "")}
+          required
+          placeholder="Enter your country"
+          error={errors.countryOther}
+          onChange={onChange}
+        />
+      ) : null}
+
       {String(values.country ?? "") === "USA" ? (
         <TextField
           label={copy.stateProvince}

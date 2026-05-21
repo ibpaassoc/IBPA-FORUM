@@ -107,6 +107,10 @@ export async function saveApplicationSubmission(formData: FormData) {
   const fullName = `${String(values.firstName ?? "").trim()} ${String(
     values.lastName ?? ""
   ).trim()}`.trim();
+  const country =
+    String(values.country ?? "") === "Other"
+      ? String(values.countryOther ?? "").trim()
+      : String(values.country ?? "").trim();
 
   let application: { id: string };
 
@@ -116,7 +120,7 @@ export async function saveApplicationSubmission(formData: FormData) {
         fullName,
         email: normalizedEmail,
         phone: String(values.phone),
-        country: String(values.country),
+        country,
         stateProvince: String(values.stateProvince || "") || null,
         city: String(values.city),
         professionalTitle: String(values.professionalTitle),
