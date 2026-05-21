@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { createPortal } from "react-dom";
-import type { ComponentProps, MouseEvent, PointerEvent } from "react";
+import type { ComponentProps, MouseEvent, PointerEvent, SyntheticEvent } from "react";
 import { useEffect, useId, useRef, useState } from "react";
 import clsx from "clsx";
 
@@ -11,6 +11,14 @@ type ImageContainerProps = Omit<ComponentProps<typeof Image>, "className"> & {
   imageClassName?: string;
   enableLightbox?: boolean;
 };
+
+function resolveImageSource(src: ComponentProps<typeof Image>["src"]) {
+  if (typeof src === "string") return src;
+  if (src && typeof src === "object" && "src" in src && typeof src.src === "string") {
+    return src.src;
+  }
+  return null;
+}
 
 export default function ImageContainer({
   src,
@@ -21,18 +29,33 @@ export default function ImageContainer({
   ...imageProps
 }: ImageContainerProps) {
   const {
-    fill: _modalFill,
     width: modalWidth,
     height: modalHeight,
-    ...modalImageProps
+    ...rawModalImageProps
   } = imageProps;
+  const modalImageProps = { ...rawModalImageProps } as Omit<
+    ComponentProps<typeof Image>,
+    "className"
+  >;
+  if ("fill" in modalImageProps) {
+    delete (modalImageProps as { fill?: boolean }).fill;
+  }
+  const {
+    onLoad: modalOnLoad,
+    onError: modalOnError,
+    ...modalImagePropsWithoutHandlers
+  } = modalImageProps;
   const CLOSE_ANIMATION_MS = 260;
   const usesFill = Boolean(imageProps.fill);
-  const [isMounted, setIsMounted] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const [isClient, setIsClient] = useState(false);
+  const resolvedModalSrc = resolveImageSource(src) ?? "__unknown__";
+  const [isModalMounted, setIsModalMounted] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalImageLoaded, setIsModalImageLoaded] = useState(false);
+  const [didModalImageFail, setDidModalImageFail] = useState(false);
+  const [modalImageStateSrc, setModalImageStateSrc] = useState(resolvedModalSrc);
   const titleId = useId();
   const closeTimerRef = useRef<number | null>(null);
+  const preloadedImageSetRef = useRef<Set<string>>(new Set());
   const pointerStateRef = useRef<{
     pointerId: number;
     startX: number;
@@ -42,7 +65,6 @@ export default function ImageContainer({
   const TRAVEL_THRESHOLD_PX = 6;
 
   useEffect(() => {
-    setIsClient(true);
     return () => {
       if (closeTimerRef.current) {
         window.clearTimeout(closeTimerRef.current);
@@ -51,14 +73,14 @@ export default function ImageContainer({
   }, []);
 
   useEffect(() => {
-    if (!isMounted) return;
+    if (!isModalMounted) return;
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setIsVisible(false);
+        setIsModalOpen(false);
       }
     };
 
@@ -68,12 +90,12 @@ export default function ImageContainer({
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [isMounted]);
+  }, [isModalMounted]);
 
   useEffect(() => {
-    if (isMounted && !isVisible) {
+    if (isModalMounted && !isModalOpen) {
       closeTimerRef.current = window.setTimeout(() => {
-        setIsMounted(false);
+        setIsModalMounted(false);
       }, CLOSE_ANIMATION_MS);
     }
     return () => {
@@ -82,17 +104,31 @@ export default function ImageContainer({
         closeTimerRef.current = null;
       }
     };
-  }, [isMounted, isVisible]);
+  }, [isModalMounted, isModalOpen]);
 
-  const close = () => setIsVisible(false);
+  const preloadModalImage = () => {
+    if (typeof window === "undefined") return;
+    if (!resolvedModalSrc || resolvedModalSrc === "__unknown__") return;
+    if (preloadedImageSetRef.current.has(resolvedModalSrc)) return;
+    const preloadImg = new window.Image();
+    preloadImg.decoding = "async";
+    preloadImg.src = resolvedModalSrc;
+    preloadedImageSetRef.current.add(resolvedModalSrc);
+  };
+
+  const close = () => setIsModalOpen(false);
   const open = () => {
+    preloadModalImage();
     if (closeTimerRef.current) {
       window.clearTimeout(closeTimerRef.current);
       closeTimerRef.current = null;
     }
-    setIsMounted(true);
+    setIsModalImageLoaded(false);
+    setDidModalImageFail(false);
+    setModalImageStateSrc(resolvedModalSrc);
+    setIsModalMounted(true);
     requestAnimationFrame(() => {
-      setIsVisible(true);
+      setIsModalOpen(true);
     });
   };
 
@@ -105,6 +141,7 @@ export default function ImageContainer({
       startY: event.clientY,
       moved: false,
     };
+    preloadModalImage();
     event.currentTarget.setPointerCapture(event.pointerId);
   };
 
@@ -143,6 +180,23 @@ export default function ImageContainer({
   };
 
   const stopModalClick = (event: MouseEvent<HTMLDivElement>) => event.stopPropagation();
+  const handleModalImageLoad = (event: SyntheticEvent<HTMLImageElement>) => {
+    setModalImageStateSrc(resolvedModalSrc);
+    setIsModalImageLoaded(true);
+    setDidModalImageFail(false);
+    modalOnLoad?.(event);
+  };
+  const handleModalImageError = (event: SyntheticEvent<HTMLImageElement>) => {
+    setModalImageStateSrc(resolvedModalSrc);
+    setIsModalImageLoaded(false);
+    setDidModalImageFail(true);
+    modalOnError?.(event);
+  };
+  const hasStatusForCurrentSource = modalImageStateSrc === resolvedModalSrc;
+  const showModalError = hasStatusForCurrentSource && didModalImageFail;
+  const showModalImage = hasStatusForCurrentSource && isModalImageLoaded && !didModalImageFail;
+  const showModalLoading = !showModalImage && !showModalError;
+  const canUseDOM = typeof document !== "undefined";
 
   return (
     <>
@@ -170,12 +224,12 @@ export default function ImageContainer({
         ) : null}
       </div>
 
-      {isClient && isMounted
+      {canUseDOM && isModalMounted
         ? createPortal(
         <div
           className={clsx(
             "fixed inset-0 z-[70] flex items-center justify-center px-2 py-2 backdrop-blur-[6px] transition-[background-color,backdrop-filter,opacity] duration-[260ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
-            isVisible
+            isModalOpen
               ? "bg-[rgba(8,14,20,0.74)] opacity-100"
               : "bg-[rgba(8,14,20,0)] opacity-0"
           )}
@@ -187,7 +241,7 @@ export default function ImageContainer({
           <div
             className={clsx(
               "relative transition-[opacity,transform] duration-[260ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
-              isVisible ? "scale-100 opacity-100" : "scale-[0.93] opacity-0"
+              isModalOpen ? "scale-100 opacity-100" : "scale-[0.93] opacity-0"
             )}
             onClick={stopModalClick}
           >
@@ -203,15 +257,36 @@ export default function ImageContainer({
               &times;
             </button>
             <div className="relative inline-flex overflow-hidden rounded-[24px] border border-white/20 bg-[rgba(10,16,24,0.35)] shadow-[0_30px_84px_rgba(4,10,18,0.52)]">
+              {showModalLoading ? (
+                <div className="absolute inset-0 z-[2] flex items-center justify-center bg-[linear-gradient(155deg,rgba(22,31,40,0.64)_0%,rgba(14,22,30,0.82)_100%)]">
+                  <span
+                    className="h-10 w-10 animate-spin rounded-full border-2 border-white/30 border-t-white"
+                    aria-hidden="true"
+                  />
+                </div>
+              ) : null}
+              {showModalError ? (
+                <div className="absolute inset-0 z-[2] flex items-center justify-center bg-[rgba(14,22,30,0.86)] px-6">
+                  <span className="rounded-full border border-white/20 bg-[rgba(255,255,255,0.08)] px-4 py-2 text-[0.68rem] uppercase tracking-[0.17em] text-white/85">
+                    Image unavailable
+                  </span>
+                </div>
+              ) : null}
               <Image
-                {...modalImageProps}
+                {...modalImagePropsWithoutHandlers}
                 src={src}
                 alt={alt}
                 width={typeof modalWidth === "number" ? modalWidth : 1600}
                 height={typeof modalHeight === "number" ? modalHeight : 1000}
                 loading="eager"
-                sizes="(max-width: 768px) 94vw, 88vw"
-                className="block h-auto max-h-[86vh] w-auto max-w-[94vw] object-contain"
+                quality={75}
+                sizes="(max-width: 768px) 92vw, 88vw"
+                onLoad={handleModalImageLoad}
+                onError={handleModalImageError}
+                className={clsx(
+                  "block h-auto max-h-[82vh] w-auto max-w-[92vw] object-contain transition-opacity duration-300",
+                  showModalImage ? "opacity-100" : "opacity-0"
+                )}
               />
             </div>
           </div>
