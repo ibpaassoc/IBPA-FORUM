@@ -35,23 +35,6 @@ export default function JuryApplyPage() {
             title={t.juryPage.apply.title}
             description={t.juryPage.apply.text}
           />
-          <StaggerContainer className="grid gap-[var(--space-md)] md:grid-cols-2">
-            <EditorialPhotoCard
-              src="/images/curated/jury_editorial.jpg"
-              alt="Jury application onboarding visual"
-              aspect="portrait"
-              overlay="soft"
-              title={copy.cardTitle}
-              description={copy.cardText}
-              priority
-            />
-            <EditorialPhotoCard
-              src="/images/events/DSC00932.jpg"
-              alt="Jury process support image"
-              aspect="portrait"
-              overlay="soft"
-            />
-          </StaggerContainer>
         </div>
       </PageSection>
 
