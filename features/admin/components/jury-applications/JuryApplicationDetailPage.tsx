@@ -121,16 +121,6 @@ export default function JuryApplicationDetailPage({
                       : "No"
                   }
                 />
-                <DetailItem
-                  label="Past IBPA Winner"
-                  value={
-                    application.pastWinner
-                      ? application.pastWinnerYear
-                        ? `Yes, ${application.pastWinnerYear}`
-                        : "Yes"
-                      : "No"
-                  }
-                />
               </div>
 
               <div className="admin-detail-card mt-4 rounded-2xl p-4">

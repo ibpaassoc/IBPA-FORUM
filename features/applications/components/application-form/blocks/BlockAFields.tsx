@@ -24,15 +24,19 @@ export default function BlockAFields({
   onChange: (name: string, value: string | string[]) => void;
   onFilesChange: (name: string, files: File[]) => void;
 }) {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const selectedCategory = categories.find(
     (category) => category.id === String(values.categoryId ?? "")
   );
+  const localizedCategoryBySlug = new Map(
+    t.categoriesPage.directions.map((category) => [category.slug, category])
+  );
+  const selectedLocalizedCategory = selectedCategory
+    ? localizedCategoryBySlug.get(selectedCategory.slug)
+    : undefined;
 
   const copy = {
     en: {
-      fullLegalName: "Full Legal Name",
-      fullLegalNamePlaceholder: "Exactly as it should appear on official documents",
       emailAddress: "Email Address",
       phoneWhatsapp: "Phone / WhatsApp",
       countryOfResidence: "Country of Residence",
@@ -45,11 +49,11 @@ export default function BlockAFields({
       yearsOfExperienceHint: "A minimum of 2 years is required.",
       licenseCertification: "Professional License / Certification",
       licenseCertificationHint: "Upload PDF, JPG, or PNG. Maximum 5MB.",
-      direction: "Direction",
-      selectDirection: "Select direction",
-      nomination: "Nomination (within direction)",
+      category: "Category",
+      selectCategory: "Select category",
+      nomination: "Nomination (within category)",
       selectNomination: "Select nomination",
-      selectDirectionFirst: "Select direction first",
+      selectCategoryFirst: "Select category first",
       website: "Professional Website",
       social: "Instagram / Social Media",
       reviews: "Client Reviews - Google / Yelp Link",
@@ -68,8 +72,6 @@ export default function BlockAFields({
       },
     },
     ru: {
-      fullLegalName: "Полное юридическое имя",
-      fullLegalNamePlaceholder: "Как должно быть указано в официальных документах",
       emailAddress: "Email",
       phoneWhatsapp: "Телефон / WhatsApp",
       countryOfResidence: "Страна проживания",
@@ -82,11 +84,11 @@ export default function BlockAFields({
       yearsOfExperienceHint: "Требуется минимум 2 года опыта.",
       licenseCertification: "Профессиональная лицензия / сертификат",
       licenseCertificationHint: "Загрузите PDF, JPG или PNG. Максимум 5MB.",
-      direction: "Направление",
-      selectDirection: "Выберите направление",
-      nomination: "Номинация (внутри направления)",
+      category: "Категория",
+      selectCategory: "Выберите категорию",
+      nomination: "Номинация (внутри категории)",
       selectNomination: "Выберите номинацию",
-      selectDirectionFirst: "Сначала выберите направление",
+      selectCategoryFirst: "Сначала выберите категорию",
       website: "Профессиональный сайт",
       social: "Instagram / соцсети",
       reviews: "Отзывы клиентов - ссылка Google / Yelp",
@@ -105,8 +107,6 @@ export default function BlockAFields({
       },
     },
     ua: {
-      fullLegalName: "Повне юридичне ім'я",
-      fullLegalNamePlaceholder: "Як має бути вказано в офіційних документах",
       emailAddress: "Email",
       phoneWhatsapp: "Телефон / WhatsApp",
       countryOfResidence: "Країна проживання",
@@ -119,11 +119,11 @@ export default function BlockAFields({
       yearsOfExperienceHint: "Потрібно щонайменше 2 роки досвіду.",
       licenseCertification: "Професійна ліцензія / сертифікат",
       licenseCertificationHint: "Завантажте PDF, JPG або PNG. Максимум 5MB.",
-      direction: "Напрямок",
-      selectDirection: "Оберіть напрямок",
-      nomination: "Номінація (всередині напрямку)",
+      category: "Категорія",
+      selectCategory: "Оберіть категорію",
+      nomination: "Номінація (всередині категорії)",
       selectNomination: "Оберіть номінацію",
-      selectDirectionFirst: "Спочатку оберіть напрямок",
+      selectCategoryFirst: "Спочатку оберіть категорію",
       website: "Професійний сайт",
       social: "Instagram / соцмережі",
       reviews: "Відгуки клієнтів - посилання Google / Yelp",
@@ -276,13 +276,13 @@ export default function BlockAFields({
       </div>
 
       <SelectField
-        label={copy.direction}
+        label={copy.category}
         name="categoryId"
         value={String(values.categoryId ?? "")}
         required
-        placeholder={copy.selectDirection}
+        placeholder={copy.selectCategory}
         options={categories.map((category) => ({
-          label: category.name,
+          label: localizedCategoryBySlug.get(category.slug)?.title ?? category.name,
           value: category.id,
         }))}
         error={errors.categoryId}
@@ -296,11 +296,11 @@ export default function BlockAFields({
         required
         disabled={!selectedCategory}
         placeholder={
-          selectedCategory ? copy.selectNomination : copy.selectDirectionFirst
+          selectedCategory ? copy.selectNomination : copy.selectCategoryFirst
         }
         options={
-          selectedCategory?.awards.map((award) => ({
-            label: award.name,
+          selectedCategory?.awards.map((award, index) => ({
+            label: selectedLocalizedCategory?.nominations[index] ?? award.name,
             value: award.id,
           })) ?? []
         }

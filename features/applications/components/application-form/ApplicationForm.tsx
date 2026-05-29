@@ -254,7 +254,7 @@ export default function ApplyForm({
               complete: profileComplete,
             },
             {
-              id: "direction",
+              id: "category",
               label: t.applyPage.form.blockBTitle,
               hint: t.applyPage.form.blockBDescription,
               complete: categoryComplete,
@@ -367,7 +367,7 @@ export default function ApplyForm({
               complete: profileComplete,
             },
             {
-              id: "direction",
+              id: "category",
               label: t.applyPage.form.blockBTitle,
               hint: t.applyPage.form.blockBDescription,
               complete: categoryComplete,

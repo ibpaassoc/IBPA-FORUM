@@ -28,7 +28,6 @@ export default function JuryApplicationForm() {
   const { language } = useLanguage()
   const formRef = useRef<HTMLFormElement | null>(null)
   const [hasPreviousJudging, setHasPreviousJudging] = useState("no")
-  const [isPastWinner, setIsPastWinner] = useState("no")
   const [selectedExpertise, setSelectedExpertise] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [progressValue, setProgressValue] = useState(0)
@@ -172,12 +171,10 @@ export default function JuryApplicationForm() {
       countryInput?.value !== "Other" || Boolean(countryOtherInput?.value?.trim())
 
     const judgingDetailsInput = form.elements.namedItem("previousJudgingDetails") as HTMLInputElement | null
-    const winnerYearInput = form.elements.namedItem("pastWinnerYear") as HTMLInputElement | null
     const conditionalDone =
-      (hasPreviousJudging === "no" || Boolean(judgingDetailsInput?.value?.trim())) &&
-      (isPastWinner === "no" || Boolean(winnerYearInput?.value?.trim()))
+      hasPreviousJudging === "no" || Boolean(judgingDetailsInput?.value?.trim())
 
-    const totalChecks = 8 + 4 + 6
+    const totalChecks = 8 + 4 + 5
     const completedChecks =
       filledProfile +
       filledMaterials +
@@ -189,7 +186,7 @@ export default function JuryApplicationForm() {
       (conditionalDone ? 1 : 0)
 
     setProgressValue(Math.round((completedChecks / totalChecks) * 100))
-  }, [hasPreviousJudging, isPastWinner, selectedExpertise.length])
+  }, [hasPreviousJudging, selectedExpertise.length])
 
   useEffect(() => {
     updateProgress()
@@ -236,7 +233,6 @@ export default function JuryApplicationForm() {
 
       form.reset()
       setHasPreviousJudging("no")
-      setIsPastWinner("no")
       setSelectedExpertise([])
     } catch {
       setSubmissionState({
@@ -293,10 +289,8 @@ export default function JuryApplicationForm() {
             <ProfessionalProfileSection />
             <ExperienceSection
               hasPreviousJudging={hasPreviousJudging}
-              isPastWinner={isPastWinner}
               selectedExpertise={selectedExpertise}
               onPreviousJudgingChange={setHasPreviousJudging}
-              onPastWinnerChange={setIsPastWinner}
               onExpertiseChange={handleExpertiseChange}
             />
             <MaterialsSection />

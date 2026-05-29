@@ -99,7 +99,7 @@ export default function JuryDashboardPage({
               { label: t.juryDashboard.allCategories, href: "/jury/dashboard", active: !activeCategory },
               ...expertiseAreas.map((area) => ({
                 label: area,
-                href: `/jury/dashboard?direction=${encodeURIComponent(area)}`,
+                href: `/jury/dashboard?category=${encodeURIComponent(area)}`,
                 active: activeCategory === area,
               })),
             ].map((item) => (

@@ -5,13 +5,13 @@ import { getJuryDashboardData } from "@/features/jury/server/dashboard-queries";
 export default async function JuryDashboardRoute({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; direction?: string }>;
 }) {
   const judge = await getAuthenticatedJudgeScoringContext();
-  const { category } = await searchParams;
+  const { category, direction } = await searchParams;
   const data = await getJuryDashboardData({
     judge,
-    category,
+    category: category ?? direction,
   });
 
   return (

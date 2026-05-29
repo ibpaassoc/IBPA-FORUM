@@ -230,7 +230,7 @@ export function validateApplicationValues({
   );
 
   if (!selectedCategory) {
-    errors.categoryId = "Please select a valid direction.";
+    errors.categoryId = "Please select a valid category.";
   }
 
   const selectedAward = selectedCategory?.awards.find(

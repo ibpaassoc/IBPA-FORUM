@@ -18,7 +18,7 @@ export default function CategoriesHero() {
         <div className="relative mx-auto w-full max-w-[720px] pb-[clamp(2.5rem,7vw,4rem)] md:pb-0">
           <EditorialPhotoCard
             src="/images/events/CategoriesHero2.jpg"
-            alt="Direction competition closeup"
+            alt="Category competition closeup"
             aspect="portrait"
             overlay="soft"
             objectPosition="center 34%"
@@ -30,7 +30,7 @@ export default function CategoriesHero() {
           <div className="relative z-20 -mt-[clamp(4rem,14vw,7rem)] ml-auto w-[88%] md:absolute md:-bottom-14 md:-left-16 md:mt-0 md:w-[88%]">
             <EditorialPhotoCard
               src="/images/events/CategoriesHero1.jpg"
-              alt="Editorial beauty direction hero image"
+              alt="Editorial beauty category hero image"
               aspect="landscape"
               overlay="soft"
               objectPosition="center 28%"

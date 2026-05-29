@@ -7,6 +7,7 @@ export default async function AdminScoringPage({
 }: {
   searchParams: Promise<{
     category?: string;
+    direction?: string;
     status?: string;
     q?: string;
     sort?: string;
@@ -14,9 +15,9 @@ export default async function AdminScoringPage({
 }) {
   await requireAdmin();
 
-  const { category, status, q, sort } = await searchParams;
+  const { category, direction, status, q, sort } = await searchParams;
   const data = await getAdminScoringOverview({
-    category,
+    category: category ?? direction,
     status,
     q,
     sort,

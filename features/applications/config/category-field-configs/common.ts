@@ -24,27 +24,6 @@ export function pressFields(prefix = "press") {
   ] satisfies ApplyFieldConfig[];
 }
 
-export function optionalTestimonials(label = "Client Testimonials", maxFiles = 3) {
-  return [
-    {
-      key: "clientTestimonialsText",
-      label,
-      type: "textarea",
-      description:
-        "Optional written testimonials, short excerpts, or summary quotes.",
-    },
-    {
-      key: "clientTestimonialsFiles",
-      label: `${label} Files`,
-      type: "file",
-      description: `Optional uploads, up to ${maxFiles} files.`,
-      accept: imageAndPdf,
-      maxFiles,
-      maxFileSizeMb: 5,
-    },
-  ] satisfies ApplyFieldConfig[];
-}
-
 export function optionalCertificates(
   label = "Professional Certifications",
   maxFiles = 5

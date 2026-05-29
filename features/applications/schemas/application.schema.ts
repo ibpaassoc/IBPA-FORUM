@@ -27,7 +27,7 @@ export const baseApplicationSchema = z.object({
     .number()
     .int("Years of Professional Experience must be a whole number.")
     .min(2, "A minimum of 2 years of professional experience is required."),
-  categoryId: z.string().trim().min(1, "Direction is required."),
+  categoryId: z.string().trim().min(1, "Category is required."),
   awardId: z.string().trim().min(1, "Nomination is required."),
   websiteUrl: optionalUrlSchema,
   socialUrl: optionalUrlSchema,

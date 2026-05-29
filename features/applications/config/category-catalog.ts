@@ -31,27 +31,19 @@ export const categoryCatalog: CategoryCatalogDefinition[] = [
     slug: "lash",
     name: "Lash",
     awards: [
-      "Award of Excellence in Classic & Volume Lash",
-      "Award of Excellence in Creative Lash Design",
+      "Award of Excellence in Classic Lash Extension",
+      "Award of Excellence in Volume Lash Extension",
+      "Award of Excellence in Creative Lash Extension Design",
       "Award of Excellence in Lash Lift",
     ],
   },
   {
-    slug: "skin-cosmetology",
-    name: "Skin & Cosmetology",
+    slug: "skin-cosmetology-facial",
+    name: "Skin Care, Cosmetology & Facial",
     awards: [
-      "Acne Treatment Transformation Award",
-      "Skin Transformation Award",
       "Award of Excellence in Non-Invasive Rejuvenation",
-    ],
-  },
-  {
-    slug: "facial-treatments",
-    name: "Facial Treatments",
-    awards: [
-      "Award of Excellence in Facial Treatment Protocol",
-      "Hydration & Glow Mastery Award",
-      "Award of Excellence in Anti-Aging Facial",
+      "Award of Excellence in Anti-Aging Facial Treatment",
+      "Award of Excellence in Acne Treatment",
     ],
   },
   {
@@ -59,8 +51,9 @@ export const categoryCatalog: CategoryCatalogDefinition[] = [
     name: "Makeup Artistry",
     awards: [
       "Award of Excellence in Bridal Makeup Artistry",
-      "Award of Excellence in Editorial & Creative Makeup",
-      "Award of Excellence in Everyday Makeup Artistry",
+      "Award of Excellence in Creative Makeup Artistry",
+      "Award of Excellence in Mature Makeup Artistry",
+      "Award of Excellence in Daytime Makeup Artistry",
     ],
   },
   {
@@ -74,11 +67,13 @@ export const categoryCatalog: CategoryCatalogDefinition[] = [
     ],
   },
   {
-    slug: "body-wellness",
-    name: "Body & Wellness",
+    slug: "body-wellness-nutrition",
+    name: "Body, Wellness & Nutrition",
     awards: [
-      "Body Transformation Award",
-      "Sculpting Massage Mastery Award",
+      "Award of Excellence in Body Transformation",
+      "Award of Excellence in Sculpting Massage",
+      "Award of Excellence in Nutrition & Diet Correction",
+      "Award of Excellence in Anti-Cellulite Treatment",
     ],
   },
   {

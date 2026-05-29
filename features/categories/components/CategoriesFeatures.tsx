@@ -16,6 +16,7 @@ import {
   Users,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import { categoryCatalog } from "@/features/applications/config/category-catalog";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 const categoryIconBySlug: Record<string, LucideIcon> = {
@@ -32,19 +33,7 @@ const categoryIconBySlug: Record<string, LucideIcon> = {
   brand: BookOpen,
 };
 
-const directionOrder = [
-  "hair",
-  "nail",
-  "brow",
-  "lash",
-  "skin-cosmetology-facial",
-  "makeup-artistry",
-  "body-wellness-nutrition",
-  "permanent-makeup",
-  "education",
-  "salon",
-  "brand",
-] as const;
+const categoryOrder = categoryCatalog.map((category) => category.slug);
 
 type Direction = {
   slug: string;
@@ -122,13 +111,8 @@ export default function CategoriesFeatures() {
 
   const directions = useMemo(() => {
     return [...t.categoriesPage.directions].sort((a, b) => {
-      const aIndex = directionOrder.indexOf(
-        a.slug as (typeof directionOrder)[number]
-      );
-
-      const bIndex = directionOrder.indexOf(
-        b.slug as (typeof directionOrder)[number]
-      );
+      const aIndex = categoryOrder.indexOf(a.slug);
+      const bIndex = categoryOrder.indexOf(b.slug);
 
       return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex);
     });

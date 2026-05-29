@@ -289,7 +289,7 @@ export async function saveApplicationSubmission(formData: FormData) {
       applicantName: fullName,
       applicantEmail: normalizedEmail,
       details: [
-        `Direction: ${validation.selectedCategory.name}`,
+        `Category: ${validation.selectedCategory.name}`,
         `Award: ${validation.selectedAward.name}`,
         "Payment status: Pending checkout",
       ],

@@ -7,6 +7,27 @@ import { getFieldVisibility } from "@/features/applications/schemas/category-fie
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import type { ApplicationValues, ValidationErrors } from "@/features/applications/types/application.types";
 
+const fieldPlaceholders: Record<
+  string,
+  { en: string; ru: string; ua: string }
+> = {
+  statementOfAchievements: {
+    en: "List all your professional credentials: whether you are a judge, media publications about you, awards, achievements, championship participation, publications, certificates, and any other professional merits.",
+    ru: "Укажите все ваши профессиональные регалии: являетесь ли вы судьёй, есть ли о вас статьи, награды, достижения, участие в чемпионатах, публикации, сертификаты и любые другие профессиональные заслуги.",
+    ua: "Вкажіть усі ваші професійні регалії: чи є ви суддею, чи є про вас статті, нагороди, досягнення, участь у чемпіонатах, публікації, сертифікати та будь-які інші професійні заслуги.",
+  },
+  signatureTechnique: {
+    en: "Describe all techniques you work with, your experience, specialization, signature techniques, and the areas in which you have studied or taught.",
+    ru: "Укажите все техники, в которых вы работаете, ваш опыт, специализацию, авторские техники, а также направления, в которых вы обучались или преподаёте.",
+    ua: "Вкажіть усі техніки, з якими ви працюєте, ваш досвід, спеціалізацію, авторські техніки, а також напрями, у яких ви навчалися або викладали.",
+  },
+  sterilizationProtocol: {
+    en: "Briefly describe how you follow sterilization, disinfection, and hygiene rules in your workspace: tool processing, use of disposable materials, sanitary standards, and keeping the workplace clean.",
+    ru: "Кратко опишите, как вы соблюдаете правила стерилизации, дезинфекции и гигиены в вашем кабинете: обработку инструментов, использование одноразовых материалов, санитарные нормы и поддержание чистоты рабочего места.",
+    ua: "Коротко опишіть, як ви дотримуєтеся правил стерилізації, дезінфекції та гігієни у вашому кабінеті: обробку інструментів, використання одноразових матеріалів, санітарні норми та підтримання чистоти робочого місця.",
+  },
+};
+
 export default function BlockBRenderer({
   categorySlug,
   categoryName,
@@ -26,25 +47,25 @@ export default function BlockBRenderer({
   const copy = {
     en: {
       empty:
-        "Choose a direction in Block A to unlock the direction-specific nomination requirements in Block B.",
+        "Choose a category in Block A to unlock the category-specific nomination requirements in Block B.",
       tailoredFor: "Block B is tailored for",
-      thisDirection: "this direction",
+      thisCategory: "this category",
       complete:
         "Complete every required item to submit a review-ready application.",
     },
     ru: {
       empty:
-        "Выберите направление в блоке A, чтобы открыть требования по выбранному направлению и номинации в блоке B.",
+        "Выберите категорию в блоке A, чтобы открыть требования по выбранной категории и номинации в блоке B.",
       tailoredFor: "Блок B настроен для",
-      thisDirection: "этого направления",
+      thisCategory: "этой категории",
       complete:
         "Заполните все обязательные пункты, чтобы отправить заявку на оценивание.",
     },
     ua: {
       empty:
-        "Оберіть напрямок у блоці A, щоб відкрити вимоги за вибраним напрямком і номінацією в блоці B.",
+        "Оберіть категорію у блоці A, щоб відкрити вимоги за вибраною категорією та номінацією у блоці B.",
       tailoredFor: "Блок B налаштований для",
-      thisDirection: "цього напрямку",
+      thisCategory: "цієї категорії",
       complete:
         "Заповніть усі обов'язкові пункти, щоб надіслати заявку на оцінювання.",
     },
@@ -66,7 +87,7 @@ export default function BlockBRenderer({
     <div className="space-y-5">
       <div className="rounded-3xl border border-[rgba(185,217,235,0.36)] bg-[linear-gradient(135deg,rgba(185,217,235,0.18),rgba(255,255,255,0.7))] px-4 py-4 text-sm text-(--color-ink)">
         {copy.tailoredFor}{" "}
-        <strong>{categoryName ?? copy.thisDirection}</strong>. {copy.complete}
+        <strong>{categoryName ?? copy.thisCategory}</strong>. {copy.complete}
       </div>
 
       <div className="grid gap-5 md:grid-cols-2">
@@ -74,6 +95,7 @@ export default function BlockBRenderer({
           const fullWidth =
             field.type === "textarea" || field.type === "file" || field.type === "checkbox-group";
           const wrapperClassName = fullWidth ? "md:col-span-2" : "";
+          const localizedPlaceholder = fieldPlaceholders[field.key]?.[language];
 
           if (field.type === "textarea") {
             return (
@@ -83,6 +105,7 @@ export default function BlockBRenderer({
                   name={field.key}
                   value={String(values[field.key] ?? "")}
                   rows={field.rows}
+                  placeholder={localizedPlaceholder ?? field.placeholder}
                   required={field.required}
                   description={field.description}
                   error={errors[field.key]}
