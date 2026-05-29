@@ -15,7 +15,7 @@ export default function ApplyHero({
       eyebrow: "Participant Applications",
       title: "Apply for the IBPA Beauty Award",
       description:
-        "Submit your official participant entry with direction-specific supporting materials and production-ready files for the award review team.",
+        "Submit your official participant entry with category-specific supporting materials and production-ready files for the award review team.",
       cardEyebrow: "Participant applications",
       cardTitle: "A premium entry point for participants",
       cardText: "The application experience is aligned with the editorial tone of the site.",
@@ -24,7 +24,7 @@ export default function ApplyHero({
       eyebrow: "Заявки участников",
       title: "Подайте заявку на IBPA Beauty Award",
       description:
-        "Отправьте официальную заявку участника с материалами по выбранному направлению и готовыми к проверке файлами для команды премии.",
+        "Отправьте официальную заявку участника с материалами по выбранной категории и готовыми к проверке файлами для команды премии.",
       cardEyebrow: "Заявки участников",
       cardTitle: "Премиальная точка входа для участников",
       cardText: "Опыт подачи заявки соответствует редакционному стилю сайта.",
@@ -33,7 +33,7 @@ export default function ApplyHero({
       eyebrow: "Заявки учасників",
       title: "Подайте заявку на IBPA Beauty Award",
       description:
-        "Надішліть офіційну заявку учасника з матеріалами за обраним напрямком і готовими до перевірки файлами для команди премії.",
+        "Надішліть офіційну заявку учасника з матеріалами за обраною категорією і готовими до перевірки файлами для команди премії.",
       cardEyebrow: "Заявки учасників",
       cardTitle: "Преміальна точка входу для учасників",
       cardText: "Досвід подання заявки відповідає редакційному стилю сайту.",

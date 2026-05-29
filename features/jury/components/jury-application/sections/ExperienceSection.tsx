@@ -3,23 +3,18 @@
 import type { ChangeEventHandler } from "react";
 import { categories } from "@/data/home";
 import FieldShell from "@/features/jury/components/jury-application/fields/FieldShell";
-import TextInput from "@/features/jury/components/jury-application/fields/TextInput";
 import TextareaField from "@/features/jury/components/jury-application/fields/TextareaField";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 export default function ExperienceSection({
   hasPreviousJudging,
-  isPastWinner,
   selectedExpertise,
   onPreviousJudgingChange,
-  onPastWinnerChange,
   onExpertiseChange,
 }: {
   hasPreviousJudging: string;
-  isPastWinner: string;
   selectedExpertise: string[];
   onPreviousJudgingChange: (value: string) => void;
-  onPastWinnerChange: (value: string) => void;
   onExpertiseChange: ChangeEventHandler<HTMLInputElement>;
 }) {
   const { language } = useLanguage();
@@ -32,11 +27,8 @@ export default function ExperienceSection({
       no: "No",
       details: "Judging Experience Details",
       detailsPlaceholder: "Describe the award, event, year, and judging format.",
-      pastWinner: "Are you a past IBPA Award winner?",
-      pastWinnerHint: "If yes, include the year of your title.",
-      winningYear: "Winning Year",
       expertise: "Areas of Expertise",
-      expertiseHint: "Choose every direction you are qualified to evaluate.",
+      expertiseHint: "Choose every category you are qualified to evaluate.",
     },
     ru: {
       section: "Опыт",
@@ -46,11 +38,8 @@ export default function ExperienceSection({
       no: "Нет",
       details: "Детали опыта судейства",
       detailsPlaceholder: "Опишите премию, событие, год и формат судейства.",
-      pastWinner: "Вы были победителем премии IBPA?",
-      pastWinnerHint: "Если да, укажите год получения титула.",
-      winningYear: "Год победы",
       expertise: "Области экспертизы",
-      expertiseHint: "Выберите все направления, которые вы можете оценивать.",
+      expertiseHint: "Выберите все категории, которые вы можете оценивать.",
     },
     ua: {
       section: "Досвід",
@@ -60,11 +49,8 @@ export default function ExperienceSection({
       no: "Ні",
       details: "Деталі досвіду суддівства",
       detailsPlaceholder: "Опишіть премію, подію, рік і формат суддівства.",
-      pastWinner: "Ви були переможцем премії IBPA?",
-      pastWinnerHint: "Якщо так, вкажіть рік отримання титулу.",
-      winningYear: "Рік перемоги",
       expertise: "Сфери експертизи",
-      expertiseHint: "Оберіть усі напрямки, які ви можете оцінювати.",
+      expertiseHint: "Оберіть усі категорії, які ви можете оцінювати.",
     },
   }[language];
 
@@ -109,44 +95,6 @@ export default function ExperienceSection({
             name="previousJudgingDetails"
             placeholder={copy.detailsPlaceholder}
             required
-          />
-        ) : null}
-
-        <FieldShell
-          label={copy.pastWinner}
-          hint={copy.pastWinnerHint}
-        >
-          <div className="grid gap-3 sm:grid-cols-2">
-            {[
-              { value: "yes", label: copy.yes },
-              { value: "no", label: copy.no },
-            ].map((item) => (
-              <label
-                key={item.value}
-                className="flex cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-white)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-ink)] transition hover:border-[var(--color-hover)] hover:bg-[var(--color-mist)]"
-              >
-                <input
-                  type="radio"
-                  name="pastWinner"
-                  value={item.value}
-                  checked={isPastWinner === item.value}
-                  onChange={() => onPastWinnerChange(item.value)}
-                  className="h-4 w-4 accent-[var(--color-hover)]"
-                />
-                <span>{item.label}</span>
-              </label>
-            ))}
-          </div>
-        </FieldShell>
-
-        {isPastWinner === "yes" ? (
-          <TextInput
-            label={copy.winningYear}
-            name="pastWinnerYear"
-            type="number"
-            min={2000}
-            max={2035}
-            placeholder="2025"
           />
         ) : null}
 

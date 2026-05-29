@@ -19,7 +19,7 @@ async function main() {
 
   const categories = (await categoriesResponse.json()) as CategoryOption[];
   const category =
-    categories.find((item) => item.slug === "body-wellness") ?? categories[0];
+    categories.find((item) => item.slug === "body-wellness-nutrition") ?? categories[0];
   const award = category?.awards[0];
 
   if (!category || !award) {
@@ -39,7 +39,11 @@ async function main() {
   formData.set("awardId", award.id);
   formData.set("heardAbout", "email");
   formData.set("licenseCertification", makeFile("license.pdf", "application/pdf"));
-  formData.set("portfolioMediaFiles", makeFile("portfolio.pdf", "application/pdf"));
+  formData.append("portfolioPhotos", makeFile("portfolio-1.jpg", "image/jpeg"));
+  formData.append("portfolioPhotos", makeFile("portfolio-2.jpg", "image/jpeg"));
+  formData.append("portfolioPhotos", makeFile("portfolio-3.jpg", "image/jpeg"));
+  formData.append("portfolioPhotos", makeFile("portfolio-4.jpg", "image/jpeg"));
+  formData.append("portfolioPhotos", makeFile("portfolio-5.jpg", "image/jpeg"));
   formData.append("beforeAfterPhotos", makeFile("before.jpg", "image/jpeg"));
   formData.append("beforeAfterPhotos", makeFile("after.jpg", "image/jpeg"));
   formData.set(
@@ -47,8 +51,8 @@ async function main() {
     "This smoke test validates the application submission flow."
   );
   formData.set(
-    "treatmentEffectivenessMeasurement",
-    "Results are measured with before-and-after photos and client records."
+    "signatureTechnique",
+    "Technique combinations are selected based on hair, skin type, and long-term client goals."
   );
   formData.set(
     "sterilizationProtocol",

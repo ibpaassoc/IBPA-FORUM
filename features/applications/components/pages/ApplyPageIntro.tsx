@@ -21,13 +21,13 @@ export default function ApplyPageIntro() {
 
   const copy = {
     en: {
-      chooseDirection: "Choose direction",
-      chooseDirectionText:
-        "Select your direction and nomination before uploading materials.",
+      chooseCategory: "Choose category",
+      chooseCategoryText:
+        "Select your category and nomination before uploading materials.",
 
       preparePortfolio: "Prepare portfolio",
       preparePortfolioText:
-        "Upload direction-relevant media and supporting documents.",
+        "Upload category-relevant media and supporting documents.",
 
       reviewDetails: "Review details",
       reviewDetailsText:
@@ -39,9 +39,9 @@ export default function ApplyPageIntro() {
     },
 
     ru: {
-      chooseDirection: "Выберите направление",
-      chooseDirectionText:
-        "Выберите направление и номинацию до загрузки материалов.",
+      chooseCategory: "Выберите категорию",
+      chooseCategoryText:
+        "Выберите категорию и номинацию до загрузки материалов.",
 
       preparePortfolio: "Подготовьте портфолио",
       preparePortfolioText:
@@ -57,9 +57,9 @@ export default function ApplyPageIntro() {
     },
 
     ua: {
-      chooseDirection: "Оберіть напрямок",
-      chooseDirectionText:
-        "Оберіть напрямок і номінацію перед завантаженням матеріалів.",
+      chooseCategory: "Оберіть категорію",
+      chooseCategoryText:
+        "Оберіть категорію та номінацію перед завантаженням матеріалів.",
 
       preparePortfolio: "Підготуйте портфоліо",
       preparePortfolioText:
@@ -89,8 +89,8 @@ export default function ApplyPageIntro() {
       >
         <FeatureCard
           icon={<IconBadge icon={FileText} />}
-          title={copy.chooseDirection}
-          description={copy.chooseDirectionText}
+          title={copy.chooseCategory}
+          description={copy.chooseCategoryText}
           className="h-full min-h-[250px]"
         />
 

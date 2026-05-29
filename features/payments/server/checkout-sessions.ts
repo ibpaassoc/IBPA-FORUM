@@ -88,7 +88,7 @@ export async function createCompetitorCheckoutSession({
           unit_amount: 5000,
           product_data: {
             name: "IBPA Beauty Award Application Fee",
-            description: "Standard competitor application fee per direction.",
+            description: "Standard competitor application fee per category.",
           },
         },
         quantity: 1,

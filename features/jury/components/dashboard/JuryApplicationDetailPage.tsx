@@ -1,5 +1,4 @@
 import type { ApplicationAnswer, ApplicationFile } from "@prisma/client";
-import { formatAdminDate } from "@/features/admin/server/view-models";
 import JurySignOutButton from "@/features/jury/components/dashboard/JurySignOutButton";
 import JuryScoreForm from "@/features/admin/components/jury-applications/JuryScoreForm";
 import type { JuryScoringApplicationRecord } from "@/features/admin/server/jury";
@@ -55,6 +54,15 @@ function formatAnswerValue(answer: {
   return "Not provided";
 }
 
+function formatLegacyFieldLabel(fieldKey: string) {
+  return fieldKey
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replaceAll("_", " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/^./, (value) => value.toUpperCase());
+}
+
 export default function JuryApplicationDetailPage({
   application,
   categoryFields,
@@ -81,6 +89,10 @@ export default function JuryApplicationDetailPage({
   } | null;
 }) {
   const answerMap = new Map(application.answers.map((answer) => [answer.fieldKey, answer]));
+  const categoryFieldKeySet = new Set(categoryFields.map((field) => field.key));
+  const categoryFileKeySet = new Set(
+    categoryFields.filter((field) => field.type === "file").map((field) => field.key)
+  );
   const fileMap = new Map<string, typeof application.files>();
 
   for (const file of application.files) {
@@ -88,6 +100,16 @@ export default function JuryApplicationDetailPage({
     group.push(file);
     fileMap.set(file.fieldKey, group);
   }
+  const legacyAnswerEntries = application.answers.filter(
+    (answer) =>
+      answer.fieldKey !== "heardAboutOther" &&
+      answer.fieldKey !== "licenseCertification" &&
+      !categoryFieldKeySet.has(answer.fieldKey)
+  );
+  const legacyFileEntries = [...fileMap.entries()].filter(
+    ([fieldKey]) =>
+      fieldKey !== "licenseCertification" && !categoryFileKeySet.has(fieldKey)
+  );
 
   return (
     <AdminDashboardShell>
@@ -134,7 +156,7 @@ export default function JuryApplicationDetailPage({
                   label="Membership Level"
                   value={application.membershipLevel || "Not available"}
                 />
-                <DetailItem label="Direction" value={application.category.name} />
+                <DetailItem label="Category" value={application.category.name} />
                 <DetailItem label="Nomination" value={application.award.name} />
                 <DetailItem
                   label="Professional Website"
@@ -186,6 +208,14 @@ export default function JuryApplicationDetailPage({
                     No text-based Block B answers were saved for this application.
                   </p>
                 ) : null}
+
+                {legacyAnswerEntries.map((answer) => (
+                  <DetailItem
+                    key={answer.id}
+                    label={`${formatLegacyFieldLabel(answer.fieldKey)} (Legacy)`}
+                    value={formatAnswerValue(answer)}
+                  />
+                ))}
               </div>
             </AdminSection>
           </div>
@@ -249,6 +279,30 @@ export default function JuryApplicationDetailPage({
                       </div>
                     );
                   })}
+
+                {legacyFileEntries.map(([fieldKey, files]) => (
+                  <div key={fieldKey}>
+                    <p className="text-sm font-semibold text-(--admin-ink)">
+                      {formatLegacyFieldLabel(fieldKey)} (Legacy)
+                    </p>
+                    <div className="mt-3 space-y-3">
+                      {files.map((file) => (
+                        <a
+                          key={file.id}
+                          href={`/api/jury/application-files/${file.id}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-(--admin-blue)"
+                        >
+                          <span>{file.fileName}</span>
+                          <span className="admin-muted text-xs">
+                            {(file.fileSize / 1024 / 1024).toFixed(2)} MB
+                          </span>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
             </AdminSection>
           </div>

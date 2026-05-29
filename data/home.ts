@@ -2,7 +2,7 @@ export const stats = [
   {
     title: "Entry Fee",
     value: "$50",
-    text: "Per direction application. Each direction and nomination entry is submitted separately.",
+    text: "Per category application. Each category and nomination entry is submitted separately.",
   },
   {
     title: "Judge Fee",
@@ -26,11 +26,10 @@ export const categories = [
   "Nail",
   "Brow",
   "Lash",
-  "Skin & Cosmetology",
-  "Facial Treatments",
+  "Skin Care, Cosmetology & Facial",
   "Makeup Artistry",
   "Permanent Makeup",
-  "Body & Wellness",
+  "Body, Wellness & Nutrition",
   "Education",
   "Salon",
   "Brand",
@@ -39,8 +38,8 @@ export const categories = [
 export const steps = [
   {
     number: "01",
-    title: "Choose Your Direction",
-    text: "Select one of 11 professional categories and the specific nomination inside that direction.",
+    title: "Choose Your Category",
+    text: "Select one of 11 professional categories and the specific nomination inside that category.",
   },
   {
     number: "02",
@@ -50,7 +49,7 @@ export const steps = [
   {
     number: "03",
     title: "Complete Your Entry",
-    text: "Fill in the main application and upload direction-specific nomination materials.",
+    text: "Fill in the main application and upload category-specific nomination materials.",
   },
   {
     number: "04",
@@ -67,10 +66,10 @@ export const steps = [
 export const faqs = [
   {
     q: "How much does it cost to apply?",
-    a: "Participant applications cost $50 per direction.",
+    a: "Participant applications cost $50 per category.",
   },
   {
-    q: "Do members get free direction entry?",
+    q: "Do members get free category entry?",
     a: "No. Membership and award participation are separate.",
   },
   {

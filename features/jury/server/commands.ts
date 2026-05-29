@@ -44,8 +44,6 @@ export async function submitJuryApplication(formData: FormData) {
   const employerAffiliation = getText(formData, "employerAffiliation");
   const previousJudgingExperience = getText(formData, "previousJudgingExperience");
   const previousJudgingDetails = getText(formData, "previousJudgingDetails");
-  const pastWinner = getText(formData, "pastWinner");
-  const pastWinnerYear = getText(formData, "pastWinnerYear");
   const professionalBio = getText(formData, "professionalBio");
   const professionalWebsite = getText(formData, "professionalWebsite");
   const conflictDisclosure = getText(formData, "conflictDisclosure");
@@ -112,8 +110,6 @@ export async function submitJuryApplication(formData: FormData) {
       employerAffiliation,
       previousJudgingExperience: previousJudgingExperience === "yes",
       previousJudgingDetails: toOptionalText(previousJudgingDetails),
-      pastWinner: pastWinner === "yes",
-      pastWinnerYear: pastWinnerYear ? Number(pastWinnerYear) : null,
       expertiseAreas: expertise,
       professionalBio,
       professionalWebsite: toOptionalText(professionalWebsite),

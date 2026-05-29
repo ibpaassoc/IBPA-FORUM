@@ -32,7 +32,7 @@ export default function CategoriesAbout() {
         >
           <EditorialPhotoCard
             src="/images/events/CategoriesAbout.jpeg"
-            alt="Editorial direction story from the event floor"
+            alt="Editorial category story from the event floor"
             aspect="portrait"
             overlay="soft"
             objectPosition="center 38%"
