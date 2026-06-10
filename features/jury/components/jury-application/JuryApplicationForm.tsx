@@ -6,7 +6,7 @@ import ExperienceSection from "@/features/jury/components/jury-application/secti
 import MaterialsSection from "@/features/jury/components/jury-application/sections/MaterialsSection"
 import ProfessionalProfileSection from "@/features/jury/components/jury-application/sections/ProfessionalProfileSection"
 import { useLanguage } from "@/lib/i18n/LanguageProvider"
-import { FadeUp, FormProgressSidebar } from "@/shared/components/public"
+import { FormProgressSidebar } from "@/shared/components/public"
 
 type SubmissionSummary = {
   name: string
@@ -277,8 +277,7 @@ export default function JuryApplicationForm() {
         </div>
 
         <div className="grid gap-[var(--space-md)] xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
-          <FadeUp>
-        <form
+          <form
           ref={formRef}
           onInput={updateProgress}
           onChange={updateProgress}
@@ -362,7 +361,6 @@ export default function JuryApplicationForm() {
             </div>
           </div>
         </form>
-          </FadeUp>
 
           <FormProgressSidebar
             className="hidden xl:block"
