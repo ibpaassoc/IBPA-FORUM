@@ -15,30 +15,56 @@ function isProtectedJuryPath(pathname: string) {
   return pathname === "/jury/dashboard" || pathname.startsWith("/jury/dashboard/");
 }
 
+// Routes accessible during the site-wide maintenance lock.
+// All other page routes are rewritten to /under-development.
+const ALLOWED_PATH_PREFIXES = [
+  "/apply/jury",
+  "/under-development",
+  // Admin panel — staff must still review applications
+  "/admin",
+  // Jury member area
+  "/jury/dashboard",
+  "/jury/login",
+  "/jury/register",
+  // General auth
+  "/login",
+  "/register",
+];
+
+function isSiteLockAllowed(pathname: string) {
+  return ALLOWED_PATH_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(prefix + "/")
+  );
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Always pass through: Next.js internals, API routes, static files
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
-    pathname.startsWith("/admin") ||
     pathname === "/favicon.ico" ||
     isPublicFile(pathname)
   ) {
     return NextResponse.next();
   }
 
-  if (!isProtectedJuryPath(pathname)) {
-    return NextResponse.next();
+  // Site-wide maintenance lock: rewrite disallowed routes to /under-development
+  if (!isSiteLockAllowed(pathname)) {
+    return NextResponse.rewrite(new URL("/under-development", request.url));
   }
 
-  const token = await getToken({
-    req: request,
-    secret: AUTH_SECRET,
-  });
+  // Protect /jury/dashboard with JWT auth
+  if (isProtectedJuryPath(pathname)) {
+    const token = await getToken({
+      req: request,
+      secret: AUTH_SECRET,
+    });
 
-  if (!token) {
-    return NextResponse.redirect(new URL("/jury/login", request.url));
+    if (!token) {
+      return NextResponse.redirect(new URL("/jury/login", request.url));
+    }
   }
 
   return NextResponse.next();
