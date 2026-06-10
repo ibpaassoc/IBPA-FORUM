@@ -20,6 +20,8 @@ export function buildJuryFieldErrors(formData: FormData) {
   const conflictDisclosure = getText(formData, "conflictDisclosure");
   const motivation = getText(formData, "motivation");
   const confidentialityAgreement = getText(formData, "confidentialityAgreement");
+  const ibpaAssociationMember = getText(formData, "ibpaAssociationMember");
+  const ibpaNumber = getText(formData, "ibpaNumber");
   const yearsExperience = Number(getText(formData, "yearsExperience"));
   const expertise = formData
     .getAll("expertise")
@@ -86,6 +88,9 @@ export function buildJuryFieldErrors(formData: FormData) {
   if (!motivation) {
     fieldErrors.motivation =
       "Please tell us why you want to serve as a judge.";
+  }
+  if (ibpaAssociationMember === "yes" && !ibpaNumber?.trim()) {
+    fieldErrors.ibpaNumber = "IBPA Number is required for association members.";
   }
 
   return fieldErrors;

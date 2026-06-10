@@ -29,6 +29,7 @@ export default function JuryApplicationForm() {
   const formRef = useRef<HTMLFormElement | null>(null)
   const [hasPreviousJudging, setHasPreviousJudging] = useState("no")
   const [selectedExpertise, setSelectedExpertise] = useState<string[]>([])
+  const [isIbpaMember, setIsIbpaMember] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [progressValue, setProgressValue] = useState(0)
   const [submissionState, setSubmissionState] = useState<SubmissionState>({
@@ -234,6 +235,7 @@ export default function JuryApplicationForm() {
       form.reset()
       setHasPreviousJudging("no")
       setSelectedExpertise([])
+      setIsIbpaMember(false)
     } catch {
       setSubmissionState({
         type: "error",
@@ -291,6 +293,8 @@ export default function JuryApplicationForm() {
               selectedExpertise={selectedExpertise}
               onPreviousJudgingChange={setHasPreviousJudging}
               onExpertiseChange={handleExpertiseChange}
+              isIbpaMember={isIbpaMember}
+              onIbpaMemberChange={setIsIbpaMember}
             />
             <MaterialsSection />
 

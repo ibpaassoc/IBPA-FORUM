@@ -104,6 +104,16 @@ export default function JuryApplicationDetailPage({
                       : application.membershipStatus || "Not provided"
                   }
                 />
+                <DetailItem
+                  label="IBPA Association Member"
+                  value={application.ibpaAssociationMember ? "Yes" : "No"}
+                />
+                {application.ibpaAssociationMember ? (
+                  <DetailItem
+                    label="IBPA Number"
+                    value={application.ibpaNumber || "Not provided"}
+                  />
+                ) : null}
               </div>
             </section>
 
