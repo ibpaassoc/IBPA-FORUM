@@ -23,4 +23,5 @@ export { default as SafeImage } from "./SafeImage";
 export { default as SectionHeading } from "./SectionHeading";
 export { default as StaggerContainer } from "./StaggerContainer";
 export { default as PageMotionShell } from "./PageMotionShell"
+export { default as SiteUnderDevelopmentPage } from "./SiteUnderDevelopmentPage";
 export { default as StatCard } from "./StatCard";
