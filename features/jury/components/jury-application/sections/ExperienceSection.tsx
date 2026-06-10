@@ -2,7 +2,7 @@
 
 import type { ChangeEventHandler } from "react";
 import { categories } from "@/data/home";
-import FieldShell from "@/features/jury/components/jury-application/fields/FieldShell";
+import FieldShell, { inputClassName } from "@/features/jury/components/jury-application/fields/FieldShell";
 import TextareaField from "@/features/jury/components/jury-application/fields/TextareaField";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
@@ -11,11 +11,15 @@ export default function ExperienceSection({
   selectedExpertise,
   onPreviousJudgingChange,
   onExpertiseChange,
+  isIbpaMember,
+  onIbpaMemberChange,
 }: {
   hasPreviousJudging: string;
   selectedExpertise: string[];
   onPreviousJudgingChange: (value: string) => void;
   onExpertiseChange: ChangeEventHandler<HTMLInputElement>;
+  isIbpaMember: boolean;
+  onIbpaMemberChange: (value: boolean) => void;
 }) {
   const { language } = useLanguage();
   const copy = {
@@ -29,6 +33,11 @@ export default function ExperienceSection({
       detailsPlaceholder: "Describe the award, event, year, and judging format.",
       expertise: "Areas of Expertise",
       expertiseHint: "Choose every category you are qualified to evaluate.",
+      ibpaMember: "IBPA Association Member",
+      ibpaMemberHint: "Check this if you are a current IBPA Association member.",
+      ibpaNumber: "IBPA Number",
+      ibpaNumberPlaceholder: "Enter your IBPA membership number",
+      ibpaNumberRequired: "IBPA Number is required for association members.",
     },
     ru: {
       section: "Опыт",
@@ -40,6 +49,11 @@ export default function ExperienceSection({
       detailsPlaceholder: "Опишите премию, событие, год и формат судейства.",
       expertise: "Области экспертизы",
       expertiseHint: "Выберите все категории, которые вы можете оценивать.",
+      ibpaMember: "Член ассоциации IBPA",
+      ibpaMemberHint: "Отметьте, если вы являетесь действующим членом ассоциации IBPA.",
+      ibpaNumber: "Номер IBPA",
+      ibpaNumberPlaceholder: "Введите ваш номер членства IBPA",
+      ibpaNumberRequired: "Номер IBPA обязателен для членов ассоциации.",
     },
     ua: {
       section: "Досвід",
@@ -51,6 +65,11 @@ export default function ExperienceSection({
       detailsPlaceholder: "Опишіть премію, подію, рік і формат суддівства.",
       expertise: "Сфери експертизи",
       expertiseHint: "Оберіть усі категорії, які ви можете оцінювати.",
+      ibpaMember: "Член асоціації IBPA",
+      ibpaMemberHint: "Позначте, якщо ви є чинним членом асоціації IBPA.",
+      ibpaNumber: "Номер IBPA",
+      ibpaNumberPlaceholder: "Введіть ваш номер членства IBPA",
+      ibpaNumberRequired: "Номер IBPA є обов'язковим для членів асоціації.",
     },
   }[language];
 
@@ -122,6 +141,33 @@ export default function ExperienceSection({
             ))}
           </div>
         </FieldShell>
+
+        {/* IBPA Association Member */}
+        <FieldShell label={copy.ibpaMember} hint={copy.ibpaMemberHint}>
+          <label className="flex cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-white)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-ink)] transition hover:border-[var(--color-hover)] hover:bg-[var(--color-mist)]">
+            <input
+              type="checkbox"
+              name="ibpaAssociationMember"
+              value="yes"
+              checked={isIbpaMember}
+              onChange={(e) => onIbpaMemberChange(e.target.checked)}
+              className="h-4 w-4 rounded accent-[var(--color-hover)]"
+            />
+            <span>{copy.ibpaMember}</span>
+          </label>
+        </FieldShell>
+
+        {isIbpaMember ? (
+          <FieldShell label={copy.ibpaNumber} required>
+            <input
+              type="text"
+              name="ibpaNumber"
+              placeholder={copy.ibpaNumberPlaceholder}
+              required
+              className={inputClassName}
+            />
+          </FieldShell>
+        ) : null}
       </div>
     </div>
   );

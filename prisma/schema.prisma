@@ -84,6 +84,8 @@ model JuryApplication {
   conflictDisclosure               String
   confidentialityAgreementAccepted Boolean               @default(false)
   motivation                       String
+  ibpaAssociationMember            Boolean               @default(false)
+  ibpaNumber                       String?
   status                           JuryApplicationStatus @default(SUBMITTED)
   submittedAt                      DateTime?
   createdAt                        DateTime              @default(now())
