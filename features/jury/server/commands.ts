@@ -53,8 +53,6 @@ export async function submitJuryApplication(formData: FormData) {
     .getAll("expertise")
     .map((value) => String(value).trim())
     .filter(Boolean);
-  const ibpaAssociationMember = getText(formData, "ibpaAssociationMember") === "yes";
-  const ibpaNumber = toOptionalText(getText(formData, "ibpaNumber"));
   const profilePhoto = formData.get("profilePhoto");
   const certifications = formData
     .getAll("certifications")
@@ -118,8 +116,6 @@ export async function submitJuryApplication(formData: FormData) {
       conflictDisclosure,
       confidentialityAgreementAccepted: true,
       motivation,
-      ibpaAssociationMember,
-      ibpaNumber: ibpaAssociationMember ? ibpaNumber : null,
       status: "SUBMITTED",
       paymentStatus: "PENDING",
       submittedAt: new Date(),
