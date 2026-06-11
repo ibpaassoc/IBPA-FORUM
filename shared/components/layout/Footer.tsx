@@ -131,9 +131,10 @@ export default function Footer() {
               </p>
 
               <div className="mt-(--space-md) flex flex-wrap gap-3">
-                {/* <JuryMenu className="ibpa-button-ghost" /> */}
-                <Link href="/apply/jury" className="ibpa-button ibpa-button-primary">
-                  {t.common.applyAsJury}
+                <JuryMenu className="ibpa-button-ghost" />
+                
+                <Link href="/apply" className="ibpa-button ibpa-button-primary">
+                  {t.common.applyNow}
                 </Link>
               </div>
             </div>
