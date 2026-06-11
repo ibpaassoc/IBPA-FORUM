@@ -2,25 +2,26 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { ChevronDown } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 export default function JuryMenu({
   mobile = false,
   onNavigate,
-  className = "",
+  dropDirection = "down",
+  dropAlign = "right",
 }: {
   mobile?: boolean;
   onNavigate?: () => void;
-  className?: string ;
+  dropDirection?: "up" | "down";
+  dropAlign?: "left" | "right";
 }) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const { t } = useLanguage();
 
   useEffect(() => {
-    if (mobile) {
-      return;
-    }
+    if (mobile) return;
 
     function handleClick(event: MouseEvent) {
       if (!containerRef.current?.contains(event.target as Node)) {
@@ -32,67 +33,70 @@ export default function JuryMenu({
     return () => window.removeEventListener("mousedown", handleClick);
   }, [mobile]);
 
+  const menuItems = [
+    { href: "/apply", label: t.common.applyAsParticipant, primary: true },
+    { href: "/apply/jury", label: t.common.applyAsJury, primary: false },
+    { href: "/jury/login", label: t.common.juryAccount, primary: false },
+  ];
+
   if (mobile) {
     return (
-      <div className="grid gap-3">
-        <p className="px-1 text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-(--color-hover)">
-          {t.common.jury}
-        </p>
-        <Link
-          href="/apply/jury"
-          onClick={onNavigate}
-          className="ibpa-button ibpa-button-ghost"
-        >
-          {t.common.applyAsJury}
-        </Link>
-        <Link
-          href="/jury/login"
-          onClick={onNavigate}
-          className="ibpa-button ibpa-button-ghost"
-        >
-          {t.common.juryAccount}
-        </Link>
+      <div className="grid gap-2">
+        {menuItems.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            onClick={onNavigate}
+            className={item.primary ? "ibpa-button ibpa-button-primary" : "ibpa-button ibpa-button-ghost"}
+          >
+            {item.label}
+          </Link>
+        ))}
       </div>
     );
   }
 
-  const buttonClassName = ["ibpa-button ibpa-button-ghost px-[var(--space-sm)] py-[var(--space-xs)]", className].join(" ");
+  const dropPositionClass = [
+    dropDirection === "up" ? "bottom-full mb-[var(--space-sm)]" : "top-full mt-[var(--space-sm)]",
+    dropAlign === "left" ? "left-0" : "right-0",
+  ].join(" ");
 
   return (
-    <div ref={containerRef} className="relative inline">
+    <div ref={containerRef} className="relative inline-block">
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
-        className={buttonClassName}
+        className="ibpa-button ibpa-button-primary flex items-center gap-1.5"
         aria-expanded={open}
       >
-        {t.common.jury}
+        {t.common.applyNow}
+        <ChevronDown
+          size={13}
+          className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+        />
       </button>
 
       {open ? (
         <div
-          className="absolute left-0 top-full z-50 mt-(--space-sm) min-w-60 rounded-(--radius) border border-(--border-default) bg-(--color-white) p-(--space-xs) shadow-(--shadow-md)"
+          className={`absolute z-50 min-w-60 rounded-[var(--radius)] border border-[var(--border-default)] bg-[var(--color-white)] p-[var(--space-xs)] shadow-[var(--shadow-md)] ${dropPositionClass}`}
         >
-          <Link
-            href="/apply/jury"
-            onClick={() => {
-              setOpen(false);
-              onNavigate?.();
-            }}
-            className="block rounded-sm px-(--space-sm) py-(--space-sm) text-sm font-medium text-(--color-ink) transition hover:bg-(--color-mist) hover:text-(--color-hover)"
-          >
-            {t.common.applyAsJury}
-          </Link>
-          <Link
-            href="/jury/login"
-            onClick={() => {
-              setOpen(false);
-              onNavigate?.();
-            }}
-            className="mt-(--space-xs) block rounded-sm px-(--space-sm) py-(--space-sm) text-sm font-medium text-(--color-ink) transition hover:bg-(--color-mist) hover:text-(--color-hover)"
-          >
-            {t.common.juryAccount}
-          </Link>
+          {menuItems.map((item, i) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={() => {
+                setOpen(false);
+                onNavigate?.();
+              }}
+              className={`block rounded-sm px-[var(--space-sm)] py-[var(--space-sm)] text-sm font-medium transition ${
+                item.primary
+                  ? "text-[var(--color-hover)] hover:bg-[var(--surface-tint)]"
+                  : "text-[var(--color-ink)] hover:bg-[var(--color-mist)] hover:text-[var(--color-hover)]"
+              } ${i > 0 ? "mt-[var(--space-xs)]" : ""}`}
+            >
+              {item.label}
+            </Link>
+          ))}
         </div>
       ) : null}
     </div>
