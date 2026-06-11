@@ -38,7 +38,7 @@ const en = {
       categoriesCta: "Explore Categories",
     },
     copy: {
-      whyEyebrow: "Why IBPA",
+      whyEyebrow: "Why IBPA Beauty Award 2026",
       whyTitle: "Designed for professional beauty leadership",
       whyText: "Structured selection, transparent judging, and global brand-level presentation.",
       heroMediaTitle: "Luxury Editorial Presence",
@@ -59,29 +59,56 @@ const en = {
       fullBleedText: "A calm, premium platform for artists, educators, salons, and brands.",
       intlRecognition: "International recognition",
       judgingIntegrity: "Structured judging integrity",
+      whyFeatures: [
+        { title: "International Recognition", text: "Your work is evaluated and recognized internationally — among beauty industry professionals worldwide." },
+        { title: "Transparent Judging", text: "Each entry is evaluated by the official IBPA Beauty Award 2026 jury according to clear professional criteria — fairly and without bias." },
+        { title: "Structured Selection", text: "11 categories and nominations within each — IBPA Beauty Award 2026 covers all key specializations in the beauty industry." },
+        { title: "Professional Jury", text: "The IBPA Beauty Award 2026 jury includes practicing specialists with 5+ years of experience — experts who understand the industry from within." },
+        { title: "Official Winner Status", text: "Winners and runners-up of IBPA Beauty Award 2026 receive certificates, supporting documents, and public recognition on the award platform." },
+        { title: "Grand Prix for the Best", text: "Participants in 5 or more nominations automatically become nominees for the Grand Prix — the highest award of IBPA Beauty Award 2026." },
+      ],
     },
-    stats: [
-      {
-        title: "Registration Fee",
-        value: "$50",
-        text: "The participation fee is paid separately for each selected category.",
+    pricing: {
+      award: {
+        eyebrow: "Award Participants",
+        title: "Participation Cost",
+        ibpaMember: {
+          label: "IBPA ASSOCIATION MEMBERS",
+          rows: [
+            { label: "1 nomination", value: "$50" },
+            { label: "3 nominations", value: "$130" },
+            { label: "5 nominations", value: "$200" },
+          ],
+          grandPrixLabel: "Grand Prix",
+          grandPrixNote: "from 5 nominations — automatically",
+        },
+        nonMember: {
+          label: "NON-IBPA MEMBERS",
+          rows: [
+            { label: "1 nomination", value: "$70" },
+            { label: "3 nominations", value: "$190" },
+            { label: "5 nominations", value: "$300" },
+          ],
+          grandPrixLabel: "Grand Prix",
+          grandPrixNote: "from 5 nominations — automatically",
+        },
       },
-      {
+      jury: {
+        eyebrow: "Judging Panel",
         title: "Judge Registration",
-        value: "$250",
-        text: "Specialists with at least five years of professional experience may apply to join the panel of judges. The registration fee is payable only after the candidacy has been approved.",
+        standard: {
+          label: "STANDARD FEE",
+          value: "$250",
+          text: "For specialists with at least 5 years of experience. The fee is payable only after candidacy approval.",
+        },
+        ibpaTrainer: {
+          label: "IBPA ASSOCIATION MEMBERS — TRAINER AND ABOVE",
+          value: "$100",
+          text: "Special fee for IBPA association members at trainer level and above.",
+          note: "Also payable after candidacy approval.",
+        },
       },
-      {
-        title: "Participation",
-        value: "IBPA",
-        text: "Current members of the IBPA association may submit an application to participate.",
-      },
-      {
-        title: "Grand Prix",
-        value: "5+",
-        text: "Participants who have submitted entries in five or more categories automatically compete in the Grand Prix category.",
-      },
-    ],
+    },
     categoriesPreview: {
       label: "Categories",
       title: "11 Categories of Excellence in the Beauty Industry",
@@ -102,7 +129,7 @@ const en = {
     },
     process: {
       label: "Award Process",
-      title: "How the Award Process Works",
+      title: "How the IBPA Award Process Works",
       steps: [
         {
           number: "01",
@@ -116,8 +143,8 @@ const en = {
         },
         {
           number: "03",
-          title: "Confirm that you are part of the IBPA.",
-          text: "Participation is open to all active members of the association. Provide your membership number, and you are one step closer.",
+          title: "Confirm your IBPA status",
+          text: "If you are an accredited IBPA specialist, enter your certificate ID to confirm and receive the IBPA member rate.",
         },
         {
           number: "04",
@@ -127,7 +154,7 @@ const en = {
         {
           number: "05",
           title: "Submit your application and pay the fee.",
-          text: "Participation in each category costs $50. Upon payment, the entry proceeds to official evaluation by the IBPA jury and culminates in a gala awards ceremony.",
+          text: "For IBPA members — from $50 per nomination; for non-members — from $70. Participating in 5+ nominations automatically includes you in the Grand Prix.",
         },
       ],
     },
@@ -145,7 +172,7 @@ const en = {
       title: "Apply to Become an Official Judge of the IBPA 2026 Award",
       text1: "Candidates for the judging panel go through a professional selection process.",
       text2:
-        "First, an application is submitted and reviewed by the expert panel. If approved, the candidate receives an invitation and a payment link for the $250 registration fee.",
+        "Submit your application as a judge — it will be reviewed by the IBPA expert panel. If approved, you will receive an invitation and a payment link for the registration fee: $250 for all specialists, or $100 for accredited IBPA specialists at trainer level and above.",
       text3:
         "After payment, judges receive official confirmation, certification documents, and a public profile on the judges page.",
       button: "Apply as a Judge",
@@ -781,7 +808,7 @@ const ru: typeof en = {
       categoriesCta: "Изучить категории",
     },
     copy: {
-      whyEyebrow: "Почему IBPA",
+      whyEyebrow: "Почему IBPA Beauty Award 2026",
       whyTitle: "Премия, созданная для профессионального лидерства в индустрии красоты",
       whyText: "Структурированный отбор, прозрачная оценка и мировая презентация на уровне брендов.",
       heroMediaTitle: "Роскошное редакционное присутствие",
@@ -802,29 +829,56 @@ const ru: typeof en = {
       fullBleedText: "Спокойная, премиальная платформа для артистов, преподавателей, салонов и брендов.",
       intlRecognition: "Международное признание",
       judgingIntegrity: "Структурированная оценка",
+      whyFeatures: [
+        { title: "Международное признание", text: "Ваша работа получает оценку и признание на международном уровне — среди профессионалов индустрии красоты по всему миру." },
+        { title: "Прозрачная оценка", text: "Каждая заявка оценивается официальным жюри IBPA Beauty Award 2026 по чётким профессиональным критериям — честно и без предвзятости." },
+        { title: "Структурированный отбор", text: "11 категорий и номинации внутри каждой — IBPA Beauty Award 2026 охватывает все ключевые специализации индустрии красоты." },
+        { title: "Профессиональное жюри", text: "В состав жюри IBPA Beauty Award 2026 входят практикующие специалисты с опытом от 5 лет — эксперты, которые понимают индустрию изнутри." },
+        { title: "Официальный статус победителя", text: "Победители и призёры IBPA Beauty Award 2026 получают сертификаты, подтверждающие документы и публичное признание на платформе премии." },
+        { title: "Гран-при для лучших", text: "Участники 5 и более номинаций автоматически становятся номинантами на Гран-при — высшую награду IBPA Beauty Award 2026." },
+      ],
     },
-    stats: [
-      {
-        title: "Регистрационный взнос",
-        value: "$50",
-        text: "Стоимость участия оплачивается отдельно за каждую выбранную номинацию.",
+    pricing: {
+      award: {
+        eyebrow: "Участники премии",
+        title: "Стоимость участия",
+        ibpaMember: {
+          label: "УЧАСТНИКИ АССОЦИАЦИИ IBPA",
+          rows: [
+            { label: "1 номинация", value: "$50" },
+            { label: "3 номинации", value: "$130" },
+            { label: "5 номинаций", value: "$200" },
+          ],
+          grandPrixLabel: "Гран-при",
+          grandPrixNote: "от 5 номинаций — автоматически",
+        },
+        nonMember: {
+          label: "УЧАСТНИКИ БЕЗ ЧЛЕНСТВА IBPA",
+          rows: [
+            { label: "1 номинация", value: "$70" },
+            { label: "3 номинации", value: "$190" },
+            { label: "5 номинаций", value: "$300" },
+          ],
+          grandPrixLabel: "Гран-при",
+          grandPrixNote: "от 5 номинаций — автоматически",
+        },
       },
-      {
+      jury: {
+        eyebrow: "Судейский состав",
         title: "Регистрация судьи",
-        value: "$250",
-        text: "Подать заявку в судейскую коллегию могут специалисты с опытом работы от 5 лет. Регистрационный взнос оплачивается только после одобрения кандидатуры.",
+        standard: {
+          label: "СТАНДАРТНЫЙ ВЗНОС",
+          value: "$250",
+          text: "Для специалистов с опытом от 5 лет. Взнос оплачивается только после одобрения кандидатуры.",
+        },
+        ibpaTrainer: {
+          label: "УЧАСТНИКИ АССОЦИАЦИИ IBPA — ТРЕНЕР И ВЫШЕ",
+          value: "$100",
+          text: "Специальный взнос для участников ассоциации IBPA категории тренер и выше.",
+          note: "Также оплачивается после одобрения кандидатуры.",
+        },
       },
-      {
-        title: "Участие",
-        value: "IBPA",
-        text: "Подать заявку на участие могут действующие члены ассоциации IBPA.",
-      },
-      {
-        title: "Гран-при",
-        value: "5+",
-        text: "Участники, подавшие заявки в 5 и более номинациях, автоматически участвуют в категории Гран-при.",
-      },
-    ],
+    },
     categoriesPreview: {
       label: "Категории",
       title: "11 категорий превосходства в индустрии красоты",
@@ -845,7 +899,7 @@ const ru: typeof en = {
     },
     process: {
       label: "Процесс премии",
-      title: "Как проходит премия",
+      title: "Как проходит премия IBPA",
       steps: [
         {
           number: "01",
@@ -859,8 +913,8 @@ const ru: typeof en = {
         },
         {
           number: "03",
-          title: "Подтвердите, что вы часть IBPA",
-          text: "Участие открыто для всех активных членов ассоциации. Укажите членский номер - и вы уже на шаг ближе",
+          title: "Подтвердите ваш статус в IBPA",
+          text: "Если вы аккредитованный специалист IBPA — укажите ID сертификата для подтверждения и получения тарифа для участников IBPA.",
         },
         {
           number: "04",
@@ -870,7 +924,7 @@ const ru: typeof en = {
         {
           number: "05",
           title: "Отправьте заявку и оплатите взнос",
-          text: "Участие в каждой номинации стоит $50. После оплаты заявка переходит на официальную оценку жюри IBPA - и завершается торжественной церемонией награждения.",
+          text: "Для участников IBPA — от $50 за номинацию, для участников которые не состоят в ассоциации — от $70. Участие в 5+ номинациях автоматически включает вас в Гран-при.",
         },
       ],
     },
@@ -888,7 +942,7 @@ const ru: typeof en = {
       title: "Подайте заявку, чтобы стать официальным судьёй премии IBPA 2026",
       text1: "Кандидаты на роль судей проходят профессиональный отбор.",
       text2:
-        "Сначала подаётся заявка, после чего она рассматривается экспертной комиссией. В случае одобрения кандидат получает приглашение и ссылку для оплаты регистрационного взноса в размере 250 долларов США.",
+        "Подайте заявку на должность судьи — её рассмотрит экспертная комиссия IBPA. В случае одобрения вы получите приглашение и ссылку для оплаты регистрационного взноса: $250 для всех специалистов или $100 для аккредитованных специалистов IBPA категории тренер и выше.",
       text3:
         "После оплаты судья получает официальное подтверждение, комплект документов и публичный профиль на странице жюри.",
       button: "Подать заявку на должность судьи",
@@ -1527,7 +1581,7 @@ const ua: typeof en = {
       categoriesCta: "Переглянути категорії",
     },
     copy: {
-      whyEyebrow: "Чому IBPA",
+      whyEyebrow: "Чому IBPA Beauty Award 2026",
       whyTitle: "Створено для професійного лідерства у beauty-сфері",
       whyText: "Структурований відбір, прозоре суддівство та міжнародний рівень представлення.",
       heroMediaTitle: "Преміальна редакційна подача",
@@ -1548,29 +1602,56 @@ const ua: typeof en = {
       fullBleedText: "Преміальна платформа для майстрів, викладачів, салонів і брендів.",
       intlRecognition: "Міжнародне визнання",
       judgingIntegrity: "Прозорість і цілісність суддівства",
+      whyFeatures: [
+        { title: "Міжнародне визнання", text: "Ваша робота отримує оцінку та визнання на міжнародному рівні — серед професіоналів індустрії краси по всьому світу." },
+        { title: "Прозора оцінка", text: "Кожна заявка оцінюється офіційним журі IBPA Beauty Award 2026 за чіткими професійними критеріями — чесно та без упередженості." },
+        { title: "Структурований відбір", text: "11 категорій і номінації всередині кожної — IBPA Beauty Award 2026 охоплює всі ключові спеціалізації індустрії краси." },
+        { title: "Професійне журі", text: "До складу журі IBPA Beauty Award 2026 входять практикуючі спеціалісти з досвідом від 5 років — експерти, які розуміють індустрію зсередини." },
+        { title: "Офіційний статус переможця", text: "Переможці та призери IBPA Beauty Award 2026 отримують сертифікати, підтверджуючі документи та публічне визнання на платформі премії." },
+        { title: "Гран-прі для кращих", text: "Учасники 5 і більше номінацій автоматично стають номінантами на Гран-прі — найвищу нагороду IBPA Beauty Award 2026." },
+      ],
     },
-    stats: [
-      {
-        title: "Реєстраційний внесок",
-        value: "$50",
-        text: "Вартість участі оплачується окремо за кожну вибрану номінацію.",
+    pricing: {
+      award: {
+        eyebrow: "Учасники премії",
+        title: "Вартість участі",
+        ibpaMember: {
+          label: "УЧАСНИКИ АСОЦІАЦІЇ IBPA",
+          rows: [
+            { label: "1 номінація", value: "$50" },
+            { label: "3 номінації", value: "$130" },
+            { label: "5 номінацій", value: "$200" },
+          ],
+          grandPrixLabel: "Гран-прі",
+          grandPrixNote: "від 5 номінацій — автоматично",
+        },
+        nonMember: {
+          label: "УЧАСНИКИ БЕЗ ЧЛЕНСТВА IBPA",
+          rows: [
+            { label: "1 номінація", value: "$70" },
+            { label: "3 номінації", value: "$190" },
+            { label: "5 номінацій", value: "$300" },
+          ],
+          grandPrixLabel: "Гран-прі",
+          grandPrixNote: "від 5 номінацій — автоматично",
+        },
       },
-      {
+      jury: {
+        eyebrow: "Суддівський склад",
         title: "Реєстрація судді",
-        value: "$250",
-        text: "Подати заявку до суддівської колегії можуть спеціалісти з досвідом роботи від 5 років. Реєстраційний внесок сплачується лише після схвалення кандидатури.",
+        standard: {
+          label: "СТАНДАРТНИЙ ВНЕСОК",
+          value: "$250",
+          text: "Для спеціалістів з досвідом від 5 років. Внесок сплачується лише після схвалення кандидатури.",
+        },
+        ibpaTrainer: {
+          label: "УЧАСНИКИ АСОЦІАЦІЇ IBPA — ТРЕНЕР І ВИЩЕ",
+          value: "$100",
+          text: "Спеціальний внесок для учасників асоціації IBPA категорії тренер і вище.",
+          note: "Також сплачується після схвалення кандидатури.",
+        },
       },
-      {
-        title: "Участь",
-        value: "IBPA",
-        text: "Подати заявку на участь можуть члени асоціації IBPA.",
-      },
-      {
-        title: "Гран-прі",
-        value: "5+",
-        text: "Учасники, які подали заявки у 5 та більше номінаціях, автоматично беруть участь у категорії Гран-прі.",
-      },
-    ],
+    },
     categoriesPreview: {
       label: "Категорії",
       title: "11 Категорій досконалості в індустрії краси",
@@ -1591,7 +1672,7 @@ const ua: typeof en = {
     },
     process: {
       label: "Процес премії",
-      title: "Як проходить премія",
+      title: "Як проходить премія IBPA",
       steps: [
         {
           number: "01",
@@ -1605,8 +1686,8 @@ const ua: typeof en = {
         },
         {
           number: "03",
-          title: "Підтвердьте, що ви є частиною IBPA",
-          text: "Участь відкрита всім активних членів асоціації. Вкажіть членський номер – і ви вже на крок ближче.",
+          title: "Підтвердьте ваш статус в IBPA",
+          text: "Якщо ви акредитований спеціаліст IBPA — вкажіть ID сертифіката для підтвердження та отримання тарифу для учасників IBPA.",
         },
         {
           number: "04",
@@ -1616,7 +1697,7 @@ const ua: typeof en = {
         {
           number: "05",
           title: "Надішліть заявку та сплатіть внесок",
-          text: "Участь у кожній номінації коштує $50. Після оплати заявка переходить на офіційну оцінку журі IBPA – та завершується урочистою церемонією нагородження.",
+          text: "Для учасників IBPA — від $50 за номінацію, для учасників без членства в асоціації — від $70. Участь у 5+ номінаціях автоматично включає вас до Гран-прі.",
         },
       ],
     },
@@ -1634,7 +1715,7 @@ const ua: typeof en = {
       title: "Подайте заявку, щоб стати офіційним суддею премії IBPA 2026",
       text1: "Кандидати до складу журі проходять професійний відбір.",
       text2:
-        "Спочатку подається заявка, після чого її розглядає експертна комісія. У разі схвалення кандидат отримує запрошення та посилання для оплати реєстраційного внеску $250.",
+        "Подайте заявку на посаду судді — її розгляне експертна комісія IBPA. У разі схвалення ви отримаєте запрошення та посилання для оплати реєстраційного внеску: $250 для всіх спеціалістів або $100 для акредитованих спеціалістів IBPA категорії тренер і вище.",
       text3:
         "Після оплати суддя отримує офіційне підтвердження, комплект документів і публічний профіль на сторінці журі.",
       button: "Подати заявку на посаду судді",
