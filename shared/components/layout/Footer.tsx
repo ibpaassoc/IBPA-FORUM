@@ -112,10 +112,10 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="w-full bg-[var(--color-ink)] text-white/60">
+      <footer className="w-full border-t border-[var(--border-default)] bg-[var(--color-off-white)] text-[var(--color-ink-soft)]">
         <div className="mx-auto max-w-[var(--content-width)] px-[var(--page-gutter)]">
           {/* Main footer grid */}
-          <div className="grid grid-cols-1 gap-[var(--space-xl)] border-b border-white/10 py-[var(--space-xl)] md:grid-cols-2 xl:grid-cols-[1.6fr_1fr_1fr_1fr]">
+          <div className="grid grid-cols-1 gap-[var(--space-xl)] border-b border-[var(--border-default)] py-[var(--space-xl)] md:grid-cols-2 xl:grid-cols-[1.6fr_1fr_1fr_1fr]">
             {/* Brand column */}
             <div className="max-w-sm">
               <Link href="/" className="inline-flex items-center">
@@ -124,11 +124,11 @@ export default function Footer() {
                   alt="IBPA Logo"
                   width={320}
                   height={80}
-                  className="h-12 w-auto object-contain [filter:brightness(0)_invert(1)]"
+                  className="h-12 w-auto object-contain opacity-85"
                 />
               </Link>
 
-              <p className="mt-[var(--space-md)] text-[0.95rem] leading-[1.78] text-white/50">
+              <p className="mt-[var(--space-md)] text-[0.95rem] leading-[1.78] text-[var(--color-ink-soft)]">
                 {copy.summary}
               </p>
 
@@ -140,7 +140,7 @@ export default function Footer() {
             {/* Nav columns */}
             {footerColumns.map((column) => (
               <div key={column.title}>
-                <h4 className="mb-[var(--space-md)] text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-white/35">
+                <h4 className="mb-[var(--space-md)] text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-ink)]/40">
                   {column.title}
                 </h4>
                 <div className="flex flex-col gap-2.5">
@@ -150,7 +150,7 @@ export default function Footer() {
                         key={link.label}
                         type="button"
                         onClick={() => setActiveLegalModal(link.legalType)}
-                        className="w-fit text-left text-[0.9rem] leading-[1.75] text-white/50 transition hover:text-white"
+                        className="w-fit text-left text-[0.9rem] leading-[1.75] text-[var(--color-ink-soft)] transition hover:text-[var(--color-ink)]"
                       >
                         {link.label}
                       </button>
@@ -158,7 +158,7 @@ export default function Footer() {
                       <a
                         key={link.label}
                         href={link.href}
-                        className="text-[0.9rem] leading-[1.75] text-white/50 transition hover:text-white"
+                        className="text-[0.9rem] leading-[1.75] text-[var(--color-ink-soft)] transition hover:text-[var(--color-ink)]"
                       >
                         {link.label}
                       </a>
@@ -168,7 +168,7 @@ export default function Footer() {
                         href={link.href}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-[0.9rem] leading-[1.75] text-white/50 transition hover:text-white"
+                        className="text-[0.9rem] leading-[1.75] text-[var(--color-ink-soft)] transition hover:text-[var(--color-ink)]"
                       >
                         {link.label}
                       </a>
@@ -176,7 +176,7 @@ export default function Footer() {
                       <Link
                         key={link.label}
                         href={link.href}
-                        className="text-[0.9rem] leading-[1.75] text-white/50 transition hover:text-white"
+                        className="text-[0.9rem] leading-[1.75] text-[var(--color-ink-soft)] transition hover:text-[var(--color-ink)]"
                       >
                         {link.label}
                       </Link>
@@ -188,9 +188,9 @@ export default function Footer() {
           </div>
 
           {/* Bottom bar */}
-          <div className="flex flex-col gap-3 py-[var(--space-md)] text-[0.75rem] text-white/30 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 py-[var(--space-md)] text-[0.75rem] text-[var(--color-ink)]/30 sm:flex-row sm:items-center sm:justify-between">
             <p>{copy.copyright}</p>
-            <p className="font-[var(--font-accent-family)] text-[1.1rem] italic text-white/40 leading-[1.2]">
+            <p className="font-[var(--font-accent-family)] text-[1.1rem] italic text-[var(--color-ink)]/40 leading-[1.2]">
               {copy.global}
             </p>
           </div>

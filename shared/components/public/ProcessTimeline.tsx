@@ -56,6 +56,12 @@ export default function ProcessTimeline({
               </p>
             </article>
           ))}
+          {/* Fill incomplete last row so no gray gap shows */}
+          {steps.length % 3 !== 0
+            ? Array.from({ length: 3 - (steps.length % 3) }).map((_, i) => (
+                <div key={`filler-${i}`} className="bg-[var(--surface)]" aria-hidden />
+              ))
+            : null}
         </div>
       </StaggerContainer>
     </PageSection>

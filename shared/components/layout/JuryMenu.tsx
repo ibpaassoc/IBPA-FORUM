@@ -10,11 +10,13 @@ export default function JuryMenu({
   onNavigate,
   dropDirection = "down",
   dropAlign = "right",
+  transparent = false,
 }: {
   mobile?: boolean;
   onNavigate?: () => void;
   dropDirection?: "up" | "down";
   dropAlign?: "left" | "right";
+  transparent?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -66,7 +68,11 @@ export default function JuryMenu({
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
-        className="ibpa-button ibpa-button-primary flex items-center gap-1.5"
+        className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-5 py-2.5 text-[0.7rem] font-semibold uppercase tracking-[0.1em] transition-all duration-300 hover:scale-105 ${
+          transparent
+            ? "bg-white text-[var(--color-ink)] hover:bg-white/90"
+            : "bg-[var(--color-ink)] text-white hover:bg-[var(--color-ink)]/90"
+        }`}
         aria-expanded={open}
       >
         {t.common.applyNow}

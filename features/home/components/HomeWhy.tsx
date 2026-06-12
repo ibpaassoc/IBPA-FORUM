@@ -40,7 +40,7 @@ export default function HomeWhy() {
             return (
               <article
                 key={item.title}
-                className="group bg-[var(--surface)] p-[var(--space-lg)] transition-colors duration-300 hover:bg-[var(--surface-muted)]"
+                className="group flex h-full flex-col bg-[var(--surface)] p-[var(--space-lg)] transition-colors duration-300 hover:bg-[var(--surface-muted)]"
               >
                 <div className="mb-[var(--space-sm)] inline-flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-muted)]">
                   <Icon size={18} className="text-[var(--color-hover-accent)]" strokeWidth={1.5} />

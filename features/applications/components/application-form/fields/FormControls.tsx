@@ -4,10 +4,10 @@ import FormFieldShell from "@/features/applications/components/application-form/
 import type { FieldOption } from "@/features/applications/types/application.types";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
-const inputClassName =
-  "w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] text-[var(--color-ink)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-hover-accent)] focus:shadow-[0_0_0_3px_rgba(114,160,193,0.16)]";
+const base =
+  "w-full rounded-[var(--radius)] border border-[var(--border-default)] bg-white px-4 py-3 text-[0.93rem] text-[var(--color-ink)] outline-none transition placeholder:text-[var(--color-ink)]/30 focus:border-[var(--color-hover-accent)] focus:shadow-[0_0_0_3px_rgba(114,160,193,0.13)]";
 
-const errorClassName = "border-[var(--color-hover-accent)] focus:border-[var(--color-hover-accent)]";
+const errorCls = "!border-red-300 focus:!border-red-400 focus:!shadow-[0_0_0_3px_rgba(239,68,68,0.1)]";
 
 export function TextField({
   label,
@@ -41,12 +41,7 @@ export function TextField({
   readOnly?: boolean;
 }) {
   return (
-    <FormFieldShell
-      label={label}
-      required={required}
-      description={description}
-      error={error}
-    >
+    <FormFieldShell label={label} required={required} description={description} error={error}>
       <input
         name={name}
         type={type}
@@ -57,10 +52,8 @@ export function TextField({
         disabled={disabled}
         placeholder={placeholder}
         onBlur={() => onBlur?.(name)}
-        onChange={(event) => onChange(name, event.target.value)}
-        className={`${inputClassName} ${error ? errorClassName : ""} ${
-          readOnly ? "cursor-not-allowed bg-[var(--color-mist)] text-[var(--color-ink-soft)]" : ""
-        } ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
+        onChange={(e) => onChange(name, e.target.value)}
+        className={`${base} ${error ? errorCls : ""} ${readOnly ? "cursor-not-allowed bg-[var(--surface-muted)] text-[var(--color-ink-soft)]" : ""} ${disabled ? "cursor-not-allowed opacity-55" : ""}`}
       />
     </FormFieldShell>
   );
@@ -88,21 +81,14 @@ export function TextareaField({
   onChange: (name: string, value: string) => void;
 }) {
   return (
-    <FormFieldShell
-      label={label}
-      required={required}
-      description={description}
-      error={error}
-    >
+    <FormFieldShell label={label} required={required} description={description} error={error}>
       <textarea
         name={name}
         rows={rows}
         value={value}
         placeholder={placeholder}
-        onChange={(event) => onChange(name, event.target.value)}
-        className={`min-h-36 w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] leading-6 text-[var(--color-ink)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-hover-accent)] focus:shadow-[0_0_0_3px_rgba(114,160,193,0.16)] ${
-          error ? errorClassName : ""
-        }`}
+        onChange={(e) => onChange(name, e.target.value)}
+        className={`min-h-32 resize-y ${base} ${error ? errorCls : ""}`}
       />
     </FormFieldShell>
   );
@@ -132,44 +118,25 @@ export function SelectField({
   onChange: (name: string, value: string) => void;
 }) {
   const { language } = useLanguage();
-  const selectOptionLabel =
-    language === "ru"
-      ? "Выберите вариант"
-      : language === "ua"
-        ? "Оберіть варіант"
-        : "Select an option";
+  const fallback =
+    language === "ru" ? "Выберите вариант" : language === "ua" ? "Оберіть варіант" : "Select an option";
 
   return (
-    <FormFieldShell
-      label={label}
-      required={required}
-      description={description}
-      error={error}
-    >
+    <FormFieldShell label={label} required={required} description={description} error={error}>
       <div className="relative">
         <select
           name={name}
           value={value}
           disabled={disabled}
-          onChange={(event) => onChange(name, event.target.value)}
-          className={`${inputClassName} appearance-none pr-10 ${
-            error ? errorClassName : ""
-          } ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
+          onChange={(e) => onChange(name, e.target.value)}
+          className={`${base} appearance-none pr-10 ${error ? errorCls : ""} ${disabled ? "cursor-not-allowed opacity-55" : ""}`}
         >
-          <option value="" className="bg-[var(--color-white)] text-[var(--color-ink)]">
-            {placeholder ?? selectOptionLabel}
-          </option>
-          {options.map((option) => (
-            <option
-              key={option.value}
-              value={option.value}
-              className="bg-[var(--color-white)] text-[var(--color-ink)]"
-            >
-              {option.label}
-            </option>
+          <option value="">{placeholder ?? fallback}</option>
+          {options.map((o) => (
+            <option key={o.value} value={o.value}>{o.label}</option>
           ))}
         </select>
-        <span className="pointer-events-none absolute inset-y-0 right-[var(--space-sm)] flex items-center text-[var(--color-ink-soft)]">
+        <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-[var(--color-ink)]/40 text-xs">
           ▾
         </span>
       </div>
@@ -198,26 +165,20 @@ export function ChoiceGroupField({
   multiple?: boolean;
   onChange: (name: string, value: string | string[]) => void;
 }) {
-  const selectedValues = Array.isArray(value) ? value : [value];
+  const selected = Array.isArray(value) ? value : [value];
 
   return (
-    <FormFieldShell
-      label={label}
-      required={required}
-      description={description}
-      error={error}
-    >
-      <div className="grid gap-3 sm:grid-cols-2">
+    <FormFieldShell label={label} required={required} description={description} error={error}>
+      <div className="grid gap-2 sm:grid-cols-2">
         {options.map((option) => {
-          const checked = selectedValues.includes(option.value);
-
+          const checked = selected.includes(option.value);
           return (
             <label
               key={option.value}
-              className={`flex cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] border px-[var(--space-sm)] py-[var(--space-sm)] text-sm transition ${
+              className={`flex cursor-pointer items-center gap-3 rounded-[var(--radius)] border px-4 py-3 text-[0.88rem] transition ${
                 checked
-                  ? "border-[var(--color-hover-accent)] bg-[rgba(185,217,235,0.26)] text-[var(--color-ink)]"
-                  : "border-[var(--border-default)] bg-[var(--color-white)] text-[var(--color-ink)] hover:border-[var(--color-hover-accent)] hover:bg-[var(--color-mist)]"
+                  ? "border-[var(--color-hover-accent)] bg-[rgba(114,160,193,0.08)] text-[var(--color-ink)]"
+                  : "border-[var(--border-default)] bg-white text-[var(--color-ink)] hover:border-[var(--color-hover-accent)]/50"
               }`}
             >
               <input
@@ -227,14 +188,10 @@ export function ChoiceGroupField({
                 value={option.value}
                 onChange={() => {
                   if (multiple) {
-                    const next = checked
-                      ? selectedValues.filter((item) => item !== option.value)
-                      : [...selectedValues.filter(Boolean), option.value];
-                    onChange(name, next);
-                    return;
+                    onChange(name, checked ? selected.filter((v) => v !== option.value) : [...selected.filter(Boolean), option.value]);
+                  } else {
+                    onChange(name, option.value);
                   }
-
-                  onChange(name, option.value);
                 }}
                 className="h-4 w-4 accent-[var(--color-hover-accent)]"
               />
@@ -246,4 +203,3 @@ export function ChoiceGroupField({
     </FormFieldShell>
   );
 }
-

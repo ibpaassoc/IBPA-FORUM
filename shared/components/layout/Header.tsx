@@ -132,20 +132,9 @@ export default function Header() {
             )}
           </nav>
 
-          <div className="hidden items-center gap-3 lg:flex">
-            <LanguageSwitcher />
-            <JuryMenu />
-            <Link
-              href="/apply"
-              onClick={handleLinkClick}
-              className={`inline-flex shrink-0 items-center gap-2 rounded-full px-5 py-2.5 text-[0.7rem] font-semibold uppercase tracking-[0.1em] transition-all duration-300 hover:scale-105 hover:shadow-lg ${
-                useTransparent
-                  ? "bg-white text-[var(--color-ink)] hover:bg-white/90"
-                  : "bg-[var(--color-ink)] text-white hover:bg-[#1a1a2e]"
-              }`}
-            >
-              {t.common.applyNow} <ArrowRight size={14} />
-            </Link>
+          <div className="hidden items-center gap-2 lg:flex">
+            <LanguageSwitcher transparent={useTransparent} />
+            <JuryMenu transparent={useTransparent} />
           </div>
 
           <button

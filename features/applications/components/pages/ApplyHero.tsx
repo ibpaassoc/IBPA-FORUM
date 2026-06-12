@@ -1,7 +1,8 @@
 "use client";
 
-import EditorialImageCard from "@/shared/components/media/EditorialImageCard";
-import { PageHero } from "@/shared/components/layout/PageShell";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 export default function ApplyHero({
@@ -13,79 +14,85 @@ export default function ApplyHero({
   const copy = {
     en: {
       eyebrow: "Participant Applications",
-      title: "Apply for the IBPA Beauty Award",
+      title: "Submit your award entry.",
       description:
-        "Submit your official participant entry with category-specific supporting materials and production-ready files for the award review team.",
-      cardEyebrow: "Participant applications",
-      cardTitle: "A premium entry point for participants",
-      cardText: "The application experience is aligned with the editorial tone of the site.",
+        "Official IBPA Beauty Award 2026 participant applications. Submit your portfolio, select your category, and be evaluated by the international jury.",
+      cta: "Start application",
+      juryLink: "Apply as a judge instead →",
     },
     ru: {
       eyebrow: "Заявки участников",
-      title: "Подайте заявку на IBPA Beauty Award",
+      title: "Подайте заявку на премию.",
       description:
-        "Отправьте официальную заявку участника с материалами по выбранной категории и готовыми к проверке файлами для команды премии.",
-      cardEyebrow: "Заявки участников",
-      cardTitle: "Премиальная точка входа для участников",
-      cardText: "Опыт подачи заявки соответствует редакционному стилю сайта.",
+        "Официальные заявки на IBPA Beauty Award 2026. Отправьте портфолио, выберите категорию и пройдите оценку международного жюри.",
+      cta: "Начать заявку",
+      juryLink: "Подать заявку как судья →",
     },
     ua: {
       eyebrow: "Заявки учасників",
-      title: "Подайте заявку на IBPA Beauty Award",
+      title: "Подайте заявку на премію.",
       description:
-        "Надішліть офіційну заявку учасника з матеріалами за обраною категорією і готовими до перевірки файлами для команди премії.",
-      cardEyebrow: "Заявки учасників",
-      cardTitle: "Преміальна точка входу для учасників",
-      cardText: "Досвід подання заявки відповідає редакційному стилю сайту.",
+        "Офіційні заявки на IBPA Beauty Award 2026. Надішліть портфоліо, оберіть категорію та пройдіть оцінювання міжнародного журі.",
+      cta: "Розпочати заявку",
+      juryLink: "Подати заявку як суддя →",
     },
   }[language];
 
   return (
-    <PageHero
-      eyebrow={copy.eyebrow}
-      title={copy.title}
-      description={copy.description}
-      asideShellClassName="overflow-hidden border-0 bg-transparent p-0 shadow-none"
-      aside={
-        <EditorialImageCard
-          src="/images/editorial/makeup.jpg"
-          alt="Luxury beauty editorial image for the participant application page"
-          eyebrow={copy.cardEyebrow}
-          title={copy.cardTitle}
-          text={copy.cardText}
-          aspectClassName="aspect-[4/5]"
-          objectPosition="center 18%"
-          sizes="(max-width: 1024px) 100vw, 40vw"
-          className="shadow-[0_22px_64px_rgba(12,16,20,0.14)]"
-        >
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+    <section className="relative flex min-h-[52vh] items-end overflow-hidden bg-[var(--color-ink)] pb-0">
+      {/* Background image */}
+      <Image
+        src="/images/editorial/makeup.jpg"
+        alt=""
+        fill
+        priority
+        className="object-cover object-center opacity-40"
+        sizes="100vw"
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-ink)]/90 via-[var(--color-ink)]/55 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-ink)] via-transparent to-[var(--color-ink)]/40" />
+
+      {/* Content */}
+      <div className="relative z-10 mx-auto w-full max-w-[var(--content-width)] px-[var(--page-gutter)] pb-[var(--space-xl)] pt-[clamp(96px,14vh,130px)]">
+        <div className="max-w-xl">
+          <p className="page-eyebrow text-[var(--color-hover-accent)] [&::before]:bg-[var(--color-hover-accent)]">
+            {copy.eyebrow}
+          </p>
+          <h1 className="mt-[var(--space-sm)] font-[var(--font-title-family)] text-[clamp(2.4rem,5vw,4.2rem)] font-light leading-[1.04] text-white">
+            {copy.title}
+          </h1>
+          <p className="mt-[var(--space-md)] max-w-md text-[clamp(0.95rem,1.5vw,1.05rem)] leading-[1.78] text-white/60">
+            {copy.description}
+          </p>
+
+          {/* Stats */}
+          <div className="mt-[var(--space-lg)] flex flex-wrap gap-3">
             {heroStats.map((item) => (
               <div
                 key={item.label}
-                className="rounded-[calc(var(--radius)-4px)] border border-white/12 bg-white/10 px-4 py-3 backdrop-blur-[8px]"
+                className="rounded-full border border-white/15 bg-white/8 px-4 py-2 text-xs uppercase tracking-[0.18em] text-white/65"
               >
-                <p className="text-[10px] uppercase tracking-[0.22em] text-[var(--color-title-accent)]">
-                  {item.label}
-                </p>
-                <p className="mt-2 font-[var(--font-display)] text-[clamp(1rem,2vw,1.35rem)] font-light text-white">
-                  {item.value}
-                </p>
+                {item.label}: <span className="text-white/90 font-medium">{item.value}</span>
               </div>
             ))}
           </div>
-        </EditorialImageCard>
-      }
-    >
-      <div className="flex flex-wrap gap-3">
-        {heroStats.map((item) => (
-          <div
-            key={item.label}
-            className="rounded-full border border-white/15 bg-white/8 px-4 py-2 text-xs uppercase tracking-[0.18em] text-white/70"
-          >
-            {item.label}: {item.value}
+
+          <div className="mt-[var(--space-lg)] flex flex-wrap items-center gap-4">
+            <a
+              href="#apply-form"
+              className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-[0.78rem] font-semibold uppercase tracking-[0.1em] text-[var(--color-ink)] transition hover:bg-white/90"
+            >
+              {copy.cta} <ArrowRight size={14} />
+            </a>
+            <Link
+              href="/apply/jury"
+              className="text-[0.82rem] text-white/50 underline-offset-4 transition hover:text-white hover:underline"
+            >
+              {copy.juryLink}
+            </Link>
           </div>
-        ))}
+        </div>
       </div>
-    </PageHero>
+    </section>
   );
 }

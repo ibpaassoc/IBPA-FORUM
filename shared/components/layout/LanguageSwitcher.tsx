@@ -7,9 +7,11 @@ import { languageLabels, languages, type Language } from "@/lib/i18n/translation
 export default function LanguageSwitcher({
   mobile = false,
   onSelect,
+  transparent = false,
 }: {
   mobile?: boolean;
   onSelect?: () => void;
+  transparent?: boolean;
 }) {
   const { language, setLanguage, t } = useLanguage();
   const [open, setOpen] = useState(false);
@@ -69,7 +71,11 @@ export default function LanguageSwitcher({
         aria-label={t.header.language}
         aria-expanded={open}
         onClick={() => setOpen((current) => !current)}
-        className="ibpa-button ibpa-button-ghost px-[var(--space-sm)] py-[var(--space-xs)]"
+        className={`rounded-full border px-4 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.1em] transition-all duration-300 ${
+          transparent
+            ? "border-white/40 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20"
+            : "border-[var(--border-default)] bg-transparent text-[var(--color-ink)] hover:border-[var(--color-ink)]"
+        }`}
       >
         {languageLabels[language].short}
       </button>
