@@ -6,6 +6,7 @@ import {
   rejectJuryApplicationAction,
   saveJuryApplicationNotesAction,
 } from "@/features/admin/actions/jury.actions";
+import DeleteJuryApplicationButton from "@/features/admin/components/jury-applications/DeleteJuryApplicationButton";
 import { formatAdminDate } from "@/features/admin/server/view-models";
 import {
   AdminDashboardShell,
@@ -53,6 +54,7 @@ export default function JuryApplicationDetailPage({
         actions={
           <>
             <AdminToolbarButton href="/admin/jury-applications">Back to List</AdminToolbarButton>
+            <DeleteJuryApplicationButton id={application.id} fullName={application.fullName} />
           </>
         }
       />
@@ -237,15 +239,28 @@ export default function JuryApplicationDetailPage({
 
               <div className="mt-5 flex flex-wrap gap-3">
                 {application.status !== "PAID" ? (
-                  <form action={approveJuryApplicationAction}>
-                    <input type="hidden" name="id" value={application.id} />
-                    <button
-                      type="submit"
-                      className="admin-action-primary inline-flex items-center justify-center rounded-full px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
-                    >
-                      Approve & Send Payment Link
-                    </button>
-                  </form>
+                  <>
+                    <form action={approveJuryApplicationAction}>
+                      <input type="hidden" name="id" value={application.id} />
+                      <input type="hidden" name="isIbpaMember" value="true" />
+                      <button
+                        type="submit"
+                        className="admin-action-primary inline-flex items-center justify-center rounded-full px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
+                      >
+                        Approve (IBPA Member)
+                      </button>
+                    </form>
+                    <form action={approveJuryApplicationAction}>
+                      <input type="hidden" name="id" value={application.id} />
+                      <input type="hidden" name="isIbpaMember" value="false" />
+                      <button
+                        type="submit"
+                        className="admin-action-primary inline-flex items-center justify-center rounded-full px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
+                      >
+                        Approve (Non-Member)
+                      </button>
+                    </form>
+                  </>
                 ) : null}
 
                 {application.status !== "REJECTED" &&
