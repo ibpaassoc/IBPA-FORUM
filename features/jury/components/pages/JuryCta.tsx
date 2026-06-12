@@ -12,7 +12,7 @@ export default function JuryCta() {
       eyebrow={t.juryPage.copy.ctaEyebrow}
       title={t.juryPage.copy.ctaTitle}
       description={t.juryPage.copy.ctaText}
-      primary={{ href: "/apply/jury", label: t.common.applyNow }}
+      primary={{ href: "/apply/jury", label: t.common.applyAsJury }}
       secondary={{ href: "/jury/login", label: t.common.juryAccount }}
       aside={
         <div className="inline-flex items-center gap-2 text-sm text-[var(--color-ink-soft)]">

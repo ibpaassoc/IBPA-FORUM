@@ -51,11 +51,14 @@ export async function GET(
     });
   }
 
+  const encodedFileName = encodeURIComponent(fileRecord.fileName);
+  const asciiFallback = fileRecord.fileName.replace(/[^\x20-\x7E]/g, "_");
+
   return new Response(result.stream, {
     status: 200,
     headers: {
       "Content-Type": fileRecord.mimeType || result.blob.contentType,
-      "Content-Disposition": `inline; filename="${fileRecord.fileName}"`,
+      "Content-Disposition": `inline; filename="${asciiFallback}"; filename*=UTF-8''${encodedFileName}`,
       "X-Content-Type-Options": "nosniff",
       ETag: result.blob.etag,
       "Cache-Control": "public, max-age=300",

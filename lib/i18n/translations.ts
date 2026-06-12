@@ -12,8 +12,9 @@ export const languageLabels: Record<Language, { short: string; label: string }> 
 
 const en = {
   common: {
-    applyNow: "Apply Now",
-    applyAsJury: "Become a Judge",
+    applyNow: "Apply",
+    applyAsParticipant: "Apply as Participant",
+    applyAsJury: "Apply as Judge",
     juryAccount: "Jury Account",
     jury: "Jury",
     categories: "Categories",
@@ -38,7 +39,7 @@ const en = {
       categoriesCta: "Explore Categories",
     },
     copy: {
-      whyEyebrow: "Why IBPA",
+      whyEyebrow: "Why IBPA Beauty Award 2026",
       whyTitle: "Designed for professional beauty leadership",
       whyText: "Structured selection, transparent judging, and global brand-level presentation.",
       heroMediaTitle: "Luxury Editorial Presence",
@@ -59,29 +60,56 @@ const en = {
       fullBleedText: "A calm, premium platform for artists, educators, salons, and brands.",
       intlRecognition: "International recognition",
       judgingIntegrity: "Structured judging integrity",
+      whyFeatures: [
+        { title: "International Recognition", text: "Your work is evaluated and recognized internationally — among beauty industry professionals worldwide." },
+        { title: "Transparent Judging", text: "Each entry is evaluated by the official IBPA Beauty Award 2026 jury according to clear professional criteria — fairly and without bias." },
+        { title: "Structured Selection", text: "11 categories and nominations within each — IBPA Beauty Award 2026 covers all key specializations in the beauty industry." },
+        { title: "Professional Jury", text: "The IBPA Beauty Award 2026 jury includes practicing specialists with 5+ years of experience — experts who understand the industry from within." },
+        { title: "Official Winner Status", text: "Winners and runners-up of IBPA Beauty Award 2026 receive certificates, supporting documents, and public recognition on the award platform." },
+        { title: "Grand Prix for the Best", text: "Participants in 5 or more nominations automatically become nominees for the Grand Prix — the highest award of IBPA Beauty Award 2026." },
+      ],
     },
-    stats: [
-      {
-        title: "Registration Fee",
-        value: "$50",
-        text: "The participation fee is paid separately for each selected category.",
+    pricing: {
+      award: {
+        eyebrow: "Award Participants",
+        title: "Participation Cost",
+        ibpaMember: {
+          label: "IBPA ASSOCIATION MEMBERS",
+          rows: [
+            { label: "1 nomination", value: "$50" },
+            { label: "3 nominations", value: "$130" },
+            { label: "5 nominations", value: "$200" },
+          ],
+          grandPrixLabel: "Grand Prix",
+          grandPrixNote: "from 5 nominations — automatically",
+        },
+        nonMember: {
+          label: "NON-IBPA MEMBERS",
+          rows: [
+            { label: "1 nomination", value: "$70" },
+            { label: "3 nominations", value: "$190" },
+            { label: "5 nominations", value: "$300" },
+          ],
+          grandPrixLabel: "Grand Prix",
+          grandPrixNote: "from 5 nominations — automatically",
+        },
       },
-      {
+      jury: {
+        eyebrow: "Judging Panel",
         title: "Judge Registration",
-        value: "$250",
-        text: "Specialists with at least five years of professional experience may apply to join the panel of judges. The registration fee is payable only after the candidacy has been approved.",
+        standard: {
+          label: "STANDARD FEE",
+          value: "$250",
+          text: "For specialists with at least 5 years of experience. The fee is payable only after candidacy approval.",
+        },
+        ibpaTrainer: {
+          label: "IBPA ASSOCIATION MEMBERS — TRAINER AND ABOVE",
+          value: "$100",
+          text: "Special fee for IBPA association members at trainer level and above.",
+          note: "Also payable after candidacy approval.",
+        },
       },
-      {
-        title: "Participation",
-        value: "IBPA",
-        text: "Current members of the IBPA association may submit an application to participate.",
-      },
-      {
-        title: "Grand Prix",
-        value: "5+",
-        text: "Participants who have submitted entries in five or more categories automatically compete in the Grand Prix category.",
-      },
-    ],
+    },
     categoriesPreview: {
       label: "Categories",
       title: "11 Categories of Excellence in the Beauty Industry",
@@ -102,7 +130,7 @@ const en = {
     },
     process: {
       label: "Award Process",
-      title: "How the Award Process Works",
+      title: "How the IBPA Award Process Works",
       steps: [
         {
           number: "01",
@@ -116,8 +144,8 @@ const en = {
         },
         {
           number: "03",
-          title: "Confirm that you are part of the IBPA.",
-          text: "Participation is open to all active members of the association. Provide your membership number, and you are one step closer.",
+          title: "Confirm your IBPA status",
+          text: "If you are an accredited IBPA specialist, enter your certificate ID to confirm and receive the IBPA member rate.",
         },
         {
           number: "04",
@@ -127,7 +155,7 @@ const en = {
         {
           number: "05",
           title: "Submit your application and pay the fee.",
-          text: "Participation in each category costs $50. Upon payment, the entry proceeds to official evaluation by the IBPA jury and culminates in a gala awards ceremony.",
+          text: "For IBPA members — from $50 per nomination; for non-members — from $70. Participating in 5+ nominations automatically includes you in the Grand Prix.",
         },
       ],
     },
@@ -145,7 +173,7 @@ const en = {
       title: "Apply to Become an Official Judge of the IBPA 2026 Award",
       text1: "Candidates for the judging panel go through a professional selection process.",
       text2:
-        "First, an application is submitted and reviewed by the expert panel. If approved, the candidate receives an invitation and a payment link for the $250 registration fee.",
+        "Submit your application as a judge — it will be reviewed by the IBPA expert panel. If approved, you will receive an invitation and a payment link for the registration fee: $250 for all specialists, or $100 for accredited IBPA specialists at trainer level and above.",
       text3:
         "After payment, judges receive official confirmation, certification documents, and a public profile on the judges page.",
       button: "Apply as a Judge",
@@ -188,10 +216,10 @@ const en = {
       feeLabel: "Registration Fee",
       feeValue: "$50 per category",
       eligibilityLabel: "Participation",
-      eligibilityValue: "For IBPA Members",
+      eligibilityValue: "For IBPA Beauty Award 2026 Members",
       cta: "Apply In A Category",
     },
-    cardText: "Professional submissions are reviewed within the official IBPA award framework.",
+    cardText: "Professional submissions are reviewed within the official IBPA Beauty Award 2026 framework.",
     directions: [
       {
         slug: "hair",
@@ -361,7 +389,7 @@ const en = {
         },
         {
           number: "02",
-          title: "IBPA Review",
+          title: "IBPA Beauty Award 2026 Review",
           text: "Your professional background, experience, and documents are reviewed.",
         },
         {
@@ -419,26 +447,26 @@ const en = {
       text: "Submit your professional profile, experience, and areas of expertise to be considered for the judging panel.",
     },
     copy: {
-      heroEyebrow: "IBPA Jury Council",
-      heroTitle: "Become an Official IBPA Judge",
+      heroEyebrow: "IBPA Beauty Award 2026 Jury Council",
+      heroTitle: "Become an Official Judge of IBPA Beauty Award 2026",
       heroText: "A premium judging council built for fairness, expertise, and global credibility.",
       leadershipTitle: "Leadership, trust, and independent standards",
       credibility: "Credibility",
       credibilityText: "Every judge must demonstrate proven professional experience and category-level expertise.",
-      processLabel: "Jury Process",
-      processTitle: "A connected 3-step application journey",
+      processLabel: "Jury Application",
+      processTitle: "Three steps to judge status",
       processText: "Clear progression from submission to official panel activation.",
-      apply: "Apply",
-      approved: "Get approved",
-      registration: "Confirm registration",
-      applyText: "Submit your profile, experience details, and required professional materials.",
-      approvedText: "IBPA evaluates your expertise and confirms your fit for designated categories.",
-      registrationText: "Approved candidates complete the official registration payment and join the panel.",
+      apply: "Application Submission",
+      approved: "Review and Approval",
+      registration: "Payment and Confirmation",
+      applyText: "Submit your professional profile, work experience, and required materials for review by the IBPA Beauty Award 2026 panel.",
+      approvedText: "IBPA Beauty Award 2026 evaluates your expertise and professional fit. Upon approval, you receive an official invitation.",
+      registrationText: "Approved candidates pay the registration fee and receive official judge status, a certificate, and a public profile on the award website.",
       benefitsEyebrow: "Judge Benefits",
-      benefitsTitle: "Why experts join the IBPA judging council",
+      benefitsTitle: "Why experts join the IBPA Beauty Award 2026 judging council",
       benefitsText: "A serious professional role with visible impact and international recognition.",
       b1Title: "Official recognition",
-      b1Text: "Be listed as a verified IBPA jury member and represent industry standards.",
+      b1Text: "Be listed as a verified IBPA Beauty Award 2026 jury member and represent industry standards.",
       b2Title: "Trusted framework",
       b2Text: "Evaluate submissions through a transparent and structured judging process.",
       b3Title: "Professional network",
@@ -447,13 +475,13 @@ const en = {
       b4Text: "Strengthen your professional authority through an official award role.",
       statementEyebrow: "Credibility Statement",
       statementTitle: "Every score should reflect both artistry and professional integrity",
-      statementText: "IBPA judges are selected for expertise, neutrality, and commitment to fair evaluation.",
+      statementText: "IBPA Beauty Award 2026 judges are selected for expertise, neutrality, and commitment to fair evaluation.",
       statementQuote: "Judging is not only about outcomes. It is about trust in the process.",
       approvedEyebrow: "Approved Jury",
-      approvedTitle: "Current IBPA Jury Members",
+      approvedTitle: "Current IBPA Beauty Award 2026 Jury Members",
       approvedSectionText: "A live roster of approved judges participating in the award.",
       ctaEyebrow: "Jury Council",
-      ctaTitle: "Bring your expertise to the IBPA stage",
+      ctaTitle: "Bring your expertise to the IBPA Beauty Award 2026 stage",
       ctaText: "Apply to become an official judge and contribute to fair, professional nomination decisions.",
       ctaAside: "Approval is required before registration payment.",
     },
@@ -512,7 +540,7 @@ const en = {
         {
           number: "02",
           title: "The jury evaluates each category.",
-          text: "Your work receives a professional evaluation from the IBPA jury—fairly and based on uniform criteria.",
+          text: "Your work receives a professional evaluation from the IBPA Beauty Award 2026 jury—fairly and based on uniform criteria.",
         },
         {
           number: "03",
@@ -560,7 +588,7 @@ const en = {
       breakText: "A premium award environment where cumulative excellence is visibly recognized.",
       ctaEyebrow: "Grand Prix Entry",
       ctaTitle: "Build your path to the highest distinction",
-      ctaText: "Enter multiple categories, elevate your profile, and compete for IBPA's top honor.",
+      ctaText: "Enter multiple categories, elevate your profile, and compete for IBPA Beauty Award 2026's top honor.",
       startEntry: "Start Entry",
       viewCategories: "View Categories",
       strategy: "Multi-categories strategy matters.",
@@ -689,26 +717,26 @@ const en = {
   auth: {
     shellCards: [
       "Private member access",
-      "Luxury IBPA styling",
+      "Luxury IBPA Beauty Award 2026 styling",
       "Protected award pages",
     ],
     access: "Access",
     accessText:
-      "Sign in to access the IBPA site experience. New visitors can register with email and password, then continue directly to the main site.",
+      "Sign in to access the IBPA Beauty Award 2026 site. New visitors can register with email and password, then continue directly to the main site.",
     loginLink: "Login",
     registerLink: "Register",
     loginPage: {
       eyebrow: "Jury Login",
-      title: "Access the IBPA jury member experience",
+      title: "Access the IBPA Beauty Award 2026 jury member experience",
       description:
         "Sign in with your email and password to continue to the jury dashboard. Protected pages will send unauthenticated visitors here first.",
       cardEyebrow: "Jury Login",
       cardTitle: "Welcome back",
-      cardText: "Enter your credentials to continue to the IBPA jury workspace.",
+      cardText: "Enter your credentials to continue to the IBPA Beauty Award 2026 jury workspace.",
     },
     registerPage: {
       eyebrow: "Jury Register",
-      title: "Create your private IBPA jury access",
+      title: "Create your private IBPA Beauty Award 2026 jury access",
       description:
         "Create an email and password to enter the site. Registration signs you in immediately and redirects you to the main homepage.",
       cardEyebrow: "Jury Register",
@@ -756,8 +784,9 @@ const en = {
 const ru: typeof en = {
   common: {
     applyNow: "Подать заявку",
-    applyAsJury: "Стать судьёй",
-    juryAccount: "Кабинет жюри",
+    applyAsParticipant: "Подать заявку участника",
+    applyAsJury: "Подать заявку судьи",
+    juryAccount: "Кабинет судьи",
     jury: "Жюри",
     categories: "Категории",
     grandPrix: "Гран-при",
@@ -781,7 +810,7 @@ const ru: typeof en = {
       categoriesCta: "Изучить категории",
     },
     copy: {
-      whyEyebrow: "Почему IBPA",
+      whyEyebrow: "Почему IBPA Beauty Award 2026",
       whyTitle: "Премия, созданная для профессионального лидерства в индустрии красоты",
       whyText: "Структурированный отбор, прозрачная оценка и мировая презентация на уровне брендов.",
       heroMediaTitle: "Роскошное редакционное присутствие",
@@ -802,29 +831,56 @@ const ru: typeof en = {
       fullBleedText: "Спокойная, премиальная платформа для артистов, преподавателей, салонов и брендов.",
       intlRecognition: "Международное признание",
       judgingIntegrity: "Структурированная оценка",
+      whyFeatures: [
+        { title: "Международное признание", text: "Ваша работа получает оценку и признание на международном уровне — среди профессионалов индустрии красоты по всему миру." },
+        { title: "Прозрачная оценка", text: "Каждая заявка оценивается официальным жюри IBPA Beauty Award 2026 по чётким профессиональным критериям — честно и без предвзятости." },
+        { title: "Структурированный отбор", text: "11 категорий и номинации внутри каждой — IBPA Beauty Award 2026 охватывает все ключевые специализации индустрии красоты." },
+        { title: "Профессиональное жюри", text: "В состав жюри IBPA Beauty Award 2026 входят практикующие специалисты с опытом от 5 лет — эксперты, которые понимают индустрию изнутри." },
+        { title: "Официальный статус победителя", text: "Победители и призёры IBPA Beauty Award 2026 получают сертификаты, подтверждающие документы и публичное признание на платформе премии." },
+        { title: "Гран-при для лучших", text: "Участники 5 и более номинаций автоматически становятся номинантами на Гран-при — высшую награду IBPA Beauty Award 2026." },
+      ],
     },
-    stats: [
-      {
-        title: "Регистрационный взнос",
-        value: "$50",
-        text: "Стоимость участия оплачивается отдельно за каждую выбранную номинацию.",
+    pricing: {
+      award: {
+        eyebrow: "Участники премии",
+        title: "Стоимость участия",
+        ibpaMember: {
+          label: "УЧАСТНИКИ АССОЦИАЦИИ IBPA",
+          rows: [
+            { label: "1 номинация", value: "$50" },
+            { label: "3 номинации", value: "$130" },
+            { label: "5 номинаций", value: "$200" },
+          ],
+          grandPrixLabel: "Гран-при",
+          grandPrixNote: "от 5 номинаций — автоматически",
+        },
+        nonMember: {
+          label: "УЧАСТНИКИ БЕЗ ЧЛЕНСТВА IBPA",
+          rows: [
+            { label: "1 номинация", value: "$70" },
+            { label: "3 номинации", value: "$190" },
+            { label: "5 номинаций", value: "$300" },
+          ],
+          grandPrixLabel: "Гран-при",
+          grandPrixNote: "от 5 номинаций — автоматически",
+        },
       },
-      {
+      jury: {
+        eyebrow: "Судейский состав",
         title: "Регистрация судьи",
-        value: "$250",
-        text: "Подать заявку в судейскую коллегию могут специалисты с опытом работы от 5 лет. Регистрационный взнос оплачивается только после одобрения кандидатуры.",
+        standard: {
+          label: "СТАНДАРТНЫЙ ВЗНОС",
+          value: "$250",
+          text: "Для специалистов с опытом от 5 лет. Взнос оплачивается только после одобрения кандидатуры.",
+        },
+        ibpaTrainer: {
+          label: "УЧАСТНИКИ АССОЦИАЦИИ IBPA — ТРЕНЕР И ВЫШЕ",
+          value: "$100",
+          text: "Специальный взнос для участников ассоциации IBPA категории тренер и выше.",
+          note: "Также оплачивается после одобрения кандидатуры.",
+        },
       },
-      {
-        title: "Участие",
-        value: "IBPA",
-        text: "Подать заявку на участие могут действующие члены ассоциации IBPA.",
-      },
-      {
-        title: "Гран-при",
-        value: "5+",
-        text: "Участники, подавшие заявки в 5 и более номинациях, автоматически участвуют в категории Гран-при.",
-      },
-    ],
+    },
     categoriesPreview: {
       label: "Категории",
       title: "11 категорий превосходства в индустрии красоты",
@@ -845,7 +901,7 @@ const ru: typeof en = {
     },
     process: {
       label: "Процесс премии",
-      title: "Как проходит премия",
+      title: "Как проходит премия IBPA",
       steps: [
         {
           number: "01",
@@ -859,8 +915,8 @@ const ru: typeof en = {
         },
         {
           number: "03",
-          title: "Подтвердите, что вы часть IBPA",
-          text: "Участие открыто для всех активных членов ассоциации. Укажите членский номер - и вы уже на шаг ближе",
+          title: "Подтвердите ваш статус в IBPA",
+          text: "Если вы аккредитованный специалист IBPA — укажите ID сертификата для подтверждения и получения тарифа для участников IBPA.",
         },
         {
           number: "04",
@@ -870,7 +926,7 @@ const ru: typeof en = {
         {
           number: "05",
           title: "Отправьте заявку и оплатите взнос",
-          text: "Участие в каждой номинации стоит $50. После оплаты заявка переходит на официальную оценку жюри IBPA - и завершается торжественной церемонией награждения.",
+          text: "Для участников IBPA — от $50 за номинацию, для участников которые не состоят в ассоциации — от $70. Участие в 5+ номинациях автоматически включает вас в Гран-при.",
         },
       ],
     },
@@ -888,7 +944,7 @@ const ru: typeof en = {
       title: "Подайте заявку, чтобы стать официальным судьёй премии IBPA 2026",
       text1: "Кандидаты на роль судей проходят профессиональный отбор.",
       text2:
-        "Сначала подаётся заявка, после чего она рассматривается экспертной комиссией. В случае одобрения кандидат получает приглашение и ссылку для оплаты регистрационного взноса в размере 250 долларов США.",
+        "Подайте заявку на должность судьи — её рассмотрит экспертная комиссия IBPA. В случае одобрения вы получите приглашение и ссылку для оплаты регистрационного взноса: $250 для всех специалистов или $100 для аккредитованных специалистов IBPA категории тренер и выше.",
       text3:
         "После оплаты судья получает официальное подтверждение, комплект документов и публичный профиль на странице жюри.",
       button: "Подать заявку на должность судьи",
@@ -931,10 +987,10 @@ const ru: typeof en = {
       feeLabel: "Регистрационный взнос",
       feeValue: "$50 за категорию",
       eligibilityLabel: "Участие",
-      eligibilityValue: "Для членов IBPA",
+      eligibilityValue: "Для членов IBPA Beauty Award 2026",
       cta: "Подать заявку по категории",
     },
-    cardText: "Профессиональные заявки рассматриваются в рамках официальной премии IBPA.",
+    cardText: "Профессиональные заявки рассматриваются в рамках официальной премии IBPA Beauty Award 2026.",
     directions: [
       {
         slug: "hair",
@@ -1104,7 +1160,7 @@ const ru: typeof en = {
         },
         {
           number: "02",
-          title: "Рассмотрение IBPA",
+          title: "Рассмотрение IBPA Beauty Award 2026",
           text: "Ваш профессиональный опыт, квалификация и документы проходят проверку.",
         },
         {
@@ -1162,26 +1218,26 @@ const ru: typeof en = {
       text: "Представьте свой профессиональный профиль, опыт и области специализации для прохождения отбора в состав жюри.",
     },
     copy: {
-      heroEyebrow: "Совет жюри IBPA",
-      heroTitle: "Станьте официальным судьей IBPA",
+      heroEyebrow: "Совет жюри IBPA Beauty Award 2026",
+      heroTitle: "Станьте официальным судьей IBPA Beauty Award 2026",
       heroText: "Премиальный состав жюри для честного, экспертного и международно признанного судейства.",
       leadershipTitle: "Лидерство, доверие и независимые стандарты",
       credibility: "Доверие",
       credibilityText: "Каждый судья должен подтвердить профессиональный опыт и экспертизу по категориям",
-      processLabel: "Процесс жюри",
-      processTitle: "Связанная 3-этапная заявка",
+      processLabel: "Заявка на судейство",
+      processTitle: "Три шага до статуса судьи",
       processText: "Понятный путь от подачи до официального включения в состав жюри.",
-      apply: "Подача",
-      approved: "Одобрение",
-      registration: "Подтверждение регистрации",
-      applyText: "Отправьте профиль, опыт и необходимые профессиональные материалы.",
-      approvedText: "IBPA оценивает вашу экспертизу и подтверждает соответствие выбранным категориям.",
-      registrationText: "Одобренные кандидаты оплачивают официальный регистрационный взнос и входят в состав жюри.",
+      apply: "Подача заявки",
+      approved: "Рассмотрение и одобрение",
+      registration: "Оплата и подтверждение",
+      applyText: "Отправьте профессиональный профиль, опыт работы и необходимые материалы для рассмотрения комиссией IBPA Beauty Award 2026.",
+      approvedText: "IBPA Beauty Award 2026 оценивает вашу экспертизу и профессиональное соответствие. При одобрении вы получаете официальное приглашение.",
+      registrationText: "Одобренные кандидаты оплачивают регистрационный взнос и получают официальный статус судьи, сертификат и публичный профиль на сайте премии.",
       benefitsEyebrow: "Преимущества судьи",
-      benefitsTitle: "Почему эксперты входят в совет жюри IBPA",
+      benefitsTitle: "Почему эксперты входят в совет жюри IBPA Beauty Award 2026",
       benefitsText: "Серьезная профессиональная роль с заметным вкладом и международным признанием.",
       b1Title: "Официальное признание",
-      b1Text: "Публикуйтесь как подтвержденный член жюри IBPA и представляйте отраслевые стандарты.",
+      b1Text: "Публикуйтесь как подтвержденный член жюри IBPA Beauty Award 2026 и представляйте отраслевые стандарты.",
       b2Title: "Надежная система",
       b2Text: "Оценивайте заявки через прозрачный и структурированный процесс судейства.",
       b3Title: "Профессиональное сообщество",
@@ -1190,13 +1246,13 @@ const ru: typeof en = {
       b4Text: "Укрепляйте профессиональный авторитет через официальную роль в премии.",
       statementEyebrow: "Позиция доверия",
       statementTitle: "Каждый балл должен отражать мастерство и профессиональную честность",
-      statementText: "Судьи IBPA отбираются по экспертизе, нейтральности и приверженности справедливой оценке.",
+      statementText: "Судьи IBPA Beauty Award 2026 отбираются по экспертизе, нейтральности и приверженности справедливой оценке.",
       statementQuote: "Судейство - это не только результат. Это доверие к процессу.",
       approvedEyebrow: "Одобренное жюри",
-      approvedTitle: "Текущий состав жюри IBPA",
+      approvedTitle: "Текущий состав жюри IBPA Beauty Award 2026",
       approvedSectionText: "Актуальный список одобренных судей, участвующих в премии.",
       ctaEyebrow: "Совет жюри",
-      ctaTitle: "Примените свою экспертизу на сцене IBPA",
+      ctaTitle: "Примените свою экспертизу на сцене IBPA Beauty Award 2026",
       ctaText: "Подайте заявку в жюри и участвуйте в справедливых профессиональных решениях по номинациям.",
       ctaAside: "Оплата регистрации доступна только после одобрения.",
     },
@@ -1255,7 +1311,7 @@ const ru: typeof en = {
         {
           number: "02",
           title: "Жюри оценивает каждую номинацию",
-          text: "Ваша работа получает профессиональную оценку жюри IBPA - честно, по единым критериям.",
+          text: "Ваша работа получает профессиональную оценку жюри IBPA Beauty Award 2026 - честно, по единым критериям.",
         },
         {
           number: "03",
@@ -1306,7 +1362,7 @@ const ru: typeof en = {
       breakText: "Премиальная среда, где суммарное мастерство получает заметное признание.",
       ctaEyebrow: "Участие в Гран-при",
       ctaTitle: "Постройте путь к высшей награде",
-      ctaText: "Выступайте в нескольких категориях, усиливайте профиль и боритесь за главный титул IBPA.",
+      ctaText: "Выступайте в нескольких категориях, усиливайте профиль и боритесь за главный титул IBPA Beauty Award 2026.",
       startEntry: "Начать подачу",
       viewCategories: "Смотреть категории",
       strategy: "Стратегия нескольких категорий имеет значение.",
@@ -1435,26 +1491,26 @@ const ru: typeof en = {
   auth: {
     shellCards: [
       "Закрытый доступ для участников",
-      "Премиальный стиль IBPA",
+      "Премиальный стиль IBPA Beauty Award 2026",
       "Защищённые страницы премии",
     ],
     access: "Доступ",
     accessText:
-      "Войдите, чтобы получить доступ к сайту IBPA. Новые пользователи могут зарегистрироваться по email и паролю, а затем перейти на основной сайт.",
+      "Войдите, чтобы получить доступ к сайту IBPA Beauty Award 2026. Новые пользователи могут зарегистрироваться по email и паролю, а затем перейти на основной сайт.",
     loginLink: "Войти",
     registerLink: "Регистрация",
     loginPage: {
       eyebrow: "Вход жюри",
-      title: "Доступ к рабочему пространству жюри IBPA",
+      title: "Доступ к рабочему пространству жюри IBPA Beauty Award 2026",
       description:
         "Войдите с email и паролем, чтобы перейти в панель жюри. Защищённые страницы сначала направят неавторизованных пользователей сюда.",
       cardEyebrow: "Вход жюри",
       cardTitle: "Добро пожаловать",
-      cardText: "Введите данные для входа в рабочее пространство жюри IBPA.",
+      cardText: "Введите данные для входа в рабочее пространство жюри IBPA Beauty Award 2026.",
     },
     registerPage: {
       eyebrow: "Регистрация жюри",
-      title: "Создайте закрытый доступ жюри IBPA",
+      title: "Создайте закрытый доступ жюри IBPA Beauty Award 2026",
       description:
         "Создайте email и пароль для входа на сайт. После регистрации вход выполняется автоматически, и вы переходите на главную страницу.",
       cardEyebrow: "Регистрация жюри",
@@ -1502,8 +1558,9 @@ const ru: typeof en = {
 const ua: typeof en = {
   common: {
     applyNow: "Подати заявку",
-    applyAsJury: "Стати суддею",
-    juryAccount: "Кабінет журі",
+    applyAsParticipant: "Подати заявку учасника",
+    applyAsJury: "Подати заявку судді",
+    juryAccount: "Кабінет судді",
     jury: "Журі",
     categories: "Категорії",
     grandPrix: "Гран-прі",
@@ -1527,7 +1584,7 @@ const ua: typeof en = {
       categoriesCta: "Переглянути категорії",
     },
     copy: {
-      whyEyebrow: "Чому IBPA",
+      whyEyebrow: "Чому IBPA Beauty Award 2026",
       whyTitle: "Створено для професійного лідерства у beauty-сфері",
       whyText: "Структурований відбір, прозоре суддівство та міжнародний рівень представлення.",
       heroMediaTitle: "Преміальна редакційна подача",
@@ -1548,29 +1605,56 @@ const ua: typeof en = {
       fullBleedText: "Преміальна платформа для майстрів, викладачів, салонів і брендів.",
       intlRecognition: "Міжнародне визнання",
       judgingIntegrity: "Прозорість і цілісність суддівства",
+      whyFeatures: [
+        { title: "Міжнародне визнання", text: "Ваша робота отримує оцінку та визнання на міжнародному рівні — серед професіоналів індустрії краси по всьому світу." },
+        { title: "Прозора оцінка", text: "Кожна заявка оцінюється офіційним журі IBPA Beauty Award 2026 за чіткими професійними критеріями — чесно та без упередженості." },
+        { title: "Структурований відбір", text: "11 категорій і номінації всередині кожної — IBPA Beauty Award 2026 охоплює всі ключові спеціалізації індустрії краси." },
+        { title: "Професійне журі", text: "До складу журі IBPA Beauty Award 2026 входять практикуючі спеціалісти з досвідом від 5 років — експерти, які розуміють індустрію зсередини." },
+        { title: "Офіційний статус переможця", text: "Переможці та призери IBPA Beauty Award 2026 отримують сертифікати, підтверджуючі документи та публічне визнання на платформі премії." },
+        { title: "Гран-прі для кращих", text: "Учасники 5 і більше номінацій автоматично стають номінантами на Гран-прі — найвищу нагороду IBPA Beauty Award 2026." },
+      ],
     },
-    stats: [
-      {
-        title: "Реєстраційний внесок",
-        value: "$50",
-        text: "Вартість участі оплачується окремо за кожну вибрану номінацію.",
+    pricing: {
+      award: {
+        eyebrow: "Учасники премії",
+        title: "Вартість участі",
+        ibpaMember: {
+          label: "УЧАСНИКИ АСОЦІАЦІЇ IBPA",
+          rows: [
+            { label: "1 номінація", value: "$50" },
+            { label: "3 номінації", value: "$130" },
+            { label: "5 номінацій", value: "$200" },
+          ],
+          grandPrixLabel: "Гран-прі",
+          grandPrixNote: "від 5 номінацій — автоматично",
+        },
+        nonMember: {
+          label: "УЧАСНИКИ БЕЗ ЧЛЕНСТВА IBPA",
+          rows: [
+            { label: "1 номінація", value: "$70" },
+            { label: "3 номінації", value: "$190" },
+            { label: "5 номінацій", value: "$300" },
+          ],
+          grandPrixLabel: "Гран-прі",
+          grandPrixNote: "від 5 номінацій — автоматично",
+        },
       },
-      {
+      jury: {
+        eyebrow: "Суддівський склад",
         title: "Реєстрація судді",
-        value: "$250",
-        text: "Подати заявку до суддівської колегії можуть спеціалісти з досвідом роботи від 5 років. Реєстраційний внесок сплачується лише після схвалення кандидатури.",
+        standard: {
+          label: "СТАНДАРТНИЙ ВНЕСОК",
+          value: "$250",
+          text: "Для спеціалістів з досвідом від 5 років. Внесок сплачується лише після схвалення кандидатури.",
+        },
+        ibpaTrainer: {
+          label: "УЧАСНИКИ АСОЦІАЦІЇ IBPA — ТРЕНЕР І ВИЩЕ",
+          value: "$100",
+          text: "Спеціальний внесок для учасників асоціації IBPA категорії тренер і вище.",
+          note: "Також сплачується після схвалення кандидатури.",
+        },
       },
-      {
-        title: "Участь",
-        value: "IBPA",
-        text: "Подати заявку на участь можуть члени асоціації IBPA.",
-      },
-      {
-        title: "Гран-прі",
-        value: "5+",
-        text: "Учасники, які подали заявки у 5 та більше номінаціях, автоматично беруть участь у категорії Гран-прі.",
-      },
-    ],
+    },
     categoriesPreview: {
       label: "Категорії",
       title: "11 Категорій досконалості в індустрії краси",
@@ -1591,7 +1675,7 @@ const ua: typeof en = {
     },
     process: {
       label: "Процес премії",
-      title: "Як проходить премія",
+      title: "Як проходить премія IBPA",
       steps: [
         {
           number: "01",
@@ -1605,8 +1689,8 @@ const ua: typeof en = {
         },
         {
           number: "03",
-          title: "Підтвердьте, що ви є частиною IBPA",
-          text: "Участь відкрита всім активних членів асоціації. Вкажіть членський номер – і ви вже на крок ближче.",
+          title: "Підтвердьте ваш статус в IBPA",
+          text: "Якщо ви акредитований спеціаліст IBPA — вкажіть ID сертифіката для підтвердження та отримання тарифу для учасників IBPA.",
         },
         {
           number: "04",
@@ -1616,7 +1700,7 @@ const ua: typeof en = {
         {
           number: "05",
           title: "Надішліть заявку та сплатіть внесок",
-          text: "Участь у кожній номінації коштує $50. Після оплати заявка переходить на офіційну оцінку журі IBPA – та завершується урочистою церемонією нагородження.",
+          text: "Для учасників IBPA — від $50 за номінацію, для учасників без членства в асоціації — від $70. Участь у 5+ номінаціях автоматично включає вас до Гран-прі.",
         },
       ],
     },
@@ -1634,7 +1718,7 @@ const ua: typeof en = {
       title: "Подайте заявку, щоб стати офіційним суддею премії IBPA 2026",
       text1: "Кандидати до складу журі проходять професійний відбір.",
       text2:
-        "Спочатку подається заявка, після чого її розглядає експертна комісія. У разі схвалення кандидат отримує запрошення та посилання для оплати реєстраційного внеску $250.",
+        "Подайте заявку на посаду судді — її розгляне експертна комісія IBPA. У разі схвалення ви отримаєте запрошення та посилання для оплати реєстраційного внеску: $250 для всіх спеціалістів або $100 для акредитованих спеціалістів IBPA категорії тренер і вище.",
       text3:
         "Після оплати суддя отримує офіційне підтвердження, комплект документів і публічний профіль на сторінці журі.",
       button: "Подати заявку на посаду судді",
@@ -1677,10 +1761,10 @@ const ua: typeof en = {
       feeLabel: "Реєстраційний внесок",
       feeValue: "$50 за категорію",
       eligibilityLabel: "Участь",
-      eligibilityValue: "Для членів IBPA",
+      eligibilityValue: "Для членів IBPA Beauty Award 2026",
       cta: "Подати заявку за категорією",
     },
-    cardText: "Професійні заявки розглядаються в межах офіційної премії IBPA.",
+    cardText: "Професійні заявки розглядаються в межах офіційної премії IBPA Beauty Award 2026.",
     directions: [
       {
         slug: "hair",
@@ -1850,7 +1934,7 @@ const ua: typeof en = {
         },
         {
           number: "02",
-          title: "Розгляд IBPA",
+          title: "Розгляд IBPA Beauty Award 2026",
           text: "Ваш професійний досвід, кваліфікація та документи проходять перевірку.",
         },
         {
@@ -1908,26 +1992,26 @@ const ua: typeof en = {
       text: "Представте свій професійний профіль, досвід і категорії спеціалізації для відбору до складу журі.",
     },
     copy: {
-      heroEyebrow: "Рада журі IBPA",
-      heroTitle: "Станьте офіційним суддею IBPA",
+      heroEyebrow: "Рада журі IBPA Beauty Award 2026",
+      heroTitle: "Станьте офіційним суддею IBPA Beauty Award 2026",
       heroText: "Преміальний склад журі для чесного, експертного та міжнародно визнаного суддівства.",
       leadershipTitle: "Лідерство, довіра та незалежні стандарти",
       credibility: "Довіра",
       credibilityText: "Кожен суддя має підтвердити професійний досвід і експертизу за категоріями.",
-      processLabel: "Процес журі",
-      processTitle: "Пов'язана 3-етапна заявка",
+      processLabel: "Заявка на суддівство",
+      processTitle: "Три кроки до статусу судді",
       processText: "Зрозумілий шлях від подання до офіційного включення до складу журі.",
-      apply: "Подання",
-      approved: "Схвалення",
-      registration: "Підтвердження реєстрації",
-      applyText: "Надішліть профіль, досвід і необхідні професійні матеріали.",
-      approvedText: "IBPA оцінює вашу експертизу та підтверджує відповідність обраним категоріям.",
-      registrationText: "Схвалені кандидати сплачують офіційний реєстраційний внесок і входять до складу журі.",
+      apply: "Подання заявки",
+      approved: "Розгляд і схвалення",
+      registration: "Оплата та підтвердження",
+      applyText: "Надішліть професійний профіль, досвід роботи та необхідні матеріали для розгляду комісією IBPA Beauty Award 2026.",
+      approvedText: "IBPA Beauty Award 2026 оцінює вашу експертизу та професійну відповідність. При схваленні ви отримуєте офіційне запрошення.",
+      registrationText: "Схвалені кандидати сплачують реєстраційний внесок і отримують офіційний статус судді, сертифікат і публічний профіль на сайті премії.",
       benefitsEyebrow: "Переваги судді",
-      benefitsTitle: "Чому експерти входять до ради журі IBPA",
+      benefitsTitle: "Чому експерти входять до ради журі IBPA Beauty Award 2026",
       benefitsText: "Серйозна професійна роль із помітним внеском і міжнародним визнанням.",
       b1Title: "Офіційне визнання",
-      b1Text: "Публікуйтесь як підтверджений член журі IBPA і представляйте галузеві стандарти.",
+      b1Text: "Публікуйтесь як підтверджений член журі IBPA Beauty Award 2026 і представляйте галузеві стандарти.",
       b2Title: "Надійна система",
       b2Text: "Оцінюйте заявки через прозорий і структурований процес суддівства.",
       b3Title: "Професійна спільнота",
@@ -1936,13 +2020,13 @@ const ua: typeof en = {
       b4Text: "Посилюйте професійний авторитет через офіційну роль у премії.",
       statementEyebrow: "Позиція довіри",
       statementTitle: "Кожен бал має відображати майстерність і професійну доброчесність",
-      statementText: "Суддів IBPA відбирають за експертизою, нейтральністю та відданістю справедливому оцінюванню.",
+      statementText: "Суддів IBPA Beauty Award 2026 відбирають за експертизою, нейтральністю та відданістю справедливому оцінюванню.",
       statementQuote: "Суддівство - це не лише результат. Це довіра до процесу.",
       approvedEyebrow: "Схвалене журі",
-      approvedTitle: "Поточний склад журі IBPA",
+      approvedTitle: "Поточний склад журі IBPA Beauty Award 2026",
       approvedSectionText: "Актуальний список схвалених суддів, які беруть участь у премії.",
       ctaEyebrow: "Рада журі",
-      ctaTitle: "Застосуйте свою експертизу на сцені IBPA",
+      ctaTitle: "Застосуйте свою експертизу на сцені IBPA Beauty Award 2026",
       ctaText: "Подайте заявку до журі та долучайтеся до справедливих професійних рішень за номінаціями.",
       ctaAside: "Оплата реєстрації доступна лише після схвалення.",
     },
@@ -2001,7 +2085,7 @@ const ua: typeof en = {
         {
           number: "02",
           title: "Журі оцінює кожну номінацію",
-          text: "Ваша робота отримує професійну оцінку журі IBPA - чесно, за єдиними критеріями.",
+          text: "Ваша робота отримує професійну оцінку журі IBPA Beauty Award 2026 - чесно, за єдиними критеріями.",
         },
         {
           number: "03",
@@ -2052,7 +2136,7 @@ const ua: typeof en = {
       breakText: "Преміальне середовище, де сумарна майстерність отримує помітне визнання.",
       ctaEyebrow: "Участь у Гран-прі",
       ctaTitle: "Побудуйте шлях до найвищої відзнаки",
-      ctaText: "Виступайте у кількох категоріях, посилюйте профіль і змагайтеся за головний титул IBPA.",
+      ctaText: "Виступайте у кількох категоріях, посилюйте профіль і змагайтеся за головний титул IBPA Beauty Award 2026.",
       startEntry: "Почати подання",
       viewCategories: "Переглянути категорії",
       strategy: "Стратегія кількох категоріях має значення.",
@@ -2181,26 +2265,26 @@ const ua: typeof en = {
   auth: {
     shellCards: [
       "Закритий доступ для учасників",
-      "Преміальний стиль IBPA",
+      "Преміальний стиль IBPA Beauty Award 2026",
       "Захищені сторінки премії",
     ],
     access: "Доступ",
     accessText:
-      "Увійдіть, щоб отримати доступ до сайту IBPA. Нові користувачі можуть зареєструватися за email і паролем, а потім перейти на основний сайт.",
+      "Увійдіть, щоб отримати доступ до сайту IBPA Beauty Award 2026. Нові користувачі можуть зареєструватися за email і паролем, а потім перейти на основний сайт.",
     loginLink: "Увійти",
     registerLink: "Реєстрація",
     loginPage: {
       eyebrow: "Вхід журі",
-      title: "Доступ до робочого простору журі IBPA",
+      title: "Доступ до робочого простору журі IBPA Beauty Award 2026",
       description:
         "Увійдіть з email і паролем, щоб перейти до панелі журі. Захищені сторінки спочатку направлять неавторизованих користувачів сюди.",
       cardEyebrow: "Вхід журі",
       cardTitle: "Вітаємо з поверненням",
-      cardText: "Введіть дані для входу до робочого простору журі IBPA.",
+      cardText: "Введіть дані для входу до робочого простору журі IBPA Beauty Award 2026.",
     },
     registerPage: {
       eyebrow: "Реєстрація журі",
-      title: "Створіть закритий доступ журі IBPA",
+      title: "Створіть закритий доступ журі IBPA Beauty Award 2026",
       description:
         "Створіть email і пароль для входу на сайт. Після реєстрації вхід виконується автоматично, і ви переходите на головну сторінку.",
       cardEyebrow: "Реєстрація журі",

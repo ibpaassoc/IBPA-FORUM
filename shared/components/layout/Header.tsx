@@ -105,11 +105,7 @@ export default function Header() {
 
           <div className="hidden items-center gap-3 lg:flex">
             <LanguageSwitcher />
-            {/* <JuryMenu /> */}
-
-            <Link href="/apply/jury" className="ibpa-button ibpa-button-primary">
-              {t.common.applyAsJury}
-            </Link>
+            <JuryMenu />
           </div>
 
           <button
@@ -183,15 +179,7 @@ export default function Header() {
 
                 <div className="grid gap-3 border-t border-[var(--border-default)] pt-[var(--space-md)]">
                   <LanguageSwitcher mobile />
-                  {/* <JuryMenu mobile onNavigate={handleLinkClick} /> */}
-
-                  <Link
-                    href="/apply/jury"
-                    onClick={handleLinkClick}
-                    className="ibpa-button ibpa-button-primary"
-                  >
-                    {t.common.applyAsJury}
-                  </Link>
+                  <JuryMenu mobile onNavigate={handleLinkClick} />
                 </div>
               </div>
             </div>

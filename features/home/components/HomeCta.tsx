@@ -20,7 +20,7 @@ export default function HomeWhy() {
                 eyebrow={t.home.cta.label}
                 title={t.home.cta.title}
                 description={t.home.cta.text}
-                primary={{ href: "/apply", label: t.common.applyNow }}
+                primary={{ href: "/apply", label: t.common.applyAsParticipant }}
                 secondary={{ href: "/jury", label: t.home.cta.judge }}
                 aside={
                   <div className="space-y-3">

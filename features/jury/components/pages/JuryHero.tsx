@@ -19,7 +19,7 @@ export default function JuryHero() {
         actions={
           <div className="flex flex-wrap gap-3">
             <Link href="/apply/jury" className="ibpa-button ibpa-button-primary">
-              {t.common.applyNow}
+              {t.common.applyAsJury}
             </Link>
             <Link href="/jury/register" className="ibpa-button ibpa-button-ghost">
               {t.common.juryAccount}

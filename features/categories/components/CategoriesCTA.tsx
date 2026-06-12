@@ -12,7 +12,7 @@ export default function CategoriesHero() {
       eyebrow={t.categoriesPage.copy.ctaEyebrow}
       title={t.categoriesPage.copy.ctaTitle}
       description={t.categoriesPage.copy.ctaText}
-      primary={{ href: "/apply", label: t.common.applyNow }}
+      primary={{ href: "/apply", label: t.common.applyAsParticipant }}
       secondary={{ href: "/grand-prix", label: t.common.grandPrix }}
     />
   );
