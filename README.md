@@ -1,6 +1,6 @@
 # IBPA Beauty Championship
 
-A Next.js 16 application for the IBPA Beauty Championship website. The project combines a public-facing marketing site, a jury application workflow, database-backed APIs, and an internal admin review dashboard.
+A Next.js 16 application for the IBPA Beauty Championship website. The project combines a public-facing marketing site, a jury application workflow, database-backed APIs, and an internal admin review dashboard. 
 
 ## Overview
 
