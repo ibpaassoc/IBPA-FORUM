@@ -14,13 +14,13 @@ export default function FormFieldShell({
   children: ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2.5">
       <div className="flex items-center gap-1.5">
-        <label className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink)]">
+        <label className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-[var(--color-ink)]/60">
           {label}
         </label>
         {required ? (
-          <span className="text-[0.9rem] font-medium text-[var(--color-hover-accent)]">*</span>
+          <span className="text-[0.85rem] font-medium text-[var(--color-hover-accent)]">*</span>
         ) : null}
       </div>
 
@@ -29,7 +29,7 @@ export default function FormFieldShell({
       {error ? (
         <p className="text-[0.72rem] leading-5 text-red-500">{error}</p>
       ) : description ? (
-        <p className="text-[0.72rem] leading-5 text-[var(--color-ink-soft)]">{description}</p>
+        <p className="text-[0.72rem] leading-5 text-[var(--color-ink)]/45">{description}</p>
       ) : null}
     </div>
   );

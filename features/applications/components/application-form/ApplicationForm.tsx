@@ -298,26 +298,29 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
   const currentStepInfo = copy.steps[step];
 
   return (
-    <form onSubmit={handleSubmit} className="pb-8">
+    <form onSubmit={handleSubmit} className="space-y-6 pb-12">
+      {/* Step bar — top nav */}
+      <StepBar steps={STEPS} current={step} />
+
       {/* Form card */}
-      <div className="mx-auto max-w-2xl rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-white p-8 shadow-[0_8px_40px_rgba(3,2,19,0.07)]">
+      <div className="mx-auto max-w-4xl rounded-[40px] border border-slate-100 bg-[#F1F3F5] p-8 shadow-xl md:p-14">
         {/* Step heading */}
-        <div className="mb-7 border-b border-[var(--border-default)] pb-6">
-          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-hover-accent)]">
+        <div className="mb-10">
+          <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-hover-accent)]">
             {STEPS[step].label} — {step + 1} / {STEPS.length}
           </p>
-          <h2 className="mt-1.5 font-[var(--font-ui-family)] text-[1.5rem] font-bold uppercase tracking-[0.04em] text-[var(--color-ink)]">
+          <h2 className="mt-2 font-[var(--font-ui-family)] text-[2rem] font-black uppercase leading-none tracking-[-0.02em] text-[var(--color-ink)] md:text-[2.5rem]">
             {currentStepInfo.title}
           </h2>
-          <p className="mt-1 font-[var(--font-accent-family)] text-[0.97rem] italic text-[var(--color-ink-soft)]">
+          <p className="mt-2 font-[var(--font-accent-family)] text-[1rem] italic leading-[1.6] text-[var(--color-ink-soft)]">
             {currentStepInfo.desc}
           </p>
         </div>
 
         {/* Step content */}
-        <div className="min-h-[280px]">
+        <div className="min-h-[300px]">
           {step === 0 && (
-            <div className="grid gap-5 md:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-2">
               <SelectField
                 label={copy.category} name="categoryId" value={String(values.categoryId ?? "")}
                 required placeholder={copy.selectCategory}
@@ -335,7 +338,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
           )}
 
           {step === 1 && (
-            <div className="grid gap-5 md:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-2">
               <TextField label={copy.firstName} name="firstName" value={String(values.firstName ?? "")} required placeholder="As shown on official documents" error={errors.firstName} onChange={handleChange} />
               <TextField label={copy.lastName} name="lastName" value={String(values.lastName ?? "")} required placeholder="As shown on official documents" error={errors.lastName} onChange={handleChange} />
               <TextField label={copy.email} name="email" type="email" value={String(values.email ?? "")} required placeholder="name@example.com" error={errors.email} onChange={handleChange} />
@@ -352,7 +355,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
           )}
 
           {step === 2 && (
-            <div className="grid gap-5 md:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-2">
               <TextField label={copy.professionalTitle} name="professionalTitle" value={String(values.professionalTitle ?? "")} required placeholder={copy.professionalTitlePh} error={errors.professionalTitle} onChange={handleChange} />
               <TextField label={copy.yearsExperience} name="yearsExperience" type="number" min={2} value={String(values.yearsExperience ?? "")} required placeholder="2" description={copy.yearsExperienceHint} error={errors.yearsExperience} onChange={handleChange} />
             </div>
@@ -378,7 +381,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
           )}
 
           {step === 5 && (
-            <div className="grid gap-5 md:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-2">
               <TextField label={copy.website} name="websiteUrl" type="url" value={String(values.websiteUrl ?? "")} placeholder="https://" error={errors.websiteUrl} onChange={handleChange} />
               <TextField label={copy.social} name="socialUrl" type="url" value={String(values.socialUrl ?? "")} placeholder="https://instagram.com/yourprofile" error={errors.socialUrl} onChange={handleChange} />
               <TextField label={copy.reviews} name="reviewsUrl" type="url" value={String(values.reviewsUrl ?? "")} placeholder="https://" error={errors.reviewsUrl} onChange={handleChange} />
@@ -395,11 +398,11 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
           )}
 
           {step === 6 && (
-            <div className="space-y-4">
-              <div className="rounded-[var(--radius)] border border-[var(--border-default)] bg-[var(--surface-tint)] p-5">
-                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--color-hover-accent)]">{copy.confirmTitle}</p>
-                <p className="mt-2 text-[0.88rem] leading-[1.7] text-[var(--color-ink-soft)]">{copy.confirmNote}</p>
-                <dl className="mt-4 grid gap-x-6 gap-y-3 sm:grid-cols-2">
+            <div className="space-y-5">
+              <div className="rounded-[24px] bg-white/80 p-6 border border-slate-100 shadow-sm">
+                <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-hover-accent)]">{copy.confirmTitle}</p>
+                <p className="mt-2 text-[0.9rem] leading-[1.7] text-[var(--color-ink-soft)]">{copy.confirmNote}</p>
+                <dl className="mt-5 grid gap-x-8 gap-y-4 sm:grid-cols-2">
                   {[
                     { label: "Name", value: `${values.firstName ?? ""} ${values.lastName ?? ""}`.trim() },
                     { label: "Email", value: String(values.email ?? "") },
@@ -407,14 +410,14 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
                     { label: "Category", value: selectedCategory?.name ?? "—" },
                   ].map((row) => (
                     <div key={row.label}>
-                      <dt className="text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink)]/40">{row.label}</dt>
-                      <dd className="mt-0.5 text-[0.9rem] font-medium text-[var(--color-ink)]">{row.value || "—"}</dd>
+                      <dt className="text-[0.62rem] font-bold uppercase tracking-[0.18em] text-[var(--color-ink)]/40">{row.label}</dt>
+                      <dd className="mt-1 text-[0.95rem] font-semibold text-[var(--color-ink)]">{row.value || "—"}</dd>
                     </div>
                   ))}
                 </dl>
               </div>
               {submissionState.message ? (
-                <div className={`rounded-[var(--radius)] border px-4 py-3 text-sm ${submissionState.type === "success" ? "border-green-200 bg-green-50 text-green-800" : "border-red-200 bg-red-50 text-red-700"}`} aria-live="polite">
+                <div className={`rounded-[16px] border px-5 py-4 text-sm ${submissionState.type === "success" ? "border-green-200 bg-green-50 text-green-800" : "border-red-200 bg-red-50 text-red-700"}`} aria-live="polite">
                   {submissionState.message}
                 </div>
               ) : null}
@@ -423,12 +426,12 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
         </div>
 
         {/* Navigation */}
-        <div className="mt-8 flex items-center justify-between border-t border-[var(--border-default)] pt-6">
+        <div className="mt-10 flex items-center justify-between pt-8 border-t border-black/6">
           <button
             type="button"
             onClick={back}
             disabled={step === 0}
-            className="inline-flex items-center gap-2 rounded-full border border-[var(--border-default)] bg-white px-5 py-2.5 text-[0.75rem] font-semibold uppercase tracking-[0.1em] text-[var(--color-ink)] transition hover:border-[var(--color-ink)] disabled:pointer-events-none disabled:opacity-30"
+            className="inline-flex items-center gap-2 rounded-full border border-[var(--border-default)] bg-white px-6 py-3 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-[var(--color-ink)] shadow-sm transition hover:border-[var(--color-ink)] hover:shadow-md disabled:pointer-events-none disabled:opacity-30"
           >
             <ChevronLeft size={14} /> {copy.back}
           </button>
@@ -437,7 +440,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
             <button
               type="button"
               onClick={advance}
-              className="inline-flex items-center gap-2 rounded-full bg-[var(--color-ink)] px-6 py-2.5 text-[0.75rem] font-semibold uppercase tracking-[0.1em] text-white transition hover:bg-[var(--color-ink)]/90"
+              className="inline-flex items-center gap-2 rounded-full bg-[var(--color-ink)] px-8 py-3 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-white shadow-lg transition hover:bg-[var(--color-ink)]/90 hover:shadow-xl"
             >
               {copy.continue} <ChevronRight size={14} />
             </button>
@@ -445,16 +448,13 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex items-center gap-2 rounded-full bg-[var(--color-ink)] px-6 py-2.5 text-[0.75rem] font-semibold uppercase tracking-[0.1em] text-white transition hover:bg-[var(--color-ink)]/90 disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-full bg-[var(--color-ink)] px-8 py-3 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-white shadow-lg transition hover:bg-[var(--color-ink)]/90 disabled:opacity-60"
             >
               {isSubmitting ? copy.submitting : copy.submit} <ChevronRight size={14} />
             </button>
           )}
         </div>
       </div>
-
-      {/* Step bar */}
-      <StepBar steps={STEPS} current={step} />
     </form>
   );
 }

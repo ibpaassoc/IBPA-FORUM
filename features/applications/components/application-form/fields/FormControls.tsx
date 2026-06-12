@@ -5,9 +5,9 @@ import type { FieldOption } from "@/features/applications/types/application.type
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 const base =
-  "w-full rounded-[var(--radius)] border border-[var(--border-default)] bg-white px-4 py-3 text-[0.93rem] text-[var(--color-ink)] outline-none transition placeholder:text-[var(--color-ink)]/30 focus:border-[var(--color-hover-accent)] focus:shadow-[0_0_0_3px_rgba(114,160,193,0.13)]";
+  "w-full rounded-[14px] border-2 border-transparent bg-[var(--surface-muted)] px-5 py-[1.05rem] text-[1rem] text-[var(--color-ink)] outline-none transition-all duration-200 placeholder:text-[var(--color-ink)]/30 focus:border-[var(--color-hover-accent)] focus:bg-white focus:shadow-[0_0_0_4px_rgba(114,160,193,0.14)]";
 
-const errorCls = "!border-red-300 focus:!border-red-400 focus:!shadow-[0_0_0_3px_rgba(239,68,68,0.1)]";
+const errorCls = "!border-red-300 !bg-red-50/60 focus:!border-red-400 focus:!shadow-[0_0_0_4px_rgba(239,68,68,0.1)]";
 
 export function TextField({
   label,
@@ -175,10 +175,10 @@ export function ChoiceGroupField({
           return (
             <label
               key={option.value}
-              className={`flex cursor-pointer items-center gap-3 rounded-[var(--radius)] border px-4 py-3 text-[0.88rem] transition ${
+              className={`flex cursor-pointer items-center gap-3 rounded-[14px] border-2 px-5 py-4 text-[0.93rem] transition-all duration-200 ${
                 checked
                   ? "border-[var(--color-hover-accent)] bg-[rgba(114,160,193,0.08)] text-[var(--color-ink)]"
-                  : "border-[var(--border-default)] bg-white text-[var(--color-ink)] hover:border-[var(--color-hover-accent)]/50"
+                  : "border-transparent bg-[var(--surface-muted)] text-[var(--color-ink)] hover:border-[var(--color-hover-accent)]/30 hover:bg-white"
               }`}
             >
               <input
