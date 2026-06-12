@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import type { JuryApplicationStatus } from "@prisma/client";
 import {
   approveJuryApplication,
+  deleteJuryApplication,
   rejectJuryApplication,
   saveJuryApplicationNotes,
   updateJuryApplicationStatus,
@@ -61,6 +62,9 @@ export async function approveJuryApplicationAction(formData: FormData) {
   await requireAdmin();
 
   const id = String(formData.get("id") ?? "");
+  const isIbpaMemberRaw = formData.get("isIbpaMember");
+  const isIbpaMemberOverride =
+    isIbpaMemberRaw === "true" ? true : isIbpaMemberRaw === "false" ? false : undefined;
 
   if (!id) {
     throw new Error("Missing jury application id.");
@@ -69,7 +73,7 @@ export async function approveJuryApplicationAction(formData: FormData) {
   let notice = "Application approved and payment link sent.";
 
   try {
-    const result = await approveJuryApplication(id);
+    const result = await approveJuryApplication(id, isIbpaMemberOverride);
 
     if (!result.emailDelivered && result.emailSkipReason === "email_test_missing") {
       notice =
@@ -194,4 +198,27 @@ export async function updateJuryApplicationStatusAction(formData: FormData) {
       notice,
     })
   );
+}
+
+export async function deleteJuryApplicationAction(formData: FormData) {
+  await requireAdmin();
+
+  const id = String(formData.get("id") ?? "");
+
+  if (!id) {
+    throw new Error("Missing jury application id.");
+  }
+
+  try {
+    await deleteJuryApplication(id);
+  } catch (error) {
+    redirect(
+      getJuryApplicationDetailPath(id, {
+        error: getActionErrorMessage(error),
+      })
+    );
+  }
+
+  revalidatePath("/admin/jury-applications");
+  redirect("/admin/jury-applications");
 }

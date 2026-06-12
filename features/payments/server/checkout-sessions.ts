@@ -1,14 +1,22 @@
+import { requireEnv } from "@/lib/env";
 import { getAppUrl, getStripe } from "@/features/payments/server/stripe-client";
+
+function getJuryPriceId(isIbpaMember: boolean) {
+  return requireEnv([isIbpaMember ? "JURY_IBPA_PRICE" : "JURY_NON_IBPA_PRICE"]);
+}
 
 export async function createJuryCheckoutSession({
   juryApplicationId,
   email,
+  isIbpaMember,
 }: {
   juryApplicationId: string;
   email: string;
+  isIbpaMember: boolean;
 }) {
   const stripe = getStripe();
   const appUrl = getAppUrl();
+  const priceId = getJuryPriceId(isIbpaMember);
 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
@@ -27,14 +35,7 @@ export async function createJuryCheckoutSession({
     },
     line_items: [
       {
-        price_data: {
-          currency: "usd",
-          unit_amount: 25000,
-          product_data: {
-            name: "IBPA Jury Registration Fee",
-            description: "Official IBPA jury registration fee after admin approval.",
-          },
-        },
+        price: priceId,
         quantity: 1,
       },
     ],

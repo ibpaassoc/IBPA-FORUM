@@ -39,7 +39,7 @@ export default function RegisterForm() {
         email: state.email,
         password,
         redirect: false,
-        callbackUrl: "/",
+        callbackUrl: "/jury/dashboard",
       });
 
       if (!result || result.error) {
@@ -48,7 +48,7 @@ export default function RegisterForm() {
         return;
       }
 
-      router.replace("/");
+      router.replace("/jury/dashboard");
       router.refresh();
     })();
   }, [router, state]);

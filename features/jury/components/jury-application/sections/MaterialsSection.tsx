@@ -15,7 +15,7 @@ export default function MaterialsSection() {
       certLabel: "Professional Certifications",
       certHint: "Upload up to 5 PDF or image files.",
       certUpload: "Upload certification files",
-      certUploadHint: "JPG, PNG, or PDF. Up to 5 files.",
+      certUploadHint: "JPG, PNG, or PDF. Up to 5 files. Max 3 MB each.",
       bioLabel: "Professional Bio",
       bioPlaceholder:
         "Share your background, achievements, and role in the industry. This bio can be published on the jury page if approved.",
@@ -23,7 +23,7 @@ export default function MaterialsSection() {
       photoLabel: "Profile Photo",
       photoHint: "Upload one professional JPG or PNG image for your jury profile.",
       photoUpload: "Upload profile image",
-      photoUploadHint: "Use a clear professional portrait in JPG or PNG.",
+      photoUploadHint: "JPG or PNG, max 3 MB. Use a clear professional portrait.",
       website: "Professional Website / LinkedIn",
       conflictLabel: "Conflict of Interest Disclosure",
       conflictPlaceholder:
@@ -40,7 +40,7 @@ export default function MaterialsSection() {
       certLabel: "Профессиональные сертификаты",
       certHint: "Загрузите до 5 файлов PDF или изображений.",
       certUpload: "Загрузить файлы сертификатов",
-      certUploadHint: "JPG, PNG или PDF. До 5 файлов.",
+      certUploadHint: "JPG, PNG или PDF. До 5 файлов. Макс. 3 МБ каждый.",
       bioLabel: "Профессиональная биография",
       bioPlaceholder:
         "Опишите ваш опыт, достижения и роль в индустрии. Эта биография может быть опубликована на странице жюри после одобрения.",
@@ -48,7 +48,7 @@ export default function MaterialsSection() {
       photoLabel: "Фото профиля",
       photoHint: "Загрузите одно профессиональное фото JPG или PNG для профиля жюри.",
       photoUpload: "Загрузить фото профиля",
-      photoUploadHint: "Используйте четкий профессиональный портрет в JPG или PNG.",
+      photoUploadHint: "JPG или PNG, макс. 3 МБ. Профессиональный портрет.",
       website: "Профессиональный сайт / LinkedIn",
       conflictLabel: "Раскрытие конфликта интересов",
       conflictPlaceholder:
@@ -65,7 +65,7 @@ export default function MaterialsSection() {
       certLabel: "Професійні сертифікати",
       certHint: "Завантажте до 5 файлів PDF або зображень.",
       certUpload: "Завантажити файли сертифікатів",
-      certUploadHint: "JPG, PNG або PDF. До 5 файлів.",
+      certUploadHint: "JPG, PNG або PDF. До 5 файлів. Макс. 3 МБ кожен.",
       bioLabel: "Професійна біографія",
       bioPlaceholder:
         "Опишіть ваш досвід, досягнення та роль в індустрії. Цю біографію можуть опублікувати на сторінці журі після схвалення.",
@@ -73,7 +73,7 @@ export default function MaterialsSection() {
       photoLabel: "Фото профілю",
       photoHint: "Завантажте одне професійне фото JPG або PNG для профілю журі.",
       photoUpload: "Завантажити фото профілю",
-      photoUploadHint: "Використовуйте чіткий професійний портрет у JPG або PNG.",
+      photoUploadHint: "JPG або PNG, макс. 3 МБ. Професійний портрет.",
       website: "Професійний сайт / LinkedIn",
       conflictLabel: "Розкриття конфлікту інтересів",
       conflictPlaceholder:

@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { del } from "@vercel/blob";
 import type { JuryApplicationStatus } from "@prisma/client";
 import { sendApplicationReceivedNotificationEmail } from "@/features/email/server/application-email.workflow";
 import {
@@ -34,7 +35,7 @@ export async function submitJuryApplication(formData: FormData) {
   const lastName = getText(formData, "lastName");
   const fullName = `${firstName} ${lastName}`.trim();
   const email = getText(formData, "email");
-  const normalizedEmail = email.toLowerCase();
+  const normalizedEmail = email.trim().toLowerCase();
   const phone = getText(formData, "phone");
   const countryValue = getText(formData, "country");
   const countryOther = getText(formData, "countryOther");
@@ -247,7 +248,7 @@ export async function resetJuryApplicationToSubmitted({
   });
 }
 
-export async function approveJuryApplication(id: string) {
+export async function approveJuryApplication(id: string, isIbpaMemberOverride?: boolean) {
   const application = await prisma.juryApplication.findUnique({
     where: { id },
     select: {
@@ -255,6 +256,7 @@ export async function approveJuryApplication(id: string) {
       fullName: true,
       email: true,
       status: true,
+      ibpaAssociationMember: true,
     },
   });
 
@@ -266,9 +268,12 @@ export async function approveJuryApplication(id: string) {
     throw new Error("Paid jury applications cannot be approved again.");
   }
 
+  const isIbpaMember = isIbpaMemberOverride ?? application.ibpaAssociationMember;
+
   const session = await createJuryCheckoutSession({
     juryApplicationId: application.id,
     email: application.email,
+    isIbpaMember,
   });
 
   await prisma.juryApplication.update({
@@ -389,4 +394,33 @@ export async function updateJuryApplicationStatus({
   }
 
   throw new Error("Paid status can only be set by Stripe webhook confirmation.");
+}
+
+export async function deleteJuryApplication(id: string) {
+  const application = await prisma.juryApplication.findUnique({
+    where: { id },
+    select: {
+      files: {
+        select: { storageKey: true },
+      },
+    },
+  });
+
+  if (!application) {
+    throw new Error("Jury application not found.");
+  }
+
+  const storageKeys = application.files
+    .map((f) => f.storageKey)
+    .filter((key): key is string => Boolean(key));
+
+  if (storageKeys.length > 0) {
+    try {
+      await del(storageKeys);
+    } catch (error) {
+      console.error("Failed to delete jury application blobs", error);
+    }
+  }
+
+  await prisma.juryApplication.delete({ where: { id } });
 }

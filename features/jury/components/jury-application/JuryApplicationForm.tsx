@@ -44,6 +44,10 @@ export default function JuryApplicationForm() {
       received: "Your jury application has been received for review.",
       submitException:
         "Something went wrong while sending the application. Please try again.",
+      fileTooLarge:
+        "One or more files exceed the 3 MB limit. Please compress or resize your photo and certifications, then try again.",
+      totalTooLarge:
+        "The total size of your uploaded files exceeds 4 MB. Please compress or resize them and try again.",
       progressTitle: "Jury Application Progress",
       progressSubtitle: "Track your profile, experience, and required materials.",
       progressLabel: "Completion",
@@ -68,6 +72,10 @@ export default function JuryApplicationForm() {
       received: "Ваша заявка в жюри получена и принята на рассмотрение.",
       submitException:
         "Во время отправки заявки произошла ошибка. Попробуйте еще раз.",
+      fileTooLarge:
+        "Один или несколько файлов превышают лимит 3 МБ. Пожалуйста, сожмите или уменьшите фото и сертификаты.",
+      totalTooLarge:
+        "Общий размер загруженных файлов превышает 4 МБ. Пожалуйста, сожмите их и попробуйте снова.",
       progressTitle: "Прогресс заявки в жюри",
       progressSubtitle: "Отслеживайте профиль, опыт и обязательные материалы.",
       progressLabel: "Заполнение",
@@ -92,6 +100,10 @@ export default function JuryApplicationForm() {
       received: "Вашу заявку до журі отримано та передано на розгляд.",
       submitException:
         "Під час надсилання заявки сталася помилка. Спробуйте ще раз.",
+      fileTooLarge:
+        "Один або кілька файлів перевищують ліміт 3 МБ. Будь ласка, стисніть або зменшіть фото та сертифікати.",
+      totalTooLarge:
+        "Загальний розмір завантажених файлів перевищує 4 МБ. Будь ласка, стисніть їх і спробуйте ще раз.",
       progressTitle: "Прогрес заявки до журі",
       progressSubtitle: "Відстежуйте профіль, досвід і обов’язкові матеріали.",
       progressLabel: "Заповнення",
@@ -202,6 +214,29 @@ export default function JuryApplicationForm() {
       return
     }
 
+    const MAX_FILE_BYTES = 3 * 1024 * 1024 // 3 MB per file
+    const MAX_TOTAL_BYTES = 4 * 1024 * 1024 // 4 MB total uploads
+
+    const photoInput = form.elements.namedItem("profilePhoto") as HTMLInputElement | null
+    const certInput = form.elements.namedItem("certifications") as HTMLInputElement | null
+    const allFiles = [
+      ...(photoInput?.files ? Array.from(photoInput.files) : []),
+      ...(certInput?.files ? Array.from(certInput.files) : []),
+    ]
+
+    for (const file of allFiles) {
+      if (file.size > MAX_FILE_BYTES) {
+        setSubmissionState({ type: "error", message: copy.fileTooLarge })
+        return
+      }
+    }
+
+    const totalSize = allFiles.reduce((sum, f) => sum + f.size, 0)
+    if (totalSize > MAX_TOTAL_BYTES) {
+      setSubmissionState({ type: "error", message: copy.totalTooLarge })
+      return
+    }
+
     setIsSubmitting(true)
     setSubmissionState({ type: "idle", message: "" })
 
@@ -212,24 +247,29 @@ export default function JuryApplicationForm() {
         body: formData,
       })
 
-      const data = await response.json()
-
-      if (!response.ok) {
+      let data: Record<string, unknown> = {}
+      try {
+        data = await response.json()
+      } catch {
         setSubmissionState({
           type: "error",
-          message:
-            data.message ??
-            copy.validationError,
+          message: response.status === 413 ? copy.fileTooLarge : copy.submitException,
         })
         return
       }
 
-      setSummary(data.summary ?? null)
+      if (!response.ok) {
+        setSubmissionState({
+          type: "error",
+          message: typeof data.message === "string" ? data.message : copy.validationError,
+        })
+        return
+      }
+
+      setSummary((data.summary as SubmissionSummary) ?? null)
       setSubmissionState({
         type: "success",
-        message:
-          data.message ??
-          copy.received,
+        message: typeof data.message === "string" ? data.message : copy.received,
       })
 
       form.reset()
