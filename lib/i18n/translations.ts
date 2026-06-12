@@ -216,10 +216,10 @@ const en = {
       feeLabel: "Registration Fee",
       feeValue: "$50 per category",
       eligibilityLabel: "Participation",
-      eligibilityValue: "For IBPA Members",
+      eligibilityValue: "For IBPA Beauty Award 2026 Members",
       cta: "Apply In A Category",
     },
-    cardText: "Professional submissions are reviewed within the official IBPA award framework.",
+    cardText: "Professional submissions are reviewed within the official IBPA Beauty Award 2026 framework.",
     directions: [
       {
         slug: "hair",
@@ -389,7 +389,7 @@ const en = {
         },
         {
           number: "02",
-          title: "IBPA Review",
+          title: "IBPA Beauty Award 2026 Review",
           text: "Your professional background, experience, and documents are reviewed.",
         },
         {
@@ -540,7 +540,7 @@ const en = {
         {
           number: "02",
           title: "The jury evaluates each category.",
-          text: "Your work receives a professional evaluation from the IBPA jury—fairly and based on uniform criteria.",
+          text: "Your work receives a professional evaluation from the IBPA Beauty Award 2026 jury—fairly and based on uniform criteria.",
         },
         {
           number: "03",
@@ -588,7 +588,7 @@ const en = {
       breakText: "A premium award environment where cumulative excellence is visibly recognized.",
       ctaEyebrow: "Grand Prix Entry",
       ctaTitle: "Build your path to the highest distinction",
-      ctaText: "Enter multiple categories, elevate your profile, and compete for IBPA's top honor.",
+      ctaText: "Enter multiple categories, elevate your profile, and compete for IBPA Beauty Award 2026's top honor.",
       startEntry: "Start Entry",
       viewCategories: "View Categories",
       strategy: "Multi-categories strategy matters.",
@@ -717,26 +717,26 @@ const en = {
   auth: {
     shellCards: [
       "Private member access",
-      "Luxury IBPA styling",
+      "Luxury IBPA Beauty Award 2026 styling",
       "Protected award pages",
     ],
     access: "Access",
     accessText:
-      "Sign in to access the IBPA site experience. New visitors can register with email and password, then continue directly to the main site.",
+      "Sign in to access the IBPA Beauty Award 2026 site. New visitors can register with email and password, then continue directly to the main site.",
     loginLink: "Login",
     registerLink: "Register",
     loginPage: {
       eyebrow: "Jury Login",
-      title: "Access the IBPA jury member experience",
+      title: "Access the IBPA Beauty Award 2026 jury member experience",
       description:
         "Sign in with your email and password to continue to the jury dashboard. Protected pages will send unauthenticated visitors here first.",
       cardEyebrow: "Jury Login",
       cardTitle: "Welcome back",
-      cardText: "Enter your credentials to continue to the IBPA jury workspace.",
+      cardText: "Enter your credentials to continue to the IBPA Beauty Award 2026 jury workspace.",
     },
     registerPage: {
       eyebrow: "Jury Register",
-      title: "Create your private IBPA jury access",
+      title: "Create your private IBPA Beauty Award 2026 jury access",
       description:
         "Create an email and password to enter the site. Registration signs you in immediately and redirects you to the main homepage.",
       cardEyebrow: "Jury Register",
@@ -987,10 +987,10 @@ const ru: typeof en = {
       feeLabel: "Регистрационный взнос",
       feeValue: "$50 за категорию",
       eligibilityLabel: "Участие",
-      eligibilityValue: "Для членов IBPA",
+      eligibilityValue: "Для членов IBPA Beauty Award 2026",
       cta: "Подать заявку по категории",
     },
-    cardText: "Профессиональные заявки рассматриваются в рамках официальной премии IBPA.",
+    cardText: "Профессиональные заявки рассматриваются в рамках официальной премии IBPA Beauty Award 2026.",
     directions: [
       {
         slug: "hair",
@@ -1160,7 +1160,7 @@ const ru: typeof en = {
         },
         {
           number: "02",
-          title: "Рассмотрение IBPA",
+          title: "Рассмотрение IBPA Beauty Award 2026",
           text: "Ваш профессиональный опыт, квалификация и документы проходят проверку.",
         },
         {
@@ -1311,7 +1311,7 @@ const ru: typeof en = {
         {
           number: "02",
           title: "Жюри оценивает каждую номинацию",
-          text: "Ваша работа получает профессиональную оценку жюри IBPA - честно, по единым критериям.",
+          text: "Ваша работа получает профессиональную оценку жюри IBPA Beauty Award 2026 - честно, по единым критериям.",
         },
         {
           number: "03",
@@ -1362,7 +1362,7 @@ const ru: typeof en = {
       breakText: "Премиальная среда, где суммарное мастерство получает заметное признание.",
       ctaEyebrow: "Участие в Гран-при",
       ctaTitle: "Постройте путь к высшей награде",
-      ctaText: "Выступайте в нескольких категориях, усиливайте профиль и боритесь за главный титул IBPA.",
+      ctaText: "Выступайте в нескольких категориях, усиливайте профиль и боритесь за главный титул IBPA Beauty Award 2026.",
       startEntry: "Начать подачу",
       viewCategories: "Смотреть категории",
       strategy: "Стратегия нескольких категорий имеет значение.",
@@ -1491,26 +1491,26 @@ const ru: typeof en = {
   auth: {
     shellCards: [
       "Закрытый доступ для участников",
-      "Премиальный стиль IBPA",
+      "Премиальный стиль IBPA Beauty Award 2026",
       "Защищённые страницы премии",
     ],
     access: "Доступ",
     accessText:
-      "Войдите, чтобы получить доступ к сайту IBPA. Новые пользователи могут зарегистрироваться по email и паролю, а затем перейти на основной сайт.",
+      "Войдите, чтобы получить доступ к сайту IBPA Beauty Award 2026. Новые пользователи могут зарегистрироваться по email и паролю, а затем перейти на основной сайт.",
     loginLink: "Войти",
     registerLink: "Регистрация",
     loginPage: {
       eyebrow: "Вход жюри",
-      title: "Доступ к рабочему пространству жюри IBPA",
+      title: "Доступ к рабочему пространству жюри IBPA Beauty Award 2026",
       description:
         "Войдите с email и паролем, чтобы перейти в панель жюри. Защищённые страницы сначала направят неавторизованных пользователей сюда.",
       cardEyebrow: "Вход жюри",
       cardTitle: "Добро пожаловать",
-      cardText: "Введите данные для входа в рабочее пространство жюри IBPA.",
+      cardText: "Введите данные для входа в рабочее пространство жюри IBPA Beauty Award 2026.",
     },
     registerPage: {
       eyebrow: "Регистрация жюри",
-      title: "Создайте закрытый доступ жюри IBPA",
+      title: "Создайте закрытый доступ жюри IBPA Beauty Award 2026",
       description:
         "Создайте email и пароль для входа на сайт. После регистрации вход выполняется автоматически, и вы переходите на главную страницу.",
       cardEyebrow: "Регистрация жюри",
@@ -1761,10 +1761,10 @@ const ua: typeof en = {
       feeLabel: "Реєстраційний внесок",
       feeValue: "$50 за категорію",
       eligibilityLabel: "Участь",
-      eligibilityValue: "Для членів IBPA",
+      eligibilityValue: "Для членів IBPA Beauty Award 2026",
       cta: "Подати заявку за категорією",
     },
-    cardText: "Професійні заявки розглядаються в межах офіційної премії IBPA.",
+    cardText: "Професійні заявки розглядаються в межах офіційної премії IBPA Beauty Award 2026.",
     directions: [
       {
         slug: "hair",
@@ -1934,7 +1934,7 @@ const ua: typeof en = {
         },
         {
           number: "02",
-          title: "Розгляд IBPA",
+          title: "Розгляд IBPA Beauty Award 2026",
           text: "Ваш професійний досвід, кваліфікація та документи проходять перевірку.",
         },
         {
@@ -2085,7 +2085,7 @@ const ua: typeof en = {
         {
           number: "02",
           title: "Журі оцінює кожну номінацію",
-          text: "Ваша робота отримує професійну оцінку журі IBPA - чесно, за єдиними критеріями.",
+          text: "Ваша робота отримує професійну оцінку журі IBPA Beauty Award 2026 - чесно, за єдиними критеріями.",
         },
         {
           number: "03",
@@ -2136,7 +2136,7 @@ const ua: typeof en = {
       breakText: "Преміальне середовище, де сумарна майстерність отримує помітне визнання.",
       ctaEyebrow: "Участь у Гран-прі",
       ctaTitle: "Побудуйте шлях до найвищої відзнаки",
-      ctaText: "Виступайте у кількох категоріях, посилюйте профіль і змагайтеся за головний титул IBPA.",
+      ctaText: "Виступайте у кількох категоріях, посилюйте профіль і змагайтеся за головний титул IBPA Beauty Award 2026.",
       startEntry: "Почати подання",
       viewCategories: "Переглянути категорії",
       strategy: "Стратегія кількох категоріях має значення.",
@@ -2265,26 +2265,26 @@ const ua: typeof en = {
   auth: {
     shellCards: [
       "Закритий доступ для учасників",
-      "Преміальний стиль IBPA",
+      "Преміальний стиль IBPA Beauty Award 2026",
       "Захищені сторінки премії",
     ],
     access: "Доступ",
     accessText:
-      "Увійдіть, щоб отримати доступ до сайту IBPA. Нові користувачі можуть зареєструватися за email і паролем, а потім перейти на основний сайт.",
+      "Увійдіть, щоб отримати доступ до сайту IBPA Beauty Award 2026. Нові користувачі можуть зареєструватися за email і паролем, а потім перейти на основний сайт.",
     loginLink: "Увійти",
     registerLink: "Реєстрація",
     loginPage: {
       eyebrow: "Вхід журі",
-      title: "Доступ до робочого простору журі IBPA",
+      title: "Доступ до робочого простору журі IBPA Beauty Award 2026",
       description:
         "Увійдіть з email і паролем, щоб перейти до панелі журі. Захищені сторінки спочатку направлять неавторизованих користувачів сюди.",
       cardEyebrow: "Вхід журі",
       cardTitle: "Вітаємо з поверненням",
-      cardText: "Введіть дані для входу до робочого простору журі IBPA.",
+      cardText: "Введіть дані для входу до робочого простору журі IBPA Beauty Award 2026.",
     },
     registerPage: {
       eyebrow: "Реєстрація журі",
-      title: "Створіть закритий доступ журі IBPA",
+      title: "Створіть закритий доступ журі IBPA Beauty Award 2026",
       description:
         "Створіть email і пароль для входу на сайт. Після реєстрації вхід виконується автоматично, і ви переходите на головну сторінку.",
       cardEyebrow: "Реєстрація журі",
