@@ -54,6 +54,74 @@ function getFileArrayValue(values: ApplicationValues, key: string) {
     : [];
 }
 
+function getUniqueCategoryFields(categories: CategoryOption[]) {
+  const fieldMap = new Map<string, ApplyFieldConfig>();
+
+  for (const category of categories) {
+    const fields = categoryFieldConfigs[category.slug] ?? [];
+
+    for (const field of fields) {
+      if (!fieldMap.has(field.key)) {
+        fieldMap.set(field.key, field);
+      }
+    }
+  }
+
+  return Array.from(fieldMap.values());
+}
+
+export function getSelectedAwards(
+  values: ApplicationValues,
+  categories: CategoryOption[]
+) {
+  const selectedAwardIds = Array.from(
+    new Set(getStringArrayValue(values, "selectedAwardIds"))
+  );
+
+  const selectedAwards = selectedAwardIds
+    .map((awardId) => {
+      for (const category of categories) {
+        const award = category.awards.find((item) => item.id === awardId);
+
+        if (award) {
+          return {
+            category,
+            award,
+          };
+        }
+      }
+
+      return null;
+    })
+    .filter(
+      (
+        item
+      ): item is {
+        category: CategoryOption;
+        award: CategoryOption["awards"][number];
+      } => item !== null
+    );
+
+  const selectedCategories = Array.from(
+    new Map(selectedAwards.map((item) => [item.category.id, item.category])).values()
+  );
+
+  return {
+    selectedAwardIds,
+    selectedAwards,
+    selectedCategories,
+  };
+}
+
+export function getVisibleCategoryFields(
+  selectedCategories: CategoryOption[],
+  values: ApplicationValues
+) {
+  return getUniqueCategoryFields(selectedCategories).filter((field) =>
+    getFieldVisibility(field, values)
+  );
+}
+
 function validateConfigField(
   field: ApplyFieldConfig,
   values: ApplicationValues,
@@ -182,6 +250,8 @@ export function validateApplicationValues({
   categories: CategoryOption[];
 }) {
   const errors: ValidationErrors = {};
+  const { selectedAwardIds, selectedAwards, selectedCategories } =
+    getSelectedAwards(values, categories);
   const result = baseApplicationSchema.safeParse({
     firstName: getStringValue(values, "firstName"),
     lastName: getStringValue(values, "lastName"),
@@ -225,17 +295,22 @@ export function validateApplicationValues({
     errors.heardAboutOther = "Please tell us how you heard about us.";
   }
 
-  const selectedCategory = categories.find(
-    (category) => category.id === getStringValue(values, "categoryId")
-  );
-
-  if (!selectedCategory) {
-    errors.categoryId = "Please select a valid category.";
+  if (selectedAwardIds.length === 0) {
+    errors.selectedAwardIds = "Please choose at least one nomination.";
+  } else if (selectedAwardIds.length > 5) {
+    errors.selectedAwardIds = "You can select up to five nominations.";
   }
 
-  const selectedAward = selectedCategory?.awards.find(
-    (award) => award.id === getStringValue(values, "awardId")
-  );
+  if (selectedAwards.length !== selectedAwardIds.length) {
+    errors.selectedAwardIds = "One or more selected nominations are invalid.";
+  }
+
+  const selectedAward = selectedAwards[0]?.award;
+  const activeCategory = selectedCategories[0];
+
+  if (!activeCategory) {
+    errors.categoryId = "Please select a valid category.";
+  }
 
   if (!selectedAward) {
     errors.awardId = "Please select a valid specific nomination.";
@@ -256,14 +331,14 @@ export function validateApplicationValues({
     errors
   );
 
-  if (selectedCategory) {
-    const categoryFields = categoryFieldConfigs[selectedCategory.slug] ?? [];
+  if (selectedCategories.length > 0) {
+    const categoryFields = getUniqueCategoryFields(selectedCategories);
 
     for (const field of categoryFields) {
       validateConfigField(field, values, errors);
     }
 
-    if (selectedCategory.slug === "education") {
+    if (selectedCategories.some((category) => category.slug === "education")) {
       const testimonialText = getStringValue(values, "studentTestimonialsText");
       const testimonialFiles = getFileArrayValue(values, "studentTestimonialsFiles");
 
@@ -275,7 +350,7 @@ export function validateApplicationValues({
       }
     }
 
-    if (selectedCategory.slug === "salon") {
+    if (selectedCategories.some((category) => category.slug === "salon")) {
       const rating = getNumberValue(values, "averageRating");
       if (Number.isFinite(rating) && (rating < 1 || rating > 5)) {
         errors.averageRating = "Average Rating must be between 1.0 and 5.0.";
@@ -286,20 +361,9 @@ export function validateApplicationValues({
   return {
     success: Object.keys(errors).length === 0,
     errors,
-    selectedCategory,
+    selectedCategory: activeCategory,
     selectedAward,
+    selectedAwards,
+    selectedCategories,
   };
-}
-
-export function getVisibleCategoryFields(
-  categorySlug: string | null,
-  values: ApplicationValues
-) {
-  if (!categorySlug) {
-    return [];
-  }
-
-  return (categoryFieldConfigs[categorySlug] ?? []).filter((field) =>
-    getFieldVisibility(field, values)
-  );
 }

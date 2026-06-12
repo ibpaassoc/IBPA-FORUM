@@ -2,10 +2,13 @@
 
 import { ChoiceGroupField, SelectField, TextField, TextareaField } from "@/features/applications/components/application-form/fields/FormControls";
 import UploadField from "@/features/applications/components/application-form/fields/UploadField";
-import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import { getFieldVisibility } from "@/features/applications/schemas/category-field-validation";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import type { ApplicationValues, ValidationErrors } from "@/features/applications/types/application.types";
+import type {
+  ApplicationValues,
+  ApplyFieldConfig,
+  ValidationErrors,
+} from "@/features/applications/types/application.types";
 
 const fieldPlaceholders: Record<
   string,
@@ -29,15 +32,15 @@ const fieldPlaceholders: Record<
 };
 
 export default function BlockBRenderer({
-  categorySlug,
-  categoryName,
+  fields,
+  title,
   values,
   errors,
   onChange,
   onFilesChange,
 }: {
-  categorySlug: string | null;
-  categoryName?: string;
+  fields: ApplyFieldConfig[];
+  title?: string;
   values: ApplicationValues;
   errors: ValidationErrors;
   onChange: (name: string, value: string | string[]) => void;
@@ -71,7 +74,7 @@ export default function BlockBRenderer({
     },
   }[language];
 
-  if (!categorySlug) {
+  if (fields.length === 0) {
     return (
       <div className="rounded-[1.6rem] border border-dashed border-(--border-default) bg-(--color-white) p-6 text-sm leading-7 text-(--color-ink-soft)">
         {copy.empty}
@@ -79,19 +82,17 @@ export default function BlockBRenderer({
     );
   }
 
-  const fields = (categoryFieldConfigs[categorySlug] ?? []).filter((field) =>
-    getFieldVisibility(field, values)
-  );
-
   return (
     <div className="space-y-5">
-      <div className="rounded-3xl border border-[rgba(185,217,235,0.36)] bg-[linear-gradient(135deg,rgba(185,217,235,0.18),rgba(255,255,255,0.7))] px-4 py-4 text-sm text-(--color-ink)">
+      <div className="rounded-3xl border border-black/8 bg-white px-5 py-4 text-sm text-(--color-ink) shadow-[0_16px_36px_rgba(3,2,19,0.04)]">
         {copy.tailoredFor}{" "}
-        <strong>{categoryName ?? copy.thisCategory}</strong>. {copy.complete}
+        <strong>{title ?? copy.thisCategory}</strong>. {copy.complete}
       </div>
 
       <div className="grid gap-5 md:grid-cols-2">
-        {fields.map((field) => {
+        {fields
+          .filter((field) => getFieldVisibility(field, values))
+          .map((field) => {
           const fullWidth =
             field.type === "textarea" || field.type === "file" || field.type === "checkbox-group";
           const wrapperClassName = fullWidth ? "md:col-span-2" : "";

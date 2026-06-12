@@ -545,6 +545,15 @@ a:hover:not(.ibpa-button) {
   object-position: var(--safe-image-desktop-position, center);
 }
 
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 .full-bleed-image {
   object-position: var(--full-bleed-desktop-position, center);
 }

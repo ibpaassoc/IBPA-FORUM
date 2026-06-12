@@ -56,14 +56,20 @@ export async function createCompetitorCheckoutSession({
   email,
   categoryId,
   awardId,
+  amount,
+  nominationCount,
 }: {
   applicationId: string;
   email: string;
   categoryId: string;
   awardId: string;
+  amount: number;
+  nominationCount: number;
 }) {
   const stripe = getStripe();
   const appUrl = getAppUrl();
+  const safeNominationCount = Math.max(1, nominationCount);
+  const unitAmount = Math.max(1, Math.round(amount / safeNominationCount));
 
   const metadata = {
     flowType: "competitor",
@@ -71,6 +77,7 @@ export async function createCompetitorCheckoutSession({
     applicantEmail: email,
     categoryId,
     awardId,
+    nominationCount: String(safeNominationCount),
   };
 
   const session = await stripe.checkout.sessions.create({
@@ -86,13 +93,16 @@ export async function createCompetitorCheckoutSession({
       {
         price_data: {
           currency: "usd",
-          unit_amount: 5000,
+          unit_amount: unitAmount,
           product_data: {
             name: "IBPA Beauty Award Application Fee",
-            description: "Standard competitor application fee per category.",
+            description:
+              safeNominationCount === 1
+                ? "IBPA competitor application fee for 1 nomination."
+                : `IBPA competitor application fee for ${safeNominationCount} nominations.`,
           },
         },
-        quantity: 1,
+        quantity: safeNominationCount,
       },
     ],
   });

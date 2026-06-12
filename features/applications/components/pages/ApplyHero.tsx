@@ -16,7 +16,7 @@ export default function ApplyHero({
       eyebrow: "Participant Applications",
       title: "Submit your award entry.",
       description:
-        "Official IBPA Beauty Award 2026 participant applications. Submit your portfolio, select your category, and be evaluated by the international jury.",
+        "Official IBPA Beauty Award 2026 participant applications. Submit your portfolio, select your nominations, and be evaluated by the international jury.",
       cta: "Start application",
       juryLink: "Apply as a judge instead →",
     },

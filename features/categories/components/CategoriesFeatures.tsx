@@ -68,37 +68,10 @@ const itemTransition = {
   ease: [0.16, 1, 0.3, 1],
 } as const;
 
-function splitDirections(
-  directions: Direction[],
-  openDirectionSlug: string | null
-) {
-  const openIndex = directions.findIndex((d) => d.slug === openDirectionSlug);
-
-  const openIsLeft = openIndex !== -1 && openIndex % 2 === 0;
-
-  let shiftedIndex: number | null = null;
-
-  if (openIsLeft) {
-    const leftIndexes = directions
-      .map((_, i) => i)
-      .filter((i) => i % 2 === 0);
-
-    const lastLeftIndex = leftIndexes[leftIndexes.length - 1];
-
-    shiftedIndex =
-      openIndex === lastLeftIndex
-        ? leftIndexes[leftIndexes.length - 2] ?? null
-        : leftIndexes.find((i) => i > openIndex) ?? null;
-  }
-
+function splitDirections(directions: Direction[]) {
   return {
-    leftDirections: directions.filter(
-      (_, index) => index % 2 === 0 && index !== shiftedIndex
-    ),
-
-    rightDirections: directions.filter(
-      (_, index) => index % 2 === 1 || index === shiftedIndex
-    ),
+    leftDirections: directions.filter((_, index) => index % 2 === 0),
+    rightDirections: directions.filter((_, index) => index % 2 === 1),
   };
 }
 
@@ -119,8 +92,8 @@ export default function CategoriesFeatures() {
   }, [t.categoriesPage.directions]);
 
   const { leftDirections, rightDirections } = useMemo(
-    () => splitDirections(directions, openDirectionSlug),
-    [directions, openDirectionSlug]
+    () => splitDirections(directions),
+    [directions]
   );
 
   const handleToggle = (slug: string) => {
@@ -139,8 +112,7 @@ export default function CategoriesFeatures() {
     return (
       <motion.article
         key={direction.slug}
-        layout="position"
-        layoutId={`direction-card-${direction.slug}`}
+        layout
         transition={layoutTransition}
         whileHover={{ y: -1.5 }}
         whileTap={{ scale: 0.996 }}
@@ -184,9 +156,9 @@ export default function CategoriesFeatures() {
             {isOpen ? (
               <motion.div
                 id={contentId}
-                initial={{ height: 0, opacity: 0, y: -4 }}
-                animate={{ height: "auto", opacity: 1, y: 0 }}
-                exit={{ height: 0, opacity: 0, y: -4 }}
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
                 transition={openTransition}
                 className="overflow-hidden"
               >

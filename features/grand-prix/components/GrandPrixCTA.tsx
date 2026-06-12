@@ -5,7 +5,6 @@ import {
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import {
-  IconBadge,
   PremiumCTA,
 } from "@/shared/components/public";
 
@@ -22,9 +21,19 @@ export default function GrandPrixPagePremium() {
       primary={{ href: "/apply", label: t.grandPrixPage.copy.startEntry }}
       secondary={{ href: "/categories", label: t.grandPrixPage.copy.viewCategories }}
       aside={
-        <div className="inline-flex items-center gap-2 text-sm text-[var(--color-ink-soft)]">
-          <IconBadge icon={Award} size={20} />
-          {t.grandPrixPage.copy.strategy}
+        <div className="flex min-w-[220px] flex-col gap-3">
+          <div className="flex items-center gap-3 rounded-[var(--radius)] border border-white/10 bg-white/6 px-4 py-3">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10">
+              <Award
+                size={16}
+                className="text-[var(--color-hover-accent)]"
+                strokeWidth={1.5}
+              />
+            </span>
+            <span className="text-sm leading-[1.5] text-white/70">
+              {t.grandPrixPage.copy.strategy}
+            </span>
+          </div>
         </div>
       }
     />
