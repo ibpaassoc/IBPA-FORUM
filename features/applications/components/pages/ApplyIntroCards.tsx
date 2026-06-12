@@ -9,7 +9,7 @@ export default function ApplyIntroCards() {
   return (
     <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
       <PageCard className="rounded-[1.8rem] p-7">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--color-hover)]">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--color-hover-accent)]">
           {t.applyPage.introCards.eligibility}
         </p>
         <div className="mt-5 space-y-4 text-sm leading-7 text-[var(--color-ink-soft)]">
@@ -20,7 +20,7 @@ export default function ApplyIntroCards() {
       </PageCard>
 
       <PageCard className="rounded-[1.8rem] p-7">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--color-hover)]">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--color-hover-accent)]">
           {t.applyPage.introCards.before}
         </p>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">

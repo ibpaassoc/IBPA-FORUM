@@ -22,7 +22,7 @@ export default function SectionHeading({
   return (
     <div className={clsx(center && "mx-auto text-center", className)}>
       {eyebrow ? <p className={clsx("page-eyebrow", center && "justify-center")}>{eyebrow}</p> : null}
-      <h2 className="mt-(--space-sm) font-(--font-title-family) text-[clamp(1.8rem,4vw,3.4rem)] leading-[1.05] text-(--color-ink) text-pretty">
+      <h2 className="mt-(--space-sm) font-[var(--font-title-family)] text-[clamp(1.8rem,4vw,3.2rem)] font-light leading-[1.08] text-[var(--color-ink)] text-pretty">
         {title}
       </h2>
       {description ? (

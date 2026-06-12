@@ -3,15 +3,22 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { usePathname } from "next/navigation";
 import LanguageSwitcher from "@/shared/components/layout/LanguageSwitcher";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import JuryMenu from "@/shared/components/layout/JuryMenu";
 
+const HERO_PAGES = ["/"];
+
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { language, t } = useLanguage();
   const pathname = usePathname();
+
+  const isHeroPage = HERO_PAGES.includes(pathname);
+  const useTransparent = isHeroPage && !scrolled;
 
   const associationLabel =
     language === "ru"
@@ -33,10 +40,16 @@ export default function Header() {
   ];
 
   useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 60);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
     const closeOnResize = () => {
       if (window.innerWidth >= 1024) setOpen(false);
     };
-
     window.addEventListener("resize", closeOnResize);
     return () => window.removeEventListener("resize", closeOnResize);
   }, []);
@@ -56,7 +69,13 @@ export default function Header() {
       : pathname === href || pathname.startsWith(`${href}/`);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-[100] w-full border-b border-[var(--border-default)] bg-white/95 px-[var(--page-gutter)] shadow-[var(--shadow-sm)] backdrop-blur-[16px]">
+    <header
+      className={`fixed inset-x-0 top-0 z-[100] w-full px-[var(--page-gutter)] transition-all duration-500 ${
+        useTransparent
+          ? "bg-transparent"
+          : "border-b border-[var(--border-default)] bg-white/96 shadow-[var(--shadow-sm)] backdrop-blur-[20px]"
+      }`}
+    >
       <div className="mx-auto max-w-[var(--content-width)]">
         <div className="relative flex h-[clamp(60px,8vh,72px)] items-center gap-[var(--space-sm)]">
           <Link
@@ -71,7 +90,9 @@ export default function Header() {
               width={320}
               height={80}
               priority
-              className="h-10 w-auto max-w-42.5 object-contain sm:h-12 sm:max-w-none"
+              className={`h-10 w-auto max-w-42.5 object-contain sm:h-12 sm:max-w-none transition-all duration-500 ${
+                useTransparent ? "[filter:brightness(0)_invert(1)]" : ""
+              }`}
             />
           </Link>
 
@@ -83,7 +104,11 @@ export default function Header() {
                   href={item.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="relative font-[var(--font-sans)] text-[clamp(0.7rem,1vw,0.8rem)] font-medium uppercase tracking-[0.1em] text-[var(--color-ink)] opacity-75 transition after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[var(--color-hover)] after:transition-transform after:duration-300 hover:text-[var(--color-hover)] hover:opacity-100 hover:after:scale-x-100"
+                  className={`relative font-[var(--font-sans)] text-[clamp(0.7rem,1vw,0.78rem)] font-semibold uppercase tracking-[0.12em] opacity-75 transition hover:opacity-100 ${
+                    useTransparent
+                      ? "text-white hover:text-white"
+                      : "text-[var(--color-ink)] hover:text-[var(--color-hover-accent)]"
+                  } after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:after:scale-x-100`}
                 >
                   {item.label}
                 </a>
@@ -91,10 +116,14 @@ export default function Header() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`relative font-[var(--font-sans)] text-[clamp(0.7rem,1vw,0.8rem)] font-medium uppercase tracking-[0.1em] transition after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:bg-[var(--color-hover)] after:transition-transform after:duration-300 ${
-                    isActive(item.href)
-                      ? "text-[var(--color-hover)] opacity-100 after:scale-x-100"
-                      : "text-[var(--color-ink)] opacity-75 after:scale-x-0 hover:text-[var(--color-hover)] hover:opacity-100 hover:after:scale-x-100"
+                  className={`relative font-[var(--font-sans)] text-[clamp(0.7rem,1vw,0.78rem)] font-semibold uppercase tracking-[0.12em] transition after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:bg-current after:transition-transform after:duration-300 ${
+                    useTransparent
+                      ? isActive(item.href)
+                        ? "text-white opacity-100 after:scale-x-100"
+                        : "text-white opacity-70 after:scale-x-0 hover:opacity-100 hover:after:scale-x-100"
+                      : isActive(item.href)
+                        ? "text-[var(--color-hover-accent)] opacity-100 after:scale-x-100"
+                        : "text-[var(--color-ink)] opacity-70 after:scale-x-0 hover:text-[var(--color-hover-accent)] hover:opacity-100 hover:after:scale-x-100"
                   }`}
                 >
                   {item.label}
@@ -106,6 +135,17 @@ export default function Header() {
           <div className="hidden items-center gap-3 lg:flex">
             <LanguageSwitcher />
             <JuryMenu />
+            <Link
+              href="/apply"
+              onClick={handleLinkClick}
+              className={`inline-flex shrink-0 items-center gap-2 rounded-full px-5 py-2.5 text-[0.7rem] font-semibold uppercase tracking-[0.1em] transition-all duration-300 hover:scale-105 hover:shadow-lg ${
+                useTransparent
+                  ? "bg-white text-[var(--color-ink)] hover:bg-white/90"
+                  : "bg-[var(--color-ink)] text-white hover:bg-[#1a1a2e]"
+              }`}
+            >
+              {t.common.applyNow} <ArrowRight size={14} />
+            </Link>
           </div>
 
           <button
@@ -113,12 +153,15 @@ export default function Header() {
             aria-label={open ? t.header.closeMenu : t.header.openMenu}
             aria-expanded={open}
             onClick={() => setOpen((prev) => !prev)}
-            className="relative ml-auto flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--border-default)] bg-[var(--color-white)] text-[var(--color-ink)] shadow-[var(--shadow-sm)] transition hover:border-[var(--color-hover)] hover:text-[var(--color-hover)] sm:h-11 sm:w-11 lg:hidden"
+            className={`relative ml-auto flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition hover:scale-105 sm:h-11 sm:w-11 lg:hidden ${
+              useTransparent
+                ? "border-white/30 bg-white/10 text-white backdrop-blur-md"
+                : "border-[var(--border-default)] bg-white text-[var(--color-ink)] shadow-[var(--shadow-sm)]"
+            }`}
           >
             <span className="sr-only">
               {open ? t.header.closeMenu : t.header.openMenu}
             </span>
-
             <span
               className={`absolute h-0.5 w-5 bg-current transition-all duration-300 ${
                 open ? "rotate-45" : "-translate-y-1.5"
@@ -145,7 +188,7 @@ export default function Header() {
           }`}
         >
           <div className="min-h-0 overflow-hidden">
-            <div className="max-h-[calc(100dvh-72px)] overflow-y-auto border-t border-[var(--border-default)] py-[var(--space-md)] pb-[max(2rem,env(safe-area-inset-bottom))]">
+            <div className="max-h-[calc(100dvh-72px)] overflow-y-auto border-t border-[var(--border-default)] bg-white py-[var(--space-md)] pb-[max(2rem,env(safe-area-inset-bottom))]">
               <div className="space-y-4">
                 <div className="grid gap-2">
                   {navigation.map((item) =>
@@ -156,7 +199,7 @@ export default function Header() {
                         target="_blank"
                         rel="noreferrer"
                         onClick={handleLinkClick}
-                        className="rounded-[var(--radius-sm)] border border-transparent bg-[var(--color-mist)] px-[var(--space-md)] py-[var(--space-sm)] text-sm font-medium uppercase tracking-[0.16em] text-[var(--color-ink)] transition hover:border-[var(--color-hover)] hover:text-[var(--color-hover)]"
+                        className="rounded-[var(--radius-sm)] border border-transparent bg-[var(--surface-muted)] px-[var(--space-md)] py-[var(--space-sm)] text-sm font-semibold uppercase tracking-[0.14em] text-[var(--color-ink)] transition hover:border-[var(--color-ink)] hover:text-[var(--color-ink)]"
                       >
                         {item.label}
                       </a>
@@ -165,16 +208,24 @@ export default function Header() {
                         key={item.href}
                         href={item.href}
                         onClick={handleLinkClick}
-                        className={`rounded-[var(--radius-sm)] border px-[var(--space-md)] py-[var(--space-sm)] text-sm font-medium uppercase tracking-[0.16em] transition ${
+                        className={`rounded-[var(--radius-sm)] border px-[var(--space-md)] py-[var(--space-sm)] text-sm font-semibold uppercase tracking-[0.14em] transition ${
                           isActive(item.href)
-                            ? "border-[var(--border-strong)] bg-[var(--surface-tint)] text-[var(--color-hover)]"
-                            : "border-transparent bg-[var(--color-mist)] text-[var(--color-ink)] hover:border-[var(--color-hover)] hover:text-[var(--color-hover)]"
+                            ? "border-[var(--color-ink)] bg-[var(--color-ink)] text-white"
+                            : "border-transparent bg-[var(--surface-muted)] text-[var(--color-ink)] hover:border-[var(--color-ink)]"
                         }`}
                       >
                         {item.label}
                       </Link>
                     )
                   )}
+
+                  <Link
+                    href="/apply"
+                    onClick={handleLinkClick}
+                    className="mt-2 flex items-center justify-center gap-2 rounded-full bg-[var(--color-ink)] px-6 py-3 text-sm font-semibold uppercase tracking-[0.1em] text-white"
+                  >
+                    {t.common.applyNow} <ArrowRight size={15} />
+                  </Link>
                 </div>
 
                 <div className="grid gap-3 border-t border-[var(--border-default)] pt-[var(--space-md)]">

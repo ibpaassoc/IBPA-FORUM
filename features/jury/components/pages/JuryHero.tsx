@@ -59,7 +59,7 @@ export default function JuryHero() {
         }
         floatingCard={
           <article className="page-card rounded-[var(--radius)] p-[var(--space-md)]">
-            <p className="text-[0.67rem] uppercase tracking-[0.2em] text-[var(--color-hover)]">{t.juryPage.copy.credibility}</p>
+            <p className="text-[0.67rem] uppercase tracking-[0.2em] text-[var(--color-hover-accent)]">{t.juryPage.copy.credibility}</p>
             <p className="mt-1 font-[var(--font-title-family)] text-[clamp(1.6rem,2.1vw,2.2rem)] leading-[1.1] text-[var(--color-ink)]">
               {t.juryPage.hero.experienceValue}
             </p>

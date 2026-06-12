@@ -78,7 +78,7 @@ export default function PublicJuryGrid({
                 />
               </div>
               <div className="flex flex-1 flex-col gap-3 p-[var(--space-md)]">
-                <div className="inline-flex items-center gap-2 text-[0.68rem] uppercase tracking-[0.17em] text-[var(--color-hover)]">
+                <div className="inline-flex items-center gap-2 text-[0.68rem] uppercase tracking-[0.17em] text-[var(--color-hover-accent)]">
                   <IconBadge icon={BadgeCheck} size={20} />
                   {copy.approvedMember}
                 </div>

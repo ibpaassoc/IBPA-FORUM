@@ -223,7 +223,7 @@ export default function ImageContainer({
             onPointerUp={onTriggerPointerUp}
             onPointerCancel={onTriggerPointerCancel}
             onClick={onTriggerClick}
-            className="absolute inset-0 z-[2] appearance-none border-0 bg-transparent p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-hover)] focus-visible:ring-offset-2"
+            className="absolute inset-0 z-[2] appearance-none border-0 bg-transparent p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-hover-accent)] focus-visible:ring-offset-2"
           />
         ) : null}
       </div>

@@ -28,23 +28,27 @@ export default function FeaturedStorySection({
   className,
 }: FeaturedStorySectionProps) {
   return (
-    <PageSection className={className} surface="mist">
+    <PageSection className={clsx("bg-[var(--color-off-white)]", className)}>
       <div
         className={clsx(
-          "grid items-center gap-[var(--space-lg)] lg:grid-cols-[0.95fr_1.05fr]",
-          reverse && "lg:grid-cols-[1.05fr_0.95fr]"
+          "grid items-center gap-[var(--space-xl)] lg:grid-cols-2",
+          reverse && "lg:grid-cols-[1fr_1fr]"
         )}
       >
-        <FadeUp className={clsx(reverse && "lg:order-2")}>{media}</FadeUp>
+        <FadeUp className={clsx(reverse && "lg:order-2")}>
+          <div className="overflow-hidden rounded-[var(--radius)] border border-[var(--border-default)]">
+            {media}
+          </div>
+        </FadeUp>
 
-        <FadeUp className={clsx("max-w-xl", reverse && "lg:order-1 lg:justify-self-start")}>
+        <FadeUp className={clsx(reverse && "lg:order-1")}>
           <SectionHeading eyebrow={eyebrow} title={title} description={description} />
           {quote ? (
-            <blockquote className="script-accent mt-[var(--space-md)] border-l border-[var(--border-strong)] pl-[var(--space-md)] text-[clamp(1.2rem,2vw,1.8rem)] leading-[1.35] text-[var(--color-ink-soft)]">
+            <blockquote className="mt-[var(--space-lg)] border-l-2 border-[var(--color-hover-accent)] pl-[var(--space-md)] font-[var(--font-accent-family)] text-[clamp(1.1rem,1.8vw,1.55rem)] italic leading-[1.45] text-[var(--color-ink-soft)]">
               {quote}
             </blockquote>
           ) : null}
-          {actions ? <div className="script-accent mt-[var(--space-lg)]">{actions}</div> : null}
+          {actions ? <div className="mt-[var(--space-lg)]">{actions}</div> : null}
         </FadeUp>
       </div>
     </PageSection>

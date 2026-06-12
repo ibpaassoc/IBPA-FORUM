@@ -23,7 +23,7 @@ export default function JuryRequirements() {
               key={item.label}
               className="page-card p-(--space-md)"
             >
-              <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-hover)">
+              <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-hover-accent)">
                 {item.label}
               </p>
               <p className="mt-(--space-sm) font-(--font-display) text-[clamp(1.8rem,4vw,2.8rem)] text-(--color-ink)">

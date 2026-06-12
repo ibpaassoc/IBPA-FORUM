@@ -342,8 +342,8 @@ export default function JuryApplicationForm() {
               <div
                 className={`rounded-sm border px-(--space-sm) py-(--space-sm) text-sm leading-[1.65] ${
                   submissionState.type === "success"
-                    ? "border-(--color-hover) bg-[rgba(185,217,235,0.26)] text-(--color-ink)"
-                    : "border-(--color-hover) bg-[rgba(185,217,235,0.26)] text-(--color-ink)"
+                    ? "border-(--color-hover-accent) bg-[rgba(185,217,235,0.26)] text-(--color-ink)"
+                    : "border-(--color-hover-accent) bg-[rgba(185,217,235,0.26)] text-(--color-ink)"
                 }`}
                 aria-live="polite"
               >
@@ -353,18 +353,18 @@ export default function JuryApplicationForm() {
 
             {summary ? (
               <div className="rounded-sm border border-(--border-default) bg-(--color-white) p-(--space-md)">
-                <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-hover)">
+                <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-hover-accent)">
                   {copy.summaryTitle}
                 </p>
                 <div className="mt-4 grid gap-4 sm:grid-cols-3">
                   <div>
-                    <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-hover)">
+                    <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-hover-accent)">
                       {copy.summaryCandidate}
                     </p>
                     <p className="mt-(--space-xs) text-sm font-medium text-(--color-ink)">{summary.name}</p>
                   </div>
                   <div>
-                    <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-hover)">
+                    <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-hover-accent)">
                       {copy.summaryLocation}
                     </p>
                     <p className="mt-(--space-xs) text-sm font-medium text-(--color-ink)">
@@ -372,7 +372,7 @@ export default function JuryApplicationForm() {
                     </p>
                   </div>
                   <div>
-                    <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-hover)">
+                    <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-hover-accent)">
                       {copy.summaryExpertise}
                     </p>
                     <p className="mt-(--space-xs) text-sm font-medium text-(--color-ink)">
@@ -386,7 +386,7 @@ export default function JuryApplicationForm() {
             <div className="flex flex-col gap-(--space-sm) border-t border-(--border-default) pt-(--space-md)">
               <div className="flex items-center justify-between gap-4">
                 <div className="min-w-0">
-                  <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-hover)">
+                  <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-hover-accent)">
                     {copy.expertiseSelected}
                   </p>
                   <p className="mt-(--space-xs) text-sm text-(--color-ink-soft)">

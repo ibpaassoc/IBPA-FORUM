@@ -310,7 +310,7 @@ export default function ApplyForm({
             <section className="rounded-(--radius) border border-(--border-default) bg-(--surface) p-(--space-lg) shadow-(--shadow-lg)">
               <div className="flex flex-col gap-(--space-sm) border-b border-(--border-default) pb-(--space-md) md:flex-row md:items-center md:justify-between">
                 <div>
-                  <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-(--color-hover)">
+                  <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-(--color-hover-accent)">
                     {t.applyPage.form.progress}
                   </p>
                   <p className="mt-(--space-xs) text-sm text-(--color-ink-soft)">
@@ -322,7 +322,7 @@ export default function ApplyForm({
                 <div className="w-full max-w-sm">
                   <div className="h-2 rounded-full bg-(--color-mist)">
                     <div
-                      className="h-2 rounded-full bg-(--color-hover) transition-all duration-500 [transition-timing-function:var(--motion-editorial)]"
+                      className="h-2 rounded-full bg-(--color-hover-accent) transition-all duration-500 [transition-timing-function:var(--motion-editorial)]"
                       style={{ width: `${progressPercentage}%` }}
                     />
                   </div>
@@ -333,8 +333,8 @@ export default function ApplyForm({
                 <div
                   className={`mt-5 rounded-[1.4rem] border px-4 py-4 text-sm leading-7 ${
                     submissionState.type === "success"
-                      ? "border-(--color-hover) bg-[rgba(185,217,235,0.26)] text-(--color-ink)"
-                      : "border-(--color-hover) bg-[rgba(185,217,235,0.26)] text-(--color-ink)"
+                      ? "border-(--color-hover-accent) bg-[rgba(185,217,235,0.26)] text-(--color-ink)"
+                      : "border-(--color-hover-accent) bg-[rgba(185,217,235,0.26)] text-(--color-ink)"
                   }`}
                   aria-live="polite"
                 >

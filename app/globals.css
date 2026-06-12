@@ -1,18 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  --color-ink: #252a2d;
+  --color-ink: #030213;
   --color-ink-soft: #46525a;
-  --color-ink-muted: rgba(70, 82, 90, 0.68);
+  --color-ink-muted: rgba(3, 2, 19, 0.5);
   --color-blue: #72a0c1;
   --color-blue-soft: #b9d9eb;
   --color-blue-light: #d8ecf8;
   --color-blue-wash: #f2f8fb;
   --color-white: #ffffff;
-  --color-off-white: #fbfbfa;
-  --color-mist: #eef6fb;
-  --color-hover: #6a98ba;
-  --color-title-accent: #b9d9eb;
+  --color-off-white: #f8f8f6;
+  --color-mist: #f0f0ee;
+  --color-hover: #030213;
+  --color-hover-accent: #6a98ba;
+  --color-title-accent: #72a0c1;
 
   --font-title-family: var(--font-display), "Bodoni Moda", serif;
   --font-body-family: var(--font-body), "Lora", serif;
@@ -20,17 +21,17 @@
   --font-accent-family: var(--font-accent), "Cormorant Garamond", italic;
   --font-legal-family: var(--font-inter), "Inter", sans-serif;
 
-  --border-default: rgba(37, 42, 45, 0.1);
-  --border-soft: rgba(37, 42, 45, 0.08);
-  --border-strong: rgba(114, 160, 193, 0.34);
+  --border-default: rgba(3, 2, 19, 0.1);
+  --border-soft: rgba(3, 2, 19, 0.06);
+  --border-strong: rgba(3, 2, 19, 0.22);
 
   --shadow-sm: 0 8px 20px rgba(37, 42, 45, 0.04);
   --shadow-md: 0 18px 40px rgba(37, 42, 45, 0.09);
   --shadow-lg: 0 30px 60px rgba(37, 42, 45, 0.12);
 
-  --radius: 24px;
-  --radius-lg: 32px;
-  --radius-sm: 12px;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --radius-sm: 6px;
   --radius-pill: 40px;
 
   --space-xs: clamp(0.5rem, 1vw, 0.75rem);
@@ -47,10 +48,10 @@
   --foreground: var(--color-ink);
   --surface: var(--color-white);
   --surface-elevated: var(--color-white);
-  --surface-strong: #f6fafd;
-  --surface-tint: #f8fbfe;
-  --surface-muted: #f4f7fa;
-  --surface-cool: #eff4f8;
+  --surface-strong: #f4f4f2;
+  --surface-tint: #f6f6f4;
+  --surface-muted: #f0f0ee;
+  --surface-cool: #ebebea;
 
   --overlay-soft: rgba(255, 255, 255, 0.68);
   --overlay-dark: rgba(17, 26, 34, 0.38);
@@ -84,14 +85,14 @@
 }
 
 @theme {
-  --color-primary: var(--color-hover);
-  --color-primary-hover: var(--color-title-accent);
+  --color-primary: var(--color-ink);
+  --color-primary-hover: #1a1a2e;
   --color-background-header: var(--color-white);
   --color-background-footer: var(--surface-tint);
   --color-text-main: var(--color-ink);
   --color-text-muted: var(--color-ink-soft);
   --color-border-main: var(--border-default);
-  --color-border-footer: rgba(37, 42, 45, 0.08);
+  --color-border-footer: rgba(3, 2, 19, 0.06);
 }
 
 html {
@@ -104,26 +105,27 @@ body {
   overflow-x: hidden;
   background: var(--color-off-white);
   color: var(--color-ink);
-  font-family: var(--font-body-family);
+  font-family: var(--font-ui-family);
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
 h1 {
-  font-family: var(--font-title-family);
-  font-weight: 300;
+  font-family: var(--font-ui-family);
+  font-weight: 800;
   font-style: normal;
-  line-height: 0.98;
-  letter-spacing: -0.03em;
+  line-height: 0.94;
+  letter-spacing: -0.04em;
   text-wrap: balance;
+  text-transform: uppercase;
 }
 
 h2 {
   font-family: var(--font-title-family);
   font-weight: 400;
-  font-style: italic;
-  line-height: 1.06;
+  font-style: normal;
+  line-height: 1.08;
   letter-spacing: -0.02em;
   text-wrap: balance;
 }
@@ -133,14 +135,15 @@ h4 {
   font-family: var(--font-title-family);
   font-weight: 400;
   font-style: normal;
-  line-height: 1.15;
+  line-height: 1.18;
   letter-spacing: -0.01em;
   text-wrap: balance;
 }
 
 p,
 li {
-  font-family: var(--font-body-family);
+  font-family: var(--font-ui-family);
+  line-height: 1.7;
 }
 
 a,
@@ -161,7 +164,7 @@ textarea {
 }
 
 a:hover:not(.ibpa-button) {
-  color: var(--color-hover);
+  color: var(--color-hover-accent);
 }
 
 @utility page-shell {
@@ -214,10 +217,10 @@ a:hover:not(.ibpa-button) {
   align-items: center;
   flex-wrap: wrap;
   gap: var(--space-sm);
-  color: var(--color-hover);
+  color: var(--color-hover-accent);
   font-family: var(--font-ui-family);
   font-size: clamp(0.65rem, 1vw, 0.75rem);
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
 }
@@ -236,8 +239,18 @@ a:hover:not(.ibpa-button) {
   color: var(--color-title-accent);
 }
 
+@utility section-dark {
+  background: var(--color-ink);
+  color: var(--color-white);
+}
+
+@utility section-bone {
+  background: #f4f1ec;
+  color: var(--color-ink);
+}
+
 @utility script-accent {
-  color: var(--color-hover);
+  color: var(--color-hover-accent);
   font-family: var(--font-accent-family);
   font-style: italic;
   font-weight: 400;
@@ -268,7 +281,13 @@ a:hover:not(.ibpa-button) {
 }
 
 @utility ibpa-button-primary {
-  background: var(--color-hover);
+  background: var(--color-ink);
+  border: 0;
+  color: var(--color-white);
+}
+
+@utility ibpa-button-blue {
+  background: var(--color-hover-accent);
   border: 0;
   color: var(--color-white);
 }
@@ -276,7 +295,7 @@ a:hover:not(.ibpa-button) {
 @utility ibpa-button-gold {
   background: var(--color-title-accent);
   border: 0;
-  color: var(--color-ink);
+  color: var(--color-white);
 }
 
 @utility ibpa-button-ghost {
@@ -287,7 +306,7 @@ a:hover:not(.ibpa-button) {
 
 @utility ibpa-button-white {
   background: transparent;
-  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
   color: var(--color-white);
 }
 
@@ -455,27 +474,10 @@ a:hover:not(.ibpa-button) {
   box-shadow: 0 0 0 3px rgba(114, 160, 193, 0.16);
 }
 
-.page-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  height: 3px;
-  background: var(--color-hover);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.55s var(--motion-editorial);
-}
-
 .page-card:hover {
   box-shadow: var(--shadow-md);
-  border-color: var(--border-strong);
-  transform: translateY(-4px);
-}
-
-.page-card:hover::before {
-  transform: scaleX(1);
+  border-color: rgba(3, 2, 19, 0.15);
+  transform: translateY(-3px);
 }
 
 .page-eyebrow::before {
@@ -483,33 +485,37 @@ a:hover:not(.ibpa-button) {
   display: block;
   width: clamp(16px, 2vw, 28px);
   height: 1px;
-  background: var(--color-hover);
+  background: var(--color-hover-accent);
 }
 
 .ibpa-button-primary:hover {
-  background: var(--color-white);
-  border: 1.5px solid var(--color-hover);
-  color: var(--color-hover);
+  background: #1a1a2e;
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.ibpa-button-blue:hover {
+  background: #4d86ad;
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }
 
 .ibpa-button-gold:hover {
-  background: var(--color-hover);
+  background: #4d86ad;
   color: var(--color-white);
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }
 
 .ibpa-button-ghost:hover {
-  background: var(--color-white);
-  border-color: var(--color-hover);
-  color: var(--color-hover);
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  color: var(--color-white);
 }
 
 .ibpa-button-white:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.85);
 }
 
 .ibpa-button:hover {

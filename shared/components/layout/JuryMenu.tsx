@@ -90,8 +90,8 @@ export default function JuryMenu({
               }}
               className={`block rounded-sm px-[var(--space-sm)] py-[var(--space-sm)] text-sm font-medium transition ${
                 item.primary
-                  ? "text-[var(--color-hover)] hover:bg-[var(--surface-tint)]"
-                  : "text-[var(--color-ink)] hover:bg-[var(--color-mist)] hover:text-[var(--color-hover)]"
+                  ? "text-[var(--color-hover-accent)] hover:bg-[var(--surface-tint)]"
+                  : "text-[var(--color-ink)] hover:bg-[var(--color-mist)] hover:text-[var(--color-hover-accent)]"
               } ${i > 0 ? "mt-[var(--space-xs)]" : ""}`}
             >
               {item.label}

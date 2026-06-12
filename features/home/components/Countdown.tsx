@@ -37,7 +37,7 @@ function CountdownCard({
 }) {
   return (
     <div className="rounded-sm border border-(--border-default) bg-[rgba(255,255,255,0.72)] px-(--space-sm) py-(--space-md) text-center shadow-(--shadow-sm)">
-      <div className="font-(--font-display) text-[clamp(1.8rem,4vw,2.8rem)] leading-none text-(--color-hover)">
+      <div className="font-(--font-display) text-[clamp(1.8rem,4vw,2.8rem)] leading-none text-(--color-hover-accent)">
         {String(value).padStart(2, "0")}
       </div>
       <div className="mt-(--space-xs) text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-ink-muted)">

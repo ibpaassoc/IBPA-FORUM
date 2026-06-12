@@ -60,8 +60,8 @@ export default function UploadField({
       <label
         className={`flex cursor-pointer flex-col rounded-[var(--radius-sm)] border-[1.5px] border-dashed p-[var(--space-lg)] text-center transition ${
           error
-            ? "border-[var(--color-hover)] bg-[rgba(185,217,235,0.26)]"
-            : "border-[var(--border-default)] bg-[var(--color-white)] hover:border-[var(--color-hover)] hover:bg-[var(--color-mist)]"
+            ? "border-[var(--color-hover-accent)] bg-[rgba(185,217,235,0.26)]"
+            : "border-[var(--border-default)] bg-[var(--color-white)] hover:border-[var(--color-hover-accent)] hover:bg-[var(--color-mist)]"
         }`}
       >
         <span className="text-sm font-medium text-[var(--color-ink)]">

@@ -32,23 +32,31 @@ export default function ProcessTimeline({
   return (
     <PageSection id={id_section} className={className}>
       <SectionHeading eyebrow={eyebrow} title={title} description={description} />
-      <StaggerContainer className="relative mt-[var(--space-lg)]">
-        <ol className="relative space-y-[var(--space-md)] before:absolute before:top-4 before:bottom-4 before:left-[15px] before:w-px before:bg-[var(--border-strong)] md:before:left-1/2">
+
+      <StaggerContainer className="mt-[var(--space-xl)]" stagger={0.09}>
+        <div className="grid gap-px rounded-[var(--radius)] border border-[var(--border-default)] bg-[var(--border-default)] overflow-hidden md:grid-cols-3">
           {steps.map((step, index) => (
-            <li key={step.id} className="relative">
-              <div className="absolute top-3 left-[9px] z-10 h-3.5 w-3.5 rounded-full border border-[var(--border-strong)] bg-[var(--surface)] md:left-[calc(50%-7px)]" />
-              <article
-                className={`page-card rounded-[var(--radius)] p-[var(--space-md)] md:max-w-[48%] ${
-                  index % 2 === 0 ? "md:ml-auto" : "md:mr-auto"
-                }`}
-              >
-                {step.icon ? <div className="mb-[var(--space-xs)]">{step.icon}</div> : null}
-                <h3 className="text-[clamp(1.1rem,1.8vw,1.4rem)] leading-[1.2] text-[var(--color-ink)]">{step.title}</h3>
-                <p className="mt-[var(--space-xs)] text-sm leading-[1.75] text-[var(--color-ink-soft)]">{step.text}</p>
-              </article>
-            </li>
+            <article
+              key={step.id}
+              className="group relative bg-[var(--surface)] p-[var(--space-lg)] transition-colors duration-300 hover:bg-[var(--surface-muted)]"
+            >
+              <p className="mb-[var(--space-md)] font-[var(--font-ui-family)] text-[2.8rem] font-black leading-[1] tracking-[-0.06em] text-[var(--color-ink)]/8 select-none">
+                {String(index + 1).padStart(2, "0")}
+              </p>
+              {step.icon ? (
+                <div className="mb-[var(--space-sm)] text-[var(--color-hover-accent)]">
+                  {step.icon}
+                </div>
+              ) : null}
+              <h3 className="font-[var(--font-ui-family)] text-[0.82rem] font-semibold uppercase tracking-[0.1em] text-[var(--color-hover-accent)]">
+                {step.title}
+              </h3>
+              <p className="mt-2 text-[0.92rem] leading-[1.72] text-[var(--color-ink-soft)]">
+                {step.text}
+              </p>
+            </article>
           ))}
-        </ol>
+        </div>
       </StaggerContainer>
     </PageSection>
   );

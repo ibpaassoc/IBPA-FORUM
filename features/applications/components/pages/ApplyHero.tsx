@@ -80,7 +80,7 @@ export default function ApplyHero({
         {heroStats.map((item) => (
           <div
             key={item.label}
-            className="rounded-full border border-[rgba(185,217,235,0.24)] bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.18em] text-[var(--color-title-accent)]"
+            className="rounded-full border border-white/15 bg-white/8 px-4 py-2 text-xs uppercase tracking-[0.18em] text-white/70"
           >
             {item.label}: {item.value}
           </div>

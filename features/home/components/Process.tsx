@@ -20,7 +20,7 @@ export default function Process() {
             key={step.number}
             className="page-card p-(--space-md) text-center"
           >
-            <div className="mx-auto flex size-14 items-center justify-center rounded-full border border-(--border-default) bg-(--color-white) text-sm font-medium tracking-widest text-(--color-hover) transition">
+            <div className="mx-auto flex size-14 items-center justify-center rounded-full border border-(--border-default) bg-(--color-white) text-sm font-medium tracking-widest text-(--color-hover-accent) transition">
               {step.number}
             </div>
             <h3 className="mt-(--space-sm) font-(--font-display) text-[clamp(1.1rem,2vw,1.6rem)] text-(--color-ink)">
