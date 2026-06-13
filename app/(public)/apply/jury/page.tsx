@@ -12,7 +12,7 @@ export default function JuryApplyPage() {
   return (
     <main className="page-shell">
       {/* Dark editorial hero */}
-      <section className="relative flex min-h-[28vh] items-end overflow-hidden bg-[var(--color-ink)] pb-8 pt-24">
+      <section className="relative flex min-h-[42vh] items-end overflow-hidden bg-[var(--color-ink)] pb-12 pt-36">
         <Image
           src="/images/editorial/makeup.jpg"
           alt=""
