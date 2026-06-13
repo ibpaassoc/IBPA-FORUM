@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { usePathname } from "next/navigation";
 import LanguageSwitcher from "@/shared/components/layout/LanguageSwitcher";
 import JuryMenu from "@/shared/components/layout/JuryMenu";
@@ -179,13 +178,6 @@ export default function Header() {
               )
             )}
 
-            <Link
-              href="/apply"
-              onClick={handleLinkClick}
-              className="mt-1 flex items-center justify-center gap-2 rounded-full bg-[var(--color-ink)] px-6 py-4 text-sm font-semibold uppercase tracking-[0.1em] text-white shadow-xl"
-            >
-              {t.common.applyNow} <ArrowRight size={15} />
-            </Link>
           </div>
 
           <div className="rounded-[30px] border border-black/8 bg-[var(--surface-tint)] p-4">
