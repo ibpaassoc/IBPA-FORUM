@@ -11,8 +11,8 @@ type Tier = "ibpa" | "standard";
 
 function PriceRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between border-b border-white/8 py-3 last:border-0">
-      <span className="text-[0.88rem] text-white/55">{label}</span>
+    <div className="flex items-center justify-between border-b border-white/[0.1] py-3 last:border-0">
+      <span className="text-[0.88rem] text-white/65">{label}</span>
       <motion.span
         key={value}
         initial={{ opacity: 0, y: -4 }}
@@ -85,17 +85,17 @@ export default function HomePricing({ tier }: { tier: Tier }) {
 
           {/* ── Forum Tickets ── */}
           <Reveal delay={0.05}>
-            <article className="group flex h-full flex-col overflow-hidden rounded-[var(--radius-lg)] bg-[var(--color-ink)]">
+            <article className="group flex h-full flex-col overflow-hidden rounded-[var(--radius-lg)] border border-white/[0.07] bg-gradient-to-br from-[#1c2236] to-[#0d1120] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-all duration-300 hover:border-white/[0.14] hover:shadow-xl">
               {/* Card header */}
-              <div className="border-b border-white/8 p-[var(--space-md)]">
+              <div className="border-b border-white/[0.1] p-[var(--space-md)]">
                 <div className="mb-3 flex items-center gap-2">
-                  <Ticket size={14} className="text-white/35" strokeWidth={1.5} />
-                  <span className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/40 transition-colors duration-300 group-hover:text-[var(--color-blue)]">
+                  <Ticket size={14} className="text-white/50" strokeWidth={1.5} />
+                  <span className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/55 transition-colors duration-300 group-hover:text-[var(--color-blue)]">
                     {ps.forumTickets}
                   </span>
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-[0.72rem] text-white/35">From</span>
+                  <span className="text-[0.72rem] text-white/50">From</span>
                   <motion.span
                     key={forumStarting}
                     initial={{ opacity: 0, y: -5 }}
@@ -105,7 +105,7 @@ export default function HomePricing({ tier }: { tier: Tier }) {
                   >
                     {forumStarting}
                   </motion.span>
-                  <span className="text-[0.72rem] text-white/30">/ person</span>
+                  <span className="text-[0.72rem] text-white/45">/ person</span>
                 </div>
               </div>
 
@@ -126,16 +126,16 @@ export default function HomePricing({ tier }: { tier: Tier }) {
 
           {/* ── Award Participation ── */}
           <Reveal delay={0.1}>
-            <article className="group flex h-full flex-col overflow-hidden rounded-[var(--radius-lg)] bg-[var(--color-ink)]">
-              <div className="border-b border-white/8 p-[var(--space-md)]">
+            <article className="group flex h-full flex-col overflow-hidden rounded-[var(--radius-lg)] border border-white/[0.07] bg-gradient-to-br from-[#1c2236] to-[#0d1120] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-all duration-300 hover:border-white/[0.14] hover:shadow-xl">
+              <div className="border-b border-white/[0.1] p-[var(--space-md)]">
                 <div className="mb-3 flex items-center gap-2">
-                  <Trophy size={14} className="text-white/35" strokeWidth={1.5} />
-                  <span className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/40 transition-colors duration-300 group-hover:text-[var(--color-blue)]">
+                  <Trophy size={14} className="text-white/50" strokeWidth={1.5} />
+                  <span className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/55 transition-colors duration-300 group-hover:text-[var(--color-blue)]">
                     {ps.awardParticipation}
                   </span>
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-[0.72rem] text-white/35">From</span>
+                  <span className="text-[0.72rem] text-white/50">From</span>
                   <motion.span
                     key={awardStarting}
                     initial={{ opacity: 0, y: -5 }}
@@ -145,7 +145,7 @@ export default function HomePricing({ tier }: { tier: Tier }) {
                   >
                     {awardStarting}
                   </motion.span>
-                  <span className="text-[0.72rem] text-white/30">/ nom.</span>
+                  <span className="text-[0.72rem] text-white/45">/ nom.</span>
                 </div>
               </div>
 
@@ -153,7 +153,7 @@ export default function HomePricing({ tier }: { tier: Tier }) {
                 {awardRows.map((row) => (
                   <PriceRow key={row.label} label={row.label} value={row.value} />
                 ))}
-                <p className="mt-3 rounded-[var(--radius-sm)] bg-white/5 px-3 py-2 text-[0.69rem] italic text-white/35">
+                <p className="mt-3 rounded-[var(--radius-sm)] bg-white/[0.06] px-3 py-2 text-[0.69rem] italic text-white/50">
                   {ps.grandPrixNote}
                 </p>
               </div>
@@ -168,16 +168,16 @@ export default function HomePricing({ tier }: { tier: Tier }) {
 
           {/* ── Judge Registration ── */}
           <Reveal delay={0.15}>
-            <article className="group flex h-full flex-col overflow-hidden rounded-[var(--radius-lg)] bg-[var(--color-ink)]">
-              <div className="border-b border-white/8 p-[var(--space-md)]">
+            <article className="group flex h-full flex-col overflow-hidden rounded-[var(--radius-lg)] border border-white/[0.07] bg-gradient-to-br from-[#1c2236] to-[#0d1120] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-all duration-300 hover:border-white/[0.14] hover:shadow-xl">
+              <div className="border-b border-white/[0.1] p-[var(--space-md)]">
                 <div className="mb-3 flex items-center gap-2">
-                  <Star size={14} className="text-white/35" strokeWidth={1.5} />
-                  <span className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/40 transition-colors duration-300 group-hover:text-[var(--color-blue)]">
+                  <Star size={14} className="text-white/50" strokeWidth={1.5} />
+                  <span className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/55 transition-colors duration-300 group-hover:text-[var(--color-blue)]">
                     {ps.judgeRegistration}
                   </span>
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-[0.72rem] text-white/35">Fee</span>
+                  <span className="text-[0.72rem] text-white/50">Fee</span>
                   <motion.span
                     key={judgePrice}
                     initial={{ opacity: 0, y: -5 }}
@@ -187,7 +187,7 @@ export default function HomePricing({ tier }: { tier: Tier }) {
                   >
                     {judgePrice}
                   </motion.span>
-                  <span className="text-[0.72rem] text-white/30">/ judge</span>
+                  <span className="text-[0.72rem] text-white/45">/ judge</span>
                 </div>
               </div>
 
@@ -196,7 +196,7 @@ export default function HomePricing({ tier }: { tier: Tier }) {
                   label={tier === "ibpa" ? ps.ibpaMembers : ps.standard}
                   value={judgePrice}
                 />
-                <p className="mt-3 rounded-[var(--radius-sm)] bg-white/5 px-3 py-2 text-[0.69rem] italic text-white/35">
+                <p className="mt-3 rounded-[var(--radius-sm)] bg-white/[0.06] px-3 py-2 text-[0.69rem] italic text-white/50">
                   {ps.judgePaidAfterApproval}
                 </p>
               </div>

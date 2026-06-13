@@ -105,23 +105,23 @@ export default function HomeParticipation({ tier }: { tier: Tier }) {
           <Reveal delay={0.1}>
             <Link
               href="/apply"
-              className="group flex h-full flex-col overflow-hidden rounded-[var(--radius-lg)] bg-[var(--color-ink)] p-[var(--space-lg)] transition-shadow duration-300 hover:shadow-[var(--shadow-lg)]"
+              className="group flex h-full flex-col overflow-hidden rounded-[var(--radius-lg)] border border-white/[0.07] bg-gradient-to-br from-[#1c2236] to-[#0d1120] p-[var(--space-lg)] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-all duration-300 hover:border-white/[0.14] hover:shadow-xl"
             >
               <div className="mb-[var(--space-md)] flex items-center justify-between">
-                <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] border border-white/12 bg-white/6">
-                  <Trophy size={18} className="text-white/50" strokeWidth={1.5} />
+                <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] border border-white/[0.15] bg-white/[0.08]">
+                  <Trophy size={18} className="text-white/60" strokeWidth={1.5} />
                 </div>
-                <span className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-white/25">
+                <span className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-white/40">
                   {tierLabel}
                 </span>
               </div>
 
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/40 transition-colors duration-300 group-hover:text-[var(--color-blue)]">
+              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/55 transition-colors duration-300 group-hover:text-[var(--color-blue)]">
                 {p.award.label}
               </p>
 
               <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-[0.72rem] text-white/35">Starting from</span>
+                <span className="text-[0.72rem] text-white/45">Starting from</span>
                 <motion.span
                   key={awardPrice}
                   initial={{ opacity: 0, y: -5 }}
@@ -133,7 +133,7 @@ export default function HomeParticipation({ tier }: { tier: Tier }) {
                 </motion.span>
               </div>
 
-              <p className="mt-3 flex-1 text-[0.87rem] leading-[1.65] text-white/50">
+              <p className="mt-3 flex-1 text-[0.87rem] leading-[1.65] text-white/60">
                 {p.award.description}
               </p>
 
@@ -149,23 +149,23 @@ export default function HomeParticipation({ tier }: { tier: Tier }) {
           <Reveal delay={0.16}>
             <Link
               href="/jury"
-              className="group flex h-full flex-col overflow-hidden rounded-[var(--radius-lg)] bg-[var(--color-ink)] p-[var(--space-lg)] transition-shadow duration-300 hover:shadow-[var(--shadow-lg)]"
+              className="group flex h-full flex-col overflow-hidden rounded-[var(--radius-lg)] border border-white/[0.07] bg-gradient-to-br from-[#1c2236] to-[#0d1120] p-[var(--space-lg)] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-all duration-300 hover:border-white/[0.14] hover:shadow-xl"
             >
               <div className="mb-[var(--space-md)] flex items-center justify-between">
-                <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] border border-white/12 bg-white/6">
-                  <Star size={18} className="text-white/50" strokeWidth={1.5} />
+                <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] border border-white/[0.15] bg-white/[0.08]">
+                  <Star size={18} className="text-white/60" strokeWidth={1.5} />
                 </div>
-                <span className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-white/25">
+                <span className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-white/40">
                   {tierLabel}
                 </span>
               </div>
 
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/40 transition-colors duration-300 group-hover:text-[var(--color-blue)]">
+              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/55 transition-colors duration-300 group-hover:text-[var(--color-blue)]">
                 {p.judge.label}
               </p>
 
               <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-[0.72rem] text-white/35">Starting from</span>
+                <span className="text-[0.72rem] text-white/45">Starting from</span>
                 <motion.span
                   key={judgePrice}
                   initial={{ opacity: 0, y: -5 }}
@@ -177,7 +177,7 @@ export default function HomeParticipation({ tier }: { tier: Tier }) {
                 </motion.span>
               </div>
 
-              <p className="mt-3 flex-1 text-[0.87rem] leading-[1.65] text-white/50">
+              <p className="mt-3 flex-1 text-[0.87rem] leading-[1.65] text-white/60">
                 {p.judge.description}
               </p>
 
