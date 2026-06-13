@@ -16,10 +16,10 @@ export default async function JuryPage() {
   return (
     <main className="page-shell">
       <JuryHero />
+      <JuryActiveMembers juryMembers={juryMembers} />
       <JuryTimeline />
       <JuryBenefits />
       <JuryCredibility />
-      <JuryActiveMembers juryMembers={juryMembers} />
       <JuryCta />
     </main>
   );
