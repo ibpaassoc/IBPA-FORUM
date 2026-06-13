@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import "./globals.css";
 import Footer from "@/shared/components/layout/Footer";
 import Header from "@/shared/components/layout/Header";
+import PageTransitionWrapper from "@/shared/components/layout/PageTransitionWrapper";
 import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
 import { languages, type Language } from "@/lib/i18n/translations";
 
@@ -72,9 +73,9 @@ export default async function RootLayout({
       <body>
         <LanguageProvider initialLanguage={initialLanguage}>
           <Header />
-          <div className="min-h-screen">
+          <PageTransitionWrapper>
             {children}
-          </div>
+          </PageTransitionWrapper>
           <Footer />
         </LanguageProvider>
       </body>
