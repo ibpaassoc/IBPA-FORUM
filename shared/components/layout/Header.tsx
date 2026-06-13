@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { usePathname } from "next/navigation";
 import LanguageSwitcher from "@/shared/components/layout/LanguageSwitcher";
 import JuryMenu from "@/shared/components/layout/JuryMenu";
@@ -40,30 +41,23 @@ export default function Header() {
 
   useEffect(() => {
     function handleScroll() {
-      setScrolled(window.scrollY > 60);
+      setScrolled(window.scrollY > 50);
     }
-
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
-
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
     function handleResize() {
-      if (window.innerWidth >= 1024) {
-        setOpen(false);
-      }
+      if (window.innerWidth >= 1024) setOpen(false);
     }
-
     window.addEventListener("resize", handleResize);
-
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
-
     return () => {
       document.body.style.overflow = "";
     };
@@ -81,10 +75,14 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-[100] w-full px-[var(--page-gutter)] transition-all duration-500 ${useTransparent ? "bg-transparent" : "border-b border-[var(--border-default)] bg-white/92 shadow-[var(--shadow-sm)] backdrop-blur-[20px]"}`}
+      className={`fixed inset-x-0 top-0 z-[100] w-full px-[var(--page-gutter)] transition-all duration-500 ${
+        useTransparent
+          ? "bg-transparent py-5 lg:py-7"
+          : "border-b border-[var(--border-default)] bg-white/92 py-3 shadow-[var(--shadow-sm)] backdrop-blur-[20px] lg:py-4"
+      }`}
     >
       <div className="mx-auto max-w-[var(--content-width)]">
-        <div className="relative flex h-[clamp(60px,8vh,72px)] items-center gap-[var(--space-sm)]">
+        <div className="relative flex items-center gap-[var(--space-sm)]">
           <Link
             href="/"
             aria-label="IBPA home"
@@ -125,9 +123,20 @@ export default function Header() {
             )}
           </nav>
 
-          <div className="hidden items-center gap-2 lg:flex">
+          <div className="hidden items-center gap-3 lg:flex">
             <LanguageSwitcher transparent={useTransparent} />
             <JuryMenu transparent={useTransparent} />
+            <Link
+              href="/apply"
+              onClick={handleLinkClick}
+              className={`inline-flex shrink-0 items-center gap-2 rounded-full px-5 py-2.5 text-[0.7rem] font-semibold uppercase tracking-[0.1em] shadow-xl transition-all duration-300 hover:scale-105 ${
+                useTransparent
+                  ? "bg-white text-[var(--color-ink)] hover:bg-white/90"
+                  : "bg-[var(--color-ink)] text-white hover:bg-[#1a1a2e]"
+              }`}
+            >
+              {t.common.applyNow} <ArrowRight size={14} />
+            </Link>
           </div>
 
           <button
@@ -135,64 +144,67 @@ export default function Header() {
             aria-label={open ? t.header.closeMenu : t.header.openMenu}
             aria-expanded={open}
             onClick={() => setOpen((current) => !current)}
-            className={`relative ml-auto flex h-11 w-11 shrink-0 items-center justify-center rounded-full border transition-all duration-300 lg:hidden ${useTransparent ? "border-white/30 bg-white/10 text-white backdrop-blur-md hover:border-white hover:bg-white hover:text-[var(--color-ink)]" : "border-black/10 bg-white text-[var(--color-ink)] shadow-[0_10px_24px_rgba(3,2,19,0.05)] hover:border-[var(--color-ink)] hover:bg-[var(--color-ink)] hover:text-white"}`}
+            className={`relative ml-auto flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition-all duration-300 lg:hidden ${useTransparent ? "border-white/30 bg-white/10 text-white backdrop-blur-md hover:border-white hover:bg-white hover:text-[var(--color-ink)]" : "border-black/10 bg-white text-[var(--color-ink)] shadow-[0_10px_24px_rgba(3,2,19,0.05)] hover:border-[var(--color-ink)] hover:bg-[var(--color-ink)] hover:text-white"}`}
           >
             <span className="sr-only">
               {open ? t.header.closeMenu : t.header.openMenu}
             </span>
-            <span
-              className={`absolute h-0.5 w-5 bg-current transition-all duration-300 ${open ? "rotate-45" : "-translate-y-1.5"}`}
-            />
-            <span
-              className={`absolute h-0.5 w-5 bg-current transition-all duration-300 ${open ? "opacity-0" : "opacity-100"}`}
-            />
-            <span
-              className={`absolute h-0.5 w-5 bg-current transition-all duration-300 ${open ? "-rotate-45" : "translate-y-1.5"}`}
-            />
+            <span className={`absolute h-0.5 w-5 bg-current transition-all duration-300 ${open ? "rotate-45" : "-translate-y-1.5"}`} />
+            <span className={`absolute h-0.5 w-5 bg-current transition-all duration-300 ${open ? "opacity-0" : "opacity-100"}`} />
+            <span className={`absolute h-0.5 w-5 bg-current transition-all duration-300 ${open ? "-rotate-45" : "translate-y-1.5"}`} />
           </button>
         </div>
+      </div>
 
-        <div
-          className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ease-out lg:hidden ${open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
-        >
-          <div className="min-h-0 overflow-hidden">
-            <div className="max-h-[calc(100dvh-72px)] overflow-y-auto border-t border-black/8 bg-white px-1 py-5 pb-[max(2rem,env(safe-area-inset-bottom))]">
-              <div className="grid gap-6">
-                <div className="grid gap-2">
-                  {navigation.map((item) =>
-                    item.external ? (
-                      <a
-                        key={item.href}
-                        href={item.href}
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={handleLinkClick}
-                        className="rounded-[24px] border border-black/10 bg-white px-5 py-4 text-sm font-semibold uppercase tracking-[0.14em] text-[var(--color-ink)] shadow-[0_12px_24px_rgba(3,2,19,0.04)] transition-all duration-300 hover:border-black/24 hover:bg-black hover:text-white"
-                      >
-                        {item.label}
-                      </a>
-                    ) : (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={handleLinkClick}
-                        className={`rounded-[24px] border px-5 py-4 text-sm font-semibold uppercase tracking-[0.14em] shadow-[0_12px_24px_rgba(3,2,19,0.04)] transition-all duration-300 ${isActive(item.href) ? "border-[var(--color-ink)] bg-[var(--color-ink)] text-white" : "border-black/10 bg-white text-[var(--color-ink)] hover:border-black/24 hover:bg-black hover:text-white"}`}
-                      >
-                        {item.label}
-                      </Link>
-                    )
-                  )}
-                </div>
+      {/* Mobile menu — slides down from top, same pattern as IBPA-WEB */}
+      <div
+        className={`fixed inset-x-0 top-[68px] z-40 h-[calc(100dvh-68px)] border-t border-black/8 bg-white/96 p-6 shadow-2xl backdrop-blur-2xl transition-all duration-300 lg:hidden ${
+          open
+            ? "pointer-events-auto translate-y-0 opacity-100"
+            : "pointer-events-none -translate-y-3 opacity-0"
+        }`}
+      >
+        <div className="flex flex-col gap-6">
+          <div className="grid gap-2">
+            {navigation.map((item) =>
+              item.external ? (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={handleLinkClick}
+                  className="rounded-[24px] border border-black/10 bg-white px-5 py-4 text-sm font-semibold uppercase tracking-[0.14em] text-[var(--color-ink)] shadow-[0_12px_24px_rgba(3,2,19,0.04)] transition-all duration-300 hover:border-black/24 hover:bg-black hover:text-white"
+                >
+                  {item.label}
+                </a>
+              ) : (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={handleLinkClick}
+                  className={`rounded-[24px] border px-5 py-4 text-sm font-semibold uppercase tracking-[0.14em] shadow-[0_12px_24px_rgba(3,2,19,0.04)] transition-all duration-300 ${isActive(item.href) ? "border-[var(--color-ink)] bg-[var(--color-ink)] text-white" : "border-black/10 bg-white text-[var(--color-ink)] hover:border-black/24 hover:bg-black hover:text-white"}`}
+                >
+                  {item.label}
+                </Link>
+              )
+            )}
 
-                <div className="rounded-[30px] border border-black/8 bg-[var(--surface-tint)] p-4">
-                  <JuryMenu mobile onNavigate={handleLinkClick} />
-                </div>
+            <Link
+              href="/apply"
+              onClick={handleLinkClick}
+              className="mt-1 flex items-center justify-center gap-2 rounded-full bg-[var(--color-ink)] px-6 py-4 text-sm font-semibold uppercase tracking-[0.1em] text-white shadow-xl"
+            >
+              {t.common.applyNow} <ArrowRight size={15} />
+            </Link>
+          </div>
 
-                <div className="rounded-[30px] border border-black/8 bg-[var(--surface-tint)] p-4">
-                  <LanguageSwitcher mobile onSelect={handleLinkClick} />
-                </div>
-              </div>
-            </div>
+          <div className="rounded-[30px] border border-black/8 bg-[var(--surface-tint)] p-4">
+            <JuryMenu mobile onNavigate={handleLinkClick} />
+          </div>
+
+          <div className="rounded-[30px] border border-black/8 bg-[var(--surface-tint)] p-4">
+            <LanguageSwitcher mobile onSelect={handleLinkClick} />
           </div>
         </div>
       </div>
