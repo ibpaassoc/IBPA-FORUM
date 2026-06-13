@@ -1,85 +1,56 @@
 "use client";
 
-import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { PageCard } from "@/shared/components/layout/PageShell";
+import { BadgeCheck, Layers3, Send, Sparkles } from "lucide-react";
 
-const cardsCopy = {
-  en: {
-    eligibility: "Eligibility & Important Notes",
-    feeHtml: "Participation fee: <strong>$50 per nomination</strong>.",
-    separate:
-      "You can select up to five nominations in one flow. The active nomination controls the category-specific requirements shown in the form.",
-    juryNote: "Jury fee rules do not apply to this participant application page.",
-    before: "Before You Start",
-    items: [
-      "Prepare your license or certification file.",
-      "Choose up to five nominations from the category grid.",
-      "Gather all portfolio and supporting files for the active nomination.",
-      "Review your portfolio files before uploading.",
-    ],
+const cards = [
+  {
+    icon: Layers3,
+    title: "Choose your category",
+    text: "Select the category and nomination that best represent your professional specialty.",
   },
-  ru: {
-    eligibility: "Право на участие и важные примечания",
-    feeHtml: "Взнос за участие: <strong>$50 за номинацию</strong>.",
-    separate:
-      "Вы можете выбрать до пяти номинаций в одном потоке. Активная номинация управляет требованиями категории в форме.",
-    juryNote: "Правила оплаты для жюри не относятся к этой странице заявки участника.",
-    before: "Перед началом",
-    items: [
-      "Подготовьте файл лицензии или сертификата.",
-      "Выберите до пяти номинаций в сетке категорий.",
-      "Соберите портфолио и дополнительные файлы для активной номинации.",
-      "Проверьте файлы портфолио перед загрузкой.",
-    ],
+  {
+    icon: BadgeCheck,
+    title: "Prepare your profile",
+    text: "Complete your contact details, professional experience, and supporting credentials.",
   },
-  ua: {
-    eligibility: "Право на участь і важливі примітки",
-    feeHtml: "Внесок за участь: <strong>$50 за номінацію</strong>.",
-    separate:
-      "Ви можете обрати до п'яти номінацій в одному потоці. Активна номінація керує вимогами категорії у формі.",
-    juryNote: "Правила оплати для журі не застосовуються до цієї сторінки заявки учасника.",
-    before: "Перед початком",
-    items: [
-      "Підготуйте файл ліцензії або сертифіката.",
-      "Оберіть до п'яти номінацій у сітці категорій.",
-      "Зберіть портфоліо та додаткові файли для активної номінації.",
-      "Перевірте файли портфоліо перед завантаженням.",
-    ],
+  {
+    icon: Send,
+    title: "Submit your application",
+    text: "Upload the required materials for review by the official IBPA panel.",
   },
-} as const;
+  {
+    icon: Sparkles,
+    title: "Expand your reach",
+    text: "Five or more nominations automatically include you in Grand Prix consideration.",
+  },
+];
 
 export default function ApplyIntroCards() {
-  const { language } = useLanguage();
-  const copy = cardsCopy[language] ?? cardsCopy.en;
-
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-      <PageCard className="rounded-[1.8rem] p-7">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--color-hover-accent)]">
-          {copy.eligibility}
-        </p>
-        <div className="mt-5 space-y-4 text-sm leading-7 text-[var(--color-ink-soft)]">
-          <p dangerouslySetInnerHTML={{ __html: copy.feeHtml }} />
-          <p>{copy.separate}</p>
-          <p>{copy.juryNote}</p>
-        </div>
-      </PageCard>
+    <section className="px-[var(--page-gutter)] py-10">
+      <div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-2 xl:grid-cols-4">
+        {cards.map((card) => {
+          const Icon = card.icon;
 
-      <PageCard className="rounded-[1.8rem] p-7">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--color-hover-accent)]">
-          {copy.before}
-        </p>
-        <div className="mt-5 grid gap-4 sm:grid-cols-2">
-          {copy.items.map((item) => (
-            <div
-              key={item}
-              className="rounded-2xl border border-[var(--border-default)] bg-[var(--color-off-white)] p-4 text-sm leading-6 text-[var(--color-ink)]"
+          return (
+            <article
+              key={card.title}
+              className="rounded-[30px] border border-black/8 bg-white p-6 shadow-[0_18px_40px_rgba(3,2,19,0.05)]"
             >
-              {item}
-            </div>
-          ))}
-        </div>
-      </PageCard>
-    </div>
+              <span className="flex h-11 w-11 items-center justify-center rounded-full border border-black/10 bg-[var(--surface-tint)] text-[var(--color-ink)]">
+                <Icon size={18} strokeWidth={1.7} />
+              </span>
+
+              <h3 className="mt-5 font-[var(--font-display)] text-[1.55rem] leading-[1.02] tracking-[-0.03em] text-[var(--color-ink)]">
+                {card.title}
+              </h3>
+              <p className="mt-3 text-sm leading-[1.8] text-[var(--color-ink-soft)]">
+                {card.text}
+              </p>
+            </article>
+          );
+        })}
+      </div>
+    </section>
   );
 }

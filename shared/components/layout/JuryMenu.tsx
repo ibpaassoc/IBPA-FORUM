@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ChevronDown } from "lucide-react";
+import { ArrowUpRight, ChevronDown } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 export default function JuryMenu({
@@ -62,9 +62,15 @@ export default function JuryMenu({
             key={item.href}
             href={item.href}
             onClick={onNavigate}
-            className="flex items-center justify-between rounded-[24px] border border-black/10 bg-white px-5 py-4 text-sm font-semibold uppercase tracking-[0.14em] text-[var(--color-ink)] transition-all duration-300 hover:border-black hover:bg-black hover:text-white"
+            className="group flex items-center justify-between rounded-[24px] border border-black/10 bg-white px-5 py-4 text-sm font-semibold uppercase tracking-[0.14em] text-[var(--color-ink)] transition-all duration-300 hover:border-black hover:bg-black hover:text-white"
           >
-            <span>{item.label}</span>
+            <span className="transition-colors duration-300 group-hover:text-white">
+              {item.label}
+            </span>
+            <ArrowUpRight
+              size={15}
+              className="transition-colors duration-300 group-hover:text-white"
+            />
           </Link>
         ))}
       </div>
@@ -105,9 +111,15 @@ export default function JuryMenu({
               setOpen(false);
               onNavigate?.();
             }}
-            className="flex items-center rounded-[18px] px-4 py-3 text-sm text-[var(--color-ink)] transition hover:bg-black hover:text-white"
+            className="group flex items-center justify-between rounded-[18px] px-4 py-3 text-sm text-[var(--color-ink)] transition hover:bg-black hover:text-white"
           >
-            <span>{item.label}</span>
+            <span className="transition-colors duration-300 group-hover:text-white">
+              {item.label}
+            </span>
+            <ArrowUpRight
+              size={14}
+              className="transition-colors duration-300 group-hover:text-white"
+            />
           </Link>
         ))}
       </div>
