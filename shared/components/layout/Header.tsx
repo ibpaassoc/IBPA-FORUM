@@ -75,10 +75,10 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-[100] w-full px-[var(--page-gutter)] transition-all duration-500 ${
+      className={`fixed inset-x-0 top-0 z-[100] w-full border-b px-[var(--page-gutter)] transition-all duration-500 ${
         useTransparent
-          ? "bg-transparent py-5 lg:py-7"
-          : "border-b border-[var(--border-default)] bg-white/92 py-3 shadow-[var(--shadow-sm)] backdrop-blur-[20px] lg:py-4"
+          ? "border-transparent bg-transparent py-5 lg:py-7"
+          : "border-[var(--border-default)] bg-white/92 py-3 shadow-[var(--shadow-sm)] backdrop-blur-[20px] lg:py-4"
       }`}
     >
       <div className="mx-auto max-w-[var(--content-width)]">
@@ -126,17 +126,6 @@ export default function Header() {
           <div className="hidden items-center gap-3 lg:flex">
             <LanguageSwitcher transparent={useTransparent} />
             <JuryMenu transparent={useTransparent} />
-            <Link
-              href="/apply"
-              onClick={handleLinkClick}
-              className={`inline-flex shrink-0 items-center gap-2 rounded-full px-5 py-2.5 text-[0.7rem] font-semibold uppercase tracking-[0.1em] shadow-xl transition-all duration-300 hover:scale-105 ${
-                useTransparent
-                  ? "bg-white text-[var(--color-ink)] hover:bg-white/90"
-                  : "bg-[var(--color-ink)] text-white hover:bg-[#1a1a2e]"
-              }`}
-            >
-              {t.common.applyNow} <ArrowRight size={14} />
-            </Link>
           </div>
 
           <button
