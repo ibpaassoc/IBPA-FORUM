@@ -31,7 +31,7 @@ export default function Footer() {
       privacy: "Privacy Policy",
       summary:
         "Celebrating excellence in the global beauty industry and recognizing professionals shaping the future of beauty.",
-      copyright: "Copyright 2026 IBPA Beauty Award. All rights reserved.",
+      copyright: "© 2026 IBPA Beauty Award. All rights reserved.",
       global: "Open to global participants.",
     },
     ru: {
@@ -112,9 +112,11 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="w-full border-t border-(--border-default) bg-(--surface-muted) py-(--space-xl) pb-(--space-lg) text-(--color-ink-soft)">
-        <div className="mx-auto max-w-(--content-width) px-(--page-gutter)">
-          <div className="grid grid-cols-1 gap-(--space-lg) border-b border-border-footer pb-(--space-lg) md:grid-cols-2 xl:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
+      <footer className="w-full border-t border-[var(--border-default)] bg-[var(--color-off-white)] text-[var(--color-ink-soft)]">
+        <div className="mx-auto max-w-[var(--content-width)] px-[var(--page-gutter)]">
+          {/* Main footer grid */}
+          <div className="grid grid-cols-1 gap-[var(--space-xl)] border-b border-[var(--border-default)] py-[var(--space-xl)] md:grid-cols-2 xl:grid-cols-[1.6fr_1fr_1fr_1fr]">
+            {/* Brand column */}
             <div className="max-w-sm">
               <Link href="/" className="inline-flex items-center">
                 <Image
@@ -122,32 +124,33 @@ export default function Footer() {
                   alt="IBPA Logo"
                   width={320}
                   height={80}
-                  className="h-14 w-auto object-contain"
+                  className="h-12 w-auto object-contain opacity-85"
                 />
               </Link>
 
-              <p className="mt-(--space-md) text-[clamp(0.92rem,1.45vw,1.04rem)] leading-[1.78] text-(--color-ink-soft)">
+              <p className="mt-[var(--space-md)] text-[0.95rem] leading-[1.78] text-[var(--color-ink-soft)]">
                 {copy.summary}
               </p>
 
-              <div className="mt-(--space-md)">
+              <div className="mt-[var(--space-md)]">
                 <JuryMenu dropDirection="up" dropAlign="left" />
               </div>
             </div>
 
+            {/* Nav columns */}
             {footerColumns.map((column) => (
               <div key={column.title}>
-                <h4 className="mb-(--space-sm) font-(--font-sans) text-[0.72rem] font-semibold uppercase tracking-[0.17em] text-(--color-hover)">
+                <h4 className="mb-[var(--space-md)] text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-ink)]/40">
                   {column.title}
                 </h4>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2.5">
                   {column.links.map((link) =>
                     link.legalType ? (
                       <button
                         key={link.label}
                         type="button"
                         onClick={() => setActiveLegalModal(link.legalType)}
-                        className="w-fit text-left text-[0.95rem] leading-[1.75] text-(--color-ink-soft) transition hover:text-(--color-hover)"
+                        className="w-fit text-left text-[0.9rem] leading-[1.75] text-[var(--color-ink-soft)] transition hover:text-[var(--color-ink)]"
                       >
                         {link.label}
                       </button>
@@ -155,7 +158,7 @@ export default function Footer() {
                       <a
                         key={link.label}
                         href={link.href}
-                        className="text-[0.95rem] leading-[1.75] text-(--color-ink-soft) transition hover:text-(--color-hover)"
+                        className="text-[0.9rem] leading-[1.75] text-[var(--color-ink-soft)] transition hover:text-[var(--color-ink)]"
                       >
                         {link.label}
                       </a>
@@ -165,7 +168,7 @@ export default function Footer() {
                         href={link.href}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-[0.95rem] leading-[1.75] text-(--color-ink-soft) transition hover:text-(--color-hover)"
+                        className="text-[0.9rem] leading-[1.75] text-[var(--color-ink-soft)] transition hover:text-[var(--color-ink)]"
                       >
                         {link.label}
                       </a>
@@ -173,7 +176,7 @@ export default function Footer() {
                       <Link
                         key={link.label}
                         href={link.href}
-                        className="text-[0.95rem] leading-[1.75] text-(--color-ink-soft) transition hover:text-(--color-hover)"
+                        className="text-[0.9rem] leading-[1.75] text-[var(--color-ink-soft)] transition hover:text-[var(--color-ink)]"
                       >
                         {link.label}
                       </Link>
@@ -184,12 +187,16 @@ export default function Footer() {
             ))}
           </div>
 
-          <div className="mt-(--space-md) flex flex-col gap-(--space-sm) text-[0.78rem] text-(--color-ink-muted) sm:flex-row sm:items-center sm:justify-between">
+          {/* Bottom bar */}
+          <div className="flex flex-col gap-3 py-[var(--space-md)] text-[0.75rem] text-[var(--color-ink)]/30 sm:flex-row sm:items-center sm:justify-between">
             <p>{copy.copyright}</p>
-            <p className="script-accent text-[1.35rem] leading-[1.2]">{copy.global}</p>
+            <p className="font-[var(--font-accent-family)] text-[1.1rem] italic text-[var(--color-ink)]/40 leading-[1.2]">
+              {copy.global}
+            </p>
           </div>
         </div>
       </footer>
+
       <Modal
         isOpen={activeLegalModal !== null}
         onClose={() => setActiveLegalModal(null)}
@@ -200,19 +207,19 @@ export default function Footer() {
             : currentLegalCopy.terms.modalTitle
         }
       >
-        <div className="space-y-(--space-md)">
+        <div className="space-y-[var(--space-md)]">
           {(activeLegalModal === "privacy"
             ? currentLegalCopy.privacy.sections
             : currentLegalCopy.terms.sections
           ).map((section) => (
             <section
               key={section.heading}
-              className="rounded-[var(--radius-sm)] border border-transparent px-[clamp(0.05rem,0.6vw,0.5rem)] py-[clamp(0.2rem,0.7vw,0.55rem)] transition hover:border-(--border-soft) hover:bg-(--surface-tint)"
+              className="rounded-[var(--radius-sm)] border border-transparent px-[clamp(0.05rem,0.6vw,0.5rem)] py-[clamp(0.2rem,0.7vw,0.55rem)] transition hover:border-[var(--border-soft)] hover:bg-[var(--surface-tint)]"
             >
-              <h3 className="mb-1 text-[clamp(1.08rem,1.5vw,1.25rem)] leading-[1.25] tracking-[0.005em] text-(--color-ink) [font-family:var(--font-accent-family)]">
+              <h3 className="mb-1 text-[clamp(1.08rem,1.5vw,1.25rem)] leading-[1.25] tracking-[0.005em] text-[var(--color-ink)] [font-family:var(--font-accent-family)]">
                 {section.heading}
               </h3>
-              <p className="text-(--color-ink-soft)">{section.body}</p>
+              <p className="text-[var(--color-ink-soft)]">{section.body}</p>
             </section>
           ))}
         </div>

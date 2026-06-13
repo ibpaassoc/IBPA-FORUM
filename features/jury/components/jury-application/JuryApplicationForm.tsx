@@ -1,440 +1,521 @@
-"use client"
+"use client";
 
-import type { ChangeEvent, FormEvent } from "react"
-import { useCallback, useEffect, useRef, useState } from "react"
-import ExperienceSection from "@/features/jury/components/jury-application/sections/ExperienceSection"
-import MaterialsSection from "@/features/jury/components/jury-application/sections/MaterialsSection"
-import ProfessionalProfileSection from "@/features/jury/components/jury-application/sections/ProfessionalProfileSection"
-import { useLanguage } from "@/lib/i18n/LanguageProvider"
-import { FormProgressSidebar } from "@/shared/components/public"
+import { useRef, useState } from "react";
+import {
+  Award,
+  BadgeCheck,
+  ChevronLeft,
+  ChevronRight,
+  ClipboardList,
+  FileCheck,
+  Send,
+  Shield,
+  User,
+} from "lucide-react";
+import UploadField from "@/features/applications/components/application-form/fields/UploadField";
+import StepBar, { type StepDef } from "@/features/applications/components/application-form/StepBar";
+import { SelectField, TextField, TextareaField, ChoiceGroupField } from "@/features/applications/components/application-form/fields/FormControls";
+import { countryOptions } from "@/features/applications/config/countries";
+import { categories as expertiseCategories } from "@/data/home";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
-type SubmissionSummary = {
-  name: string
-  location: string
-  expertise: string[]
+const STEPS: StepDef[] = [
+  { id: "contact", label: "Contact", icon: User },
+  { id: "profile", label: "Profile", icon: BadgeCheck },
+  { id: "experience", label: "Experience", icon: ClipboardList },
+  { id: "credentials", label: "Credentials", icon: FileCheck },
+  { id: "materials", label: "Materials", icon: Award },
+  { id: "motivation", label: "Motivation", icon: Shield },
+  { id: "confirm", label: "Confirm", icon: Send },
+];
+
+type FormValues = Record<string, string | string[] | File[]>;
+
+function isFieldFilled(value: FormValues[string] | undefined) {
+  if (!value) return false;
+  if (Array.isArray(value)) return value.length > 0;
+  return String(value).trim().length > 0;
 }
 
-type SubmissionState =
-  | {
-      type: "idle"
-      message: string
-    }
-  | {
-      type: "success" | "error"
-      message: string
-    }
-
 export default function JuryApplicationForm() {
-  const { language } = useLanguage()
-  const formRef = useRef<HTMLFormElement | null>(null)
-  const [hasPreviousJudging, setHasPreviousJudging] = useState("no")
-  const [selectedExpertise, setSelectedExpertise] = useState<string[]>([])
-  const [isIbpaMember, setIsIbpaMember] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [progressValue, setProgressValue] = useState(0)
-  const [submissionState, setSubmissionState] = useState<SubmissionState>({
-    type: "idle",
-    message: "",
-  })
-  const [summary, setSummary] = useState<SubmissionSummary | null>(null)
+  const { language } = useLanguage();
+  const formRef = useRef<HTMLFormElement>(null);
+  const [step, setStep] = useState(0);
+  const [values, setValues] = useState<FormValues>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionState, setSubmissionState] = useState<{ type: "idle" | "success" | "error"; message: string }>({ type: "idle", message: "" });
+
   const copy = {
     en: {
-      validationError:
-        "We could not validate the form. Please review your information and try again.",
+      steps: [
+        { title: "Contact Details", desc: "Use the contact information that should receive review updates." },
+        { title: "Professional Profile", desc: "Share your professional title, experience, and current affiliation." },
+        { title: "Judging Experience", desc: "Describe your previous judging experience and areas of expertise." },
+        { title: "Credentials", desc: "Upload your professional certifications and a profile photo." },
+        { title: "Bio & Disclosure", desc: "Share your professional bio, website, and any conflict of interest." },
+        { title: "Motivation & Agreement", desc: "Tell us why you want to serve as a judge and agree to confidentiality." },
+        { title: "Review & Submit", desc: "Review your application before final submission." },
+      ],
+      back: "Back",
+      continue: "Continue",
+      submit: "Submit Application",
+      submitting: "Submitting…",
+      firstName: "First Name",
+      lastName: "Last Name",
+      email: "Email Address",
+      phone: "Phone / WhatsApp",
+      country: "Country",
+      selectCountry: "Select country",
+      city: "City",
+      countryOther: "Country (Other)",
+      stateProvince: "State / Province",
+      professionalTitle: "Professional Title",
+      professionalTitlePh: "PMU Artist & Educator",
+      yearsExperience: "Years of Professional Experience",
+      yearsExperienceHint: "A minimum of 5 years is required for the jury panel.",
+      employer: "Current Employer / Affiliation",
+      employerPh: "Salon, academy, clinic, organization, or brand",
+      previousJudging: "Previous Judging Experience",
+      previousJudgingHint: "If yes, tell us where, when, and in what format you served.",
+      yes: "Yes",
+      no: "No",
+      judgingDetails: "Judging Experience Details",
+      judgingDetailsPh: "Describe the award, event, year, and judging format.",
+      expertise: "Areas of Expertise",
+      expertiseHint: "Choose every category you are qualified to evaluate.",
+      ibpaMember: "Are you an accredited IBPA member?",
+      ibpaNumber: "IBPA ID",
+      ibpaNumberPh: "e.g. CERT-2026-XXXXX",
+      ibpaNumberHint: "Enter the certificate ID of an accredited IBPA member.",
+      certifications: "Professional Certifications",
+      certificationsHint: "Upload up to 5 PDF or image files. Max 3 MB each.",
+      profilePhoto: "Profile Photo",
+      profilePhotoHint: "Upload one professional JPG or PNG image for your jury profile. Max 3 MB.",
+      bio: "Professional Bio",
+      bioPh: "Share your background, achievements, and role in the industry. This bio can be published on the jury page if approved.",
+      bioHint: "Target length: up to 300 words.",
+      website: "Professional Website / LinkedIn",
+      conflict: "Conflict of Interest Disclosure",
+      conflictPh: "Disclose any relationships with nominees, schools, salons, brands, or other participants.",
+      motivation: "Why do you want to serve as a judge?",
+      motivationPh: "Describe what you would bring to the IBPA jury panel and why the role matters to you.",
+      motivationHint: "Target length: up to 200 words.",
+      confidentiality: "I agree to keep all jury deliberations, candidate information, and judging materials strictly confidential.",
+      confirmTitle: "Application Summary",
+      confirmNote: "Please review the details below. Once submitted, your jury application will be forwarded to the IBPA committee.",
       received: "Your jury application has been received for review.",
-      submitException:
-        "Something went wrong while sending the application. Please try again.",
-      fileTooLarge:
-        "One or more files exceed the 3 MB limit. Please compress or resize your photo and certifications, then try again.",
-      totalTooLarge:
-        "The total size of your uploaded files exceeds 4 MB. Please compress or resize them and try again.",
-      progressTitle: "Jury Application Progress",
-      progressSubtitle: "Track your profile, experience, and required materials.",
-      progressLabel: "Completion",
-      stepProfile: "Professional profile",
-      stepProfileHint: "Identity, location, and title fields",
-      stepExperience: "Experience details",
-      stepExperienceHint: "Judging history and expertise areas",
-      stepMaterials: "Materials and disclosure",
-      stepMaterialsHint: "Uploads, bio, and confidentiality",
-      summaryTitle: "Application Summary",
-      summaryCandidate: "Candidate",
-      summaryLocation: "Location",
-      summaryExpertise: "Expertise",
-      expertiseSelected: "Expertise Selected",
-      sending: "Sending Application...",
-      submit: "Submit Jury Application",
-      completeSuffix: "complete",
+      submitError: "Something went wrong. Please try again.",
     },
     ru: {
-      validationError:
-        "Не удалось проверить форму. Проверьте данные и попробуйте снова.",
+      steps: [
+        { title: "Контактные данные", desc: "Укажите контактную информацию для получения обновлений." },
+        { title: "Профессиональный профиль", desc: "Укажите профессиональный статус, стаж и текущую аффилиацию." },
+        { title: "Опыт судейства", desc: "Опишите предыдущий опыт судейства и области экспертизы." },
+        { title: "Документы", desc: "Загрузите профессиональные сертификаты и фото профиля." },
+        { title: "Биография и раскрытие", desc: "Поделитесь биографией, сайтом и данными о конфликтах интересов." },
+        { title: "Мотивация и соглашение", desc: "Расскажите, почему вы хотите быть судьей, и подтвердите конфиденциальность." },
+        { title: "Проверка и отправка", desc: "Проверьте заявку перед финальной отправкой." },
+      ],
+      back: "Назад",
+      continue: "Продолжить",
+      submit: "Отправить заявку",
+      submitting: "Отправка…",
+      firstName: "Имя",
+      lastName: "Фамилия",
+      email: "Email",
+      phone: "Телефон / WhatsApp",
+      country: "Страна",
+      selectCountry: "Выберите страну",
+      city: "Город",
+      countryOther: "Страна (другое)",
+      stateProvince: "Штат / Регион",
+      professionalTitle: "Профессиональный статус",
+      professionalTitlePh: "PMU-мастер и преподаватель",
+      yearsExperience: "Стаж профессиональной работы",
+      yearsExperienceHint: "Для состава жюри требуется минимум 5 лет опыта.",
+      employer: "Текущее место работы / аффилиация",
+      employerPh: "Салон, академия, клиника, организация или бренд",
+      previousJudging: "Опыт судейства",
+      previousJudgingHint: "Если да, укажите где, когда и в каком формате вы судили.",
+      yes: "Да",
+      no: "Нет",
+      judgingDetails: "Детали опыта судейства",
+      judgingDetailsPh: "Опишите премию, событие, год и формат судейства.",
+      expertise: "Области экспертизы",
+      expertiseHint: "Выберите все категории, которые вы можете оценивать.",
+      ibpaMember: "Являетесь ли вы аккредитованным участником IBPA?",
+      ibpaNumber: "ID IBPA",
+      ibpaNumberPh: "Пример: CERT-2026-XXXXX",
+      ibpaNumberHint: "Введите ID сертификата аккредитованного участника IBPA.",
+      certifications: "Профессиональные сертификаты",
+      certificationsHint: "Загрузите до 5 файлов PDF или изображений. Макс. 3 МБ каждый.",
+      profilePhoto: "Фото профиля",
+      profilePhotoHint: "Загрузите одно профессиональное фото JPG или PNG. Макс. 3 МБ.",
+      bio: "Профессиональная биография",
+      bioPh: "Опишите ваш опыт, достижения и роль в индустрии. Биография может быть опубликована после одобрения.",
+      bioHint: "Рекомендуемый объем: до 300 слов.",
+      website: "Профессиональный сайт / LinkedIn",
+      conflict: "Раскрытие конфликта интересов",
+      conflictPh: "Укажите любые связи с номинантами, школами, салонами, брендами или участниками.",
+      motivation: "Почему вы хотите быть судьей?",
+      motivationPh: "Опишите, какой вклад вы можете внести в состав жюри IBPA.",
+      motivationHint: "Рекомендуемый объем: до 200 слов.",
+      confidentiality: "Я соглашаюсь сохранять конфиденциальность всех обсуждений жюри, информации о кандидатах и материалов оценивания.",
+      confirmTitle: "Сводка заявки",
+      confirmNote: "Проверьте данные. После отправки ваша заявка будет передана комитету IBPA.",
       received: "Ваша заявка в жюри получена и принята на рассмотрение.",
-      submitException:
-        "Во время отправки заявки произошла ошибка. Попробуйте еще раз.",
-      fileTooLarge:
-        "Один или несколько файлов превышают лимит 3 МБ. Пожалуйста, сожмите или уменьшите фото и сертификаты.",
-      totalTooLarge:
-        "Общий размер загруженных файлов превышает 4 МБ. Пожалуйста, сожмите их и попробуйте снова.",
-      progressTitle: "Прогресс заявки в жюри",
-      progressSubtitle: "Отслеживайте профиль, опыт и обязательные материалы.",
-      progressLabel: "Заполнение",
-      stepProfile: "Профиль",
-      stepProfileHint: "Личные данные, локация и профессиональный статус",
-      stepExperience: "Детали опыта",
-      stepExperienceHint: "Опыт судейства и области экспертизы",
-      stepMaterials: "Материалы и раскрытие",
-      stepMaterialsHint: "Файлы, биография и конфиденциальность",
-      summaryTitle: "Сводка заявки",
-      summaryCandidate: "Кандидат",
-      summaryLocation: "Локация",
-      summaryExpertise: "Экспертиза",
-      expertiseSelected: "Выбрано направлений",
-      sending: "Отправка заявки...",
-      submit: "Отправить заявку в жюри",
-      completeSuffix: "заполнено",
+      submitError: "Что-то пошло не так. Попробуйте снова.",
     },
     ua: {
-      validationError:
-        "Не вдалося перевірити форму. Перевірте дані та спробуйте ще раз.",
+      steps: [
+        { title: "Контактні дані", desc: "Вкажіть контактну інформацію для отримання оновлень." },
+        { title: "Професійний профіль", desc: "Вкажіть статус, стаж та поточну афіліацію." },
+        { title: "Досвід суддівства", desc: "Опишіть попередній досвід суддівства та сфери експертизи." },
+        { title: "Документи", desc: "Завантажте сертифікати та фото профілю." },
+        { title: "Біографія та розкриття", desc: "Поділіться біографією, сайтом і даними про конфлікти інтересів." },
+        { title: "Мотивація та угода", desc: "Розкажіть, чому хочете бути суддею, та підтвердьте конфіденційність." },
+        { title: "Перевірка та надсилання", desc: "Перевірте заявку перед фінальним надсиланням." },
+      ],
+      back: "Назад",
+      continue: "Продовжити",
+      submit: "Надіслати заявку",
+      submitting: "Надсилання…",
+      firstName: "Ім'я",
+      lastName: "Прізвище",
+      email: "Email",
+      phone: "Телефон / WhatsApp",
+      country: "Країна",
+      selectCountry: "Оберіть країну",
+      city: "Місто",
+      countryOther: "Країна (інше)",
+      stateProvince: "Штат / Регіон",
+      professionalTitle: "Професійний статус",
+      professionalTitlePh: "PMU-майстер і викладач",
+      yearsExperience: "Стаж професійної роботи",
+      yearsExperienceHint: "Для складу журі потрібно щонайменше 5 років досвіду.",
+      employer: "Поточне місце роботи / афіліація",
+      employerPh: "Салон, академія, клініка, організація або бренд",
+      previousJudging: "Досвід суддівства",
+      previousJudgingHint: "Якщо так, вкажіть де, коли і в якому форматі ви судили.",
+      yes: "Так",
+      no: "Ні",
+      judgingDetails: "Деталі досвіду суддівства",
+      judgingDetailsPh: "Опишіть премію, подію, рік і формат суддівства.",
+      expertise: "Сфери експертизи",
+      expertiseHint: "Оберіть усі категорії, які ви можете оцінювати.",
+      ibpaMember: "Чи є ви акредитованим учасником IBPA?",
+      ibpaNumber: "ID IBPA",
+      ibpaNumberPh: "Приклад: CERT-2026-XXXXX",
+      ibpaNumberHint: "Введіть ID сертифіката акредитованого учасника IBPA.",
+      certifications: "Професійні сертифікати",
+      certificationsHint: "Завантажте до 5 файлів PDF або зображень. Макс. 3 МБ кожен.",
+      profilePhoto: "Фото профілю",
+      profilePhotoHint: "Завантажте одне фото JPG або PNG. Макс. 3 МБ.",
+      bio: "Професійна біографія",
+      bioPh: "Опишіть ваш досвід, досягнення та роль в індустрії. Може бути опублікована після схвалення.",
+      bioHint: "Рекомендований обсяг: до 300 слів.",
+      website: "Професійний сайт / LinkedIn",
+      conflict: "Розкриття конфлікту інтересів",
+      conflictPh: "Вкажіть будь-які зв'язки з номінантами, школами, салонами, брендами або учасниками.",
+      motivation: "Чому ви хочете бути суддею?",
+      motivationPh: "Опишіть, який внесок ви можете зробити до складу журі IBPA.",
+      motivationHint: "Рекомендований обсяг: до 200 слів.",
+      confidentiality: "Я погоджуюся зберігати конфіденційність усіх обговорень журі, інформації про кандидатів і матеріалів оцінювання.",
+      confirmTitle: "Підсумок заявки",
+      confirmNote: "Перевірте дані. Після надсилання вашу заявку буде передано комітету IBPA.",
       received: "Вашу заявку до журі отримано та передано на розгляд.",
-      submitException:
-        "Під час надсилання заявки сталася помилка. Спробуйте ще раз.",
-      fileTooLarge:
-        "Один або кілька файлів перевищують ліміт 3 МБ. Будь ласка, стисніть або зменшіть фото та сертифікати.",
-      totalTooLarge:
-        "Загальний розмір завантажених файлів перевищує 4 МБ. Будь ласка, стисніть їх і спробуйте ще раз.",
-      progressTitle: "Прогрес заявки до журі",
-      progressSubtitle: "Відстежуйте профіль, досвід і обов’язкові матеріали.",
-      progressLabel: "Заповнення",
-      stepProfile: "Профіль",
-      stepProfileHint: "Особисті дані, локація та професійний статус",
-      stepExperience: "Деталі досвіду",
-      stepExperienceHint: "Досвід суддівства та сфери експертизи",
-      stepMaterials: "Матеріали та розкриття",
-      stepMaterialsHint: "Файли, біографія та конфіденційність",
-      summaryTitle: "Підсумок заявки",
-      summaryCandidate: "Кандидат",
-      summaryLocation: "Локація",
-      summaryExpertise: "Експертиза",
-      expertiseSelected: "Обрано напрямків",
-      sending: "Надсилання заявки...",
-      submit: "Надіслати заявку до журі",
-      completeSuffix: "заповнено",
+      submitError: "Щось пішло не так. Спробуйте ще раз.",
     },
-  }[language]
+  }[language];
 
-  const handleExpertiseChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { value, checked } = event.target
+  const currentStepInfo = copy.steps[step];
 
-    setSelectedExpertise((current) => {
-      if (checked) {
-        return [...current, value]
-      }
-
-      return current.filter((item) => item !== value)
-    })
+  function handleChange(name: string, value: string | string[]) {
+    setValues((cur) => {
+      const next = { ...cur, [name]: value };
+      if (name === "country" && value !== "Other") delete next.countryOther;
+      if (name === "country" && value !== "USA") delete next.stateProvince;
+      if (name === "previousJudgingExperience" && value === "no") delete next.previousJudgingDetails;
+      if (name === "ibpaAssociationMember" && value === "no") delete next.ibpaNumber;
+      return next;
+    });
+    setErrors((cur) => { const next = { ...cur }; delete next[name]; return next; });
   }
 
-  const updateProgress = useCallback(() => {
-    const form = formRef.current
-    if (!form) {
-      return
+  function handleFilesChange(name: string, files: File[]) {
+    setValues((cur) => ({ ...cur, [name]: files }));
+    setErrors((cur) => { const next = { ...cur }; delete next[name]; return next; });
+  }
+
+  function validateStep(s: number): Record<string, string> {
+    const e: Record<string, string> = {};
+    const req = (key: string) => { if (!isFieldFilled(values[key])) e[key] = "Required"; };
+
+    if (s === 0) {
+      req("firstName"); req("lastName"); req("email"); req("phone"); req("country"); req("city");
+      if (String(values.country ?? "") === "Other") req("countryOther");
+      if (String(values.country ?? "") === "USA") req("stateProvince");
     }
-
-    const profileFields = [
-      "firstName",
-      "lastName",
-      "email",
-      "phone",
-      "country",
-      "city",
-      "professionalTitle",
-      "yearsExperience",
-      "employerAffiliation",
-    ]
-    const materialsFields = [
-      "professionalBio",
-      "conflictDisclosure",
-      "motivation",
-      "professionalWebsite",
-    ]
-
-    const filledProfile = profileFields.filter((name) => {
-      const input = form.elements.namedItem(name) as HTMLInputElement | null
-      return Boolean(input?.value?.trim())
-    }).length
-
-    const filledMaterials = materialsFields.filter((name) => {
-      const input = form.elements.namedItem(name) as HTMLInputElement | null
-      return Boolean(input?.value?.trim())
-    }).length
-
-    const certificationsInput = form.elements.namedItem("certifications") as HTMLInputElement | null
-    const profilePhotoInput = form.elements.namedItem("profilePhoto") as HTMLInputElement | null
-    const confidentialityInput = form.elements.namedItem("confidentialityAgreement") as HTMLInputElement | null
-    const countryInput = form.elements.namedItem("country") as HTMLInputElement | null
-    const countryOtherInput = form.elements.namedItem("countryOther") as HTMLInputElement | null
-
-    const hasCertifications = Boolean(certificationsInput?.files?.length)
-    const hasProfilePhoto = Boolean(profilePhotoInput?.files?.length)
-    const confidentialityChecked = Boolean(confidentialityInput?.checked)
-    const expertiseDone = selectedExpertise.length > 0
-    const countryOtherDone =
-      countryInput?.value !== "Other" || Boolean(countryOtherInput?.value?.trim())
-
-    const judgingDetailsInput = form.elements.namedItem("previousJudgingDetails") as HTMLInputElement | null
-    const conditionalDone =
-      hasPreviousJudging === "no" || Boolean(judgingDetailsInput?.value?.trim())
-
-    const totalChecks = 8 + 4 + 5
-    const completedChecks =
-      filledProfile +
-      filledMaterials +
-      (hasCertifications ? 1 : 0) +
-      (hasProfilePhoto ? 1 : 0) +
-      (confidentialityChecked ? 1 : 0) +
-      (expertiseDone ? 1 : 0) +
-      (countryOtherDone ? 1 : 0) +
-      (conditionalDone ? 1 : 0)
-
-    setProgressValue(Math.round((completedChecks / totalChecks) * 100))
-  }, [hasPreviousJudging, selectedExpertise.length])
-
-  useEffect(() => {
-    updateProgress()
-  }, [updateProgress])
-
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
-    const form = event.currentTarget
-
-    if (!form.reportValidity()) {
-      return
+    if (s === 1) {
+      req("professionalTitle"); req("yearsExperience"); req("employerAffiliation");
     }
-
-    const MAX_FILE_BYTES = 3 * 1024 * 1024 // 3 MB per file
-    const MAX_TOTAL_BYTES = 4 * 1024 * 1024 // 4 MB total uploads
-
-    const photoInput = form.elements.namedItem("profilePhoto") as HTMLInputElement | null
-    const certInput = form.elements.namedItem("certifications") as HTMLInputElement | null
-    const allFiles = [
-      ...(photoInput?.files ? Array.from(photoInput.files) : []),
-      ...(certInput?.files ? Array.from(certInput.files) : []),
-    ]
-
-    for (const file of allFiles) {
-      if (file.size > MAX_FILE_BYTES) {
-        setSubmissionState({ type: "error", message: copy.fileTooLarge })
-        return
-      }
+    if (s === 2) {
+      req("previousJudgingExperience");
+      req("expertise");
+      if (String(values.previousJudgingExperience ?? "") === "yes") req("previousJudgingDetails");
+      if (String(values.ibpaAssociationMember ?? "") === "yes") req("ibpaNumber");
     }
-
-    const totalSize = allFiles.reduce((sum, f) => sum + f.size, 0)
-    if (totalSize > MAX_TOTAL_BYTES) {
-      setSubmissionState({ type: "error", message: copy.totalTooLarge })
-      return
+    if (s === 3) {
+      req("certifications");
+      req("profilePhoto");
     }
+    if (s === 4) {
+      req("professionalBio");
+      req("conflictDisclosure");
+    }
+    if (s === 5) {
+      req("motivation");
+      if (!isFieldFilled(values.confidentialityAgreement)) e.confidentialityAgreement = "You must agree to continue";
+    }
+    return e;
+  }
 
-    setIsSubmitting(true)
-    setSubmissionState({ type: "idle", message: "" })
+  function scrollToForm() {
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
+  function advance() {
+    const e = validateStep(step);
+    if (Object.keys(e).length > 0) { setErrors(e); return; }
+    setErrors({});
+    setStep((s) => Math.min(s + 1, STEPS.length - 1));
+    scrollToForm();
+  }
+
+  function back() {
+    setStep((s) => Math.max(s - 1, 0));
+    scrollToForm();
+  }
+
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    setIsSubmitting(true);
     try {
-      const formData = new FormData(form)
-      const response = await fetch("/api/jury", {
-        method: "POST",
-        body: formData,
-      })
-
-      let data: Record<string, unknown> = {}
-      try {
-        data = await response.json()
-      } catch {
-        setSubmissionState({
-          type: "error",
-          message: response.status === 413 ? copy.fileTooLarge : copy.submitException,
-        })
-        return
+      const formData = new FormData();
+      for (const [key, raw] of Object.entries(values)) {
+        if (!raw) continue;
+        if (Array.isArray(raw)) {
+          for (const item of raw) {
+            if (item instanceof File) formData.append(key, item);
+            else formData.append(key, String(item));
+          }
+          continue;
+        }
+        formData.append(key, String(raw));
       }
-
-      if (!response.ok) {
-        setSubmissionState({
-          type: "error",
-          message: typeof data.message === "string" ? data.message : copy.validationError,
-        })
-        return
+      const res = await fetch("/api/jury", { method: "POST", body: formData });
+      const data = await res.json().catch(() => ({})) as { message?: string };
+      if (!res.ok) {
+        setSubmissionState({ type: "error", message: data.message ?? copy.submitError });
+        return;
       }
-
-      setSummary((data.summary as SubmissionSummary) ?? null)
-      setSubmissionState({
-        type: "success",
-        message: typeof data.message === "string" ? data.message : copy.received,
-      })
-
-      form.reset()
-      setHasPreviousJudging("no")
-      setSelectedExpertise([])
-      setIsIbpaMember("")
+      setSubmissionState({ type: "success", message: data.message ?? copy.received });
     } catch {
-      setSubmissionState({
-        type: "error",
-        message: copy.submitException,
-      })
+      setSubmissionState({ type: "error", message: copy.submitError });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
+
+  const country = String(values.country ?? "");
+  const prevJudging = String(values.previousJudgingExperience ?? "");
+  const ibpaMember = String(values.ibpaAssociationMember ?? "");
 
   return (
-    <section id="jury-application-form">
-      <div className="mx-auto max-w-[var(--content-width)]">
-        <div className="mb-[var(--space-md)] xl:hidden">
-          <FormProgressSidebar
-            title={copy.progressTitle}
-            subtitle={copy.progressSubtitle}
-            progressLabel={copy.progressLabel}
-            progressValue={progressValue}
-            steps={[
-              {
-                id: "profile",
-                label: copy.stepProfile,
-                hint: copy.stepProfileHint,
-                complete: progressValue >= 30,
-              },
-              {
-                id: "experience",
-                label: copy.stepExperience,
-                hint: copy.stepExperienceHint,
-                complete: progressValue >= 60,
-              },
-              {
-                id: "materials",
-                label: copy.stepMaterials,
-                hint: copy.stepMaterialsHint,
-                complete: progressValue >= 90,
-              },
-            ]}
-          />
+    <form ref={formRef} onSubmit={handleSubmit} className="space-y-6 pb-12">
+      {/* Step bar — top nav */}
+      <StepBar steps={STEPS} current={step} />
+
+      {/* Form card */}
+      <div className="mx-auto max-w-4xl rounded-[40px] border border-slate-100 bg-[#F1F3F5] p-8 shadow-xl md:p-14">
+        {/* Step heading */}
+        <div className="mb-10">
+          <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-hover-accent)]">
+            {STEPS[step].label} — {step + 1} / {STEPS.length}
+          </p>
+          <h2 className="mt-2 font-[var(--font-ui-family)] text-[2rem] font-black uppercase leading-none tracking-[-0.02em] text-[var(--color-ink)] md:text-[2.5rem]">
+            {currentStepInfo.title}
+          </h2>
+          <p className="mt-2 font-[var(--font-accent-family)] text-[1rem] italic leading-[1.6] text-[var(--color-ink-soft)]">
+            {currentStepInfo.desc}
+          </p>
         </div>
 
-        <div className="grid gap-[var(--space-md)] xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
-          <form
-          ref={formRef}
-          onInput={updateProgress}
-          onChange={updateProgress}
-          onSubmit={handleSubmit}
-          className="rounded-(--radius) border border-(--border-default) bg-(--surface) p-(--space-lg) shadow-(--shadow-lg)"
-        >
-          <div className="space-y-(--space-lg)">
-            <ProfessionalProfileSection />
-            <ExperienceSection
-              hasPreviousJudging={hasPreviousJudging}
-              selectedExpertise={selectedExpertise}
-              onPreviousJudgingChange={setHasPreviousJudging}
-              onExpertiseChange={handleExpertiseChange}
-              isIbpaMember={isIbpaMember}
-              onIbpaMemberChange={setIsIbpaMember}
-            />
-            <MaterialsSection />
+        {/* Step content */}
+        <div className="min-h-[300px]">
+          {step === 0 && (
+            <div className="grid gap-6 md:grid-cols-2">
+              <TextField label={copy.firstName} name="firstName" value={String(values.firstName ?? "")} required placeholder="As shown on official documents" error={errors.firstName} onChange={handleChange} />
+              <TextField label={copy.lastName} name="lastName" value={String(values.lastName ?? "")} required placeholder="As shown on official documents" error={errors.lastName} onChange={handleChange} />
+              <TextField label={copy.email} name="email" type="email" value={String(values.email ?? "")} required placeholder="name@example.com" error={errors.email} onChange={handleChange} />
+              <TextField label={copy.phone} name="phone" type="tel" value={String(values.phone ?? "")} required placeholder="+1 (555) 000-0000" error={errors.phone} onChange={handleChange} />
+              <SelectField label={copy.country} name="country" value={country} required placeholder={copy.selectCountry} options={countryOptions} error={errors.country} onChange={handleChange} />
+              {country === "Other" && (
+                <TextField label={copy.countryOther} name="countryOther" value={String(values.countryOther ?? "")} required placeholder="Enter your country" error={errors.countryOther} onChange={handleChange} />
+              )}
+              {country === "USA" && (
+                <TextField label={copy.stateProvince} name="stateProvince" value={String(values.stateProvince ?? "")} required placeholder="California" error={errors.stateProvince} onChange={handleChange} />
+              )}
+              <TextField label={copy.city} name="city" value={String(values.city ?? "")} required placeholder="Los Angeles" error={errors.city} onChange={handleChange} />
+            </div>
+          )}
 
-            {submissionState.message ? (
-              <div
-                className={`rounded-sm border px-(--space-sm) py-(--space-sm) text-sm leading-[1.65] ${
-                  submissionState.type === "success"
-                    ? "border-(--color-hover) bg-[rgba(185,217,235,0.26)] text-(--color-ink)"
-                    : "border-(--color-hover) bg-[rgba(185,217,235,0.26)] text-(--color-ink)"
-                }`}
-                aria-live="polite"
-              >
-                {submissionState.message}
-              </div>
-            ) : null}
+          {step === 1 && (
+            <div className="grid gap-6 md:grid-cols-2">
+              <TextField label={copy.professionalTitle} name="professionalTitle" value={String(values.professionalTitle ?? "")} required placeholder={copy.professionalTitlePh} error={errors.professionalTitle} onChange={handleChange} />
+              <TextField label={copy.yearsExperience} name="yearsExperience" type="number" min={5} value={String(values.yearsExperience ?? "")} required placeholder="5" description={copy.yearsExperienceHint} error={errors.yearsExperience} onChange={handleChange} />
+              <TextField label={copy.employer} name="employerAffiliation" value={String(values.employerAffiliation ?? "")} required placeholder={copy.employerPh} error={errors.employerAffiliation} onChange={handleChange} />
+            </div>
+          )}
 
-            {summary ? (
-              <div className="rounded-sm border border-(--border-default) bg-(--color-white) p-(--space-md)">
-                <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-hover)">
-                  {copy.summaryTitle}
-                </p>
-                <div className="mt-4 grid gap-4 sm:grid-cols-3">
-                  <div>
-                    <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-hover)">
-                      {copy.summaryCandidate}
-                    </p>
-                    <p className="mt-(--space-xs) text-sm font-medium text-(--color-ink)">{summary.name}</p>
-                  </div>
-                  <div>
-                    <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-hover)">
-                      {copy.summaryLocation}
-                    </p>
-                    <p className="mt-(--space-xs) text-sm font-medium text-(--color-ink)">
-                      {summary.location}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-hover)">
-                      {copy.summaryExpertise}
-                    </p>
-                    <p className="mt-(--space-xs) text-sm font-medium text-(--color-ink)">
-                      {summary.expertise.join(", ")}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ) : null}
+          {step === 2 && (
+            <div className="space-y-6">
+              <ChoiceGroupField
+                label={copy.previousJudging} name="previousJudgingExperience"
+                value={prevJudging} required
+                description={copy.previousJudgingHint}
+                options={[{ label: copy.yes, value: "yes" }, { label: copy.no, value: "no" }]}
+                error={errors.previousJudgingExperience} onChange={handleChange}
+              />
+              {prevJudging === "yes" && (
+                <TextareaField label={copy.judgingDetails} name="previousJudgingDetails" value={String(values.previousJudgingDetails ?? "")} required placeholder={copy.judgingDetailsPh} error={errors.previousJudgingDetails} onChange={handleChange} />
+              )}
+              <ChoiceGroupField
+                label={copy.expertise} name="expertise"
+                value={Array.isArray(values.expertise) ? values.expertise.filter((v): v is string => typeof v === "string") : []}
+                required multiple description={copy.expertiseHint}
+                options={expertiseCategories.map((c) => ({ label: c, value: c }))}
+                error={errors.expertise} onChange={handleChange}
+              />
+              <ChoiceGroupField
+                label={copy.ibpaMember} name="ibpaAssociationMember"
+                value={ibpaMember}
+                options={[{ label: copy.yes, value: "yes" }, { label: copy.no, value: "no" }]}
+                error={errors.ibpaAssociationMember} onChange={handleChange}
+              />
+              {ibpaMember === "yes" && (
+                <TextField label={copy.ibpaNumber} name="ibpaNumber" value={String(values.ibpaNumber ?? "")} required placeholder={copy.ibpaNumberPh} description={copy.ibpaNumberHint} error={errors.ibpaNumber} onChange={handleChange} />
+              )}
+            </div>
+          )}
 
-            <div className="flex flex-col gap-(--space-sm) border-t border-(--border-default) pt-(--space-md)">
-              <div className="flex items-center justify-between gap-4">
-                <div className="min-w-0">
-                  <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-hover)">
-                    {copy.expertiseSelected}
-                  </p>
-                  <p className="mt-(--space-xs) text-sm text-(--color-ink-soft)">
-                    {selectedExpertise.length} | {progressValue}% {copy.completeSuffix}
-                  </p>
-                </div>
+          {step === 3 && (
+            <div className="space-y-6">
+              <UploadField
+                label={copy.certifications} name="certifications"
+                files={Array.isArray(values.certifications) ? values.certifications.filter((f): f is File => f instanceof File) : []}
+                required multiple accept={["image/jpeg", "image/png", "application/pdf"]}
+                description={copy.certificationsHint} error={errors.certifications} onChange={handleFilesChange}
+              />
+              <UploadField
+                label={copy.profilePhoto} name="profilePhoto"
+                files={Array.isArray(values.profilePhoto) ? values.profilePhoto.filter((f): f is File => f instanceof File) : []}
+                required multiple={false} accept={["image/jpeg", "image/png"]}
+                description={copy.profilePhotoHint} error={errors.profilePhoto} onChange={handleFilesChange}
+              />
+            </div>
+          )}
 
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="ibpa-button ibpa-button-primary disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {isSubmitting ? copy.sending : copy.submit}
-                </button>
+          {step === 4 && (
+            <div className="space-y-6">
+              <TextareaField label={copy.bio} name="professionalBio" value={String(values.professionalBio ?? "")} required placeholder={copy.bioPh} description={copy.bioHint} rows={6} error={errors.professionalBio} onChange={handleChange} />
+              <TextField label={copy.website} name="professionalWebsite" type="url" value={String(values.professionalWebsite ?? "")} placeholder="https://" error={errors.professionalWebsite} onChange={handleChange} />
+              <TextareaField label={copy.conflict} name="conflictDisclosure" value={String(values.conflictDisclosure ?? "")} required placeholder={copy.conflictPh} rows={4} error={errors.conflictDisclosure} onChange={handleChange} />
+            </div>
+          )}
+
+          {step === 5 && (
+            <div className="space-y-6">
+              <TextareaField label={copy.motivation} name="motivation" value={String(values.motivation ?? "")} required placeholder={copy.motivationPh} description={copy.motivationHint} rows={6} error={errors.motivation} onChange={handleChange} />
+              <div>
+                <label className={`flex cursor-pointer items-start gap-3 rounded-[14px] border-2 px-5 py-4 transition-all duration-200 ${isFieldFilled(values.confidentialityAgreement) ? "border-[var(--color-hover-accent)] bg-[rgba(114,160,193,0.08)]" : "border-transparent bg-[var(--surface-muted)] hover:border-[var(--color-hover-accent)]/30 hover:bg-white"}`}>
+                  <input
+                    type="checkbox"
+                    checked={isFieldFilled(values.confidentialityAgreement)}
+                    onChange={(e) => handleChange("confidentialityAgreement", e.target.checked ? "yes" : "")}
+                    className="mt-0.5 h-4 w-4 rounded accent-[var(--color-hover-accent)]"
+                  />
+                  <span className="text-[0.93rem] leading-[1.6] text-[var(--color-ink-soft)]">{copy.confidentiality}</span>
+                </label>
+                {errors.confidentialityAgreement && (
+                  <p className="mt-2 text-[0.72rem] text-red-500">{errors.confidentialityAgreement}</p>
+                )}
               </div>
             </div>
-          </div>
-        </form>
+          )}
 
-          <FormProgressSidebar
-            className="hidden xl:block"
-            title={copy.progressTitle}
-            subtitle={copy.progressSubtitle}
-            progressLabel={copy.progressLabel}
-            progressValue={progressValue}
-            steps={[
-              {
-                id: "profile",
-                label: copy.stepProfile,
-                hint: copy.stepProfileHint,
-                complete: progressValue >= 30,
-              },
-              {
-                id: "experience",
-                label: copy.stepExperience,
-                hint: copy.stepExperienceHint,
-                complete: progressValue >= 60,
-              },
-              {
-                id: "materials",
-                label: copy.stepMaterials,
-                hint: copy.stepMaterialsHint,
-                complete: progressValue >= 90,
-              },
-            ]}
-          />
+          {step === 6 && (
+            <div className="space-y-5">
+              <div className="rounded-[24px] bg-white/80 p-6 border border-slate-100 shadow-sm">
+                <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-hover-accent)]">{copy.confirmTitle}</p>
+                <p className="mt-2 text-[0.9rem] leading-[1.7] text-[var(--color-ink-soft)]">{copy.confirmNote}</p>
+                <dl className="mt-5 grid gap-x-8 gap-y-4 sm:grid-cols-2">
+                  {[
+                    { label: "Name", value: `${values.firstName ?? ""} ${values.lastName ?? ""}`.trim() },
+                    { label: "Email", value: String(values.email ?? "") },
+                    { label: "Country", value: String(values.country ?? "") },
+                    { label: "Title", value: String(values.professionalTitle ?? "") },
+                    { label: "Experience", value: `${String(values.yearsExperience ?? "")} years` },
+                  ].map((row) => (
+                    <div key={row.label}>
+                      <dt className="text-[0.62rem] font-bold uppercase tracking-[0.18em] text-[var(--color-ink)]/40">{row.label}</dt>
+                      <dd className="mt-1 text-[0.95rem] font-semibold text-[var(--color-ink)]">{row.value || "—"}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+              {submissionState.message ? (
+                <div className={`rounded-[16px] border px-5 py-4 text-sm ${submissionState.type === "success" ? "border-green-200 bg-green-50 text-green-800" : "border-red-200 bg-red-50 text-red-700"}`} aria-live="polite">
+                  {submissionState.message}
+                </div>
+              ) : null}
+            </div>
+          )}
+        </div>
+
+        {/* Navigation */}
+        <div className="mt-10 flex items-center justify-between border-t border-black/6 pt-8">
+          <button
+            type="button"
+            onClick={back}
+            disabled={step === 0}
+            className="inline-flex items-center gap-2 rounded-full border border-[var(--border-default)] bg-white px-6 py-3 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-[var(--color-ink)] shadow-sm transition hover:border-[var(--color-ink)] hover:shadow-md disabled:pointer-events-none disabled:opacity-30"
+          >
+            <ChevronLeft size={14} /> {copy.back}
+          </button>
+
+          {step < STEPS.length - 1 ? (
+            <button
+              key="continue"
+              type="button"
+              onClick={advance}
+              className="inline-flex items-center gap-2 rounded-full bg-[var(--color-ink)] px-8 py-3 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-white shadow-lg transition hover:bg-[var(--color-ink)]/90 hover:shadow-xl"
+            >
+              {copy.continue} <ChevronRight size={14} />
+            </button>
+          ) : (
+            <button
+              key="submit"
+              type="submit"
+              disabled={isSubmitting}
+              className="inline-flex items-center gap-2 rounded-full bg-[var(--color-ink)] px-8 py-3 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-white shadow-lg transition hover:bg-[var(--color-ink)]/90 disabled:opacity-60"
+            >
+              {isSubmitting ? copy.submitting : copy.submit} <ChevronRight size={14} />
+            </button>
+          )}
         </div>
       </div>
-    </section>
-  )
+    </form>
+  );
 }

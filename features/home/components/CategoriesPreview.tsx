@@ -20,7 +20,7 @@ export default function CategoriesPreview() {
 
           <Link
             href="/directions"
-            className="font-(--font-sans) text-[clamp(0.72rem,1vw,0.85rem)] uppercase tracking-widest text-(--color-ink) transition hover:text-(--color-hover)"
+            className="font-(--font-sans) text-[clamp(0.72rem,1vw,0.85rem)] uppercase tracking-widest text-(--color-ink) transition hover:text-(--color-hover-accent)"
           >
             {t.home.categoriesPreview.viewAll} {"->"}
           </Link>
@@ -31,9 +31,9 @@ export default function CategoriesPreview() {
             <Link
               key={category}
               href="/directions"
-              className="page-card group bg-(--color-off-white) p-(--space-md) transition hover:border-(--color-hover) hover:bg-(--color-hover)"
+              className="page-card group bg-(--color-off-white) p-(--space-md) transition hover:border-(--color-hover-accent) hover:bg-(--color-hover-accent)"
             >
-              <div className="text-sm font-medium tracking-widest text-(--color-hover) group-hover:text-(--color-title-accent)">
+              <div className="text-sm font-medium tracking-widest text-(--color-hover-accent) group-hover:text-(--color-title-accent)">
                 {String(index + 1).padStart(2, "0")}
               </div>
               <div className="mt-(--space-xs) font-(--font-display) text-[clamp(1.1rem,2vw,1.6rem)] text-(--color-ink) group-hover:text-white">

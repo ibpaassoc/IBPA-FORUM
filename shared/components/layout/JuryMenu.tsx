@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ChevronDown } from "lucide-react";
+import { ArrowUpRight, ChevronDown } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 export default function JuryMenu({
@@ -10,33 +10,48 @@ export default function JuryMenu({
   onNavigate,
   dropDirection = "down",
   dropAlign = "right",
+  transparent = false,
 }: {
   mobile?: boolean;
   onNavigate?: () => void;
   dropDirection?: "up" | "down";
   dropAlign?: "left" | "right";
+  transparent?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const { t } = useLanguage();
 
   useEffect(() => {
-    if (mobile) return;
+    if (!open || mobile) {
+      return;
+    }
 
-    function handleClick(event: MouseEvent) {
+    function handlePointerDown(event: MouseEvent) {
       if (!containerRef.current?.contains(event.target as Node)) {
         setOpen(false);
       }
     }
 
-    window.addEventListener("mousedown", handleClick);
-    return () => window.removeEventListener("mousedown", handleClick);
-  }, [mobile]);
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    }
+
+    window.addEventListener("mousedown", handlePointerDown);
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      window.removeEventListener("mousedown", handlePointerDown);
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [mobile, open]);
 
   const menuItems = [
-    { href: "/apply", label: t.common.applyAsParticipant, primary: true },
-    { href: "/apply/jury", label: t.common.applyAsJury, primary: false },
-    { href: "/jury/login", label: t.common.juryAccount, primary: false },
+    { href: "/apply", label: t.common.applyAsParticipant },
+    { href: "/apply/jury", label: t.common.applyAsJury },
+    { href: "/jury/login", label: t.common.juryAccount },
   ];
 
   if (mobile) {
@@ -47,9 +62,15 @@ export default function JuryMenu({
             key={item.href}
             href={item.href}
             onClick={onNavigate}
-            className={item.primary ? "ibpa-button ibpa-button-primary" : "ibpa-button ibpa-button-ghost"}
+            className="group flex items-center justify-between rounded-[24px] border border-black/10 bg-white px-5 py-4 text-sm font-semibold uppercase tracking-[0.14em] text-[var(--color-ink)] transition-all duration-300 hover:border-black hover:bg-black hover:text-white"
           >
-            {item.label}
+            <span className="transition-colors duration-300 group-hover:text-white">
+              {item.label}
+            </span>
+            <ArrowUpRight
+              size={15}
+              className="transition-colors duration-300 group-hover:text-white"
+            />
           </Link>
         ))}
       </div>
@@ -57,7 +78,9 @@ export default function JuryMenu({
   }
 
   const dropPositionClass = [
-    dropDirection === "up" ? "bottom-full mb-[var(--space-sm)]" : "top-full mt-[var(--space-sm)]",
+    dropDirection === "up"
+      ? "bottom-[calc(100%+0.7rem)] origin-bottom"
+      : "top-[calc(100%+0.7rem)] origin-top",
     dropAlign === "left" ? "left-0" : "right-0",
   ].join(" ");
 
@@ -65,40 +88,41 @@ export default function JuryMenu({
     <div ref={containerRef} className="relative inline-block">
       <button
         type="button"
-        onClick={() => setOpen((current) => !current)}
-        className="ibpa-button ibpa-button-primary flex items-center gap-1.5"
+        aria-haspopup="menu"
         aria-expanded={open}
+        onClick={() => setOpen((current) => !current)}
+        className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-5 py-2.5 text-[0.72rem] font-semibold uppercase tracking-[0.12em] transition-all duration-300 ${transparent ? "border-white/35 bg-white text-[var(--color-ink)] hover:border-white hover:bg-[var(--color-ink)] hover:text-white" : "border-[var(--color-ink)] bg-[var(--color-ink)] text-white shadow-[0_14px_30px_rgba(3,2,19,0.14)] hover:bg-white hover:text-[var(--color-ink)]"}`}
       >
-        {t.common.applyNow}
+        <span>{t.common.applyNow}</span>
         <ChevronDown
-          size={13}
-          className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          size={14}
+          className={`transition-transform duration-300 ${open ? "rotate-180" : ""}`}
         />
       </button>
 
-      {open ? (
-        <div
-          className={`absolute z-50 min-w-60 rounded-[var(--radius)] border border-[var(--border-default)] bg-[var(--color-white)] p-[var(--space-xs)] shadow-[var(--shadow-md)] ${dropPositionClass}`}
-        >
-          {menuItems.map((item, i) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => {
-                setOpen(false);
-                onNavigate?.();
-              }}
-              className={`block rounded-sm px-[var(--space-sm)] py-[var(--space-sm)] text-sm font-medium transition ${
-                item.primary
-                  ? "text-[var(--color-hover)] hover:bg-[var(--surface-tint)]"
-                  : "text-[var(--color-ink)] hover:bg-[var(--color-mist)] hover:text-[var(--color-hover)]"
-              } ${i > 0 ? "mt-[var(--space-xs)]" : ""}`}
-            >
+      <div
+        className={`absolute z-50 min-w-64 overflow-hidden rounded-[24px] border border-black/10 bg-white p-2 shadow-[0_24px_60px_rgba(3,2,19,0.14)] transition-all duration-300 ${dropPositionClass} ${open ? "pointer-events-auto translate-y-0 opacity-100" : `${dropDirection === "up" ? "translate-y-2" : "-translate-y-2"} pointer-events-none opacity-0`}`}
+      >
+        {menuItems.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            onClick={() => {
+              setOpen(false);
+              onNavigate?.();
+            }}
+            className="group flex items-center justify-between rounded-[18px] px-4 py-3 text-sm text-[var(--color-ink)] transition hover:bg-black hover:text-white"
+          >
+            <span className="transition-colors duration-300 group-hover:text-white">
               {item.label}
-            </Link>
-          ))}
-        </div>
-      ) : null}
+            </span>
+            <ArrowUpRight
+              size={14}
+              className="transition-colors duration-300 group-hover:text-white"
+            />
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }

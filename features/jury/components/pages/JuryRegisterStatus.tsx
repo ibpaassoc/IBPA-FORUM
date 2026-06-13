@@ -11,7 +11,7 @@ export default function JuryRegisterStatus({ sessionId }: { sessionId?: string }
 
       <PageSection className="pb-20">
         <PageCard className="mx-auto max-w-3xl rounded-[1.75rem] p-8 text-center">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-(--color-hover)">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-(--color-hover-accent)">
             Jury Registration Status
           </p>
           <p className="mt-5 text-base leading-8 text-(--color-ink-soft)">

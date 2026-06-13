@@ -1,39 +1,56 @@
 "use client";
 
-import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { PageCard } from "@/shared/components/layout/PageShell";
+import { BadgeCheck, Layers3, Send, Sparkles } from "lucide-react";
+
+const cards = [
+  {
+    icon: Layers3,
+    title: "Choose your category",
+    text: "Select the category and nomination that best represent your professional specialty.",
+  },
+  {
+    icon: BadgeCheck,
+    title: "Prepare your profile",
+    text: "Complete your contact details, professional experience, and supporting credentials.",
+  },
+  {
+    icon: Send,
+    title: "Submit your application",
+    text: "Upload the required materials for review by the official IBPA panel.",
+  },
+  {
+    icon: Sparkles,
+    title: "Expand your reach",
+    text: "Five or more nominations automatically include you in Grand Prix consideration.",
+  },
+];
 
 export default function ApplyIntroCards() {
-  const { t } = useLanguage();
-
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-      <PageCard className="rounded-[1.8rem] p-7">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--color-hover)]">
-          {t.applyPage.introCards.eligibility}
-        </p>
-        <div className="mt-5 space-y-4 text-sm leading-7 text-[var(--color-ink-soft)]">
-          <p dangerouslySetInnerHTML={{ __html: t.applyPage.introCards.feeHtml }} />
-          <p>{t.applyPage.introCards.separate}</p>
-          <p>{t.applyPage.introCards.juryNote}</p>
-        </div>
-      </PageCard>
+    <section className="px-[var(--page-gutter)] py-10">
+      <div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-2 xl:grid-cols-4">
+        {cards.map((card) => {
+          const Icon = card.icon;
 
-      <PageCard className="rounded-[1.8rem] p-7">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--color-hover)]">
-          {t.applyPage.introCards.before}
-        </p>
-        <div className="mt-5 grid gap-4 sm:grid-cols-2">
-          {t.applyPage.introCards.items.map((item) => (
-            <div
-              key={item}
-              className="rounded-2xl border border-[var(--border-default)] bg-[var(--color-off-white)] p-4 text-sm leading-6 text-[var(--color-ink)]"
+          return (
+            <article
+              key={card.title}
+              className="rounded-[30px] border border-black/8 bg-white p-6 shadow-[0_18px_40px_rgba(3,2,19,0.05)]"
             >
-              {item}
-            </div>
-          ))}
-        </div>
-      </PageCard>
-    </div>
+              <span className="flex h-11 w-11 items-center justify-center rounded-full border border-black/10 bg-[var(--surface-tint)] text-[var(--color-ink)]">
+                <Icon size={18} strokeWidth={1.7} />
+              </span>
+
+              <h3 className="mt-5 font-[var(--font-display)] text-[1.55rem] leading-[1.02] tracking-[-0.03em] text-[var(--color-ink)]">
+                {card.title}
+              </h3>
+              <p className="mt-3 text-sm leading-[1.8] text-[var(--color-ink-soft)]">
+                {card.text}
+              </p>
+            </article>
+          );
+        })}
+      </div>
+    </section>
   );
 }

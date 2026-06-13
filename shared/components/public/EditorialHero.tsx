@@ -37,7 +37,7 @@ export default function EditorialHero({
           : "pt-[clamp(76px,10vh,96px)]",
         className
       )}
-      surface="tint"
+      surface="default"
     >
       <div
         className={clsx(

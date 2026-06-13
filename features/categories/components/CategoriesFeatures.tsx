@@ -42,16 +42,16 @@ type Direction = {
 };
 
 const cardClass =
-  "cursor-pointer border border-[rgba(114,160,193,0.28)] bg-[linear-gradient(145deg,rgba(255,255,255,0.96)_0%,rgba(244,248,251,0.92)_100%)] shadow-[0_14px_36px_rgba(37,42,45,0.09)] transition-[border-color,box-shadow,background] duration-300 hover:border-[rgba(114,160,193,0.58)] hover:bg-[linear-gradient(145deg,rgba(255,255,255,1)_0%,rgba(239,247,252,0.98)_100%)] hover:shadow-[0_22px_60px_rgba(37,42,45,0.14)]";
+  "cursor-pointer border border-[var(--border-default)] bg-white shadow-[var(--shadow-sm)] transition-[border-color,box-shadow,transform] duration-300 hover:border-[var(--border-strong)] hover:shadow-[var(--shadow-md)]";
 
 const iconClass =
-  "border border-[rgba(114,160,193,0.28)] bg-white shadow-[0_8px_20px_rgba(114,160,193,0.16)] transition-[border-color,box-shadow,transform] duration-300 group-hover:border-[rgba(114,160,193,0.68)] group-hover:shadow-[0_10px_28px_rgba(114,160,193,0.22)]";
+  "border border-[var(--border-default)] bg-[var(--surface-muted)] transition-[border-color,transform] duration-300 group-hover:border-[var(--border-strong)]";
 
 const listWrapClass =
-  "border border-[rgba(114,160,193,0.22)] bg-[rgba(255,255,255,0.64)] shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]";
+  "border border-[var(--border-soft)] bg-[var(--surface-muted)]";
 
 const nominationClass =
-  "border border-[rgba(114,160,193,0.18)] bg-white shadow-[0_8px_22px_rgba(37,42,45,0.07)] transition-[border-color,box-shadow,transform] duration-300 hover:border-[rgba(114,160,193,0.42)] hover:shadow-[0_12px_28px_rgba(37,42,45,0.1)]";
+  "border border-[var(--border-soft)] bg-white shadow-[var(--shadow-sm)] transition-[border-color,box-shadow] duration-300 hover:border-[var(--border-default)] hover:shadow-[var(--shadow-md)]";
   
 const layoutTransition = {
   duration: 0.4,
@@ -68,37 +68,10 @@ const itemTransition = {
   ease: [0.16, 1, 0.3, 1],
 } as const;
 
-function splitDirections(
-  directions: Direction[],
-  openDirectionSlug: string | null
-) {
-  const openIndex = directions.findIndex((d) => d.slug === openDirectionSlug);
-
-  const openIsLeft = openIndex !== -1 && openIndex % 2 === 0;
-
-  let shiftedIndex: number | null = null;
-
-  if (openIsLeft) {
-    const leftIndexes = directions
-      .map((_, i) => i)
-      .filter((i) => i % 2 === 0);
-
-    const lastLeftIndex = leftIndexes[leftIndexes.length - 1];
-
-    shiftedIndex =
-      openIndex === lastLeftIndex
-        ? leftIndexes[leftIndexes.length - 2] ?? null
-        : leftIndexes.find((i) => i > openIndex) ?? null;
-  }
-
+function splitDirections(directions: Direction[]) {
   return {
-    leftDirections: directions.filter(
-      (_, index) => index % 2 === 0 && index !== shiftedIndex
-    ),
-
-    rightDirections: directions.filter(
-      (_, index) => index % 2 === 1 || index === shiftedIndex
-    ),
+    leftDirections: directions.filter((_, index) => index % 2 === 0),
+    rightDirections: directions.filter((_, index) => index % 2 === 1),
   };
 }
 
@@ -119,8 +92,8 @@ export default function CategoriesFeatures() {
   }, [t.categoriesPage.directions]);
 
   const { leftDirections, rightDirections } = useMemo(
-    () => splitDirections(directions, openDirectionSlug),
-    [directions, openDirectionSlug]
+    () => splitDirections(directions),
+    [directions]
   );
 
   const handleToggle = (slug: string) => {
@@ -139,12 +112,11 @@ export default function CategoriesFeatures() {
     return (
       <motion.article
         key={direction.slug}
-        layout="position"
-        layoutId={`direction-card-${direction.slug}`}
+        layout
         transition={layoutTransition}
         whileHover={{ y: -1.5 }}
         whileTap={{ scale: 0.996 }}
-        className={`group relative min-h-[132px] overflow-hidden rounded-[var(--radius-lg)] p-0.5 text-left ${
+        className={`group relative min-h-[132px] overflow-hidden rounded-[var(--radius)] p-0.5 text-left ${
           isOpen ? "z-20" : "z-10"
         } ${cardClass}`}
       >
@@ -154,13 +126,13 @@ export default function CategoriesFeatures() {
           aria-expanded={isOpen}
           aria-controls={contentId}
           aria-label={`${direction.title} (${direction.nominations.length})`}
-          className="absolute inset-0 z-20 rounded-[var(--radius-lg)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-hover)] focus-visible:ring-offset-2"
+          className="absolute inset-0 z-20 rounded-[var(--radius)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-hover-accent)] focus-visible:ring-offset-2"
         />
 
         <div className="relative rounded-[calc(var(--radius-lg)-4px)] p-4">
           <div className="relative flex w-full items-start gap-3.5">
             <span
-              className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-[var(--color-hover)] transition-transform duration-200 group-hover:scale-105 ${iconClass}`}
+              className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-sm)] text-[var(--color-hover-accent)] transition-transform duration-200 group-hover:scale-105 ${iconClass}`}
             >
               <Icon className="h-[18px] w-[18px]" aria-hidden="true" />
             </span>
@@ -184,9 +156,9 @@ export default function CategoriesFeatures() {
             {isOpen ? (
               <motion.div
                 id={contentId}
-                initial={{ height: 0, opacity: 0, y: -4 }}
-                animate={{ height: "auto", opacity: 1, y: 0 }}
-                exit={{ height: 0, opacity: 0, y: -4 }}
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
                 transition={openTransition}
                 className="overflow-hidden"
               >
@@ -211,7 +183,7 @@ export default function CategoriesFeatures() {
                       },
                     },
                   }}
-                  className={`mt-4 space-y-2.5 rounded-[17px] p-3 ${listWrapClass}`}
+                  className={`mt-4 space-y-2.5 rounded-[var(--radius-sm)] p-3 ${listWrapClass}`}
                 >
                   {direction.nominations.map(
                     (nomination, nominationIndex) => (
@@ -224,10 +196,10 @@ export default function CategoriesFeatures() {
                         transition={itemTransition}
                       >
                         <div
-                          className={`rounded-[14px] px-3.5 py-2.5 sm:px-4 sm:py-3 ${nominationClass}`}
+                          className={`rounded-[var(--radius-sm)] px-3.5 py-2.5 sm:px-4 sm:py-3 ${nominationClass}`}
                         >
                           <div className="flex items-start gap-3">
-                            <span className="min-w-[1.8rem] font-[var(--font-ui-family)] text-[0.88rem] tracking-[0.12em] text-[rgba(114,160,193,0.88)]">
+                            <span className="min-w-[1.8rem] font-[var(--font-ui-family)] text-[0.88rem] font-semibold tracking-[0.12em] text-[var(--color-hover-accent)]">
                               {String(nominationIndex + 1).padStart(2, "0")}
                             </span>
 

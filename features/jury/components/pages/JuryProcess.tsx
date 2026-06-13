@@ -26,7 +26,7 @@ export default function JuryProcess() {
                 key={step.number}
                 className="page-card p-(--space-md)"
               >
-                <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-hover)">
+                <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-hover-accent)">
                   {step.number}
                 </p>
 
@@ -60,7 +60,7 @@ export default function JuryProcess() {
                   key={label}
                   className="rounded-sm border border-(--border-default) bg-(--color-off-white) p-(--space-sm)"
                 >
-                  <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-hover)">
+                  <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-hover-accent)">
                     {label}
                   </p>
 

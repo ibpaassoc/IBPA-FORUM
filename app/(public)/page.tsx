@@ -1,27 +1,23 @@
 "use client";
 
-import { 
-    HomeCategoriesRow, 
-    HomeHero,
-    HomeSlidingGallery,
-    HomeWelcome,
-    HomeWhy,
-    HomeJuryStandards,
-    HomeTimeline,
-    HomeEvent,
-    HomeFullBleed,
-    HomeCta,
+import {
+  HomeHero,
+  HomeConversionBlock,
+  HomeGrandPrix,
+  HomeWhyAttend,
+  HomeCategoriesRow,
+  HomeSlidingGallery,
+  HomeCta,
 } from "@/features/home/components";
 
 export default function HomePagePremium() {
   return (
     <main className="page-shell">
       <HomeHero />
-      <HomeWelcome />
-      <HomeWhy />
+      <HomeConversionBlock />
+      <HomeGrandPrix />
+      <HomeWhyAttend />
       <HomeCategoriesRow />
-      <HomeJuryStandards />
-      <HomeTimeline />
       <HomeSlidingGallery />
       <HomeCta />
     </main>

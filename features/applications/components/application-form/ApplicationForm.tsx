@@ -1,124 +1,553 @@
 "use client";
 
-import { useState } from "react";
-import BlockAFields from "@/features/applications/components/application-form/blocks/BlockAFields";
+import { startTransition, useMemo, useState } from "react";
+import type { LucideIcon } from "lucide-react";
+import {
+  Award,
+  BadgeCheck,
+  BookOpen,
+  Brush,
+  Camera,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  ClipboardList,
+  FileCheck,
+  Gem,
+  GraduationCap,
+  HeartHandshake,
+  Layers,
+  Send,
+  Sparkles,
+  SprayCan,
+  Trophy,
+  User,
+  Users,
+  X,
+} from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import BlockBRenderer from "@/features/applications/components/application-form/blocks/BlockBRenderer";
-import FormSection from "@/features/applications/components/application-form/FormSection";
-import { getVisibleCategoryFields, validateApplicationValues } from "@/features/applications/schemas/category-field-validation";
-import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { FadeUp, FormProgressSidebar } from "@/shared/components/public";
-import type {
-  ApplicationValues,
-  CategoryOption,
-  ValidationErrors,
+import StepBar, {
+  type StepDef,
+} from "@/features/applications/components/application-form/StepBar";
+import {
+  SelectField,
+  TextField,
+} from "@/features/applications/components/application-form/fields/FormControls";
+import UploadField from "@/features/applications/components/application-form/fields/UploadField";
+import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
+import { countryOptions } from "@/features/applications/config/countries";
+import { heardAboutOptions } from "@/features/applications/config/application-timeline";
+import { validateApplicationValues } from "@/features/applications/schemas/category-field-validation";
+import {
+  type ApplicationValues,
+  type CategoryOption,
+  type ValidationErrors,
 } from "@/features/applications/types/application.types";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
-type SubmissionState =
-  | {
-      type: "idle";
-      message: string;
-    }
-  | {
-      type: "success" | "error";
-      message: string;
-    };
+const STEPS: StepDef[] = [
+  { id: "category", label: "Category", icon: Layers },
+  { id: "contact", label: "Contact", icon: User },
+  { id: "profile", label: "Profile", icon: BadgeCheck },
+  { id: "credentials", label: "Credentials", icon: FileCheck },
+  { id: "details", label: "Details", icon: ClipboardList },
+  { id: "motivation", label: "Motivation", icon: Award },
+  { id: "confirm", label: "Confirm", icon: Send },
+];
+
+const categoryIconBySlug: Record<string, LucideIcon> = {
+  hair: SprayCan,
+  nail: Gem,
+  brow: Brush,
+  lash: Sparkles,
+  "skin-cosmetology-facial": HeartHandshake,
+  "makeup-artistry": Camera,
+  "permanent-makeup": Award,
+  "body-wellness-nutrition": Users,
+  education: GraduationCap,
+  salon: Trophy,
+  brand: BookOpen,
+};
+
+const MAX_SELECTED_NOMINATIONS = 5;
+
+const categoryCardTransition = {
+  duration: 0.36,
+  ease: [0.16, 1, 0.3, 1],
+} as const;
 
 function isFieldComplete(value: ApplicationValues[string]) {
-  if (typeof value === "string") {
-    return value.trim().length > 0;
-  }
-
   if (Array.isArray(value)) {
     return value.length > 0;
+  }
+
+  if (typeof value === "string") {
+    return value.trim().length > 0;
   }
 
   return false;
 }
 
-export default function ApplyForm({
-  categories,
-}: {
-  categories: CategoryOption[];
-}) {
+function getSelectedAwardIds(values: ApplicationValues) {
+  return Array.isArray(values.selectedAwardIds)
+    ? values.selectedAwardIds.filter((item): item is string => typeof item === "string")
+    : [];
+}
+
+function splitCategories(categories: CategoryOption[]) {
+  return {
+    leftCategories: categories.filter((_, index) => index % 2 === 0),
+    rightCategories: categories.filter((_, index) => index % 2 === 1),
+  };
+}
+
+const formCopy = {
+  en: {
+    steps: [
+      {
+        title: "Select Your Nominations",
+        desc: "",
+      },
+      {
+        title: "Contact Details",
+        desc: "Use the contact information that should receive review updates.",
+      },
+      {
+        title: "Professional Profile",
+        desc: "Tell us about your professional background and experience.",
+      },
+      {
+        title: "Credentials",
+        desc: "Upload your professional license or certification for verification.",
+      },
+      {
+        title: "Category Details",
+        desc: "Complete the category-specific requirements for your selected nominations.",
+      },
+      {
+        title: "Motivation & Links",
+        desc: "Share your online presence and how you found the award.",
+      },
+      {
+        title: "Review & Submit",
+        desc: "Review your application before final submission.",
+      },
+    ],
+    back: "Back",
+    continue: "Continue",
+    submit: "Submit Application",
+    submitting: "Submitting...",
+    category: "Category",
+    nomination: "Nomination",
+    firstName: "First Name",
+    lastName: "Last Name",
+    email: "Email Address",
+    phone: "Phone / WhatsApp",
+    country: "Country of Residence",
+    selectCountry: "Select country",
+    city: "City",
+    stateProvince: "State / Province",
+    countryOther: "Country (Other)",
+    professionalTitle: "Professional Title",
+    professionalTitlePh: "Master Stylist, Educator, Clinic Founder...",
+    yearsExperience: "Years of Experience",
+    yearsExperienceHint: "Minimum 2 years required.",
+    licenseCertification: "Professional License / Certification",
+    licenseCertificationHint:
+      "Upload PDF, JPG, or PNG. Max 5 MB. Large images are auto-compressed.",
+    website: "Professional Website",
+    social: "Instagram / Social Media",
+    reviews: "Client Reviews Link",
+    heardAbout: "How did you hear about us?",
+    selectOption: "Select an option",
+    heardAboutOther: "Please specify",
+    heardAboutLabels: {
+      instagram: "Instagram",
+      facebook: "Facebook",
+      email: "Email newsletter",
+      referral: "Friend or colleague",
+      google: "Google search",
+      event: "Event / expo",
+      other: "Other",
+    },
+    selectUpTo: "Select up to five nominations",
+    selectionHint:
+      "Your active nomination drives the category-specific requirements in the next steps.",
+    selectedTitle: "Selected nominations",
+    selectedEmpty: "No nominations selected yet.",
+    selectedEmptyHint:
+      "Open a category card and click a nomination to add it here.",
+    selectionLimitError: "You can select up to five nominations.",
+    activeNomination: "Active nomination",
+    makeActive: "Set as active",
+    remove: "Remove",
+    confirmTitle: "Application Summary",
+    confirmNote:
+      "Please review the details below before submitting. Once submitted, your entry will be sent to the IBPA jury for evaluation.",
+    errorValidation: "Please fill all required fields before continuing.",
+    submitError: "Submission failed. Please try again.",
+    submitException: "Something went wrong. Please try again.",
+    redirecting: "Redirecting to payment...",
+    nominationCount: "Selected nominations",
+  },
+  ru: {
+    steps: [
+      {
+        title: "Выбор номинаций",
+        desc: "Откройте категорию и выберите до пяти номинаций в одном потоке заявки.",
+      },
+      {
+        title: "Контактные данные",
+        desc: "Укажите контакты для получения обновлений по заявке.",
+      },
+      {
+        title: "Профессиональный профиль",
+        desc: "Расскажите о вашем профессиональном опыте и специализации.",
+      },
+      {
+        title: "Документы",
+        desc: "Загрузите профессиональную лицензию или сертификат для проверки.",
+      },
+      {
+        title: "Детали категории",
+        desc: "Заполните требования для активной номинации.",
+      },
+      {
+        title: "Мотивация и ссылки",
+        desc: "Укажите онлайн-площадки и как вы узнали о премии.",
+      },
+      {
+        title: "Проверка и отправка",
+        desc: "Проверьте заявку перед финальной отправкой.",
+      },
+    ],
+    back: "Назад",
+    continue: "Продолжить",
+    submit: "Отправить заявку",
+    submitting: "Отправка...",
+    category: "Категория",
+    nomination: "Номинация",
+    firstName: "Имя",
+    lastName: "Фамилия",
+    email: "Email",
+    phone: "Телефон / WhatsApp",
+    country: "Страна проживания",
+    selectCountry: "Выберите страну",
+    city: "Город",
+    stateProvince: "Штат / Регион",
+    countryOther: "Страна (другое)",
+    professionalTitle: "Профессиональный статус",
+    professionalTitlePh: "Мастер-стилист, преподаватель, владелец студии...",
+    yearsExperience: "Стаж работы",
+    yearsExperienceHint: "Минимум 2 года опыта.",
+    licenseCertification: "Лицензия / Сертификат",
+    licenseCertificationHint:
+      "Загрузите PDF, JPG или PNG. Макс. 5 МБ. Большие изображения сжимаются автоматически.",
+    website: "Профессиональный сайт",
+    social: "Instagram / Соцсети",
+    reviews: "Ссылка на отзывы клиентов",
+    heardAbout: "Откуда вы узнали о нас?",
+    selectOption: "Выберите вариант",
+    heardAboutOther: "Уточните",
+    heardAboutLabels: {
+      instagram: "Instagram",
+      facebook: "Facebook",
+      email: "Email-рассылка",
+      referral: "Друг или коллега",
+      google: "Поиск Google",
+      event: "Событие / выставка",
+      other: "Другое",
+    },
+    selectUpTo: "Выберите до пяти номинаций",
+    selectionHint:
+      "Активная номинация определяет требования блока категории на следующих шагах.",
+    selectedTitle: "Выбранные номинации",
+    selectedEmpty: "Пока нет выбранных номинаций.",
+    selectedEmptyHint:
+      "Откройте карточку категории и нажмите на номинацию, чтобы добавить её сюда.",
+    selectionLimitError: "Можно выбрать не более пяти номинаций.",
+    activeNomination: "Активная номинация",
+    makeActive: "Сделать активной",
+    remove: "Удалить",
+    confirmTitle: "Сводка заявки",
+    confirmNote:
+      "Проверьте данные перед отправкой. После отправки ваша заявка будет передана жюри IBPA.",
+    errorValidation: "Заполните все обязательные поля перед продолжением.",
+    submitError: "Не удалось отправить заявку. Попробуйте снова.",
+    submitException: "Что-то пошло не так. Попробуйте снова.",
+    redirecting: "Переход к оплате...",
+    nominationCount: "Выбранные номинации",
+  },
+  ua: {
+    steps: [
+      {
+        title: "Вибір номінацій",
+        desc: "Відкрийте категорію та оберіть до п'яти номінацій в одному потоці заявки.",
+      },
+      {
+        title: "Контактні дані",
+        desc: "Вкажіть контакти для отримання оновлень щодо заявки.",
+      },
+      {
+        title: "Професійний профіль",
+        desc: "Розкажіть про ваш досвід та спеціалізацію.",
+      },
+      {
+        title: "Документи",
+        desc: "Завантажте професійну ліцензію або сертифікат для перевірки.",
+      },
+      {
+        title: "Деталі категорії",
+        desc: "Заповніть вимоги для активної номінації.",
+      },
+      {
+        title: "Мотивація та посилання",
+        desc: "Поділіться онлайн-профілями та як ви дізналися про премію.",
+      },
+      {
+        title: "Перевірка та надсилання",
+        desc: "Перевірте заявку перед фінальним надсиланням.",
+      },
+    ],
+    back: "Назад",
+    continue: "Продовжити",
+    submit: "Надіслати заявку",
+    submitting: "Надсилання...",
+    category: "Категорія",
+    nomination: "Номінація",
+    firstName: "Ім'я",
+    lastName: "Прізвище",
+    email: "Email",
+    phone: "Телефон / WhatsApp",
+    country: "Країна проживання",
+    selectCountry: "Оберіть країну",
+    city: "Місто",
+    stateProvince: "Штат / Регіон",
+    countryOther: "Країна (інше)",
+    professionalTitle: "Професійний статус",
+    professionalTitlePh: "Майстер-стиліст, викладач, власник студії...",
+    yearsExperience: "Стаж роботи",
+    yearsExperienceHint: "Мінімум 2 роки досвіду.",
+    licenseCertification: "Ліцензія / Сертифікат",
+    licenseCertificationHint:
+      "Завантажте PDF, JPG або PNG. Макс. 5 МБ. Великі зображення стискаються автоматично.",
+    website: "Професійний сайт",
+    social: "Instagram / Соцмережі",
+    reviews: "Посилання на відгуки клієнтів",
+    heardAbout: "Звідки ви дізналися про нас?",
+    selectOption: "Оберіть варіант",
+    heardAboutOther: "Уточніть",
+    heardAboutLabels: {
+      instagram: "Instagram",
+      facebook: "Facebook",
+      email: "Email-розсилка",
+      referral: "Друг або колега",
+      google: "Пошук Google",
+      event: "Подія / виставка",
+      other: "Інше",
+    },
+    selectUpTo: "Оберіть до п'яти номінацій",
+    selectionHint:
+      "Активна номінація визначає вимоги категорії на наступних кроках.",
+    selectedTitle: "Обрані номінації",
+    selectedEmpty: "Поки що немає обраних номінацій.",
+    selectedEmptyHint:
+      "Відкрийте картку категорії та натисніть на номінацію, щоб додати її сюди.",
+    selectionLimitError: "Можна обрати не більше п'яти номінацій.",
+    activeNomination: "Активна номінація",
+    makeActive: "Зробити активною",
+    remove: "Видалити",
+    confirmTitle: "Підсумок заявки",
+    confirmNote:
+      "Перевірте дані перед надсиланням. Після відправки вашу заявку буде передано журі IBPA.",
+    errorValidation: "Заповніть усі обов'язкові поля перед продовженням.",
+    submitError: "Не вдалося надіслати заявку. Спробуйте ще раз.",
+    submitException: "Щось пішло не так. Спробуйте ще раз.",
+    redirecting: "Перехід до оплати...",
+    nominationCount: "Обрані номінації",
+  },
+} as const;
+
+export default function ApplyForm({ categories }: { categories: CategoryOption[] }) {
+  const { language, t } = useLanguage();
+  const [step, setStep] = useState(0);
+  const [openCategoryId, setOpenCategoryId] = useState<string | null>(
+    categories[0]?.id ?? null
+  );
   const [values, setValues] = useState<ApplicationValues>({});
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submissionState, setSubmissionState] = useState<SubmissionState>({
-    type: "idle",
-    message: "",
-  });
-  const { t } = useLanguage();
+  const [submissionState, setSubmissionState] = useState<{
+    type: "idle" | "success" | "error";
+    message: string;
+  }>({ type: "idle", message: "" });
+  const copy = formCopy[language] ?? formCopy.en;
 
-  const selectedCategory = categories.find(
-    (category) => category.id === String(values.categoryId ?? "")
+  const localizedCategoryBySlug = useMemo(
+    () => new Map(t.categoriesPage.directions.map((category) => [category.slug, category])),
+    [t.categoriesPage.directions]
   );
-  const visibleCategoryFields = getVisibleCategoryFields(
-    selectedCategory?.slug ?? null,
-    values
-  );
-  const requiredFieldKeys = [
-    "firstName",
-    "lastName",
-    "email",
-    "phone",
-    "country",
-    ...(String(values.country ?? "") === "Other" ? ["countryOther"] : []),
-    ...(String(values.country ?? "") === "USA" ? ["stateProvince"] : []),
-    "city",
-    "professionalTitle",
-    "yearsExperience",
-    "licenseCertification",
-    "categoryId",
-    "awardId",
-    ...visibleCategoryFields.filter((field) => field.required).map((field) => field.key),
-  ];
-  const completedRequiredCount = requiredFieldKeys.filter((fieldKey) => {
-    if (fieldKey === "awardId" && !selectedCategory) {
-      return false;
+
+  const nominationLookup = useMemo(() => {
+    const lookup = new Map<
+      string,
+      {
+        award: CategoryOption["awards"][number];
+        category: CategoryOption;
+        categoryTitle: string;
+        nominationTitle: string;
+      }
+    >();
+
+    for (const category of categories) {
+      const localizedCategory = localizedCategoryBySlug.get(category.slug);
+
+      category.awards.forEach((award, index) => {
+        lookup.set(award.id, {
+          award,
+          category,
+          categoryTitle: localizedCategory?.title ?? category.name,
+          nominationTitle: localizedCategory?.nominations[index] ?? award.name,
+        });
+      });
     }
 
-    return isFieldComplete(values[fieldKey]);
-  }).length;
-  const progressPercentage =
-    requiredFieldKeys.length === 0
-      ? 0
-      : Math.round((completedRequiredCount / requiredFieldKeys.length) * 100);
-  const profileFieldKeys = [
-    "firstName",
-    "lastName",
-    "email",
-    "phone",
-    "country",
-    ...(String(values.country ?? "") === "Other" ? ["countryOther"] : []),
-    ...(String(values.country ?? "") === "USA" ? ["stateProvince"] : []),
-    "city",
-    "professionalTitle",
-    "yearsExperience",
-    "licenseCertification",
-    "categoryId",
-    "awardId",
-  ];
-  const profileComplete = profileFieldKeys.every((fieldKey) =>
-    isFieldComplete(values[fieldKey])
+    return lookup;
+  }, [categories, localizedCategoryBySlug]);
+
+  const selectedAwardIds = getSelectedAwardIds(values);
+  const selectedNominations = selectedAwardIds
+    .map((awardId) => nominationLookup.get(awardId))
+    .filter(
+      (
+        item
+      ): item is {
+        award: CategoryOption["awards"][number];
+        category: CategoryOption;
+        categoryTitle: string;
+        nominationTitle: string;
+      } => Boolean(item)
+    );
+
+  const selectedCategories = Array.from(
+    new Map(
+      selectedNominations.map((item) => [
+        item.category.id,
+        { category: item.category, categoryTitle: item.categoryTitle },
+      ])
+    ).values()
   );
-  const categoryRequiredKeys = visibleCategoryFields
-    .filter((field) => field.required)
-    .map((field) => field.key);
-  const categoryComplete =
-    Boolean(selectedCategory) &&
-    categoryRequiredKeys.every((fieldKey) => isFieldComplete(values[fieldKey]));
-  const readyComplete = progressPercentage >= 100;
+
+  const blockGroups = (() => {
+    const groups = new Map<
+      string,
+      {
+        id: string;
+        title: string;
+        fields: (typeof categoryFieldConfigs)[string];
+      }
+    >();
+
+    for (const item of selectedCategories) {
+      const fields = categoryFieldConfigs[item.category.slug] ?? [];
+      const signature = fields.map((field) => field.key).join("|");
+      const existing = groups.get(signature);
+
+      if (existing) {
+        existing.title = `${existing.title} / ${item.categoryTitle}`;
+        continue;
+      }
+
+      groups.set(signature, {
+        id: signature || item.category.slug,
+        title: item.categoryTitle,
+        fields,
+      });
+    }
+
+    return Array.from(groups.values());
+  })();
+
+  const { leftCategories, rightCategories } = useMemo(
+    () => splitCategories(categories),
+    [categories]
+  );
+
+  function updatePrimarySelection(nextSelectedAwardIds: string[]) {
+    const nextPrimaryNomination = nextSelectedAwardIds[0]
+      ? nominationLookup.get(nextSelectedAwardIds[0])
+      : undefined;
+
+    return {
+      selectedAwardIds: nextSelectedAwardIds,
+      awardId: nextPrimaryNomination?.award.id ?? "",
+      categoryId: nextPrimaryNomination?.category.id ?? "",
+    };
+  }
+
+  function clearSelectionErrors() {
+    setErrors((current) => {
+      const next = { ...current };
+      delete next.selectedAwardIds;
+      delete next.awardId;
+      delete next.categoryId;
+      return next;
+    });
+  }
+
+  function handleNominationToggle(awardId: string) {
+    const exists = selectedAwardIds.includes(awardId);
+
+    if (!exists && selectedAwardIds.length >= MAX_SELECTED_NOMINATIONS) {
+      setErrors((current) => ({
+        ...current,
+        selectedAwardIds: copy.selectionLimitError,
+      }));
+      return;
+    }
+
+    const nomination = nominationLookup.get(awardId);
+    if (!nomination) {
+      return;
+    }
+
+    startTransition(() => {
+      setValues((current) => {
+        const currentIds = getSelectedAwardIds(current);
+        const alreadySelected = currentIds.includes(awardId);
+        const nextIds = alreadySelected
+          ? currentIds.filter((item) => item !== awardId)
+          : [...currentIds, awardId];
+
+        return {
+          ...current,
+          ...updatePrimarySelection(nextIds),
+        };
+      });
+      setOpenCategoryId(nomination.category.id);
+      clearSelectionErrors();
+    });
+  }
+
+  function handleSelectedNominationRemove(awardId: string) {
+    startTransition(() => {
+      setValues((current) => {
+        const nextIds = getSelectedAwardIds(current).filter((item) => item !== awardId);
+
+        return {
+          ...current,
+          ...updatePrimarySelection(nextIds),
+        };
+      });
+      clearSelectionErrors();
+    });
+  }
 
   function handleChange(name: string, value: string | string[]) {
     setValues((current) => {
-      const next: ApplicationValues = {
-        ...current,
-        [name]: value,
-      };
+      const next = { ...current, [name]: value };
 
-      if (name === "categoryId") {
-        next.awardId = "";
-      }
       if (name === "country" && value !== "Other") {
         next.countryOther = "";
       }
@@ -129,24 +558,12 @@ export default function ApplyForm({
     setErrors((current) => {
       const next = { ...current };
       delete next[name];
-
-      if (name === "categoryId") {
-        delete next.awardId;
-      }
-      if (name === "country" && value !== "Other") {
-        delete next.countryOther;
-      }
-
       return next;
     });
   }
 
   function handleFilesChange(name: string, files: File[]) {
-    setValues((current) => ({
-      ...current,
-      [name]: files,
-    }));
-
+    setValues((current) => ({ ...current, [name]: files }));
     setErrors((current) => {
       const next = { ...current };
       delete next[name];
@@ -154,21 +571,82 @@ export default function ApplyForm({
     });
   }
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setSubmissionState({ type: "idle", message: "" });
+  function validateStep(currentStep: number): ValidationErrors {
+    const nextErrors: ValidationErrors = {};
+    const requireField = (key: string, value?: ApplicationValues[string]) => {
+      if (!isFieldComplete(value ?? values[key])) {
+        nextErrors[key] = "Required";
+      }
+    };
 
-    const validation = validateApplicationValues({
-      values,
-      categories,
-    });
+    if (currentStep === 0) {
+      requireField("selectedAwardIds", selectedAwardIds);
+    }
+
+    if (currentStep === 1) {
+      requireField("firstName");
+      requireField("lastName");
+      requireField("email");
+      requireField("phone");
+      requireField("country");
+      requireField("city");
+
+      if (String(values.country ?? "") === "Other") {
+        requireField("countryOther");
+      }
+
+      if (String(values.country ?? "") === "USA") {
+        requireField("stateProvince");
+      }
+    }
+
+    if (currentStep === 2) {
+      requireField("professionalTitle");
+      requireField("yearsExperience");
+    }
+
+    if (currentStep === 3) {
+      requireField("licenseCertification");
+    }
+
+    if (currentStep === 4) {
+      Object.assign(
+        nextErrors,
+        validateApplicationValues({
+          values,
+          categories,
+        }).errors
+      );
+    }
+
+    return nextErrors;
+  }
+
+  function advance() {
+    const nextErrors = validateStep(step);
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors(nextErrors);
+      return;
+    }
+
+    setErrors({});
+    setStep((current) => Math.min(current + 1, STEPS.length - 1));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function back() {
+    setStep((current) => Math.max(current - 1, 0));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+
+    const validation = validateApplicationValues({ values, categories });
 
     if (!validation.success) {
       setErrors(validation.errors);
-      setSubmissionState({
-        type: "error",
-        message: t.applyPage.form.validationError,
-      });
+      setSubmissionState({ type: "error", message: copy.errorValidation });
       return;
     }
 
@@ -177,6 +655,7 @@ export default function ApplyForm({
 
     try {
       const formData = new FormData();
+
       for (const [key, rawValue] of Object.entries(values)) {
         if (!rawValue) {
           continue;
@@ -196,13 +675,7 @@ export default function ApplyForm({
         method: "POST",
         body: formData,
       });
-      const data = (await response.json().catch((error) => {
-        console.error("Application submission response was not JSON", {
-          status: response.status,
-          error,
-        });
-        return {};
-      })) as {
+      const data = (await response.json().catch(() => ({}))) as {
         message?: string;
         checkoutUrl?: string;
         fieldErrors?: ValidationErrors;
@@ -212,174 +685,553 @@ export default function ApplyForm({
         setErrors(data.fieldErrors ?? {});
         setSubmissionState({
           type: "error",
-          message:
-            data.message ??
-            t.applyPage.form.submitError,
+          message: data.message ?? copy.submitError,
         });
         return;
       }
 
       setSubmissionState({
         type: "success",
-        message: data.message ?? t.applyPage.form.redirecting,
+        message: data.message ?? copy.redirecting,
       });
 
       if (data.checkoutUrl) {
         window.location.assign(data.checkoutUrl);
       }
-    } catch (error) {
-      console.error("Application submission request failed", error);
+    } catch {
       setSubmissionState({
         type: "error",
-        message: t.applyPage.form.submitException,
+        message: copy.submitException,
       });
     } finally {
       setIsSubmitting(false);
     }
   }
 
+  function renderCategoryCard(category: CategoryOption) {
+    const localizedCategory = localizedCategoryBySlug.get(category.slug);
+    const isOpen = openCategoryId === category.id;
+    const selectedCount = category.awards.filter((award) =>
+      selectedAwardIds.includes(award.id)
+    ).length;
+    const Icon = categoryIconBySlug[category.slug] ?? Award;
+
+    return (
+      <motion.article
+        key={category.id}
+        layout
+        transition={categoryCardTransition}
+        whileHover={{ y: -1.5 }}
+        className={`overflow-hidden rounded-[28px] border bg-white shadow-[0_16px_36px_rgba(3,2,19,0.05)] ${
+          isOpen ? "border-[var(--color-ink)]" : "border-black/8"
+        }`}
+      >
+        <button
+          type="button"
+          aria-expanded={isOpen}
+          onClick={() =>
+            setOpenCategoryId((current) =>
+              current === category.id ? null : category.id
+            )
+          }
+          className="flex w-full items-start gap-4 p-5 text-left"
+        >
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[18px] border border-black/8 bg-[var(--surface-tint)] text-[var(--color-ink)]">
+            <Icon size={18} strokeWidth={1.6} />
+          </span>
+
+          <span className="min-w-0 flex-1">
+            <span className="block font-[var(--font-display)] text-[1.35rem] leading-[1.05] text-[var(--color-ink)]">
+              {localizedCategory?.title ?? category.name}
+            </span>
+            <span className="mt-2 block text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-ink-soft)]">
+              {String(category.awards.length).padStart(2, "0")}{" "}
+              {t.categoriesPage.copy.nominationPlural}
+            </span>
+          </span>
+
+          <span
+            className={`shrink-0 rounded-full border px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] transition-all ${
+              selectedCount > 0
+                ? "border-[var(--color-ink)] bg-[var(--color-ink)] text-white"
+                : "border-black/8 bg-[var(--surface-tint)] text-[var(--color-ink-soft)]"
+            }`}
+          >
+            {selectedCount}
+          </span>
+        </button>
+
+        <AnimatePresence initial={false}>
+          {isOpen ? (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={categoryCardTransition}
+              className="overflow-hidden"
+            >
+              <div className="border-t border-black/6 px-5 pb-5 pt-4">
+                <div className="space-y-2">
+                  {category.awards.map((award, index) => {
+                    const selected = selectedAwardIds.includes(award.id);
+                    const locked =
+                      !selected &&
+                      selectedAwardIds.length >= MAX_SELECTED_NOMINATIONS;
+
+                    return (
+                      <button
+                        key={award.id}
+                        type="button"
+                        disabled={locked}
+                        onClick={() => handleNominationToggle(award.id)}
+                        className={`flex w-full items-start gap-3 rounded-[20px] border px-4 py-3 text-left transition-all duration-300 ${
+                          selected
+                            ? "border-black bg-black text-white shadow-[0_18px_36px_rgba(3,2,19,0.16)]"
+                            : locked
+                              ? "cursor-not-allowed border-black/6 bg-black/[0.03] text-[var(--color-ink-soft)] opacity-55"
+                              : "border-black/8 bg-[var(--surface-tint)] text-[var(--color-ink)] hover:border-black hover:bg-white"
+                        }`}
+                      >
+                        <span className="min-w-[1.8rem] pt-0.5 text-[0.78rem] font-semibold uppercase tracking-[0.12em]">
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+                        <span className="flex-1 text-sm leading-[1.6]">
+                          {localizedCategory?.nominations[index] ?? award.name}
+                        </span>
+                        <span
+                          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
+                            selected
+                              ? "border-white/30 bg-white/12"
+                              : "border-black/10 bg-black/[0.03]"
+                          }`}
+                        >
+                          {selected ? <Check size={13} /> : null}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      </motion.article>
+    );
+  }
+
+  const currentStepInfo = copy.steps[step];
+
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="mb-[var(--space-md)] xl:hidden">
-        <FormProgressSidebar
-          title={t.applyPage.form.progress}
-          subtitle={`${completedRequiredCount} of ${requiredFieldKeys.length} ${t.applyPage.form.requiredComplete}`}
-          progressLabel={t.applyPage.form.progress}
-          progressValue={progressPercentage}
-          steps={[
-            {
-              id: "profile",
-              label: t.applyPage.form.blockATitle,
-              hint: t.applyPage.form.blockADescription,
-              complete: profileComplete,
-            },
-            {
-              id: "category",
-              label: t.applyPage.form.blockBTitle,
-              hint: t.applyPage.form.blockBDescription,
-              complete: categoryComplete,
-            },
-            {
-              id: "submit",
-              label: t.applyPage.form.submit,
-              hint: t.applyPage.form.redirecting,
-              complete: readyComplete,
-            },
-          ]}
-        />
-      </div>
+    <form onSubmit={handleSubmit} className="space-y-6 pb-12">
+      <StepBar steps={STEPS} current={step} />
 
-      <div className="grid gap-[var(--space-md)] xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
-        <div className="space-y-[var(--space-md)]">
-          <FadeUp>
-            <FormSection
-              eyebrow={t.applyPage.form.blockA}
-              title={t.applyPage.form.blockATitle}
-              description={t.applyPage.form.blockADescription}
-            >
-              <BlockAFields
-                values={values}
-                errors={errors}
-                categories={categories}
+      <div className="mx-auto max-w-6xl rounded-[40px] border border-black/6 bg-[#F3F3F1] p-6 shadow-[0_28px_80px_rgba(3,2,19,0.08)] md:p-10 xl:p-14">
+        <div className="mb-10">
+          <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-ink-soft)]">
+            {STEPS[step].label} - {step + 1} / {STEPS.length}
+          </p>
+          <h2 className="mt-2 font-[var(--font-ui-family)] text-[2rem] font-black uppercase leading-none tracking-[-0.02em] text-[var(--color-ink)] md:text-[2.5rem]">
+            {currentStepInfo.title}
+          </h2>
+          {currentStepInfo.desc ? (
+            <p className="mt-3 max-w-3xl text-[1rem] italic leading-[1.7] text-[var(--color-ink-soft)]">
+              {currentStepInfo.desc}
+            </p>
+          ) : null}
+        </div>
+
+        <div className="min-h-[300px]">
+          {step === 0 ? (
+            <div className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(300px,0.9fr)]">
+              <div>
+                <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+                  <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-ink-soft)]">
+                    {copy.selectUpTo}
+                  </p>
+                  <span className="rounded-full border border-black/10 bg-white px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink)]">
+                    {selectedAwardIds.length} / {MAX_SELECTED_NOMINATIONS}
+                  </span>
+                </div>
+
+                {errors.selectedAwardIds ? (
+                  <div className="mb-5 rounded-[20px] border border-red-200 bg-red-50/90 px-4 py-3 text-sm text-red-700">
+                    {errors.selectedAwardIds}
+                  </div>
+                ) : null}
+
+                <div className="space-y-4 md:hidden">
+                  {categories.map(renderCategoryCard)}
+                </div>
+
+                <div className="hidden gap-4 md:grid md:grid-cols-2">
+                  <div className="flex flex-col gap-4">
+                    {leftCategories.map(renderCategoryCard)}
+                  </div>
+                  <div className="flex flex-col gap-4">
+                    {rightCategories.map(renderCategoryCard)}
+                  </div>
+                </div>
+              </div>
+
+              <aside className="h-fit rounded-[32px] border border-black/8 bg-white p-5 shadow-[0_16px_36px_rgba(3,2,19,0.05)] xl:sticky xl:top-6">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-ink-soft)]">
+                      {copy.selectedTitle}
+                    </p>
+                    <p className="mt-2 text-[1.5rem] font-semibold uppercase tracking-[0.02em] text-[var(--color-ink)]">
+                      {selectedAwardIds.length}
+                    </p>
+                  </div>
+
+                  <span className="rounded-full border border-black/8 bg-[var(--surface-tint)] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-soft)]">
+                    {MAX_SELECTED_NOMINATIONS} max
+                  </span>
+                </div>
+
+                <div className="mt-5 space-y-3">
+                  {selectedNominations.length === 0 ? (
+                    <div className="rounded-[24px] border border-dashed border-black/12 bg-[var(--surface-tint)] px-4 py-6 text-center">
+                      <p className="text-sm font-medium text-[var(--color-ink)]">
+                        {copy.selectedEmpty}
+                      </p>
+                    </div>
+                  ) : (
+                    selectedNominations.map((item) => {
+                      return (
+                        <div
+                          key={item.award.id}
+                          className="rounded-[24px] border border-black/8 bg-[var(--surface-tint)] px-4 py-4 text-[var(--color-ink)] transition-all duration-300"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-ink-soft)]">
+                                {item.categoryTitle}
+                              </p>
+                              <p className="mt-2 text-sm leading-[1.6]">
+                                {item.nominationTitle}
+                              </p>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => handleSelectedNominationRemove(item.award.id)}
+                              aria-label={`${copy.remove} ${item.nominationTitle}`}
+                              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-black/10 bg-white transition hover:border-black/20"
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </aside>
+            </div>
+          ) : null}
+
+          {step === 1 ? (
+            <div className="grid gap-6 md:grid-cols-2">
+              <TextField
+                label={copy.firstName}
+                name="firstName"
+                value={String(values.firstName ?? "")}
+                required
+                placeholder="As shown on official documents"
+                error={errors.firstName}
                 onChange={handleChange}
-                onFilesChange={handleFilesChange}
               />
-            </FormSection>
-          </FadeUp>
+              <TextField
+                label={copy.lastName}
+                name="lastName"
+                value={String(values.lastName ?? "")}
+                required
+                placeholder="As shown on official documents"
+                error={errors.lastName}
+                onChange={handleChange}
+              />
+              <TextField
+                label={copy.email}
+                name="email"
+                type="email"
+                value={String(values.email ?? "")}
+                required
+                placeholder="name@example.com"
+                error={errors.email}
+                onChange={handleChange}
+              />
+              <TextField
+                label={copy.phone}
+                name="phone"
+                type="tel"
+                value={String(values.phone ?? "")}
+                required
+                placeholder="+1 (555) 123-4567"
+                error={errors.phone}
+                onChange={handleChange}
+              />
+              <SelectField
+                label={copy.country}
+                name="country"
+                value={String(values.country ?? "")}
+                required
+                placeholder={copy.selectCountry}
+                options={countryOptions}
+                error={errors.country}
+                onChange={handleChange}
+              />
+              {String(values.country ?? "") === "Other" ? (
+                <TextField
+                  label={copy.countryOther}
+                  name="countryOther"
+                  value={String(values.countryOther ?? "")}
+                  required
+                  placeholder="Enter your country"
+                  error={errors.countryOther}
+                  onChange={handleChange}
+                />
+              ) : null}
+              {String(values.country ?? "") === "USA" ? (
+                <TextField
+                  label={copy.stateProvince}
+                  name="stateProvince"
+                  value={String(values.stateProvince ?? "")}
+                  required
+                  placeholder="California"
+                  error={errors.stateProvince}
+                  onChange={handleChange}
+                />
+              ) : null}
+              <TextField
+                label={copy.city}
+                name="city"
+                value={String(values.city ?? "")}
+                required
+                placeholder="Los Angeles"
+                error={errors.city}
+                onChange={handleChange}
+              />
+            </div>
+          ) : null}
 
-          <FadeUp delay={0.06}>
-            <FormSection
-              eyebrow={t.applyPage.form.blockB}
-              title={t.applyPage.form.blockBTitle}
-              description={t.applyPage.form.blockBDescription}
-            >
-              <div className="transition-all duration-500 [transition-timing-function:var(--motion-editorial)]">
+          {step === 2 ? (
+            <div className="grid gap-6 md:grid-cols-2">
+              <TextField
+                label={copy.professionalTitle}
+                name="professionalTitle"
+                value={String(values.professionalTitle ?? "")}
+                required
+                placeholder={copy.professionalTitlePh}
+                error={errors.professionalTitle}
+                onChange={handleChange}
+              />
+              <TextField
+                label={copy.yearsExperience}
+                name="yearsExperience"
+                type="number"
+                min={2}
+                value={String(values.yearsExperience ?? "")}
+                required
+                placeholder="2"
+                description={copy.yearsExperienceHint}
+                error={errors.yearsExperience}
+                onChange={handleChange}
+              />
+            </div>
+          ) : null}
+
+          {step === 3 ? (
+            <UploadField
+              label={copy.licenseCertification}
+              name="licenseCertification"
+              files={
+                Array.isArray(values.licenseCertification)
+                  ? values.licenseCertification.filter(
+                      (file): file is File => file instanceof File
+                    )
+                  : []
+              }
+              required
+              multiple={false}
+              accept={["image/jpeg", "image/png", "application/pdf"]}
+              description={copy.licenseCertificationHint}
+              error={errors.licenseCertification}
+              onChange={handleFilesChange}
+            />
+          ) : null}
+
+          {step === 4 ? (
+            <div className="space-y-6">
+              {blockGroups.length > 0 ? (
+                blockGroups.map((group) => (
+                  <BlockBRenderer
+                    key={group.id}
+                    fields={group.fields}
+                    title={group.title}
+                    values={values}
+                    errors={errors}
+                    onChange={handleChange}
+                    onFilesChange={handleFilesChange}
+                  />
+                ))
+              ) : (
                 <BlockBRenderer
-                  categorySlug={selectedCategory?.slug ?? null}
-                  categoryName={selectedCategory?.name}
+                  fields={[]}
                   values={values}
                   errors={errors}
                   onChange={handleChange}
                   onFilesChange={handleFilesChange}
                 />
-              </div>
-            </FormSection>
-          </FadeUp>
+              )}
+            </div>
+          ) : null}
 
-          <FadeUp delay={0.1}>
-            <section className="rounded-(--radius) border border-(--border-default) bg-(--surface) p-(--space-lg) shadow-(--shadow-lg)">
-              <div className="flex flex-col gap-(--space-sm) border-b border-(--border-default) pb-(--space-md) md:flex-row md:items-center md:justify-between">
-                <div>
-                  <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-(--color-hover)">
-                    {t.applyPage.form.progress}
-                  </p>
-                  <p className="mt-(--space-xs) text-sm text-(--color-ink-soft)">
-                    {completedRequiredCount} of {requiredFieldKeys.length}{" "}
-                    {t.applyPage.form.requiredComplete}
-                  </p>
-                </div>
+          {step === 5 ? (
+            <div className="grid gap-6 md:grid-cols-2">
+              <TextField
+                label={copy.website}
+                name="websiteUrl"
+                type="url"
+                value={String(values.websiteUrl ?? "")}
+                placeholder="https://"
+                error={errors.websiteUrl}
+                onChange={handleChange}
+              />
+              <TextField
+                label={copy.social}
+                name="socialUrl"
+                type="url"
+                value={String(values.socialUrl ?? "")}
+                placeholder="https://instagram.com/yourprofile"
+                error={errors.socialUrl}
+                onChange={handleChange}
+              />
+              <TextField
+                label={copy.reviews}
+                name="reviewsUrl"
+                type="url"
+                value={String(values.reviewsUrl ?? "")}
+                placeholder="https://"
+                error={errors.reviewsUrl}
+                onChange={handleChange}
+              />
+              <SelectField
+                label={copy.heardAbout}
+                name="heardAbout"
+                value={String(values.heardAbout ?? "")}
+                placeholder={copy.selectOption}
+                options={heardAboutOptions.map((option) => ({
+                  ...option,
+                  label:
+                    copy.heardAboutLabels[
+                      option.value as keyof typeof copy.heardAboutLabels
+                    ] ?? option.label,
+                }))}
+                error={errors.heardAbout}
+                onChange={handleChange}
+              />
+              {String(values.heardAbout ?? "") === "other" ? (
+                <TextField
+                  label={copy.heardAboutOther}
+                  name="heardAboutOther"
+                  value={String(values.heardAboutOther ?? "")}
+                  placeholder="Tell us the source"
+                  error={errors.heardAboutOther}
+                  onChange={handleChange}
+                />
+              ) : null}
+            </div>
+          ) : null}
 
-                <div className="w-full max-w-sm">
-                  <div className="h-2 rounded-full bg-(--color-mist)">
+          {step === 6 ? (
+            <div className="space-y-5">
+              <div className="rounded-[28px] border border-black/8 bg-white p-6 shadow-[0_16px_36px_rgba(3,2,19,0.05)]">
+                <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-ink-soft)]">
+                  {copy.confirmTitle}
+                </p>
+                <p className="mt-3 text-[0.92rem] leading-[1.75] text-[var(--color-ink-soft)]">
+                  {copy.confirmNote}
+                </p>
+                <dl className="mt-6 grid gap-x-8 gap-y-4 sm:grid-cols-2">
+                  {[
+                    {
+                      label: "Name",
+                      value: `${values.firstName ?? ""} ${values.lastName ?? ""}`.trim(),
+                    },
+                    { label: "Email", value: String(values.email ?? "") },
+                    { label: "Country", value: String(values.country ?? "") },
+                    {
+                      label: copy.nominationCount,
+                      value: `${selectedAwardIds.length}`,
+                    },
+                  ].map((row) => (
+                    <div key={row.label}>
+                      <dt className="text-[0.62rem] font-bold uppercase tracking-[0.18em] text-[var(--color-ink)]/40">
+                        {row.label}
+                      </dt>
+                      <dd className="mt-1 text-[0.95rem] font-semibold text-[var(--color-ink)]">
+                        {row.value || "-"}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+
+                <div className="mt-6 grid gap-3">
+                  {selectedNominations.map((item) => (
                     <div
-                      className="h-2 rounded-full bg-(--color-hover) transition-all duration-500 [transition-timing-function:var(--motion-editorial)]"
-                      style={{ width: `${progressPercentage}%` }}
-                    />
-                  </div>
+                      key={item.award.id}
+                      className="rounded-[22px] border border-black/8 bg-[var(--surface-tint)] px-4 py-3 text-[var(--color-ink)]"
+                    >
+                      <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-ink-soft)]">
+                        {item.categoryTitle}
+                      </p>
+                      <p className="mt-2 text-sm leading-[1.6]">{item.nominationTitle}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
 
               {submissionState.message ? (
                 <div
-                  className={`mt-5 rounded-[1.4rem] border px-4 py-4 text-sm leading-7 ${
-                    submissionState.type === "success"
-                      ? "border-(--color-hover) bg-[rgba(185,217,235,0.26)] text-(--color-ink)"
-                      : "border-(--color-hover) bg-[rgba(185,217,235,0.26)] text-(--color-ink)"
-                  }`}
+                  className={`rounded-[18px] border px-5 py-4 text-sm ${submissionState.type === "success" ? "border-green-200 bg-green-50 text-green-800" : "border-red-200 bg-red-50 text-red-700"}`}
                   aria-live="polite"
                 >
                   {submissionState.message}
                 </div>
               ) : null}
-
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="ibpa-button ibpa-button-primary mt-(--space-md) w-full disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {isSubmitting ? t.applyPage.form.submitting : t.applyPage.form.submit}
-              </button>
-            </section>
-          </FadeUp>
+            </div>
+          ) : null}
         </div>
 
-        <FormProgressSidebar
-          className="hidden xl:block"
-          title={t.applyPage.form.progress}
-          subtitle={`${completedRequiredCount} of ${requiredFieldKeys.length} ${t.applyPage.form.requiredComplete}`}
-          progressLabel={t.applyPage.form.progress}
-          progressValue={progressPercentage}
-          steps={[
-            {
-              id: "profile",
-              label: t.applyPage.form.blockATitle,
-              hint: t.applyPage.form.blockADescription,
-              complete: profileComplete,
-            },
-            {
-              id: "category",
-              label: t.applyPage.form.blockBTitle,
-              hint: t.applyPage.form.blockBDescription,
-              complete: categoryComplete,
-            },
-            {
-              id: "submit",
-              label: t.applyPage.form.submit,
-              hint: t.applyPage.form.redirecting,
-              complete: readyComplete,
-            },
-          ]}
-        />
+        <div className="mt-10 flex items-center justify-between border-t border-black/6 pt-8">
+          <button
+            type="button"
+            onClick={back}
+            disabled={step === 0}
+            className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-6 py-3 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-[var(--color-ink)] shadow-[0_12px_24px_rgba(3,2,19,0.04)] transition-all duration-300 hover:border-[var(--color-ink)] hover:bg-[var(--color-ink)] hover:text-white disabled:pointer-events-none disabled:opacity-30"
+          >
+            <ChevronLeft size={14} /> {copy.back}
+          </button>
+
+          {step < STEPS.length - 1 ? (
+            <button
+              type="button"
+              onClick={advance}
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--color-ink)] bg-[var(--color-ink)] px-8 py-3 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-white shadow-[0_18px_36px_rgba(3,2,19,0.14)] transition-all duration-300 hover:bg-white hover:text-[var(--color-ink)]"
+            >
+              {copy.continue} <ChevronRight size={14} />
+            </button>
+          ) : (
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--color-ink)] bg-[var(--color-ink)] px-8 py-3 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-white shadow-[0_18px_36px_rgba(3,2,19,0.14)] transition-all duration-300 hover:bg-white hover:text-[var(--color-ink)] disabled:opacity-60"
+            >
+              {isSubmitting ? copy.submitting : copy.submit} <ChevronRight size={14} />
+            </button>
+          )}
+        </div>
       </div>
     </form>
   );

@@ -12,10 +12,52 @@ function getTextValue(formData: FormData, key: string) {
   return String(formData.get(key) ?? "").trim();
 }
 
+function getSelectedCategories(
+  selectedAwardIds: string[],
+  categories: CategoryOption[]
+) {
+  const selectedCategories: CategoryOption[] = [];
+  const categoryIds = new Set<string>();
+
+  for (const awardId of selectedAwardIds) {
+    const category = categories.find((item) =>
+      item.awards.some((award) => award.id === awardId)
+    );
+
+    if (category && !categoryIds.has(category.id)) {
+      categoryIds.add(category.id);
+      selectedCategories.push(category);
+    }
+  }
+
+  return selectedCategories;
+}
+
+function getUniqueCategoryFields(selectedCategories: CategoryOption[]) {
+  const fieldMap = new Map<string, (typeof categoryFieldConfigs)[string][number]>();
+
+  for (const category of selectedCategories) {
+    const fields = categoryFieldConfigs[category.slug] ?? [];
+
+    for (const field of fields) {
+      if (!fieldMap.has(field.key)) {
+        fieldMap.set(field.key, field);
+      }
+    }
+  }
+
+  return Array.from(fieldMap.values());
+}
+
 export function extractApplicationValues(
   formData: FormData,
   categories: CategoryOption[]
 ): ApplicationValues {
+  const selectedAwardIds = formData
+    .getAll("selectedAwardIds")
+    .map((item) => String(item).trim())
+    .filter(Boolean);
+
   const values: ApplicationValues = {
     firstName: getTextValue(formData, "firstName"),
     lastName: getTextValue(formData, "lastName"),
@@ -29,6 +71,7 @@ export function extractApplicationValues(
     yearsExperience: getTextValue(formData, "yearsExperience"),
     categoryId: getTextValue(formData, "categoryId"),
     awardId: getTextValue(formData, "awardId"),
+    selectedAwardIds,
     websiteUrl: getTextValue(formData, "websiteUrl"),
     socialUrl: getTextValue(formData, "socialUrl"),
     reviewsUrl: getTextValue(formData, "reviewsUrl"),
@@ -39,12 +82,11 @@ export function extractApplicationValues(
       .filter((entry): entry is File => isFilledFile(entry)),
   };
 
-  const selectedCategory = categories.find(
-    (category) => category.id === values.categoryId
+  const selectedCategories = getSelectedCategories(
+    selectedAwardIds,
+    categories
   );
-  const categoryFields = selectedCategory
-    ? categoryFieldConfigs[selectedCategory.slug] ?? []
-    : [];
+  const categoryFields = getUniqueCategoryFields(selectedCategories);
 
   for (const field of categoryFields) {
     if (field.type === "checkbox-group") {

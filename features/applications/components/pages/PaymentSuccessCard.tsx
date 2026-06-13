@@ -59,7 +59,7 @@ export default function PaymentSuccessCard({ sessionId }: { sessionId?: string }
       <PageSection className="pb-20">
         <div className="page-card mx-auto flex max-w-3xl flex-col items-center rounded-(--radius-lg) p-8 text-center">
           <IconBadge icon={CheckCircle2} size={28} />
-          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--color-hover)]">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--color-hover-accent)]">
             {copy.status}
           </p>
           <p className="mt-5 text-base leading-8 text-[var(--color-ink-soft)]">

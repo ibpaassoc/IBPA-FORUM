@@ -89,7 +89,7 @@ export default function MaterialsSection() {
 
   return (
     <div className="border-b border-(--border-default) pb-(--space-lg)">
-      <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-(--color-hover)">
+      <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-(--color-hover-accent)">
         {copy.section}
       </p>
 
@@ -99,7 +99,7 @@ export default function MaterialsSection() {
           hint={copy.certHint}
           required
         >
-          <label className="flex cursor-pointer flex-col rounded-[var(--radius-sm)] border-[1.5px] border-dashed border-(--border-default) bg-(--surface) p-(--space-md) transition hover:border-(--color-hover) hover:bg-(--surface-tint)">
+          <label className="flex cursor-pointer flex-col rounded-[var(--radius-sm)] border-[1.5px] border-dashed border-(--border-default) bg-(--surface) p-(--space-md) transition hover:border-(--color-hover-accent) hover:bg-(--surface-tint)">
             <span className="text-sm font-medium text-(--color-ink)">{copy.certUpload}</span>
             <span className="mt-1 text-xs leading-5 text-(--color-ink-soft)">
               {copy.certUploadHint}
@@ -110,7 +110,7 @@ export default function MaterialsSection() {
               accept=".pdf,.jpg,.jpeg,.png"
               multiple
               required
-              className="mt-3 block w-full text-sm text-(--color-ink) file:mr-(--space-sm) file:rounded-full file:border-0 file:bg-(--color-hover) file:px-(--space-sm) file:py-(--space-xs) file:text-xs file:font-medium file:uppercase file:tracking-[0.16em] file:text-white"
+              className="mt-3 block w-full text-sm text-(--color-ink) file:mr-(--space-sm) file:rounded-full file:border-0 file:bg-(--color-hover-accent) file:px-(--space-sm) file:py-(--space-xs) file:text-xs file:font-medium file:uppercase file:tracking-[0.16em] file:text-white"
             />
           </label>
         </FieldShell>
@@ -129,7 +129,7 @@ export default function MaterialsSection() {
           hint={copy.photoHint}
           required
         >
-          <label className="flex cursor-pointer flex-col rounded-[var(--radius-sm)] border-[1.5px] border-dashed border-(--border-default) bg-(--surface) p-(--space-md) transition hover:border-(--color-hover) hover:bg-(--surface-tint)">
+          <label className="flex cursor-pointer flex-col rounded-[var(--radius-sm)] border-[1.5px] border-dashed border-(--border-default) bg-(--surface) p-(--space-md) transition hover:border-(--color-hover-accent) hover:bg-(--surface-tint)">
             <span className="text-sm font-medium text-(--color-ink)">{copy.photoUpload}</span>
             <span className="mt-1 text-xs leading-5 text-(--color-ink-soft)">
               {copy.photoUploadHint}
@@ -139,7 +139,7 @@ export default function MaterialsSection() {
               name="profilePhoto"
               accept=".jpg,.jpeg,.png"
               required
-              className="mt-3 block w-full text-sm text-(--color-ink) file:mr-(--space-sm) file:rounded-full file:border-0 file:bg-(--color-hover) file:px-(--space-sm) file:py-(--space-xs) file:text-xs file:font-medium file:uppercase file:tracking-[0.16em] file:text-white"
+              className="mt-3 block w-full text-sm text-(--color-ink) file:mr-(--space-sm) file:rounded-full file:border-0 file:bg-(--color-hover-accent) file:px-(--space-sm) file:py-(--space-xs) file:text-xs file:font-medium file:uppercase file:tracking-[0.16em] file:text-white"
             />
           </label>
         </FieldShell>
@@ -173,7 +173,7 @@ export default function MaterialsSection() {
             name="confidentialityAgreement"
             value="yes"
             required
-            className="mt-1 h-4 w-4 rounded accent-(--color-hover)"
+            className="mt-1 h-4 w-4 rounded accent-(--color-hover-accent)"
           />
           <span className="leading-6 text-(--color-ink-soft)">
             {copy.confidentiality}

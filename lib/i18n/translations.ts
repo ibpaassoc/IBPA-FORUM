@@ -206,6 +206,81 @@ const en = {
       text: "Prepare your portfolio, select a category, and submit your entry for official evaluation by the IBPA jury. Recognition begins with a single step.",
       judge: "Become a Judge",
     },
+    forum: {
+      eyebrow: "Beauty Business Forum USA 2026",
+      title: "BEAUTY BUSINESS FORUM USA 2026",
+      description: "An international gathering of beauty industry leaders uniting award recognition, professional education, business networking, and the Grand Gala Ceremony — all in one premier event.",
+    },
+    participation: {
+      eyebrow: "Choose Your Participation",
+      tickets: {
+        label: "FORUM TICKETS",
+        features: "1 Day Pass · 2 Day Pass · Gala Dinner",
+        cta: "Buy Tickets",
+      },
+      award: {
+        label: "AWARD PARTICIPATION",
+        description: "Submit your work for international recognition.",
+        cta: "Apply Now",
+      },
+      judge: {
+        label: "JUDGE REGISTRATION",
+        description: "Join the official judging panel.",
+        cta: "Register as Judge",
+      },
+    },
+    pricingSection: {
+      eyebrow: "Pricing",
+      title: "Transparent Pricing for Every Path",
+      forumTickets: "Forum Tickets",
+      awardParticipation: "Award Participation",
+      judgeRegistration: "Judge Registration",
+      standard: "Standard",
+      ibpaMembers: "IBPA Members",
+      nonMembers: "Non-Members",
+      oneDayPass: "1 Day Pass",
+      twoDayPass: "2 Day Pass",
+      galaDinner: "Gala Dinner",
+      oneNomination: "1 Nomination",
+      threeNominations: "3 Nominations",
+      fiveNominations: "5 Nominations",
+      grandPrixNote: "5+ nominations automatically qualify for Grand Prix.",
+      judgePaidAfterApproval: "Paid after approval",
+    },
+    grandPrixSpotlight: {
+      eyebrow: "Grand Prix",
+      title: "GRAND PRIX",
+      description: "Participants submitting 5 or more nominations automatically compete for the Grand Prix award — the highest distinction at Beauty Business Forum USA 2026.",
+      cta: "Apply for Award",
+    },
+    whyAttend: {
+      eyebrow: "Why Attend",
+      items: [
+        {
+          title: "Business Networking",
+          description: "Meet professionals, build partnerships and grow your business in an international setting.",
+        },
+        {
+          title: "Educational Sessions",
+          description: "Gain knowledge from industry experts and innovative leaders shaping the future of beauty.",
+        },
+        {
+          title: "International Recognition",
+          description: "Showcase your talent and receive global industry recognition at the highest level.",
+        },
+        {
+          title: "Award Ceremony & Gala Dinner",
+          description: "Celebrate excellence in an unforgettable evening with the beauty industry's finest.",
+        },
+      ],
+    },
+    finalCta: {
+      eyebrow: "Join Beauty Business Forum USA 2026",
+      title: "Ready to Join BEAUTY BUSINESS FORUM USA 2026?",
+      buyTicket: "Buy Forum Ticket",
+      applyAward: "Apply for Award",
+      registerJudge: "Register as Judge",
+    },
   },
   categoriesPage: {
     hero: {
@@ -976,6 +1051,81 @@ const ru: typeof en = {
       title: "Ваше место среди лучших",
       text: "Подготовьте портфолио, выберите номинацию и подайте заявку на официальную оценку жюри IBPA. Признание начинается с одного шага.",
       judge: "Стать судьёй",
+    },
+    forum: {
+      eyebrow: "Beauty Business Forum USA 2026",
+      title: "BEAUTY BUSINESS FORUM USA 2026",
+      description: "Международная встреча лидеров beauty-индустрии, объединяющая нагородение, профессиональное образование, деловые связи и торжественный Гала-вечер — всё в одном премиальном событии.",
+    },
+    participation: {
+      eyebrow: "Выберите участие",
+      tickets: {
+        label: "БИЛЕТЫ НА ФОРУМ",
+        features: "1 день · 2 дня · Гала-ужин",
+        cta: "Купить билеты",
+      },
+      award: {
+        label: "УЧАСТИЕ В КОНКУРСЕ",
+        description: "Представьте свою работу на международное признание.",
+        cta: "Подать заявку",
+      },
+      judge: {
+        label: "РЕГИСТРАЦИЯ СУДЬИ",
+        description: "Присоединитесь к официальному составу жюри.",
+        cta: "Зарегистрироваться",
+      },
+    },
+    pricingSection: {
+      eyebrow: "Стоимость участия",
+      title: "Прозрачные цены для каждого пути",
+      forumTickets: "Билеты на форум",
+      awardParticipation: "Участие в конкурсе",
+      judgeRegistration: "Регистрация судьи",
+      standard: "Стандарт",
+      ibpaMembers: "Члены IBPA",
+      nonMembers: "Не члены",
+      oneDayPass: "1 день",
+      twoDayPass: "2 дня",
+      galaDinner: "Гала-ужин",
+      oneNomination: "1 номинация",
+      threeNominations: "3 номинации",
+      fiveNominations: "5 номинаций",
+      grandPrixNote: "5+ номинаций автоматически квалифицируют на Гран-при.",
+      judgePaidAfterApproval: "Оплачивается после одобрения",
+    },
+    grandPrixSpotlight: {
+      eyebrow: "Гран-при",
+      title: "ГРАН-ПРИ",
+      description: "Участники, подающие 5 и более номинаций, автоматически участвуют в розыгрыше Гран-при — высшего звания Beauty Business Forum USA 2026.",
+      cta: "Подать заявку на участие",
+    },
+    whyAttend: {
+      eyebrow: "Зачем участвовать",
+      items: [
+        {
+          title: "Деловые связи",
+          description: "Знакомьтесь с профессионалами, стройте партнёрства и развивайте бизнес на международном уровне.",
+        },
+        {
+          title: "Образовательные сессии",
+          description: "Получайте знания от экспертов индустрии и инновационных лидеров, формирующих будущее красоты.",
+        },
+        {
+          title: "Международное признание",
+          description: "Продемонстрируйте свой талант и получите мировое признание на высочайшем уровне.",
+        },
+        {
+          title: "Церемония награждения и Гала-ужин",
+          description: "Отпразднуйте профессиональное совершенство в незабываемый вечер с лучшими индустрии красоты.",
+        },
+      ],
+    },
+    finalCta: {
+      eyebrow: "Присоединяйтесь к Beauty Business Forum USA 2026",
+      title: "Готовы присоединиться к BEAUTY BUSINESS FORUM USA 2026?",
+      buyTicket: "Купить билет",
+      applyAward: "Подать заявку",
+      registerJudge: "Регистрация судьи",
     },
   },
   categoriesPage: {
@@ -1750,6 +1900,81 @@ const ua: typeof en = {
       title: "Ваше місце серед найкращих",
       text: "Підготуйте портфоліо, виберіть номінацію та подайте заявку на офіційну оцінку журі IBPA. Визнання починається з одного кроку.",
       judge: "Стати суддею",
+    },
+    forum: {
+      eyebrow: "Beauty Business Forum USA 2026",
+      title: "BEAUTY BUSINESS FORUM USA 2026",
+      description: "Міжнародна зустріч лідерів б'юті-індустрії, що об'єднує нагородження, професійну освіту, ділові зв'язки та урочистий Гала-вечір — все в одній преміальній події.",
+    },
+    participation: {
+      eyebrow: "Оберіть участь",
+      tickets: {
+        label: "КВИТКИ НА ФОРУМ",
+        features: "1 день · 2 дні · Гала-вечеря",
+        cta: "Придбати квитки",
+      },
+      award: {
+        label: "УЧАСТЬ У КОНКУРСІ",
+        description: "Представте свою роботу для міжнародного визнання.",
+        cta: "Подати заявку",
+      },
+      judge: {
+        label: "РЕЄСТРАЦІЯ СУДДІ",
+        description: "Приєднайтесь до офіційного складу журі.",
+        cta: "Зареєструватися",
+      },
+    },
+    pricingSection: {
+      eyebrow: "Вартість участі",
+      title: "Прозоре ціноутворення для кожного шляху",
+      forumTickets: "Квитки на форум",
+      awardParticipation: "Участь у конкурсі",
+      judgeRegistration: "Реєстрація судді",
+      standard: "Стандарт",
+      ibpaMembers: "Члени IBPA",
+      nonMembers: "Не члени",
+      oneDayPass: "1 день",
+      twoDayPass: "2 дні",
+      galaDinner: "Гала-вечеря",
+      oneNomination: "1 номінація",
+      threeNominations: "3 номінації",
+      fiveNominations: "5 номінацій",
+      grandPrixNote: "5+ номінацій автоматично кваліфікують на Гран-прі.",
+      judgePaidAfterApproval: "Оплачується після схвалення",
+    },
+    grandPrixSpotlight: {
+      eyebrow: "Гран-прі",
+      title: "ГРАН-ПРІ",
+      description: "Учасники, які подають 5 або більше номінацій, автоматично змагаються за Гран-прі — найвищу відзнаку Beauty Business Forum USA 2026.",
+      cta: "Подати заявку на участь",
+    },
+    whyAttend: {
+      eyebrow: "Чому варто брати участь",
+      items: [
+        {
+          title: "Ділові зв'язки",
+          description: "Знайомтеся з професіоналами, будуйте партнерства та розвивайте бізнес на міжнародному рівні.",
+        },
+        {
+          title: "Освітні сесії",
+          description: "Здобувайте знання від експертів індустрії та інноваційних лідерів, які формують майбутнє краси.",
+        },
+        {
+          title: "Міжнародне визнання",
+          description: "Продемонструйте свій талант і отримайте світове визнання на найвищому рівні.",
+        },
+        {
+          title: "Церемонія нагородження та Гала-вечеря",
+          description: "Відсвяткуйте досконалість у незабутній вечір із кращими представниками б'юті-індустрії.",
+        },
+      ],
+    },
+    finalCta: {
+      eyebrow: "Приєднуйтесь до Beauty Business Forum USA 2026",
+      title: "Готові приєднатися до BEAUTY BUSINESS FORUM USA 2026?",
+      buyTicket: "Купити квиток",
+      applyAward: "Подати заявку",
+      registerJudge: "Реєстрація судді",
     },
   },
   categoriesPage: {

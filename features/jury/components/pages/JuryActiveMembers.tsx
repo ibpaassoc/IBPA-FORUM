@@ -15,23 +15,22 @@ type JuryMember = {
   profilePhotoFileId?: string | null;
 };
 
-
 export default function JuryActiveMembers({ juryMembers }: { juryMembers: JuryMember[] }) {
   const { t } = useLanguage();
 
+  if (juryMembers.length === 0) return null;
+
   return (
-    juryMembers.length > 0 ? (
-      <section id="JuryCouncil" className="section-rhythm-tight">
-        <div className="page-section">
-          <SectionHeading
-            eyebrow={t.juryPage.copy.approvedEyebrow}
-            title={t.juryPage.copy.approvedTitle}
-          />
-          <div className="mt-[var(--space-lg)]">
-            <PublicJuryGrid members={juryMembers} />
-          </div>
+    <section id="JuryCouncil" className="section-rhythm-loose px-[var(--page-gutter)]">
+      <div className="mx-auto max-w-7xl">
+        <SectionHeading
+          eyebrow={t.juryPage.copy.approvedEyebrow}
+          title={t.juryPage.copy.approvedTitle}
+        />
+        <div className="mt-10">
+          <PublicJuryGrid members={juryMembers} />
         </div>
-      </section>
-    ) : null
+      </div>
+    </section>
   );
 }

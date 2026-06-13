@@ -38,7 +38,7 @@ export default function SiteUnderDevelopmentPage() {
   return (
     <main className="page-shell flex min-h-screen flex-col items-center justify-center px-6 py-24">
       <div className="mx-auto w-full max-w-2xl text-center">
-        <p className="text-[clamp(0.62rem,1vw,0.72rem)] font-medium uppercase tracking-[0.22em] text-(--color-hover)">
+        <p className="text-[clamp(0.62rem,1vw,0.72rem)] font-medium uppercase tracking-[0.22em] text-(--color-hover-accent)">
           {copy.eyebrow}
         </p>
 

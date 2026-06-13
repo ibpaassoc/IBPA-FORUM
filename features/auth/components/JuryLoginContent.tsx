@@ -13,7 +13,7 @@ export default function JuryLoginContent() {
       title={t.auth.loginPage.title}
       description={t.auth.loginPage.description}
     >
-      <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-[var(--color-hover)]">
+      <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.2em] text-[var(--color-hover-accent)]">
         {t.auth.loginPage.cardEyebrow}
       </p>
       <h2 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(1.1rem,2vw,1.6rem)] font-normal text-[var(--color-ink)]">

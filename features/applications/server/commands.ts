@@ -7,6 +7,22 @@ import { uploadApplicationFile } from "@/features/applications/server/uploads";
 import { createCompetitorCheckoutSession } from "@/features/payments/server/checkout-sessions";
 import { prisma } from "@/shared/lib/prisma";
 
+function getUniqueCategoryFields(slugs: string[]) {
+  const fieldMap = new Map<string, (typeof categoryFieldConfigs)[string][number]>();
+
+  for (const slug of slugs) {
+    const fields = categoryFieldConfigs[slug] ?? [];
+
+    for (const field of fields) {
+      if (!fieldMap.has(field.key)) {
+        fieldMap.set(field.key, field);
+      }
+    }
+  }
+
+  return Array.from(fieldMap.values());
+}
+
 export async function saveApplicationSubmission(formData: FormData) {
   console.info("saveApplicationSubmission started");
   const categories = await getApplicationCategories();
@@ -37,7 +53,9 @@ export async function saveApplicationSubmission(formData: FormData) {
     ? values.licenseCertification.filter((file): file is File => file instanceof File)
     : [];
 
-  const categoryFields = categoryFieldConfigs[validation.selectedCategory.slug] ?? [];
+  const categoryFields = getUniqueCategoryFields(
+    validation.selectedCategories.map((category) => category.slug)
+  );
   const answerEntries = [];
   const pendingFileUploads: Array<{ fieldKey: string; files: File[] }> = [
     {
@@ -111,6 +129,19 @@ export async function saveApplicationSubmission(formData: FormData) {
     String(values.country ?? "") === "Other"
       ? String(values.countryOther ?? "").trim()
       : String(values.country ?? "").trim();
+  const selectedNominations = validation.selectedAwards.map((item) => ({
+    categoryId: item.category.id,
+    categoryName: item.category.name,
+    awardId: item.award.id,
+    awardName: item.award.name,
+  }));
+  const nominationCount = Math.max(1, selectedNominations.length);
+  const applicationAmount = nominationCount * 5000;
+
+  answerEntries.push({
+    fieldKey: "selectedAwards",
+    valueJson: selectedNominations,
+  });
 
   let application: { id: string };
 
@@ -135,7 +166,7 @@ export async function saveApplicationSubmission(formData: FormData) {
         awardId: validation.selectedAward.id,
         status: "PAYMENT_PENDING",
         paymentStatus: "PENDING",
-        amount: 5000,
+        amount: applicationAmount,
         currency: "usd",
       },
       select: {
@@ -226,6 +257,8 @@ export async function saveApplicationSubmission(formData: FormData) {
       email: normalizedEmail,
       categoryId: validation.selectedCategory.id,
       awardId: validation.selectedAward.id,
+      amount: applicationAmount,
+      nominationCount,
     });
     console.info("Stripe competitor checkout session created", {
       applicationId: application.id,
@@ -264,7 +297,7 @@ export async function saveApplicationSubmission(formData: FormData) {
         data: {
           applicationId: application.id,
           stripeSessionId: checkoutSession.id,
-          amount: 5000,
+          amount: applicationAmount,
           currency: "usd",
           status: "PENDING",
         },
@@ -291,6 +324,7 @@ export async function saveApplicationSubmission(formData: FormData) {
       details: [
         `Category: ${validation.selectedCategory.name}`,
         `Award: ${validation.selectedAward.name}`,
+        `Selected nominations: ${selectedNominations.map((item) => `${item.categoryName} - ${item.awardName}`).join("; ")}`,
         "Payment status: Pending checkout",
       ],
     });
@@ -322,6 +356,7 @@ export async function retryCompetitorApplicationPayment(applicationId: string) {
       email: true,
       categoryId: true,
       awardId: true,
+      amount: true,
       status: true,
       paymentStatus: true,
     },
@@ -350,6 +385,8 @@ export async function retryCompetitorApplicationPayment(applicationId: string) {
     email: application.email,
     categoryId: application.categoryId,
     awardId: application.awardId,
+    amount: application.amount,
+    nominationCount: Math.max(1, Math.round(application.amount / 5000)),
   });
 
   await prisma.$transaction([
@@ -378,7 +415,7 @@ export async function retryCompetitorApplicationPayment(applicationId: string) {
       data: {
         applicationId: application.id,
         stripeSessionId: checkoutSession.id,
-        amount: 5000,
+        amount: application.amount,
         currency: "usd",
         status: "PENDING",
       },

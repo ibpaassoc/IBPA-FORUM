@@ -60,7 +60,7 @@ export default function Modal({ isOpen, onClose, title, children, labelledById }
             type="button"
             onClick={onClose}
             aria-label="Close dialog"
-            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-(--border-default) bg-(--color-off-white) text-[1.1rem] font-medium text-(--color-ink-soft) shadow-[0_8px_18px_rgba(37,42,45,0.08)] transition hover:-translate-y-px hover:border-(--color-hover) hover:bg-(--surface) hover:text-(--color-hover)"
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-(--border-default) bg-(--color-off-white) text-[1.1rem] font-medium text-(--color-ink-soft) shadow-[0_8px_18px_rgba(37,42,45,0.08)] transition hover:-translate-y-px hover:border-(--color-hover-accent) hover:bg-(--surface) hover:text-(--color-hover-accent)"
           >
             <span aria-hidden="true">&times;</span>
           </button>

@@ -18,7 +18,7 @@ export default function CategoriesAbout() {
     <motion.section
       layout
       transition={lowerSectionTransition}
-      className="bg-[var(--surface-tint)] py-[clamp(4rem,9vw,8rem)]"
+      className="bg-[var(--color-off-white)] py-[clamp(4rem,9vw,8rem)]"
     >
       <motion.div
         layout
@@ -58,7 +58,7 @@ export default function CategoriesAbout() {
             {t.categoriesPage.copy.associationText}
           </p>
 
-          <blockquote className="script-accent mx-auto mt-[var(--space-lg)] max-w-[38rem] border-t border-[var(--border-default)] pt-[var(--space-md)] text-[clamp(1.05rem,1.8vw,1.35rem)] leading-[1.75] text-[var(--color-ink-soft)] lg:mx-0 lg:border-l lg:border-t-0 lg:pl-[var(--space-md)] lg:pt-0">
+          <blockquote className="mt-[var(--space-lg)] max-w-[38rem] border-l-2 border-[var(--color-hover-accent)] pl-[var(--space-md)] font-[var(--font-accent-family)] text-[clamp(1.05rem,1.8vw,1.35rem)] italic leading-[1.75] text-[var(--color-ink-soft)]">
             {t.categoriesPage.copy.associationQuote}
           </blockquote>
 

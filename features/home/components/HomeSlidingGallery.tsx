@@ -106,7 +106,7 @@ function GalleryImageCard({
     >
       <div
         className={clsx(
-          "pointer-events-none absolute inset-0 z-[1] rounded-[inherit] border border-transparent bg-[linear-gradient(150deg,rgba(242,247,252,0.92)_0%,rgba(231,239,246,0.94)_100%)] transition-opacity duration-300",
+          "pointer-events-none absolute inset-0 z-[1] rounded-[inherit] border border-transparent bg-[var(--surface-muted)] transition-opacity duration-300",
           isLoaded && !hasLoadError ? "opacity-0" : "opacity-100"
         )}
         aria-hidden="true"
@@ -182,7 +182,7 @@ function GalleryRow({
 export default function HomeSlidingGallery() {
   return (
     <section className="section-rhythm-tight overflow-hidden">
-      <div key="gallery" className="w-screen overflow-hidden border-y border-[var(--border-default)] bg-[var(--surface-tint)] py-[clamp(1.1rem,2vw,1.9rem)]">
+      <div key="gallery" className="w-screen overflow-hidden border-y border-[var(--border-default)] bg-[var(--color-ink)] py-[clamp(1.1rem,2vw,1.9rem)]">
         <div className="space-y-[clamp(0.7rem,1.4vw,1.1rem)] overflow-hidden">
           {galleryRows.map((row, index) => (
             <GalleryRow
