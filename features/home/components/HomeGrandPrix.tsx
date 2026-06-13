@@ -15,11 +15,11 @@ export default function HomeGrandPrix() {
       {/* Background image */}
       <div className="absolute inset-0">
         <Image
-          src="/images/curated/grandprix_editorial.jpg"
+          src="/images/events/DSC01248.jpg"
           alt="Grand Prix"
           fill
           sizes="100vw"
-          className="object-cover opacity-20"
+          className="object-cover opacity-25"
           priority={false}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-ink)] via-[var(--color-ink)]/80 to-[var(--color-ink)]/40" />

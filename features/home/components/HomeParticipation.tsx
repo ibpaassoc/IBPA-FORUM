@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
@@ -10,15 +11,51 @@ import { Trophy, Star, CheckCircle } from "lucide-react";
 export default function HomeParticipation() {
   const { t } = useLanguage();
   const p = t.home.participation;
+  const [tier, setTier] = useState<"ibpa" | "standard">("ibpa");
+
+  const awardPrice =
+    tier === "ibpa"
+      ? PRICING.awardParticipation.ibpaMembers.oneNomination
+      : PRICING.awardParticipation.nonMembers.oneNomination;
+
+  const judgePrice =
+    tier === "ibpa"
+      ? PRICING.judgeRegistration.ibpaMembers
+      : PRICING.judgeRegistration.standard;
 
   return (
     <section className="section-rhythm-loose bg-[var(--surface)]">
       <div className="page-section">
-        <Reveal>
-          <p className="page-eyebrow mb-[var(--space-lg)]">{p.eyebrow}</p>
-        </Reveal>
+        {/* Header row + toggle */}
+        <div className="mb-[var(--space-xl)] flex flex-col gap-[var(--space-md)] sm:flex-row sm:items-center sm:justify-between">
+          <Reveal>
+            <p className="page-eyebrow">{p.eyebrow}</p>
+          </Reveal>
 
-        {/* Asymmetric participation grid */}
+          <Reveal delay={0.04}>
+            <div
+              role="group"
+              aria-label="Membership tier"
+              className="flex items-center rounded-[var(--radius-pill)] border border-[var(--border-default)] bg-[var(--surface-muted)] p-1"
+            >
+              {(["ibpa", "standard"] as const).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setTier(t)}
+                  className={`rounded-[var(--radius-pill)] px-5 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.14em] transition-all duration-200 ${
+                    tier === t
+                      ? "bg-[var(--color-ink)] text-white shadow-sm"
+                      : "text-[var(--color-ink-soft)] hover:text-[var(--color-ink)]"
+                  }`}
+                >
+                  {t === "ibpa" ? "IBPA Member" : "Standard"}
+                </button>
+              ))}
+            </div>
+          </Reveal>
+        </div>
+
+        {/* Grid */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-[1.6fr_1fr]">
 
           {/* ── Forum Tickets — dominant card ── */}
@@ -27,7 +64,6 @@ export default function HomeParticipation() {
               href="/tickets"
               className="group relative flex h-full min-h-[480px] flex-col overflow-hidden rounded-[var(--radius-lg)] bg-[var(--color-ink)] lg:min-h-[560px]"
             >
-              {/* Background image */}
               <Image
                 src="/images/events/HomeHero.jpg"
                 alt="Forum Tickets"
@@ -35,12 +71,9 @@ export default function HomeParticipation() {
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 55vw, 700px"
                 className="object-cover opacity-40 transition-transform duration-700 group-hover:scale-[1.03]"
               />
-              {/* Gradient overlay */}
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--color-ink)] via-[var(--color-ink)]/60 to-transparent" />
 
-              {/* Content */}
               <div className="relative flex h-full flex-col justify-between p-[var(--space-lg)]">
-                {/* Top badge */}
                 <div className="flex items-center justify-between">
                   <span className="rounded-[var(--radius-sm)] border border-white/20 bg-white/10 px-3 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/80">
                     Most Popular
@@ -48,7 +81,6 @@ export default function HomeParticipation() {
                   <Star size={18} className="text-[var(--color-blue-soft)] opacity-70" strokeWidth={1.5} />
                 </div>
 
-                {/* Bottom content */}
                 <div>
                   <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-blue-soft)]">
                     {p.tickets.label}
@@ -61,7 +93,6 @@ export default function HomeParticipation() {
                     </span>
                   </h3>
 
-                  {/* Feature list */}
                   <div className="mt-[var(--space-md)] flex flex-wrap gap-x-4 gap-y-2">
                     {["1 Day Pass", "2 Day Pass", "Gala Dinner"].map((item) => (
                       <span key={item} className="flex items-center gap-1.5 text-[0.82rem] text-white/70">
@@ -81,89 +112,76 @@ export default function HomeParticipation() {
             </Link>
           </Reveal>
 
-          {/* ── Award Participation card ── */}
+          {/* ── Award Participation — dark card ── */}
           <Reveal delay={0.1}>
             <Link
               href="/apply"
-              className="group relative flex flex-col overflow-hidden rounded-[var(--radius-lg)] bg-[var(--surface-tint)] p-[var(--space-lg)] transition-shadow duration-300 hover:shadow-[var(--shadow-md)] border border-[var(--border-default)]"
+              className="group flex h-full flex-col overflow-hidden rounded-[var(--radius-lg)] bg-[var(--color-ink)] p-[var(--space-lg)] transition-shadow duration-300 hover:shadow-[var(--shadow-lg)]"
             >
-              <div className="flex items-start justify-between">
-                <div className="flex h-11 w-11 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface)]">
-                  <Trophy size={20} className="text-[var(--color-hover-accent)]" strokeWidth={1.5} />
+              <div className="mb-[var(--space-md)] flex items-center justify-between">
+                <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] border border-white/12 bg-white/6">
+                  <Trophy size={18} className="text-white/50" strokeWidth={1.5} />
                 </div>
-                {/* Small image */}
-                <div className="relative h-16 w-24 overflow-hidden rounded-[var(--radius-sm)]">
-                  <Image
-                    src="/images/curated/grandprix_editorial.jpg"
-                    alt="Award Participation"
-                    fill
-                    sizes="96px"
-                    className="object-cover"
-                  />
-                </div>
+                <span className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-white/25">
+                  {tier === "ibpa" ? "IBPA Members" : "Standard"}
+                </span>
               </div>
 
-              <div className="mt-[var(--space-md)] flex-1">
-                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-hover-accent)]">
-                  {p.award.label}
-                </p>
-                <div className="mt-1 flex items-baseline gap-2">
-                  <span className="text-[0.75rem] text-[var(--color-ink-soft)]">Starting from</span>
-                  <span className="font-[var(--font-title-family)] text-[2rem] font-light text-[var(--color-ink)]">
-                    {PRICING.awardParticipation.startingFrom}
-                  </span>
-                </div>
-                <p className="mt-2 text-[0.88rem] leading-[1.65] text-[var(--color-ink-soft)]">
-                  {p.award.description}
-                </p>
+              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/40 transition-colors duration-300 group-hover:text-[var(--color-blue)]">
+                {p.award.label}
+              </p>
+
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="text-[0.72rem] text-white/35">Starting from</span>
+                <span className="font-[var(--font-title-family)] text-[2.2rem] font-light leading-none text-white transition-colors duration-300 group-hover:text-[var(--color-blue)]">
+                  {awardPrice}
+                </span>
               </div>
 
-              <div className="mt-[var(--space-md)]">
-                <span className="ibpa-button ibpa-button-gold inline-flex">
+              <p className="mt-3 flex-1 text-[0.87rem] leading-[1.65] text-white/50">
+                {p.award.description}
+              </p>
+
+              <div className="mt-[var(--space-lg)]">
+                <span className="ibpa-button ibpa-button-white inline-flex text-[0.72rem]">
                   {p.award.cta}
                 </span>
               </div>
             </Link>
           </Reveal>
 
-          {/* ── Judge Registration card ── */}
+          {/* ── Judge Registration — dark card ── */}
           <Reveal delay={0.16}>
             <Link
               href="/jury"
-              className="group relative flex flex-col overflow-hidden rounded-[var(--radius-lg)] bg-[var(--surface-tint)] p-[var(--space-lg)] transition-shadow duration-300 hover:shadow-[var(--shadow-md)] border border-[var(--border-default)]"
+              className="group flex h-full flex-col overflow-hidden rounded-[var(--radius-lg)] bg-[var(--color-ink)] p-[var(--space-lg)] transition-shadow duration-300 hover:shadow-[var(--shadow-lg)]"
             >
-              <div className="flex items-start justify-between">
-                <div className="flex h-11 w-11 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface)]">
-                  <Star size={20} className="text-[var(--color-hover-accent)]" strokeWidth={1.5} />
+              <div className="mb-[var(--space-md)] flex items-center justify-between">
+                <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] border border-white/12 bg-white/6">
+                  <Star size={18} className="text-white/50" strokeWidth={1.5} />
                 </div>
-                <div className="relative h-16 w-24 overflow-hidden rounded-[var(--radius-sm)]">
-                  <Image
-                    src="/images/curated/jury_editorial.jpg"
-                    alt="Judge Registration"
-                    fill
-                    sizes="96px"
-                    className="object-cover"
-                  />
-                </div>
+                <span className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-white/25">
+                  {tier === "ibpa" ? "IBPA Members" : "Standard"}
+                </span>
               </div>
 
-              <div className="mt-[var(--space-md)] flex-1">
-                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-hover-accent)]">
-                  {p.judge.label}
-                </p>
-                <div className="mt-1 flex items-baseline gap-2">
-                  <span className="text-[0.75rem] text-[var(--color-ink-soft)]">Starting from</span>
-                  <span className="font-[var(--font-title-family)] text-[2rem] font-light text-[var(--color-ink)]">
-                    {PRICING.judgeRegistration.startingFrom}
-                  </span>
-                </div>
-                <p className="mt-2 text-[0.88rem] leading-[1.65] text-[var(--color-ink-soft)]">
-                  {p.judge.description}
-                </p>
+              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/40 transition-colors duration-300 group-hover:text-[var(--color-blue)]">
+                {p.judge.label}
+              </p>
+
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="text-[0.72rem] text-white/35">Starting from</span>
+                <span className="font-[var(--font-title-family)] text-[2.2rem] font-light leading-none text-white transition-colors duration-300 group-hover:text-[var(--color-blue)]">
+                  {judgePrice}
+                </span>
               </div>
 
-              <div className="mt-[var(--space-md)]">
-                <span className="ibpa-button ibpa-button-ghost inline-flex">
+              <p className="mt-3 flex-1 text-[0.87rem] leading-[1.65] text-white/50">
+                {p.judge.description}
+              </p>
+
+              <div className="mt-[var(--space-lg)]">
+                <span className="ibpa-button ibpa-button-white inline-flex text-[0.72rem]">
                   {p.judge.cta}
                 </span>
               </div>

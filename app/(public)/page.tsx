@@ -2,7 +2,6 @@
 
 import {
   HomeHero,
-  HomeForumOverview,
   HomeParticipation,
   HomePricing,
   HomeGrandPrix,
@@ -16,7 +15,6 @@ export default function HomePagePremium() {
   return (
     <main className="page-shell">
       <HomeHero />
-      <HomeForumOverview />
       <HomeParticipation />
       <HomePricing />
       <HomeGrandPrix />
