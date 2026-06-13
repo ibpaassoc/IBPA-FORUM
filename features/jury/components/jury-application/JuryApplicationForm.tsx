@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Award,
   BadgeCheck,
@@ -39,6 +39,7 @@ function isFieldFilled(value: FormValues[string] | undefined) {
 
 export default function JuryApplicationForm() {
   const { language } = useLanguage();
+  const formRef = useRef<HTMLFormElement>(null);
   const [step, setStep] = useState(0);
   const [values, setValues] = useState<FormValues>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -280,17 +281,21 @@ export default function JuryApplicationForm() {
     return e;
   }
 
+  function scrollToForm() {
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   function advance() {
     const e = validateStep(step);
     if (Object.keys(e).length > 0) { setErrors(e); return; }
     setErrors({});
     setStep((s) => Math.min(s + 1, STEPS.length - 1));
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    scrollToForm();
   }
 
   function back() {
     setStep((s) => Math.max(s - 1, 0));
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    scrollToForm();
   }
 
   async function handleSubmit(event: React.FormEvent) {
@@ -328,7 +333,7 @@ export default function JuryApplicationForm() {
   const ibpaMember = String(values.ibpaAssociationMember ?? "");
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 pb-12">
+    <form ref={formRef} onSubmit={handleSubmit} className="space-y-6 pb-12">
       {/* Step bar — top nav */}
       <StepBar steps={STEPS} current={step} />
 
@@ -492,6 +497,7 @@ export default function JuryApplicationForm() {
 
           {step < STEPS.length - 1 ? (
             <button
+              key="continue"
               type="button"
               onClick={advance}
               className="inline-flex items-center gap-2 rounded-full bg-[var(--color-ink)] px-8 py-3 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-white shadow-lg transition hover:bg-[var(--color-ink)]/90 hover:shadow-xl"
@@ -500,6 +506,7 @@ export default function JuryApplicationForm() {
             </button>
           ) : (
             <button
+              key="submit"
               type="submit"
               disabled={isSubmitting}
               className="inline-flex items-center gap-2 rounded-full bg-[var(--color-ink)] px-8 py-3 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-white shadow-lg transition hover:bg-[var(--color-ink)]/90 disabled:opacity-60"

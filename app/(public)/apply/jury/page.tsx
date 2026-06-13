@@ -12,7 +12,7 @@ export default function JuryApplyPage() {
   return (
     <main className="page-shell">
       {/* Dark editorial hero */}
-      <section className="relative flex min-h-[46vh] items-end overflow-hidden bg-[var(--color-ink)] pb-14 pt-28">
+      <section className="relative flex min-h-[28vh] items-end overflow-hidden bg-[var(--color-ink)] pb-8 pt-24">
         <Image
           src="/images/editorial/makeup.jpg"
           alt=""
@@ -35,13 +35,10 @@ export default function JuryApplyPage() {
           <h1 className="mt-2 max-w-xl font-[var(--font-title-family)] text-[clamp(2rem,5vw,3.2rem)] font-light leading-[1.1] text-white">
             {t.juryPage.apply.title}
           </h1>
-          <p className="mt-3 max-w-lg font-[var(--font-accent-family)] text-[1.05rem] italic leading-[1.6] text-white/60">
-            {t.juryPage.apply.text}
-          </p>
         </div>
       </section>
 
-      <PageSection id="jury-form" className="py-16">
+      <PageSection id="jury-form" className="py-8">
         <JuryApplicationForm />
       </PageSection>
     </main>
