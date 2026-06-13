@@ -1,17 +1,23 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { Reveal } from "@/shared/components/public";
 import { PRICING } from "@/data/pricing";
 import { Trophy, Star, CheckCircle } from "lucide-react";
 
-export default function HomeParticipation() {
+type Tier = "ibpa" | "standard";
+
+export default function HomeParticipation({ tier }: { tier: Tier }) {
   const { t } = useLanguage();
   const p = t.home.participation;
-  const [tier, setTier] = useState<"ibpa" | "standard">("ibpa");
+
+  const forumPrice =
+    tier === "ibpa"
+      ? PRICING.forumTickets.ibpaMembers.oneDay
+      : PRICING.forumTickets.standard.oneDay;
 
   const awardPrice =
     tier === "ibpa"
@@ -23,37 +29,14 @@ export default function HomeParticipation() {
       ? PRICING.judgeRegistration.ibpaMembers
       : PRICING.judgeRegistration.standard;
 
+  const tierLabel = tier === "ibpa" ? "IBPA Members" : "Standard";
+
   return (
     <section className="section-rhythm-loose bg-[var(--surface)]">
       <div className="page-section">
-        {/* Header row + toggle */}
-        <div className="mb-[var(--space-xl)] flex flex-col gap-[var(--space-md)] sm:flex-row sm:items-center sm:justify-between">
-          <Reveal>
-            <p className="page-eyebrow">{p.eyebrow}</p>
-          </Reveal>
-
-          <Reveal delay={0.04}>
-            <div
-              role="group"
-              aria-label="Membership tier"
-              className="flex items-center rounded-[var(--radius-pill)] border border-[var(--border-default)] bg-[var(--surface-muted)] p-1"
-            >
-              {(["ibpa", "standard"] as const).map((t) => (
-                <button
-                  key={t}
-                  onClick={() => setTier(t)}
-                  className={`rounded-[var(--radius-pill)] px-5 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.14em] transition-all duration-200 ${
-                    tier === t
-                      ? "bg-[var(--color-ink)] text-white shadow-sm"
-                      : "text-[var(--color-ink-soft)] hover:text-[var(--color-ink)]"
-                  }`}
-                >
-                  {t === "ibpa" ? "IBPA Member" : "Standard"}
-                </button>
-              ))}
-            </div>
-          </Reveal>
-        </div>
+        <Reveal className="mb-[var(--space-xl)]">
+          <p className="page-eyebrow">{p.eyebrow}</p>
+        </Reveal>
 
         {/* Grid */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-[1.6fr_1fr]">
@@ -88,9 +71,15 @@ export default function HomeParticipation() {
                   <h3 className="mt-2 font-[var(--font-title-family)] text-[clamp(1.8rem,3.5vw,3rem)] font-light leading-[1.05] text-white">
                     Starting from
                     <br />
-                    <span className="text-[clamp(2.4rem,5vw,4rem)] font-medium">
-                      {PRICING.forumTickets.startingFrom}
-                    </span>
+                    <motion.span
+                      key={forumPrice}
+                      initial={{ opacity: 0, y: -6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.22, ease: "easeOut" }}
+                      className="text-[clamp(2.4rem,5vw,4rem)] font-medium"
+                    >
+                      {forumPrice}
+                    </motion.span>
                   </h3>
 
                   <div className="mt-[var(--space-md)] flex flex-wrap gap-x-4 gap-y-2">
@@ -123,7 +112,7 @@ export default function HomeParticipation() {
                   <Trophy size={18} className="text-white/50" strokeWidth={1.5} />
                 </div>
                 <span className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-white/25">
-                  {tier === "ibpa" ? "IBPA Members" : "Standard"}
+                  {tierLabel}
                 </span>
               </div>
 
@@ -133,9 +122,15 @@ export default function HomeParticipation() {
 
               <div className="mt-2 flex items-baseline gap-2">
                 <span className="text-[0.72rem] text-white/35">Starting from</span>
-                <span className="font-[var(--font-title-family)] text-[2.2rem] font-light leading-none text-white transition-colors duration-300 group-hover:text-[var(--color-blue)]">
+                <motion.span
+                  key={awardPrice}
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  className="font-[var(--font-title-family)] text-[2.2rem] font-light leading-none text-white transition-colors duration-300 group-hover:text-[var(--color-blue)]"
+                >
                   {awardPrice}
-                </span>
+                </motion.span>
               </div>
 
               <p className="mt-3 flex-1 text-[0.87rem] leading-[1.65] text-white/50">
@@ -161,7 +156,7 @@ export default function HomeParticipation() {
                   <Star size={18} className="text-white/50" strokeWidth={1.5} />
                 </div>
                 <span className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-white/25">
-                  {tier === "ibpa" ? "IBPA Members" : "Standard"}
+                  {tierLabel}
                 </span>
               </div>
 
@@ -171,9 +166,15 @@ export default function HomeParticipation() {
 
               <div className="mt-2 flex items-baseline gap-2">
                 <span className="text-[0.72rem] text-white/35">Starting from</span>
-                <span className="font-[var(--font-title-family)] text-[2.2rem] font-light leading-none text-white transition-colors duration-300 group-hover:text-[var(--color-blue)]">
+                <motion.span
+                  key={judgePrice}
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  className="font-[var(--font-title-family)] text-[2.2rem] font-light leading-none text-white transition-colors duration-300 group-hover:text-[var(--color-blue)]"
+                >
                   {judgePrice}
-                </span>
+                </motion.span>
               </div>
 
               <p className="mt-3 flex-1 text-[0.87rem] leading-[1.65] text-white/50">

@@ -13,5 +13,6 @@ export { default as HomeParticipation } from "./HomeParticipation"
 export { default as HomePricing } from "./HomePricing"
 export { default as HomeGrandPrix } from "./HomeGrandPrix"
 export { default as HomeWhyAttend } from "./HomeWhyAttend"
+export { default as HomeConversionBlock } from "./HomeConversionBlock"
 
 export {default as EventExperienceCollage} from "./EventExperienceCollage"
