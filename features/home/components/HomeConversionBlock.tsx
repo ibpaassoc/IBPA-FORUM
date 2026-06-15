@@ -4,11 +4,13 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import HomeParticipation from "./HomeParticipation";
 import HomePricing from "./HomePricing";
+import TicketModal from "@/features/tickets/components/TicketModal";
 
 export type Tier = "ibpa" | "standard";
 
 export default function HomeConversionBlock() {
   const [tier, setTier] = useState<Tier>("ibpa");
+  const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
 
   return (
     <div className="relative">
@@ -67,7 +69,12 @@ export default function HomeConversionBlock() {
 
       {/* ── Sections driven by tier ── */}
       <HomeParticipation tier={tier} />
-      <HomePricing tier={tier} />
+      <HomePricing tier={tier} onBuyTickets={() => setIsTicketModalOpen(true)} />
+
+      <TicketModal
+        isOpen={isTicketModalOpen}
+        onClose={() => setIsTicketModalOpen(false)}
+      />
     </div>
   );
 }

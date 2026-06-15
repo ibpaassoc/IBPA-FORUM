@@ -26,7 +26,13 @@ function PriceRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-export default function HomePricing({ tier }: { tier: Tier }) {
+export default function HomePricing({
+  tier,
+  onBuyTickets,
+}: {
+  tier: Tier;
+  onBuyTickets?: () => void;
+}) {
   const { t } = useLanguage();
   const ps = t.home.pricingSection;
 
@@ -117,9 +123,13 @@ export default function HomePricing({ tier }: { tier: Tier }) {
               </div>
 
               <div className="p-[var(--space-md)]">
-                <Link href="/tickets" className="ibpa-button ibpa-button-white w-full text-center">
+                <button
+                  type="button"
+                  onClick={onBuyTickets}
+                  className="ibpa-button ibpa-button-white w-full"
+                >
                   Buy Tickets
-                </Link>
+                </button>
               </div>
             </article>
           </Reveal>
