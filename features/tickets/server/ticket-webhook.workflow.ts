@@ -71,6 +71,15 @@ async function handleTicketCheckoutCompleted(event: Stripe.Event): Promise<boole
           stripePaymentIntentId: paymentIntentId,
         },
       });
+
+      await tx.payment.updateMany({
+        where: { stripeSessionId: session.id },
+        data: {
+          status: "PAID",
+          stripePaymentIntentId: paymentIntentId,
+          paidAt,
+        },
+      });
     });
   } catch (error) {
     if (isDuplicateStripeEventError(error)) {

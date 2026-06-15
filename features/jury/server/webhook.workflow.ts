@@ -106,13 +106,24 @@ async function handleCheckoutCompleted(event: Stripe.Event): Promise<boolean> {
         return;
       }
 
+      const paidAt = new Date();
+
       await tx.juryApplication.update({
         where: { id: application.id },
         data: {
           status: "PAID",
           paymentStatus: "PAID",
-          paidAt: new Date(),
+          paidAt,
           stripeCheckoutSessionId: session.id,
+        },
+      });
+
+      await tx.payment.updateMany({
+        where: { stripeSessionId: session.id },
+        data: {
+          status: "PAID",
+          stripePaymentIntentId: paymentIntentId,
+          paidAt,
         },
       });
 

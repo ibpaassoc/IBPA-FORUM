@@ -276,17 +276,35 @@ export async function approveJuryApplication(id: string, isIbpaMemberOverride?: 
     isIbpaMember,
   });
 
-  await prisma.juryApplication.update({
-    where: { id },
-    data: {
-      status: "APPROVED",
-      paymentStatus: "PENDING",
-      approvedAt: new Date(),
-      rejectedAt: null,
-      paidAt: null,
-      stripeCheckoutSessionId: session.id,
-    },
-  });
+  const juryAmountCents = isIbpaMember ? 10000 : 25000;
+
+  await prisma.$transaction([
+    prisma.payment.updateMany({
+      where: { juryApplicationId: application.id, status: "PENDING" },
+      data: { status: "EXPIRED" },
+    }),
+    prisma.juryApplication.update({
+      where: { id },
+      data: {
+        status: "APPROVED",
+        paymentStatus: "PENDING",
+        approvedAt: new Date(),
+        rejectedAt: null,
+        paidAt: null,
+        stripeCheckoutSessionId: session.id,
+      },
+    }),
+    prisma.payment.create({
+      data: {
+        source: "JURY",
+        juryApplicationId: application.id,
+        stripeSessionId: session.id,
+        amount: juryAmountCents,
+        currency: "usd",
+        status: "PENDING",
+      },
+    }),
+  ]);
 
   let emailDelivered = false;
   let emailSkipReason:

@@ -99,6 +99,7 @@ model JuryApplication {
   files                            JuryApplicationFile[]
   judgeScores                      JudgeScore[]
   account                          JuryAccount?
+  payments                         Payment[]
 }
 
 model JuryAccount {
@@ -148,16 +149,21 @@ model ApplicationFile {
 }
 
 model Payment {
-  id                    String        @id @default(cuid())
-  applicationId         String
-  stripeSessionId       String?       @unique
-  stripePaymentIntentId String?       @unique
+  id                    String           @id @default(cuid())
+  source                PaymentSource
+  applicationId         String?
+  juryApplicationId     String?
+  ticketId              String?
+  stripeSessionId       String?          @unique
+  stripePaymentIntentId String?          @unique
   amount                Int
-  currency              String        @default("usd")
-  status                PaymentStatus @default(PENDING)
+  currency              String           @default("usd")
+  status                PaymentStatus    @default(PENDING)
   paidAt                DateTime?
-  createdAt             DateTime      @default(now())
-  application           Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  createdAt             DateTime         @default(now())
+  application           Application?     @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  juryApplication       JuryApplication? @relation(fields: [juryApplicationId], references: [id], onDelete: Cascade)
+  ticket                Ticket?          @relation(fields: [ticketId], references: [id], onDelete: Cascade)
 }
 
 model StripeWebhookEvent {
@@ -209,6 +215,12 @@ enum PaymentStatus {
   REFUNDED
 }
 
+enum PaymentSource {
+  COMPETITOR
+  JURY
+  TICKET
+}
+
 enum JuryApplicationStatus {
   SUBMITTED
   APPROVED
@@ -240,6 +252,7 @@ model Ticket {
   lastCheckIn           DateTime?
   createdAt             DateTime     @default(now())
   updatedAt             DateTime     @updatedAt
+  payments              Payment[]
 }
 
 enum TicketType {
