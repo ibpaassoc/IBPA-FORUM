@@ -221,3 +221,35 @@ enum ScoreStatus {
   SUBMITTED
   REOPENED
 }
+
+model Ticket {
+  id             String       @id @default(cuid())
+  secureToken    String       @unique
+  fullName       String
+  email          String
+  phone          String
+  type           TicketType
+  galaDinner     Boolean      @default(false)
+  isIbpaMember   Boolean      @default(false)
+  ibpaCertNumber String?
+  paymentLink    String?
+  stripeSessionId String?     @unique
+  status         TicketStatus @default(PENDING)
+  lastCheckIn    DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+enum TicketType {
+  ONE_DAY
+  TWO_DAYS
+}
+
+enum TicketStatus {
+  PENDING
+  PAID
+  CANCELED
+  CHECKED_ONE_DAY
+  CHECKED_TWO_DAY
+  CHECKED_GALA_DINNER
+}
