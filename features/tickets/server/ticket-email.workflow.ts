@@ -1,8 +1,8 @@
 import "server-only";
 import type { TicketType } from "@prisma/client";
 import { sendEmail } from "@/features/email/server/send-email";
-import { ticketConfirmationTemplate } from "../templates/ticket-confirmation";
-import { generateTicketQRDataUrl } from "./ticket-qr";
+import { ticketConfirmationTemplate, QR_CID } from "../templates/ticket-confirmation";
+import { generateTicketQRBuffer } from "./ticket-qr";
 
 export async function sendTicketConfirmationEmail({
   to,
@@ -17,8 +17,8 @@ export async function sendTicketConfirmationEmail({
   galaDinner: boolean;
   secureToken: string;
 }) {
-  const qrDataUrl = await generateTicketQRDataUrl(secureToken);
-  const template = ticketConfirmationTemplate({ fullName, type, galaDinner, qrDataUrl });
+  const qrBuffer = await generateTicketQRBuffer(secureToken);
+  const template = ticketConfirmationTemplate({ fullName, type, galaDinner });
 
   return sendEmail({
     type: "user",
@@ -26,5 +26,12 @@ export async function sendTicketConfirmationEmail({
     subject: template.subject,
     html: template.html,
     text: template.text,
+    attachments: [
+      {
+        filename: "ticket-qr.png",
+        content: qrBuffer,
+        content_id: QR_CID,
+      },
+    ],
   });
 }

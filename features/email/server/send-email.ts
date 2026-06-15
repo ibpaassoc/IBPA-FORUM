@@ -7,12 +7,19 @@ import {
   type EmailFromType,
 } from "@/lib/email/config";
 
+export type EmailAttachment = {
+  filename: string;
+  content: Buffer;
+  content_id: string;
+};
+
 export type SendEmailInput = {
   type: EmailFromType;
   to: string;
   subject: string;
   html: string;
   text?: string;
+  attachments?: EmailAttachment[];
 };
 
 export type SendEmailResult = {
@@ -46,6 +53,7 @@ function getNormalizedEmailPayload(input: SendEmailInput) {
     subject: input.subject,
     html: input.html,
     text: input.text,
+    attachments: input.attachments,
   };
 }
 
@@ -122,6 +130,7 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
     subject: payload.subject,
     html: payload.html,
     text: payload.text,
+    attachments: payload.attachments,
   });
 
   if (result.error) {

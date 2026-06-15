@@ -1,8 +1,9 @@
 import "server-only";
 import QRCode from "qrcode";
 
-export async function generateTicketQRDataUrl(secureToken: string): Promise<string> {
-  return QRCode.toDataURL(`IBPA-TICKET:${secureToken}`, {
+export async function generateTicketQRBuffer(secureToken: string): Promise<Buffer> {
+  return QRCode.toBuffer(`IBPA-TICKET:${secureToken}`, {
+    type: "png",
     width: 300,
     margin: 2,
     color: {
