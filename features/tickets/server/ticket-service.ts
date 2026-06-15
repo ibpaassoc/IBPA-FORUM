@@ -1,8 +1,15 @@
 import "server-only";
 import type { TicketType } from "@prisma/client";
 import { prisma } from "@/shared/lib/prisma";
-import { createTicket, updateTicketCheckoutSession } from "./ticket-repository";
+import { createTicket, findActiveTicketByEmail } from "./ticket-repository";
 import { createTicketCheckoutSession } from "./ticket-checkout";
+
+export class TicketConflictError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "TicketConflictError";
+  }
+}
 
 const TICKET_AMOUNTS_CENTS: Record<TicketType, { ibpa: number; standard: number }> = {
   ONE_DAY:  { ibpa: 29500, standard: 39500 },
@@ -24,6 +31,16 @@ export type InitiateTicketPurchaseInput = {
 export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput) {
   const fullName = `${input.firstName.trim()} ${input.lastName.trim()}`.trim();
   const email = input.email.trim().toLowerCase();
+
+  const existing = await findActiveTicketByEmail(email);
+  if (existing) {
+    const isPaid = existing.status !== "PENDING";
+    throw new TicketConflictError(
+      isPaid
+        ? "A ticket has already been purchased for this email address. Check your inbox for your confirmation."
+        : "A checkout session is already in progress for this email. Please complete your payment or wait a few minutes before trying again."
+    );
+  }
 
   const ticket = await createTicket({
     fullName,

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ticketApiSchema } from "@/features/tickets/schemas/ticket-form-schema";
-import { initiateTicketPurchase } from "@/features/tickets/server/ticket-service";
+import { initiateTicketPurchase, TicketConflictError } from "@/features/tickets/server/ticket-service";
 import { EnvConfigError, isProduction, validateProductionEnv } from "@/lib/env";
 
 function getErrorMessage(error: unknown) {
@@ -32,6 +32,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ checkoutUrl: result.checkoutUrl }, { status: 201 });
   } catch (error) {
+    if (error instanceof TicketConflictError) {
+      return NextResponse.json({ message: error.message }, { status: 409 });
+    }
+
     console.error("POST /api/tickets error:", error);
 
     const devMessage = `Failed to create ticket: ${getErrorMessage(error)}`;

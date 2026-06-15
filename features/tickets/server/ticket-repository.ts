@@ -53,6 +53,18 @@ export async function updateTicketCheckoutSession(
   });
 }
 
+export async function findActiveTicketByEmail(email: string) {
+  return prisma.ticket.findFirst({
+    where: {
+      email,
+      status: {
+        notIn: ["CANCELED"],
+      },
+    },
+    select: { id: true, status: true },
+  });
+}
+
 export async function checkInTicket(
   ticketId: string,
   status: Extract<TicketStatus, "CHECKED_ONE_DAY" | "CHECKED_TWO_DAY" | "CHECKED_GALA_DINNER">
