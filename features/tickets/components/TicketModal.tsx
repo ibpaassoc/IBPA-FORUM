@@ -59,7 +59,7 @@ export default function TicketModal({ isOpen, onClose }: TicketModalProps) {
             <div className="flex shrink-0 items-start justify-between border-b border-[var(--border-soft)] px-6 py-5">
               <div>
                 <p className="mb-1 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-blue)]">
-                  Beauty Business Forum USA 2026
+                  IBPA BEAUTY AWARD 2026
                 </p>
                 <h2
                   id="ticket-modal-title"
@@ -80,7 +80,7 @@ export default function TicketModal({ isOpen, onClose }: TicketModalProps) {
 
             {/* Scrollable body */}
             <div className="flex-1 overflow-y-auto px-6 py-6 [font-family:var(--font-legal-family)]">
-              <TicketForm onSuccess={onClose} />
+              <TicketForm />
             </div>
           </motion.div>
         </motion.div>

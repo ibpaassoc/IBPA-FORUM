@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
+import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
 import { PRICING } from "@/data/pricing";
 
@@ -29,58 +30,59 @@ const labelBase =
 
 const errorText = "mt-1 text-[0.77rem] text-red-600";
 
+const sectionTransition = { duration: 0.32, ease: [0.22, 1, 0.36, 1] as const };
+const membershipSectionTransition = {
+  duration: 0.24,
+  ease: [0.22, 1, 0.36, 1] as const,
+};
+
 function priceStrToNum(str: string) {
   return parseInt(str.replace("$", ""), 10);
 }
 
-function CertStatusBadge({ status }: { status: CertStatus }) {
-  if (status === "idle") return null;
-
-  if (status === "checking") {
-    return (
-      <span className="mt-1.5 flex items-center gap-1.5 text-[0.77rem] text-[var(--color-ink-soft)]">
-        <svg className="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-        </svg>
-        Verifying…
-      </span>
-    );
-  }
-
-  if (status === "valid") {
-    return (
-      <span className="mt-1.5 flex items-center gap-1.5 text-[0.77rem] text-emerald-600">
-        <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-        </svg>
-        Valid IBPA member certificate
-      </span>
-    );
-  }
-
-  if (status === "invalid") {
-    return (
-      <span className="mt-1.5 flex items-center gap-1.5 text-[0.77rem] text-red-600">
-        <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-          <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-        </svg>
-        Certificate not found or has expired
-      </span>
-    );
-  }
-
-  return (
-    <span className="mt-1.5 flex items-center gap-1.5 text-[0.77rem] text-amber-600">
+const CERT_STATUS_CONTENT: Record<Exclude<CertStatus, "idle">, React.ReactNode> = {
+  checking: (
+    <span className="flex items-center gap-1.5 text-[var(--color-ink-soft)]">
+      <svg className="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+      </svg>
+      Verifying…
+    </span>
+  ),
+  valid: (
+    <span className="flex items-center gap-1.5 text-emerald-600">
+      <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+      </svg>
+      Valid IBPA member certificate
+    </span>
+  ),
+  invalid: (
+    <span className="flex items-center gap-1.5 text-red-600">
+      <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+      </svg>
+      Certificate not found or has expired
+    </span>
+  ),
+  error: (
+    <span className="flex items-center gap-1.5 text-amber-600">
       <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
         <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
       </svg>
-      Could not verify — proceeding without member discount
+      Could not verify - proceeding without member discount
     </span>
-  );
+  ),
+};
+
+function CertStatusBadge({ status }: { status: CertStatus }) {
+  if (status === "idle") return null;
+
+  return <div className="mt-1.5 min-h-5 text-[0.77rem]">{CERT_STATUS_CONTENT[status]}</div>;
 }
 
-export default function TicketForm({ onSuccess }: { onSuccess?: () => void }) {
+export default function TicketForm() {
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [certStatus, setCertStatus] = useState<CertStatus>("idle");
@@ -206,7 +208,6 @@ export default function TicketForm({ onSuccess }: { onSuccess?: () => void }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
-      {/* Personal info */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className={labelBase} htmlFor="tf-firstName">
@@ -220,9 +221,7 @@ export default function TicketForm({ onSuccess }: { onSuccess?: () => void }) {
             className={clsx(inputBase, errors.firstName && inputError)}
             {...register("firstName", { required: "First name is required." })}
           />
-          {errors.firstName && (
-            <p className={errorText}>{errors.firstName.message}</p>
-          )}
+          {errors.firstName && <p className={errorText}>{errors.firstName.message}</p>}
         </div>
 
         <div>
@@ -237,13 +236,10 @@ export default function TicketForm({ onSuccess }: { onSuccess?: () => void }) {
             className={clsx(inputBase, errors.lastName && inputError)}
             {...register("lastName", { required: "Last name is required." })}
           />
-          {errors.lastName && (
-            <p className={errorText}>{errors.lastName.message}</p>
-          )}
+          {errors.lastName && <p className={errorText}>{errors.lastName.message}</p>}
         </div>
       </div>
 
-      {/* Contact */}
       <div>
         <label className={labelBase} htmlFor="tf-email">
           Email <span className="text-red-500">*</span>
@@ -280,7 +276,6 @@ export default function TicketForm({ onSuccess }: { onSuccess?: () => void }) {
         {errors.phone && <p className={errorText}>{errors.phone.message}</p>}
       </div>
 
-      {/* Ticket type */}
       <div>
         <p className={labelBase}>
           Ticket Type <span className="text-red-500">*</span>
@@ -317,7 +312,6 @@ export default function TicketForm({ onSuccess }: { onSuccess?: () => void }) {
         {errors.type && <p className={errorText}>{errors.type.message}</p>}
       </div>
 
-      {/* Add-ons */}
       <div className="space-y-3 rounded-[12px] border border-[var(--border-soft)] bg-[var(--surface-tint)] p-4">
         <p className={labelBase + " mb-3"}>Add-ons</p>
 
@@ -332,13 +326,12 @@ export default function TicketForm({ onSuccess }: { onSuccess?: () => void }) {
               Gala Dinner
             </span>
             <span className="text-[0.78rem] text-[var(--color-ink-soft)]">
-              Evening gala dinner on Day 1 — {galaPrice} per person
+              Evening gala dinner on Day 1 - {galaPrice} per person
             </span>
           </span>
         </label>
       </div>
 
-      {/* Membership */}
       <div className="space-y-3 rounded-[12px] border border-[var(--border-soft)] bg-[var(--surface-tint)] p-4">
         <p className={labelBase + " mb-3"}>Membership</p>
 
@@ -358,89 +351,108 @@ export default function TicketForm({ onSuccess }: { onSuccess?: () => void }) {
           </span>
         </label>
 
-        {isIbpaMember && (
-          <div className="pt-1">
-            <label className={labelBase} htmlFor="tf-certNumber">
-              IBPA CERT Number <span className="text-red-500">*</span>
-            </label>
-            <input
-              id="tf-certNumber"
-              type="text"
-              placeholder="e.g. CERT-20240124-A00A"
-              className={clsx(
-                inputBase,
-                errors.ibpaCertNumber && inputError,
-                certStatus === "valid" &&
-                  "border-emerald-400 focus:border-emerald-500 focus:ring-emerald-100",
-                certStatus === "invalid" && inputError
-              )}
-              {...register("ibpaCertNumber", {
-                validate: (value) => {
-                  if (isIbpaMember && (!value || !value.trim())) {
-                    return "CERT number is required for IBPA members.";
-                  }
-                  return true;
-                },
-              })}
-            />
-            <CertStatusBadge status={certStatus} />
-            {errors.ibpaCertNumber && certStatus === "idle" && (
-              <p className={errorText}>{errors.ibpaCertNumber.message}</p>
-            )}
-          </div>
-        )}
+        <AnimatePresence initial={false}>
+          {isIbpaMember && (
+            <motion.div
+              key="cert-field"
+              initial={{ opacity: 0, height: 0, y: -4 }}
+              animate={{ opacity: 1, height: "auto", y: 0 }}
+              exit={{ opacity: 0, height: 0, y: -4 }}
+              transition={membershipSectionTransition}
+              className="overflow-hidden"
+            >
+              <div className="pt-3">
+                <label className={labelBase} htmlFor="tf-certNumber">
+                  IBPA CERT Number <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="tf-certNumber"
+                  type="text"
+                  placeholder="e.g. CERT-20240124-A00A"
+                  className={clsx(
+                    inputBase,
+                    errors.ibpaCertNumber && inputError,
+                    certStatus === "valid" &&
+                      "border-emerald-400 focus:border-emerald-500 focus:ring-emerald-100",
+                    certStatus === "invalid" && inputError
+                  )}
+                  {...register("ibpaCertNumber", {
+                    validate: (value) => {
+                      if (isIbpaMember && (!value || !value.trim())) {
+                        return "CERT number is required for IBPA members.";
+                      }
+                      return true;
+                    },
+                  })}
+                />
+                <CertStatusBadge status={certStatus} />
+                {errors.ibpaCertNumber && certStatus === "idle" && (
+                  <p className={errorText}>{errors.ibpaCertNumber.message}</p>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
-      {/* Price summary */}
-      {type && (
-        <div className="rounded-[12px] border border-[var(--border-default)] bg-white px-5 py-4">
-          <p className={labelBase + " mb-3"}>Order Summary</p>
-          <div className="space-y-2">
-            {ticketPriceStr && (
-              <div className="flex justify-between text-[0.88rem]">
-                <span className="text-[var(--color-ink-soft)]">
-                  {type === "ONE_DAY" ? "1-Day Forum Pass" : "2-Day Forum Pass"}
-                  {isIbpaMember && (
-                    <span className="ml-2 rounded-full bg-[var(--color-blue-wash)] px-2 py-0.5 text-[0.68rem] font-semibold uppercase tracking-wide text-[var(--color-blue)]">
-                      Member
+      <AnimatePresence initial={false} mode="wait">
+        {type && (
+          <motion.div
+            key="order-summary"
+            initial={{ opacity: 0, height: 0, y: -8 }}
+            animate={{ opacity: 1, height: "auto", y: 0 }}
+            exit={{ opacity: 0, height: 0, y: -8 }}
+            transition={sectionTransition}
+            className="overflow-hidden"
+          >
+            <div className="rounded-[12px] border border-[var(--border-default)] bg-white px-5 py-4">
+              <p className={labelBase + " mb-3"}>Order Summary</p>
+              <div className="space-y-2">
+                {ticketPriceStr && (
+                  <div className="flex justify-between text-[0.88rem]">
+                    <span className="text-[var(--color-ink-soft)]">
+                      {type === "ONE_DAY" ? "1-Day Forum Pass" : "2-Day Forum Pass"}
+                      {isIbpaMember && (
+                        <span className="ml-2 inline-block rounded-full bg-[var(--color-blue-wash)] px-2 py-0.5 text-[0.68rem] font-semibold uppercase tracking-wide text-[var(--color-blue)]">
+                          Member
+                        </span>
+                      )}
                     </span>
-                  )}
-                </span>
-                <span className="font-semibold text-[var(--color-ink)]">{ticketPriceStr}</span>
+                    <span className="font-semibold text-[var(--color-ink)]">{ticketPriceStr}</span>
+                  </div>
+                )}
+                {galaDinner && (
+                  <div className="flex justify-between text-[0.88rem]">
+                    <span className="text-[var(--color-ink-soft)]">Gala Dinner Add-on</span>
+                    <span className="font-semibold text-[var(--color-ink)]">{galaPrice}</span>
+                  </div>
+                )}
+                <div className="flex justify-between border-t border-[var(--border-soft)] pt-2 text-[0.92rem] font-bold text-[var(--color-ink)]">
+                  <span>Total</span>
+                  <span>${total}</span>
+                </div>
               </div>
-            )}
-            {galaDinner && (
-              <div className="flex justify-between text-[0.88rem]">
-                <span className="text-[var(--color-ink-soft)]">Gala Dinner Add-on</span>
-                <span className="font-semibold text-[var(--color-ink)]">{galaPrice}</span>
-              </div>
-            )}
-            <div className="flex justify-between border-t border-[var(--border-soft)] pt-2 text-[0.92rem] font-bold text-[var(--color-ink)]">
-              <span>Total</span>
-              <span>${total}</span>
             </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Error */}
       {serverError && (
-        <p className="rounded-[10px] bg-red-50 border border-red-200 px-4 py-3 text-[0.85rem] text-red-700">
+        <p className="rounded-[10px] border border-red-200 bg-red-50 px-4 py-3 text-[0.85rem] text-red-700">
           {serverError}
         </p>
       )}
 
-      {/* Submit */}
       <button
         type="submit"
         disabled={submitting || certStatus === "checking"}
         className="ibpa-button ibpa-button-primary w-full disabled:cursor-not-allowed disabled:opacity-60"
       >
         {submitting
-          ? "Creating your checkout…"
+          ? "Creating your checkout..."
           : certStatus === "checking"
-            ? "Verifying certificate…"
-            : "Continue to Payment →"}
+            ? "Verifying certificate..."
+            : "Continue to Payment ->"}
       </button>
     </form>
   );

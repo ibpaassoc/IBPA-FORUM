@@ -2,7 +2,7 @@ import Link from "next/link";
 import { CheckCircle } from "lucide-react";
 
 export const metadata = {
-  title: "Ticket Confirmed — Beauty Business Forum USA 2026",
+  title: "Ticket Confirmed — IBPA BEAUTY AWARD 2026",
 };
 
 export default function TicketsSuccessPage() {
@@ -16,7 +16,7 @@ export default function TicketsSuccessPage() {
           Payment Confirmed
         </h1>
         <p className="mb-2 text-[0.95rem] text-[var(--color-ink-soft)] leading-relaxed">
-          Your ticket for the <strong>Beauty Business Forum USA 2026</strong> is confirmed.
+          Your ticket for the <strong>IBPA BEAUTY AWARD 2026</strong> is confirmed.
         </p>
         <p className="mb-8 text-[0.88rem] text-[var(--color-ink-soft)] leading-relaxed">
           We&rsquo;ve emailed your QR code ticket to the address you provided.

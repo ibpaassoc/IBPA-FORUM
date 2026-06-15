@@ -3,7 +3,7 @@ import Link from "next/link";
 import { findTicketWithPaymentByToken } from "@/features/tickets/server/ticket-repository";
 
 export const metadata = {
-  title: "Payment Details — Beauty Business Forum USA 2026",
+  title: "Payment Details — IBPA BEAUTY AWARD 2026",
 };
 
 const TICKET_LABELS: Record<string, string> = {
@@ -43,7 +43,7 @@ export default async function TicketPaymentPage({
     <main className="page-shell flex min-h-screen items-center justify-center p-6">
       <div className="w-full max-w-md rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-white px-8 py-10 shadow-[var(--shadow-md)]">
         <p className="mb-5 text-[10px] font-bold tracking-[0.22em] uppercase text-[var(--color-blue)]">
-          Beauty Business Forum USA 2026
+          IBPA BEAUTY AWARD 2026
         </p>
 
         <h1 className="mb-1 text-[1.7rem] leading-tight [font-family:var(--font-accent-family)] text-[var(--color-ink)]">

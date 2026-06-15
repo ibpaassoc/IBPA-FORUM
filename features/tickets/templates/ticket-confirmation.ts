@@ -35,7 +35,7 @@ export function ticketConfirmationTemplate({
         <tr>
           <td style="padding-bottom:28px;">
             <p style="margin:0;font-size:10px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:#72a0c1;">
-              Beauty Business Forum USA
+              IBPA BEAUTY AWARD 2026
             </p>
           </td>
         </tr>
@@ -60,7 +60,7 @@ export function ticketConfirmationTemplate({
               Dear <strong>${fullName}</strong>,
             </p>
             <p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:#374151;">
-              Your registration for the <strong>Beauty Business Forum USA 2026</strong> is complete.
+              Your registration for the <strong>IBPA BEAUTY AWARD 2026</strong> is complete.
               Below are your ticket details and the QR code you'll use to check in on the day of the event.
             </p>
 
@@ -122,7 +122,7 @@ export function ticketConfirmationTemplate({
         <tr>
           <td style="padding-top:24px;text-align:center;">
             <p style="margin:0;font-size:11px;color:#4b5563;">
-              © 2026 International Beauty Professional Association · Beauty Business Forum USA
+              © 2026 International Beauty Professional Association · IBPA BEAUTY AWARD 2026
             </p>
           </td>
         </tr>
@@ -135,7 +135,7 @@ export function ticketConfirmationTemplate({
 
   const text = [
     `Dear ${fullName},`,
-    `Your ticket for the Beauty Business Forum USA 2026 is confirmed.`,
+    `Your ticket for the IBPA BEAUTY AWARD 2026 is confirmed.`,
     `Ticket type: ${ticketLabel}`,
     `Gala Dinner: ${galaDinner ? "Included" : "Not included"}`,
     `Please show the attached QR code at the check-in desk on arrival.`,
@@ -145,7 +145,7 @@ export function ticketConfirmationTemplate({
   ].join("\n\n");
 
   return {
-    subject: "Your Ticket Is Confirmed — Beauty Business Forum USA 2026",
+    subject: "Your Ticket Is Confirmed — IBPA BEAUTY AWARD 2026",
     html,
     text,
   };
