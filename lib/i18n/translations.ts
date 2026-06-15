@@ -207,8 +207,8 @@ const en = {
       judge: "Become a Judge",
     },
     forum: {
-      eyebrow: "Beauty Business Forum USA 2026",
-      title: "BEAUTY BUSINESS FORUM USA 2026",
+      eyebrow: "IBPA BEAUTY AWARD 2026",
+      title: "IBPA BEAUTY AWARD 2026",
       description: "An international gathering of beauty industry leaders uniting award recognition, professional education, business networking, and the Grand Gala Ceremony — all in one premier event.",
     },
     participation: {
@@ -250,7 +250,7 @@ const en = {
     grandPrixSpotlight: {
       eyebrow: "Grand Prix",
       title: "GRAND PRIX",
-      description: "Participants submitting 5 or more nominations automatically compete for the Grand Prix award — the highest distinction at Beauty Business Forum USA 2026.",
+      description: "Participants submitting 5 or more nominations automatically compete for the Grand Prix award — the highest distinction at IBPA BEAUTY AWARD 2026.",
       cta: "Apply for Award",
     },
     whyAttend: {
@@ -275,8 +275,8 @@ const en = {
       ],
     },
     finalCta: {
-      eyebrow: "Join Beauty Business Forum USA 2026",
-      title: "Ready to Join BEAUTY BUSINESS FORUM USA 2026?",
+      eyebrow: "Join IBPA BEAUTY AWARD 2026",
+      title: "Ready to Join IBPA BEAUTY AWARD 2026?",
       buyTicket: "Buy Forum Ticket",
       applyAward: "Apply for Award",
       registerJudge: "Register as Judge",
@@ -1053,8 +1053,8 @@ const ru: typeof en = {
       judge: "Стать судьёй",
     },
     forum: {
-      eyebrow: "Beauty Business Forum USA 2026",
-      title: "BEAUTY BUSINESS FORUM USA 2026",
+      eyebrow: "IBPA BEAUTY AWARD 2026",
+      title: "IBPA BEAUTY AWARD 2026",
       description: "Международная встреча лидеров beauty-индустрии, объединяющая нагородение, профессиональное образование, деловые связи и торжественный Гала-вечер — всё в одном премиальном событии.",
     },
     participation: {
@@ -1096,7 +1096,7 @@ const ru: typeof en = {
     grandPrixSpotlight: {
       eyebrow: "Гран-при",
       title: "ГРАН-ПРИ",
-      description: "Участники, подающие 5 и более номинаций, автоматически участвуют в розыгрыше Гран-при — высшего звания Beauty Business Forum USA 2026.",
+      description: "Участники, подающие 5 и более номинаций, автоматически участвуют в розыгрыше Гран-при — высшего звания IBPA BEAUTY AWARD 2026.",
       cta: "Подать заявку на участие",
     },
     whyAttend: {
@@ -1121,8 +1121,8 @@ const ru: typeof en = {
       ],
     },
     finalCta: {
-      eyebrow: "Присоединяйтесь к Beauty Business Forum USA 2026",
-      title: "Готовы присоединиться к BEAUTY BUSINESS FORUM USA 2026?",
+      eyebrow: "Присоединяйтесь к IBPA BEAUTY AWARD 2026",
+      title: "Готовы присоединиться к IBPA BEAUTY AWARD 2026?",
       buyTicket: "Купить билет",
       applyAward: "Подать заявку",
       registerJudge: "Регистрация судьи",
@@ -1902,8 +1902,8 @@ const ua: typeof en = {
       judge: "Стати суддею",
     },
     forum: {
-      eyebrow: "Beauty Business Forum USA 2026",
-      title: "BEAUTY BUSINESS FORUM USA 2026",
+      eyebrow: "IBPA BEAUTY AWARD 2026",
+      title: "IBPA BEAUTY AWARD 2026",
       description: "Міжнародна зустріч лідерів б'юті-індустрії, що об'єднує нагородження, професійну освіту, ділові зв'язки та урочистий Гала-вечір — все в одній преміальній події.",
     },
     participation: {
@@ -1945,7 +1945,7 @@ const ua: typeof en = {
     grandPrixSpotlight: {
       eyebrow: "Гран-прі",
       title: "ГРАН-ПРІ",
-      description: "Учасники, які подають 5 або більше номінацій, автоматично змагаються за Гран-прі — найвищу відзнаку Beauty Business Forum USA 2026.",
+      description: "Учасники, які подають 5 або більше номінацій, автоматично змагаються за Гран-прі — найвищу відзнаку IBPA BEAUTY AWARD 2026.",
       cta: "Подати заявку на участь",
     },
     whyAttend: {
@@ -1970,8 +1970,8 @@ const ua: typeof en = {
       ],
     },
     finalCta: {
-      eyebrow: "Приєднуйтесь до Beauty Business Forum USA 2026",
-      title: "Готові приєднатися до BEAUTY BUSINESS FORUM USA 2026?",
+      eyebrow: "Приєднуйтесь до IBPA BEAUTY AWARD 2026",
+      title: "Готові приєднатися до IBPA BEAUTY AWARD 2026?",
       buyTicket: "Купити квиток",
       applyAward: "Подати заявку",
       registerJudge: "Реєстрація судді",

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -7,10 +8,12 @@ import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { Reveal } from "@/shared/components/public";
 import { PRICING } from "@/data/pricing";
 import { Trophy, Star, CheckCircle } from "lucide-react";
+import TicketModal from "@/features/tickets/components/TicketModal";
 
 type Tier = "ibpa" | "standard";
 
 export default function HomeParticipation({ tier }: { tier: Tier }) {
+  const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const { t } = useLanguage();
   const p = t.home.participation;
 
@@ -38,14 +41,14 @@ export default function HomeParticipation({ tier }: { tier: Tier }) {
           <p className="page-eyebrow">{p.eyebrow}</p>
         </Reveal>
 
-        {/* Grid */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-[1.6fr_1fr]">
 
-          {/* ── Forum Tickets — dominant card ── */}
+          {/* Forum Tickets dominant card */}
           <Reveal delay={0.05} className="md:row-span-2">
-            <Link
-              href="/tickets"
-              className="group relative flex h-full min-h-[480px] flex-col overflow-hidden rounded-[var(--radius-lg)] bg-[var(--color-ink)] lg:min-h-[560px]"
+            <button
+              type="button"
+              onClick={() => setIsTicketModalOpen(true)}
+              className="group relative flex h-full min-h-[480px] w-full flex-col overflow-hidden rounded-[var(--radius-lg)] bg-[var(--color-ink)] text-left lg:min-h-[560px]"
             >
               <Image
                 src="/images/events/HomeHero.jpg"
@@ -98,10 +101,10 @@ export default function HomeParticipation({ tier }: { tier: Tier }) {
                   </div>
                 </div>
               </div>
-            </Link>
+            </button>
           </Reveal>
 
-          {/* ── Award Participation — dark card ── */}
+          {/* Award Participation dark card */}
           <Reveal delay={0.1}>
             <Link
               href="/apply"
@@ -145,7 +148,7 @@ export default function HomeParticipation({ tier }: { tier: Tier }) {
             </Link>
           </Reveal>
 
-          {/* ── Judge Registration — dark card ── */}
+          {/* Judge Registration dark card */}
           <Reveal delay={0.16}>
             <Link
               href="/jury"
@@ -190,6 +193,11 @@ export default function HomeParticipation({ tier }: { tier: Tier }) {
           </Reveal>
         </div>
       </div>
+
+      <TicketModal
+        isOpen={isTicketModalOpen}
+        onClose={() => setIsTicketModalOpen(false)}
+      />
     </section>
   );
 }

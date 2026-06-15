@@ -12,6 +12,7 @@ import {
   Shield,
   User,
 } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import UploadField from "@/features/applications/components/application-form/fields/UploadField";
 import StepBar, { type StepDef } from "@/features/applications/components/application-form/StepBar";
 import { SelectField, TextField, TextareaField, ChoiceGroupField } from "@/features/applications/components/application-form/fields/FormControls";
@@ -41,6 +42,7 @@ export default function JuryApplicationForm() {
   const { language } = useLanguage();
   const formRef = useRef<HTMLFormElement>(null);
   const [step, setStep] = useState(0);
+  const [stepDirection, setStepDirection] = useState<1 | -1>(1);
   const [values, setValues] = useState<FormValues>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -228,6 +230,20 @@ export default function JuryApplicationForm() {
       submitError: "Щось пішло не так. Спробуйте ще раз.",
     },
   }[language];
+  const stepContentVariants = {
+    enter: (direction: 1 | -1) => ({
+      x: direction > 0 ? 48 : -48,
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction: 1 | -1) => ({
+      x: direction > 0 ? -48 : 48,
+      opacity: 0,
+    }),
+  } as const;
 
   const currentStepInfo = copy.steps[step];
 
@@ -289,11 +305,13 @@ export default function JuryApplicationForm() {
     const e = validateStep(step);
     if (Object.keys(e).length > 0) { setErrors(e); return; }
     setErrors({});
+    setStepDirection(1);
     setStep((s) => Math.min(s + 1, STEPS.length - 1));
     scrollToForm();
   }
 
   function back() {
+    setStepDirection(-1);
     setStep((s) => Math.max(s - 1, 0));
     scrollToForm();
   }
@@ -353,7 +371,18 @@ export default function JuryApplicationForm() {
         </div>
 
         {/* Step content */}
-        <div className="min-h-[300px]">
+        <div className="min-h-[300px] overflow-x-hidden overflow-y-visible">
+          <AnimatePresence initial={false} custom={stepDirection} mode="wait">
+            <motion.div
+              key={step}
+              custom={stepDirection}
+              variants={stepContentVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
+              className="relative z-10"
+            >
           {step === 0 && (
             <div className="grid gap-6 md:grid-cols-2">
               <TextField label={copy.firstName} name="firstName" value={String(values.firstName ?? "")} required placeholder="As shown on official documents" error={errors.firstName} onChange={handleChange} />
@@ -482,6 +511,8 @@ export default function JuryApplicationForm() {
               ) : null}
             </div>
           )}
+            </motion.div>
+          </AnimatePresence>
         </div>
 
         {/* Navigation */}

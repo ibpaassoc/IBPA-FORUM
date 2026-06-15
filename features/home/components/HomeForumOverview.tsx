@@ -64,7 +64,7 @@ export default function HomeForumOverview() {
             <div className="relative aspect-[4/3] overflow-hidden rounded-[var(--radius-lg)] lg:aspect-[3/4]">
               <Image
                 src="/images/curated/home_hero_support.jpg"
-                alt="Beauty Business Forum USA 2026"
+                alt="IBPA BEAUTY AWARD 2026"
                 fill
                 sizes="(max-width: 1024px) 100vw, 44vw"
                 className="object-cover"
@@ -76,7 +76,7 @@ export default function HomeForumOverview() {
                   Official Event
                 </p>
                 <p className="mt-0.5 font-[var(--font-title-family)] text-[0.95rem] text-white">
-                  Beauty Business Forum USA 2026
+                  IBPA BEAUTY AWARD 2026
                 </p>
               </div>
             </div>

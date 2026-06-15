@@ -295,6 +295,7 @@ export async function saveApplicationSubmission(formData: FormData) {
       }),
       prisma.payment.create({
         data: {
+          source: "COMPETITOR",
           applicationId: application.id,
           stripeSessionId: checkoutSession.id,
           amount: applicationAmount,
@@ -413,6 +414,7 @@ export async function retryCompetitorApplicationPayment(applicationId: string) {
     }),
     prisma.payment.create({
       data: {
+        source: "COMPETITOR",
         applicationId: application.id,
         stripeSessionId: checkoutSession.id,
         amount: application.amount,

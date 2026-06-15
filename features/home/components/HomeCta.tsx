@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { Reveal } from "@/shared/components/public";
 import { Ticket, Trophy, Star } from "lucide-react";
+import BuyTicketsButton from "@/features/tickets/components/BuyTicketsButton";
 
 export default function HomeCta() {
   const { t } = useLanguage();
@@ -40,13 +41,10 @@ export default function HomeCta() {
 
         <Reveal delay={0.18}>
           <div className="mx-auto mt-[var(--space-xl)] flex max-w-2xl flex-col items-center justify-center gap-4 sm:flex-row sm:flex-wrap">
-            <Link
-              href="/tickets"
-              className="ibpa-button ibpa-button-white flex items-center gap-2"
-            >
+            <BuyTicketsButton className="ibpa-button ibpa-button-white flex items-center gap-2">
               <Ticket size={16} strokeWidth={1.5} />
               {fc.buyTicket}
-            </Link>
+            </BuyTicketsButton>
             <Link
               href="/apply"
               className="ibpa-button flex items-center gap-2 border border-white/25 bg-transparent text-white hover:bg-white/10"

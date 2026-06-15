@@ -56,17 +56,15 @@ function getPaymentIntentId(value: string | Stripe.PaymentIntent | null) {
 export async function handleJuryStripeEvent(event: Stripe.Event) {
   switch (event.type) {
     case "checkout.session.completed":
-      await handleCheckoutCompleted(event);
-      return true;
+      return handleCheckoutCompleted(event);
     case "payment_intent.payment_failed":
-      await handlePaymentFailed(event);
-      return true;
+      return handlePaymentFailed(event);
     default:
       return false;
   }
 }
 
-async function handleCheckoutCompleted(event: Stripe.Event) {
+async function handleCheckoutCompleted(event: Stripe.Event): Promise<boolean> {
   const session = event.data.object as Stripe.Checkout.Session;
   const applicationId =
     getApplicationIdFromMetadata(session.metadata) ??
@@ -82,7 +80,7 @@ async function handleCheckoutCompleted(event: Stripe.Event) {
       .then((application) => application?.id ?? null));
 
   if (!applicationId) {
-    return;
+    return false;
   }
 
   const paymentIntentId = getPaymentIntentId(session.payment_intent);
@@ -108,13 +106,24 @@ async function handleCheckoutCompleted(event: Stripe.Event) {
         return;
       }
 
+      const paidAt = new Date();
+
       await tx.juryApplication.update({
         where: { id: application.id },
         data: {
           status: "PAID",
           paymentStatus: "PAID",
-          paidAt: new Date(),
+          paidAt,
           stripeCheckoutSessionId: session.id,
+        },
+      });
+
+      await tx.payment.updateMany({
+        where: { stripeSessionId: session.id },
+        data: {
+          status: "PAID",
+          stripePaymentIntentId: paymentIntentId,
+          paidAt,
         },
       });
 
@@ -125,14 +134,14 @@ async function handleCheckoutCompleted(event: Stripe.Event) {
     });
   } catch (error) {
     if (isDuplicateStripeEventError(error)) {
-      return;
+      return true;
     }
 
     throw error;
   }
 
   if (!emailPayload) {
-    return;
+    return true;
   }
 
   const confirmedEmailPayload = emailPayload as JuryPaymentEmailPayload;
@@ -156,14 +165,16 @@ async function handleCheckoutCompleted(event: Stripe.Event) {
   } catch (error) {
     console.error("Failed to send jury payment admin notification email", error);
   }
+
+  return true;
 }
 
-async function handlePaymentFailed(event: Stripe.Event) {
+async function handlePaymentFailed(event: Stripe.Event): Promise<boolean> {
   const paymentIntent = event.data.object as Stripe.PaymentIntent;
   const applicationId = getApplicationIdFromMetadata(paymentIntent.metadata);
 
   if (!applicationId) {
-    return;
+    return false;
   }
 
   try {
@@ -188,9 +199,11 @@ async function handlePaymentFailed(event: Stripe.Event) {
     });
   } catch (error) {
     if (isDuplicateStripeEventError(error)) {
-      return;
+      return true;
     }
 
     throw error;
   }
+
+  return true;
 }
