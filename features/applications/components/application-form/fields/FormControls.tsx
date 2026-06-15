@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Check, ChevronDown } from "lucide-react";
 import FormFieldShell from "@/features/applications/components/application-form/fields/FormFieldShell";
 import type { FieldOption } from "@/features/applications/types/application.types";
@@ -137,6 +138,13 @@ export function SelectField({
   const { language } = useLanguage();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [menuStyle, setMenuStyle] = useState<{
+    top: number;
+    left: number;
+    width: number;
+  } | null>(null);
   const listboxId = useId();
   const selectedOption = options.find((option) => option.value === value);
   const fallback =
@@ -151,8 +159,25 @@ export function SelectField({
       return;
     }
 
+    function updateMenuPosition() {
+      const rect = buttonRef.current?.getBoundingClientRect();
+      if (!rect) {
+        return;
+      }
+
+      setMenuStyle({
+        top: rect.bottom + 10,
+        left: rect.left,
+        width: rect.width,
+      });
+    }
+
     function handlePointerDown(event: MouseEvent) {
-      if (!containerRef.current?.contains(event.target as Node)) {
+      const target = event.target as Node;
+      const clickedTrigger = containerRef.current?.contains(target);
+      const clickedMenu = menuRef.current?.contains(target);
+
+      if (!clickedTrigger && !clickedMenu) {
         setOpen(false);
       }
     }
@@ -163,12 +188,18 @@ export function SelectField({
       }
     }
 
+    updateMenuPosition();
+
     window.addEventListener("mousedown", handlePointerDown);
     window.addEventListener("keydown", handleEscape);
+    window.addEventListener("resize", updateMenuPosition);
+    window.addEventListener("scroll", updateMenuPosition, true);
 
     return () => {
       window.removeEventListener("mousedown", handlePointerDown);
       window.removeEventListener("keydown", handleEscape);
+      window.removeEventListener("resize", updateMenuPosition);
+      window.removeEventListener("scroll", updateMenuPosition, true);
     };
   }, [open]);
 
@@ -181,6 +212,7 @@ export function SelectField({
     >
       <div ref={containerRef} className="relative">
         <button
+          ref={buttonRef}
           type="button"
           aria-haspopup="listbox"
           aria-expanded={open}
@@ -205,53 +237,64 @@ export function SelectField({
             className={`shrink-0 text-[var(--color-ink)]/48 transition-transform duration-300 ${open ? "rotate-180" : ""}`}
           />
         </button>
+      </div>
 
-        <div
-          id={listboxId}
-          role="listbox"
-          aria-label={label}
-          className={`absolute left-0 right-0 top-[calc(100%+0.6rem)] z-30 overflow-hidden rounded-[24px] border border-black/10 bg-white shadow-[0_24px_60px_rgba(3,2,19,0.12)] transition-all duration-300 ${open ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none -translate-y-2 opacity-0"}`}
-        >
-          <div className="max-h-64 overflow-y-auto p-2">
-            <button
-              type="button"
-              onClick={() => {
-                onChange(name, "");
-                setOpen(false);
+      {typeof document !== "undefined" && menuStyle
+        ? createPortal(
+            <div
+              ref={menuRef}
+              id={listboxId}
+              role="listbox"
+              aria-label={label}
+              className={`fixed z-[250] overflow-hidden rounded-[24px] border border-black/10 bg-white shadow-[0_24px_60px_rgba(3,2,19,0.12)] transition-all duration-300 ${open ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none -translate-y-2 opacity-0"}`}
+              style={{
+                top: menuStyle.top,
+                left: menuStyle.left,
+                width: menuStyle.width,
               }}
-              className={`flex w-full items-center justify-between rounded-[18px] px-4 py-3 text-left text-sm transition ${!value ? "bg-black text-white" : "text-[var(--color-ink-soft)] hover:bg-black/[0.04] hover:text-[var(--color-ink)]"}`}
             >
-              <span>{placeholder ?? fallback}</span>
-              {!value ? <Check size={16} /> : null}
-            </button>
-
-            {options.map((option) => {
-              const checked = option.value === value;
-
-              return (
+              <div className="max-h-64 overflow-y-auto p-2">
                 <button
-                  key={option.value}
                   type="button"
-                  role="option"
-                  aria-selected={checked}
                   onClick={() => {
-                    onChange(name, option.value);
+                    onChange(name, "");
                     setOpen(false);
                   }}
-                  className={`mt-1 flex w-full items-center justify-between rounded-[18px] px-4 py-3 text-left text-sm transition ${checked ? "bg-black text-white" : "text-[var(--color-ink)] hover:bg-black/[0.04]"}`}
+                  className={`flex w-full items-center justify-between rounded-[18px] px-4 py-3 text-left text-sm transition ${!value ? "bg-black text-white" : "text-[var(--color-ink-soft)] hover:bg-black/[0.04] hover:text-[var(--color-ink)]"}`}
                 >
-                  <span>{option.label}</span>
-                  <span
-                    className={`inline-flex h-5 w-5 items-center justify-center rounded-full border transition ${checked ? "border-white/30 bg-white/10" : "border-black/10 bg-black/[0.03]"}`}
-                  >
-                    {checked ? <Check size={13} /> : null}
-                  </span>
+                  <span>{placeholder ?? fallback}</span>
+                  {!value ? <Check size={16} /> : null}
                 </button>
-              );
-            })}
-          </div>
-        </div>
-      </div>
+
+                {options.map((option) => {
+                  const checked = option.value === value;
+
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      role="option"
+                      aria-selected={checked}
+                      onClick={() => {
+                        onChange(name, option.value);
+                        setOpen(false);
+                      }}
+                      className={`mt-1 flex w-full items-center justify-between rounded-[18px] px-4 py-3 text-left text-sm transition ${checked ? "bg-black text-white" : "text-[var(--color-ink)] hover:bg-black/[0.04]"}`}
+                    >
+                      <span>{option.label}</span>
+                      <span
+                        className={`inline-flex h-5 w-5 items-center justify-center rounded-full border transition ${checked ? "border-white/30 bg-white/10" : "border-black/10 bg-black/[0.03]"}`}
+                      >
+                        {checked ? <Check size={13} /> : null}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
     </FormFieldShell>
   );
 }

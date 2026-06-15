@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useMemo, useState } from "react";
+import { startTransition, useMemo, useRef, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   Award,
@@ -371,7 +371,9 @@ const formCopy = {
 
 export default function ApplyForm({ categories }: { categories: CategoryOption[] }) {
   const { language, t } = useLanguage();
+  const formRef = useRef<HTMLFormElement>(null);
   const [step, setStep] = useState(0);
+  const [stepDirection, setStepDirection] = useState<1 | -1>(1);
   const [openCategoryId, setOpenCategoryId] = useState<string | null>(
     categories[0]?.id ?? null
   );
@@ -383,6 +385,20 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
     message: string;
   }>({ type: "idle", message: "" });
   const copy = formCopy[language] ?? formCopy.en;
+  const stepContentVariants = {
+    enter: (direction: 1 | -1) => ({
+      x: direction > 0 ? 48 : -48,
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction: 1 | -1) => ({
+      x: direction > 0 ? -48 : 48,
+      opacity: 0,
+    }),
+  } as const;
 
   const localizedCategoryBySlug = useMemo(
     () => new Map(t.categoriesPage.directions.map((category) => [category.slug, category])),
@@ -630,13 +646,15 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
     }
 
     setErrors({});
+    setStepDirection(1);
     setStep((current) => Math.min(current + 1, STEPS.length - 1));
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function back() {
+    setStepDirection(-1);
     setStep((current) => Math.max(current - 1, 0));
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   async function handleSubmit(event: React.FormEvent) {
@@ -822,7 +840,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
   const currentStepInfo = copy.steps[step];
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 pb-12">
+    <form ref={formRef} onSubmit={handleSubmit} className="space-y-6 pb-12">
       <StepBar steps={STEPS} current={step} />
 
       <div className="mx-auto max-w-6xl rounded-[40px] border border-black/6 bg-[#F3F3F1] p-6 shadow-[0_28px_80px_rgba(3,2,19,0.08)] md:p-10 xl:p-14">
@@ -840,7 +858,18 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
           ) : null}
         </div>
 
-        <div className="min-h-[300px]">
+        <div className="min-h-[300px] overflow-x-hidden overflow-y-visible">
+          <AnimatePresence initial={false} custom={stepDirection} mode="wait">
+            <motion.div
+              key={step}
+              custom={stepDirection}
+              variants={stepContentVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
+              className="relative z-10"
+            >
           {step === 0 ? (
             <div className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(300px,0.9fr)]">
               <div>
@@ -1202,6 +1231,8 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
               ) : null}
             </div>
           ) : null}
+            </motion.div>
+          </AnimatePresence>
         </div>
 
         <div className="mt-10 flex items-center justify-between border-t border-black/6 pt-8">
