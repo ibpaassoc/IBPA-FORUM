@@ -11,12 +11,14 @@ type TicketConfirmationParams = {
   fullName: string;
   type: TicketType;
   galaDinner: boolean;
+  paymentUrl: string;
 };
 
 export function ticketConfirmationTemplate({
   fullName,
   type,
   galaDinner,
+  paymentUrl,
 }: TicketConfirmationParams) {
   const ticketLabel = TICKET_LABELS[type];
 
@@ -93,6 +95,16 @@ export function ticketConfirmationTemplate({
               />
             </div>
 
+            <!-- Payment details link -->
+            <div style="text-align:center;margin-bottom:28px;">
+              <a
+                href="${paymentUrl}"
+                style="display:inline-block;font-size:13px;font-weight:600;color:#72a0c1;text-decoration:none;border:1px solid #72a0c1;border-radius:8px;padding:10px 22px;"
+              >
+                View Payment Details →
+              </a>
+            </div>
+
             <!-- Divider -->
             <div style="height:1px;background:#e5e7eb;margin-bottom:24px;"></div>
 
@@ -127,6 +139,7 @@ export function ticketConfirmationTemplate({
     `Ticket type: ${ticketLabel}`,
     `Gala Dinner: ${galaDinner ? "Included" : "Not included"}`,
     `Please show the attached QR code at the check-in desk on arrival.`,
+    `View your payment details: ${paymentUrl}`,
     `Questions? Contact us at forum@ibpa.global`,
     `© 2026 International Beauty Professional Association`,
   ].join("\n\n");

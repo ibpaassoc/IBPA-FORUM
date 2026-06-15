@@ -43,13 +43,16 @@ export async function findTicketByToken(secureToken: string) {
   });
 }
 
-export async function updateTicketCheckoutSession(
-  ticketId: string,
-  { stripeSessionId, paymentLink }: { stripeSessionId: string; paymentLink: string }
-) {
-  return prisma.ticket.update({
-    where: { id: ticketId },
-    data: { stripeSessionId, paymentLink },
+export async function findTicketWithPaymentByToken(secureToken: string) {
+  return prisma.ticket.findUnique({
+    where: { secureToken },
+    include: {
+      payments: {
+        where: { source: "TICKET", status: "PAID" },
+        orderBy: { createdAt: "desc" },
+        take: 1,
+      },
+    },
   });
 }
 

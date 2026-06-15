@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import clsx from "clsx";
 import { PRICING } from "@/data/pricing";
@@ -15,6 +15,8 @@ type FormValues = {
   isIbpaMember: boolean;
   ibpaCertNumber: string;
 };
+
+type CertStatus = "idle" | "checking" | "valid" | "invalid" | "error";
 
 const inputBase =
   "w-full rounded-[12px] border border-[var(--border-default)] bg-white px-4 py-3 text-[0.92rem] text-[var(--color-ink)] placeholder-[var(--color-ink-muted)] outline-none transition focus:border-[var(--color-blue)] focus:ring-2 focus:ring-[var(--color-blue)]/20 disabled:cursor-not-allowed disabled:opacity-50";
@@ -31,9 +33,58 @@ function priceStrToNum(str: string) {
   return parseInt(str.replace("$", ""), 10);
 }
 
+function CertStatusBadge({ status }: { status: CertStatus }) {
+  if (status === "idle") return null;
+
+  if (status === "checking") {
+    return (
+      <span className="mt-1.5 flex items-center gap-1.5 text-[0.77rem] text-[var(--color-ink-soft)]">
+        <svg className="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+        </svg>
+        Verifying…
+      </span>
+    );
+  }
+
+  if (status === "valid") {
+    return (
+      <span className="mt-1.5 flex items-center gap-1.5 text-[0.77rem] text-emerald-600">
+        <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+        </svg>
+        Valid IBPA member certificate
+      </span>
+    );
+  }
+
+  if (status === "invalid") {
+    return (
+      <span className="mt-1.5 flex items-center gap-1.5 text-[0.77rem] text-red-600">
+        <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+        </svg>
+        Certificate not found or has expired
+      </span>
+    );
+  }
+
+  return (
+    <span className="mt-1.5 flex items-center gap-1.5 text-[0.77rem] text-amber-600">
+      <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+        <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+      </svg>
+      Could not verify — proceeding without member discount
+    </span>
+  );
+}
+
 export default function TicketForm({ onSuccess }: { onSuccess?: () => void }) {
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [certStatus, setCertStatus] = useState<CertStatus>("idle");
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const {
     register,
@@ -56,6 +107,46 @@ export default function TicketForm({ onSuccess }: { onSuccess?: () => void }) {
   const type = watch("type");
   const galaDinner = watch("galaDinner");
   const isIbpaMember = watch("isIbpaMember");
+  const ibpaCertNumber = watch("ibpaCertNumber");
+
+  useEffect(() => {
+    if (!isIbpaMember) {
+      setCertStatus("idle");
+      return;
+    }
+
+    const trimmed = ibpaCertNumber?.trim() ?? "";
+
+    if (!trimmed) {
+      setCertStatus("idle");
+      return;
+    }
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    setCertStatus("checking");
+
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `/api/tickets/verify-cert?certNumber=${encodeURIComponent(trimmed)}`
+        );
+        const data = (await res.json()) as { valid: boolean; reason?: string };
+
+        if (res.status === 503) {
+          setCertStatus("error");
+        } else {
+          setCertStatus(data.valid ? "valid" : "invalid");
+        }
+      } catch {
+        setCertStatus("error");
+      }
+    }, 600);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [isIbpaMember, ibpaCertNumber]);
 
   const ticketPriceStr =
     type === "ONE_DAY"
@@ -75,6 +166,19 @@ export default function TicketForm({ onSuccess }: { onSuccess?: () => void }) {
 
   const onSubmit = async (data: FormValues) => {
     if (!data.type) return;
+
+    if (isIbpaMember && certStatus === "invalid") {
+      setServerError(
+        "Your IBPA certificate number could not be verified. Please check the number and try again."
+      );
+      return;
+    }
+
+    if (isIbpaMember && certStatus === "checking") {
+      setServerError("Please wait while we verify your certificate number.");
+      return;
+    }
+
     setSubmitting(true);
     setServerError(null);
 
@@ -262,8 +366,14 @@ export default function TicketForm({ onSuccess }: { onSuccess?: () => void }) {
             <input
               id="tf-certNumber"
               type="text"
-              placeholder="e.g. IBPA-2024-00123"
-              className={clsx(inputBase, errors.ibpaCertNumber && inputError)}
+              placeholder="e.g. CERT-20240124-A00A"
+              className={clsx(
+                inputBase,
+                errors.ibpaCertNumber && inputError,
+                certStatus === "valid" &&
+                  "border-emerald-400 focus:border-emerald-500 focus:ring-emerald-100",
+                certStatus === "invalid" && inputError
+              )}
               {...register("ibpaCertNumber", {
                 validate: (value) => {
                   if (isIbpaMember && (!value || !value.trim())) {
@@ -273,7 +383,8 @@ export default function TicketForm({ onSuccess }: { onSuccess?: () => void }) {
                 },
               })}
             />
-            {errors.ibpaCertNumber && (
+            <CertStatusBadge status={certStatus} />
+            {errors.ibpaCertNumber && certStatus === "idle" && (
               <p className={errorText}>{errors.ibpaCertNumber.message}</p>
             )}
           </div>
@@ -322,10 +433,14 @@ export default function TicketForm({ onSuccess }: { onSuccess?: () => void }) {
       {/* Submit */}
       <button
         type="submit"
-        disabled={submitting}
+        disabled={submitting || certStatus === "checking"}
         className="ibpa-button ibpa-button-primary w-full disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {submitting ? "Creating your checkout…" : "Continue to Payment →"}
+        {submitting
+          ? "Creating your checkout…"
+          : certStatus === "checking"
+            ? "Verifying certificate…"
+            : "Continue to Payment →"}
       </button>
     </form>
   );

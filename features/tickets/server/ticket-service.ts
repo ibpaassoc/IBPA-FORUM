@@ -3,11 +3,19 @@ import type { TicketType } from "@prisma/client";
 import { prisma } from "@/shared/lib/prisma";
 import { createTicket, findActiveTicketByEmail } from "./ticket-repository";
 import { createTicketCheckoutSession } from "./ticket-checkout";
+import { verifyIbpaMembership } from "./ibpa-membership";
 
 export class TicketConflictError extends Error {
   constructor(message: string) {
     super(message);
     this.name = "TicketConflictError";
+  }
+}
+
+export class InvalidCertError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "InvalidCertError";
   }
 }
 
@@ -31,6 +39,15 @@ export type InitiateTicketPurchaseInput = {
 export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput) {
   const fullName = `${input.firstName.trim()} ${input.lastName.trim()}`.trim();
   const email = input.email.trim().toLowerCase();
+
+  if (input.isIbpaMember && input.ibpaCertNumber?.trim()) {
+    const verification = await verifyIbpaMembership(input.ibpaCertNumber);
+    if (!verification.verified && verification.reason === "invalid_cert") {
+      throw new InvalidCertError(
+        "This IBPA certificate number was not found or has expired. Please check your number and try again."
+      );
+    }
+  }
 
   const existing = await findActiveTicketByEmail(email);
   if (existing) {
@@ -67,7 +84,7 @@ export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput)
   await prisma.$transaction([
     prisma.ticket.update({
       where: { id: ticket.id },
-      data: { stripeSessionId: session.id, paymentLink: session.url },
+      data: { stripeSessionId: session.id },
     }),
     prisma.payment.create({
       data: {

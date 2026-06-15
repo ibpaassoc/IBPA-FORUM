@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ticketApiSchema } from "@/features/tickets/schemas/ticket-form-schema";
-import { initiateTicketPurchase, TicketConflictError } from "@/features/tickets/server/ticket-service";
+import { initiateTicketPurchase, TicketConflictError, InvalidCertError } from "@/features/tickets/server/ticket-service";
 import { EnvConfigError, isProduction, validateProductionEnv } from "@/lib/env";
 
 function getErrorMessage(error: unknown) {
@@ -34,6 +34,10 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof TicketConflictError) {
       return NextResponse.json({ message: error.message }, { status: 409 });
+    }
+
+    if (error instanceof InvalidCertError) {
+      return NextResponse.json({ message: error.message }, { status: 422 });
     }
 
     console.error("POST /api/tickets error:", error);

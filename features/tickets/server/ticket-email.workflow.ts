@@ -1,5 +1,6 @@
 import "server-only";
 import type { TicketType } from "@prisma/client";
+import { getAppUrl } from "@/features/payments/server/stripe-client";
 import { sendEmail } from "@/features/email/server/send-email";
 import { ticketConfirmationTemplate, QR_CID } from "../templates/ticket-confirmation";
 import { generateTicketQRBuffer } from "./ticket-qr";
@@ -18,7 +19,8 @@ export async function sendTicketConfirmationEmail({
   secureToken: string;
 }) {
   const qrBuffer = await generateTicketQRBuffer(secureToken);
-  const template = ticketConfirmationTemplate({ fullName, type, galaDinner });
+  const paymentUrl = `${getAppUrl()}/tickets/${secureToken}`;
+  const template = ticketConfirmationTemplate({ fullName, type, galaDinner, paymentUrl });
 
   return sendEmail({
     type: "user",

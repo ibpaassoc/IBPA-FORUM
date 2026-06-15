@@ -4,15 +4,28 @@ export type MembershipVerificationResult =
   | { verified: true }
   | { verified: false; reason: "ibpa_api_not_configured" | "invalid_cert" | "api_error" };
 
-/**
- * Verifies an IBPA membership certificate number against the IBPA API.
- * Required env vars (when available): IBPA_API_URL, IBPA_API_KEY
- */
 export async function verifyIbpaMembership(
   certNumber: string
 ): Promise<MembershipVerificationResult> {
-  // TODO: Integrate with IBPA API when credentials are available.
-  // The API endpoint and key will be provided by IBPA associations.
-  console.info("IBPA membership verification requested", { certNumber });
-  return { verified: false, reason: "ibpa_api_not_configured" };
+  const backendUrl = process.env.IBPA_WEB_BACKEND_URL?.replace(/\/+$/, "");
+
+  if (!backendUrl) {
+    return { verified: false, reason: "ibpa_api_not_configured" };
+  }
+
+  try {
+    const res = await fetch(
+      `${backendUrl}/api/members/verify-cert?certNumber=${encodeURIComponent(certNumber.trim())}`,
+      { next: { revalidate: 0 } }
+    );
+
+    if (!res.ok) {
+      return { verified: false, reason: "api_error" };
+    }
+
+    const data = (await res.json()) as { valid: boolean };
+    return data.valid ? { verified: true } : { verified: false, reason: "invalid_cert" };
+  } catch {
+    return { verified: false, reason: "api_error" };
+  }
 }

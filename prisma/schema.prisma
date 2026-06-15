@@ -244,7 +244,6 @@ model Ticket {
   galaDinner            Boolean      @default(false)
   isIbpaMember          Boolean      @default(false)
   ibpaCertNumber        String?
-  paymentLink           String?
   stripeSessionId       String?      @unique
   stripePaymentIntentId String?      @unique
   status                TicketStatus @default(PENDING)

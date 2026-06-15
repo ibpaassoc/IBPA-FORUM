@@ -1,0 +1,2 @@
+ALTER TABLE "Ticket" DROP COLUMN IF EXISTS "paymentLink";
+ALTER TABLE "Ticket" DROP COLUMN IF EXISTS "receiptUrl";
