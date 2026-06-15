@@ -5,6 +5,11 @@ import { prisma } from "@/shared/lib/prisma";
 import { findTicketByStripeSessionId } from "./ticket-repository";
 import { sendTicketConfirmationEmail } from "./ticket-email.workflow";
 
+function getPaymentIntentId(value: string | Stripe.PaymentIntent | null): string | null {
+  if (!value) return null;
+  return typeof value === "string" ? value : value.id;
+}
+
 function serializeStripeEvent(event: Stripe.Event): Prisma.InputJsonValue {
   return JSON.parse(JSON.stringify(event)) as Prisma.InputJsonValue;
 }
@@ -40,8 +45,11 @@ async function handleTicketCheckoutCompleted(event: Stripe.Event): Promise<boole
     console.warn("Ticket webhook: no ticket found for Stripe session", {
       sessionId: session.id,
     });
-    return false;
+    return true;
   }
+
+  const paymentIntentId = getPaymentIntentId(session.payment_intent);
+  const paidAt = new Date();
 
   try {
     await prisma.$transaction(async (tx) => {
@@ -57,7 +65,11 @@ async function handleTicketCheckoutCompleted(event: Stripe.Event): Promise<boole
 
       await tx.ticket.update({
         where: { id: ticket.id },
-        data: { status: "PAID" },
+        data: {
+          status: "PAID",
+          paidAt,
+          stripePaymentIntentId: paymentIntentId,
+        },
       });
     });
   } catch (error) {

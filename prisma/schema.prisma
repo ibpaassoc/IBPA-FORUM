@@ -223,21 +223,23 @@ enum ScoreStatus {
 }
 
 model Ticket {
-  id             String       @id @default(cuid())
-  secureToken    String       @unique
-  fullName       String
-  email          String
-  phone          String
-  type           TicketType
-  galaDinner     Boolean      @default(false)
-  isIbpaMember   Boolean      @default(false)
-  ibpaCertNumber String?
-  paymentLink    String?
-  stripeSessionId String?     @unique
-  status         TicketStatus @default(PENDING)
-  lastCheckIn    DateTime?
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  id                    String       @id @default(cuid())
+  secureToken           String       @unique
+  fullName              String
+  email                 String
+  phone                 String
+  type                  TicketType
+  galaDinner            Boolean      @default(false)
+  isIbpaMember          Boolean      @default(false)
+  ibpaCertNumber        String?
+  paymentLink           String?
+  stripeSessionId       String?      @unique
+  stripePaymentIntentId String?      @unique
+  status                TicketStatus @default(PENDING)
+  paidAt                DateTime?
+  lastCheckIn           DateTime?
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
 }
 
 enum TicketType {
