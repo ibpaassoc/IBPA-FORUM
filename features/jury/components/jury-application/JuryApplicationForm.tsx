@@ -91,9 +91,9 @@ export default function JuryApplicationForm() {
       ibpaNumberPh: "e.g. CERT-2026-XXXXX",
       ibpaNumberHint: "Enter the certificate ID of an accredited IBPA member.",
       certifications: "Professional Certifications",
-      certificationsHint: "Upload up to 5 PDF or image files. Max 3 MB each.",
+      certificationsHint: "Upload up to 10 PDF or image files.",
       profilePhoto: "Profile Photo",
-      profilePhotoHint: "Upload one professional JPG or PNG image for your jury profile. Max 3 MB.",
+      profilePhotoHint: "Upload one professional JPG or PNG image for your jury profile.",
       bio: "Professional Bio",
       bioPh: "Share your background, achievements, and role in the industry. This bio can be published on the jury page if approved.",
       bioHint: "Target length: up to 300 words.",
@@ -151,9 +151,9 @@ export default function JuryApplicationForm() {
       ibpaNumberPh: "Пример: CERT-2026-XXXXX",
       ibpaNumberHint: "Введите ID сертификата аккредитованного участника IBPA.",
       certifications: "Профессиональные сертификаты",
-      certificationsHint: "Загрузите до 5 файлов PDF или изображений. Макс. 3 МБ каждый.",
+      certificationsHint: "Загрузите до 10 файлов PDF или изображений.",
       profilePhoto: "Фото профиля",
-      profilePhotoHint: "Загрузите одно профессиональное фото JPG или PNG. Макс. 3 МБ.",
+      profilePhotoHint: "Загрузите одно профессиональное фото JPG или PNG.",
       bio: "Профессиональная биография",
       bioPh: "Опишите ваш опыт, достижения и роль в индустрии. Биография может быть опубликована после одобрения.",
       bioHint: "Рекомендуемый объем: до 300 слов.",
@@ -211,9 +211,9 @@ export default function JuryApplicationForm() {
       ibpaNumberPh: "Приклад: CERT-2026-XXXXX",
       ibpaNumberHint: "Введіть ID сертифіката акредитованого учасника IBPA.",
       certifications: "Професійні сертифікати",
-      certificationsHint: "Завантажте до 5 файлів PDF або зображень. Макс. 3 МБ кожен.",
+      certificationsHint: "Завантажте до 10 файлів PDF або зображень.",
       profilePhoto: "Фото профілю",
-      profilePhotoHint: "Завантажте одне фото JPG або PNG. Макс. 3 МБ.",
+      profilePhotoHint: "Завантажте одне фото JPG або PNG.",
       bio: "Професійна біографія",
       bioPh: "Опишіть ваш досвід, досягнення та роль в індустрії. Може бути опублікована після схвалення.",
       bioHint: "Рекомендований обсяг: до 300 слів.",
@@ -444,7 +444,7 @@ export default function JuryApplicationForm() {
               <UploadField
                 label={copy.certifications} name="certifications"
                 files={Array.isArray(values.certifications) ? values.certifications.filter((f): f is File => f instanceof File) : []}
-                required multiple accept={["image/jpeg", "image/png", "application/pdf"]}
+                required multiple maxFiles={10} accept={["image/jpeg", "image/png", "application/pdf"]}
                 description={copy.certificationsHint} error={errors.certifications} onChange={handleFilesChange}
               />
               <UploadField

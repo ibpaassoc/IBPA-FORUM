@@ -11,7 +11,7 @@ export async function POST(
 ) {
   try {
     const judge = await getAuthenticatedJudgeScoringApiContext();
-    const { applicationId } = await params;
+    const { applicationId: nominationApplicationId } = await params;
     const parsed = draftScoreSchema.safeParse(await request.json());
 
     if (!parsed.success) {
@@ -25,7 +25,7 @@ export async function POST(
 
     const score = await saveJudgeScoreDraft({
       judge,
-      applicationId,
+      nominationApplicationId,
       input: parsed.data,
     });
 

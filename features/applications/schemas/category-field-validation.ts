@@ -242,11 +242,46 @@ function validateConfigField(
   }
 }
 
+function validateNominationBlockB(
+  categorySlug: string,
+  nomValues: ApplicationValues
+): ValidationErrors {
+  const nomErrors: ValidationErrors = {};
+  const fields = categoryFieldConfigs[categorySlug] ?? [];
+
+  for (const field of fields) {
+    validateConfigField(field, nomValues, nomErrors);
+  }
+
+  if (categorySlug === "education") {
+    const testimonialText = getStringValue(nomValues, "studentTestimonialsText");
+    const testimonialFiles = getFileArrayValue(nomValues, "studentTestimonialsFiles");
+
+    if (!testimonialText && testimonialFiles.length === 0) {
+      nomErrors.studentTestimonialsText =
+        "Student Testimonials require written text or uploaded files.";
+      nomErrors.studentTestimonialsFiles =
+        "Student Testimonials require written text or uploaded files.";
+    }
+  }
+
+  if (categorySlug === "salon") {
+    const rating = getNumberValue(nomValues, "averageRating");
+    if (Number.isFinite(rating) && (rating < 1 || rating > 5)) {
+      nomErrors.averageRating = "Average Rating must be between 1.0 and 5.0.";
+    }
+  }
+
+  return nomErrors;
+}
+
 export function validateApplicationValues({
   values,
+  blockBValuesByNomination = {},
   categories,
 }: {
   values: ApplicationValues;
+  blockBValuesByNomination?: Record<string, ApplicationValues>;
   categories: CategoryOption[];
 }) {
   const errors: ValidationErrors = {};
@@ -324,46 +359,34 @@ export function validateApplicationValues({
       required: true,
       accept: ["image/jpeg", "image/png", "application/pdf"],
       minFiles: 1,
-      maxFiles: 1,
-      maxFileSizeMb: 5,
+      maxFiles: 5,
     },
     values,
     errors
   );
 
-  if (selectedCategories.length > 0) {
-    const categoryFields = getUniqueCategoryFields(selectedCategories);
-
-    for (const field of categoryFields) {
-      validateConfigField(field, values, errors);
-    }
-
-    if (selectedCategories.some((category) => category.slug === "education")) {
-      const testimonialText = getStringValue(values, "studentTestimonialsText");
-      const testimonialFiles = getFileArrayValue(values, "studentTestimonialsFiles");
-
-      if (!testimonialText && testimonialFiles.length === 0) {
-        errors.studentTestimonialsText =
-          "Student Testimonials require written text or uploaded files.";
-        errors.studentTestimonialsFiles =
-          "Student Testimonials require written text or uploaded files.";
-      }
-    }
-
-    if (selectedCategories.some((category) => category.slug === "salon")) {
-      const rating = getNumberValue(values, "averageRating");
-      if (Number.isFinite(rating) && (rating < 1 || rating > 5)) {
-        errors.averageRating = "Average Rating must be between 1.0 and 5.0.";
-      }
+  // Validate per-nomination Block B
+  const blockBErrors: Record<string, ValidationErrors> = {};
+  for (const { award, category } of selectedAwards) {
+    const nomValues = blockBValuesByNomination[award.id] ?? {};
+    const nomErrors = validateNominationBlockB(category.slug, nomValues);
+    if (Object.keys(nomErrors).length > 0) {
+      blockBErrors[award.id] = nomErrors;
     }
   }
 
+  const allBlockBValid = Object.keys(blockBErrors).length === 0;
+
   return {
-    success: Object.keys(errors).length === 0,
+    success: Object.keys(errors).length === 0 && allBlockBValid,
     errors,
+    blockBErrors,
     selectedCategory: activeCategory,
     selectedAward,
     selectedAwards,
     selectedCategories,
   };
 }
+
+// Export for use in server commands
+export { validateNominationBlockB };

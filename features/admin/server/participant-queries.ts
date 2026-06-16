@@ -51,15 +51,16 @@ export async function getParticipantApplicationDetail(id: string) {
     include: {
       category: true,
       award: true,
-      answers: {
-        orderBy: {
-          createdAt: "asc",
+      answers: { orderBy: { createdAt: "asc" } },
+      files: { orderBy: { createdAt: "asc" } },
+      nominationApplications: {
+        include: {
+          award: true,
+          category: true,
+          answers: { orderBy: { createdAt: "asc" } },
+          files: { orderBy: { createdAt: "asc" } },
         },
-      },
-      files: {
-        orderBy: {
-          createdAt: "asc",
-        },
+        orderBy: { createdAt: "asc" },
       },
     },
   });

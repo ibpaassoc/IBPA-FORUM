@@ -19,7 +19,7 @@ import {
 } from "@/features/admin/server/shared";
 
 export type JuryDashboardApplicationRecord = {
-  id: string;
+  id: string; // nominationApplicationId — used as URL [id] param
   fullName: string;
   email: string;
   city: string;
@@ -32,6 +32,22 @@ export type JuryDashboardApplicationRecord = {
   scoreId: string | null;
 };
 
+export type JuryNominationScoringRecord = Prisma.NominationApplicationGetPayload<{
+  include: {
+    award: true;
+    category: true;
+    answers: true;
+    files: true;
+    application: {
+      include: {
+        answers: true;
+        files: true;
+      };
+    };
+  };
+}>;
+
+// Kept for any legacy imports
 export type JuryScoringApplicationRecord = Prisma.ApplicationGetPayload<{
   include: {
     category: true;
@@ -41,39 +57,45 @@ export type JuryScoringApplicationRecord = Prisma.ApplicationGetPayload<{
   };
 }>;
 
-async function getAccessibleApplicationForJudge({
-  applicationId,
+const SCORE_DETAIL_SELECT = {
+  id: true,
+  technical: true,
+  aesthetic: true,
+  creativity: true,
+  impact: true,
+  presentation: true,
+  totalScore: true,
+  comment: true,
+  status: true,
+  submittedAt: true,
+  updatedAt: true,
+} as const;
+
+async function getAccessibleNominationForJudge({
+  nominationApplicationId,
   judge,
 }: {
-  applicationId: string;
+  nominationApplicationId: string;
   judge: ActiveJudgeContext;
 }) {
-  const application = await prisma.application.findFirst({
+  const nomination = await prisma.nominationApplication.findFirst({
     where: {
-      id: applicationId,
-      ...getScoreableApplicationsWhere(),
-      category: {
-        name: {
-          in: judge.expertiseAreas,
-        },
-      },
+      id: nominationApplicationId,
+      application: getScoreableApplicationsWhere(),
+      category: { name: { in: judge.expertiseAreas } },
     },
     select: {
       id: true,
-      category: {
-        select: {
-          slug: true,
-          name: true,
-        },
-      },
+      applicationId: true,
+      category: { select: { slug: true, name: true } },
     },
   });
 
-  if (!application) {
+  if (!nomination) {
     throw new ScoringHttpError(404, "The participant application could not be found.");
   }
 
-  return application;
+  return nomination;
 }
 
 export async function getJudgeAssignedApplications({
@@ -86,78 +108,55 @@ export async function getJudgeAssignedApplications({
   const activeCategory =
     category && judge.expertiseAreas.includes(category) ? category : undefined;
 
-  const where = {
-    ...getScoreableApplicationsWhere(),
-    category: activeCategory
-      ? {
-          name: activeCategory,
-        }
-      : {
-          name: {
-            in: judge.expertiseAreas,
-          },
-        },
-  };
-
-  const applications = await prisma.application.findMany({
-    where,
+  const nominations = await prisma.nominationApplication.findMany({
+    where: {
+      application: getScoreableApplicationsWhere(),
+      category: activeCategory
+        ? { name: activeCategory }
+        : { name: { in: judge.expertiseAreas } },
+    },
     orderBy: [
-      {
-        submittedAt: "desc",
-      },
-      {
-        createdAt: "desc",
-      },
+      { application: { submittedAt: "desc" } },
+      { application: { createdAt: "desc" } },
     ],
     select: {
       id: true,
-      fullName: true,
-      email: true,
-      city: true,
-      country: true,
-      createdAt: true,
-      submittedAt: true,
-      category: {
+      application: {
         select: {
-          name: true,
+          fullName: true,
+          email: true,
+          city: true,
+          country: true,
+          createdAt: true,
+          submittedAt: true,
         },
       },
-      award: {
-        select: {
-          name: true,
-        },
-      },
+      category: { select: { name: true } },
+      award: { select: { name: true } },
       judgeScores: {
-        where: {
-          judgeId: judge.juryApplicationId,
-        },
-        select: {
-          id: true,
-          status: true,
-        },
+        where: { judgeId: judge.juryApplicationId },
+        select: { id: true, status: true },
       },
     },
   });
 
-  const scoredApplications = applications.filter(
-    (application) => application.judgeScores[0]?.status === "SUBMITTED"
+  const scoredNominations = nominations.filter(
+    (nom) => nom.judgeScores[0]?.status === "SUBMITTED"
   ).length;
 
-  const dashboardApplications: JuryDashboardApplicationRecord[] = applications.map(
-    (application) => ({
-      id: application.id,
-      fullName: application.fullName,
-      email: application.email,
-      city: application.city,
-      country: application.country,
-      createdAt: application.createdAt,
-      submittedAt: application.submittedAt,
-      category: application.category,
-      award: application.award,
-      scoreId: application.judgeScores[0]?.id ?? null,
-      scoreStatus: getJuryScoreListStatus(application.judgeScores[0] ?? null),
-    })
-  );
+  const dashboardApplications: JuryDashboardApplicationRecord[] = nominations.map((nom) => ({
+    id: nom.id,
+    fullName: nom.application.fullName,
+    email: nom.application.email,
+    city: nom.application.city,
+    country: nom.application.country,
+    createdAt: nom.application.createdAt,
+    submittedAt: nom.application.submittedAt,
+    category: nom.category,
+    award: nom.award,
+    scoreId: nom.judgeScores[0]?.id ?? null,
+    scoreStatus: getJuryScoreListStatus(nom.judgeScores[0] ?? null),
+  }));
 
   return {
     judge: {
@@ -168,9 +167,9 @@ export async function getJudgeAssignedApplications({
     activeCategory,
     applications: dashboardApplications,
     totals: {
-      totalAssignedApplications: applications.length,
-      scoredApplications,
-      remainingApplications: Math.max(applications.length - scoredApplications, 0),
+      totalAssignedApplications: nominations.length,
+      scoredApplications: scoredNominations,
+      remainingApplications: Math.max(nominations.length - scoredNominations, 0),
       categories: judge.expertiseAreas.length,
     },
   };
@@ -178,64 +177,44 @@ export async function getJudgeAssignedApplications({
 
 export async function getJudgeApplicationScoringDetail({
   judge,
-  applicationId,
+  nominationApplicationId,
 }: {
   judge: ActiveJudgeContext;
-  applicationId: string;
+  nominationApplicationId: string;
 }) {
-  const application = await prisma.application.findFirst({
+  const nomination = await prisma.nominationApplication.findFirst({
     where: {
-      id: applicationId,
-      ...getScoreableApplicationsWhere(),
-      category: {
-        name: {
-          in: judge.expertiseAreas,
-        },
-      },
+      id: nominationApplicationId,
+      application: getScoreableApplicationsWhere(),
+      category: { name: { in: judge.expertiseAreas } },
     },
     include: {
-      category: true,
       award: true,
-      answers: {
-        orderBy: {
-          createdAt: "asc",
-        },
-      },
-      files: {
-        orderBy: {
-          createdAt: "asc",
-        },
-      },
+      category: true,
+      answers: { orderBy: { createdAt: "asc" } },
+      files: { orderBy: { createdAt: "asc" } },
       judgeScores: {
-        where: {
-          judgeId: judge.juryApplicationId,
-        },
-        select: {
-          id: true,
-          technical: true,
-          aesthetic: true,
-          creativity: true,
-          impact: true,
-          presentation: true,
-          totalScore: true,
-          comment: true,
-          status: true,
-          submittedAt: true,
-          updatedAt: true,
+        where: { judgeId: judge.juryApplicationId },
+        select: SCORE_DETAIL_SELECT,
+      },
+      application: {
+        include: {
+          answers: { orderBy: { createdAt: "asc" } },
+          files: { orderBy: { createdAt: "asc" } },
         },
       },
     },
   });
 
-  if (!application) {
+  if (!nomination) {
     throw new ScoringHttpError(404, "The participant application could not be found.");
   }
 
-  const score = application.judgeScores[0] ?? null;
+  const score = nomination.judgeScores[0] ?? null;
 
   return {
-    application: application as JuryScoringApplicationRecord,
-    categoryFields: categoryFieldConfigs[application.category.slug] ?? [],
+    nomination: nomination as JuryNominationScoringRecord,
+    categoryFields: categoryFieldConfigs[nomination.category.slug] ?? [],
     score:
       score === null
         ? null
@@ -253,126 +232,82 @@ export async function getJudgeApplicationScoringDetail({
 
 export async function saveJudgeScoreDraft({
   judge,
-  applicationId,
+  nominationApplicationId,
   input,
 }: {
   judge: ActiveJudgeContext;
-  applicationId: string;
+  nominationApplicationId: string;
   input: DraftScoreInput;
 }) {
-  await getAccessibleApplicationForJudge({
-    applicationId,
-    judge,
-  });
+  const nomination = await getAccessibleNominationForJudge({ nominationApplicationId, judge });
 
-  const existingScore = await prisma.judgeScore.findUnique({
-    where: {
-      applicationId_judgeId: {
-        applicationId,
-        judgeId: judge.juryApplicationId,
-      },
-    },
-    select: {
-      id: true,
-      status: true,
-    },
+  const existingScore = await prisma.judgeScore.findFirst({
+    where: { nominationApplicationId, judgeId: judge.juryApplicationId },
+    select: { id: true, status: true },
   });
 
   if (existingScore?.status === "SUBMITTED") {
-    throw new ScoringHttpError(
-      409,
-      "Submitted scores are locked until an admin reopens them."
-    );
+    throw new ScoringHttpError(409, "Submitted scores are locked until an admin reopens them.");
   }
 
   const totalScore = calculateTotalScore(input);
+  const scoreData = {
+    technical: input.technical ?? null,
+    aesthetic: input.aesthetic ?? null,
+    creativity: input.creativity ?? null,
+    impact: input.impact ?? null,
+    presentation: input.presentation ?? null,
+    totalScore,
+    comment: input.comment ?? null,
+    status: "DRAFT" as const,
+    submittedAt: null,
+  };
 
-  const score = await prisma.judgeScore.upsert({
-    where: {
-      applicationId_judgeId: {
-        applicationId,
+  let score;
+  if (existingScore) {
+    score = await prisma.judgeScore.update({
+      where: { id: existingScore.id },
+      data: scoreData,
+      select: SCORE_DETAIL_SELECT,
+    });
+  } else {
+    score = await prisma.judgeScore.create({
+      data: {
+        applicationId: nomination.applicationId,
+        nominationApplicationId,
         judgeId: judge.juryApplicationId,
+        ...scoreData,
       },
-    },
-    create: {
-      applicationId,
-      judgeId: judge.juryApplicationId,
-      technical: input.technical ?? null,
-      aesthetic: input.aesthetic ?? null,
-      creativity: input.creativity ?? null,
-      impact: input.impact ?? null,
-      presentation: input.presentation ?? null,
-      totalScore,
-      comment: input.comment ?? null,
-      status: "DRAFT",
-      submittedAt: null,
-    },
-    update: {
-      technical: input.technical ?? null,
-      aesthetic: input.aesthetic ?? null,
-      creativity: input.creativity ?? null,
-      impact: input.impact ?? null,
-      presentation: input.presentation ?? null,
-      totalScore,
-      comment: input.comment ?? null,
-      status: "DRAFT",
-      submittedAt: null,
-    },
-    select: {
-      id: true,
-      technical: true,
-      aesthetic: true,
-      creativity: true,
-      impact: true,
-      presentation: true,
-      totalScore: true,
-      comment: true,
-      status: true,
-      submittedAt: true,
-      updatedAt: true,
-    },
-  });
+      select: SCORE_DETAIL_SELECT,
+    });
+  }
 
   revalidatePath("/jury/dashboard");
-  revalidatePath(`/jury/dashboard/applications/${applicationId}`);
+  revalidatePath(`/jury/dashboard/applications/${nominationApplicationId}`);
   revalidatePath("/admin/scoring");
-  revalidatePath(`/admin/scoring/${applicationId}`);
+  revalidatePath(`/admin/scoring/${nomination.applicationId}`);
 
   return score;
 }
 
 export async function submitJudgeScore({
   judge,
-  applicationId,
+  nominationApplicationId,
   input,
 }: {
   judge: ActiveJudgeContext;
-  applicationId: string;
+  nominationApplicationId: string;
   input: SubmitScoreInput;
 }) {
-  await getAccessibleApplicationForJudge({
-    applicationId,
-    judge,
-  });
+  const nomination = await getAccessibleNominationForJudge({ nominationApplicationId, judge });
 
-  const existingScore = await prisma.judgeScore.findUnique({
-    where: {
-      applicationId_judgeId: {
-        applicationId,
-        judgeId: judge.juryApplicationId,
-      },
-    },
-    select: {
-      id: true,
-      status: true,
-    },
+  const existingScore = await prisma.judgeScore.findFirst({
+    where: { nominationApplicationId, judgeId: judge.juryApplicationId },
+    select: { id: true, status: true },
   });
 
   if (existingScore?.status === "SUBMITTED") {
-    throw new ScoringHttpError(
-      409,
-      "You have already submitted a final score for this application."
-    );
+    throw new ScoringHttpError(409, "You have already submitted a final score for this application.");
   }
 
   const totalScore = calculateTotalScore(input);
@@ -382,57 +317,41 @@ export async function submitJudgeScore({
   }
 
   const submittedAt = new Date();
+  const scoreData = {
+    technical: input.technical,
+    aesthetic: input.aesthetic,
+    creativity: input.creativity,
+    impact: input.impact,
+    presentation: input.presentation,
+    totalScore,
+    comment: input.comment ?? null,
+    status: "SUBMITTED" as const,
+    submittedAt,
+  };
 
-  const score = await prisma.judgeScore.upsert({
-    where: {
-      applicationId_judgeId: {
-        applicationId,
+  let score;
+  if (existingScore) {
+    score = await prisma.judgeScore.update({
+      where: { id: existingScore.id },
+      data: scoreData,
+      select: SCORE_DETAIL_SELECT,
+    });
+  } else {
+    score = await prisma.judgeScore.create({
+      data: {
+        applicationId: nomination.applicationId,
+        nominationApplicationId,
         judgeId: judge.juryApplicationId,
+        ...scoreData,
       },
-    },
-    create: {
-      applicationId,
-      judgeId: judge.juryApplicationId,
-      technical: input.technical,
-      aesthetic: input.aesthetic,
-      creativity: input.creativity,
-      impact: input.impact,
-      presentation: input.presentation,
-      totalScore,
-      comment: input.comment ?? null,
-      status: "SUBMITTED",
-      submittedAt,
-    },
-    update: {
-      technical: input.technical,
-      aesthetic: input.aesthetic,
-      creativity: input.creativity,
-      impact: input.impact,
-      presentation: input.presentation,
-      totalScore,
-      comment: input.comment ?? null,
-      status: "SUBMITTED",
-      submittedAt,
-    },
-    select: {
-      id: true,
-      technical: true,
-      aesthetic: true,
-      creativity: true,
-      impact: true,
-      presentation: true,
-      totalScore: true,
-      comment: true,
-      status: true,
-      submittedAt: true,
-      updatedAt: true,
-    },
-  });
+      select: SCORE_DETAIL_SELECT,
+    });
+  }
 
   revalidatePath("/jury/dashboard");
-  revalidatePath(`/jury/dashboard/applications/${applicationId}`);
+  revalidatePath(`/jury/dashboard/applications/${nominationApplicationId}`);
   revalidatePath("/admin/scoring");
-  revalidatePath(`/admin/scoring/${applicationId}`);
+  revalidatePath(`/admin/scoring/${nomination.applicationId}`);
 
   return score;
 }
@@ -441,7 +360,7 @@ export async function getAuthenticatedJudgeScoringContext() {
   return requireActiveJuryJudge();
 }
 
-export async function getAuthenticatedJudgeScoringApiContext() {
+export async function getAuthenticatedJudgeScoringApiContext(): Promise<ActiveJudgeContext> {
   const session = await getAppSession();
 
   if (!session?.user?.email) {
@@ -484,5 +403,5 @@ export async function getAuthenticatedJudgeScoringApiContext() {
     fullName: account.juryApplication.fullName,
     professionalTitle: account.juryApplication.professionalTitle,
     expertiseAreas: account.juryApplication.expertiseAreas,
-  } satisfies ActiveJudgeContext;
+  };
 }

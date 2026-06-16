@@ -83,6 +83,8 @@ export type ApplicationValues = Record<string, ApplicationValue>;
 
 export type ValidationErrors = Record<string, string>;
 
+export type BlockBValuesByNomination = Record<string, ApplicationValues>;
+
 export type UploadedApplicationFile = {
   fieldKey: string;
   fileName: string;

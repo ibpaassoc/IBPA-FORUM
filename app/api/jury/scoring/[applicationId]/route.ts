@@ -10,10 +10,10 @@ export async function GET(
 ) {
   try {
     const judge = await getAuthenticatedJudgeScoringApiContext();
-    const { applicationId } = await params;
+    const { applicationId: nominationApplicationId } = await params;
     const data = await getJudgeApplicationScoringDetail({
       judge,
-      applicationId,
+      nominationApplicationId,
     });
 
     return NextResponse.json(data);

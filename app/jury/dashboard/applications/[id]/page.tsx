@@ -8,15 +8,15 @@ export default async function JuryDashboardApplicationRoute({
   params: Promise<{ id: string }>;
 }) {
   const judge = await getAuthenticatedJudgeScoringContext();
-  const { id } = await params;
+  const { id: nominationApplicationId } = await params;
   const data = await getJuryDashboardApplicationDetail({
     judge,
-    applicationId: id,
+    nominationApplicationId,
   });
 
   return (
     <JuryApplicationDetailPage
-      application={data.application}
+      nomination={data.nomination}
       categoryFields={data.categoryFields}
       score={data.score}
     />

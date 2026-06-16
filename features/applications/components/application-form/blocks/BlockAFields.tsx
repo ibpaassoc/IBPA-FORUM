@@ -48,7 +48,7 @@ export default function BlockAFields({
       yearsOfExperience: "Years of Professional Experience",
       yearsOfExperienceHint: "A minimum of 2 years is required.",
       licenseCertification: "Professional License / Certification",
-      licenseCertificationHint: "Upload PDF, JPG, or PNG. Maximum 5MB.",
+      licenseCertificationHint: "Upload up to 5 files. PDF, JPG, or PNG.",
       category: "Category",
       selectCategory: "Select category",
       nomination: "Nomination (within category)",
@@ -83,7 +83,7 @@ export default function BlockAFields({
       yearsOfExperience: "Стаж профессиональной работы",
       yearsOfExperienceHint: "Требуется минимум 2 года опыта.",
       licenseCertification: "Профессиональная лицензия / сертификат",
-      licenseCertificationHint: "Загрузите PDF, JPG или PNG. Максимум 5MB.",
+      licenseCertificationHint: "До 5 файлов. PDF, JPG или PNG.",
       category: "Категория",
       selectCategory: "Выберите категорию",
       nomination: "Номинация (внутри категории)",
@@ -118,7 +118,7 @@ export default function BlockAFields({
       yearsOfExperience: "Стаж професійної роботи",
       yearsOfExperienceHint: "Потрібно щонайменше 2 роки досвіду.",
       licenseCertification: "Професійна ліцензія / сертифікат",
-      licenseCertificationHint: "Завантажте PDF, JPG або PNG. Максимум 5MB.",
+      licenseCertificationHint: "До 5 файлів. PDF, JPG або PNG.",
       category: "Категорія",
       selectCategory: "Оберіть категорію",
       nomination: "Номінація (всередині категорії)",
@@ -267,7 +267,8 @@ export default function BlockAFields({
               : []
           }
           required
-          multiple={false}
+          multiple
+          maxFiles={5}
           accept={["image/jpeg", "image/png", "application/pdf"]}
           description={copy.licenseCertificationHint}
           error={errors.licenseCertification}
