@@ -215,6 +215,7 @@ const en = {
       eyebrow: "Choose Your Participation",
       tickets: {
         label: "FORUM TICKETS",
+        mostPopular: "Most Popular",
         features: "1 Day Pass · 2 Day Pass · Gala Dinner",
         cta: "Buy Tickets",
       },
@@ -246,12 +247,25 @@ const en = {
       fiveNominations: "5 Nominations",
       grandPrixNote: "5+ nominations automatically qualify for Grand Prix.",
       judgePaidAfterApproval: "Paid after approval",
+      mostPopular: "Most Popular",
+      startingFrom: "Starting from",
+      from: "From",
+      perPerson: "/ person",
+      perNom: "/ nom.",
+      fee: "Fee",
+      perJudge: "/ judge",
     },
     grandPrixSpotlight: {
       eyebrow: "Grand Prix",
       title: "GRAND PRIX",
       description: "Participants submitting 5 or more nominations automatically compete for the Grand Prix award — the highest distinction at IBPA BEAUTY AWARD 2026.",
       cta: "Apply for Award",
+      learnMore: "Learn More",
+      stats: [
+        { value: "5+", label: "Nominations required" },
+        { value: "Auto", label: "Qualification" },
+        { value: "#1", label: "Highest distinction" },
+      ],
     },
     whyAttend: {
       eyebrow: "Why Attend",
@@ -560,6 +574,24 @@ const en = {
       ctaText: "Apply to become an official judge and contribute to fair, professional nomination decisions.",
       ctaAside: "Approval is required before registration payment.",
     },
+    benefits: {
+      eyebrow: "Benefits",
+      title: "What approved judges receive",
+      description: "After approval and payment, official judges receive formal recognition, supporting documents, and public listing as part of the award jury panel.",
+      items: [
+        "Official invitation to serve on the IBPA jury panel.",
+        "Personalized jury certificate for the award year.",
+        "Official letter of appreciation from the IBPA President.",
+        "Professional contribution letter for industry recognition.",
+        "Public jury profile with photo and biography.",
+      ],
+    },
+    juryCta: {
+      eyebrow: "Jury registration",
+      title: "Join the international IBPA judging panel.",
+      description: "Apply as a jury member to evaluate excellence in beauty, support professional standards, and contribute to a respected global award platform.",
+      registrationFee: "Registration fee",
+    },
   },
   grandPrixPage: {
     hero: {
@@ -670,6 +702,15 @@ const en = {
       fiveCategories: "5+ Nominations — and you're in the Grand Prix",
       qualificationRule: "Submit entries in 5 or more categories, and you automatically become a nominee for the IBPA Grand Prix—no additional applications required.",
       decision: "Award Decision",
+    },
+    participationCta: {
+      eyebrow: "Award participation",
+      title: "Participation cost with Grand Prix access built in.",
+      description: "Enter the main award with the nomination path that fits your profile. When you submit five or more nominations, Grand Prix consideration is included automatically.",
+      nominationFees: "Nomination fees",
+      members: "Members",
+      perNomSubmission: "Per nomination submission",
+      nominationsActivate: "Nominations activate eligibility",
     },
   },
   applyPage: {
@@ -1061,6 +1102,7 @@ const ru: typeof en = {
       eyebrow: "Выберите участие",
       tickets: {
         label: "БИЛЕТЫ НА ФОРУМ",
+        mostPopular: "Самое популярное",
         features: "1 день · 2 дня · Гала-ужин",
         cta: "Купить билеты",
       },
@@ -1092,12 +1134,25 @@ const ru: typeof en = {
       fiveNominations: "5 номинаций",
       grandPrixNote: "5+ номинаций автоматически квалифицируют на Гран-при.",
       judgePaidAfterApproval: "Оплачивается после одобрения",
+      mostPopular: "Самое популярное",
+      startingFrom: "Начиная от",
+      from: "От",
+      perPerson: "/ чел.",
+      perNom: "/ ном.",
+      fee: "Взнос",
+      perJudge: "/ судья",
     },
     grandPrixSpotlight: {
       eyebrow: "Гран-при",
       title: "ГРАН-ПРИ",
       description: "Участники, подающие 5 и более номинаций, автоматически участвуют в розыгрыше Гран-при — высшего звания IBPA BEAUTY AWARD 2026.",
       cta: "Подать заявку на участие",
+      learnMore: "Подробнее",
+      stats: [
+        { value: "5+", label: "Номинаций требуется" },
+        { value: "Авто", label: "Квалификация" },
+        { value: "#1", label: "Высшее отличие" },
+      ],
     },
     whyAttend: {
       eyebrow: "Зачем участвовать",
@@ -1406,6 +1461,24 @@ const ru: typeof en = {
       ctaText: "Подайте заявку в жюри и участвуйте в справедливых профессиональных решениях по номинациям.",
       ctaAside: "Оплата регистрации доступна только после одобрения.",
     },
+    benefits: {
+      eyebrow: "Преимущества",
+      title: "Что получают одобренные судьи",
+      description: "После одобрения и оплаты официальные судьи получают официальное признание, подтверждающие документы и публичный профиль в составе жюри премии.",
+      items: [
+        "Официальное приглашение в состав жюри IBPA.",
+        "Именной сертификат члена жюри за год проведения премии.",
+        "Официальное письмо благодарности от Президента IBPA.",
+        "Письмо о профессиональном вкладе для признания в отрасли.",
+        "Публичный профиль судьи с фото и биографией.",
+      ],
+    },
+    juryCta: {
+      eyebrow: "Регистрация судьи",
+      title: "Присоединяйтесь к международному жюри IBPA.",
+      description: "Подайте заявку как член жюри для оценки профессионального мастерства в индустрии красоты и участия в уважаемой международной премии.",
+      registrationFee: "Регистрационный взнос",
+    },
   },
   grandPrixPage: {
     hero: {
@@ -1519,6 +1592,15 @@ const ru: typeof en = {
       fiveCategories: "5+ номинаций - и вы в Гран-при",
       qualificationRule: "Подайте заявки в 5 и более номинаций - и вы автоматически становитесь номинантом на Гран-при IBPA. Без дополнительных заявок.",
       decision: "Решение премии",
+    },
+    participationCta: {
+      eyebrow: "Участие в конкурсе",
+      title: "Стоимость участия с доступом к Гран-при.",
+      description: "Войдите в основную премию с путём номинации, который соответствует вашему профилю. При подаче пяти и более номинаций участие в Гран-при включается автоматически.",
+      nominationFees: "Взносы за номинации",
+      members: "Участники",
+      perNomSubmission: "За одну номинацию",
+      nominationsActivate: "Номинации активируют право участия",
     },
   },
   applyPage: {
@@ -1910,6 +1992,7 @@ const ua: typeof en = {
       eyebrow: "Оберіть участь",
       tickets: {
         label: "КВИТКИ НА ФОРУМ",
+        mostPopular: "Найпопулярніше",
         features: "1 день · 2 дні · Гала-вечеря",
         cta: "Придбати квитки",
       },
@@ -1941,12 +2024,25 @@ const ua: typeof en = {
       fiveNominations: "5 номінацій",
       grandPrixNote: "5+ номінацій автоматично кваліфікують на Гран-прі.",
       judgePaidAfterApproval: "Оплачується після схвалення",
+      mostPopular: "Найпопулярніше",
+      startingFrom: "Від",
+      from: "Від",
+      perPerson: "/ особа",
+      perNom: "/ ном.",
+      fee: "Внесок",
+      perJudge: "/ суддя",
     },
     grandPrixSpotlight: {
       eyebrow: "Гран-прі",
       title: "ГРАН-ПРІ",
       description: "Учасники, які подають 5 або більше номінацій, автоматично змагаються за Гран-прі — найвищу відзнаку IBPA BEAUTY AWARD 2026.",
       cta: "Подати заявку на участь",
+      learnMore: "Докладніше",
+      stats: [
+        { value: "5+", label: "Номінацій потрібно" },
+        { value: "Авто", label: "Кваліфікація" },
+        { value: "#1", label: "Найвища відзнака" },
+      ],
     },
     whyAttend: {
       eyebrow: "Чому варто брати участь",
@@ -2255,6 +2351,24 @@ const ua: typeof en = {
       ctaText: "Подайте заявку до журі та долучайтеся до справедливих професійних рішень за номінаціями.",
       ctaAside: "Оплата реєстрації доступна лише після схвалення.",
     },
+    benefits: {
+      eyebrow: "Переваги",
+      title: "Що отримують схвалені судді",
+      description: "Після схвалення та оплати офіційні судді отримують офіційне визнання, підтверджуючі документи та публічний профіль у складі журі премії.",
+      items: [
+        "Офіційне запрошення до складу журі IBPA.",
+        "Іменний сертифікат члена журі за рік проведення премії.",
+        "Офіційний лист подяки від Президента IBPA.",
+        "Лист про професійний внесок для визнання в галузі.",
+        "Публічний профіль судді з фото та біографією.",
+      ],
+    },
+    juryCta: {
+      eyebrow: "Реєстрація судді",
+      title: "Приєднуйтесь до міжнародного журі IBPA.",
+      description: "Подайте заявку як член журі для оцінювання досконалості у сфері краси, підтримки професійних стандартів і участі у шанованій міжнародній премії.",
+      registrationFee: "Реєстраційний внесок",
+    },
   },
   grandPrixPage: {
     hero: {
@@ -2368,6 +2482,15 @@ const ua: typeof en = {
       fiveCategories: "5+ номінацій - і ви в Гран-прі",
       qualificationRule: "Подайте заявки в 5 і більше номінацій - і ви автоматично стаєте номінантом на Гран-прі IBPA. Без додаткових заявок.",
       decision: "Рішення премії",
+    },
+    participationCta: {
+      eyebrow: "Участь у конкурсі",
+      title: "Вартість участі з доступом до Гран-прі.",
+      description: "Увійдіть до основної премії зі шляхом номінації, що відповідає вашому профілю. При поданні п'яти і більше номінацій участь у Гран-прі включається автоматично.",
+      nominationFees: "Внески за номінації",
+      members: "Учасники",
+      perNomSubmission: "За одну номінацію",
+      nominationsActivate: "Номінації активують право участі",
     },
   },
   applyPage: {

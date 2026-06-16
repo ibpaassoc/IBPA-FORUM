@@ -101,7 +101,7 @@ export default function HomePricing({
                   </span>
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-[0.72rem] text-white/50">From</span>
+                  <span className="text-[0.72rem] text-white/50">{ps.from}</span>
                   <motion.span
                     key={forumStarting}
                     initial={{ opacity: 0, y: -5 }}
@@ -111,7 +111,7 @@ export default function HomePricing({
                   >
                     {forumStarting}
                   </motion.span>
-                  <span className="text-[0.72rem] text-white/45">/ person</span>
+                  <span className="text-[0.72rem] text-white/45">{ps.perPerson}</span>
                 </div>
               </div>
 
@@ -128,7 +128,7 @@ export default function HomePricing({
                   onClick={onBuyTickets}
                   className="ibpa-button ibpa-button-white w-full"
                 >
-                  Buy Tickets
+                  {t.home.participation.tickets.cta}
                 </button>
               </div>
             </article>
@@ -145,7 +145,7 @@ export default function HomePricing({
                   </span>
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-[0.72rem] text-white/50">From</span>
+                  <span className="text-[0.72rem] text-white/50">{ps.from}</span>
                   <motion.span
                     key={awardStarting}
                     initial={{ opacity: 0, y: -5 }}
@@ -155,7 +155,7 @@ export default function HomePricing({
                   >
                     {awardStarting}
                   </motion.span>
-                  <span className="text-[0.72rem] text-white/45">/ nom.</span>
+                  <span className="text-[0.72rem] text-white/45">{ps.perNom}</span>
                 </div>
               </div>
 
@@ -170,7 +170,7 @@ export default function HomePricing({
 
               <div className="p-[var(--space-md)]">
                 <Link href="/apply" className="ibpa-button ibpa-button-white w-full text-center">
-                  Apply Now
+                  {t.home.participation.award.cta}
                 </Link>
               </div>
             </article>
@@ -187,7 +187,7 @@ export default function HomePricing({
                   </span>
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-[0.72rem] text-white/50">Fee</span>
+                  <span className="text-[0.72rem] text-white/50">{ps.fee}</span>
                   <motion.span
                     key={judgePrice}
                     initial={{ opacity: 0, y: -5 }}
@@ -197,7 +197,7 @@ export default function HomePricing({
                   >
                     {judgePrice}
                   </motion.span>
-                  <span className="text-[0.72rem] text-white/45">/ judge</span>
+                  <span className="text-[0.72rem] text-white/45">{ps.perJudge}</span>
                 </div>
               </div>
 
@@ -213,7 +213,7 @@ export default function HomePricing({
 
               <div className="p-[var(--space-md)]">
                 <Link href="/jury" className="ibpa-button ibpa-button-white w-full text-center">
-                  Register as Judge
+                  {t.home.participation.judge.cta}
                 </Link>
               </div>
             </article>

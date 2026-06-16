@@ -74,7 +74,7 @@ export default function HomeGrandPrix() {
                 href="/grand-prix"
                 className="ibpa-button border border-white/20 bg-transparent text-white hover:bg-white/10"
               >
-                Learn More
+                {gp.learnMore}
               </Link>
             </div>
           </Reveal>
@@ -83,11 +83,7 @@ export default function HomeGrandPrix() {
         {/* Floating nomination counter */}
         <Reveal delay={0.32} className="mt-[var(--space-2xl)]">
           <div className="flex flex-wrap gap-6">
-            {[
-              { value: "5+", label: "Nominations required" },
-              { value: "Auto", label: "Qualification" },
-              { value: "#1", label: "Highest distinction" },
-            ].map((stat) => (
+            {gp.stats.map((stat) => (
               <div key={stat.label} className="flex items-center gap-4 rounded-[var(--radius)] border border-white/10 bg-white/5 px-5 py-4 backdrop-blur-sm">
                 <span className="font-[var(--font-title-family)] text-[1.8rem] font-light leading-none text-white">
                   {stat.value}
