@@ -1,4 +1,13 @@
-import type { Application, ApplicationAnswer, ApplicationFile, Award, Category } from "@prisma/client";
+import type {
+  Application,
+  ApplicationAnswer,
+  ApplicationFile,
+  Award,
+  Category,
+  NominationApplication,
+  NominationAnswer,
+  NominationFile,
+} from "@prisma/client";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import {
   DashboardCard,
@@ -6,11 +15,19 @@ import {
   DashboardSecondaryBtn,
 } from "@/shared/components/admin/DashboardUI";
 
+type NominationDetail = NominationApplication & {
+  award: Award;
+  category: Category;
+  answers: NominationAnswer[];
+  files: NominationFile[];
+};
+
 type ParticipantApplicationDetail = Application & {
   category: Category;
   award: Award;
   answers: ApplicationAnswer[];
   files: ApplicationFile[];
+  nominationApplications: NominationDetail[];
 };
 
 function formatAnswerValue(answer: {
@@ -50,29 +67,88 @@ function FileLink({ href, name, sizeBytes }: { href: string; name: string; sizeB
   );
 }
 
+function NominationBlockB({ nomination }: { nomination: NominationDetail }) {
+  const fields = categoryFieldConfigs[nomination.category.slug] ?? [];
+  const answerMap = new Map(nomination.answers.map((a) => [a.fieldKey, a]));
+  const fileMap = new Map<string, NominationFile[]>();
+  for (const file of nomination.files) {
+    const group = fileMap.get(file.fieldKey) ?? [];
+    group.push(file);
+    fileMap.set(file.fieldKey, group);
+  }
+
+  return (
+    <DashboardCard>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">
+        Block B — {nomination.category.name} / {nomination.award.name}
+      </p>
+      <div className="mt-4 space-y-3">
+        {fields.filter((f) => f.type !== "file").map((field) => {
+          const answer = answerMap.get(field.key);
+          if (!answer) return null;
+          return <DashboardDetailCard key={field.key} label={field.label} value={formatAnswerValue(answer)} />;
+        })}
+        {fields.every((f) => f.type === "file" || !answerMap.get(f.key)) && (
+          <p className="text-sm text-slate-400">No text-based Block B answers saved for this nomination.</p>
+        )}
+        {fields.filter((f) => f.type === "file").map((field) => {
+          const files = fileMap.get(field.key) ?? [];
+          return (
+            <div key={field.key}>
+              <p className="text-sm font-semibold text-[#10203B]">{field.label}</p>
+              <div className="mt-1 space-y-1">
+                {files.map((f) => (
+                  <FileLink
+                    key={f.id}
+                    href={`/api/admin/nomination-files/${f.id}`}
+                    name={f.fileName}
+                    sizeBytes={f.fileSize}
+                  />
+                ))}
+                {files.length === 0 && <p className="text-sm text-slate-400">No files uploaded.</p>}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </DashboardCard>
+  );
+}
+
 export default function ApplicationDetailPage({
   application,
 }: {
   application: ParticipantApplicationDetail;
 }) {
-  const categoryFields = categoryFieldConfigs[application.category.slug] ?? [];
-  const categoryFieldKeySet = new Set(categoryFields.map((f) => f.key));
-  const categoryFileKeySet = new Set(categoryFields.filter((f) => f.type === "file").map((f) => f.key));
   const answerMap = new Map(application.answers.map((a) => [a.fieldKey, a]));
-  const fileMap = new Map<string, typeof application.files>();
-
+  const fileMap = new Map<string, ApplicationFile[]>();
   for (const file of application.files) {
     const group = fileMap.get(file.fieldKey) ?? [];
     group.push(file);
     fileMap.set(file.fieldKey, group);
   }
 
-  const legacyAnswerEntries = application.answers.filter(
-    (a) => a.fieldKey !== "heardAboutOther" && a.fieldKey !== "licenseCertification" && !categoryFieldKeySet.has(a.fieldKey)
+  const categoryFields = categoryFieldConfigs[application.category.slug] ?? [];
+  const categoryFieldKeySet = new Set(categoryFields.map((f) => f.key));
+  const categoryFileKeySet = new Set(categoryFields.filter((f) => f.type === "file").map((f) => f.key));
+
+  // Only show legacy flat Block B if no nominations have Block B data
+  const hasNominationData = application.nominationApplications.some(
+    (n) => n.answers.length > 0 || n.files.length > 0
   );
-  const legacyFileEntries = [...fileMap.entries()].filter(
-    ([key]) => key !== "licenseCertification" && !categoryFileKeySet.has(key)
-  );
+
+  const legacyAnswerEntries = !hasNominationData
+    ? application.answers.filter(
+        (a) =>
+          a.fieldKey !== "heardAboutOther" &&
+          a.fieldKey !== "licenseCertification" &&
+          a.fieldKey !== "selectedAwards" &&
+          categoryFieldKeySet.has(a.fieldKey)
+      )
+    : [];
+  const legacyFileEntries = !hasNominationData
+    ? [...fileMap.entries()].filter(([key]) => key !== "licenseCertification" && categoryFileKeySet.has(key))
+    : [];
 
   return (
     <div className="space-y-5">
@@ -117,35 +193,33 @@ export default function ApplicationDetailPage({
             </div>
           </DashboardCard>
 
-          {/* Block B Answers */}
-          <DashboardCard>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">Block B — Answers</p>
-            <div className="mt-4 space-y-3">
-              {categoryFields
-                .filter((f) => f.type !== "file")
-                .map((field) => {
-                  const answer = answerMap.get(field.key);
-                  if (!answer) return null;
-                  return <DashboardDetailCard key={field.key} label={field.label} value={formatAnswerValue(answer)} />;
-                })}
-              {categoryFields.every((f) => f.type === "file" || !answerMap.get(f.key)) && (
-                <p className="text-sm text-slate-400">No text-based Block B answers saved.</p>
-              )}
-              {legacyAnswerEntries.map((a) => (
-                <DashboardDetailCard
-                  key={a.id}
-                  label={`${formatLegacyFieldLabel(a.fieldKey)} (Legacy)`}
-                  value={formatAnswerValue(a)}
-                />
-              ))}
-            </div>
-          </DashboardCard>
+          {/* Per-nomination Block B sections */}
+          {hasNominationData ? (
+            application.nominationApplications.map((nom) => (
+              <NominationBlockB key={nom.id} nomination={nom} />
+            ))
+          ) : (
+            <DashboardCard>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">Block B — Answers (Legacy)</p>
+              <div className="mt-4 space-y-3">
+                {legacyAnswerEntries.map((a) => (
+                  <DashboardDetailCard
+                    key={a.id}
+                    label={formatLegacyFieldLabel(a.fieldKey)}
+                    value={formatAnswerValue(a)}
+                  />
+                ))}
+                {legacyAnswerEntries.length === 0 && (
+                  <p className="text-sm text-slate-400">No Block B answers recorded.</p>
+                )}
+              </div>
+            </DashboardCard>
+          )}
         </div>
 
         {/* Files */}
         <DashboardCard>
           <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">Uploaded files</p>
-
           <div className="mt-4 space-y-5">
             {/* License */}
             <div>
@@ -160,25 +234,7 @@ export default function ApplicationDetailPage({
               </div>
             </div>
 
-            {/* Category-specific files */}
-            {categoryFields
-              .filter((f) => f.type === "file")
-              .map((field) => {
-                const files = fileMap.get(field.key) ?? [];
-                return (
-                  <div key={field.key}>
-                    <p className="mb-2 text-sm font-semibold text-[#10203B]">{field.label}</p>
-                    <div className="space-y-2">
-                      {files.map((f) => (
-                        <FileLink key={f.id} href={`/api/admin/application-files/${f.id}`} name={f.fileName} sizeBytes={f.fileSize} />
-                      ))}
-                      {files.length === 0 && <p className="text-sm text-slate-400">No files uploaded for this field.</p>}
-                    </div>
-                  </div>
-                );
-              })}
-
-            {/* Legacy files */}
+            {/* Legacy flat category files */}
             {legacyFileEntries.map(([key, files]) => (
               <div key={key}>
                 <p className="mb-2 text-sm font-semibold text-[#10203B]">{formatLegacyFieldLabel(key)} (Legacy)</p>

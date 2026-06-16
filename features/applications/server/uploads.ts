@@ -28,3 +28,28 @@ export async function uploadApplicationFile(
     fileSize: file.size,
   } satisfies UploadedApplicationFile;
 }
+
+export async function uploadNominationFile(
+  file: File,
+  applicationId: string,
+  nominationApplicationId: string,
+  fieldKey: string,
+  index = 0
+) {
+  const safeFileName = sanitizeFileName(file.name);
+  const pathname = `applications/${applicationId}/nominations/${nominationApplicationId}/${fieldKey}-${index + 1}-${safeFileName}`;
+
+  const blob = await put(pathname, file, {
+    access: "private",
+    addRandomSuffix: true,
+    contentType: file.type || "application/octet-stream",
+  });
+
+  return {
+    fieldKey,
+    fileName: file.name,
+    fileUrl: blob.pathname,
+    mimeType: file.type || "application/octet-stream",
+    fileSize: file.size,
+  } satisfies UploadedApplicationFile;
+}

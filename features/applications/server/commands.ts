@@ -1,81 +1,50 @@
 import { sendApplicationReceivedNotificationEmail } from "@/features/email/server/application-email.workflow";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import { validateApplicationValues } from "@/features/applications/schemas/category-field-validation";
-import { extractApplicationValues } from "@/features/applications/server/form-mapping";
+import {
+  extractApplicationValues,
+  extractNominationBlockBValues,
+} from "@/features/applications/server/form-mapping";
 import { getApplicationCategories } from "@/features/applications/server/queries";
-import { uploadApplicationFile } from "@/features/applications/server/uploads";
+import { uploadApplicationFile, uploadNominationFile } from "@/features/applications/server/uploads";
 import { createCompetitorCheckoutSession } from "@/features/payments/server/checkout-sessions";
 import { prisma } from "@/shared/lib/prisma";
+import { Prisma } from "@prisma/client";
+import type { ApplicationValues } from "@/features/applications/types/application.types";
 
-function getUniqueCategoryFields(slugs: string[]) {
-  const fieldMap = new Map<string, (typeof categoryFieldConfigs)[string][number]>();
+async function createNominationApplication({
+  applicationId,
+  awardId,
+  categoryId,
+  categorySlug,
+  nomValues,
+}: {
+  applicationId: string;
+  awardId: string;
+  categoryId: string;
+  categorySlug: string;
+  nomValues: ApplicationValues;
+}) {
+  const fields = categoryFieldConfigs[categorySlug] ?? [];
 
-  for (const slug of slugs) {
-    const fields = categoryFieldConfigs[slug] ?? [];
+  const answerEntries: Array<{
+    fieldKey: string;
+    valueText?: string;
+    valueNumber?: number;
+    valueJson?: Prisma.InputJsonValue;
+  }> = [];
 
-    for (const field of fields) {
-      if (!fieldMap.has(field.key)) {
-        fieldMap.set(field.key, field);
-      }
-    }
-  }
+  const pendingFileUploads: Array<{ fieldKey: string; files: File[] }> = [];
 
-  return Array.from(fieldMap.values());
-}
-
-export async function saveApplicationSubmission(formData: FormData) {
-  console.info("saveApplicationSubmission started");
-  const categories = await getApplicationCategories();
-  const values = extractApplicationValues(formData, categories);
-  const validation = validateApplicationValues({
-    values,
-    categories,
-  });
-
-  if (!validation.success || !validation.selectedCategory || !validation.selectedAward) {
-    console.warn("Application submission validation failed", {
-      errors: validation.errors,
-      categoryId: String(values.categoryId ?? ""),
-      awardId: String(values.awardId ?? ""),
-    });
-    return {
-      ok: false as const,
-      status: 400,
-      body: {
-        message:
-          "Please review the participant application form and correct the highlighted fields.",
-        fieldErrors: validation.errors,
-      },
-    };
-  }
-
-  const licenseFiles = Array.isArray(values.licenseCertification)
-    ? values.licenseCertification.filter((file): file is File => file instanceof File)
-    : [];
-
-  const categoryFields = getUniqueCategoryFields(
-    validation.selectedCategories.map((category) => category.slug)
-  );
-  const answerEntries = [];
-  const pendingFileUploads: Array<{ fieldKey: string; files: File[] }> = [
-    {
-      fieldKey: "licenseCertification",
-      files: licenseFiles,
-    },
-  ];
-
-  for (const field of categoryFields) {
-    const rawValue = values[field.key];
+  for (const field of fields) {
+    const rawValue = nomValues[field.key];
 
     if (field.type === "file") {
       const files = Array.isArray(rawValue)
-        ? rawValue.filter((file): file is File => file instanceof File)
+        ? rawValue.filter((f): f is File => f instanceof File)
         : [];
       if (files.length > 0) {
-        pendingFileUploads.push({
-          fieldKey: field.key,
-          files,
-        });
+        pendingFileUploads.push({ fieldKey: field.key, files });
       }
       continue;
     }
@@ -85,10 +54,7 @@ export async function saveApplicationSubmission(formData: FormData) {
         ? rawValue.filter((item): item is string => typeof item === "string")
         : [];
       if (list.length > 0) {
-        answerEntries.push({
-          fieldKey: field.key,
-          valueJson: list,
-        });
+        answerEntries.push({ fieldKey: field.key, valueJson: list });
       }
       continue;
     }
@@ -107,19 +73,100 @@ export async function saveApplicationSubmission(formData: FormData) {
 
     const textValue = typeof rawValue === "string" ? rawValue.trim() : "";
     if (textValue) {
-      answerEntries.push({
-        fieldKey: field.key,
-        valueText: textValue,
-      });
+      answerEntries.push({ fieldKey: field.key, valueText: textValue });
     }
   }
 
-  if (typeof values.heardAboutOther === "string" && values.heardAboutOther.trim()) {
-    answerEntries.push({
-      fieldKey: "heardAboutOther",
-      valueText: values.heardAboutOther.trim(),
+  // Create the NominationApplication record first to get the ID
+  const nominationApplication = await prisma.nominationApplication.create({
+    data: {
+      applicationId,
+      awardId,
+      categoryId,
+    },
+    select: { id: true },
+  });
+
+  // Upload files for this nomination
+  const uploadedFiles = (
+    await Promise.all(
+      pendingFileUploads.flatMap(({ fieldKey, files }) =>
+        files.map((file, index) =>
+          uploadNominationFile(file, applicationId, nominationApplication.id, fieldKey, index)
+        )
+      )
+    )
+  ).filter(Boolean);
+
+  // Save answers and files
+  if (answerEntries.length > 0 || uploadedFiles.length > 0) {
+    await prisma.nominationApplication.update({
+      where: { id: nominationApplication.id },
+      data: {
+        answers: answerEntries.length
+          ? { create: answerEntries }
+          : undefined,
+        files: uploadedFiles.length
+          ? { create: uploadedFiles }
+          : undefined,
+      },
     });
   }
+
+  return nominationApplication;
+}
+
+export async function saveApplicationSubmission(formData: FormData) {
+  console.info("saveApplicationSubmission started");
+  const categories = await getApplicationCategories();
+  const values = extractApplicationValues(formData, categories);
+
+  const selectedAwardIds = Array.isArray(values.selectedAwardIds)
+    ? values.selectedAwardIds.filter((id): id is string => typeof id === "string")
+    : [];
+
+  const blockBValuesByNomination = extractNominationBlockBValues(formData, categories, selectedAwardIds);
+
+  const validation = validateApplicationValues({
+    values,
+    blockBValuesByNomination,
+    categories,
+  });
+
+  if (!validation.success || !validation.selectedCategory || !validation.selectedAward) {
+    console.warn("Application submission validation failed", {
+      errors: validation.errors,
+      blockBErrors: validation.blockBErrors,
+      categoryId: String(values.categoryId ?? ""),
+      awardId: String(values.awardId ?? ""),
+    });
+    return {
+      ok: false as const,
+      status: 400,
+      body: {
+        message:
+          "Please review the participant application form and correct the highlighted fields.",
+        fieldErrors: validation.errors,
+        blockBErrors: validation.blockBErrors,
+      },
+    };
+  }
+
+  // Upload license/certification (shared across nominations — Block A)
+  const licenseFiles = Array.isArray(values.licenseCertification)
+    ? values.licenseCertification.filter((file): file is File => file instanceof File)
+    : [];
+
+  const selectedNominations = validation.selectedAwards.map((item) => ({
+    categoryId: item.category.id,
+    categoryName: item.category.name,
+    categorySlug: item.category.slug,
+    awardId: item.award.id,
+    awardName: item.award.name,
+  }));
+
+  const nominationCount = Math.max(1, selectedNominations.length);
+  const applicationAmount = nominationCount * 5000;
 
   const normalizedEmail = String(values.email).trim().toLowerCase();
   const fullName = `${String(values.firstName ?? "").trim()} ${String(
@@ -129,19 +176,6 @@ export async function saveApplicationSubmission(formData: FormData) {
     String(values.country ?? "") === "Other"
       ? String(values.countryOther ?? "").trim()
       : String(values.country ?? "").trim();
-  const selectedNominations = validation.selectedAwards.map((item) => ({
-    categoryId: item.category.id,
-    categoryName: item.category.name,
-    awardId: item.award.id,
-    awardName: item.award.name,
-  }));
-  const nominationCount = Math.max(1, selectedNominations.length);
-  const applicationAmount = nominationCount * 5000;
-
-  answerEntries.push({
-    fieldKey: "selectedAwards",
-    valueJson: selectedNominations,
-  });
 
   let application: { id: string };
 
@@ -169,83 +203,84 @@ export async function saveApplicationSubmission(formData: FormData) {
         amount: applicationAmount,
         currency: "usd",
       },
-      select: {
-        id: true,
-      },
+      select: { id: true },
     });
-    console.info("Application database record created", {
-      applicationId: application.id,
-      categoryId: validation.selectedCategory.id,
-      awardId: validation.selectedAward.id,
-    });
+    console.info("Application database record created", { applicationId: application.id });
   } catch (error) {
-    console.error("Application database insert failed", {
-      categoryId: validation.selectedCategory.id,
-      awardId: validation.selectedAward.id,
-      error,
-    });
+    console.error("Application database insert failed", { error });
     throw error;
   }
 
-  let uploadedFiles: Array<NonNullable<Awaited<ReturnType<typeof uploadApplicationFile>>>>;
+  let uploadedLicenseFiles: Array<NonNullable<Awaited<ReturnType<typeof uploadApplicationFile>>>>;
 
   try {
-    uploadedFiles = (
+    uploadedLicenseFiles = (
       await Promise.all(
-        pendingFileUploads.flatMap(({ fieldKey, files }) =>
-          files.map((file, index) =>
-            uploadApplicationFile(file, application.id, fieldKey, index)
-          )
+        licenseFiles.map((file, index) =>
+          uploadApplicationFile(file, application.id, "licenseCertification", index)
         )
       )
     ).filter(Boolean);
-    console.info("Application files uploaded", {
+    console.info("License files uploaded", {
       applicationId: application.id,
-      fileCount: uploadedFiles.length,
-      fields: uploadedFiles.map((file) => file.fieldKey),
+      fileCount: uploadedLicenseFiles.length,
     });
   } catch (error) {
-    console.error("Application file upload failed", {
-      applicationId: application.id,
-      uploadFields: pendingFileUploads.map(({ fieldKey, files }) => ({
-        fieldKey,
-        fileCount: files.length,
-      })),
-      error,
-    });
+    console.error("License file upload failed", { applicationId: application.id, error });
     throw error;
   }
 
+  // Save shared Block A answers and license files
   try {
-    await prisma.application.update({
-      where: {
-        id: application.id,
+    const heardAboutOtherText =
+      typeof values.heardAboutOther === "string" ? values.heardAboutOther.trim() : "";
+    const blockAAnswers: Array<{ fieldKey: string; valueText?: string; valueJson?: Prisma.InputJsonValue }> = [
+      {
+        fieldKey: "selectedAwards",
+        valueJson: selectedNominations.map(({ categoryId, categoryName, awardId, awardName }) => ({
+          categoryId,
+          categoryName,
+          awardId,
+          awardName,
+        })),
       },
+    ];
+    if (heardAboutOtherText) {
+      blockAAnswers.push({ fieldKey: "heardAboutOther", valueText: heardAboutOtherText });
+    }
+
+    await prisma.application.update({
+      where: { id: application.id },
       data: {
-        answers: answerEntries.length
-          ? {
-              create: answerEntries,
-            }
-          : undefined,
-        files: uploadedFiles.length
-          ? {
-              create: uploadedFiles,
-            }
-          : undefined,
+        answers: blockAAnswers.length ? { create: blockAAnswers } : undefined,
+        files: uploadedLicenseFiles.length ? { create: uploadedLicenseFiles } : undefined,
       },
     });
-    console.info("Application answers/files database update completed", {
+    console.info("Block A answers/files saved", { applicationId: application.id });
+  } catch (error) {
+    console.error("Block A answers/files save failed", { applicationId: application.id, error });
+    throw error;
+  }
+
+  // Create NominationApplication records (one per selected award) with per-nomination Block B
+  try {
+    await Promise.all(
+      selectedNominations.map((nom) =>
+        createNominationApplication({
+          applicationId: application.id,
+          awardId: nom.awardId,
+          categoryId: nom.categoryId,
+          categorySlug: nom.categorySlug,
+          nomValues: blockBValuesByNomination[nom.awardId] ?? {},
+        })
+      )
+    );
+    console.info("NominationApplication records created", {
       applicationId: application.id,
-      answerCount: answerEntries.length,
-      fileCount: uploadedFiles.length,
+      nominationCount: selectedNominations.length,
     });
   } catch (error) {
-    console.error("Application answers/files database update failed", {
-      applicationId: application.id,
-      answerCount: answerEntries.length,
-      fileCount: uploadedFiles.length,
-      error,
-    });
+    console.error("NominationApplication creation failed", { applicationId: application.id, error });
     throw error;
   }
 
@@ -265,33 +300,19 @@ export async function saveApplicationSubmission(formData: FormData) {
       checkoutSessionId: checkoutSession.id,
     });
   } catch (error) {
-    console.error("Stripe competitor checkout session creation failed", {
-      applicationId: application.id,
-      categoryId: validation.selectedCategory.id,
-      awardId: validation.selectedAward.id,
-      error,
-    });
+    console.error("Stripe checkout session creation failed", { applicationId: application.id, error });
     throw error;
   }
 
   try {
     await prisma.$transaction([
       prisma.payment.updateMany({
-        where: {
-          applicationId: application.id,
-          status: "PENDING",
-        },
-        data: {
-          status: "EXPIRED",
-        },
+        where: { applicationId: application.id, status: "PENDING" },
+        data: { status: "EXPIRED" },
       }),
       prisma.application.update({
-        where: {
-          id: application.id,
-        },
-        data: {
-          stripeCheckoutSessionId: checkoutSession.id,
-        },
+        where: { id: application.id },
+        data: { stripeCheckoutSessionId: checkoutSession.id },
       }),
       prisma.payment.create({
         data: {
@@ -309,11 +330,7 @@ export async function saveApplicationSubmission(formData: FormData) {
       checkoutSessionId: checkoutSession.id,
     });
   } catch (error) {
-    console.error("Payment database transaction failed", {
-      applicationId: application.id,
-      checkoutSessionId: checkoutSession.id,
-      error,
-    });
+    console.error("Payment database transaction failed", { applicationId: application.id, error });
     throw error;
   }
 
@@ -325,7 +342,7 @@ export async function saveApplicationSubmission(formData: FormData) {
       details: [
         `Category: ${validation.selectedCategory.name}`,
         `Award: ${validation.selectedAward.name}`,
-        `Selected nominations: ${selectedNominations.map((item) => `${item.categoryName} - ${item.awardName}`).join("; ")}`,
+        `Selected nominations: ${selectedNominations.map((n) => `${n.categoryName} - ${n.awardName}`).join("; ")}`,
         "Payment status: Pending checkout",
       ],
     });
@@ -349,9 +366,7 @@ export async function saveApplicationSubmission(formData: FormData) {
 
 export async function retryCompetitorApplicationPayment(applicationId: string) {
   const application = await prisma.application.findUnique({
-    where: {
-      id: applicationId,
-    },
+    where: { id: applicationId },
     select: {
       id: true,
       email: true,
@@ -366,44 +381,34 @@ export async function retryCompetitorApplicationPayment(applicationId: string) {
   if (!application) {
     return {
       status: 404,
-      body: {
-        message: "Application not found.",
-      },
+      body: { message: "Application not found." },
     };
   }
 
   if (application.paymentStatus === "PAID" || application.status === "SUBMITTED") {
     return {
       status: 409,
-      body: {
-        message: "This application has already been paid and submitted.",
-      },
+      body: { message: "This application has already been paid and submitted." },
     };
   }
 
+  const nominationCount = Math.max(1, Math.round(application.amount / 5000));
   const checkoutSession = await createCompetitorCheckoutSession({
     applicationId: application.id,
     email: application.email,
     categoryId: application.categoryId,
     awardId: application.awardId,
     amount: application.amount,
-    nominationCount: Math.max(1, Math.round(application.amount / 5000)),
+    nominationCount,
   });
 
   await prisma.$transaction([
     prisma.payment.updateMany({
-      where: {
-        applicationId: application.id,
-        status: "PENDING",
-      },
-      data: {
-        status: "EXPIRED",
-      },
+      where: { applicationId: application.id, status: "PENDING" },
+      data: { status: "EXPIRED" },
     }),
     prisma.application.update({
-      where: {
-        id: application.id,
-      },
+      where: { id: application.id },
       data: {
         status: "PAYMENT_PENDING",
         paymentStatus: "PENDING",
@@ -426,8 +431,6 @@ export async function retryCompetitorApplicationPayment(applicationId: string) {
 
   return {
     status: 200,
-    body: {
-      checkoutUrl: checkoutSession.url,
-    },
+    body: { checkoutUrl: checkoutSession.url },
   };
 }

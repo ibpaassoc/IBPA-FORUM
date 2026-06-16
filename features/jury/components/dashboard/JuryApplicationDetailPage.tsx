@@ -1,16 +1,10 @@
-import type { ApplicationAnswer, ApplicationFile } from "@prisma/client";
 import JuryScoreForm from "@/features/admin/components/jury-applications/JuryScoreForm";
-import type { JuryScoringApplicationRecord } from "@/features/admin/server/jury";
+import type { JuryNominationScoringRecord } from "@/features/admin/server/jury";
 import {
   DashboardCard,
   DashboardDetailCard,
   DashboardSecondaryBtn,
 } from "@/shared/components/admin/DashboardUI";
-
-type JuryApplicationDetail = JuryScoringApplicationRecord & {
-  answers: ApplicationAnswer[];
-  files: ApplicationFile[];
-};
 
 function formatAnswerValue(answer: {
   valueText: string | null;
@@ -51,11 +45,11 @@ function FileLink({ href, name, sizeBytes }: { href: string; name: string; sizeB
 }
 
 export default function JuryApplicationDetailPage({
-  application,
+  nomination,
   categoryFields,
   score,
 }: {
-  application: JuryApplicationDetail;
+  nomination: JuryNominationScoringRecord;
   categoryFields: Array<{ key: string; label: string; type: string }>;
   score: {
     id: string;
@@ -71,28 +65,45 @@ export default function JuryApplicationDetailPage({
     updatedAt: Date;
   } | null;
 }) {
-  const answerMap = new Map(application.answers.map((a) => [a.fieldKey, a]));
+  const { application } = nomination;
+
+  // Block A answers from parent application
+  const appAnswerMap = new Map(application.answers.map((a) => [a.fieldKey, a]));
+  const appFileMap = new Map<string, typeof application.files>();
+  for (const file of application.files) {
+    const group = appFileMap.get(file.fieldKey) ?? [];
+    group.push(file);
+    appFileMap.set(file.fieldKey, group);
+  }
+
+  // Block B answers from this nomination
+  const nomAnswerMap = new Map(nomination.answers.map((a) => [a.fieldKey, a]));
+  const nomFileMap = new Map<string, typeof nomination.files>();
+  for (const file of nomination.files) {
+    const group = nomFileMap.get(file.fieldKey) ?? [];
+    group.push(file);
+    nomFileMap.set(file.fieldKey, group);
+  }
+
   const categoryFieldKeySet = new Set(categoryFields.map((f) => f.key));
   const categoryFileKeySet = new Set(
     categoryFields.filter((f) => f.type === "file").map((f) => f.key)
   );
-  const fileMap = new Map<string, typeof application.files>();
 
-  for (const file of application.files) {
-    const group = fileMap.get(file.fieldKey) ?? [];
-    group.push(file);
-    fileMap.set(file.fieldKey, group);
-  }
-
-  const legacyAnswerEntries = application.answers.filter(
-    (a) =>
-      a.fieldKey !== "heardAboutOther" &&
-      a.fieldKey !== "licenseCertification" &&
-      !categoryFieldKeySet.has(a.fieldKey)
-  );
-  const legacyFileEntries = [...fileMap.entries()].filter(
-    ([key]) => key !== "licenseCertification" && !categoryFileKeySet.has(key)
-  );
+  // Legacy flat answers on the parent application (for old submissions without NominationAnswer)
+  const hasNominationAnswers = nomination.answers.length > 0 || nomination.files.length > 0;
+  const legacyAppAnswers = !hasNominationAnswers
+    ? application.answers.filter(
+        (a) =>
+          a.fieldKey !== "heardAboutOther" &&
+          a.fieldKey !== "licenseCertification" &&
+          a.fieldKey !== "selectedAwards" &&
+          categoryFieldKeySet.has(a.fieldKey)
+      )
+    : [];
+  const legacyAppFileEntries = !hasNominationAnswers
+    ? [...appFileMap.entries()].filter(([key]) => categoryFileKeySet.has(key))
+    : [];
 
   return (
     <div className="space-y-5">
@@ -105,7 +116,7 @@ export default function JuryApplicationDetailPage({
             {application.fullName}
           </h1>
           <p className="mt-0.5 text-sm text-slate-500">
-            {application.category.name} / {application.award.name}
+            {nomination.category.name} / {nomination.award.name}
           </p>
         </div>
         <DashboardSecondaryBtn href="/jury/dashboard">← Back</DashboardSecondaryBtn>
@@ -142,8 +153,8 @@ export default function JuryApplicationDetailPage({
                 label="Membership level"
                 value={application.membershipLevel || "Not available"}
               />
-              <DashboardDetailCard label="Category" value={application.category.name} />
-              <DashboardDetailCard label="Nomination" value={application.award.name} />
+              <DashboardDetailCard label="Category" value={nomination.category.name} />
+              <DashboardDetailCard label="Nomination" value={nomination.award.name} />
               <DashboardDetailCard
                 label="Website"
                 value={application.websiteUrl || "Not provided"}
@@ -159,8 +170,8 @@ export default function JuryApplicationDetailPage({
               <DashboardDetailCard
                 label="Heard about us"
                 value={
-                  answerMap.get("heardAboutOther")?.valueText
-                    ? `${application.heardAbout || "Other"}: ${answerMap.get("heardAboutOther")?.valueText}`
+                  appAnswerMap.get("heardAboutOther")?.valueText
+                    ? `${application.heardAbout || "Other"}: ${appAnswerMap.get("heardAboutOther")?.valueText}`
                     : application.heardAbout || "Not provided"
                 }
               />
@@ -172,35 +183,45 @@ export default function JuryApplicationDetailPage({
               Block B — Answers
             </p>
             <div className="mt-4 space-y-3">
-              {categoryFields
-                .filter((f) => f.type !== "file")
-                .map((field) => {
-                  const answer = answerMap.get(field.key);
-                  if (!answer) return null;
-                  return (
+              {hasNominationAnswers ? (
+                <>
+                  {categoryFields
+                    .filter((f) => f.type !== "file")
+                    .map((field) => {
+                      const answer = nomAnswerMap.get(field.key);
+                      if (!answer) return null;
+                      return (
+                        <DashboardDetailCard
+                          key={field.key}
+                          label={field.label}
+                          value={formatAnswerValue(answer)}
+                        />
+                      );
+                    })}
+                  {categoryFields.every((f) => f.type === "file" || !nomAnswerMap.get(f.key)) && (
+                    <p className="text-sm text-slate-400">No text-based Block B answers saved.</p>
+                  )}
+                </>
+              ) : (
+                <>
+                  {legacyAppAnswers.map((a) => (
                     <DashboardDetailCard
-                      key={field.key}
-                      label={field.label}
-                      value={formatAnswerValue(answer)}
+                      key={a.id}
+                      label={formatLegacyFieldLabel(a.fieldKey)}
+                      value={formatAnswerValue(a)}
                     />
-                  );
-                })}
-              {categoryFields.every((f) => f.type === "file" || !answerMap.get(f.key)) && (
-                <p className="text-sm text-slate-400">No text-based Block B answers saved.</p>
+                  ))}
+                  {legacyAppAnswers.length === 0 && (
+                    <p className="text-sm text-slate-400">No Block B answers recorded.</p>
+                  )}
+                </>
               )}
-              {legacyAnswerEntries.map((a) => (
-                <DashboardDetailCard
-                  key={a.id}
-                  label={`${formatLegacyFieldLabel(a.fieldKey)} (Legacy)`}
-                  value={formatAnswerValue(a)}
-                />
-              ))}
             </div>
           </DashboardCard>
         </div>
 
         <div className="space-y-5">
-          <JuryScoreForm applicationId={application.id} initialScore={score} />
+          <JuryScoreForm nominationApplicationId={nomination.id} initialScore={score} />
 
           <DashboardCard>
             <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">
@@ -212,7 +233,7 @@ export default function JuryApplicationDetailPage({
                   Professional license / Certification
                 </p>
                 <div className="space-y-2">
-                  {(fileMap.get("licenseCertification") ?? []).map((f) => (
+                  {(appFileMap.get("licenseCertification") ?? []).map((f) => (
                     <FileLink
                       key={f.id}
                       href={`/api/jury/application-files/${f.id}`}
@@ -220,53 +241,55 @@ export default function JuryApplicationDetailPage({
                       sizeBytes={f.fileSize}
                     />
                   ))}
-                  {(fileMap.get("licenseCertification") ?? []).length === 0 && (
+                  {(appFileMap.get("licenseCertification") ?? []).length === 0 && (
                     <p className="text-sm text-slate-400">No license file uploaded.</p>
                   )}
                 </div>
               </div>
 
-              {categoryFields
-                .filter((f) => f.type === "file")
-                .map((field) => {
-                  const files = fileMap.get(field.key) ?? [];
-                  return (
-                    <div key={field.key}>
-                      <p className="mb-2 text-sm font-semibold text-[#10203B]">{field.label}</p>
-                      <div className="space-y-2">
-                        {files.map((f) => (
-                          <FileLink
-                            key={f.id}
-                            href={`/api/jury/application-files/${f.id}`}
-                            name={f.fileName}
-                            sizeBytes={f.fileSize}
-                          />
-                        ))}
-                        {files.length === 0 && (
-                          <p className="text-sm text-slate-400">No files uploaded for this field.</p>
-                        )}
+              {hasNominationAnswers ? (
+                categoryFields
+                  .filter((f) => f.type === "file")
+                  .map((field) => {
+                    const files = nomFileMap.get(field.key) ?? [];
+                    return (
+                      <div key={field.key}>
+                        <p className="mb-2 text-sm font-semibold text-[#10203B]">{field.label}</p>
+                        <div className="space-y-2">
+                          {files.map((f) => (
+                            <FileLink
+                              key={f.id}
+                              href={`/api/jury/nomination-files/${f.id}`}
+                              name={f.fileName}
+                              sizeBytes={f.fileSize}
+                            />
+                          ))}
+                          {files.length === 0 && (
+                            <p className="text-sm text-slate-400">No files uploaded for this field.</p>
+                          )}
+                        </div>
                       </div>
+                    );
+                  })
+              ) : (
+                legacyAppFileEntries.map(([key, files]) => (
+                  <div key={key}>
+                    <p className="mb-2 text-sm font-semibold text-[#10203B]">
+                      {formatLegacyFieldLabel(key)}
+                    </p>
+                    <div className="space-y-2">
+                      {files.map((f) => (
+                        <FileLink
+                          key={f.id}
+                          href={`/api/jury/application-files/${f.id}`}
+                          name={f.fileName}
+                          sizeBytes={f.fileSize}
+                        />
+                      ))}
                     </div>
-                  );
-                })}
-
-              {legacyFileEntries.map(([key, files]) => (
-                <div key={key}>
-                  <p className="mb-2 text-sm font-semibold text-[#10203B]">
-                    {formatLegacyFieldLabel(key)} (Legacy)
-                  </p>
-                  <div className="space-y-2">
-                    {files.map((f) => (
-                      <FileLink
-                        key={f.id}
-                        href={`/api/jury/application-files/${f.id}`}
-                        name={f.fileName}
-                        sizeBytes={f.fileSize}
-                      />
-                    ))}
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </DashboardCard>
         </div>

@@ -9,7 +9,7 @@ import { DashboardCard, dashboardInputClass, dashboardTextareaClass } from "@/sh
 type ScoreFormValue = "" | `${number}`;
 
 type JuryScoreFormProps = {
-  applicationId: string;
+  nominationApplicationId: string;
   initialScore: {
     id: string;
     technical: number | null;
@@ -41,7 +41,7 @@ function parseScore(value: ScoreFormValue) {
   return value === "" ? null : Number(value);
 }
 
-export default function JuryScoreForm({ applicationId, initialScore }: JuryScoreFormProps) {
+export default function JuryScoreForm({ nominationApplicationId, initialScore }: JuryScoreFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [technical, setTechnical] = useState<ScoreFormValue>(toValue(initialScore?.technical));
@@ -63,7 +63,7 @@ export default function JuryScoreForm({ applicationId, initialScore }: JuryScore
     setError(null);
     setNotice(null);
 
-    const response = await fetch(`/api/jury/scoring/${applicationId}/${mode}`, {
+    const response = await fetch(`/api/jury/scoring/${nominationApplicationId}/${mode}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

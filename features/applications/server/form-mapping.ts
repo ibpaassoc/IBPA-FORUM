@@ -1,8 +1,11 @@
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import type {
   ApplicationValues,
+  BlockBValuesByNomination,
   CategoryOption,
 } from "@/features/applications/types/application.types";
+
+const NOM_PREFIX = "__nom__";
 
 function isFilledFile(value: FormDataEntryValue | null): value is File {
   return value instanceof File && value.size > 0;
@@ -82,30 +85,69 @@ export function extractApplicationValues(
       .filter((entry): entry is File => isFilledFile(entry)),
   };
 
-  const selectedCategories = getSelectedCategories(
-    selectedAwardIds,
-    categories
-  );
-  const categoryFields = getUniqueCategoryFields(selectedCategories);
-
-  for (const field of categoryFields) {
-    if (field.type === "checkbox-group") {
-      values[field.key] = formData
-        .getAll(field.key)
-        .map((item) => String(item).trim())
-        .filter(Boolean);
-      continue;
-    }
-
-    if (field.type === "file") {
-      values[field.key] = formData
-        .getAll(field.key)
-        .filter((item): item is File => isFilledFile(item));
-      continue;
-    }
-
-    values[field.key] = getTextValue(formData, field.key);
-  }
-
+  // No longer extract flat Block B fields — they come via extractNominationBlockBValues
   return values;
 }
+
+/**
+ * Parses per-nomination Block B values from FormData.
+ * Keys are encoded as __nom__<awardId>__<fieldKey>.
+ * CUIDs have no underscores, so splitting on "__" after the prefix is unambiguous.
+ */
+export function extractNominationBlockBValues(
+  formData: FormData,
+  categories: CategoryOption[],
+  selectedAwardIds: string[]
+): BlockBValuesByNomination {
+  const result: BlockBValuesByNomination = {};
+
+  // Build a map of awardId → categorySlug for the selected awards
+  const awardCategorySlug = new Map<string, string>();
+  for (const awardId of selectedAwardIds) {
+    for (const category of categories) {
+      if (category.awards.some((a) => a.id === awardId)) {
+        awardCategorySlug.set(awardId, category.slug);
+        break;
+      }
+    }
+  }
+
+  // Collect all __nom__ prefixed keys
+  const seenKeys = new Set<string>();
+  for (const key of formData.keys()) {
+    if (!key.startsWith(NOM_PREFIX) || seenKeys.has(key)) continue;
+    seenKeys.add(key);
+
+    const rest = key.slice(NOM_PREFIX.length);
+    const sepIdx = rest.indexOf("__");
+    if (sepIdx === -1) continue;
+
+    const awardId = rest.slice(0, sepIdx);
+    const fieldKey = rest.slice(sepIdx + 2);
+    if (!awardId || !fieldKey) continue;
+    if (!awardCategorySlug.has(awardId)) continue;
+
+    if (!result[awardId]) {
+      result[awardId] = {};
+    }
+
+    const allValues = formData.getAll(key);
+    const files = allValues.filter((v): v is File => isFilledFile(v));
+
+    if (files.length > 0) {
+      result[awardId][fieldKey] = files;
+      continue;
+    }
+
+    const texts = allValues.map((v) => String(v).trim()).filter(Boolean);
+    if (texts.length > 1) {
+      result[awardId][fieldKey] = texts;
+    } else if (texts.length === 1) {
+      result[awardId][fieldKey] = texts[0];
+    }
+  }
+
+  return result;
+}
+
+export const NOMINATION_FORM_PREFIX = NOM_PREFIX;
