@@ -2,28 +2,34 @@
 
 import Link from "next/link";
 import { ArrowRight, Trophy } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { PRICING } from "@/data/pricing";
 
 export default function GrandPrixCTA() {
+  const { t } = useLanguage();
+  const c = t.grandPrixPage.participationCta;
+  const ps = t.home.pricingSection;
+
   return (
     <section className="section-rhythm-loose px-[var(--page-gutter)]">
       <div className="mx-auto grid max-w-7xl gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
-        <article className="rounded-[36px] border border-black/8 bg-white p-8 shadow-[0_24px_60px_rgba(3,2,19,0.06)] md:p-10">
+        <article className="flex flex-col rounded-[36px] border border-black/8 bg-white p-8 shadow-[0_24px_60px_rgba(3,2,19,0.06)] md:p-10">
           <p className="text-[0.62rem] font-semibold uppercase tracking-[0.26em] text-[var(--color-hover-accent)]">
-            Award participation
+            {c.eyebrow}
           </p>
-          <h3 className="mt-4 max-w-xl font-[var(--font-display)] text-[clamp(2.1rem,3.6vw,3.5rem)] leading-[0.96] tracking-[-0.03em] text-[var(--color-ink)]">
-            Participation cost with Grand Prix access built in.
+          <h3 className="mt-4 font-[var(--font-display)] text-[clamp(1.9rem,3.2vw,3rem)] leading-[1.06] tracking-[-0.03em] text-[var(--color-ink)]">
+            {c.title}
           </h3>
-          <p className="mt-5 max-w-2xl text-[1rem] leading-[1.85] text-[var(--color-ink-soft)]">
-            Enter the main award with the nomination path that fits your profile. When you submit five or more nominations, Grand Prix consideration is included automatically.
+          <p className="mt-5 text-[1rem] leading-[1.85] text-[var(--color-ink-soft)]">
+            {c.description}
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center gap-3">
+          <div className="mt-auto flex flex-wrap items-center gap-3 pt-8">
             <Link
               href="/apply"
               className="inline-flex items-center gap-2 rounded-full bg-[var(--color-ink)] px-6 py-3 text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-white transition-all duration-300 hover:bg-black"
             >
-              Apply now <ArrowRight size={15} />
+              {t.common.applyNow} <ArrowRight size={15} />
             </Link>
 
             <Link
@@ -31,47 +37,47 @@ export default function GrandPrixCTA() {
               className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-6 py-3 text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink)] transition-all duration-300 hover:border-black hover:bg-black hover:text-white"
             >
               <Trophy size={14} strokeWidth={1.7} />
-              Learn more
+              {t.home.grandPrixSpotlight.learnMore}
             </Link>
           </div>
         </article>
 
         <article className="rounded-[36px] bg-[var(--color-ink)] p-8 text-white shadow-[0_24px_60px_rgba(3,2,19,0.12)] md:p-10">
           <p className="text-[0.62rem] font-semibold uppercase tracking-[0.26em] text-white/65">
-            Nomination fees
+            {c.nominationFees}
           </p>
           <div className="mt-5 space-y-4">
             <div className="rounded-[24px] border border-white/10 bg-white/6 px-5 py-5">
               <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-white/62">
-                Members
+                {c.members}
               </p>
               <p className="mt-2 text-[2rem] font-semibold tracking-[-0.03em] text-white">
-                $50
+                {PRICING.awardParticipation.ibpaMembers.oneNomination}
               </p>
               <p className="mt-1 text-[0.78rem] leading-[1.6] text-white/55">
-                Per nomination submission
+                {c.perNomSubmission}
               </p>
             </div>
             <div className="rounded-[24px] border border-white/10 bg-white/6 px-5 py-5">
               <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-white/62">
-                Non-members
+                {ps.nonMembers}
               </p>
               <p className="mt-2 text-[2rem] font-semibold tracking-[-0.03em] text-white">
-                $70
+                {PRICING.awardParticipation.nonMembers.oneNomination}
               </p>
               <p className="mt-1 text-[0.78rem] leading-[1.6] text-white/55">
-                Per nomination submission
+                {c.perNomSubmission}
               </p>
             </div>
             <div className="rounded-[24px] border border-white/10 bg-white/6 px-5 py-5">
               <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-white/62">
-                Grand Prix
+                {t.common.grandPrix}
               </p>
               <p className="mt-2 text-[2rem] font-semibold tracking-[-0.03em] text-white">
                 5+
               </p>
               <p className="mt-1 text-[0.78rem] leading-[1.6] text-white/55">
-                Nominations activate eligibility
+                {c.nominationsActivate}
               </p>
             </div>
           </div>

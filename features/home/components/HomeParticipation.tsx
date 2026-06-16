@@ -32,7 +32,8 @@ export default function HomeParticipation({ tier }: { tier: Tier }) {
       ? PRICING.judgeRegistration.ibpaMembers
       : PRICING.judgeRegistration.standard;
 
-  const tierLabel = tier === "ibpa" ? "IBPA Members" : "Standard";
+  const ps = t.home.pricingSection;
+  const tierLabel = tier === "ibpa" ? ps.ibpaMembers : ps.standard;
 
   return (
     <section className="section-rhythm-loose bg-[var(--surface)]">
@@ -62,7 +63,7 @@ export default function HomeParticipation({ tier }: { tier: Tier }) {
               <div className="relative flex h-full flex-col justify-between p-[var(--space-lg)]">
                 <div className="flex items-center justify-between">
                   <span className="rounded-[var(--radius-sm)] border border-white/20 bg-white/10 px-3 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/80">
-                    Most Popular
+                    {p.tickets.mostPopular}
                   </span>
                   <Star size={18} className="text-[var(--color-blue-soft)] opacity-70" strokeWidth={1.5} />
                 </div>
@@ -72,7 +73,7 @@ export default function HomeParticipation({ tier }: { tier: Tier }) {
                     {p.tickets.label}
                   </p>
                   <h3 className="mt-2 font-[var(--font-title-family)] text-[clamp(1.8rem,3.5vw,3rem)] font-light leading-[1.05] text-white">
-                    Starting from
+                    {ps.startingFrom}
                     <br />
                     <motion.span
                       key={forumPrice}
@@ -86,10 +87,10 @@ export default function HomeParticipation({ tier }: { tier: Tier }) {
                   </h3>
 
                   <div className="mt-[var(--space-md)] flex flex-wrap gap-x-4 gap-y-2">
-                    {["1 Day Pass", "2 Day Pass", "Gala Dinner"].map((item) => (
+                    {p.tickets.features.split("·").map((item) => (
                       <span key={item} className="flex items-center gap-1.5 text-[0.82rem] text-white/70">
                         <CheckCircle size={13} strokeWidth={2} className="text-[var(--color-blue-soft)]" />
-                        {item}
+                        {item.trim()}
                       </span>
                     ))}
                   </div>
@@ -124,7 +125,7 @@ export default function HomeParticipation({ tier }: { tier: Tier }) {
               </p>
 
               <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-[0.72rem] text-white/45">Starting from</span>
+                <span className="text-[0.72rem] text-white/45">{ps.startingFrom}</span>
                 <motion.span
                   key={awardPrice}
                   initial={{ opacity: 0, y: -5 }}
@@ -168,7 +169,7 @@ export default function HomeParticipation({ tier }: { tier: Tier }) {
               </p>
 
               <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-[0.72rem] text-white/45">Starting from</span>
+                <span className="text-[0.72rem] text-white/45">{ps.startingFrom}</span>
                 <motion.span
                   key={judgePrice}
                   initial={{ opacity: 0, y: -5 }}
