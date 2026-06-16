@@ -356,7 +356,7 @@ export default function JuryApplicationForm() {
       <StepBar steps={STEPS} current={step} />
 
       {/* Form card */}
-      <div className="mx-auto max-w-4xl rounded-[40px] border border-slate-100 bg-[#F1F3F5] p-8 shadow-xl md:p-14">
+      <div className="mx-auto max-w-4xl rounded-2xl border border-slate-100 bg-[#F1F3F5] p-5 shadow-xl sm:rounded-[32px] sm:p-8 md:rounded-[40px] md:p-14">
         {/* Step heading */}
         <div className="mb-10">
           <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-hover-accent)]">

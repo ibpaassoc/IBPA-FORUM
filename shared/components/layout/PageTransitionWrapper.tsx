@@ -67,7 +67,7 @@ export default function PageTransitionWrapper({
   }, [pathname]);
 
   return (
-    <div className="relative grid w-full overflow-x-hidden">
+    <div className="relative grid grid-cols-1 w-full overflow-x-hidden">
       <AnimatePresence initial={false} custom={direction} mode="sync">
         <motion.div
           key={pathname}

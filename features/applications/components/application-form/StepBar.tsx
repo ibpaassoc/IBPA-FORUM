@@ -16,7 +16,7 @@ export default function StepBar({
 }) {
   return (
     <div className="mx-auto w-full max-w-4xl px-4">
-      <div className="flex items-center justify-between rounded-[40px] bg-white/90 px-6 py-4 shadow-xl backdrop-blur-xl border border-slate-100 overflow-x-auto no-scrollbar gap-2">
+      <div className="flex items-center justify-between rounded-[40px] bg-white/90 px-3 py-3 shadow-xl backdrop-blur-xl border border-slate-100 overflow-x-auto no-scrollbar gap-1 sm:gap-2 sm:px-6 sm:py-4">
         {steps.map((step, i) => {
           const Icon = step.icon;
           const done = i < current;
@@ -26,7 +26,7 @@ export default function StepBar({
               {/* Step pill */}
               <div className="flex min-w-0 flex-1 flex-col items-center gap-1.5">
                 <div
-                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-all duration-300 ${
+                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-all duration-300 sm:h-10 sm:w-10 ${
                     done
                       ? "bg-[var(--color-hover-accent)] text-white"
                       : active
@@ -52,7 +52,7 @@ export default function StepBar({
               {/* Connector */}
               {i < steps.length - 1 ? (
                 <div
-                  className={`mx-1 h-px w-4 shrink-0 transition-colors duration-500 sm:w-6 ${
+                  className={`mx-0.5 h-px w-2 shrink-0 transition-colors duration-500 sm:mx-1 sm:w-4 ${
                     i < current ? "bg-[var(--color-hover-accent)]/50" : "bg-slate-200"
                   }`}
                 />

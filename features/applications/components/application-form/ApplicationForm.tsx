@@ -843,7 +843,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
     <form ref={formRef} onSubmit={handleSubmit} className="space-y-6 pb-12">
       <StepBar steps={STEPS} current={step} />
 
-      <div className="mx-auto max-w-6xl rounded-[40px] border border-black/6 bg-[#F3F3F1] p-6 shadow-[0_28px_80px_rgba(3,2,19,0.08)] md:p-10 xl:p-14">
+      <div className="mx-auto max-w-6xl rounded-2xl border border-black/6 bg-[#F3F3F1] p-5 shadow-[0_28px_80px_rgba(3,2,19,0.08)] sm:rounded-[32px] sm:p-6 md:rounded-[40px] md:p-10 xl:p-14">
         <div className="mb-10">
           <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-ink-soft)]">
             {STEPS[step].label} - {step + 1} / {STEPS.length}

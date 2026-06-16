@@ -17,7 +17,7 @@ export default function HomeConversionBlock() {
       {/* ── Sticky tier toggle ── */}
       <div className="sticky top-[70px] z-30">
         <div className="border-b border-[var(--border-soft)] bg-[var(--surface)]/94 py-3 backdrop-blur-md">
-          <div className="page-section flex items-center justify-between gap-4">
+          <div className="page-section flex items-center justify-center gap-4 sm:justify-between">
             {/* Label */}
             <p className="hidden text-[0.69rem] font-medium uppercase tracking-[0.14em] text-[var(--color-ink-soft)] sm:block">
               {tier === "ibpa" ? "IBPA Member pricing active" : "Standard pricing active"}
