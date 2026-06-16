@@ -173,6 +173,7 @@ export default function BlockBRenderer({
                   files={fileList}
                   required={field.required}
                   multiple={(field.maxFiles ?? 1) > 1}
+                  maxFiles={field.maxFiles}
                   accept={field.accept}
                   description={field.description}
                   error={errors[field.key]}

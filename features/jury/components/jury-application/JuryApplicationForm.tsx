@@ -444,7 +444,7 @@ export default function JuryApplicationForm() {
               <UploadField
                 label={copy.certifications} name="certifications"
                 files={Array.isArray(values.certifications) ? values.certifications.filter((f): f is File => f instanceof File) : []}
-                required multiple accept={["image/jpeg", "image/png", "application/pdf"]}
+                required multiple maxFiles={10} accept={["image/jpeg", "image/png", "application/pdf"]}
                 description={copy.certificationsHint} error={errors.certifications} onChange={handleFilesChange}
               />
               <UploadField

@@ -324,8 +324,7 @@ export function validateApplicationValues({
       required: true,
       accept: ["image/jpeg", "image/png", "application/pdf"],
       minFiles: 1,
-      maxFiles: 1,
-      maxFileSizeMb: 5,
+      maxFiles: 5,
     },
     values,
     errors
