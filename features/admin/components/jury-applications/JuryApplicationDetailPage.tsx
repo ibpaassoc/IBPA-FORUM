@@ -9,24 +9,29 @@ import {
 import DeleteJuryApplicationButton from "@/features/admin/components/jury-applications/DeleteJuryApplicationButton";
 import { formatAdminDate } from "@/features/admin/server/view-models";
 import {
-  AdminDashboardShell,
-  AdminDetailCard,
-  AdminHeroCard,
-  AdminToolbarButton,
-} from "@/shared/components/admin/AdminDashboard";
+  DashboardCard,
+  DashboardDetailCard,
+  DashboardSecondaryBtn,
+  DashboardChip,
+  dashboardTextareaClass,
+} from "@/shared/components/admin/DashboardUI";
 
 type JuryApplicationDetail = JuryApplication & {
   files: JuryApplicationFile[];
 };
 
-function DetailItem({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
-  return <AdminDetailCard label={label} value={value} />;
+function FileLink({ href, name, sizeBytes }: { href: string; name: string; sizeBytes: number }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className="flex items-center justify-between rounded-[16px] border border-slate-200 bg-slate-50/60 px-4 py-3 text-sm text-[#10203B] transition hover:border-[#4C7D9D]/40 hover:bg-white"
+    >
+      <span>{name}</span>
+      <span className="text-xs text-slate-400">{(sizeBytes / 1024 / 1024).toFixed(2)} MB</span>
+    </a>
+  );
 }
 
 export default function JuryApplicationDetailPage({
@@ -38,255 +43,190 @@ export default function JuryApplicationDetailPage({
   error?: string;
   notice?: string;
 }) {
-  const profilePhoto = application.files.find(
-    (file) => file.fieldKey === "profilePhoto"
-  );
-  const certifications = application.files.filter(
-    (file) => file.fieldKey === "certifications"
-  );
+  const profilePhoto = application.files.find((f) => f.fieldKey === "profilePhoto");
+  const certifications = application.files.filter((f) => f.fieldKey === "certifications");
 
   return (
-    <AdminDashboardShell>
-      <AdminHeroCard
-        eyebrow="Jury Admin"
-        title={application.fullName}
-        subtitle={`${application.professionalTitle} from ${application.city}, ${application.country}`}
-        actions={
-          <>
-            <AdminToolbarButton href="/admin/jury-applications">Back to List</AdminToolbarButton>
-            <DeleteJuryApplicationButton id={application.id} fullName={application.fullName} />
-          </>
-        }
-      />
+    <div className="space-y-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">Jury Applicant</p>
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[#10203B]">{application.fullName}</h1>
+          <p className="mt-0.5 text-sm text-slate-500">
+            {application.professionalTitle} · {application.city}, {application.country}
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <DashboardSecondaryBtn href="/admin/jury-applications">← Back</DashboardSecondaryBtn>
+          <DeleteJuryApplicationButton id={application.id} fullName={application.fullName} />
+        </div>
+      </div>
 
-        <div className="mt-6 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-          <div className="space-y-6">
-            {error ? (
-              <div className="admin-alert-danger rounded-2xl px-5 py-4 text-sm leading-7">
-                {error}
-              </div>
-            ) : null}
+      {error && (
+        <div className="rounded-[16px] border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700">
+          {error}
+        </div>
+      )}
+      {notice && (
+        <div className="rounded-[16px] border border-[#4C7D9D]/30 bg-[#4C7D9D]/5 px-5 py-4 text-sm text-[#10203B]">
+          {notice}
+        </div>
+      )}
 
-            {notice ? (
-              <div className="rounded-2xl border admin-alert-note px-5 py-4 text-sm leading-7">
-                {notice}
-              </div>
-            ) : null}
+      <div className="grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
+        <div className="space-y-5">
+          <DashboardCard>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">Applicant</p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <DashboardDetailCard label="Full name" value={application.fullName} />
+              <DashboardDetailCard label="Email" value={application.email} />
+              <DashboardDetailCard label="Phone" value={application.phone} />
+              <DashboardDetailCard label="Location" value={`${application.city}, ${application.country}`} />
+              <DashboardDetailCard label="Professional title" value={application.professionalTitle} />
+              <DashboardDetailCard label="Employer / Affiliation" value={application.employerAffiliation} />
+              <DashboardDetailCard label="Years of experience" value={String(application.yearsExperience)} />
+              <DashboardDetailCard
+                label="Membership"
+                value={
+                  application.membershipLevel
+                    ? `${application.membershipStatus ?? "Not provided"} (${application.membershipLevel})`
+                    : application.membershipStatus || "Not provided"
+                }
+              />
+              <DashboardDetailCard
+                label="IBPA Association Member"
+                value={application.ibpaAssociationMember ? "Yes" : "No"}
+              />
+              {application.ibpaAssociationMember && (
+                <DashboardDetailCard label="IBPA Number" value={application.ibpaNumber || "Not provided"} />
+              )}
+            </div>
+          </DashboardCard>
 
-            <section className="admin-card rounded-3xl p-6">
-              <p className="admin-eyebrow">
-                Applicant
-              </p>
-
-              <div className="mt-5 grid gap-4 md:grid-cols-2">
-                <DetailItem label="Full Name" value={application.fullName} />
-                <DetailItem label="Email" value={application.email} />
-                <DetailItem label="Phone" value={application.phone} />
-                <DetailItem
-                  label="Location"
-                  value={`${application.city}, ${application.country}`}
-                />
-                <DetailItem
-                  label="Professional Title"
-                  value={application.professionalTitle}
-                />
-                <DetailItem
-                  label="Employer / Affiliation"
-                  value={application.employerAffiliation}
-                />
-                <DetailItem
-                  label="Years of Experience"
-                  value={String(application.yearsExperience)}
-                />
-                <DetailItem
-                  label="Membership"
-                  value={
-                    application.membershipLevel
-                      ? `${application.membershipStatus ?? "Not provided"} (${application.membershipLevel})`
-                      : application.membershipStatus || "Not provided"
-                  }
-                />
-                <DetailItem
-                  label="IBPA Association Member"
-                  value={application.ibpaAssociationMember ? "Yes" : "No"}
-                />
-                {application.ibpaAssociationMember ? (
-                  <DetailItem
-                    label="IBPA Number"
-                    value={application.ibpaNumber || "Not provided"}
-                  />
-                ) : null}
-              </div>
-            </section>
-
-            <section className="admin-card rounded-3xl p-6">
-              <p className="admin-eyebrow">
-                Experience
-              </p>
-
-              <div className="mt-5 grid gap-4 md:grid-cols-2">
-                <DetailItem
-                  label="Previous Judging Experience"
-                  value={
-                    application.previousJudgingExperience
-                      ? application.previousJudgingDetails || "Yes"
-                      : "No"
-                  }
-                />
-              </div>
-
-              <div className="admin-detail-card mt-4 rounded-2xl p-4">
-                <p className="admin-eyebrow">
-                  Areas of Expertise
+          <DashboardCard>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">Experience</p>
+            <div className="mt-4">
+              <DashboardDetailCard
+                label="Previous judging experience"
+                value={
+                  application.previousJudgingExperience
+                    ? application.previousJudgingDetails || "Yes"
+                    : "No"
+                }
+              />
+            </div>
+            {application.expertiseAreas.length > 0 && (
+              <div className="mt-4">
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">
+                  Expertise areas
                 </p>
-
-                <div className="mt-4 flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2">
                   {application.expertiseAreas.map((area: string) => (
-                    <span
-                      key={area}
-                      className="admin-chip rounded-full px-3 py-1 text-xs"
-                    >
-                      {area}
-                    </span>
+                    <DashboardChip key={area}>{area}</DashboardChip>
                   ))}
                 </div>
               </div>
-            </section>
+            )}
+          </DashboardCard>
 
-            <section className="admin-card rounded-3xl p-6">
-              <p className="admin-eyebrow">
-                Statements
-              </p>
+          <DashboardCard>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">Statements</p>
+            <div className="mt-4 space-y-3">
+              <DashboardDetailCard label="Professional bio" value={application.professionalBio} />
+              <DashboardDetailCard label="Conflict disclosure" value={application.conflictDisclosure} />
+              <DashboardDetailCard label="Why they want to judge" value={application.motivation} />
+              <DashboardDetailCard
+                label="Website / LinkedIn"
+                value={application.professionalWebsite || "Not provided"}
+              />
+            </div>
+          </DashboardCard>
+        </div>
 
-              <div className="mt-5 space-y-4">
-                <DetailItem
-                  label="Professional Bio"
-                  value={application.professionalBio}
-                />
-                <DetailItem
-                  label="Conflict Disclosure"
-                  value={application.conflictDisclosure}
-                />
-                <DetailItem
-                  label="Why They Want to Judge"
-                  value={application.motivation}
-                />
-                <DetailItem
-                  label="Website / LinkedIn"
-                  value={application.professionalWebsite || "Not provided"}
+        <div className="space-y-5">
+          <DashboardCard>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">Review Panel</p>
+            <div className="mt-4">
+              <ApplicationStatusBadge status={application.status} />
+            </div>
+
+            <form action={saveJuryApplicationNotesAction} className="mt-5 space-y-4">
+              <input type="hidden" name="id" value={application.id} />
+              <div>
+                <label htmlFor="adminNotes" className="mb-2 block text-sm font-semibold text-[#10203B]">
+                  Admin notes
+                </label>
+                <textarea
+                  id="adminNotes"
+                  name="adminNotes"
+                  defaultValue={application.adminNotes || ""}
+                  rows={5}
+                  placeholder="Add internal review notes, follow-up items, or approval context."
+                  className={dashboardTextareaClass}
                 />
               </div>
-            </section>
-          </div>
-
-          <div className="space-y-6">
-            <section className="admin-card rounded-3xl p-6">
-              <p className="admin-eyebrow">
-                Review Panel
-              </p>
-
-              <div className="mt-5 grid gap-4">
-                <div className="admin-detail-card rounded-2xl p-4">
-                  <p className="admin-eyebrow">
-                    Application Status
-                  </p>
-                  <div className="mt-4">
-                    <ApplicationStatusBadge status={application.status} />
-                  </div>
-                </div>
+              <div>
+                <button
+                  type="submit"
+                  className="inline-flex items-center justify-center rounded-2xl bg-[#10203B] px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-[#1a3357]"
+                >
+                  Save Notes
+                </button>
               </div>
+            </form>
 
-              <form action={saveJuryApplicationNotesAction} className="mt-5 space-y-5">
-                <input type="hidden" name="id" value={application.id} />
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              <DashboardDetailCard label="Submitted" value={formatAdminDate(application.submittedAt)} />
+              <DashboardDetailCard label="Approved at" value={formatAdminDate(application.approvedAt)} />
+              <DashboardDetailCard label="Paid at" value={formatAdminDate(application.paidAt)} />
+            </div>
 
-                <div>
-                  <label
-                    htmlFor="adminNotes"
-                    className="admin-label mb-2 block text-sm font-semibold"
-                  >
-                    Admin notes
-                  </label>
-                  <textarea
-                    id="adminNotes"
-                    name="adminNotes"
-                    defaultValue={application.adminNotes || ""}
-                    className="admin-field min-h-45 w-full rounded-2xl px-4 py-3 text-sm outline-none transition"
-                    placeholder="Add internal review notes, follow-up items, or approval context."
-                  />
-                </div>
-                
-                <div className="justify-self-center">
-                    <button
-                        type="submit"
-                        className="admin-action-primary inline-flex items-center rounded-full px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
-                        >
-                        Save Notes
-                    </button>
-                </div>
-              </form>
-
-              <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                <DetailItem
-                  label="Submitted"
-                  value={formatAdminDate(application.submittedAt)}
-                />
-                <DetailItem
-                  label="Approved At"
-                  value={formatAdminDate(application.approvedAt)}
-                />
-                <DetailItem label="Paid At" value={formatAdminDate(application.paidAt)} />
-              </div>
-
-              <div className="mt-5 flex flex-wrap gap-3">
-                {application.status !== "PAID" ? (
-                  <>
-                    <form action={approveJuryApplicationAction}>
-                      <input type="hidden" name="id" value={application.id} />
-                      <input type="hidden" name="isIbpaMember" value="true" />
-                      <button
-                        type="submit"
-                        className="admin-action-primary inline-flex items-center justify-center rounded-full px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
-                      >
-                        Approve (IBPA Member)
-                      </button>
-                    </form>
-                    <form action={approveJuryApplicationAction}>
-                      <input type="hidden" name="id" value={application.id} />
-                      <input type="hidden" name="isIbpaMember" value="false" />
-                      <button
-                        type="submit"
-                        className="admin-action-primary inline-flex items-center justify-center rounded-full px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
-                      >
-                        Approve (Non-Member)
-                      </button>
-                    </form>
-                  </>
-                ) : null}
-
-                {application.status !== "REJECTED" &&
-                application.status !== "PAID" ? (
-                  <form action={rejectJuryApplicationAction}>
+            <div className="mt-5 flex flex-wrap gap-3">
+              {application.status !== "PAID" && (
+                <>
+                  <form action={approveJuryApplicationAction}>
                     <input type="hidden" name="id" value={application.id} />
+                    <input type="hidden" name="isIbpaMember" value="true" />
                     <button
                       type="submit"
-                      className="admin-alert-danger inline-flex items-center justify-center rounded-full px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition hover:border-(--admin-blue) hover:text-(--admin-blue-strong)"
+                      className="inline-flex items-center justify-center rounded-2xl bg-[#10203B] px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-[#1a3357]"
                     >
-                      Reject Application
+                      Approve (IBPA Member)
                     </button>
                   </form>
-                ) : null}
-              </div>
-            </section>
+                  <form action={approveJuryApplicationAction}>
+                    <input type="hidden" name="id" value={application.id} />
+                    <input type="hidden" name="isIbpaMember" value="false" />
+                    <button
+                      type="submit"
+                      className="inline-flex items-center justify-center rounded-2xl bg-[#10203B] px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-[#1a3357]"
+                    >
+                      Approve (Non-Member)
+                    </button>
+                  </form>
+                </>
+              )}
+              {application.status !== "REJECTED" && application.status !== "PAID" && (
+                <form action={rejectJuryApplicationAction}>
+                  <input type="hidden" name="id" value={application.id} />
+                  <button
+                    type="submit"
+                    className="inline-flex items-center justify-center rounded-2xl border border-red-200 bg-white px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-red-600 transition hover:border-red-300 hover:bg-red-50"
+                  >
+                    Reject Application
+                  </button>
+                </form>
+              )}
+            </div>
+          </DashboardCard>
 
-            <section className="admin-card rounded-3xl p-6">
-              <p className="admin-eyebrow">
-                Files
-              </p>
-
+          <DashboardCard>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">Files</p>
+            <div className="mt-4">
               {profilePhoto ? (
-                <div className="mt-5">
-                  <p className="text-sm font-semibold text-(--admin-ink)">Profile Photo</p>
-                  <div className="mt-4 overflow-hidden rounded-2xl border border-[rgba(37,42,45,0.12)] bg-white">
+                <div>
+                  <p className="mb-2 text-sm font-semibold text-[#10203B]">Profile Photo</p>
+                  <div className="overflow-hidden rounded-[16px] border border-slate-200">
                     <Image
                       src={`/api/admin/jury-files/${profilePhoto.id}`}
                       alt={application.fullName}
@@ -298,40 +238,28 @@ export default function JuryApplicationDetailPage({
                   </div>
                 </div>
               ) : (
-                <p className="admin-empty mt-5 text-sm">
-                  No profile photo was saved for this application.
-                </p>
+                <p className="text-sm text-slate-400">No profile photo uploaded.</p>
               )}
-
-              <div className="mt-6">
-                <p className="text-sm font-semibold text-(--admin-ink)">Certifications</p>
-
-                <div className="mt-4 space-y-3">
-                  {certifications.map((file) => (
-                    <a
-                      key={file.id}
-                      href={`/api/admin/jury-files/${file.id}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="admin-detail-card flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition hover:border-(--admin-blue)"
-                    >
-                      <span>{file.fileName}</span>
-                      <span className="admin-muted text-xs">
-                        {(file.fileSize / 1024 / 1024).toFixed(2)} MB
-                      </span>
-                    </a>
-                  ))}
-
-                  {certifications.length === 0 ? (
-                    <p className="admin-muted text-sm">
-                      No certifications were saved for this application.
-                    </p>
-                  ) : null}
-                </div>
+            </div>
+            <div className="mt-5">
+              <p className="mb-2 text-sm font-semibold text-[#10203B]">Certifications</p>
+              <div className="space-y-2">
+                {certifications.map((file) => (
+                  <FileLink
+                    key={file.id}
+                    href={`/api/admin/jury-files/${file.id}`}
+                    name={file.fileName}
+                    sizeBytes={file.fileSize}
+                  />
+                ))}
+                {certifications.length === 0 && (
+                  <p className="text-sm text-slate-400">No certifications uploaded.</p>
+                )}
               </div>
-            </section>
-          </div>
+            </div>
+          </DashboardCard>
         </div>
-    </AdminDashboardShell>
+      </div>
+    </div>
   );
 }

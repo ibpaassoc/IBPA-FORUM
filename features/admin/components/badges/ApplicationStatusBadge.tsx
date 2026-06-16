@@ -1,28 +1,28 @@
 "use client";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { AdminStatusBadge } from "@/shared/components/admin/AdminDashboard";
+import { DashboardBadge } from "@/shared/components/admin/DashboardUI";
 
-const statusStyles = {
-  DRAFT: "muted",
-  PAYMENT_PENDING: "gold",
+const statusTones = {
+  DRAFT: "neutral",
+  PAYMENT_PENDING: "amber",
   SUBMITTED: "blue",
-  UNDER_REVIEW: "gold",
-  APPROVED: "success",
-  REJECTED: "danger",
-  PAID: "success",
+  UNDER_REVIEW: "amber",
+  APPROVED: "green",
+  REJECTED: "red",
+  PAID: "green",
 } as const;
 
 export default function ApplicationStatusBadge({
   status,
 }: {
-  status: keyof typeof statusStyles;
+  status: keyof typeof statusTones;
 }) {
   const { t } = useLanguage();
 
   return (
-    <AdminStatusBadge tone={statusStyles[status]}>
+    <DashboardBadge tone={statusTones[status]}>
       {t.statuses[status]}
-    </AdminStatusBadge>
+    </DashboardBadge>
   );
 }

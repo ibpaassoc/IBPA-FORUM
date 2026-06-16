@@ -2,52 +2,37 @@
 
 import AdminLoginForm from "@/features/admin/components/auth/AdminLoginForm";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { AdminDashboardShell } from "@/shared/components/admin/AdminDashboard";
 
 export default function AdminLoginPage() {
   const { t } = useLanguage();
 
   return (
-    <AdminDashboardShell className="px-6 py-16 md:px-10 md:py-20">
-      <div className="mx-auto max-w-6xl">
-        <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
-          <section className="admin-panel rounded-3xl p-8 md:p-10">
-            <p className="admin-eyebrow">
-              {t.admin.login.eyebrow}
-            </p>
-            <h1 className="admin-heading mt-5 max-w-3xl text-4xl font-semibold leading-tight sm:text-5xl">
-              {t.admin.login.title}
-            </h1>
-            <p className="admin-copy mt-5 max-w-2xl text-sm leading-7 sm:text-base">
-              {t.admin.login.text}
-            </p>
+    <div className="flex min-h-[70vh] items-center justify-center">
+      <div className="w-full max-w-md">
+        <div className="mb-6">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">
+            {t.admin.login.eyebrow}
+          </p>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[#10203B]">
+            {t.admin.login.title}
+          </h1>
+          <p className="mt-2 text-sm leading-6 text-slate-500">{t.admin.login.text}</p>
+        </div>
 
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
-              {t.admin.login.cards.map((item) => (
-                <div key={item} className="admin-detail-card rounded-2xl p-4">
-                  <p className="text-sm font-semibold text-[var(--admin-ink)]">
-                    {item}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </section>
+        <div className="rounded-[24px] border border-slate-200/80 bg-white p-6 shadow-[0_2px_16px_rgba(16,32,59,0.06)]">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">
+            {t.admin.login.signIn}
+          </p>
+          <h2 className="mt-2 text-xl font-semibold tracking-tight text-[#10203B]">
+            {t.admin.login.loginTitle}
+          </h2>
+          <p className="mt-1.5 text-sm leading-6 text-slate-500">{t.admin.login.loginText}</p>
 
-          <section className="admin-card flex flex-col rounded-3xl p-8 md:p-10">
-            <p className="admin-eyebrow">
-              {t.admin.login.signIn}
-            </p>
-            <h2 className="admin-heading mt-4 text-2xl font-semibold">
-              {t.admin.login.loginTitle}
-            </h2>
-            <p className="admin-copy mt-3 text-sm leading-6">
-              {t.admin.login.loginText}
-            </p>
-
+          <div className="mt-6">
             <AdminLoginForm />
-          </section>
+          </div>
         </div>
       </div>
-    </AdminDashboardShell>
+    </div>
   );
 }

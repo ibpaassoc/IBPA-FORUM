@@ -20,7 +20,7 @@ export default function DeleteJuryApplicationButton({
       <input type="hidden" name="id" value={id} />
       <button
         type="submit"
-        className="admin-alert-danger inline-flex items-center justify-center rounded-full px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition"
+        className="inline-flex items-center justify-center rounded-2xl border border-red-200 bg-white px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-red-600 transition hover:border-red-300 hover:bg-red-50"
       >
         Delete Application
       </button>
