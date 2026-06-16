@@ -53,15 +53,8 @@ import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 const NOM_FORM_PREFIX = "__nom__";
 
-const STEPS: StepDef[] = [
-  { id: "category", label: "Category", icon: Layers },
-  { id: "contact", label: "Contact", icon: User },
-  { id: "profile", label: "Profile", icon: BadgeCheck },
-  { id: "credentials", label: "Credentials", icon: FileCheck },
-  { id: "details", label: "Details", icon: ClipboardList },
-  { id: "motivation", label: "Motivation", icon: Award },
-  { id: "confirm", label: "Confirm", icon: Send },
-];
+// Fixed step index where Block B sections begin (one per selected nomination)
+const BLOCK_B_START = 4;
 
 const categoryIconBySlug: Record<string, LucideIcon> = {
   hair: SprayCan,
@@ -455,6 +448,9 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
       } => Boolean(item)
     );
 
+  // Dynamic step boundaries — change when nomination count changes
+  const MOTIVATION_STEP = BLOCK_B_START + Math.max(1, selectedNominations.length);
+  const CONFIRM_STEP = MOTIVATION_STEP + 1;
 
   function handleBlockBChange(awardId: string, name: string, value: string | string[]) {
     setBlockBValues((current) => ({
@@ -620,22 +616,18 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
       requireField("licenseCertification");
     }
 
-    if (currentStep === 4) {
-      const newBlockBErrors: Record<string, ValidationErrors> = {};
-      let hasBlockBErrors = false;
-      for (const nom of selectedNominations) {
+    if (currentStep >= BLOCK_B_START && currentStep < MOTIVATION_STEP) {
+      const nomIndex = currentStep - BLOCK_B_START;
+      const nom = selectedNominations[nomIndex];
+      if (nom) {
         const nomErrors = validateNominationBlockB(
           nom.category.slug,
           blockBValues[nom.award.id] ?? {}
         );
+        setBlockBErrors((current) => ({ ...current, [nom.award.id]: nomErrors }));
         if (Object.keys(nomErrors).length > 0) {
-          newBlockBErrors[nom.award.id] = nomErrors;
-          hasBlockBErrors = true;
+          nextErrors._blockB = "Please complete all required fields for this nomination.";
         }
-      }
-      setBlockBErrors(newBlockBErrors);
-      if (hasBlockBErrors) {
-        nextErrors._blockB = "Please complete all required fields for each nomination.";
       }
     }
 
@@ -651,7 +643,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
 
     setErrors({});
     setStepDirection(1);
-    setStep((current) => Math.min(current + 1, STEPS.length - 1));
+    setStep((current) => Math.min(current + 1, CONFIRM_STEP));
     formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
@@ -663,6 +655,12 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+
+    // Enter key in any field triggers this — only actually submit on the final step
+    if (step < CONFIRM_STEP) {
+      advance();
+      return;
+    }
 
     const validation = validateApplicationValues({
       values,
@@ -867,16 +865,49 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
     );
   }
 
-  const currentStepInfo = copy.steps[step];
+  // Build dynamic step list — one Block B step per selected nomination
+  const nomSteps: StepDef[] = selectedNominations.length > 0
+    ? selectedNominations.map((_, i) => ({
+        id: `blockb-${i}`,
+        label: `Details ${i + 1}`,
+        icon: ClipboardList,
+      }))
+    : [{ id: "details", label: "Details", icon: ClipboardList }];
+  const dynamicSteps: StepDef[] = [
+    { id: "category", label: "Category", icon: Layers },
+    { id: "contact", label: "Contact", icon: User },
+    { id: "profile", label: "Profile", icon: BadgeCheck },
+    { id: "credentials", label: "Credentials", icon: FileCheck },
+    ...nomSteps,
+    { id: "motivation", label: "Motivation", icon: Award },
+    { id: "confirm", label: "Confirm", icon: Send },
+  ];
+
+  const currentBlockBNom =
+    step >= BLOCK_B_START && step < MOTIVATION_STEP
+      ? (selectedNominations[step - BLOCK_B_START] ?? null)
+      : null;
+
+  const blockBNomIndex = currentBlockBNom ? step - BLOCK_B_START : -1;
+  const currentStepInfo: { title: string; desc: string } = currentBlockBNom
+    ? {
+        title: currentBlockBNom.nominationTitle,
+        desc: `Nomination ${blockBNomIndex + 1} of ${selectedNominations.length} · ${currentBlockBNom.categoryTitle}`,
+      }
+    : step === MOTIVATION_STEP
+      ? copy.steps[5]!
+      : step >= CONFIRM_STEP
+        ? copy.steps[6]!
+        : (copy.steps[step] ?? copy.steps[4]!);
 
   return (
     <form ref={formRef} onSubmit={handleSubmit} className="space-y-6 pb-12">
-      <StepBar steps={STEPS} current={step} />
+      <StepBar steps={dynamicSteps} current={step} />
 
       <div className="mx-auto max-w-6xl rounded-2xl border border-black/6 bg-[#F3F3F1] p-5 shadow-[0_28px_80px_rgba(3,2,19,0.08)] sm:rounded-[32px] sm:p-6 md:rounded-[40px] md:p-10 xl:p-14">
         <div className="mb-10">
           <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-ink-soft)]">
-            {STEPS[step].label} - {step + 1} / {STEPS.length}
+            {dynamicSteps[step]?.label} - {step + 1} / {dynamicSteps.length}
           </p>
           <h2 className="mt-2 font-[var(--font-ui-family)] text-[2rem] font-black uppercase leading-none tracking-[-0.02em] text-[var(--color-ink)] md:text-[2.5rem]">
             {currentStepInfo.title}
@@ -1120,25 +1151,21 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
             />
           ) : null}
 
-          {step === 4 ? (
-            <div className="space-y-6">
+          {step >= BLOCK_B_START && step < MOTIVATION_STEP ? (
+            <div className="space-y-5">
               {errors._blockB ? (
                 <div className="rounded-[20px] border border-red-200 bg-red-50/90 px-4 py-3 text-sm text-red-700">
                   {errors._blockB}
                 </div>
               ) : null}
-              {selectedNominations.length > 0 ? (
-                selectedNominations.map((nom) => (
-                  <BlockBRenderer
-                    key={nom.award.id}
-                    fields={categoryFieldConfigs[nom.category.slug] ?? []}
-                    title={nom.nominationTitle}
-                    values={blockBValues[nom.award.id] ?? {}}
-                    errors={blockBErrors[nom.award.id] ?? {}}
-                    onChange={(name, value) => handleBlockBChange(nom.award.id, name, value)}
-                    onFilesChange={(name, files) => handleBlockBFilesChange(nom.award.id, name, files)}
-                  />
-                ))
+              {currentBlockBNom ? (
+                <BlockBRenderer
+                  fields={categoryFieldConfigs[currentBlockBNom.category.slug] ?? []}
+                  values={blockBValues[currentBlockBNom.award.id] ?? {}}
+                  errors={blockBErrors[currentBlockBNom.award.id] ?? {}}
+                  onChange={(name, value) => handleBlockBChange(currentBlockBNom.award.id, name, value)}
+                  onFilesChange={(name, files) => handleBlockBFilesChange(currentBlockBNom.award.id, name, files)}
+                />
               ) : (
                 <BlockBRenderer
                   fields={[]}
@@ -1151,7 +1178,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
             </div>
           ) : null}
 
-          {step === 5 ? (
+          {step === MOTIVATION_STEP ? (
             <div className="grid gap-6 md:grid-cols-2">
               <TextField
                 label={copy.website}
@@ -1208,7 +1235,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
             </div>
           ) : null}
 
-          {step === 6 ? (
+          {step === CONFIRM_STEP ? (
             <div className="space-y-5">
               <div className="rounded-[28px] border border-black/8 bg-white p-6 shadow-[0_16px_36px_rgba(3,2,19,0.05)]">
                 <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-ink-soft)]">
@@ -1280,7 +1307,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
             <ChevronLeft size={14} /> {copy.back}
           </button>
 
-          {step < STEPS.length - 1 ? (
+          {step < CONFIRM_STEP ? (
             <button
               type="button"
               onClick={advance}
