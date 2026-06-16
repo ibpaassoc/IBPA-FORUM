@@ -6,6 +6,7 @@ import {
   type AdminLoginState,
 } from "@/features/admin/actions/auth.actions";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { dashboardInputClass } from "@/shared/components/admin/DashboardUI";
 
 const initialState: AdminLoginState = {};
 
@@ -14,12 +15,9 @@ export default function AdminLoginForm() {
   const { t } = useLanguage();
 
   return (
-    <form action={action} className="mt-8 space-y-5">
+    <form action={action} className="space-y-5">
       <div>
-        <label
-          htmlFor="password"
-          className="admin-label mb-2 block text-sm font-semibold"
-        >
+        <label htmlFor="password" className="mb-1.5 block text-sm font-semibold text-[#10203B]">
           {t.admin.login.password}
         </label>
         <input
@@ -27,21 +25,21 @@ export default function AdminLoginForm() {
           name="password"
           type="password"
           required
-          className="admin-field w-full rounded-2xl px-4 py-3 text-sm outline-none transition"
+          className={dashboardInputClass}
           placeholder={t.admin.login.placeholder}
         />
       </div>
 
-      {state?.error ? (
-        <p className="admin-alert-danger rounded-2xl px-4 py-3 text-sm">
+      {state?.error && (
+        <div className="rounded-[16px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {state.error}
-        </p>
-      ) : null}
+        </div>
+      )}
 
       <button
         type="submit"
         disabled={pending}
-        className="admin-action-primary inline-flex w-full items-center justify-center rounded-full px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] transition disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex w-full items-center justify-center rounded-2xl bg-[#10203B] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-[#1a3357] disabled:cursor-not-allowed disabled:opacity-60"
       >
         {pending ? t.admin.login.opening : t.admin.login.open}
       </button>

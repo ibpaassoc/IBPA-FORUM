@@ -77,3 +77,21 @@ export async function checkInTicket(
     data: { status, lastCheckIn: new Date() },
   });
 }
+
+export async function getAllTickets() {
+  return prisma.ticket.findMany({
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      fullName: true,
+      email: true,
+      phone: true,
+      type: true,
+      galaDinner: true,
+      isIbpaMember: true,
+      status: true,
+      lastCheckIn: true,
+      createdAt: true,
+    },
+  });
+}

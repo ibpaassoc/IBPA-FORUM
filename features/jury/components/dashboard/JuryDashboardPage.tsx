@@ -1,19 +1,23 @@
 "use client";
+
+import { ClipboardList } from "lucide-react";
 import { formatAdminDate } from "@/features/admin/server/view-models";
-import JurySignOutButton from "@/features/jury/components/dashboard/JurySignOutButton";
-import ScoreStatusBadge from "@/features/admin/components/scoring/ScoreStatusBadge";
-import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import {
-  AdminDashboardShell,
-  AdminDataRow,
-  AdminDataTable,
-  AdminEmptyState,
-  AdminFilterChip,
-  AdminHeroCard,
-  AdminSection,
-  AdminStatCard,
-  AdminToolbarButton,
-} from "@/shared/components/admin/AdminDashboard";
+  DashboardCard,
+  DashboardMetricTile,
+  DashboardFilterChip,
+  DashboardBadge,
+  DashboardEmptyState,
+  DashboardChip,
+} from "@/shared/components/admin/DashboardUI";
+
+function scoreStatusBadge(status: "NOT_STARTED" | "DRAFT" | "SUBMITTED") {
+  switch (status) {
+    case "SUBMITTED": return <DashboardBadge tone="green">Scored</DashboardBadge>;
+    case "DRAFT": return <DashboardBadge tone="amber">Draft saved</DashboardBadge>;
+    default: return <DashboardBadge tone="neutral">Not started</DashboardBadge>;
+  }
+}
 
 export default function JuryDashboardPage({
   juryName,
@@ -47,117 +51,99 @@ export default function JuryDashboardPage({
     categories: number;
   };
 }) {
-  const { t } = useLanguage();
-  const summaryItems = [
-    { label: t.juryDashboard.assigned, value: totals.totalAssignedApplications },
-    { label: t.juryDashboard.scored, value: totals.scoredApplications },
-    { label: t.juryDashboard.remaining, value: totals.remainingApplications },
-    { label: t.juryDashboard.approvedCategories, value: totals.categories },
-  ];
+  const completionPct = totals.totalAssignedApplications > 0
+    ? Math.round((totals.scoredApplications / totals.totalAssignedApplications) * 100)
+    : 0;
 
   return (
-    <AdminDashboardShell>
-      <AdminHeroCard
-        eyebrow={t.juryDashboard.dashboard}
-        title={juryName}
-        subtitle={`${professionalTitle}. ${t.juryDashboard.accessText}`}
-        actions={<JurySignOutButton />}
-      />
-
-      <AdminSection
-        className="mt-5"
-        eyebrow={t.juryDashboard.approvedCategories}
-      >
-        {expertiseAreas.length > 0 ? (
-          <div className="mt-4 flex flex-wrap gap-2">
-            {expertiseAreas.map((area) => (
-              <span
-                key={area}
-                className="admin-chip rounded-full px-3 py-1 text-xs font-semibold"
-              >
-                {area}
-              </span>
-            ))}
-          </div>
-        ) : (
-          <AdminEmptyState
-            title={t.juryDashboard.approvedCategories}
-            text={t.juryDashboard.empty}
-          />
+    <div className="space-y-5">
+      {/* Page header */}
+      <div>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">
+          Jury Panel
+        </p>
+        <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[#10203B] md:text-3xl">
+          Review Applications
+        </h1>
+        {professionalTitle && (
+          <p className="mt-1 text-sm text-slate-500">{professionalTitle}</p>
         )}
-      </AdminSection>
-
-      <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {summaryItems.map((item) => (
-          <AdminStatCard key={item.label} label={item.label} value={item.value} />
-        ))}
       </div>
 
-      <AdminSection className="mt-5">
-          <div className="justify-self-center mt-2 mb-10 flex flex-wrap gap-3">
-            {[
-              { label: t.juryDashboard.allCategories, href: "/jury/dashboard", active: !activeCategory },
-              ...expertiseAreas.map((area) => ({
-                label: area,
-                href: `/jury/dashboard?category=${encodeURIComponent(area)}`,
-                active: activeCategory === area,
-              })),
-            ].map((item) => (
-              <AdminFilterChip
-                key={item.label}
-                href={item.href}
-                active={item.active}
-              >
-                {item.label}
-              </AdminFilterChip>
-            ))}
-          </div>
+      {/* Expertise areas */}
+      {expertiseAreas.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {expertiseAreas.map((area) => (
+            <DashboardChip key={area}>{area}</DashboardChip>
+          ))}
+        </div>
+      )}
 
-          <AdminDataTable
-            headers={[
-              t.juryDashboard.applicant,
-              t.juryDashboard.category,
-              t.juryDashboard.award,
-              t.juryDashboard.status,
-              t.juryDashboard.submitted,
-            ]}
-          >
-            {applications.map((application) => (
-              <AdminDataRow
-                key={application.id}
-                href={`/jury/dashboard/applications/${application.id}`}
+      {/* Metrics */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <DashboardMetricTile label="Assigned" value={totals.totalAssignedApplications} />
+        <DashboardMetricTile label="Scored" value={totals.scoredApplications} accent="green" />
+        <DashboardMetricTile label="Remaining" value={totals.remainingApplications} accent="amber" />
+        <DashboardMetricTile label="Completion" value={`${completionPct}%`} accent={completionPct === 100 ? "green" : "blue"} />
+      </div>
+
+      {/* Category filters */}
+      {expertiseAreas.length > 1 && (
+        <div className="flex flex-wrap gap-2">
+          <DashboardFilterChip href="/jury/dashboard" active={!activeCategory}>
+            All categories
+          </DashboardFilterChip>
+          {expertiseAreas.map((area) => (
+            <DashboardFilterChip
+              key={area}
+              href={`/jury/dashboard?category=${encodeURIComponent(area)}`}
+              active={activeCategory === area}
+            >
+              {area}
+            </DashboardFilterChip>
+          ))}
+        </div>
+      )}
+
+      {/* Applications table */}
+      <DashboardCard className="p-0 overflow-hidden">
+        {applications.length === 0 ? (
+          <div className="p-6">
+            <DashboardEmptyState
+              icon={<ClipboardList size={22} />}
+              title="No applications to review"
+              description={activeCategory ? "Try switching to a different category." : "You have no assigned applications yet."}
+            />
+          </div>
+        ) : (
+          <div className="divide-y divide-slate-100">
+            <div className="hidden grid-cols-[1.4fr_0.9fr_1fr_auto_auto] gap-3 border-b border-slate-100 bg-slate-50/80 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#4C7D9D] lg:grid">
+              <span>Applicant</span>
+              <span>Category</span>
+              <span>Nomination</span>
+              <span>Score status</span>
+              <span>Submitted</span>
+            </div>
+            {applications.map((app) => (
+              <a
+                key={app.id}
+                href={`/jury/dashboard/applications/${app.id}`}
+                className="grid gap-2 px-4 py-4 transition-colors hover:bg-slate-50/80 lg:grid-cols-[1.4fr_0.9fr_1fr_auto_auto] lg:items-center"
               >
                 <div>
-                  <p className="justify-self-center text-sm font-semibold text-(--admin-ink)">
-                    {application.fullName}
-                  </p>
-                  <p className="justify-self-center admin-muted mt-1 text-sm">{application.email}</p>
-                  <p className="justify-self-center admin-muted mt-1 text-sm">
-                    {application.city}, {application.country}
-                  </p>
+                  <p className="text-sm font-semibold text-[#10203B]">{app.fullName}</p>
+                  <p className="mt-0.5 text-xs text-slate-500">{app.email}</p>
+                  <p className="text-xs text-slate-400">{app.city}, {app.country}</p>
                 </div>
-
-                <div className="justify-self-center text-sm text-(--admin-ink)">{application.category.name}</div>
-
-                <div className="justify-self-center text-sm text-(--admin-ink)">{application.award.name}</div>
-
-                <div className="justify-self-center">
-                  <ScoreStatusBadge status={application.scoreStatus} />
-                </div>
-
-                <div className="justify-self-center admin-muted text-sm">
-                  {formatAdminDate(application.submittedAt ?? application.createdAt)}
-                </div>
-              </AdminDataRow>
+                <p className="text-sm text-slate-600">{app.category.name}</p>
+                <p className="text-sm text-slate-600">{app.award.name}</p>
+                <div>{scoreStatusBadge(app.scoreStatus)}</div>
+                <p className="text-xs text-slate-400">{formatAdminDate(app.submittedAt ?? app.createdAt)}</p>
+              </a>
             ))}
-
-            {applications.length === 0 ? (
-              <div className="px-4 py-5">
-                <AdminEmptyState title={t.juryDashboard.empty} />
-              </div>
-            ) : null}
-          </AdminDataTable>
-      </AdminSection>
-    </AdminDashboardShell>
+          </div>
+        )}
+      </DashboardCard>
+    </div>
   );
 }

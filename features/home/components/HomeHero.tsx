@@ -37,7 +37,7 @@ export default function HomeHero() {
       <div className="relative z-10 flex w-full max-w-[var(--content-width)] flex-col items-center px-[var(--page-gutter)] text-center">
         <div className="flex w-full flex-col gap-8 py-24 sm:py-36 md:py-52">
           <p className="font-[var(--font-ui-family)] text-[0.72rem] font-semibold uppercase tracking-[0.28em] text-white/55">
-            IBPA Beauty Award
+            Beauty Business Forum
           </p>
 
           <h1

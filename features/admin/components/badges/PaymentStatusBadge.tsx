@@ -1,26 +1,26 @@
 "use client";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { AdminStatusBadge } from "@/shared/components/admin/AdminDashboard";
+import { DashboardBadge } from "@/shared/components/admin/DashboardUI";
 
-const paymentStatusStyles = {
-  PENDING: "gold",
-  PAID: "success",
-  FAILED: "danger",
-  EXPIRED: "muted",
+const paymentStatusTones = {
+  PENDING: "amber",
+  PAID: "green",
+  FAILED: "red",
+  EXPIRED: "neutral",
   REFUNDED: "neutral",
 } as const;
 
 export default function PaymentStatusBadge({
   status,
 }: {
-  status: keyof typeof paymentStatusStyles;
+  status: keyof typeof paymentStatusTones;
 }) {
   const { t } = useLanguage();
 
   return (
-    <AdminStatusBadge tone={paymentStatusStyles[status]}>
+    <DashboardBadge tone={paymentStatusTones[status]}>
       {t.statuses[status]}
-    </AdminStatusBadge>
+    </DashboardBadge>
   );
 }

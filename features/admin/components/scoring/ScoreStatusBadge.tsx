@@ -1,30 +1,27 @@
 "use client";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { AdminStatusBadge } from "@/shared/components/admin/AdminDashboard";
+import { DashboardBadge } from "@/shared/components/admin/DashboardUI";
 
 type ScoreStatusBadgeProps = {
   status: "NOT_STARTED" | "DRAFT" | "SUBMITTED" | "REOPENED" | "IN_PROGRESS" | "COMPLETE";
 };
 
-const statusStyles: Record<
-  ScoreStatusBadgeProps["status"],
-  "muted" | "gold" | "success" | "blue"
-> = {
-  NOT_STARTED: "muted",
-  DRAFT: "gold",
-  SUBMITTED: "success",
+const statusTones: Record<ScoreStatusBadgeProps["status"], "neutral" | "amber" | "green" | "blue"> = {
+  NOT_STARTED: "neutral",
+  DRAFT: "amber",
+  SUBMITTED: "green",
   REOPENED: "blue",
-  IN_PROGRESS: "gold",
-  COMPLETE: "success",
+  IN_PROGRESS: "amber",
+  COMPLETE: "green",
 };
 
 export default function ScoreStatusBadge({ status }: ScoreStatusBadgeProps) {
   const { t } = useLanguage();
 
   return (
-    <AdminStatusBadge tone={statusStyles[status]}>
+    <DashboardBadge tone={statusTones[status]}>
       {t.statuses[status]}
-    </AdminStatusBadge>
+    </DashboardBadge>
   );
 }
