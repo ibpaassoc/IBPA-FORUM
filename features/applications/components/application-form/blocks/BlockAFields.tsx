@@ -48,7 +48,7 @@ export default function BlockAFields({
       yearsOfExperience: "Years of Professional Experience",
       yearsOfExperienceHint: "A minimum of 2 years is required.",
       licenseCertification: "Professional License / Certification",
-      licenseCertificationHint: "Upload PDF, JPG, or PNG. Maximum 5MB.",
+      licenseCertificationHint: "Upload PDF, JPG, or PNG.",
       category: "Category",
       selectCategory: "Select category",
       nomination: "Nomination (within category)",

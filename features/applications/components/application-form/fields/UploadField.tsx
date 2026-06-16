@@ -82,7 +82,7 @@ export default function UploadField({
       selectedPlural: "files selected",
       select: "Click to select files",
       drag: "or drag and drop",
-      hint: "JPG, PNG, PDF supported · Max 5 MB · Large images are auto-compressed",
+      hint: "JPG, PNG, PDF supported · Large images are auto-compressed",
       compressing: "Compressing…",
       remove: "Remove",
     },
@@ -91,7 +91,7 @@ export default function UploadField({
       selectedPlural: "файлов выбрано",
       select: "Нажмите для выбора файлов",
       drag: "или перетащите сюда",
-      hint: "JPG, PNG, PDF · Макс. 5 МБ · Большие изображения сжимаются автоматически",
+      hint: "JPG, PNG, PDF · Большие изображения сжимаются автоматически",
       compressing: "Сжатие…",
       remove: "Удалить",
     },
@@ -100,7 +100,7 @@ export default function UploadField({
       selectedPlural: "файлів обрано",
       select: "Натисніть для вибору файлів",
       drag: "або перетягніть сюди",
-      hint: "JPG, PNG, PDF · Макс. 5 МБ · Великі зображення стискаються автоматично",
+      hint: "JPG, PNG, PDF · Великі зображення стискаються автоматично",
       compressing: "Стиснення…",
       remove: "Видалити",
     },
@@ -119,7 +119,7 @@ export default function UploadField({
       })
     );
     setCompressing(false);
-    onChange(name, processed);
+    onChange(name, [...files, ...processed]);
     // reset input so the same file can be re-selected if removed
     event.target.value = "";
   }

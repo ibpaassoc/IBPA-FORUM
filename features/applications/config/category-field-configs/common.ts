@@ -26,7 +26,7 @@ export function pressFields(prefix = "press") {
 
 export function optionalCertificates(
   label = "Professional Certifications",
-  maxFiles = 5
+  maxFiles = 10
 ) {
   return [
     {
@@ -36,7 +36,6 @@ export function optionalCertificates(
       description: `Optional supporting certificates, up to ${maxFiles} files.`,
       accept: imageAndPdf,
       maxFiles,
-      maxFileSizeMb: 5,
     },
   ] satisfies ApplyFieldConfig[];
 }

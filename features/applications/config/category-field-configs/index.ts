@@ -207,8 +207,7 @@ export const categoryFieldConfigs: Record<string, ApplyFieldConfig[]> = {
       required: true,
       accept: imageAndPdf,
       minFiles: 1,
-      maxFiles: 5,
-      maxFileSizeMb: 5,
+      maxFiles: 10,
     },
     {
       key: "publishedEducationalMaterialsUrl",
