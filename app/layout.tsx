@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Inter, Marck_Script, Lora, Raleway, Bodoni_Moda } from "next/font/google";
+import { Cormorant_Garamond, Inter, Lora, Raleway, Bodoni_Moda } from "next/font/google";
 import { cookies } from "next/headers";
 import "./globals.css";
-import Footer from "@/shared/components/layout/Footer";
-import Header from "@/shared/components/layout/Header";
-import PageTransitionWrapper from "@/shared/components/layout/PageTransitionWrapper";
 import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
 import { languages, type Language } from "@/lib/i18n/translations";
 
@@ -72,11 +69,7 @@ export default async function RootLayout({
     >
       <body>
         <LanguageProvider initialLanguage={initialLanguage}>
-          <Header />
-          <PageTransitionWrapper>
-            {children}
-          </PageTransitionWrapper>
-          <Footer />
+          {children}
         </LanguageProvider>
       </body>
     </html>
