@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { BadgeDollarSign } from "lucide-react";
 import HomeParticipation from "./HomeParticipation";
 import HomePricing from "./HomePricing";
 import TicketModal from "@/features/tickets/components/TicketModal";
@@ -15,21 +16,45 @@ export default function HomeConversionBlock() {
   return (
     <div className="relative">
       {/* ── Sticky tier toggle ── */}
-      <div className="sticky top-[70px] z-30">
-        <div className="border-b border-[var(--border-soft)] bg-[var(--surface)]/94 py-3 backdrop-blur-md">
-          <div className="page-section flex items-center justify-center gap-4 sm:justify-between">
-            {/* Label */}
-            <p className="hidden text-[0.69rem] font-medium uppercase tracking-[0.14em] text-[var(--color-ink-soft)] sm:block">
-              {tier === "ibpa" ? "IBPA Member pricing active" : "Standard pricing active"}
-            </p>
+      <div className="sticky top-[68px] z-30">
+        <div className="border-b border-[var(--border-soft)] bg-[var(--surface)]/96 py-3 shadow-[0_2px_12px_rgba(3,2,19,0.06)] backdrop-blur-md">
+          <div className="page-section flex items-center justify-between gap-3">
 
-            {/* Animated segmented toggle */}
+            {/* Left: icon + context label */}
+            <div className="flex min-w-0 items-center gap-2.5">
+              <BadgeDollarSign
+                size={16}
+                strokeWidth={1.5}
+                className="shrink-0 text-[var(--color-ink-soft)]"
+              />
+              <div className="min-w-0">
+                <p className="text-[0.67rem] font-semibold uppercase tracking-[0.15em] text-[var(--color-ink-soft)]">
+                  Showing prices for
+                </p>
+                <AnimatePresence mode="wait">
+                  <motion.p
+                    key={tier}
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 5 }}
+                    transition={{ duration: 0.14, ease: "easeOut" }}
+                    className="truncate text-[0.8rem] font-medium text-[var(--color-ink)]"
+                  >
+                    {tier === "ibpa"
+                      ? "IBPA Members — member discounts applied"
+                      : "Standard (non-member) rates"}
+                  </motion.p>
+                </AnimatePresence>
+              </div>
+            </div>
+
+            {/* Right: segmented toggle — larger & more prominent */}
             <div
               role="group"
               aria-label="Select pricing tier"
-              className="relative flex rounded-[var(--radius-pill)] border border-[var(--border-default)] bg-[var(--surface-muted)] p-1"
+              className="relative flex shrink-0 rounded-[var(--radius-pill)] border-2 border-[var(--border-default)] bg-[var(--surface-muted)] p-1"
             >
-              {/* Animated sliding pill — layout-animated by Framer Motion */}
+              {/* Animated sliding pill */}
               <motion.div
                 aria-hidden
                 className="pointer-events-none absolute inset-y-1 rounded-[var(--radius-pill)] bg-[var(--color-ink)]"
@@ -44,17 +69,27 @@ export default function HomeConversionBlock() {
 
               <button
                 onClick={() => setTier("ibpa")}
-                className={`relative z-10 rounded-[var(--radius-pill)] px-6 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.14em] transition-colors duration-150 ${
+                className={`relative z-10 flex items-center gap-2 rounded-[var(--radius-pill)] px-4 py-2 text-[0.75rem] font-semibold uppercase tracking-[0.12em] transition-colors duration-150 sm:px-5 ${
                   tier === "ibpa"
                     ? "text-white"
                     : "text-[var(--color-ink-soft)] hover:text-[var(--color-ink)]"
                 }`}
               >
                 IBPA Member
+                <span
+                  className={`rounded px-1.5 py-0.5 text-[0.58rem] font-bold tracking-wider transition-colors duration-150 ${
+                    tier === "ibpa"
+                      ? "bg-white/25 text-white"
+                      : "bg-[var(--surface)] text-[var(--color-ink-muted)]"
+                  }`}
+                >
+                  SAVE
+                </span>
               </button>
+
               <button
                 onClick={() => setTier("standard")}
-                className={`relative z-10 rounded-[var(--radius-pill)] px-6 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.14em] transition-colors duration-150 ${
+                className={`relative z-10 rounded-[var(--radius-pill)] px-4 py-2 text-[0.75rem] font-semibold uppercase tracking-[0.12em] transition-colors duration-150 sm:px-5 ${
                   tier === "standard"
                     ? "text-white"
                     : "text-[var(--color-ink-soft)] hover:text-[var(--color-ink)]"
