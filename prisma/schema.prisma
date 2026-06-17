@@ -115,6 +115,15 @@ model JuryAccount {
   juryApplication   JuryApplication? @relation(fields: [juryApplicationId], references: [id], onDelete: Cascade)
 }
 
+model JuryPasswordReset {
+  id        String    @id @default(cuid())
+  email     String
+  token     String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+}
+
 model ApplicationAnswer {
   id            String      @id @default(cuid())
   applicationId String
