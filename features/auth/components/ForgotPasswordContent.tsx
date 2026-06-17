@@ -1,25 +1,25 @@
 "use client";
 
 import AuthShell from "@/features/auth/components/AuthShell";
-import RegisterForm from "@/features/auth/components/RegisterForm";
+import ForgotPasswordForm from "@/features/auth/components/ForgotPasswordForm";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
-export default function JuryRegisterContent() {
+export default function ForgotPasswordContent() {
   const { t } = useLanguage();
 
   return (
     <AuthShell
-      eyebrow={t.auth.registerPage.eyebrow}
-      title={t.auth.registerPage.title}
-      description={t.auth.registerPage.description}
+      eyebrow={t.auth.forgotPage.eyebrow}
+      title={t.auth.forgotPage.title}
+      description={t.auth.forgotPage.description}
     >
       <h2 className="font-[var(--font-display)] text-[clamp(1.1rem,2vw,1.5rem)] font-normal text-[var(--color-ink)]">
-        {t.auth.registerPage.cardTitle}
+        {t.auth.forgotPage.cardTitle}
       </h2>
       <p className="mt-[var(--space-xs)] text-sm leading-[1.65] text-[var(--color-ink-soft)]">
-        {t.auth.registerPage.cardText}
+        {t.auth.forgotPage.cardText}
       </p>
-      <RegisterForm />
+      <ForgotPasswordForm />
     </AuthShell>
   );
 }

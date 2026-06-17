@@ -96,6 +96,23 @@ export async function getJuryApplicationByEmail(email: string) {
   });
 }
 
+export async function validatePasswordResetToken(token: string): Promise<{
+  valid: boolean;
+  expired?: boolean;
+}> {
+  const record = await prisma.juryPasswordReset.findUnique({ where: { token } });
+
+  if (!record || record.usedAt) {
+    return { valid: false };
+  }
+
+  if (record.expiresAt < new Date()) {
+    return { valid: false, expired: true };
+  }
+
+  return { valid: true };
+}
+
 export async function requireJuryAuth() {
   const session = await getAppSession();
 

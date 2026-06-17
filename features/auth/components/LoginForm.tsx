@@ -6,6 +6,12 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
+const inputClass =
+  "w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] text-[var(--color-ink)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-hover-accent)] focus:shadow-[0_0_0_3px_rgba(114,160,193,0.16)]";
+
+const labelClass =
+  "block text-[clamp(0.68rem,1vw,0.78rem)] font-medium uppercase tracking-[0.08em] text-[var(--color-ink)]";
+
 export default function LoginForm() {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,7 +49,7 @@ export default function LoginForm() {
   return (
     <form action={handleSubmit} className="mt-[var(--space-lg)] space-y-[var(--space-md)]">
       <div>
-        <label htmlFor="email" className="mb-[var(--space-xs)] block text-[clamp(0.68rem,1vw,0.78rem)] font-medium uppercase tracking-[0.08em] text-[var(--color-ink)]">
+        <label htmlFor="email" className={`mb-[var(--space-xs)] ${labelClass}`}>
           {t.auth.form.email}
         </label>
         <input
@@ -51,21 +57,31 @@ export default function LoginForm() {
           name="email"
           type="email"
           required
-          className="w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] text-[var(--color-ink)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-hover-accent)] focus:shadow-[0_0_0_3px_rgba(114,160,193,0.16)]"
+          autoComplete="email"
+          className={inputClass}
           placeholder={t.auth.form.emailPlaceholder}
         />
       </div>
 
       <div>
-        <label htmlFor="password" className="mb-[var(--space-xs)] block text-[clamp(0.68rem,1vw,0.78rem)] font-medium uppercase tracking-[0.08em] text-[var(--color-ink)]">
-          {t.auth.form.password}
-        </label>
+        <div className="mb-[var(--space-xs)] flex items-center justify-between gap-2">
+          <label htmlFor="password" className={labelClass}>
+            {t.auth.form.password}
+          </label>
+          <Link
+            href="/jury/forgot-password"
+            className="text-[clamp(0.65rem,0.95vw,0.75rem)] text-[var(--color-hover-accent)] transition hover:text-[var(--color-blue)] hover:underline"
+          >
+            {t.auth.form.forgotPassword}
+          </Link>
+        </div>
         <input
           id="password"
           name="password"
           type="password"
           required
-          className="w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] text-[var(--color-ink)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-hover-accent)] focus:shadow-[0_0_0_3px_rgba(114,160,193,0.16)]"
+          autoComplete="current-password"
+          className={inputClass}
           placeholder={t.auth.form.passwordPlaceholder}
         />
       </div>
@@ -86,7 +102,10 @@ export default function LoginForm() {
 
       <p className="text-sm leading-6 text-[var(--color-ink-soft)]">
         {t.auth.form.noAccount}{" "}
-        <Link href="/jury/register" className="text-[var(--color-hover-accent)] hover:text-[var(--color-blue)] hover:underline">
+        <Link
+          href="/jury/register"
+          className="text-[var(--color-hover-accent)] hover:text-[var(--color-blue)] hover:underline"
+        >
           {t.auth.form.register}
         </Link>
         .
