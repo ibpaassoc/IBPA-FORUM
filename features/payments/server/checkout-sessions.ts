@@ -51,25 +51,41 @@ export async function createJuryCheckoutSession({
   };
 }
 
+function getCompetitorPriceId(isIbpaMember: boolean): string {
+  return requireEnv([isIbpaMember ? "APPLY_IBPA_PRICE" : "APPLY_NON_IBPA_PRICE"]);
+}
+
+function getCompetitorCouponId(nominationCount: number): string | null {
+  if (nominationCount >= 5) {
+    // 5_NOMINATIONS_DSICOUNT — note: intentional typo matches the env var name
+    return process.env["5_NOMINATIONS_DSICOUNT"] ?? null;
+  }
+  if (nominationCount >= 3) {
+    return process.env["3_NOMINATIONS_DISCOUNT"] ?? null;
+  }
+  return null;
+}
+
 export async function createCompetitorCheckoutSession({
   applicationId,
   email,
   categoryId,
   awardId,
-  amount,
   nominationCount,
+  isIbpaMember,
 }: {
   applicationId: string;
   email: string;
   categoryId: string;
   awardId: string;
-  amount: number;
   nominationCount: number;
+  isIbpaMember: boolean;
 }) {
   const stripe = getStripe();
   const appUrl = getAppUrl();
-  const safeNominationCount = Math.max(1, nominationCount);
-  const unitAmount = Math.max(1, Math.round(amount / safeNominationCount));
+  const safeCount = Math.max(1, nominationCount);
+  const priceId = getCompetitorPriceId(isIbpaMember);
+  const couponId = getCompetitorCouponId(safeCount);
 
   const metadata = {
     flowType: "competitor",
@@ -77,7 +93,8 @@ export async function createCompetitorCheckoutSession({
     applicantEmail: email,
     categoryId,
     awardId,
-    nominationCount: String(safeNominationCount),
+    nominationCount: String(safeCount),
+    isIbpaMember: String(isIbpaMember),
   };
 
   const session = await stripe.checkout.sessions.create({
@@ -86,25 +103,14 @@ export async function createCompetitorCheckoutSession({
     success_url: `${appUrl}/apply/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${appUrl}/apply/cancel?application_id=${applicationId}`,
     metadata,
-    payment_intent_data: {
-      metadata,
-    },
+    payment_intent_data: { metadata },
     line_items: [
       {
-        price_data: {
-          currency: "usd",
-          unit_amount: unitAmount,
-          product_data: {
-            name: "IBPA Beauty Award Application Fee",
-            description:
-              safeNominationCount === 1
-                ? "IBPA competitor application fee for 1 nomination."
-                : `IBPA competitor application fee for ${safeNominationCount} nominations.`,
-          },
-        },
-        quantity: safeNominationCount,
+        price: priceId,
+        quantity: safeCount,
       },
     ],
+    ...(couponId ? { discounts: [{ coupon: couponId }] } : {}),
   });
 
   if (!session.url) {

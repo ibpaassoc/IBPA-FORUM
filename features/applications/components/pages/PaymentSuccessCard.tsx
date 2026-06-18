@@ -1,77 +1,238 @@
 "use client";
 
-import { CheckCircle2 } from "lucide-react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { Mail, Users, Trophy } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { IconBadge, PageHero, PageSection } from "@/shared/components/public";
 
-export default function PaymentSuccessCard({ sessionId }: { sessionId?: string }) {
+const copy = {
+  en: {
+    eyebrow: "Application Confirmed",
+    headline: "You're in.",
+    sub: "Your entry has been received and registered with the IBPA Beauty Award 2026. Payment confirmed.",
+    nextLabel: "What happens next",
+    steps: [
+      {
+        icon: Mail,
+        title: "Check your inbox",
+        body: "A confirmation email is on its way with your application reference and full details.",
+      },
+      {
+        icon: Users,
+        title: "Jury evaluation",
+        body: "Your submission enters the official review stage. The international IBPA jury evaluates every entry between August 5–20.",
+      },
+      {
+        icon: Trophy,
+        title: "Award ceremony",
+        body: "Finalists and winners are announced at the IBPA Ceremony on September 4–5, 2026.",
+      },
+    ],
+    cta: "Back to Home",
+    ctaSub: "Explore categories →",
+  },
+  ru: {
+    eyebrow: "Заявка подтверждена",
+    headline: "Вы участвуете.",
+    sub: "Ваша заявка получена и зарегистрирована на IBPA Beauty Award 2026. Оплата подтверждена.",
+    nextLabel: "Что будет дальше",
+    steps: [
+      {
+        icon: Mail,
+        title: "Проверьте почту",
+        body: "На ваш email отправлено письмо с номером заявки и всеми подробностями.",
+      },
+      {
+        icon: Users,
+        title: "Оценка жюри",
+        body: "Ваша работа поступает на официальный этап проверки. Международное жюри IBPA оценивает все заявки с 5 по 20 августа.",
+      },
+      {
+        icon: Trophy,
+        title: "Церемония награждения",
+        body: "Финалисты и победители объявляются на церемонии IBPA 4–5 сентября 2026 года.",
+      },
+    ],
+    cta: "На главную",
+    ctaSub: "Смотреть категории →",
+  },
+  ua: {
+    eyebrow: "Заявку підтверджено",
+    headline: "Ви берете участь.",
+    sub: "Вашу заявку отримано та зареєстровано на IBPA Beauty Award 2026. Оплату підтверджено.",
+    nextLabel: "Що буде далі",
+    steps: [
+      {
+        icon: Mail,
+        title: "Перевірте пошту",
+        body: "На вашу електронну адресу надіслано лист із номером заявки та всіма деталями.",
+      },
+      {
+        icon: Users,
+        title: "Оцінювання журі",
+        body: "Ваша робота переходить до офіційного етапу розгляду. Міжнародне журі IBPA оцінює всі заявки з 5 по 20 серпня.",
+      },
+      {
+        icon: Trophy,
+        title: "Церемонія нагородження",
+        body: "Фіналістів і переможців оголошують на церемонії IBPA 4–5 вересня 2026 року.",
+      },
+    ],
+    cta: "На головну",
+    ctaSub: "Переглянути категорії →",
+  },
+};
+
+const fade = {
+  hidden: { opacity: 0, y: 20 },
+  show: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.1, duration: 0.54, ease: [0.22, 1, 0.36, 1] },
+  }),
+};
+
+export default function PaymentSuccessCard({ sessionId: _sessionId }: { sessionId?: string }) {
   const { language } = useLanguage();
-  const copy = {
-    en: {
-      eyebrow: "Payment Return",
-      title: "Your payment is being confirmed",
-      description:
-        "Stripe has returned you to the IBPA application site. Your participant application becomes complete only after our webhook confirms the payment successfully.",
-      status: "Participant Application Status",
-      completeWithSession:
-        "Your Stripe Checkout session completed successfully. We are now waiting for Stripe to deliver the webhook that marks your application as paid and submitted.",
-      completeNoSession:
-        "If you recently completed payment, please allow a moment for the Stripe webhook to finalize your application.",
-      finalNote:
-        "Once confirmed, we will email you to confirm that payment was received, your application is complete, and it will be reviewed by the judges and admin team.",
-    },
-    ru: {
-      eyebrow: "Возврат после оплаты",
-      title: "Оплата подтверждается",
-      description:
-        "Stripe вернул вас на сайт заявок IBPA. Заявка участника считается завершенной только после подтверждения оплаты вебхуком.",
-      status: "Статус заявки участника",
-      completeWithSession:
-        "Сессия Stripe Checkout успешно завершена. Сейчас мы ожидаем вебхук Stripe, который отметит вашу заявку как оплаченную и отправленную.",
-      completeNoSession:
-        "Если вы только что завершили оплату, подождите немного, пока вебхук Stripe завершит обработку заявки.",
-      finalNote:
-        "После подтверждения мы отправим письмо о получении оплаты, завершении заявки и ее передаче на рассмотрение жюри и администраторов.",
-    },
-    ua: {
-      eyebrow: "Повернення після оплати",
-      title: "Оплату підтверджують",
-      description:
-        "Stripe повернув вас на сайт заявок IBPA. Заявка учасника вважається завершеною лише після підтвердження оплати вебхуком.",
-      status: "Статус заявки учасника",
-      completeWithSession:
-        "Сесію Stripe Checkout успішно завершено. Зараз ми очікуємо вебхук Stripe, який позначить вашу заявку як оплачену та надіслану.",
-      completeNoSession:
-        "Якщо ви щойно завершили оплату, зачекайте трохи, доки вебхук Stripe завершить обробку заявки.",
-      finalNote:
-        "Після підтвердження ми надішлемо лист про отримання оплати, завершення заявки та передачу її на розгляд журі й адміністраторів.",
-    },
-  }[language];
+  const t = copy[language] ?? copy.en;
 
   return (
     <main className="page-shell">
-      <PageHero
-        eyebrow={copy.eyebrow}
-        title={copy.title}
-        description={copy.description}
-      />
+      {/* ── Hero ── */}
+      <section className="relative overflow-hidden border-b border-black/6 bg-[var(--color-ink)] px-[var(--page-gutter)] pb-20 pt-[calc(var(--site-header-height)+4rem)]">
+        {/* Subtle grid texture */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage:
+              "linear-gradient(var(--color-white) 1px, transparent 1px), linear-gradient(90deg, var(--color-white) 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+          }}
+        />
 
-      <PageSection className="pb-20">
-        <div className="page-card mx-auto flex max-w-3xl flex-col items-center rounded-(--radius-lg) p-8 text-center">
-          <IconBadge icon={CheckCircle2} size={28} />
-          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--color-hover-accent)]">
-            {copy.status}
-          </p>
-          <p className="mt-5 text-base leading-8 text-[var(--color-ink-soft)]">
-            {sessionId
-              ? copy.completeWithSession
-              : copy.completeNoSession}
-          </p>
-          <p className="mt-4 text-sm leading-7 text-[var(--text-muted)]">
-            {copy.finalNote}
-          </p>
+        <div className="relative mx-auto max-w-[--content-width]">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.88 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="mb-8 flex h-16 w-16 items-center justify-center rounded-[22px] border border-white/10 bg-white/6"
+          >
+            {/* Animated check */}
+            <svg viewBox="0 0 32 32" fill="none" className="h-8 w-8">
+              <motion.path
+                d="M6 16.5L13 23.5L26 9"
+                stroke="white"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.6, ease: "easeOut" }}
+              />
+            </svg>
+          </motion.div>
+
+          <motion.p
+            custom={0}
+            variants={fade}
+            initial="hidden"
+            animate="show"
+            className="mb-4 text-[0.65rem] font-bold uppercase tracking-[0.32em] text-white/40"
+          >
+            {t.eyebrow}
+          </motion.p>
+
+          <motion.h1
+            custom={1}
+            variants={fade}
+            initial="hidden"
+            animate="show"
+            className="font-[var(--font-ui-family)] text-[clamp(3.2rem,8vw,6rem)] font-black uppercase leading-none tracking-[-0.03em] text-white"
+          >
+            {t.headline}
+          </motion.h1>
+
+          <motion.p
+            custom={2}
+            variants={fade}
+            initial="hidden"
+            animate="show"
+            className="mt-6 max-w-xl text-[1.05rem] leading-[1.75] text-white/55"
+          >
+            {t.sub}
+          </motion.p>
         </div>
-      </PageSection>
+      </section>
+
+      {/* ── What happens next ── */}
+      <section className="px-[var(--page-gutter)] py-20">
+        <div className="mx-auto max-w-[--content-width]">
+          <motion.p
+            custom={3}
+            variants={fade}
+            initial="hidden"
+            animate="show"
+            className="mb-12 text-[0.65rem] font-bold uppercase tracking-[0.32em] text-[var(--color-ink-soft)]"
+          >
+            {t.nextLabel}
+          </motion.p>
+
+          <div className="grid gap-px overflow-hidden rounded-[28px] border border-black/8 bg-black/6 sm:grid-cols-3">
+            {t.steps.map((step, i) => {
+              const Icon = step.icon;
+              return (
+                <motion.div
+                  key={i}
+                  custom={i + 4}
+                  variants={fade}
+                  initial="hidden"
+                  animate="show"
+                  className="flex flex-col gap-5 bg-[var(--color-off-white)] p-8"
+                >
+                  <div className="flex h-11 w-11 items-center justify-center rounded-[16px] border border-black/8 bg-white shadow-[0_8px_20px_rgba(3,2,19,0.05)]">
+                    <Icon size={18} strokeWidth={1.6} className="text-[var(--color-ink)]" />
+                  </div>
+
+                  <div>
+                    <p className="mb-1 text-[0.6rem] font-bold uppercase tracking-[0.26em] text-[var(--color-ink-soft)]">
+                      {String(i + 1).padStart(2, "0")}
+                    </p>
+                    <h2 className="font-[var(--font-ui-family)] text-[1.18rem] font-black uppercase leading-tight tracking-[-0.01em] text-[var(--color-ink)]">
+                      {step.title}
+                    </h2>
+                    <p className="mt-3 text-[0.9rem] leading-[1.75] text-[var(--color-ink-soft)]">
+                      {step.body}
+                    </p>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          {/* CTA row */}
+          <motion.div
+            custom={7}
+            variants={fade}
+            initial="hidden"
+            animate="show"
+            className="mt-14 flex flex-wrap items-center gap-4"
+          >
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--color-ink)] bg-[var(--color-ink)] px-8 py-3.5 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-white shadow-[0_18px_36px_rgba(3,2,19,0.14)] transition-all duration-300 hover:bg-white hover:text-[var(--color-ink)]"
+            >
+              {t.cta}
+            </Link>
+            <Link
+              href="/categories"
+              className="text-[0.78rem] font-semibold tracking-[0.06em] text-[var(--color-ink-soft)] transition hover:text-[var(--color-ink)]"
+            >
+              {t.ctaSub}
+            </Link>
+          </motion.div>
+        </div>
+      </section>
     </main>
   );
 }
