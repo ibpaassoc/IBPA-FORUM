@@ -377,19 +377,23 @@ export function DashboardChip({ children }: { children: ReactNode }) {
 export function DashboardKpiBar({
   value,
   label,
+  tone = "light",
 }: {
   value: number;
   label: string;
+  tone?: "light" | "dark";
 }) {
   const clamped = Math.max(0, Math.min(value, 100));
+  const labelClass = tone === "dark" ? "text-white/55" : "text-black/45";
+  const trackClass = tone === "dark" ? "bg-white/10" : "bg-black/10";
 
   return (
     <div>
-      <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.14em] text-black/45">
+      <div className={`flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.14em] ${labelClass}`}>
         <span>{label}</span>
         <span>{clamped}%</span>
       </div>
-      <div className="mt-2 h-2 rounded-full bg-black/10">
+      <div className={`mt-2 h-2 rounded-full ${trackClass}`}>
         <div
           className="h-2 rounded-full bg-[#7DC8EE]"
           style={{ width: `${clamped}%` }}

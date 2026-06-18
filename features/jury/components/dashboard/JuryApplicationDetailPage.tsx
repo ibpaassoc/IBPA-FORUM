@@ -1,5 +1,6 @@
 import JuryScoreForm from "@/features/admin/components/jury-applications/JuryScoreForm";
 import type { JuryNominationScoringRecord } from "@/features/admin/server/jury";
+import type { ReactNode } from "react";
 import {
   ArrowLeft,
   BriefcaseBusiness,
@@ -9,12 +10,16 @@ import {
   Layers3,
   Mail,
   MapPin,
-  ShieldCheck,
-  Sparkles,
+  ReceiptText,
+  UserRound,
 } from "lucide-react";
 import {
+  DashboardBadge,
   DashboardCard,
+  DashboardChip,
   DashboardDetailCard,
+  DashboardPageHeader,
+  DashboardPanel,
   DashboardSecondaryBtn,
 } from "@/shared/components/admin/DashboardUI";
 
@@ -88,19 +93,46 @@ function FileLink({
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="group flex items-center justify-between gap-3 rounded-[18px] border border-slate-200 bg-white px-4 py-3 text-sm text-[#10203B] transition hover:border-[#4C7D9D]/35 hover:shadow-[0_12px_30px_rgba(16,32,59,0.08)]"
+      className="group flex items-center justify-between gap-3 rounded-lg border border-black/10 bg-white px-3 py-3 text-sm text-[#0A0A0A] transition hover:border-[#7DC8EE] hover:bg-[#EAF6FF]/45"
     >
       <div className="flex min-w-0 items-center gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#E9F1F8] text-[#4C7D9D]">
-          <Files size={16} />
+        <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-[#EAF6FF] text-[#1673A5]">
+          <Files aria-hidden size={15} />
         </div>
         <div className="min-w-0">
-          <p className="truncate font-medium text-[#10203B]">{name}</p>
-          <p className="text-xs text-slate-400">{(sizeBytes / 1024 / 1024).toFixed(2)} MB</p>
+          <p className="truncate font-semibold text-[#0A0A0A]">{name}</p>
+          <p className="text-xs text-black/45">{(sizeBytes / 1024 / 1024).toFixed(2)} MB</p>
         </div>
       </div>
-      <ExternalLink size={15} className="shrink-0 text-slate-400 transition group-hover:text-[#4C7D9D]" />
+      <ExternalLink
+        aria-hidden
+        size={15}
+        className="shrink-0 text-black/35 transition group-hover:text-[#1673A5]"
+      />
     </a>
+  );
+}
+
+function EmptyInline({ children }: { children: ReactNode }) {
+  return (
+    <div className="rounded-lg border border-dashed border-black/15 bg-[#FAFAFA] px-4 py-4 text-sm text-black/50">
+      {children}
+    </div>
+  );
+}
+
+function SectionLabel({
+  icon: Icon,
+  children,
+}: {
+  icon: typeof UserRound;
+  children: ReactNode;
+}) {
+  return (
+    <div className="flex items-center gap-2 text-[#1673A5]">
+      <Icon aria-hidden size={16} />
+      <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">{children}</p>
+    </div>
   );
 }
 
@@ -178,139 +210,80 @@ export default function JuryApplicationDetailPage({
 
   const nominationFileFields = categoryFields.filter((field) => field.type === "file");
   const nominationTextFields = categoryFields.filter((field) => field.type !== "file");
+  const hasVisibleAnswers = hasNominationAnswers
+    ? nominationTextFields.some((field) => nomAnswerMap.get(field.key))
+    : legacyAppAnswers.length > 0;
+  const currentIndex = orderedApplicationNominations.findIndex((item) => item.id === nomination.id);
+  const licenseFiles = appFileMap.get("licenseCertification") ?? [];
 
   return (
-    <div className="space-y-6">
-      <DashboardCard className="overflow-hidden border-[#10203B]/10 bg-[radial-gradient(circle_at_top_left,_rgba(76,125,157,0.18),_transparent_35%),linear-gradient(135deg,#ffffff_0%,#f5f8fc_55%,#eef3f8_100%)] p-0">
-        <div className="grid gap-6 px-6 py-6 md:px-8 md:py-8 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
-          <div>
-            <div className="inline-flex rounded-full border border-[#4C7D9D]/20 bg-[#E9F1F8] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#4C7D9D]">
-              Jury review workspace
-            </div>
-            <h1 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-[#10203B] md:text-4xl">
-              {nomination.award.name}
-            </h1>
-            <p className="mt-2 text-[15px] leading-7 text-slate-600">{nomination.category.name}</p>
+    <div className="flex flex-col gap-5">
+      <DashboardPageHeader
+        label="Nomination review"
+        title={nomination.award.name}
+        description={`${nomination.category.name} / ${application.fullName}`}
+        actions={
+          <DashboardSecondaryBtn href="/jury/dashboard">
+            <ArrowLeft aria-hidden size={15} />
+            Back
+          </DashboardSecondaryBtn>
+        }
+      />
 
-            <div className="mt-5 flex flex-wrap gap-2">
-              <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-500">
-                <ShieldCheck size={13} />
-                {application.fullName}
-              </span>
-              <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-500">
-                <Mail size={13} />
-                {application.email}
-              </span>
-              <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-500">
-                <MapPin size={13} />
-                {application.city}, {application.country}
-              </span>
-            </div>
+      <DashboardCard>
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-wrap gap-2">
+            <DashboardChip>{nomination.category.name}</DashboardChip>
+            <DashboardBadge tone="blue">
+              {currentIndex + 1} of {orderedApplicationNominations.length}
+            </DashboardBadge>
           </div>
-
-          <div className="grid gap-3">
-            <div className="rounded-[28px] border border-[#10203B]/10 bg-[#10203B] p-5 text-white shadow-[0_18px_50px_rgba(16,32,59,0.16)]">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/55">
-                Review focus
-              </p>
-              <p className="mt-3 text-2xl font-semibold tracking-[-0.04em]">{application.fullName}</p>
-              <p className="mt-2 text-sm leading-6 text-white/70">
-                Score this nomination with applicant context, evidence files, and category answers
-                in one focused workflow.
-              </p>
-            </div>
-
-            <div className="rounded-[28px] border border-slate-200/80 bg-white/85 p-5 shadow-[0_14px_40px_rgba(15,23,42,0.06)]">
-              <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#E9F1F8] text-[#4C7D9D]">
-                  <Sparkles size={18} />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-[#10203B]">Nomination position</p>
-                  <p className="text-xs uppercase tracking-[0.16em] text-slate-400">
-                    Application-only scope
-                  </p>
-                </div>
-              </div>
-              <div className="mt-4 rounded-[22px] border border-slate-200 bg-slate-50/70 p-4">
-                <p className="text-sm leading-7 text-slate-600">
-                  {orderedApplicationNominations.findIndex((item) => item.id === nomination.id) + 1} of{" "}
-                  {orderedApplicationNominations.length} nominations in this application.
-                </p>
-              </div>
-            </div>
+          <div className="flex flex-wrap gap-2 text-xs text-black/55">
+            <span className="inline-flex items-center gap-2 rounded-md border border-black/10 bg-[#FAFAFA] px-2.5 py-1">
+              <Mail aria-hidden size={13} />
+              {application.email}
+            </span>
+            <span className="inline-flex items-center gap-2 rounded-md border border-black/10 bg-[#FAFAFA] px-2.5 py-1">
+              <MapPin aria-hidden size={13} />
+              {application.city}, {application.country}
+            </span>
           </div>
         </div>
       </DashboardCard>
 
-      <div className="flex justify-between">
-        <DashboardSecondaryBtn href="/jury/dashboard" className="gap-2">
-          <ArrowLeft size={15} />
-          Back to review queue
-        </DashboardSecondaryBtn>
-      </div>
-
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.05fr)_380px]">
-        <div className="space-y-6">
-          <DashboardCard className="overflow-hidden border-slate-200/90 bg-[linear-gradient(135deg,#ffffff_0%,#fbfcfe_60%,#f2f6fb_100%)] p-0">
-            <div className="border-b border-slate-200/80 px-5 py-5 md:px-6">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">
-                Applicant context
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
+        <div className="flex flex-col gap-5">
+          <DashboardCard className="p-0">
+            <div className="border-b border-black/10 p-4 md:p-5">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#1673A5]">
+                Applicant
               </p>
-              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-[#10203B]">
-                Review-ready profile
+              <h2 className="mt-2 text-2xl font-semibold normal-case tracking-[-0.02em] text-[#0A0A0A]">
+                Context
               </h2>
             </div>
 
-            <div className="space-y-6 px-5 py-5 md:px-6">
+            <div className="flex flex-col gap-6 p-4 md:p-5">
               <div>
-                <div className="flex items-center gap-2 text-[#4C7D9D]">
-                  <BriefcaseBusiness size={16} />
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.24em]">
-                    Applicant details
-                  </p>
-                </div>
-                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <SectionLabel icon={BriefcaseBusiness}>Details</SectionLabel>
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
                   <DashboardDetailCard label="Full legal name" value={application.fullName} />
                   <DashboardDetailCard label="Professional title" value={application.professionalTitle} />
                   <DashboardDetailCard label="Email address" value={application.email} />
                   <DashboardDetailCard label="Phone / WhatsApp" value={application.phone} />
-                  <DashboardDetailCard
-                    label="Country / City"
-                    value={`${application.country}, ${application.city}`}
-                  />
-                  <DashboardDetailCard
-                    label="State / Province"
-                    value={application.stateProvince || "Not required"}
-                  />
-                  <DashboardDetailCard
-                    label="Years of experience"
-                    value={String(application.yearsExperience)}
-                  />
-                  <DashboardDetailCard
-                    label="Membership level"
-                    value={application.membershipLevel || "Not available"}
-                  />
+                  <DashboardDetailCard label="Country / City" value={`${application.country}, ${application.city}`} />
+                  <DashboardDetailCard label="State / Province" value={application.stateProvince || "Not required"} />
+                  <DashboardDetailCard label="Years of experience" value={String(application.yearsExperience)} />
+                  <DashboardDetailCard label="Membership level" value={application.membershipLevel || "Not available"} />
                 </div>
               </div>
 
               <div>
-                <div className="flex items-center gap-2 text-[#4C7D9D]">
-                  <Globe size={16} />
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.24em]">
-                    Public presence
-                  </p>
-                </div>
-                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <SectionLabel icon={Globe}>Public presence</SectionLabel>
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
                   <DashboardDetailCard label="Website" value={application.websiteUrl || "Not provided"} />
-                  <DashboardDetailCard
-                    label="Instagram / Social"
-                    value={application.socialUrl || "Not provided"}
-                  />
-                  <DashboardDetailCard
-                    label="Client reviews"
-                    value={application.reviewsUrl || "Not provided"}
-                  />
+                  <DashboardDetailCard label="Instagram / Social" value={application.socialUrl || "Not provided"} />
+                  <DashboardDetailCard label="Client reviews" value={application.reviewsUrl || "Not provided"} />
                   <DashboardDetailCard
                     label="Heard about us"
                     value={
@@ -324,23 +297,22 @@ export default function JuryApplicationDetailPage({
             </div>
           </DashboardCard>
 
-          <DashboardCard className="overflow-hidden border-slate-200/90 bg-[linear-gradient(135deg,#ffffff_0%,#fbfcfe_60%,#f2f6fb_100%)] p-0">
-            <div className="border-b border-slate-200/80 px-5 py-5 md:px-6">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">
-                Nomination evidence
+          <DashboardCard className="p-0">
+            <div className="border-b border-black/10 p-4 md:p-5">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#1673A5]">
+                Evidence
               </p>
-              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-[#10203B]">
+              <h2 className="mt-2 text-2xl font-semibold normal-case tracking-[-0.02em] text-[#0A0A0A]">
                 {nomination.award.name}
               </h2>
-              <p className="mt-1 text-sm text-slate-500">{nomination.category.name}</p>
             </div>
 
-            <div className="grid gap-5 px-5 py-5 md:px-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.9fr)]">
+            <div className="grid gap-4 p-4 md:p-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(300px,0.9fr)]">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-black/45">
                   Answers
                 </p>
-                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
                   {hasNominationAnswers
                     ? nominationTextFields.map((field) => {
                         const answer = nomAnswerMap.get(field.key);
@@ -361,27 +333,25 @@ export default function JuryApplicationDetailPage({
                         />
                       ))}
                 </div>
-                {(hasNominationAnswers
-                  ? nominationTextFields.every((field) => !nomAnswerMap.get(field.key))
-                  : legacyAppAnswers.length === 0) ? (
-                  <div className="mt-4 rounded-[22px] border border-dashed border-slate-200 bg-slate-50/70 px-4 py-5 text-sm text-slate-500">
-                    No text-based answers were saved for this nomination.
+                {!hasVisibleAnswers ? (
+                  <div className="mt-3">
+                    <EmptyInline>No text answers were saved for this nomination.</EmptyInline>
                   </div>
                 ) : null}
               </div>
 
-              <div className="rounded-[26px] border border-slate-200 bg-white/85 p-5 shadow-[0_14px_35px_rgba(15,23,42,0.05)]">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">
+              <DashboardPanel>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-black/45">
                   Files
                 </p>
-                <div className="mt-4 space-y-4">
+                <div className="mt-3 flex flex-col gap-4">
                   {hasNominationAnswers
                     ? nominationFileFields.map((field) => {
                         const files = nomFileMap.get(field.key) ?? [];
                         return (
                           <div key={field.key}>
-                            <p className="text-sm font-semibold text-[#10203B]">{field.label}</p>
-                            <div className="mt-3 space-y-2">
+                            <p className="text-sm font-semibold text-[#0A0A0A]">{field.label}</p>
+                            <div className="mt-2 flex flex-col gap-2">
                               {files.map((file) => (
                                 <FileLink
                                   key={file.id}
@@ -390,21 +360,17 @@ export default function JuryApplicationDetailPage({
                                   sizeBytes={file.fileSize}
                                 />
                               ))}
-                              {files.length === 0 ? (
-                                <div className="rounded-[18px] border border-dashed border-slate-200 bg-slate-50/70 px-4 py-4 text-sm text-slate-500">
-                                  No files uploaded for this field.
-                                </div>
-                              ) : null}
+                              {files.length === 0 ? <EmptyInline>No files uploaded.</EmptyInline> : null}
                             </div>
                           </div>
                         );
                       })
                     : legacyAppFileEntries.map(([key, files]) => (
                         <div key={key}>
-                          <p className="text-sm font-semibold text-[#10203B]">
+                          <p className="text-sm font-semibold text-[#0A0A0A]">
                             {formatLegacyFieldLabel(key)}
                           </p>
-                          <div className="mt-3 space-y-2">
+                          <div className="mt-2 flex flex-col gap-2">
                             {files.map((file) => (
                               <FileLink
                                 key={file.id}
@@ -417,50 +383,38 @@ export default function JuryApplicationDetailPage({
                         </div>
                       ))}
                 </div>
-              </div>
+              </DashboardPanel>
             </div>
           </DashboardCard>
         </div>
 
-        <div className="space-y-5 xl:sticky xl:top-6 xl:self-start">
+        <aside className="order-first flex flex-col gap-4 xl:order-none xl:sticky xl:top-5 xl:self-start">
           <JuryScoreForm nominationApplicationId={nomination.id} initialScore={score} />
 
-          <DashboardCard className="overflow-hidden border-slate-200/90 bg-[linear-gradient(135deg,#ffffff_0%,#fbfcfe_65%,#f2f6fb_100%)] p-0">
-            <div className="border-b border-slate-200/80 px-5 py-5">
-              <div className="flex items-center gap-2 text-[#4C7D9D]">
-                <Layers3 size={16} />
-                <p className="text-[11px] font-semibold uppercase tracking-[0.24em]">
-                  Application nominations
-                </p>
-              </div>
-              <h2 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-[#10203B]">
-                Review map
-              </h2>
+          <DashboardCard>
+            <div className="flex items-center gap-2 text-[#1673A5]">
+              <Layers3 aria-hidden size={16} />
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">Application map</p>
             </div>
-
-            <div className="space-y-3 px-5 py-5">
+            <div className="mt-3 flex flex-col gap-2">
               {orderedApplicationNominations.map((item, index) => {
                 const active = item.id === nomination.id;
 
                 return (
                   <div
                     key={item.id}
-                    className={`rounded-[22px] border px-4 py-4 ${
-                      active
-                        ? "border-[#4C7D9D]/30 bg-[#E9F1F8]"
-                        : "border-slate-200 bg-white"
+                    className={`rounded-lg border px-3 py-3 ${
+                      active ? "border-[#7DC8EE] bg-[#EAF6FF]" : "border-black/10 bg-white"
                     }`}
                   >
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#4C7D9D]">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-black/45">
                       Nomination {String(index + 1).padStart(2, "0")}
                     </p>
-                    <p className="mt-2 text-sm font-semibold leading-6 text-[#10203B]">
-                      {item.award.name}
-                    </p>
-                    <p className="mt-1 text-xs text-slate-500">{item.category.name}</p>
+                    <p className="mt-1 text-sm font-semibold text-[#0A0A0A]">{item.award.name}</p>
+                    <p className="mt-0.5 text-xs text-black/50">{item.category.name}</p>
                     {active ? (
-                      <p className="mt-2 text-xs font-medium uppercase tracking-[0.14em] text-[#4C7D9D]">
-                        Current review
+                      <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#1673A5]">
+                        Current
                       </p>
                     ) : null}
                   </div>
@@ -469,39 +423,29 @@ export default function JuryApplicationDetailPage({
             </div>
           </DashboardCard>
 
-          <DashboardCard className="overflow-hidden border-slate-200/90 bg-[linear-gradient(135deg,#ffffff_0%,#fbfcfe_65%,#f2f6fb_100%)] p-0">
-            <div className="border-b border-slate-200/80 px-5 py-5">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">
-                Shared credentials
-              </p>
-              <h2 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-[#10203B]">
-                License and shared files
-              </h2>
+          <DashboardCard>
+            <div className="flex items-center gap-2 text-[#1673A5]">
+              <ReceiptText aria-hidden size={16} />
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">Shared credentials</p>
             </div>
-            <div className="space-y-4 px-5 py-5">
-              <div>
-                <p className="text-sm font-semibold text-[#10203B]">
-                  Professional license / Certification
-                </p>
-                <div className="mt-3 space-y-2">
-                  {(appFileMap.get("licenseCertification") ?? []).map((file) => (
-                    <FileLink
-                      key={file.id}
-                      href={`/api/jury/application-files/${file.id}`}
-                      name={file.fileName}
-                      sizeBytes={file.fileSize}
-                    />
-                  ))}
-                  {(appFileMap.get("licenseCertification") ?? []).length === 0 ? (
-                    <div className="rounded-[18px] border border-dashed border-slate-200 bg-slate-50/70 px-4 py-4 text-sm text-slate-500">
-                      No license file uploaded.
-                    </div>
-                  ) : null}
-                </div>
+            <div className="mt-4">
+              <p className="text-sm font-semibold text-[#0A0A0A]">
+                Professional license / Certification
+              </p>
+              <div className="mt-2 flex flex-col gap-2">
+                {licenseFiles.map((file) => (
+                  <FileLink
+                    key={file.id}
+                    href={`/api/jury/application-files/${file.id}`}
+                    name={file.fileName}
+                    sizeBytes={file.fileSize}
+                  />
+                ))}
+                {licenseFiles.length === 0 ? <EmptyInline>No license file uploaded.</EmptyInline> : null}
               </div>
             </div>
           </DashboardCard>
-        </div>
+        </aside>
       </div>
     </div>
   );
