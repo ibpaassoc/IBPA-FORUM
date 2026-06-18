@@ -95,7 +95,7 @@ export default function JuryDashboardPage({
           </div>
         </DashboardAccentBlock>
 
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-3 gap-3">
           <DashboardMetricTile label="Assigned" value={totals.totalAssignedApplications} />
           <DashboardMetricTile label="Scored" value={totals.scoredApplications} accent="green" />
           <DashboardMetricTile label="Remaining" value={totals.remainingApplications} accent="amber" />

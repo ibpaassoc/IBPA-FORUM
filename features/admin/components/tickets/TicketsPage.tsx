@@ -392,7 +392,7 @@ export default function TicketsPage({
       <EarlyBirdToggle initialEnabled={initialEarlyBirdEnabled} />
 
       {/* Metrics */}
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-[1.1fr_repeat(3,minmax(0,0.75fr))]">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-[1.1fr_repeat(3,minmax(0,0.75fr))]">
         <DashboardAccentBlock>
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/50">
             Total tickets
