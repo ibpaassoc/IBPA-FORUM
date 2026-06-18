@@ -30,6 +30,13 @@ type ParticipantApplicationDetail = Application & {
   nominationApplications: NominationDetail[];
 };
 
+type SelectedAwardSummary = {
+  categoryId: string;
+  categoryName: string;
+  awardId: string;
+  awardName: string;
+};
+
 function formatAnswerValue(answer: {
   valueText: string | null;
   valueNumber: number | null;
@@ -51,6 +58,30 @@ function formatLegacyFieldLabel(fieldKey: string) {
     .replace(/\s+/g, " ")
     .trim()
     .replace(/^./, (v) => v.toUpperCase());
+}
+
+function parseSelectedAwards(valueJson: unknown): SelectedAwardSummary[] {
+  if (!Array.isArray(valueJson)) {
+    return [];
+  }
+
+  return valueJson.flatMap((item) => {
+    if (!item || typeof item !== "object") {
+      return [];
+    }
+
+    const record = item as Record<string, unknown>;
+    const categoryId = typeof record.categoryId === "string" ? record.categoryId : "";
+    const categoryName = typeof record.categoryName === "string" ? record.categoryName : "";
+    const awardId = typeof record.awardId === "string" ? record.awardId : "";
+    const awardName = typeof record.awardName === "string" ? record.awardName : "";
+
+    if (!categoryId || !categoryName || !awardId || !awardName) {
+      return [];
+    }
+
+    return [{ categoryId, categoryName, awardId, awardName }];
+  });
 }
 
 function FileLink({ href, name, sizeBytes }: { href: string; name: string; sizeBytes: number }) {
@@ -80,8 +111,9 @@ function NominationBlockB({ nomination }: { nomination: NominationDetail }) {
   return (
     <DashboardCard>
       <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">
-        Block B — {nomination.category.name} / {nomination.award.name}
+        Block B - {nomination.award.name}
       </p>
+      <p className="mt-1 text-sm text-slate-500">{nomination.category.name}</p>
       <div className="mt-4 space-y-3">
         {fields.filter((f) => f.type !== "file").map((field) => {
           const answer = answerMap.get(field.key);
@@ -121,6 +153,7 @@ export default function ApplicationDetailPage({
   application: ParticipantApplicationDetail;
 }) {
   const answerMap = new Map(application.answers.map((a) => [a.fieldKey, a]));
+  const selectedAwards = parseSelectedAwards(answerMap.get("selectedAwards")?.valueJson);
   const fileMap = new Map<string, ApplicationFile[]>();
   for (const file of application.files) {
     const group = fileMap.get(file.fieldKey) ?? [];
@@ -136,6 +169,33 @@ export default function ApplicationDetailPage({
   const hasNominationData = application.nominationApplications.some(
     (n) => n.answers.length > 0 || n.files.length > 0
   );
+  const nominationOrder = new Map(
+    selectedAwards.map((item, index) => [item.awardId, index])
+  );
+  const orderedNominations = [...application.nominationApplications].sort((left, right) => {
+    const leftOrder = nominationOrder.get(left.awardId) ?? Number.MAX_SAFE_INTEGER;
+    const rightOrder = nominationOrder.get(right.awardId) ?? Number.MAX_SAFE_INTEGER;
+
+    if (leftOrder !== rightOrder) {
+      return leftOrder - rightOrder;
+    }
+
+    return left.createdAt.getTime() - right.createdAt.getTime();
+  });
+  const nominationSummaries =
+    selectedAwards.length > 0
+      ? selectedAwards
+      : orderedNominations.map((nom) => ({
+          categoryId: nom.categoryId,
+          categoryName: nom.category.name,
+          awardId: nom.awardId,
+          awardName: nom.award.name,
+        }));
+  const categorySummary = [...new Set(nominationSummaries.map((item) => item.categoryName))].join(", ");
+  const nominationSummaryLabel =
+    nominationSummaries.length <= 1
+      ? nominationSummaries[0]?.awardName ?? application.award.name
+      : `${nominationSummaries.length} nominations selected`;
 
   const legacyAnswerEntries = !hasNominationData
     ? application.answers.filter(
@@ -157,7 +217,19 @@ export default function ApplicationDetailPage({
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">Participant</p>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[#10203B]">{application.fullName}</h1>
-          <p className="mt-0.5 text-sm text-slate-500">{application.category.name} / {application.award.name}</p>
+          <p className="mt-0.5 text-sm text-slate-500">{nominationSummaryLabel}</p>
+          {nominationSummaries.length > 1 ? (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {nominationSummaries.map((item) => (
+                <span
+                  key={item.awardId}
+                  className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs text-slate-600"
+                >
+                  {item.awardName}
+                </span>
+              ))}
+            </div>
+          ) : null}
         </div>
         <DashboardSecondaryBtn href="/admin/applications">← Back to list</DashboardSecondaryBtn>
       </div>
@@ -177,8 +249,8 @@ export default function ApplicationDetailPage({
               <DashboardDetailCard label="Years of experience" value={String(application.yearsExperience)} />
               <DashboardDetailCard label="IBPA membership no." value={application.membershipNumber || "Not provided"} />
               <DashboardDetailCard label="Membership level" value={application.membershipLevel || "Not available"} />
-              <DashboardDetailCard label="Category" value={application.category.name} />
-              <DashboardDetailCard label="Nomination" value={application.award.name} />
+              <DashboardDetailCard label="Category" value={categorySummary || application.category.name} />
+              <DashboardDetailCard label="Nomination" value={nominationSummaryLabel} />
               <DashboardDetailCard label="Website" value={application.websiteUrl || "Not provided"} />
               <DashboardDetailCard label="Instagram / Social" value={application.socialUrl || "Not provided"} />
               <DashboardDetailCard label="Client reviews" value={application.reviewsUrl || "Not provided"} />
@@ -195,7 +267,7 @@ export default function ApplicationDetailPage({
 
           {/* Per-nomination Block B sections */}
           {hasNominationData ? (
-            application.nominationApplications.map((nom) => (
+            orderedNominations.map((nom) => (
               <NominationBlockB key={nom.id} nomination={nom} />
             ))
           ) : (

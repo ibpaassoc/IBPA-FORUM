@@ -116,8 +116,9 @@ export default function JuryApplicationDetailPage({
             {application.fullName}
           </h1>
           <p className="mt-0.5 text-sm text-slate-500">
-            {nomination.category.name} / {nomination.award.name}
+            {nomination.award.name}
           </p>
+          <p className="mt-1 text-sm text-slate-400">{nomination.category.name}</p>
         </div>
         <DashboardSecondaryBtn href="/jury/dashboard">← Back</DashboardSecondaryBtn>
       </div>
