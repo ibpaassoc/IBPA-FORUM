@@ -43,6 +43,7 @@
 
   --page-gutter: clamp(1rem, 5vw, 4rem);
   --content-width: 1200px;
+  --site-header-height: 105px;
 
   --background: var(--color-off-white);
   --foreground: var(--color-ink);
