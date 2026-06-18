@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useMemo, useRef, useState } from "react";
+import { startTransition, useEffect, useMemo, useRef, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   Award,
@@ -18,6 +18,7 @@ import {
   HeartHandshake,
   Layers,
   Send,
+  ShieldCheck,
   Sparkles,
   SprayCan,
   Trophy,
@@ -71,6 +72,65 @@ const categoryIconBySlug: Record<string, LucideIcon> = {
 };
 
 const MAX_SELECTED_NOMINATIONS = 5;
+
+// Tiered pricing in dollars: index = nomination count (1–5)
+const MEMBER_PRICES = [0, 50, 100, 130, 180, 200] as const;
+const NON_MEMBER_PRICES = [0, 70, 140, 190, 260, 300] as const;
+
+function getDisplayPrice(count: number, isMember: boolean): number | null {
+  if (count === 0) return null;
+  const prices = isMember ? MEMBER_PRICES : NON_MEMBER_PRICES;
+  return prices[Math.min(count, 5) as 0 | 1 | 2 | 3 | 4 | 5] ?? null;
+}
+
+function getSavingsAmount(count: number): number {
+  if (count >= 5) return 50;
+  if (count >= 3) return 20;
+  return 0;
+}
+
+type CertStatus = "idle" | "checking" | "valid" | "invalid" | "error";
+
+const CERT_STATUS_CONTENT: Record<Exclude<CertStatus, "idle">, React.ReactNode> = {
+  checking: (
+    <span className="flex items-center gap-1.5 text-[var(--color-ink-soft)]">
+      <svg className="h-3 w-3 animate-spin" viewBox="0 0 24 24" fill="none">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+      </svg>
+      Verifying…
+    </span>
+  ),
+  valid: (
+    <span className="flex items-center gap-1.5 text-emerald-600">
+      <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+      </svg>
+      Valid IBPA member certificate
+    </span>
+  ),
+  invalid: (
+    <span className="flex items-center gap-1.5 text-red-500">
+      <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+      </svg>
+      Certificate not found
+    </span>
+  ),
+  error: (
+    <span className="flex items-center gap-1.5 text-amber-600">
+      <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+        <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+      </svg>
+      Could not verify – non-member rate applies
+    </span>
+  ),
+};
+
+function CertStatusBadge({ status }: { status: CertStatus }) {
+  if (status === "idle") return null;
+  return <div className="mt-1.5 text-[0.72rem]">{CERT_STATUS_CONTENT[status]}</div>;
+}
 
 const categoryCardTransition = {
   duration: 0.36,
@@ -190,6 +250,18 @@ const formCopy = {
     submitException: "Something went wrong. Please try again.",
     redirecting: "Redirecting to payment...",
     nominationCount: "Selected nominations",
+    ibpaMembership: "IBPA Membership",
+    ibpaMemberLabel: "I am an IBPA Member",
+    ibpaMemberSub: "Members receive discounted entry fees",
+    ibpaCertNumber: "IBPA CERT Number",
+    entryFee: "Entry Fee",
+    memberRate: "Member rate",
+    standardRate: "Standard rate",
+    grandPrixEligible: "Grand Prix eligible",
+    selectForPricing: "Select nominations to see pricing",
+    savings: "Save",
+    certInvalidError: "Your IBPA certificate could not be verified. Please check the number or uncheck IBPA Member to proceed at standard rate.",
+    certCheckingError: "Please wait while we verify your IBPA certificate.",
   },
   ru: {
     steps: [
@@ -278,6 +350,18 @@ const formCopy = {
     submitException: "Что-то пошло не так. Попробуйте снова.",
     redirecting: "Переход к оплате...",
     nominationCount: "Выбранные номинации",
+    ibpaMembership: "Членство IBPA",
+    ibpaMemberLabel: "Я являюсь членом IBPA",
+    ibpaMemberSub: "Члены получают сниженные взносы",
+    ibpaCertNumber: "CERT-номер IBPA",
+    entryFee: "Взнос",
+    memberRate: "Тариф участника",
+    standardRate: "Стандартный тариф",
+    grandPrixEligible: "Участие в Гран-При",
+    selectForPricing: "Выберите номинации для расчёта цены",
+    savings: "Скидка",
+    certInvalidError: "Ваш сертификат IBPA не прошёл проверку. Проверьте номер или снимите галочку «Член IBPA» для стандартного тарифа.",
+    certCheckingError: "Подождите, идёт проверка вашего сертификата IBPA.",
   },
   ua: {
     steps: [
@@ -366,6 +450,18 @@ const formCopy = {
     submitException: "Щось пішло не так. Спробуйте ще раз.",
     redirecting: "Перехід до оплати...",
     nominationCount: "Обрані номінації",
+    ibpaMembership: "Членство IBPA",
+    ibpaMemberLabel: "Я є членом IBPA",
+    ibpaMemberSub: "Члени отримують знижені внески",
+    ibpaCertNumber: "CERT-номер IBPA",
+    entryFee: "Внесок",
+    memberRate: "Тариф учасника",
+    standardRate: "Стандартний тариф",
+    grandPrixEligible: "Участь у Гран-Прі",
+    selectForPricing: "Оберіть номінації для розрахунку ціни",
+    savings: "Знижка",
+    certInvalidError: "Ваш сертифікат IBPA не пройшов перевірку. Перевірте номер або зніміть позначку «Член IBPA» для стандартного тарифу.",
+    certCheckingError: "Зачекайте, йде перевірка вашого сертифіката IBPA.",
   },
 } as const;
 
@@ -386,7 +482,48 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
     type: "idle" | "success" | "error";
     message: string;
   }>({ type: "idle", message: "" });
+  const [isIbpaMember, setIsIbpaMember] = useState(false);
+  const [ibpaMemberNumber, setIbpaMemberNumber] = useState("");
+  const [certStatus, setCertStatus] = useState<CertStatus>("idle");
+  const certDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const copy = formCopy[language] ?? formCopy.en;
+
+  // Cert verification — same pattern as TicketForm
+  useEffect(() => {
+    if (!isIbpaMember) {
+      setCertStatus("idle");
+      return;
+    }
+    const trimmed = ibpaMemberNumber.trim();
+    if (!trimmed) {
+      setCertStatus("idle");
+      return;
+    }
+    if (certDebounceRef.current) clearTimeout(certDebounceRef.current);
+    setCertStatus("checking");
+    certDebounceRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `/api/tickets/verify-cert?certNumber=${encodeURIComponent(trimmed)}`
+        );
+        const data = (await res.json()) as { valid: boolean };
+        if (res.status === 503) {
+          setCertStatus("error");
+        } else {
+          setCertStatus(data.valid ? "valid" : "invalid");
+        }
+      } catch {
+        setCertStatus("error");
+      }
+    }, 600);
+    return () => {
+      if (certDebounceRef.current) clearTimeout(certDebounceRef.current);
+    };
+  }, [isIbpaMember, ibpaMemberNumber]);
+
+  // Effective membership: only valid cert counts (error falls back to non-member)
+  const effectivelyMember = isIbpaMember && certStatus === "valid";
+
   const stepContentVariants = {
     enter: (direction: 1 | -1) => ({
       x: direction > 0 ? 48 : -48,
@@ -447,6 +584,10 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
         nominationTitle: string;
       } => Boolean(item)
     );
+
+  // Computed pricing (depends on selectedAwardIds which is above)
+  const displayPrice = getDisplayPrice(selectedAwardIds.length, effectivelyMember);
+  const savings = getSavingsAmount(selectedAwardIds.length);
 
   // Dynamic step boundaries — change when nomination count changes
   const MOTIVATION_STEP = BLOCK_B_START + Math.max(1, selectedNominations.length);
@@ -662,6 +803,16 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
       return;
     }
 
+    // Block submission if cert is invalid or still verifying
+    if (isIbpaMember && certStatus === "invalid") {
+      setSubmissionState({ type: "error", message: copy.certInvalidError });
+      return;
+    }
+    if (isIbpaMember && certStatus === "checking") {
+      setSubmissionState({ type: "error", message: copy.certCheckingError });
+      return;
+    }
+
     const validation = validateApplicationValues({
       values,
       blockBValuesByNomination: blockBValues,
@@ -711,6 +862,12 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
             formData.append(formKey, String(rawValue));
           }
         }
+      }
+
+      // Membership — only send "true" if cert was verified
+      formData.append("isIbpaMember", String(effectivelyMember));
+      if (effectivelyMember && ibpaMemberNumber.trim()) {
+        formData.append("ibpaMemberNumber", ibpaMemberNumber.trim());
       }
 
       const response = await fetch("/api/applications", {
@@ -1017,6 +1174,110 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
                     })
                   )}
                 </div>
+
+                {/* IBPA Membership + Pricing */}
+                <div className="mt-5 space-y-5 border-t border-black/6 pt-5">
+                  {/* Membership toggle */}
+                  <div>
+                    <p className="mb-3 text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-ink-soft)]">
+                      {copy.ibpaMembership}
+                    </p>
+                    <label className="flex cursor-pointer items-start gap-3">
+                      <input
+                        type="checkbox"
+                        checked={isIbpaMember}
+                        onChange={(e) => {
+                          setIsIbpaMember(e.target.checked);
+                          if (!e.target.checked) {
+                            setIbpaMemberNumber("");
+                            setCertStatus("idle");
+                          }
+                        }}
+                        className="mt-0.5 h-[14px] w-[14px] shrink-0 rounded border-black/20 accent-[var(--color-ink)]"
+                      />
+                      <span className="flex flex-col gap-0.5">
+                        <span className="text-[0.87rem] font-medium text-[var(--color-ink)]">
+                          {copy.ibpaMemberLabel}
+                        </span>
+                        <span className="text-[0.72rem] leading-[1.55] text-[var(--color-ink-soft)]">
+                          {copy.ibpaMemberSub}
+                        </span>
+                      </span>
+                    </label>
+
+                    <AnimatePresence initial={false}>
+                      {isIbpaMember && (
+                        <motion.div
+                          key="cert-input"
+                          initial={{ opacity: 0, height: 0, y: -4 }}
+                          animate={{ opacity: 1, height: "auto", y: 0 }}
+                          exit={{ opacity: 0, height: 0, y: -4 }}
+                          transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+                          className="overflow-hidden"
+                        >
+                          <div className="mt-3">
+                            <p className="mb-1.5 text-[0.65rem] font-bold uppercase tracking-[0.2em] text-[var(--color-ink-soft)]">
+                              {copy.ibpaCertNumber}
+                            </p>
+                            <input
+                              type="text"
+                              value={ibpaMemberNumber}
+                              onChange={(e) => setIbpaMemberNumber(e.target.value)}
+                              placeholder="CERT-20240124-A00A"
+                              className={`w-full rounded-[14px] border bg-white px-3 py-2.5 text-[0.85rem] text-[var(--color-ink)] placeholder-[var(--color-ink-soft)] outline-none transition focus:ring-2 ${
+                                certStatus === "valid"
+                                  ? "border-emerald-400 focus:border-emerald-500 focus:ring-emerald-100"
+                                  : certStatus === "invalid"
+                                    ? "border-red-300 bg-red-50/40 focus:ring-red-100"
+                                    : "border-black/12 focus:border-[var(--color-ink)] focus:ring-black/8"
+                              }`}
+                            />
+                            <CertStatusBadge status={certStatus} />
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Entry fee */}
+                  <div className="border-t border-black/6 pt-4">
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-ink-soft)]">
+                        {copy.entryFee}
+                      </p>
+                      {effectivelyMember ? (
+                        <span className="flex items-center gap-1 rounded-full border border-[var(--color-ink)]/15 bg-[var(--surface-tint)] px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink)]">
+                          <ShieldCheck size={9} strokeWidth={2} />
+                          {copy.memberRate}
+                        </span>
+                      ) : null}
+                    </div>
+
+                    {displayPrice !== null ? (
+                      <div>
+                        <div className="flex items-baseline gap-2">
+                          <p className="text-[1.5rem] font-semibold tracking-[-0.02em] text-[var(--color-ink)]">
+                            ${displayPrice}
+                          </p>
+                          {savings > 0 && (
+                            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-emerald-700">
+                              {copy.savings} ${savings}
+                            </span>
+                          )}
+                        </div>
+                        {selectedAwardIds.length === 5 && (
+                          <p className="mt-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-emerald-600">
+                            {copy.grandPrixEligible}
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-[0.8rem] italic text-[var(--color-ink-soft)]">
+                        {copy.selectForPricing}
+                      </p>
+                    )}
+                  </div>
+                </div>
               </aside>
             </div>
           ) : null}
@@ -1255,6 +1516,14 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
                     {
                       label: copy.nominationCount,
                       value: `${selectedAwardIds.length}`,
+                    },
+                    {
+                      label: copy.ibpaMembership,
+                      value: effectivelyMember ? copy.ibpaMemberLabel : copy.standardRate,
+                    },
+                    {
+                      label: copy.entryFee,
+                      value: displayPrice !== null ? `$${displayPrice}` : "—",
                     },
                   ].map((row) => (
                     <div key={row.label}>

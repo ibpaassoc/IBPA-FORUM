@@ -12,6 +12,16 @@ import { prisma } from "@/shared/lib/prisma";
 import { Prisma } from "@prisma/client";
 import type { ApplicationValues } from "@/features/applications/types/application.types";
 
+// Tiered pricing in cents: index = nomination count (1–5)
+const MEMBER_PRICES_CENTS = [0, 5000, 10000, 13000, 18000, 20000] as const;
+const NON_MEMBER_PRICES_CENTS = [0, 7000, 14000, 19000, 26000, 30000] as const;
+
+function computeApplicationAmountCents(count: number, isMember: boolean): number {
+  const prices = isMember ? MEMBER_PRICES_CENTS : NON_MEMBER_PRICES_CENTS;
+  const idx = Math.min(5, Math.max(1, count)) as 1 | 2 | 3 | 4 | 5;
+  return prices[idx];
+}
+
 async function createNominationApplication({
   applicationId,
   awardId,
@@ -77,7 +87,6 @@ async function createNominationApplication({
     }
   }
 
-  // Create the NominationApplication record first to get the ID
   const nominationApplication = await prisma.nominationApplication.create({
     data: {
       applicationId,
@@ -87,7 +96,6 @@ async function createNominationApplication({
     select: { id: true },
   });
 
-  // Upload files for this nomination
   const uploadedFiles = (
     await Promise.all(
       pendingFileUploads.flatMap(({ fieldKey, files }) =>
@@ -98,7 +106,6 @@ async function createNominationApplication({
     )
   ).filter(Boolean);
 
-  // Save answers and files
   if (answerEntries.length > 0 || uploadedFiles.length > 0) {
     await prisma.nominationApplication.update({
       where: { id: nominationApplication.id },
@@ -152,7 +159,10 @@ export async function saveApplicationSubmission(formData: FormData) {
     };
   }
 
-  // Upload license/certification (shared across nominations — Block A)
+  // Membership data from form
+  const isIbpaMember = formData.get("isIbpaMember") === "true";
+  const ibpaMemberNumber = String(formData.get("ibpaMemberNumber") ?? "").trim();
+
   const licenseFiles = Array.isArray(values.licenseCertification)
     ? values.licenseCertification.filter((file): file is File => file instanceof File)
     : [];
@@ -166,7 +176,7 @@ export async function saveApplicationSubmission(formData: FormData) {
   }));
 
   const nominationCount = Math.max(1, selectedNominations.length);
-  const applicationAmount = nominationCount * 5000;
+  const applicationAmount = computeApplicationAmountCents(nominationCount, isIbpaMember);
 
   const normalizedEmail = String(values.email).trim().toLowerCase();
   const fullName = `${String(values.firstName ?? "").trim()} ${String(
@@ -190,8 +200,8 @@ export async function saveApplicationSubmission(formData: FormData) {
         city: String(values.city),
         professionalTitle: String(values.professionalTitle),
         yearsExperience: Number(values.yearsExperience),
-        membershipNumber: null,
-        membershipLevel: null,
+        membershipNumber: isIbpaMember && ibpaMemberNumber ? ibpaMemberNumber : null,
+        membershipLevel: isIbpaMember ? "member" : null,
         websiteUrl: String(values.websiteUrl || "") || null,
         socialUrl: String(values.socialUrl || "") || null,
         reviewsUrl: String(values.reviewsUrl || "") || null,
@@ -230,7 +240,6 @@ export async function saveApplicationSubmission(formData: FormData) {
     throw error;
   }
 
-  // Save shared Block A answers and license files
   try {
     const heardAboutOtherText =
       typeof values.heardAboutOther === "string" ? values.heardAboutOther.trim() : "";
@@ -262,7 +271,6 @@ export async function saveApplicationSubmission(formData: FormData) {
     throw error;
   }
 
-  // Create NominationApplication records (one per selected award) with per-nomination Block B
   try {
     for (const nom of selectedNominations) {
       await createNominationApplication({
@@ -290,8 +298,8 @@ export async function saveApplicationSubmission(formData: FormData) {
       email: normalizedEmail,
       categoryId: validation.selectedCategory.id,
       awardId: validation.selectedAward.id,
-      amount: applicationAmount,
       nominationCount,
+      isIbpaMember,
     });
     console.info("Stripe competitor checkout session created", {
       applicationId: application.id,
@@ -341,6 +349,8 @@ export async function saveApplicationSubmission(formData: FormData) {
         `Category: ${validation.selectedCategory.name}`,
         `Award: ${validation.selectedAward.name}`,
         `Selected nominations: ${selectedNominations.map((n) => `${n.categoryName} - ${n.awardName}`).join("; ")}`,
+        `IBPA Member: ${isIbpaMember ? "Yes" : "No"}`,
+        `Entry fee: $${applicationAmount / 100}`,
         "Payment status: Pending checkout",
       ],
     });
@@ -373,6 +383,8 @@ export async function retryCompetitorApplicationPayment(applicationId: string) {
       amount: true,
       status: true,
       paymentStatus: true,
+      membershipNumber: true,
+      _count: { select: { nominationApplications: true } },
     },
   });
 
@@ -390,14 +402,17 @@ export async function retryCompetitorApplicationPayment(applicationId: string) {
     };
   }
 
-  const nominationCount = Math.max(1, Math.round(application.amount / 5000));
+  const isIbpaMember = !!application.membershipNumber;
+  const nominationCount = Math.max(1, application._count.nominationApplications);
+  const applicationAmount = computeApplicationAmountCents(nominationCount, isIbpaMember);
+
   const checkoutSession = await createCompetitorCheckoutSession({
     applicationId: application.id,
     email: application.email,
     categoryId: application.categoryId,
     awardId: application.awardId,
-    amount: application.amount,
     nominationCount,
+    isIbpaMember,
   });
 
   await prisma.$transaction([
@@ -413,6 +428,7 @@ export async function retryCompetitorApplicationPayment(applicationId: string) {
         stripeCheckoutSessionId: checkoutSession.id,
         stripePaymentIntentId: null,
         paidAt: null,
+        amount: applicationAmount,
       },
     }),
     prisma.payment.create({
@@ -420,7 +436,7 @@ export async function retryCompetitorApplicationPayment(applicationId: string) {
         source: "COMPETITOR",
         applicationId: application.id,
         stripeSessionId: checkoutSession.id,
-        amount: application.amount,
+        amount: applicationAmount,
         currency: "usd",
         status: "PENDING",
       },
