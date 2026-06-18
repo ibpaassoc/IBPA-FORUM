@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { DashboardSecondaryBtn } from "@/shared/components/admin/DashboardUI";
 
 export default function AdminReopenScoreButton({ scoreId }: { scoreId: string }) {
   const router = useRouter();
@@ -30,15 +31,14 @@ export default function AdminReopenScoreButton({ scoreId }: { scoreId: string })
   }
 
   return (
-    <div className="space-y-1.5">
-      <button
+    <div className="flex flex-col gap-1.5">
+      <DashboardSecondaryBtn
         type="button"
         disabled={isPending}
         onClick={() => { void handleReopen(); }}
-        className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-700 transition hover:border-[#4C7D9D]/40 hover:text-[#10203B] disabled:cursor-not-allowed disabled:opacity-65"
       >
-        Reopen Score
-      </button>
+        Reopen score
+      </DashboardSecondaryBtn>
       {error && <p className="text-xs text-red-600">{error}</p>}
     </div>
   );

@@ -1,22 +1,31 @@
 "use client";
 
-import { Users } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, MapPin, Users } from "lucide-react";
 import { formatAdminDate } from "@/features/admin/server/view-models";
 import {
-  DashboardCard,
-  DashboardMetricTile,
+  DashboardAccentBlock,
   DashboardBadge,
+  DashboardCard,
   DashboardChip,
   DashboardEmptyState,
+  DashboardMetricTile,
+  DashboardPageHeader,
+  DashboardPanel,
 } from "@/shared/components/admin/DashboardUI";
 
 function juryStatusBadge(status: string) {
   switch (status) {
-    case "PAID": return <DashboardBadge tone="green">Active judge</DashboardBadge>;
-    case "APPROVED": return <DashboardBadge tone="blue">Approved</DashboardBadge>;
-    case "SUBMITTED": return <DashboardBadge tone="amber">Pending review</DashboardBadge>;
-    case "REJECTED": return <DashboardBadge tone="red">Rejected</DashboardBadge>;
-    default: return <DashboardBadge tone="neutral">{status}</DashboardBadge>;
+    case "PAID":
+      return <DashboardBadge tone="green">Active judge</DashboardBadge>;
+    case "APPROVED":
+      return <DashboardBadge tone="blue">Approved</DashboardBadge>;
+    case "SUBMITTED":
+      return <DashboardBadge tone="amber">Pending review</DashboardBadge>;
+    case "REJECTED":
+      return <DashboardBadge tone="red">Rejected</DashboardBadge>;
+    default:
+      return <DashboardBadge tone="neutral">{status}</DashboardBadge>;
   }
 }
 
@@ -46,74 +55,90 @@ export default function JuryApplicationListPage({
   activeJudgeCount: number;
 }) {
   return (
-    <div className="space-y-5">
-      {/* Page header */}
-      <div>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">
-          Admin
-        </p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[#10203B] md:text-3xl">
-          Jury Applications
-        </h1>
-      </div>
+    <div className="flex flex-col gap-5">
+      <DashboardPageHeader
+        label="Jury"
+        title="Candidate review"
+        description="Approve judges, track payment activation, and keep expertise coverage clear."
+      />
 
-      {/* Metrics */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <DashboardMetricTile label="Total" value={totalCount} />
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-[1.1fr_repeat(3,minmax(0,0.75fr))]">
+        <DashboardAccentBlock>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/50">
+            Total candidates
+          </p>
+          <p className="mt-2 text-3xl font-semibold tracking-[-0.03em]">{totalCount}</p>
+        </DashboardAccentBlock>
         <DashboardMetricTile label="Pending review" value={pendingCount} accent="amber" />
         <DashboardMetricTile label="Approved" value={approvedCount} accent="blue" />
         <DashboardMetricTile label="Active judges" value={activeJudgeCount} accent="green" />
       </div>
 
-      {/* Table */}
-      <DashboardCard className="p-0 overflow-hidden">
-        {applications.length === 0 ? (
-          <div className="p-6">
-            <DashboardEmptyState
-              icon={<Users size={22} />}
-              title="No jury applications yet"
-              description="Jury applications will appear here once submitted."
-            />
-          </div>
-        ) : (
-          <div className="divide-y divide-slate-100">
-            {/* Header row */}
-            <div className="hidden grid-cols-[1.4fr_0.8fr_1fr_auto_auto] gap-3 border-b border-slate-100 bg-slate-50/80 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#4C7D9D] lg:grid">
-              <span>Candidate</span>
-              <span>Title</span>
-              <span>Expertise</span>
-              <span>Status</span>
-              <span>Date</span>
-            </div>
-            {applications.map((app) => (
-              <a
-                key={app.id}
-                href={`/admin/jury-applications/${app.id}`}
-                className="grid gap-2 px-4 py-4 transition-colors hover:bg-slate-50/80 lg:grid-cols-[1.4fr_0.8fr_1fr_auto_auto] lg:items-center"
-              >
-                <div>
-                  <p className="text-sm font-semibold text-[#10203B]">{app.fullName}</p>
-                  <p className="mt-0.5 text-xs text-slate-500">{app.email}</p>
-                  <p className="text-xs text-slate-400">{app.city}, {app.country}</p>
+      {applications.length === 0 ? (
+        <DashboardCard>
+          <DashboardEmptyState
+            icon={<Users size={22} />}
+            title="No jury applications yet"
+            description="Submitted candidates will appear here."
+          />
+        </DashboardCard>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {applications.map((app) => (
+            <Link
+              key={app.id}
+              href={`/admin/jury-applications/${app.id}`}
+              className="group block"
+            >
+              <DashboardCard className="p-0 transition hover:border-[#7DC8EE] hover:shadow-[0_22px_60px_rgba(10,10,10,0.1)]">
+                <div className="grid gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.8fr)_170px] lg:items-center">
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      {juryStatusBadge(app.status)}
+                    </div>
+                    <h2 className="mt-3 text-xl font-semibold normal-case tracking-[-0.02em] text-[#0A0A0A]">
+                      {app.fullName}
+                    </h2>
+                    <p className="mt-1 truncate text-sm text-black/55">{app.email}</p>
+                    <p className="mt-3 inline-flex items-center gap-2 rounded-md border border-black/10 bg-[#FAFAFA] px-2.5 py-1 text-xs text-black/55">
+                      <MapPin aria-hidden size={13} />
+                      {app.city}, {app.country}
+                    </p>
+                  </div>
+
+                  <DashboardPanel>
+                    <p className="text-sm font-semibold text-[#0A0A0A]">{app.professionalTitle}</p>
+                    <div className="mt-3 flex flex-wrap gap-1.5">
+                      {app.expertiseAreas.slice(0, 4).map((area) => (
+                        <DashboardChip key={area}>{area}</DashboardChip>
+                      ))}
+                      {app.expertiseAreas.length > 4 ? (
+                        <DashboardChip>+{app.expertiseAreas.length - 4}</DashboardChip>
+                      ) : null}
+                    </div>
+                  </DashboardPanel>
+
+                  <div className="flex items-center justify-between gap-3 rounded-lg border border-black/10 bg-white p-4 lg:flex-col lg:items-start">
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-black/45">
+                        Last activity
+                      </p>
+                      <p className="mt-2 text-sm font-semibold text-[#0A0A0A]">
+                        {formatAdminDate(app.paidAt ?? app.submittedAt)}
+                      </p>
+                    </div>
+                    <ArrowRight
+                      aria-hidden
+                      size={17}
+                      className="text-black/45 transition group-hover:translate-x-0.5 group-hover:text-[#1673A5]"
+                    />
+                  </div>
                 </div>
-                <p className="text-sm text-slate-600">{app.professionalTitle}</p>
-                <div className="flex flex-wrap gap-1">
-                  {app.expertiseAreas.slice(0, 3).map((area) => (
-                    <DashboardChip key={area}>{area}</DashboardChip>
-                  ))}
-                  {app.expertiseAreas.length > 3 && (
-                    <DashboardChip>+{app.expertiseAreas.length - 3}</DashboardChip>
-                  )}
-                </div>
-                <div>{juryStatusBadge(app.status)}</div>
-                <p className="text-xs text-slate-400">
-                  {formatAdminDate(app.paidAt ?? app.submittedAt)}
-                </p>
-              </a>
-            ))}
-          </div>
-        )}
-      </DashboardCard>
+              </DashboardCard>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,20 +1,24 @@
 "use client";
 
+import Link from "next/link";
 import {
   ArrowRight,
   Clock3,
   FileText,
   Layers3,
   MapPin,
-  ShieldCheck,
+  ReceiptText,
 } from "lucide-react";
 import { formatAdminDate } from "@/features/admin/server/view-models";
 import {
+  DashboardAccentBlock,
   DashboardBadge,
   DashboardCard,
   DashboardEmptyState,
   DashboardFilterChip,
   DashboardMetricTile,
+  DashboardPageHeader,
+  DashboardPanel,
 } from "@/shared/components/admin/DashboardUI";
 
 function applicationBadge(status: string) {
@@ -24,7 +28,7 @@ function applicationBadge(status: string) {
     case "SUBMITTED":
       return <DashboardBadge tone="blue">Submitted</DashboardBadge>;
     case "UNDER_REVIEW":
-      return <DashboardBadge tone="purple">Under review</DashboardBadge>;
+      return <DashboardBadge tone="blue">Under review</DashboardBadge>;
     case "PAYMENT_PENDING":
       return <DashboardBadge tone="amber">Payment pending</DashboardBadge>;
     case "REJECTED":
@@ -50,6 +54,15 @@ function paymentBadge(status: string) {
       return <DashboardBadge tone="neutral">{status}</DashboardBadge>;
   }
 }
+
+const statusFilters = [
+  { label: "All", href: "/admin/applications", status: undefined },
+  { label: "Payment pending", href: "/admin/applications?status=PAYMENT_PENDING", status: "PAYMENT_PENDING" },
+  { label: "Submitted", href: "/admin/applications?status=SUBMITTED", status: "SUBMITTED" },
+  { label: "Under review", href: "/admin/applications?status=UNDER_REVIEW", status: "UNDER_REVIEW" },
+  { label: "Approved", href: "/admin/applications?status=APPROVED", status: "APPROVED" },
+  { label: "Rejected", href: "/admin/applications?status=REJECTED", status: "REJECTED" },
+];
 
 export default function ApplicationListPage({
   applications,
@@ -83,111 +96,50 @@ export default function ApplicationListPage({
   };
 }) {
   return (
-    <div className="space-y-6">
-      <DashboardCard className="overflow-hidden border-[#10203B]/10 bg-[radial-gradient(circle_at_top_left,_rgba(76,125,157,0.16),_transparent_38%),linear-gradient(135deg,#ffffff_0%,#f5f8fc_52%,#edf2f8_100%)] p-0">
-        <div className="grid gap-6 px-6 py-6 md:px-8 md:py-8 xl:grid-cols-[minmax(0,1.3fr)_minmax(320px,0.9fr)]">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#4C7D9D]">
-              Admin applications
-            </p>
-            <h1 className="mt-2 max-w-2xl text-3xl font-semibold tracking-[-0.03em] text-[#10203B] md:text-4xl">
-              Premium review workspace for participant submissions.
-            </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 md:text-[15px]">
-              Scan submission health, payment readiness, and nomination spread without opening each
-              file. This view is scoped only to participant applications.
-            </p>
-            <div className="mt-5 flex flex-wrap gap-2">
-              {[
-                { label: "All", href: "/admin/applications", active: !activeStatus },
-                {
-                  label: "Payment pending",
-                  href: "/admin/applications?status=PAYMENT_PENDING",
-                  active: activeStatus === "PAYMENT_PENDING",
-                },
-                {
-                  label: "Submitted",
-                  href: "/admin/applications?status=SUBMITTED",
-                  active: activeStatus === "SUBMITTED",
-                },
-                {
-                  label: "Under review",
-                  href: "/admin/applications?status=UNDER_REVIEW",
-                  active: activeStatus === "UNDER_REVIEW",
-                },
-                {
-                  label: "Approved",
-                  href: "/admin/applications?status=APPROVED",
-                  active: activeStatus === "APPROVED",
-                },
-                {
-                  label: "Rejected",
-                  href: "/admin/applications?status=REJECTED",
-                  active: activeStatus === "REJECTED",
-                },
-              ].map((filter) => (
-                <DashboardFilterChip
-                  key={filter.label}
-                  href={filter.href}
-                  active={filter.active}
-                >
-                  {filter.label}
-                </DashboardFilterChip>
-              ))}
-            </div>
-          </div>
+    <div className="flex flex-col gap-5">
+      <DashboardPageHeader
+        label="Applications"
+        title="Review queue"
+        description="Participant submissions grouped by applicant, payment state, and nomination set."
+      />
 
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
-            <div className="rounded-[28px] border border-[#10203B]/10 bg-[#10203B] p-5 text-white shadow-[0_18px_50px_rgba(16,32,59,0.16)]">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/60">
-                Live focus
-              </p>
-              <p className="mt-3 text-4xl font-semibold tracking-[-0.04em]">
-                {totals.total}
-              </p>
-              <p className="mt-2 text-sm leading-6 text-white/70">
-                Applications currently flowing through the participant awards pipeline.
-              </p>
-            </div>
-            <div className="rounded-[28px] border border-slate-200/80 bg-white/85 p-5 shadow-[0_14px_40px_rgba(15,23,42,0.06)]">
-              <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#E9F1F8] text-[#4C7D9D]">
-                  <ShieldCheck size={18} />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-[#10203B]">Premium triage</p>
-                  <p className="text-xs uppercase tracking-[0.16em] text-slate-400">
-                    Application-only surface
-                  </p>
-                </div>
-              </div>
-              <div className="mt-5 grid grid-cols-2 gap-3">
-                <DashboardMetricTile label="Submitted" value={totals.submitted} accent="blue" />
-                <DashboardMetricTile label="Approved" value={totals.approved} accent="green" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </DashboardCard>
-
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-        <DashboardMetricTile label="Total" value={totals.total} />
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-[1.1fr_repeat(4,minmax(0,0.75fr))]">
+        <DashboardAccentBlock>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/50">
+            In review system
+          </p>
+          <p className="mt-2 text-3xl font-semibold tracking-[-0.03em]">{totals.total}</p>
+        </DashboardAccentBlock>
         <DashboardMetricTile label="Payment pending" value={totals.paymentPending} accent="amber" />
         <DashboardMetricTile label="Submitted" value={totals.submitted} accent="blue" />
         <DashboardMetricTile label="Under review" value={totals.underReview} accent="blue" />
         <DashboardMetricTile label="Approved" value={totals.approved} accent="green" />
       </div>
 
+      <DashboardCard>
+        <div className="flex flex-wrap gap-2">
+          {statusFilters.map((filter) => (
+            <DashboardFilterChip
+              key={filter.label}
+              href={filter.href}
+              active={filter.status ? activeStatus === filter.status : !activeStatus}
+            >
+              {filter.label}
+            </DashboardFilterChip>
+          ))}
+        </div>
+      </DashboardCard>
+
       {applications.length === 0 ? (
         <DashboardCard>
           <DashboardEmptyState
             icon={<FileText size={22} />}
             title="No applications found"
-            description="Try adjusting the status filter to reveal a different set of submissions."
+            description="Adjust the status filter to see another queue."
           />
         </DashboardCard>
       ) : (
-        <div className="space-y-4">
+        <div className="flex flex-col gap-3">
           {applications.map((app) => {
             const nominations =
               app.nominationApplications.length > 0
@@ -197,119 +149,85 @@ export default function ApplicationListPage({
             const remainingNominationCount = nominations.length - previewNominations.length;
 
             return (
-              <a
+              <Link
                 key={app.id}
                 href={`/admin/applications/${app.id}`}
                 className="group block"
               >
-                <DashboardCard className="overflow-hidden border-slate-200/90 bg-[linear-gradient(135deg,#ffffff_0%,#fbfcfe_60%,#f2f6fb_100%)] p-0 transition duration-300 hover:-translate-y-0.5 hover:border-[#4C7D9D]/30 hover:shadow-[0_24px_60px_rgba(16,32,59,0.12)]">
-                  <div className="grid gap-5 px-5 py-5 md:px-6 md:py-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.95fr)]">
-                    <div>
-                      <div className="flex flex-wrap items-start justify-between gap-3">
-                        <div>
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">
-                            Participant
-                          </p>
-                          <h2 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-[#10203B]">
-                            {app.fullName}
-                          </h2>
-                          <p className="mt-1 text-sm text-slate-500">{app.email}</p>
-                          <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-500">
-                            <MapPin size={13} />
-                            {app.city}, {app.country}
-                          </div>
-                        </div>
-
-                        <div className="flex flex-col items-end gap-2">
-                          {applicationBadge(app.status)}
-                          {paymentBadge(app.paymentStatus)}
-                        </div>
+                <DashboardCard className="p-0 transition hover:border-[#7DC8EE] hover:shadow-[0_22px_60px_rgba(10,10,10,0.1)]">
+                  <div className="grid gap-4 p-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(260px,0.8fr)_minmax(180px,0.45fr)] lg:items-stretch">
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        {applicationBadge(app.status)}
+                        {paymentBadge(app.paymentStatus)}
                       </div>
-
-                      <div className="mt-5 grid gap-3 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-                        <div className="rounded-[22px] border border-slate-200 bg-white/90 p-4">
-                          <div className="flex items-center gap-2 text-[#4C7D9D]">
-                            <Layers3 size={16} />
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.2em]">
-                              Nomination spread
-                            </p>
-                          </div>
-                          <p className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-[#10203B]">
-                            {nominations.length}
-                          </p>
-                          <p className="mt-2 text-sm leading-6 text-slate-500">
-                            {nominations.length === 1
-                              ? "Single nomination application."
-                              : "Multiple nominations grouped into one premium review flow."}
-                          </p>
-                        </div>
-
-                        <div className="rounded-[22px] border border-slate-200 bg-slate-50/70 p-4">
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#4C7D9D]">
-                            Nominations
-                          </p>
-                          <div className="mt-3 flex flex-wrap gap-2">
-                            {previewNominations.map((nomination) => (
-                              <span
-                                key={nomination.id}
-                                className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600"
-                              >
-                                {nomination.award.name}
-                              </span>
-                            ))}
-                            {remainingNominationCount > 0 ? (
-                              <span className="rounded-full border border-dashed border-[#4C7D9D]/30 bg-[#E9F1F8] px-3 py-1 text-xs font-medium text-[#4C7D9D]">
-                                +{remainingNominationCount} more
-                              </span>
-                            ) : null}
-                          </div>
-                        </div>
-                      </div>
+                      <h2 className="mt-3 text-xl font-semibold normal-case tracking-[-0.02em] text-[#0A0A0A]">
+                        {app.fullName}
+                      </h2>
+                      <p className="mt-1 truncate text-sm text-black/55">{app.email}</p>
+                      <p className="mt-3 inline-flex items-center gap-2 rounded-md border border-black/10 bg-[#FAFAFA] px-2.5 py-1 text-xs text-black/55">
+                        <MapPin aria-hidden size={13} />
+                        {app.city}, {app.country}
+                      </p>
                     </div>
 
-                    <div className="flex flex-col justify-between gap-4 rounded-[28px] border border-[#10203B]/8 bg-[#10203B] px-5 py-5 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+                    <DashboardPanel className="flex flex-col justify-between gap-4">
                       <div>
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/55">
-                          Primary application path
-                        </p>
-                        <p className="mt-3 text-lg font-semibold leading-7 text-white">
-                          {app.award.name}
-                        </p>
-                        <p className="mt-1 text-sm text-white/60">{app.category.name}</p>
-                      </div>
-
-                      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
-                        <div className="rounded-[22px] border border-white/10 bg-white/5 p-4">
-                          <div className="flex items-center gap-2 text-white/70">
-                            <Clock3 size={15} />
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.2em]">
-                              Created
-                            </p>
-                          </div>
-                          <p className="mt-2 text-sm font-medium text-white">
-                            {formatAdminDate(app.createdAt)}
+                        <div className="flex items-center gap-2 text-[#1673A5]">
+                          <Layers3 aria-hidden size={16} />
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">
+                            Nominations
                           </p>
                         </div>
+                        <p className="mt-2 text-sm font-semibold text-[#0A0A0A]">
+                          {nominations.length} selected
+                        </p>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {previewNominations.map((nomination) => (
+                          <span
+                            key={nomination.id}
+                            className="rounded-md border border-black/10 bg-white px-2 py-1 text-xs font-medium text-black/60"
+                          >
+                            {nomination.award.name}
+                          </span>
+                        ))}
+                        {remainingNominationCount > 0 ? (
+                          <span className="rounded-md border border-[#7DC8EE] bg-[#EAF6FF] px-2 py-1 text-xs font-semibold text-[#0A0A0A]">
+                            +{remainingNominationCount}
+                          </span>
+                        ) : null}
+                      </div>
+                    </DashboardPanel>
 
-                        <div className="flex items-end justify-between rounded-[22px] border border-white/10 bg-white/5 p-4">
-                          <div>
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/55">
-                              Open review
-                            </p>
-                            <p className="mt-2 text-sm text-white/75">
-                              View grouped nomination sections and uploaded materials.
-                            </p>
-                          </div>
-                          <ArrowRight
-                            size={18}
-                            className="shrink-0 text-white/80 transition group-hover:translate-x-0.5"
-                          />
+                    <div className="flex flex-col justify-between gap-3 rounded-lg border border-black/10 bg-white p-4">
+                      <div>
+                        <div className="flex items-center gap-2 text-black/45">
+                          <ReceiptText aria-hidden size={15} />
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">
+                            Primary path
+                          </p>
                         </div>
+                        <p className="mt-2 text-sm font-semibold leading-6 text-[#0A0A0A]">
+                          {app.award.name}
+                        </p>
+                        <p className="text-sm text-black/55">{app.category.name}</p>
+                      </div>
+                      <div className="flex items-center justify-between gap-3 border-t border-black/10 pt-3">
+                        <span className="inline-flex items-center gap-1.5 text-xs text-black/45">
+                          <Clock3 aria-hidden size={13} />
+                          {formatAdminDate(app.createdAt)}
+                        </span>
+                        <ArrowRight
+                          aria-hidden
+                          size={17}
+                          className="text-black/50 transition group-hover:translate-x-0.5 group-hover:text-[#1673A5]"
+                        />
                       </div>
                     </div>
                   </div>
                 </DashboardCard>
-              </a>
+              </Link>
             );
           })}
         </div>
