@@ -4,7 +4,10 @@ import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
+import { Zap } from "lucide-react";
 import { PRICING } from "@/data/pricing";
+import { applyDiscountToPrice } from "@/features/tickets/types";
+import type { EarlyBirdStatus } from "@/features/tickets/types";
 
 type FormValues = {
   firstName: string;
@@ -37,7 +40,7 @@ const membershipSectionTransition = {
 };
 
 function priceStrToNum(str: string) {
-  return parseInt(str.replace("$", ""), 10);
+  return parseFloat(str.replace("$", ""));
 }
 
 const CERT_STATUS_CONTENT: Record<Exclude<CertStatus, "idle">, React.ReactNode> = {
@@ -86,7 +89,17 @@ export default function TicketForm() {
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [certStatus, setCertStatus] = useState<CertStatus>("idle");
+  const [earlyBird, setEarlyBird] = useState<EarlyBirdStatus>({ enabled: false, discount: null });
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    fetch("/api/early-bird")
+      .then((r) => r.json())
+      .then((data: EarlyBirdStatus) => setEarlyBird(data))
+      .catch(() => {});
+  }, []);
+
+  const discount = earlyBird.enabled ? earlyBird.discount : null;
 
   const {
     register,
@@ -150,7 +163,7 @@ export default function TicketForm() {
     };
   }, [isIbpaMember, ibpaCertNumber]);
 
-  const ticketPriceStr =
+  const rawTicketPriceStr =
     type === "ONE_DAY"
       ? isIbpaMember
         ? PRICING.forumTickets.ibpaMembers.oneDay
@@ -161,10 +174,15 @@ export default function TicketForm() {
           : PRICING.forumTickets.standard.twoDays
         : null;
 
+  const discountedTicketPriceStr = rawTicketPriceStr
+    ? applyDiscountToPrice(rawTicketPriceStr, discount)
+    : null;
+  const ticketPriceStr = discountedTicketPriceStr ?? rawTicketPriceStr;
+
   const galaPrice = PRICING.forumTickets.ibpaMembers.galaDinner;
   const ticketNum = ticketPriceStr ? priceStrToNum(ticketPriceStr) : 0;
   const galaNum = galaDinner ? priceStrToNum(galaPrice) : 0;
-  const total = ticketNum + galaNum;
+  const total = Math.round((ticketNum + galaNum) * 100) / 100;
 
   const onSubmit = async (data: FormValues) => {
     if (!data.type) return;
@@ -208,6 +226,22 @@ export default function TicketForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
+
+      {/* Early bird notice */}
+      {discount && (
+        <div className="flex items-center gap-2.5 rounded-[12px] border border-amber-200 bg-amber-50 px-4 py-3">
+          <Zap size={15} className="shrink-0 text-amber-500" strokeWidth={2} />
+          <div>
+            <p className="text-[0.82rem] font-semibold text-amber-800">Early Bird Pricing</p>
+            <p className="text-[0.75rem] text-amber-700">
+              {discount.type === "percent"
+                ? `${discount.value}% off all forum passes. Gala dinner excluded. Limited time.`
+                : `$${(discount.value / 100).toFixed(0)} off all forum passes. Gala dinner excluded. Limited time.`}
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className={labelBase} htmlFor="tf-firstName">
@@ -408,8 +442,8 @@ export default function TicketForm() {
             <div className="rounded-[12px] border border-[var(--border-default)] bg-white px-5 py-4">
               <p className={labelBase + " mb-3"}>Order Summary</p>
               <div className="space-y-2">
-                {ticketPriceStr && (
-                  <div className="flex justify-between text-[0.88rem]">
+                {rawTicketPriceStr && (
+                  <div className="flex items-start justify-between text-[0.88rem]">
                     <span className="text-[var(--color-ink-soft)]">
                       {type === "ONE_DAY" ? "1-Day Forum Pass" : "2-Day Forum Pass"}
                       {isIbpaMember && (
@@ -417,8 +451,22 @@ export default function TicketForm() {
                           Member
                         </span>
                       )}
+                      {discount && (
+                        <span className="ml-2 inline-flex items-center gap-0.5 rounded-full bg-amber-100 px-2 py-0.5 text-[0.68rem] font-semibold uppercase tracking-wide text-amber-700">
+                          <Zap size={8} strokeWidth={2.5} /> Early Bird
+                        </span>
+                      )}
                     </span>
-                    <span className="font-semibold text-[var(--color-ink)]">{ticketPriceStr}</span>
+                    <span className="flex flex-col items-end">
+                      {discountedTicketPriceStr && (
+                        <span className="text-[0.78rem] text-[var(--color-ink-muted)] line-through">
+                          {rawTicketPriceStr}
+                        </span>
+                      )}
+                      <span className={`font-semibold ${discountedTicketPriceStr ? "text-amber-700" : "text-[var(--color-ink)]"}`}>
+                        {ticketPriceStr}
+                      </span>
+                    </span>
                   </div>
                 )}
                 {galaDinner && (
@@ -429,8 +477,13 @@ export default function TicketForm() {
                 )}
                 <div className="flex justify-between border-t border-[var(--border-soft)] pt-2 text-[0.92rem] font-bold text-[var(--color-ink)]">
                   <span>Total</span>
-                  <span>${total}</span>
+                  <span>${total % 1 === 0 ? total.toFixed(0) : total.toFixed(2)}</span>
                 </div>
+                {discount && (
+                  <p className="text-[0.72rem] text-amber-600">
+                    Early Bird discount applied to forum pass only.
+                  </p>
+                )}
               </div>
             </div>
           </motion.div>

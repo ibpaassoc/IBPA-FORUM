@@ -4,6 +4,11 @@ import { prisma } from "@/shared/lib/prisma";
 import { createTicket, findActiveTicketByEmail } from "./ticket-repository";
 import { createTicketCheckoutSession } from "./ticket-checkout";
 import { verifyIbpaMembership } from "./ibpa-membership";
+import { getSiteSettingBool } from "@/features/settings/server/site-settings";
+import { getStripe } from "@/features/payments/server/stripe-client";
+import { readEnv } from "@/lib/env";
+import { applyDiscountToCents } from "@/features/tickets/types";
+import type { EarlyBirdDiscount } from "@/features/tickets/types";
 
 export class TicketConflictError extends Error {
   constructor(message: string) {
@@ -36,6 +41,28 @@ export type InitiateTicketPurchaseInput = {
   ibpaCertNumber?: string | null;
 };
 
+async function getEarlyBirdDiscount(): Promise<EarlyBirdDiscount> {
+  const enabled = await getSiteSettingBool("earlyBirdEnabled");
+  if (!enabled) return null;
+
+  const couponId = readEnv(["STRIPE_EARLY_BIRD_COUPON"]);
+  if (!couponId) return null;
+
+  try {
+    const stripe = getStripe();
+    const coupon = await stripe.coupons.retrieve(couponId);
+    if (coupon.percent_off) {
+      return { type: "percent", value: coupon.percent_off };
+    }
+    if (coupon.amount_off && coupon.currency) {
+      return { type: "amount", value: coupon.amount_off, currency: coupon.currency };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput) {
   const fullName = `${input.firstName.trim()} ${input.lastName.trim()}`.trim();
   const email = input.email.trim().toLowerCase();
@@ -59,6 +86,13 @@ export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput)
     );
   }
 
+  const earlyBirdDiscount = await getEarlyBirdDiscount();
+  const memberKey = input.isIbpaMember ? "ibpa" : "standard";
+  const baseTicketAmountCents = TICKET_AMOUNTS_CENTS[input.type][memberKey];
+  const discountedTicketAmountCents = earlyBirdDiscount
+    ? applyDiscountToCents(baseTicketAmountCents, earlyBirdDiscount)
+    : null;
+
   const ticket = await createTicket({
     fullName,
     email,
@@ -75,11 +109,11 @@ export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput)
     type: ticket.type,
     galaDinner: ticket.galaDinner,
     isIbpaMember: ticket.isIbpaMember,
+    earlyBirdDiscountedAmountCents: discountedTicketAmountCents,
   });
 
-  const ticketAmountCents =
-    TICKET_AMOUNTS_CENTS[input.type][input.isIbpaMember ? "ibpa" : "standard"] +
-    (input.galaDinner ? GALA_DINNER_CENTS : 0);
+  const finalTicketAmountCents = discountedTicketAmountCents ?? baseTicketAmountCents;
+  const totalAmountCents = finalTicketAmountCents + (input.galaDinner ? GALA_DINNER_CENTS : 0);
 
   await prisma.$transaction([
     prisma.ticket.update({
@@ -91,7 +125,7 @@ export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput)
         source: "TICKET",
         ticketId: ticket.id,
         stripeSessionId: session.id,
-        amount: ticketAmountCents,
+        amount: totalAmountCents,
         currency: "usd",
         status: "PENDING",
       },
