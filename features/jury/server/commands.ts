@@ -10,9 +10,8 @@ import {
 import { createJuryCheckoutSession } from "@/features/payments/server/checkout-sessions";
 import { buildJuryFieldErrors } from "@/features/jury/schemas/jury-application.schema";
 import {
+  type BlobFileInfo,
   getText,
-  isFilledFile,
-  saveUploadedJuryFile,
   toOptionalText,
 } from "@/features/jury/server/uploads";
 import { prisma } from "@/shared/lib/prisma";
@@ -56,10 +55,13 @@ export async function submitJuryApplication(formData: FormData) {
     .filter(Boolean);
   const ibpaAssociationMember = getText(formData, "ibpaAssociationMember") === "yes";
   const ibpaNumber = toOptionalText(getText(formData, "ibpaNumber"));
-  const profilePhoto = formData.get("profilePhoto");
-  const certifications = formData
-    .getAll("certifications")
-    .filter((value): value is File => isFilledFile(value));
+
+  const profilePhotoBlob = JSON.parse(
+    getText(formData, "profilePhotoBlob") || "null"
+  ) as BlobFileInfo | null;
+  const certificationBlobs = formData
+    .getAll("certificationsBlob")
+    .map((v) => JSON.parse(String(v)) as BlobFileInfo);
 
   const existingApplication = await prisma.juryApplication.findFirst({
     where: {
@@ -79,7 +81,7 @@ export async function submitJuryApplication(formData: FormData) {
     };
   }
 
-  if (!isFilledFile(profilePhoto)) {
+  if (!profilePhotoBlob) {
     return {
       status: 400,
       body: {
@@ -89,16 +91,6 @@ export async function submitJuryApplication(formData: FormData) {
   }
 
   const applicationId = randomUUID();
-  const savedProfilePhoto = await saveUploadedJuryFile(
-    profilePhoto,
-    applicationId,
-    "profilePhoto"
-  );
-  const savedCertifications = await Promise.all(
-    certifications.map((file, index) =>
-      saveUploadedJuryFile(file, applicationId, "certifications", index)
-    )
-  );
 
   const juryApplication = await prisma.juryApplication.create({
     data: {
@@ -128,11 +120,11 @@ export async function submitJuryApplication(formData: FormData) {
         create: [
           {
             fieldKey: "profilePhoto",
-            ...savedProfilePhoto,
+            ...profilePhotoBlob,
           },
-          ...savedCertifications.map((file) => ({
+          ...certificationBlobs.map((blob) => ({
             fieldKey: "certifications",
-            ...file,
+            ...blob,
           })),
         ],
       },

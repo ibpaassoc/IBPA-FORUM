@@ -1,5 +1,12 @@
 import { put } from "@vercel/blob";
 
+export type BlobFileInfo = {
+  fileName: string;
+  mimeType: string;
+  fileSize: number;
+  storageKey: string;
+};
+
 export function getText(formData: FormData, key: string) {
   return String(formData.get(key) ?? "").trim();
 }

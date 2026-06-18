@@ -5,8 +5,6 @@ import FormFieldShell from "@/features/applications/components/application-form/
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { ImageIcon, FileText, X, Loader2, RefreshCw, Lock } from "lucide-react";
 
-const MAX_MB = 5;
-const MAX_BYTES = MAX_MB * 1024 * 1024;
 const COMPRESS_QUALITY = 0.78;
 const COMPRESS_MAX_DIM = 2400;
 
@@ -85,7 +83,7 @@ export default function UploadField({
       select: "Click to select files",
       selectOne: "Click to select a file",
       drag: "or drag and drop",
-      hint: "JPG, PNG, PDF supported · Large images are auto-compressed",
+      hint: "JPG, PNG, PDF supported · Images are auto-compressed",
       compressing: "Compressing…",
       remove: "Remove",
       replace: "Click to replace",
@@ -99,7 +97,7 @@ export default function UploadField({
       select: "Нажмите для выбора файлов",
       selectOne: "Нажмите для выбора файла",
       drag: "или перетащите сюда",
-      hint: "JPG, PNG, PDF · Большие изображения сжимаются автоматически",
+      hint: "JPG, PNG, PDF · Изображения сжимаются автоматически",
       compressing: "Сжатие…",
       remove: "Удалить",
       replace: "Нажмите для замены",
@@ -113,7 +111,7 @@ export default function UploadField({
       select: "Натисніть для вибору файлів",
       selectOne: "Натисніть для вибору файлу",
       drag: "або перетягніть сюди",
-      hint: "JPG, PNG, PDF · Великі зображення стискаються автоматично",
+      hint: "JPG, PNG, PDF · Зображення стискаються автоматично",
       compressing: "Стиснення…",
       remove: "Видалити",
       replace: "Натисніть для заміни",
@@ -132,7 +130,7 @@ export default function UploadField({
     setCompressing(true);
     const processed = await Promise.all(
       raw.map(async (file) => {
-        if (IMAGE_TYPES.includes(file.type) && file.size > MAX_BYTES) {
+        if (IMAGE_TYPES.includes(file.type)) {
           return compressImage(file);
         }
         return file;
