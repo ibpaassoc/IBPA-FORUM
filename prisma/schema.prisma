@@ -330,3 +330,9 @@ enum TicketStatus {
   CHECKED_TWO_DAY
   CHECKED_GALA_DINNER
 }
+
+model SiteSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}

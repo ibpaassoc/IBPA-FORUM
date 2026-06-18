@@ -7,20 +7,32 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { Reveal } from "@/shared/components/public";
 import { PRICING } from "@/data/pricing";
-import { Trophy, Star, CheckCircle } from "lucide-react";
+import { Trophy, Star, CheckCircle, Zap } from "lucide-react";
 import TicketModal from "@/features/tickets/components/TicketModal";
+import { applyDiscountToPrice } from "@/features/tickets/types";
+import type { EarlyBirdStatus } from "@/features/tickets/types";
 
 type Tier = "ibpa" | "standard";
 
-export default function HomeParticipation({ tier }: { tier: Tier }) {
+export default function HomeParticipation({
+  tier,
+  earlyBird,
+}: {
+  tier: Tier;
+  earlyBird: EarlyBirdStatus;
+}) {
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const { t } = useLanguage();
   const p = t.home.participation;
 
-  const forumPrice =
+  const discount = earlyBird.enabled ? earlyBird.discount : null;
+
+  const rawForumPrice =
     tier === "ibpa"
       ? PRICING.forumTickets.ibpaMembers.oneDay
       : PRICING.forumTickets.standard.oneDay;
+
+  const forumPrice = applyDiscountToPrice(rawForumPrice, discount) ?? rawForumPrice;
 
   const awardPrice =
     tier === "ibpa"
@@ -65,7 +77,13 @@ export default function HomeParticipation({ tier }: { tier: Tier }) {
                   <span className="rounded-[var(--radius-sm)] border border-white/20 bg-white/10 px-3 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/80">
                     {p.tickets.mostPopular}
                   </span>
-                  <Star size={18} className="text-[var(--color-blue-soft)] opacity-70" strokeWidth={1.5} />
+                  {discount ? (
+                    <span className="flex items-center gap-1 rounded-full bg-amber-500/30 px-3 py-1 text-[0.62rem] font-bold uppercase tracking-wider text-amber-300">
+                      <Zap size={10} strokeWidth={2.5} /> Early Bird
+                    </span>
+                  ) : (
+                    <Star size={18} className="text-[var(--color-blue-soft)] opacity-70" strokeWidth={1.5} />
+                  )}
                 </div>
 
                 <div>
@@ -75,15 +93,22 @@ export default function HomeParticipation({ tier }: { tier: Tier }) {
                   <h3 className="mt-2 font-[var(--font-title-family)] text-[clamp(1.8rem,3.5vw,3rem)] font-light leading-[1.05] text-white">
                     {ps.startingFrom}
                     <br />
-                    <motion.span
-                      key={forumPrice}
-                      initial={{ opacity: 0, y: -6 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.22, ease: "easeOut" }}
-                      className="text-[clamp(2.4rem,5vw,4rem)] font-medium"
-                    >
-                      {forumPrice}
-                    </motion.span>
+                    <div className="flex items-baseline gap-3">
+                      {discount && (
+                        <span className="text-[clamp(1.4rem,3vw,2.5rem)] font-light text-white/40 line-through">
+                          {rawForumPrice}
+                        </span>
+                      )}
+                      <motion.span
+                        key={forumPrice}
+                        initial={{ opacity: 0, y: -6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.22, ease: "easeOut" }}
+                        className={`text-[clamp(2.4rem,5vw,4rem)] font-medium ${discount ? "text-amber-300" : ""}`}
+                      >
+                        {forumPrice}
+                      </motion.span>
+                    </div>
                   </h3>
 
                   <div className="mt-[var(--space-md)] flex flex-wrap gap-x-4 gap-y-2">

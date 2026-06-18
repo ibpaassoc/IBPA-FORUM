@@ -1,17 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BadgeDollarSign } from "lucide-react";
 import HomeParticipation from "./HomeParticipation";
 import HomePricing from "./HomePricing";
 import TicketModal from "@/features/tickets/components/TicketModal";
+import type { EarlyBirdStatus } from "@/features/tickets/types";
 
 export type Tier = "ibpa" | "standard";
 
 export default function HomeConversionBlock() {
   const [tier, setTier] = useState<Tier>("ibpa");
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
+  const [earlyBird, setEarlyBird] = useState<EarlyBirdStatus>({ enabled: false, discount: null });
+
+  useEffect(() => {
+    fetch("/api/early-bird")
+      .then((r) => r.json())
+      .then((data: EarlyBirdStatus) => setEarlyBird(data))
+      .catch(() => {});
+  }, []);
 
   return (
     <div className="relative">
@@ -103,8 +112,8 @@ export default function HomeConversionBlock() {
       </div>
 
       {/* ── Sections driven by tier ── */}
-      <HomeParticipation tier={tier} />
-      <HomePricing tier={tier} onBuyTickets={() => setIsTicketModalOpen(true)} />
+      <HomeParticipation tier={tier} earlyBird={earlyBird} />
+      <HomePricing tier={tier} onBuyTickets={() => setIsTicketModalOpen(true)} earlyBird={earlyBird} />
 
       <TicketModal
         isOpen={isTicketModalOpen}

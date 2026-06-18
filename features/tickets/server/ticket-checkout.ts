@@ -14,25 +14,45 @@ function getGalaDinnerPriceId(): string {
   return requireEnv(["GALA_DINNER"]);
 }
 
+function ticketLabel(type: TicketType, earlyBird: boolean): string {
+  const base = type === "ONE_DAY" ? "1-Day Forum Pass" : "2-Day Forum Pass";
+  return earlyBird ? `${base} — Early Bird` : base;
+}
+
 export async function createTicketCheckoutSession({
   ticketId,
   email,
   type,
   galaDinner,
   isIbpaMember,
+  earlyBirdDiscountedAmountCents,
 }: {
   ticketId: string;
   email: string;
   type: TicketType;
   galaDinner: boolean;
   isIbpaMember: boolean;
+  earlyBirdDiscountedAmountCents: number | null;
 }) {
   const stripe = getStripe();
   const appUrl = getAppUrl();
+  const isEarlyBird = earlyBirdDiscountedAmountCents !== null;
 
-  const lineItems: { price: string; quantity: number }[] = [
-    { price: getTicketPriceId(type, isIbpaMember), quantity: 1 },
-  ];
+  const forumPassLineItem = isEarlyBird
+    ? {
+        price_data: {
+          currency: "usd",
+          unit_amount: earlyBirdDiscountedAmountCents,
+          product_data: { name: ticketLabel(type, true) },
+        },
+        quantity: 1,
+      }
+    : { price: getTicketPriceId(type, isIbpaMember), quantity: 1 };
+
+  const lineItems: (
+    | { price: string; quantity: number }
+    | { price_data: { currency: string; unit_amount: number; product_data: { name: string } }; quantity: number }
+  )[] = [forumPassLineItem];
 
   if (galaDinner) {
     lineItems.push({ price: getGalaDinnerPriceId(), quantity: 1 });
