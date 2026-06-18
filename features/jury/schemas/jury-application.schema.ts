@@ -1,4 +1,4 @@
-import { getText, isFilledFile } from "@/features/jury/server/uploads";
+import { getText } from "@/features/jury/server/uploads";
 
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -27,10 +27,10 @@ export function buildJuryFieldErrors(formData: FormData) {
     .getAll("expertise")
     .map((value) => String(value).trim())
     .filter(Boolean);
-  const profilePhoto = formData.get("profilePhoto");
-  const certifications = formData
-    .getAll("certifications")
-    .filter((value): value is File => isFilledFile(value));
+  const profilePhotoBlob = getText(formData, "profilePhotoBlob");
+  const certificationBlobs = formData
+    .getAll("certificationsBlob")
+    .filter((v) => String(v).trim());
 
   const fieldErrors: Record<string, string> = {};
 
@@ -67,14 +67,14 @@ export function buildJuryFieldErrors(formData: FormData) {
   if (expertise.length === 0) {
     fieldErrors.expertise = "Select at least one area of expertise.";
   }
-  if (certifications.length === 0) {
+  if (certificationBlobs.length === 0) {
     fieldErrors.certifications =
       "Upload at least one professional certification.";
   }
   if (!professionalBio) {
     fieldErrors.professionalBio = "Professional bio is required.";
   }
-  if (!isFilledFile(profilePhoto)) {
+  if (!profilePhotoBlob) {
     fieldErrors.profilePhoto = "Profile photo is required.";
   }
   if (!conflictDisclosure) {

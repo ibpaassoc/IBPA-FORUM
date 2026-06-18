@@ -42,11 +42,15 @@ export async function sendJuryRejectedEmail({
 export async function sendJuryPaymentConfirmedEmail({
   to,
   fullName,
+  amount,
+  currency,
 }: {
   to: string;
   fullName: string;
+  amount: number;
+  currency: string;
 }) {
-  const template = juryPaymentConfirmed({ fullName });
+  const template = juryPaymentConfirmed({ fullName, amount, currency });
   return sendEmail(templateToPayload(to, template));
 }
 

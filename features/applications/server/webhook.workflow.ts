@@ -177,7 +177,14 @@ async function handleCompetitorCheckoutCompleted(event: Stripe.Event) {
     emailPayload as CompetitorPaymentEmailPayload;
 
   try {
-    await sendCompetitorApplicationConfirmedEmail(confirmedEmailPayload);
+    await sendCompetitorApplicationConfirmedEmail({
+      to: confirmedEmailPayload.to,
+      fullName: confirmedEmailPayload.fullName,
+      categoryName: confirmedEmailPayload.categoryName,
+      awardName: confirmedEmailPayload.awardName,
+      amount: confirmedEmailPayload.amount,
+      currency: confirmedEmailPayload.currency,
+    });
   } catch (error) {
     console.error("Failed to send competitor payment confirmation email", error);
   }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { upload } from "@vercel/blob/client";
 import {
   Award,
   BadgeCheck,
@@ -46,6 +47,7 @@ export default function JuryApplicationForm() {
   const [values, setValues] = useState<FormValues>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [submissionState, setSubmissionState] = useState<{ type: "idle" | "success" | "error"; message: string }>({ type: "idle", message: "" });
 
   const copy = {
@@ -108,6 +110,7 @@ export default function JuryApplicationForm() {
       confirmNote: "Please review the details below. Once submitted, your jury application will be forwarded to the IBPA committee.",
       received: "Your jury application has been received for review.",
       submitError: "Something went wrong. Please try again.",
+      uploading: "Uploading files…",
     },
     ru: {
       steps: [
@@ -168,6 +171,7 @@ export default function JuryApplicationForm() {
       confirmNote: "Проверьте данные. После отправки ваша заявка будет передана комитету IBPA.",
       received: "Ваша заявка в жюри получена и принята на рассмотрение.",
       submitError: "Что-то пошло не так. Попробуйте снова.",
+      uploading: "Загрузка файлов…",
     },
     ua: {
       steps: [
@@ -228,6 +232,7 @@ export default function JuryApplicationForm() {
       confirmNote: "Перевірте дані. Після надсилання вашу заявку буде передано комітету IBPA.",
       received: "Вашу заявку до журі отримано та передано на розгляд.",
       submitError: "Щось пішло не так. Спробуйте ще раз.",
+      uploading: "Завантаження файлів…",
     },
   }[language];
   const stepContentVariants = {
@@ -316,30 +321,90 @@ export default function JuryApplicationForm() {
     scrollToForm();
   }
 
+  function sanitizeBlobName(name: string) {
+    return name.replace(/[^a-zA-Z0-9._-]/g, "_");
+  }
+
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     setIsSubmitting(true);
     try {
+      const uploadSessionId = crypto.randomUUID();
+
+      // Upload files directly to Vercel Blob from the browser.
+      setIsUploading(true);
+      const profilePhotoFile = (values.profilePhoto as File[] | undefined)?.[0];
+      const certFiles = (values.certifications as File[] | undefined ?? []).filter(
+        (f): f is File => f instanceof File
+      );
+
+      const [profilePhotoResult, ...certResults] = await Promise.all([
+        profilePhotoFile
+          ? upload(
+              `jury/${uploadSessionId}/profilePhoto-1-${sanitizeBlobName(profilePhotoFile.name)}`,
+              profilePhotoFile,
+              { access: "private", handleUploadUrl: "/api/jury/upload", multipart: true }
+            )
+          : null,
+        ...certFiles.map((file, i) =>
+          upload(
+            `jury/${uploadSessionId}/certifications-${i + 1}-${sanitizeBlobName(file.name)}`,
+            file,
+            { access: "private", handleUploadUrl: "/api/jury/upload", multipart: true }
+          )
+        ),
+      ]);
+      setIsUploading(false);
+
+      // Build FormData: text fields only, plus blob metadata.
       const formData = new FormData();
       for (const [key, raw] of Object.entries(values)) {
-        if (!raw) continue;
+        if (!raw || key === "profilePhoto" || key === "certifications") continue;
         if (Array.isArray(raw)) {
           for (const item of raw) {
-            if (item instanceof File) formData.append(key, item);
-            else formData.append(key, String(item));
+            if (!(item instanceof File)) formData.append(key, String(item));
           }
           continue;
         }
         formData.append(key, String(raw));
       }
+
+      if (profilePhotoResult && profilePhotoFile) {
+        formData.append(
+          "profilePhotoBlob",
+          JSON.stringify({
+            fileName: profilePhotoFile.name,
+            mimeType: profilePhotoFile.type || "image/jpeg",
+            fileSize: profilePhotoFile.size,
+            storageKey: profilePhotoResult.pathname,
+          })
+        );
+      }
+
+      certFiles.forEach((file, i) => {
+        const result = certResults[i];
+        if (result) {
+          formData.append(
+            "certificationsBlob",
+            JSON.stringify({
+              fileName: file.name,
+              mimeType: file.type || "application/pdf",
+              fileSize: file.size,
+              storageKey: result.pathname,
+            })
+          );
+        }
+      });
+
       const res = await fetch("/api/jury", { method: "POST", body: formData });
-      const data = await res.json().catch(() => ({})) as { message?: string };
+      const data = (await res.json().catch(() => ({}))) as { message?: string };
       if (!res.ok) {
         setSubmissionState({ type: "error", message: data.message ?? copy.submitError });
         return;
       }
       setSubmissionState({ type: "success", message: data.message ?? copy.received });
     } catch {
+      setIsUploading(false);
       setSubmissionState({ type: "error", message: copy.submitError });
     } finally {
       setIsSubmitting(false);
@@ -542,7 +607,7 @@ export default function JuryApplicationForm() {
               disabled={isSubmitting}
               className="inline-flex items-center gap-2 rounded-full bg-[var(--color-ink)] px-8 py-3 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-white shadow-lg transition hover:bg-[var(--color-ink)]/90 disabled:opacity-60"
             >
-              {isSubmitting ? copy.submitting : copy.submit} <ChevronRight size={14} />
+              {isUploading ? copy.uploading : isSubmitting ? copy.submitting : copy.submit} <ChevronRight size={14} />
             </button>
           )}
         </div>

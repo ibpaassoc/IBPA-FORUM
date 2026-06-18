@@ -7,6 +7,8 @@ import { prisma } from "@/shared/lib/prisma";
 type JuryPaymentEmailPayload = {
   to: string;
   fullName: string;
+  amount: number;
+  currency: string;
 };
 
 function serializeStripeEvent(event: Stripe.Event): Prisma.InputJsonValue {
@@ -130,6 +132,8 @@ async function handleCheckoutCompleted(event: Stripe.Event): Promise<boolean> {
       emailPayload = {
         to: application.email,
         fullName: application.fullName,
+        amount: session.amount_total ?? 0,
+        currency: session.currency ?? "usd",
       };
     });
   } catch (error) {
@@ -157,8 +161,8 @@ async function handleCheckoutCompleted(event: Stripe.Event): Promise<boolean> {
       flowLabel: "Jury registration",
       applicantName: confirmedEmailPayload.fullName,
       applicantEmail: confirmedEmailPayload.to,
-      amount: 25000,
-      currency: "usd",
+      amount: confirmedEmailPayload.amount,
+      currency: confirmedEmailPayload.currency,
       stripeSessionId: session.id,
       stripePaymentIntentId: paymentIntentId,
     });

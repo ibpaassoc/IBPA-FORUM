@@ -13,7 +13,7 @@ export default function SiteUnderDevelopmentPage() {
         "Our team is refining the platform ahead of the 2026 award season. Jury applications remain open.",
       applyLabel: "Apply as Jury Member",
       contact: "Questions? Contact us at",
-      email: "info@ibpa.beauty",
+      email: "forum-support@ibpassociations.org",
     },
     ru: {
       eyebrow: "Обновление сайта",
@@ -22,7 +22,7 @@ export default function SiteUnderDevelopmentPage() {
         "Команда дорабатывает платформу перед сезоном премии 2026 года. Приём заявок в жюри продолжается.",
       applyLabel: "Подать заявку в жюри",
       contact: "Вопросы? Напишите нам:",
-      email: "info@ibpa.beauty",
+      email: "forum-support@ibpassociations.org",
     },
     ua: {
       eyebrow: "Оновлення сайту",
@@ -31,7 +31,7 @@ export default function SiteUnderDevelopmentPage() {
         "Команда вдосконалює платформу перед сезоном премії 2026 року. Прийом заявок до журі триває.",
       applyLabel: "Подати заявку до журі",
       contact: "Питання? Напишіть нам:",
-      email: "info@ibpa.beauty",
+      email: "forum-support@ibpassociations.org",
     },
   }[language];
 
