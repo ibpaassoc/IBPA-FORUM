@@ -42,6 +42,12 @@ export type JuryNominationScoringRecord = Prisma.NominationApplicationGetPayload
       include: {
         answers: true;
         files: true;
+        nominationApplications: {
+          include: {
+            award: true;
+            category: true;
+          };
+        };
       };
     };
   };
@@ -201,6 +207,15 @@ export async function getJudgeApplicationScoringDetail({
         include: {
           answers: { orderBy: { createdAt: "asc" } },
           files: { orderBy: { createdAt: "asc" } },
+          nominationApplications: {
+            include: {
+              award: true,
+              category: true,
+            },
+            orderBy: {
+              createdAt: "asc",
+            },
+          },
         },
       },
     },

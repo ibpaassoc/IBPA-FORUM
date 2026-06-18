@@ -22,6 +22,24 @@ export async function getParticipantApplications(status?: string) {
     include: {
       category: true,
       award: true,
+      nominationApplications: {
+        select: {
+          id: true,
+          category: {
+            select: {
+              name: true,
+            },
+          },
+          award: {
+            select: {
+              name: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+      },
     },
   });
 
