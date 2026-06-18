@@ -264,17 +264,15 @@ export async function saveApplicationSubmission(formData: FormData) {
 
   // Create NominationApplication records (one per selected award) with per-nomination Block B
   try {
-    await Promise.all(
-      selectedNominations.map((nom) =>
-        createNominationApplication({
-          applicationId: application.id,
-          awardId: nom.awardId,
-          categoryId: nom.categoryId,
-          categorySlug: nom.categorySlug,
-          nomValues: blockBValuesByNomination[nom.awardId] ?? {},
-        })
-      )
-    );
+    for (const nom of selectedNominations) {
+      await createNominationApplication({
+        applicationId: application.id,
+        awardId: nom.awardId,
+        categoryId: nom.categoryId,
+        categorySlug: nom.categorySlug,
+        nomValues: blockBValuesByNomination[nom.awardId] ?? {},
+      });
+    }
     console.info("NominationApplication records created", {
       applicationId: application.id,
       nominationCount: selectedNominations.length,

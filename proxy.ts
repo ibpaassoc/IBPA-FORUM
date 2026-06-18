@@ -26,6 +26,8 @@ const ALLOWED_PATH_PREFIXES = [
   "/jury/dashboard",
   "/jury/login",
   "/jury/register",
+  "/jury/forgot-password",
+  "/jury/reset-password",
   // General auth
   "/login",
   "/register",
