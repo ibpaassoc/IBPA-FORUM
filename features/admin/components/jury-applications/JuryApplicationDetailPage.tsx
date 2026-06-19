@@ -21,6 +21,7 @@ import {
   saveJuryApplicationNotesAction,
 } from "@/features/admin/actions/jury.actions";
 import DeleteJuryApplicationButton from "@/features/admin/components/jury-applications/DeleteJuryApplicationButton";
+import RequestAdditionalInfoPanel from "@/features/admin/components/jury-applications/RequestAdditionalInfoPanel";
 import { formatAdminDate } from "@/features/admin/server/view-models";
 import {
   DashboardAccentBlock,
@@ -36,6 +37,9 @@ import {
 
 type JuryApplicationDetail = JuryApplication & {
   files: JuryApplicationFile[];
+  infoRequestDetails?: string | null;
+  infoRequestedAt?: Date | null;
+  infoResubmittedAt?: Date | null;
 };
 
 function FileLink({ href, name, sizeBytes }: { href: string; name: string; sizeBytes: number }) {
@@ -324,6 +328,14 @@ export default function JuryApplicationDetailPage({
                 </form>
               ) : null}
             </div>
+
+            <RequestAdditionalInfoPanel
+              applicationId={application.id}
+              status={application.status}
+              infoRequestDetails={application.infoRequestDetails}
+              infoRequestedAt={application.infoRequestedAt}
+              infoResubmittedAt={application.infoResubmittedAt}
+            />
           </DashboardCard>
 
           <DashboardCard>
@@ -332,6 +344,12 @@ export default function JuryApplicationDetailPage({
             </p>
             <div className="mt-3 grid gap-3">
               <DashboardDetailCard label="Submitted" value={formatAdminDate(application.submittedAt)} />
+              {application.infoRequestedAt ? (
+                <DashboardDetailCard label="Info requested" value={formatAdminDate(application.infoRequestedAt)} />
+              ) : null}
+              {application.infoResubmittedAt ? (
+                <DashboardDetailCard label="Applicant resubmitted" value={formatAdminDate(application.infoResubmittedAt)} />
+              ) : null}
               <DashboardDetailCard label="Approved at" value={formatAdminDate(application.approvedAt)} />
               <DashboardDetailCard label="Paid at" value={formatAdminDate(application.paidAt)} />
             </div>

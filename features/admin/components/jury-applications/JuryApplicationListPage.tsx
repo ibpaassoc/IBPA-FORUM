@@ -44,7 +44,7 @@ export default function JuryApplicationListPage({
     country: string;
     professionalTitle: string;
     expertiseAreas: string[];
-    status: "SUBMITTED" | "APPROVED" | "REJECTED" | "PAID";
+    status: "SUBMITTED" | "ADDITIONAL_INFO_REQUIRED" | "APPROVED" | "REJECTED" | "PAID";
     paymentStatus: "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "REFUNDED";
     submittedAt: Date | null;
     paidAt: Date | null;

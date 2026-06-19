@@ -7,6 +7,7 @@ import {
   approveJuryApplication,
   deleteJuryApplication,
   rejectJuryApplication,
+  requestAdditionalInfoFromJuryApplication,
   saveJuryApplicationNotes,
   updateJuryApplicationStatus,
 } from "@/features/jury/server/commands";
@@ -198,6 +199,43 @@ export async function updateJuryApplicationStatusAction(formData: FormData) {
       notice,
     })
   );
+}
+
+export async function requestAdditionalInfoAction(formData: FormData) {
+  await requireAdmin();
+
+  const id = String(formData.get("id") ?? "");
+  const infoRequestDetails = String(formData.get("infoRequestDetails") ?? "").trim();
+
+  if (!id) throw new Error("Missing jury application id.");
+  if (!infoRequestDetails) {
+    redirect(
+      getJuryApplicationDetailPath(id, {
+        error: "Please describe what additional information is needed.",
+      })
+    );
+  }
+
+  let notice = "Additional information request sent to the applicant.";
+
+  try {
+    const result = await requestAdditionalInfoFromJuryApplication({ id, infoRequestDetails });
+
+    if (!result.emailDelivered) {
+      notice =
+        "Status updated, but the notification email could not be delivered. Check email configuration.";
+    }
+  } catch (error) {
+    redirect(
+      getJuryApplicationDetailPath(id, {
+        error: getActionErrorMessage(error),
+      })
+    );
+  }
+
+  revalidatePath("/admin/jury-applications");
+  revalidatePath(`/admin/jury-applications/${id}`);
+  redirect(getJuryApplicationDetailPath(id, { notice }));
 }
 
 export async function deleteJuryApplicationAction(formData: FormData) {
