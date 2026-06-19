@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Inter, Lora, Bodoni_Moda } from "next/font/google";
+import { Cormorant_Garamond, Lora, Bodoni_Moda } from "next/font/google";
 import { cookies } from "next/headers";
 import "./globals.css";
 import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
@@ -34,12 +34,6 @@ export const cormorant = Cormorant_Garamond({
   variable: "--font-accent",
 });
 
-export const inter = Inter({
-  subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-inter",
-});
-
 function resolveLanguage(value: string | undefined): Language {
   if (!value) return "en";
   if (languages.includes(value as Language)) {
@@ -61,7 +55,7 @@ export default async function RootLayout({
   return (
     <html
       lang={htmlLanguage}
-      className={`${cormorant.variable} ${inter.variable} ${lora.variable} ${bodoniModa.variable}`}
+      className={`${cormorant.variable} ${lora.variable} ${bodoniModa.variable}`}
     >
       <body>
         <LanguageProvider initialLanguage={initialLanguage}>

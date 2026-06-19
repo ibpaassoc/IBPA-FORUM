@@ -45,7 +45,7 @@ export default function JuryScoresPage({
           <div>
             <p
               className="text-[0.65rem] uppercase tracking-[0.18em] text-white/75"
-              style={{ fontFamily: "var(--font-inter)" }}
+              style={{ fontFamily: "var(--font-ui-family)" }}
             >
               Submitted by
             </p>
@@ -59,7 +59,7 @@ export default function JuryScoresPage({
           <div className="rounded-[10px] border border-white/20 bg-white/12 px-5 py-3">
             <p
               className="text-[0.62rem] uppercase tracking-[0.16em] text-white/70"
-              style={{ fontFamily: "var(--font-inter)" }}
+              style={{ fontFamily: "var(--font-ui-family)" }}
             >
               Completed
             </p>
@@ -114,7 +114,7 @@ export default function JuryScoresPage({
                       <UserRound aria-hidden size={14} />
                       <p
                         className="text-[0.6rem] font-semibold uppercase tracking-[0.14em]"
-                        style={{ fontFamily: "var(--font-inter)" }}
+                        style={{ fontFamily: "var(--font-ui-family)" }}
                       >
                         Applicant
                       </p>
@@ -133,7 +133,7 @@ export default function JuryScoresPage({
                     </p>
                     <p
                       className="mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-black/[0.08] bg-white px-2.5 py-1 text-[0.7rem]"
-                      style={{ fontFamily: "var(--font-inter)", color: "#46525a" }}
+                      style={{ fontFamily: "var(--font-ui-family)", color: "#46525a" }}
                     >
                       <MapPin aria-hidden size={11} />
                       {app.city}, {app.country}
@@ -147,7 +147,7 @@ export default function JuryScoresPage({
                         <ShieldCheck aria-hidden size={14} />
                         <p
                           className="text-[0.6rem] font-semibold uppercase tracking-[0.14em]"
-                          style={{ fontFamily: "var(--font-inter)" }}
+                          style={{ fontFamily: "var(--font-ui-family)" }}
                         >
                           Archive
                         </p>

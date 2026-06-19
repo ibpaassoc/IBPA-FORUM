@@ -78,7 +78,7 @@ export default function JuryDashboardPage({
             <div>
               <p
                 className="text-[0.65rem] uppercase tracking-[0.18em] text-white/75"
-                style={{ fontFamily: "var(--font-inter)" }}
+                style={{ fontFamily: "var(--font-ui-family)" }}
               >
                 Active judge
               </p>
@@ -102,7 +102,7 @@ export default function JuryDashboardPage({
                 <span
                   key={area}
                   className="rounded-full border border-white/25 bg-white/15 px-2.5 py-0.5 text-[0.62rem] font-medium text-white/85"
-                  style={{ fontFamily: "var(--font-inter)" }}
+                  style={{ fontFamily: "var(--font-ui-family)" }}
                 >
                   {area}
                 </span>
@@ -185,7 +185,7 @@ export default function JuryDashboardPage({
                       <UserRound aria-hidden size={14} />
                       <p
                         className="text-[0.6rem] font-semibold uppercase tracking-[0.14em]"
-                        style={{ fontFamily: "var(--font-inter)" }}
+                        style={{ fontFamily: "var(--font-ui-family)" }}
                       >
                         Applicant
                       </p>
@@ -204,7 +204,7 @@ export default function JuryDashboardPage({
                     </p>
                     <p
                       className="mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-black/[0.08] bg-white px-2.5 py-1 text-[0.7rem]"
-                      style={{ fontFamily: "var(--font-inter)", color: "#46525a" }}
+                      style={{ fontFamily: "var(--font-ui-family)", color: "#46525a" }}
                     >
                       <MapPin aria-hidden size={11} />
                       {app.city}, {app.country}
@@ -218,7 +218,7 @@ export default function JuryDashboardPage({
                         <PenSquare aria-hidden size={14} />
                         <p
                           className="text-[0.6rem] font-semibold uppercase tracking-[0.14em]"
-                          style={{ fontFamily: "var(--font-inter)" }}
+                          style={{ fontFamily: "var(--font-ui-family)" }}
                         >
                           Review
                         </p>

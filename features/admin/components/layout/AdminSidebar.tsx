@@ -35,7 +35,7 @@ export default function AdminSidebar() {
           >
             <p
               className="text-[0.65rem] uppercase tracking-[0.18em] text-white/75"
-              style={{ fontFamily: "var(--font-inter)" }}
+              style={{ fontFamily: "var(--font-ui-family)" }}
             >
               IBPA Admin
             </p>
@@ -61,7 +61,7 @@ export default function AdminSidebar() {
                         ? "bg-[#f2f8fb] text-[#030213]"
                         : "text-black/50 hover:bg-[#f8f8f6] hover:text-[#030213]"
                     }`}
-                    style={{ fontFamily: "var(--font-inter)" }}
+                    style={{ fontFamily: "var(--font-ui-family)" }}
                   >
                     <Icon
                       aria-hidden
@@ -80,7 +80,7 @@ export default function AdminSidebar() {
                 <button
                   type="submit"
                   className="flex min-h-[42px] w-full items-center gap-3 rounded-[10px] px-3 text-[0.8rem] text-black/40 transition-all duration-150 hover:bg-red-50 hover:text-red-600"
-                  style={{ fontFamily: "var(--font-inter)" }}
+                  style={{ fontFamily: "var(--font-ui-family)" }}
                 >
                   <LogOut aria-hidden size={16} strokeWidth={1.8} />
                   Sign out
@@ -103,7 +103,7 @@ export default function AdminSidebar() {
                 className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-[10px] px-1 text-center text-[0.62rem] transition-all duration-150 ${
                   active ? "bg-[#f2f8fb] text-[#030213]" : "text-black/40"
                 }`}
-                style={{ fontFamily: "var(--font-inter)" }}
+                style={{ fontFamily: "var(--font-ui-family)" }}
               >
                 <Icon
                   aria-hidden

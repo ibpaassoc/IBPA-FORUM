@@ -40,7 +40,7 @@ export default function JurySidebar({
           >
             <p
               className="text-[0.65rem] uppercase tracking-[0.18em] text-white/75"
-              style={{ fontFamily: "var(--font-inter)" }}
+              style={{ fontFamily: "var(--font-ui-family)" }}
             >
               Jury panel
             </p>
@@ -56,7 +56,7 @@ export default function JurySidebar({
                   <span
                     key={area}
                     className="rounded-full border border-white/25 bg-white/15 px-2.5 py-0.5 text-[0.62rem] font-medium text-white/80"
-                    style={{ fontFamily: "var(--font-inter)" }}
+                    style={{ fontFamily: "var(--font-ui-family)" }}
                   >
                     {area}
                   </span>
@@ -79,7 +79,7 @@ export default function JurySidebar({
                         ? "bg-[#f2f8fb] text-[#030213]"
                         : "text-black/50 hover:bg-[#f8f8f6] hover:text-[#030213]"
                     }`}
-                    style={{ fontFamily: "var(--font-inter)" }}
+                    style={{ fontFamily: "var(--font-ui-family)" }}
                   >
                     <Icon
                       aria-hidden
@@ -98,7 +98,7 @@ export default function JurySidebar({
                 type="button"
                 onClick={() => void signOut({ callbackUrl: "/jury/login" })}
                 className="flex min-h-[42px] w-full items-center gap-3 rounded-[10px] px-3 text-[0.8rem] text-black/40 transition-all duration-150 hover:bg-red-50 hover:text-red-600"
-                style={{ fontFamily: "var(--font-inter)" }}
+                style={{ fontFamily: "var(--font-ui-family)" }}
               >
                 <LogOut aria-hidden size={16} strokeWidth={1.8} />
                 Sign out
@@ -120,7 +120,7 @@ export default function JurySidebar({
                 className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-[10px] px-2 text-center text-[0.65rem] transition-all duration-150 ${
                   active ? "bg-[#f2f8fb] text-[#030213]" : "text-black/40"
                 }`}
-                style={{ fontFamily: "var(--font-inter)" }}
+                style={{ fontFamily: "var(--font-ui-family)" }}
               >
                 <Icon
                   aria-hidden

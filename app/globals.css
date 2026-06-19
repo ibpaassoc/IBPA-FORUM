@@ -17,9 +17,9 @@
 
   --font-title-family: var(--font-display), "Bodoni Moda", Georgia, serif;
   --font-body-family: var(--font-body), "Lora", Georgia, serif;
-  --font-ui-family: var(--font-inter), "Inter", system-ui, sans-serif;
+  --font-ui-family: var(--font-body), "Lora", Georgia, serif;
   --font-accent-family: var(--font-accent), "Cormorant Garamond", Georgia, serif;
-  --font-legal-family: var(--font-inter), "Inter", system-ui, sans-serif;
+  --font-legal-family: var(--font-body), "Lora", Georgia, serif;
 
   --border-default: rgba(3, 2, 19, 0.1);
   --border-soft: rgba(3, 2, 19, 0.06);

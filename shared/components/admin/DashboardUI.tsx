@@ -121,7 +121,7 @@ export function DashboardMetricTile({
     <div className="rounded-[12px] border border-black/[0.07] bg-white p-4 shadow-[0_4px_16px_rgba(3,2,19,0.04)]">
       <p
         className="text-[0.65rem] font-semibold uppercase tracking-[0.18em]"
-        style={{ fontFamily: "var(--font-inter)", color: IBPA_MUTED }}
+        style={{ fontFamily: "var(--font-ui-family)", color: IBPA_MUTED }}
       >
         {label}
       </p>
@@ -271,7 +271,7 @@ export function DashboardBadge({
   return (
     <span
       className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[0.62rem] font-semibold uppercase leading-none tracking-[0.1em] ${badgeTone[tone]}`}
-      style={{ fontFamily: "var(--font-inter)" }}
+      style={{ fontFamily: "var(--font-ui-family)" }}
     >
       {children}
     </span>
@@ -294,7 +294,7 @@ export function DashboardTable({
         className="hidden gap-4 border-b border-black/[0.07] bg-[#fafaf9] px-5 py-3 text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-black/40 lg:grid"
         style={{
           gridTemplateColumns: `repeat(${headers.length}, minmax(0, 1fr))`,
-          fontFamily: "var(--font-inter)",
+          fontFamily: "var(--font-ui-family)",
         } as CSSProperties}
       >
         {headers.map((header, i) => <span key={i}>{header}</span>)}
@@ -382,7 +382,7 @@ export function DashboardDetailCard({
     <div className="rounded-[10px] border border-black/[0.07] bg-[#fafaf9] p-4">
       <p
         className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-black/40"
-        style={{ fontFamily: "var(--font-inter)" }}
+        style={{ fontFamily: "var(--font-ui-family)" }}
       >
         {label}
       </p>
@@ -401,7 +401,7 @@ export function DashboardChip({ children }: { children: ReactNode }) {
   return (
     <span
       className="inline-flex items-center rounded-full border border-[#b9d9eb] bg-[#f2f8fb] px-3 py-0.5 text-[0.62rem] font-semibold leading-none tracking-[0.08em] text-[#2d6080]"
-      style={{ fontFamily: "var(--font-inter)" }}
+      style={{ fontFamily: "var(--font-ui-family)" }}
     >
       {children}
     </span>
@@ -426,7 +426,7 @@ export function DashboardKpiBar({
     <div>
       <div
         className="flex items-center justify-between text-[0.65rem] font-semibold uppercase tracking-[0.14em]"
-        style={{ fontFamily: "var(--font-inter)", color: labelColor }}
+        style={{ fontFamily: "var(--font-ui-family)", color: labelColor }}
       >
         <span>{label}</span>
         <span>{clamped}%</span>
