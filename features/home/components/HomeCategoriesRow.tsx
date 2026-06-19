@@ -40,12 +40,12 @@ export default function HomeCategoriesRow() {
               return (
                 <a key={`${item}-${index}`} href="/apply">
                   <span
-                    className="group inline-flex shrink-0 items-center gap-2 rounded-full border border-[var(--border-soft)] bg-[var(--surface-tint)] px-4 py-2 text-sm text-[var(--color-ink-soft)] transition hover:border-[var(--color-hover-accent)] hover:bg-[var(--color-hover-accent)] hover:text-white"
+                    className="group inline-flex shrink-0 items-center gap-2 rounded-full border border-[var(--border-soft)] bg-[var(--surface-tint)] px-4 py-2 text-sm text-[var(--color-ink-soft)] transition hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-wash)] hover:text-[var(--color-ink)]"
                   >
                     <Icon
                       size={18}
                       strokeWidth={1.5}
-                      className="text-[var(--color-hover-accent)] transition group-hover:text-white"
+                      className="text-[var(--color-hover-accent)] transition group-hover:text-[var(--color-blue)]"
                     />
                     {item}
                   </span>

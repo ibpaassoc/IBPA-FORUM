@@ -61,7 +61,7 @@ export default function HomeParticipation({
             <button
               type="button"
               onClick={() => setIsTicketModalOpen(true)}
-              className="group relative flex h-full min-h-[480px] w-full flex-col overflow-hidden rounded-[var(--radius-lg)] bg-[var(--color-blue-wash)] text-left lg:min-h-[560px]"
+              className="premium-glass group relative flex h-full min-h-[480px] w-full flex-col text-left lg:min-h-[560px]"
             >
               <Image
                 src="/images/events/HomeHero.jpg"
@@ -78,7 +78,7 @@ export default function HomeParticipation({
                     {p.tickets.mostPopular}
                   </span>
                   {discount ? (
-                    <span className="flex items-center gap-1 rounded-full bg-amber-500/20 px-3 py-1 text-[0.62rem] font-bold uppercase tracking-wider text-amber-700">
+                    <span className="flex items-center gap-1 rounded-full border border-[var(--color-blue-soft)] bg-white/80 px-3 py-1 text-[0.62rem] font-bold uppercase tracking-wider text-[var(--color-blue)]">
                       <Zap size={10} strokeWidth={2.5} /> Early Bird
                     </span>
                   ) : (
@@ -104,7 +104,7 @@ export default function HomeParticipation({
                         initial={{ opacity: 0, y: -6 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.22, ease: "easeOut" }}
-                        className={`text-[clamp(2.4rem,5vw,4rem)] font-medium ${discount ? "text-amber-700" : ""}`}
+                        className={`text-[clamp(2.4rem,5vw,4rem)] font-medium ${discount ? "text-[var(--color-blue)]" : ""}`}
                       >
                         {forumPrice}
                       </motion.span>
@@ -121,7 +121,7 @@ export default function HomeParticipation({
                   </div>
 
                   <div className="mt-[var(--space-lg)]">
-                    <span className="ibpa-button ibpa-button-primary inline-flex">
+                    <span className="ibpa-button ibpa-button-blue inline-flex">
                       {p.tickets.cta}
                     </span>
                   </div>
@@ -134,7 +134,7 @@ export default function HomeParticipation({
           <Reveal delay={0.1}>
             <Link
               href="/apply"
-              className="group flex h-full flex-col overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-white p-[var(--space-lg)] shadow-[var(--shadow-sm)] transition-all duration-300 hover:border-[var(--color-blue)]/40 hover:shadow-[var(--shadow-md)]"
+              className="premium-glass group flex h-full flex-col p-[var(--space-lg)] transition-all duration-300 hover:border-[var(--color-blue)]/40 hover:shadow-[var(--shadow-md)]"
             >
               <div className="mb-[var(--space-md)] flex items-center justify-between">
                 <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--color-blue)]/20 bg-[var(--color-blue-wash)]">
@@ -167,7 +167,7 @@ export default function HomeParticipation({
               </p>
 
               <div className="mt-[var(--space-lg)]">
-                <span className="ibpa-button ibpa-button-primary inline-flex text-[0.72rem]">
+                <span className="ibpa-button ibpa-button-soft inline-flex text-[0.72rem]">
                   {p.award.cta}
                 </span>
               </div>
@@ -178,7 +178,7 @@ export default function HomeParticipation({
           <Reveal delay={0.16}>
             <Link
               href="/jury"
-              className="group flex h-full flex-col overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-white p-[var(--space-lg)] shadow-[var(--shadow-sm)] transition-all duration-300 hover:border-[var(--color-blue)]/40 hover:shadow-[var(--shadow-md)]"
+              className="premium-glass group flex h-full flex-col p-[var(--space-lg)] transition-all duration-300 hover:border-[var(--color-blue)]/40 hover:shadow-[var(--shadow-md)]"
             >
               <div className="mb-[var(--space-md)] flex items-center justify-between">
                 <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--color-blue)]/20 bg-[var(--color-blue-wash)]">
@@ -211,7 +211,7 @@ export default function HomeParticipation({
               </p>
 
               <div className="mt-[var(--space-lg)]">
-                <span className="ibpa-button ibpa-button-primary inline-flex text-[0.72rem]">
+                <span className="ibpa-button ibpa-button-soft inline-flex text-[0.72rem]">
                   {p.judge.cta}
                 </span>
               </div>

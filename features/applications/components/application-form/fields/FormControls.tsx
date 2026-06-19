@@ -8,10 +8,10 @@ import type { FieldOption } from "@/features/applications/types/application.type
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 const baseField =
-  "w-full rounded-[24px] border border-black/10 bg-white px-5 py-4 text-[0.96rem] text-[var(--color-ink)] shadow-[0_12px_30px_rgba(3,2,19,0.04)] outline-none transition-[border-color,box-shadow,background-color,transform] duration-300 placeholder:text-[var(--color-ink)]/34 hover:border-black/22 focus:border-[var(--color-ink)] focus:bg-white focus:shadow-[0_0_0_4px_rgba(3,2,19,0.06)]";
+  "w-full rounded-[24px] border border-[var(--border-default)] bg-white/92 px-5 py-4 text-[0.96rem] text-[var(--color-ink)] shadow-[0_12px_30px_rgba(3,2,19,0.04)] outline-none transition-[border-color,box-shadow,background-color,transform] duration-300 placeholder:text-[var(--color-ink)]/34 hover:border-[var(--color-blue)]/50 focus:border-[var(--color-blue)] focus:bg-white focus:shadow-[0_0_0_4px_rgba(185,217,235,0.36)]";
 
 const disabledField =
-  "cursor-not-allowed bg-black/[0.03] text-[var(--color-ink-soft)] opacity-70";
+  "cursor-not-allowed bg-[var(--surface-tint)] text-[var(--color-ink-soft)] opacity-70";
 
 const errorField =
   "!border-red-300 !bg-red-50/70 focus:!border-red-400 focus:!shadow-[0_0_0_4px_rgba(239,68,68,0.1)]";
@@ -246,7 +246,7 @@ export function SelectField({
               id={listboxId}
               role="listbox"
               aria-label={label}
-              className={`fixed z-[250] overflow-hidden rounded-[24px] border border-black/10 bg-white shadow-[0_24px_60px_rgba(3,2,19,0.12)] transition-all duration-300 ${open ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none -translate-y-2 opacity-0"}`}
+              className={`fixed z-[250] overflow-hidden rounded-[24px] border border-[var(--border-default)] bg-white shadow-[0_24px_60px_rgba(114,160,193,0.16)] transition-all duration-300 ${open ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none -translate-y-2 opacity-0"}`}
               style={{
                 top: menuStyle.top,
                 left: menuStyle.left,
@@ -260,7 +260,7 @@ export function SelectField({
                     onChange(name, "");
                     setOpen(false);
                   }}
-                  className={`flex w-full items-center justify-between rounded-[18px] px-4 py-3 text-left text-sm transition ${!value ? "bg-black text-white" : "text-[var(--color-ink-soft)] hover:bg-black/[0.04] hover:text-[var(--color-ink)]"}`}
+                  className={`flex w-full items-center justify-between rounded-[18px] px-4 py-3 text-left text-sm transition ${!value ? "bg-[var(--color-blue-wash)] text-[var(--color-ink)]" : "text-[var(--color-ink-soft)] hover:bg-[var(--color-blue-wash)] hover:text-[var(--color-ink)]"}`}
                 >
                   <span>{placeholder ?? fallback}</span>
                   {!value ? <Check size={16} /> : null}
@@ -279,11 +279,11 @@ export function SelectField({
                         onChange(name, option.value);
                         setOpen(false);
                       }}
-                      className={`mt-1 flex w-full items-center justify-between rounded-[18px] px-4 py-3 text-left text-sm transition ${checked ? "bg-black text-white" : "text-[var(--color-ink)] hover:bg-black/[0.04]"}`}
+                      className={`mt-1 flex w-full items-center justify-between rounded-[18px] px-4 py-3 text-left text-sm transition ${checked ? "bg-[var(--color-blue-wash)] text-[var(--color-ink)]" : "text-[var(--color-ink)] hover:bg-[var(--color-blue-wash)]"}`}
                     >
                       <span>{option.label}</span>
                       <span
-                        className={`inline-flex h-5 w-5 items-center justify-center rounded-full border transition ${checked ? "border-white/30 bg-white/10" : "border-black/10 bg-black/[0.03]"}`}
+                        className={`inline-flex h-5 w-5 items-center justify-center rounded-full border transition ${checked ? "border-[var(--color-blue)] bg-white text-[var(--color-blue)]" : "border-[var(--border-soft)] bg-[var(--surface-tint)]"}`}
                       >
                         {checked ? <Check size={13} /> : null}
                       </span>
@@ -336,7 +336,7 @@ export function ChoiceGroupField({
           return (
             <label
               key={option.value}
-              className={`group flex cursor-pointer items-center gap-3 rounded-[22px] border px-5 py-4 text-[0.93rem] transition-all duration-300 ${checked ? "border-[var(--color-ink)] bg-[var(--color-ink)] text-white shadow-[0_18px_40px_rgba(3,2,19,0.12)]" : "border-black/10 bg-white text-[var(--color-ink)] shadow-[0_12px_30px_rgba(3,2,19,0.04)] hover:border-black/24"}`}
+              className={`group flex cursor-pointer items-center gap-3 rounded-[22px] border px-5 py-4 text-[0.93rem] transition-all duration-300 ${checked ? "border-[var(--color-blue)] bg-[var(--color-blue-wash)] text-[var(--color-ink)] shadow-[0_18px_40px_rgba(114,160,193,0.12)]" : "border-[var(--border-default)] bg-white text-[var(--color-ink)] shadow-[0_12px_30px_rgba(3,2,19,0.04)] hover:border-[var(--color-blue)]/50"}`}
             >
               <input
                 type={multiple ? "checkbox" : "radio"}
@@ -358,13 +358,13 @@ export function ChoiceGroupField({
                 className="sr-only"
               />
               <span
-                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition ${checked ? "border-white/40 bg-white/10 text-white" : "border-black/16 bg-black/[0.03] text-transparent group-hover:border-black/28"}`}
+                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition ${checked ? "border-[var(--color-blue)] bg-white text-[var(--color-blue)]" : "border-[var(--border-soft)] bg-[var(--surface-tint)] text-transparent group-hover:border-[var(--color-blue)]/40"}`}
               >
                 {multiple ? (
                   <Check size={13} />
                 ) : (
                   <span
-                    className={`h-2.5 w-2.5 rounded-full transition ${checked ? "bg-white" : "bg-transparent"}`}
+                    className={`h-2.5 w-2.5 rounded-full transition ${checked ? "bg-[var(--color-blue)]" : "bg-transparent"}`}
                   />
                 )}
               </span>

@@ -32,7 +32,7 @@ function PriceRow({
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.18, ease: "easeOut" }}
-              className="font-[var(--font-title-family)] text-[1.1rem] font-medium text-amber-700"
+              className="font-[var(--font-title-family)] text-[1.1rem] font-medium text-[var(--color-blue)]"
             >
               {discountedValue}
             </motion.span>
@@ -140,10 +140,10 @@ export default function HomePricing({
         {/* Early bird banner */}
         {discount && (
           <Reveal className="mb-6">
-            <div className="flex items-center gap-3 rounded-[var(--radius-md)] border border-amber-300/40 bg-gradient-to-r from-amber-500/10 to-amber-400/5 px-5 py-3.5">
-              <Zap size={16} className="shrink-0 text-amber-500" strokeWidth={2} />
+            <div className="premium-glass flex items-center gap-3 px-5 py-3.5">
+              <Zap size={16} className="shrink-0 text-[var(--color-blue)]" strokeWidth={2} />
               <p className="text-[0.84rem] font-medium text-[var(--color-ink)]">
-                <span className="font-semibold text-amber-600">Early Bird Pricing Active</span>
+                <span className="font-semibold text-[var(--color-blue)]">Early Bird Pricing Active</span>
                 {discount.type === "percent" && (
                   <span className="text-[var(--color-ink-soft)]"> — {discount.value}% off forum passes. Limited time only.</span>
                 )}
@@ -159,7 +159,7 @@ export default function HomePricing({
 
           {/* ── Forum Tickets ── */}
           <Reveal delay={0.05}>
-            <article className="group flex h-full flex-col overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-white shadow-[var(--shadow-sm)] transition-all duration-300 hover:border-[var(--color-blue)]/40 hover:shadow-[var(--shadow-md)]">
+            <article className="premium-glass group flex h-full flex-col transition-all duration-300 hover:border-[var(--color-blue)]/40 hover:shadow-[var(--shadow-md)]">
               {/* Card header */}
               <div className="border-b border-[var(--border-soft)] p-[var(--space-md)]">
                 <div className="mb-3 flex items-center justify-between">
@@ -170,7 +170,7 @@ export default function HomePricing({
                     </span>
                   </div>
                   {discount && (
-                    <span className="flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200 px-2.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wider text-amber-700">
+                    <span className="flex items-center gap-1 rounded-full border border-[var(--color-blue-soft)] bg-[var(--color-blue-wash)] px-2.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wider text-[var(--color-blue)]">
                       <Zap size={9} strokeWidth={2.5} />
                       Early Bird
                     </span>
@@ -186,7 +186,7 @@ export default function HomePricing({
                     initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
-                    className={`font-[var(--font-title-family)] text-[2rem] font-light leading-none ${discount ? "text-amber-700" : "text-[var(--color-ink)]"}`}
+                    className={`font-[var(--font-title-family)] text-[2rem] font-light leading-none ${discount ? "text-[var(--color-blue)]" : "text-[var(--color-ink)]"}`}
                   >
                     {forumStarting}
                   </motion.span>
@@ -208,7 +208,7 @@ export default function HomePricing({
                 <button
                   type="button"
                   onClick={onBuyTickets}
-                  className="ibpa-button ibpa-button-primary w-full"
+                  className="ibpa-button ibpa-button-blue w-full"
                 >
                   {t.home.participation.tickets.cta}
                 </button>
@@ -218,7 +218,7 @@ export default function HomePricing({
 
           {/* ── Award Participation ── */}
           <Reveal delay={0.1}>
-            <article className="group flex h-full flex-col overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-white shadow-[var(--shadow-sm)] transition-all duration-300 hover:border-[var(--color-blue)]/40 hover:shadow-[var(--shadow-md)]">
+            <article className="premium-glass group flex h-full flex-col transition-all duration-300 hover:border-[var(--color-blue)]/40 hover:shadow-[var(--shadow-md)]">
               <div className="border-b border-[var(--border-soft)] p-[var(--space-md)]">
                 <div className="mb-3 flex items-center gap-2">
                   <Trophy size={14} className="text-[var(--color-blue)]" strokeWidth={1.5} />
@@ -251,7 +251,7 @@ export default function HomePricing({
               </div>
 
               <div className="p-[var(--space-md)]">
-                <Link href="/apply" className="ibpa-button ibpa-button-primary w-full text-center">
+                <Link href="/apply" className="ibpa-button ibpa-button-blue w-full text-center">
                   {t.home.participation.award.cta}
                 </Link>
               </div>
@@ -260,7 +260,7 @@ export default function HomePricing({
 
           {/* ── Judge Registration ── */}
           <Reveal delay={0.15}>
-            <article className="group flex h-full flex-col overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-white shadow-[var(--shadow-sm)] transition-all duration-300 hover:border-[var(--color-blue)]/40 hover:shadow-[var(--shadow-md)]">
+            <article className="premium-glass group flex h-full flex-col transition-all duration-300 hover:border-[var(--color-blue)]/40 hover:shadow-[var(--shadow-md)]">
               <div className="border-b border-[var(--border-soft)] p-[var(--space-md)]">
                 <div className="mb-3 flex items-center gap-2">
                   <Star size={14} className="text-[var(--color-blue)]" strokeWidth={1.5} />
@@ -294,7 +294,7 @@ export default function HomePricing({
               </div>
 
               <div className="p-[var(--space-md)]">
-                <Link href="/jury" className="ibpa-button ibpa-button-primary w-full text-center">
+                <Link href="/jury" className="ibpa-button ibpa-button-blue w-full text-center">
                   {t.home.participation.judge.cta}
                 </Link>
               </div>

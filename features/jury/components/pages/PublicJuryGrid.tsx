@@ -22,8 +22,6 @@ const juryFallbackPhotos = [
   "/images/events/DSC00947.jpg",
 ];
 
-const CARD_BG = "#0c0c15";
-
 export default function PublicJuryGrid({
   members,
 }: {
@@ -62,11 +60,7 @@ export default function PublicJuryGrid({
         return (
           <HoverCard key={member.id} className="h-full" lift={-8} scale={1.012}>
             <article
-              className="flex h-full flex-col overflow-hidden rounded-[28px]"
-              style={{
-                background: CARD_BG,
-                boxShadow: "0 50px 120px rgba(0,0,0,0.45), 0 8px 24px rgba(0,0,0,0.3)",
-              }}
+              className="premium-glass flex h-full flex-col overflow-hidden rounded-[28px]"
             >
               {/* Photo */}
               <div className="relative aspect-[4/5] shrink-0 overflow-hidden">
@@ -86,7 +80,7 @@ export default function PublicJuryGrid({
                 <div
                   className="absolute inset-x-0 bottom-0 h-44"
                   style={{
-                    background: `linear-gradient(to top, ${CARD_BG} 0%, ${CARD_BG}cc 30%, transparent 100%)`,
+                    background: "linear-gradient(to top, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.72) 34%, transparent 100%)",
                   }}
                 />
               </div>
@@ -96,23 +90,22 @@ export default function PublicJuryGrid({
                 {/* Approved badge */}
                 <div className="mb-4 inline-flex items-center gap-2">
                   <span
-                    className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-blue-500"
-                    style={{ boxShadow: "0 0 12px rgba(59,130,246,0.55)" }}
+                    className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-[var(--color-blue-soft)] shadow-[0_0_16px_rgba(114,160,193,0.36)]"
                   >
-                    <Check size={10} strokeWidth={3} className="text-white" />
+                    <Check size={10} strokeWidth={3} className="text-[var(--color-ink)]" />
                   </span>
-                  <span className="text-[0.6rem] font-semibold uppercase tracking-[0.24em] text-white/45">
+                  <span className="text-[0.6rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-blue)]">
                     {copy.approvedMember}
                   </span>
                 </div>
 
                 {/* Name */}
-                <h3 className="font-[var(--font-display)] text-[1.65rem] leading-[1.04] tracking-[-0.03em] text-white text-pretty">
+                <h3 className="font-[var(--font-display)] text-[1.65rem] leading-[1.04] tracking-[-0.03em] text-[var(--color-ink)] text-pretty">
                   {member.fullName}
                 </h3>
 
                 {/* Title · Location */}
-                <p className="mt-2 text-[0.875rem] leading-[1.6] text-white/50">
+                <p className="mt-2 text-[0.875rem] leading-[1.6] text-[var(--color-ink-soft)]">
                   {[member.professionalTitle, memberLocation].filter(Boolean).join(" · ") ||
                     copy.council}
                 </p>
@@ -123,7 +116,7 @@ export default function PublicJuryGrid({
                     {expertise.map((item) => (
                       <span
                         key={item}
-                        className="rounded-full border border-white/10 bg-white/6 px-3 py-1 text-xs text-white/55"
+                        className="rounded-full border border-[var(--color-blue-soft)] bg-[var(--color-blue-wash)] px-3 py-1 text-xs text-[var(--color-ink-soft)]"
                       >
                         {item}
                       </span>

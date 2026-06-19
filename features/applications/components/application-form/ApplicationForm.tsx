@@ -118,7 +118,7 @@ const CERT_STATUS_CONTENT: Record<Exclude<CertStatus, "idle">, React.ReactNode> 
     </span>
   ),
   error: (
-    <span className="flex items-center gap-1.5 text-amber-600">
+    <span className="flex items-center gap-1.5 text-[var(--color-blue)]">
       <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
         <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
       </svg>
@@ -925,8 +925,8 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
         layout
         transition={categoryCardTransition}
         whileHover={{ y: -1.5 }}
-        className={`overflow-hidden rounded-[28px] border bg-white shadow-[0_16px_36px_rgba(3,2,19,0.05)] ${
-          isOpen ? "border-[var(--color-ink)]" : "border-black/8"
+        className={`premium-glass ${
+          isOpen ? "border-[var(--color-blue)]" : "border-[var(--border-soft)]"
         }`}
       >
         <button
@@ -939,7 +939,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
           }
           className="flex w-full items-start gap-4 p-5 text-left"
         >
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[18px] border border-black/8 bg-[var(--surface-tint)] text-[var(--color-ink)]">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[18px] border border-[var(--color-blue-soft)] bg-[var(--color-blue-wash)] text-[var(--color-ink)]">
             <Icon size={18} strokeWidth={1.6} />
           </span>
 
@@ -956,8 +956,8 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
           <span
             className={`shrink-0 rounded-full border px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] transition-all ${
               selectedCount > 0
-                ? "border-[var(--color-ink)] bg-[var(--color-ink)] text-white"
-                : "border-black/8 bg-[var(--surface-tint)] text-[var(--color-ink-soft)]"
+                ? "border-[var(--color-blue)] bg-[var(--color-blue-wash)] text-[var(--color-ink)]"
+                : "border-[var(--border-soft)] bg-[var(--surface-tint)] text-[var(--color-ink-soft)]"
             }`}
           >
             {selectedCount}
@@ -973,7 +973,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
               transition={categoryCardTransition}
               className="overflow-hidden"
             >
-              <div className="border-t border-black/6 px-5 pb-5 pt-4">
+              <div className="border-t border-[var(--border-soft)] px-5 pb-5 pt-4">
                 <div className="space-y-2">
                   {category.awards.map((award, index) => {
                     const selected = selectedAwardIds.includes(award.id);
@@ -989,10 +989,10 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
                         onClick={() => handleNominationToggle(award.id)}
                         className={`flex w-full items-start gap-3 rounded-[20px] border px-4 py-3 text-left transition-all duration-300 ${
                           selected
-                            ? "border-black bg-black text-white shadow-[0_18px_36px_rgba(3,2,19,0.16)]"
+                            ? "border-[var(--color-blue)] bg-[var(--color-blue-wash)] text-[var(--color-ink)] shadow-[0_18px_36px_rgba(114,160,193,0.16)]"
                             : locked
-                              ? "cursor-not-allowed border-black/6 bg-black/[0.03] text-[var(--color-ink-soft)] opacity-55"
-                              : "border-black/8 bg-[var(--surface-tint)] text-[var(--color-ink)] hover:border-black hover:bg-white"
+                              ? "cursor-not-allowed border-[var(--border-soft)] bg-[var(--surface-muted)] text-[var(--color-ink-soft)] opacity-55"
+                              : "border-[var(--border-soft)] bg-[var(--surface-tint)] text-[var(--color-ink)] hover:border-[var(--color-blue)] hover:bg-white"
                         }`}
                       >
                         <span className="min-w-[1.8rem] pt-0.5 text-[0.78rem] font-semibold uppercase tracking-[0.12em]">
@@ -1004,8 +1004,8 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
                         <span
                           className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
                             selected
-                              ? "border-white/30 bg-white/12"
-                              : "border-black/10 bg-black/[0.03]"
+                              ? "border-[var(--color-blue)] bg-white text-[var(--color-blue)]"
+                              : "border-[var(--border-soft)] bg-[var(--surface-tint)]"
                           }`}
                         >
                           {selected ? <Check size={13} /> : null}
@@ -1061,7 +1061,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
     <form ref={formRef} onSubmit={handleSubmit} className="space-y-6 pb-12">
       <StepBar steps={dynamicSteps} current={step} />
 
-      <div className="mx-auto max-w-6xl rounded-2xl border border-black/6 bg-[#F3F3F1] p-5 shadow-[0_28px_80px_rgba(3,2,19,0.08)] sm:rounded-[32px] sm:p-6 md:rounded-[40px] md:p-10 xl:p-14">
+      <div className="mx-auto max-w-6xl rounded-2xl border border-[var(--border-soft)] bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(248,248,246,0.86))] p-5 shadow-[0_28px_80px_rgba(114,160,193,0.11)] sm:rounded-[32px] sm:p-6 md:rounded-[40px] md:p-10 xl:p-14">
         <div className="mb-10">
           <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-ink-soft)]">
             {dynamicSteps[step]?.label} - {step + 1} / {dynamicSteps.length}
@@ -1095,7 +1095,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
                   <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-ink-soft)]">
                     {copy.selectUpTo}
                   </p>
-                  <span className="rounded-full border border-black/10 bg-white px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink)]">
+                  <span className="rounded-full border border-[var(--color-blue-soft)] bg-white px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink)]">
                     {selectedAwardIds.length} / {MAX_SELECTED_NOMINATIONS}
                   </span>
                 </div>
@@ -1120,7 +1120,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
                 </div>
               </div>
 
-              <aside className="h-fit rounded-[32px] border border-black/8 bg-white p-5 shadow-[0_16px_36px_rgba(3,2,19,0.05)] xl:sticky xl:top-6">
+              <aside className="premium-glass h-fit p-5 xl:sticky xl:top-6">
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-ink-soft)]">
@@ -1131,14 +1131,14 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
                     </p>
                   </div>
 
-                  <span className="rounded-full border border-black/8 bg-[var(--surface-tint)] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-soft)]">
+                  <span className="rounded-full border border-[var(--color-blue-soft)] bg-[var(--color-blue-wash)] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-soft)]">
                     {MAX_SELECTED_NOMINATIONS} max
                   </span>
                 </div>
 
                 <div className="mt-5 space-y-3">
                   {selectedNominations.length === 0 ? (
-                    <div className="rounded-[24px] border border-dashed border-black/12 bg-[var(--surface-tint)] px-4 py-6 text-center">
+                    <div className="rounded-[24px] border border-dashed border-[var(--color-blue-soft)] bg-[var(--surface-tint)] px-4 py-6 text-center">
                       <p className="text-sm font-medium text-[var(--color-ink)]">
                         {copy.selectedEmpty}
                       </p>
@@ -1148,7 +1148,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
                       return (
                         <div
                           key={item.award.id}
-                          className="rounded-[24px] border border-black/8 bg-[var(--surface-tint)] px-4 py-4 text-[var(--color-ink)] transition-all duration-300"
+                          className="rounded-[24px] border border-[var(--border-soft)] bg-white/72 px-4 py-4 text-[var(--color-ink)] transition-all duration-300"
                         >
                           <div className="flex items-start justify-between gap-3">
                             <div className="min-w-0">
@@ -1164,7 +1164,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
                               type="button"
                               onClick={() => handleSelectedNominationRemove(item.award.id)}
                               aria-label={`${copy.remove} ${item.nominationTitle}`}
-                              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-black/10 bg-white transition hover:border-black/20"
+                              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--border-soft)] bg-white transition hover:border-[var(--color-blue)]"
                             >
                               <X size={14} />
                             </button>
@@ -1176,7 +1176,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
                 </div>
 
                 {/* IBPA Membership + Pricing */}
-                <div className="mt-5 space-y-5 border-t border-black/6 pt-5">
+                <div className="mt-5 space-y-5 border-t border-[var(--border-soft)] pt-5">
                   {/* Membership toggle */}
                   <div>
                     <p className="mb-3 text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-ink-soft)]">
@@ -1193,7 +1193,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
                             setCertStatus("idle");
                           }
                         }}
-                        className="mt-0.5 h-[14px] w-[14px] shrink-0 rounded border-black/20 accent-[var(--color-ink)]"
+                        className="mt-0.5 h-[14px] w-[14px] shrink-0 rounded border-[var(--border-soft)] accent-[var(--color-blue)]"
                       />
                       <span className="flex flex-col gap-0.5">
                         <span className="text-[0.87rem] font-medium text-[var(--color-ink)]">
@@ -1229,7 +1229,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
                                   ? "border-emerald-400 focus:border-emerald-500 focus:ring-emerald-100"
                                   : certStatus === "invalid"
                                     ? "border-red-300 bg-red-50/40 focus:ring-red-100"
-                                    : "border-black/12 focus:border-[var(--color-ink)] focus:ring-black/8"
+                                    : "border-[var(--border-soft)] focus:border-[var(--color-blue)] focus:ring-[var(--color-blue-soft)]/50"
                               }`}
                             />
                             <CertStatusBadge status={certStatus} />
@@ -1240,7 +1240,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
                   </div>
 
                   {/* Entry fee */}
-                  <div className="border-t border-black/6 pt-4">
+                  <div className="border-t border-[var(--border-soft)] pt-4">
                     <div className="flex items-center justify-between gap-2 mb-2">
                       <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-ink-soft)]">
                         {copy.entryFee}
@@ -1498,7 +1498,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
 
           {step === CONFIRM_STEP ? (
             <div className="space-y-5">
-              <div className="rounded-[28px] border border-black/8 bg-white p-6 shadow-[0_16px_36px_rgba(3,2,19,0.05)]">
+              <div className="premium-glass rounded-[28px] bg-white/86 p-6">
                 <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-ink-soft)]">
                   {copy.confirmTitle}
                 </p>
@@ -1541,7 +1541,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
                   {selectedNominations.map((item) => (
                     <div
                       key={item.award.id}
-                      className="rounded-[22px] border border-black/8 bg-[var(--surface-tint)] px-4 py-3 text-[var(--color-ink)]"
+                      className="rounded-[22px] border border-[var(--border-soft)] bg-[var(--surface-tint)] px-4 py-3 text-[var(--color-ink)]"
                     >
                       <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-ink-soft)]">
                         {item.categoryTitle}
@@ -1566,12 +1566,12 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
           </AnimatePresence>
         </div>
 
-        <div className="mt-10 flex items-center justify-between border-t border-black/6 pt-8">
+        <div className="mt-10 flex items-center justify-between border-t border-[var(--border-soft)] pt-8">
           <button
             type="button"
             onClick={back}
             disabled={step === 0}
-            className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-6 py-3 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-[var(--color-ink)] shadow-[0_12px_24px_rgba(3,2,19,0.04)] transition-all duration-300 hover:border-[var(--color-ink)] hover:bg-[var(--color-ink)] hover:text-white disabled:pointer-events-none disabled:opacity-30"
+            className="inline-flex items-center gap-2 rounded-full border border-[var(--border-soft)] bg-white px-6 py-3 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-[var(--color-ink)] shadow-[0_12px_24px_rgba(3,2,19,0.04)] transition-all duration-300 hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-wash)] disabled:pointer-events-none disabled:opacity-30"
           >
             <ChevronLeft size={14} /> {copy.back}
           </button>
@@ -1580,7 +1580,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
             <button
               type="button"
               onClick={advance}
-              className="inline-flex items-center gap-2 rounded-full border border-[var(--color-ink)] bg-[var(--color-ink)] px-8 py-3 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-white shadow-[0_18px_36px_rgba(3,2,19,0.14)] transition-all duration-300 hover:bg-white hover:text-[var(--color-ink)]"
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--color-blue)] bg-[var(--color-blue)] px-8 py-3 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-[var(--color-ink)] shadow-[0_18px_36px_rgba(114,160,193,0.18)] transition-all duration-300 hover:bg-white"
             >
               {copy.continue} <ChevronRight size={14} />
             </button>
@@ -1588,7 +1588,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex items-center gap-2 rounded-full border border-[var(--color-ink)] bg-[var(--color-ink)] px-8 py-3 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-white shadow-[0_18px_36px_rgba(3,2,19,0.14)] transition-all duration-300 hover:bg-white hover:text-[var(--color-ink)] disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--color-blue)] bg-[var(--color-blue)] px-8 py-3 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-[var(--color-ink)] shadow-[0_18px_36px_rgba(114,160,193,0.18)] transition-all duration-300 hover:bg-white disabled:opacity-60"
             >
               {isSubmitting ? copy.submitting : copy.submit} <ChevronRight size={14} />
             </button>

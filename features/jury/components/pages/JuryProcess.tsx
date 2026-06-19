@@ -24,7 +24,7 @@ export default function JuryProcess() {
             {t.juryPage.process.steps.map((step) => (
               <div
                 key={step.number}
-                className="page-card p-(--space-md)"
+                className="premium-glass p-(--space-md)"
               >
                 <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-hover-accent)">
                   {step.number}
@@ -58,7 +58,7 @@ export default function JuryProcess() {
               ].map(([label, value]) => (
                 <div
                   key={label}
-                  className="rounded-sm border border-(--border-default) bg-(--color-off-white) p-(--space-sm)"
+                  className="rounded-sm border border-(--color-blue-soft) bg-white/76 p-(--space-sm) shadow-(--shadow-sm)"
                 >
                   <p className="text-[clamp(0.65rem,1vw,0.75rem)] uppercase tracking-[0.15em] text-(--color-hover-accent)">
                     {label}

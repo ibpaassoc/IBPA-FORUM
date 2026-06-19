@@ -42,16 +42,16 @@ type Direction = {
 };
 
 const cardClass =
-  "cursor-pointer border border-[var(--border-default)] bg-white shadow-[var(--shadow-sm)] transition-[border-color,box-shadow,transform] duration-300 hover:border-[var(--border-strong)] hover:shadow-[var(--shadow-md)]";
+  "cursor-pointer border border-[var(--border-default)] bg-white/86 shadow-[var(--shadow-sm)] backdrop-blur-xl transition-[border-color,box-shadow,transform] duration-300 hover:border-[var(--color-blue)]/50 hover:shadow-[var(--shadow-md)]";
 
 const iconClass =
-  "border border-[var(--border-default)] bg-[var(--surface-muted)] transition-[border-color,transform] duration-300 group-hover:border-[var(--border-strong)]";
+  "border border-[var(--color-blue-soft)] bg-[var(--color-blue-wash)] transition-[border-color,transform] duration-300 group-hover:border-[var(--color-blue)]/55";
 
 const listWrapClass =
-  "border border-[var(--border-soft)] bg-[var(--surface-muted)]";
+  "border border-[var(--color-blue-soft)] bg-white/68 backdrop-blur-xl";
 
 const nominationClass =
-  "border border-[var(--border-soft)] bg-white shadow-[var(--shadow-sm)] transition-[border-color,box-shadow] duration-300 hover:border-[var(--border-default)] hover:shadow-[var(--shadow-md)]";
+  "border border-[var(--border-soft)] bg-white/84 shadow-[var(--shadow-sm)] transition-[border-color,box-shadow] duration-300 hover:border-[var(--color-blue)]/40 hover:shadow-[var(--shadow-md)]";
   
 const layoutTransition = {
   duration: 0.4,
@@ -183,7 +183,7 @@ export default function CategoriesFeatures() {
                       },
                     },
                   }}
-                  className={`mt-4 space-y-2.5 rounded-[var(--radius-sm)] p-3 ${listWrapClass}`}
+                  className={`mt-4 flex flex-col gap-2.5 rounded-[var(--radius-sm)] p-3 ${listWrapClass}`}
                 >
                   {direction.nominations.map(
                     (nomination, nominationIndex) => (

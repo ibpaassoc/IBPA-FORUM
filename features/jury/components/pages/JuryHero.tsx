@@ -18,7 +18,7 @@ export default function JuryHero() {
         description={t.juryPage.copy.heroText}
         actions={
           <div className="flex flex-wrap gap-3">
-            <Link href="/apply/jury" className="ibpa-button ibpa-button-primary">
+            <Link href="/apply/jury" className="ibpa-button ibpa-button-blue">
               {t.common.applyAsJury}
             </Link>
             <Link href="/jury/register" className="ibpa-button ibpa-button-ghost">
@@ -58,7 +58,7 @@ export default function JuryHero() {
           </div>
         }
         floatingCard={
-          <article className="page-card rounded-[var(--radius)] p-[var(--space-md)]">
+          <article className="premium-glass rounded-[var(--radius)] p-[var(--space-md)]">
             <p className="text-[0.67rem] uppercase tracking-[0.2em] text-[var(--color-hover-accent)]">{t.juryPage.copy.credibility}</p>
             <p className="mt-1 font-[var(--font-title-family)] text-[clamp(1.6rem,2.1vw,2.2rem)] leading-[1.1] text-[var(--color-ink)]">
               {t.juryPage.hero.experienceValue}

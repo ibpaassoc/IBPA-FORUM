@@ -69,7 +69,7 @@ export default function LanguageSwitcher({
                 key={item}
                 type="button"
                 onClick={() => chooseLanguage(item)}
-                className={`rounded-full border px-4 py-3 text-[0.72rem] font-semibold uppercase tracking-[0.18em] transition-all duration-300 ${active ? "border-[var(--color-ink)] bg-[var(--color-ink)] text-white shadow-[0_16px_30px_rgba(3,2,19,0.14)]" : "border-black/10 bg-white text-[var(--color-ink)] hover:border-black/24 hover:bg-black hover:text-white"}`}
+                className={`rounded-full border px-4 py-3 text-[0.72rem] font-semibold uppercase tracking-[0.18em] transition-all duration-300 ${active ? "border-[var(--color-blue)] bg-[var(--color-blue-wash)] text-[var(--color-ink)] shadow-[0_16px_30px_rgba(114,160,193,0.14)]" : "border-[var(--border-soft)] bg-white text-[var(--color-ink)] hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-wash)]"}`}
               >
                 {languageLabels[item].short}
               </button>
@@ -88,7 +88,7 @@ export default function LanguageSwitcher({
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => setOpen((current) => !current)}
-        className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-[0.7rem] font-semibold uppercase tracking-[0.12em] transition-all duration-300 ${transparent ? "border-white/30 bg-white/10 text-white backdrop-blur-md hover:border-white hover:bg-white hover:text-[var(--color-ink)]" : "border-black/10 bg-white text-[var(--color-ink)] shadow-[0_10px_24px_rgba(3,2,19,0.05)] hover:border-[var(--color-ink)] hover:bg-[var(--color-ink)] hover:text-white"}`}
+        className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-[0.7rem] font-semibold uppercase tracking-[0.12em] transition-all duration-300 ${transparent ? "border-white/30 bg-white/10 text-white backdrop-blur-md hover:border-white hover:bg-white hover:text-[var(--color-ink)]" : "border-[var(--border-soft)] bg-white text-[var(--color-ink)] shadow-[0_10px_24px_rgba(3,2,19,0.05)] hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-wash)]"}`}
       >
         <Globe size={14} className="shrink-0" />
         <span>{languageLabels[language].short}</span>
@@ -109,11 +109,11 @@ export default function LanguageSwitcher({
               key={item}
               type="button"
               onClick={() => chooseLanguage(item)}
-              className={`flex w-full items-center justify-between rounded-[18px] px-4 py-3 text-left text-sm transition ${active ? "bg-[var(--color-ink)] text-white" : "text-[var(--color-ink)] hover:bg-black/[0.04]"}`}
+              className={`flex w-full items-center justify-between rounded-[18px] px-4 py-3 text-left text-sm transition ${active ? "bg-[var(--color-blue-wash)] text-[var(--color-ink)]" : "text-[var(--color-ink)] hover:bg-[var(--color-blue-wash)]"}`}
             >
               <span>{languageLabels[item].label}</span>
               <span
-                className={`inline-flex h-5 w-5 items-center justify-center rounded-full border text-[0.68rem] ${active ? "border-white/30 bg-white/10" : "border-black/10 bg-black/[0.03] text-transparent"}`}
+                className={`inline-flex h-5 w-5 items-center justify-center rounded-full border text-[0.68rem] ${active ? "border-[var(--color-blue)] bg-white text-[var(--color-blue)]" : "border-black/10 bg-black/[0.03] text-transparent"}`}
               >
                 •
               </span>

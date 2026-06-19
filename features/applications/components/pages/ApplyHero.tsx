@@ -80,7 +80,7 @@ export default function ApplyHero({
           <div className="mt-[var(--space-lg)] flex flex-wrap items-center gap-4">
             <a
               href="#apply-form"
-              className="inline-flex items-center gap-2 rounded-full bg-[var(--color-ink)] px-6 py-3 text-[0.78rem] font-semibold uppercase tracking-[0.1em] text-white transition hover:bg-[#1a1a2e]"
+              className="ibpa-button ibpa-button-blue inline-flex items-center gap-2"
             >
               {copy.cta} <ArrowRight size={14} />
             </a>

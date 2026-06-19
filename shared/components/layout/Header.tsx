@@ -8,7 +8,7 @@ import LanguageSwitcher from "@/shared/components/layout/LanguageSwitcher";
 import JuryMenu from "@/shared/components/layout/JuryMenu";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
-const HERO_PAGES = ["/"];
+const HERO_PAGES: string[] = [];
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -122,7 +122,7 @@ export default function Header() {
               width={320}
               height={80}
               priority
-              className={`h-10 w-auto max-w-42.5 object-contain transition-all duration-500 sm:h-12 sm:max-w-none ${useTransparent ? "[filter:brightness(0)_invert(1)]" : ""}`}
+              className="h-10 w-auto max-w-42.5 object-contain transition-all duration-500 sm:h-12 sm:max-w-none"
             />
           </Link>
 
@@ -160,7 +160,7 @@ export default function Header() {
             aria-label={open ? t.header.closeMenu : t.header.openMenu}
             aria-expanded={open}
             onClick={() => setOpen((current) => !current)}
-            className={`relative ml-auto flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition-all duration-300 lg:hidden ${useTransparent ? "border-white/30 bg-white/10 text-white backdrop-blur-md hover:border-white hover:bg-white hover:text-[var(--color-ink)]" : "border-black/10 bg-white text-[var(--color-ink)] shadow-[0_10px_24px_rgba(3,2,19,0.05)] hover:border-[var(--color-ink)] hover:bg-[var(--color-ink)] hover:text-white"}`}
+            className={`relative ml-auto flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition-all duration-300 lg:hidden ${useTransparent ? "border-white/30 bg-white/10 text-white backdrop-blur-md hover:border-white hover:bg-white hover:text-[var(--color-ink)]" : "border-[var(--color-blue-soft)] bg-white text-[var(--color-ink)] shadow-[0_10px_24px_rgba(3,2,19,0.05)] hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-wash)]"}`}
           >
             <span className="sr-only">
               {open ? t.header.closeMenu : t.header.openMenu}
@@ -190,7 +190,7 @@ export default function Header() {
                   target="_blank"
                   rel="noreferrer"
                   onClick={handleLinkClick}
-                  className="rounded-[24px] border border-black/10 bg-white px-5 py-4 text-sm font-semibold uppercase tracking-[0.14em] text-[var(--color-ink)] shadow-[0_12px_24px_rgba(3,2,19,0.04)] transition-all duration-300 hover:border-black/24 hover:bg-black hover:text-white"
+                  className="rounded-[24px] border border-[var(--border-soft)] bg-white px-5 py-4 text-sm font-semibold uppercase tracking-[0.14em] text-[var(--color-ink)] shadow-[0_12px_24px_rgba(3,2,19,0.04)] transition-all duration-300 hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-wash)]"
                 >
                   {item.label}
                 </a>
@@ -199,7 +199,7 @@ export default function Header() {
                   key={item.href}
                   href={item.href}
                   onClick={handleLinkClick}
-                  className={`rounded-[24px] border px-5 py-4 text-sm font-semibold uppercase tracking-[0.14em] shadow-[0_12px_24px_rgba(3,2,19,0.04)] transition-all duration-300 ${isActive(item.href) ? "border-[var(--color-ink)] bg-[var(--color-ink)] text-white" : "border-black/10 bg-white text-[var(--color-ink)] hover:border-black/24 hover:bg-black hover:text-white"}`}
+                  className={`rounded-[24px] border px-5 py-4 text-sm font-semibold uppercase tracking-[0.14em] shadow-[0_12px_24px_rgba(3,2,19,0.04)] transition-all duration-300 ${isActive(item.href) ? "border-[var(--color-blue)] bg-[var(--color-blue-wash)] text-[var(--color-ink)]" : "border-[var(--border-soft)] bg-white text-[var(--color-ink)] hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-wash)]"}`}
                 >
                   {item.label}
                 </Link>

@@ -35,9 +35,9 @@ export default function ApplyIntroCards() {
           return (
             <article
               key={card.title}
-              className="rounded-[30px] border border-black/8 bg-white p-6 shadow-[0_18px_40px_rgba(3,2,19,0.05)]"
+              className="premium-glass p-6"
             >
-              <span className="flex h-11 w-11 items-center justify-center rounded-full border border-black/10 bg-[var(--surface-tint)] text-[var(--color-ink)]">
+              <span className="flex h-11 w-11 items-center justify-center rounded-full border border-[var(--color-blue-soft)] bg-[var(--color-blue-wash)] text-[var(--color-blue)]">
                 <Icon size={18} strokeWidth={1.7} />
               </span>
 

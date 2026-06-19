@@ -62,14 +62,14 @@ export default function JuryMenu({
             key={item.href}
             href={item.href}
             onClick={onNavigate}
-            className="group flex items-center justify-between rounded-[24px] border border-black/10 bg-white px-5 py-4 text-sm font-semibold uppercase tracking-[0.14em] text-[var(--color-ink)] transition-all duration-300 hover:border-black hover:bg-black hover:text-white"
+            className="group flex items-center justify-between rounded-[24px] border border-[var(--border-soft)] bg-white px-5 py-4 text-sm font-semibold uppercase tracking-[0.14em] text-[var(--color-ink)] transition-all duration-300 hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-wash)]"
           >
-            <span className="transition-colors duration-300 group-hover:text-white">
+            <span className="transition-colors duration-300">
               {item.label}
             </span>
             <ArrowUpRight
               size={15}
-              className="transition-colors duration-300 group-hover:text-white"
+              className="text-[var(--color-blue)] transition-colors duration-300"
             />
           </Link>
         ))}
@@ -91,7 +91,7 @@ export default function JuryMenu({
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen((current) => !current)}
-        className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-5 py-2.5 text-[0.72rem] font-semibold uppercase tracking-[0.12em] transition-all duration-300 ${transparent ? "border-white/35 bg-white text-[var(--color-ink)] hover:border-white hover:bg-[var(--color-ink)] hover:text-white" : "border-[var(--color-ink)] bg-[var(--color-ink)] text-white shadow-[0_14px_30px_rgba(3,2,19,0.14)] hover:bg-white hover:text-[var(--color-ink)]"}`}
+        className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-5 py-2.5 text-[0.72rem] font-semibold uppercase tracking-[0.12em] transition-all duration-300 ${transparent ? "border-white/45 bg-white text-[var(--color-ink)] hover:border-white hover:bg-[var(--color-blue-wash)]" : "border-[var(--color-blue)] bg-[var(--color-blue)] text-[var(--color-ink)] shadow-[0_14px_30px_rgba(114,160,193,0.2)] hover:bg-white hover:text-[var(--color-ink)]"}`}
       >
         <span>{t.common.applyNow}</span>
         <ChevronDown
@@ -111,14 +111,14 @@ export default function JuryMenu({
               setOpen(false);
               onNavigate?.();
             }}
-            className="group flex items-center justify-between rounded-[18px] px-4 py-3 text-sm text-[var(--color-ink)] transition hover:bg-black hover:text-white"
+            className="group flex items-center justify-between rounded-[18px] px-4 py-3 text-sm text-[var(--color-ink)] transition hover:bg-[var(--color-blue-wash)]"
           >
-            <span className="transition-colors duration-300 group-hover:text-white">
+            <span className="transition-colors duration-300">
               {item.label}
             </span>
             <ArrowUpRight
               size={14}
-              className="transition-colors duration-300 group-hover:text-white"
+              className="text-[var(--color-blue)] transition-colors duration-300"
             />
           </Link>
         ))}

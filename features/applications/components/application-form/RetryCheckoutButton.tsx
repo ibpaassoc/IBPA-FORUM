@@ -75,7 +75,7 @@ export default function RetryCheckoutButton({
         type="button"
         onClick={handleRetry}
         disabled={isLoading}
-        className="ibpa-button ibpa-button-primary disabled:cursor-not-allowed disabled:opacity-60"
+        className="ibpa-button ibpa-button-blue disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isLoading ? copy.opening : copy.retry}
       </button>

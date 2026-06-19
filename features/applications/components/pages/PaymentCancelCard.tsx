@@ -54,7 +54,7 @@ export default function PaymentCancelCard({
       />
 
       <PageSection className="pb-20">
-        <div className="page-card mx-auto flex max-w-3xl flex-col items-center rounded-(--radius-lg) p-8 text-center">
+        <div className="premium-glass mx-auto flex max-w-3xl flex-col items-center p-8 text-center">
           <IconBadge icon={RefreshCcw} size={28} />
           <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--color-hover-accent)]">
             {copy.nextStep}

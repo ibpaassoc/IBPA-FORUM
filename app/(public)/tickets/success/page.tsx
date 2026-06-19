@@ -8,7 +8,7 @@ export const metadata = {
 export default function TicketsSuccessPage() {
   return (
     <main className="page-shell flex min-h-screen items-center justify-center p-6">
-      <div className="w-full max-w-md rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-white px-8 py-10 shadow-[var(--shadow-md)] text-center">
+      <div className="premium-glass w-full max-w-md px-8 py-10 text-center">
         <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-full bg-[var(--color-blue-wash)]">
           <CheckCircle className="h-7 w-7 text-[var(--color-blue)]" strokeWidth={1.5} />
         </div>
@@ -22,7 +22,7 @@ export default function TicketsSuccessPage() {
           We&rsquo;ve emailed your QR code ticket to the address you provided.
           Please show it at the forum check-in desk.
         </p>
-        <Link href="/" className="ibpa-button ibpa-button-primary">
+        <Link href="/" className="ibpa-button ibpa-button-blue">
           Back to Home
         </Link>
       </div>

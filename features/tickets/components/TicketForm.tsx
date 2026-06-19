@@ -70,7 +70,7 @@ const CERT_STATUS_CONTENT: Record<Exclude<CertStatus, "idle">, React.ReactNode> 
     </span>
   ),
   error: (
-    <span className="flex items-center gap-1.5 text-amber-600">
+    <span className="flex items-center gap-1.5 text-[var(--color-blue)]">
       <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
         <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
       </svg>
@@ -229,11 +229,11 @@ export default function TicketForm() {
 
       {/* Early bird notice */}
       {discount && (
-        <div className="flex items-center gap-2.5 rounded-[12px] border border-amber-200 bg-amber-50 px-4 py-3">
-          <Zap size={15} className="shrink-0 text-amber-500" strokeWidth={2} />
+        <div className="flex items-center gap-2.5 rounded-[12px] border border-[var(--color-blue-soft)] bg-[var(--color-blue-wash)] px-4 py-3">
+          <Zap size={15} className="shrink-0 text-[var(--color-blue)]" strokeWidth={2} />
           <div>
-            <p className="text-[0.82rem] font-semibold text-amber-800">Early Bird Pricing</p>
-            <p className="text-[0.75rem] text-amber-700">
+            <p className="text-[0.82rem] font-semibold text-[var(--color-ink)]">Early Bird Pricing</p>
+            <p className="text-[0.75rem] text-[var(--color-ink-soft)]">
               {discount.type === "percent"
                 ? `${discount.value}% off all forum passes. Gala dinner excluded. Limited time.`
                 : `$${(discount.value / 100).toFixed(0)} off all forum passes. Gala dinner excluded. Limited time.`}
@@ -452,7 +452,7 @@ export default function TicketForm() {
                         </span>
                       )}
                       {discount && (
-                        <span className="ml-2 inline-flex items-center gap-0.5 rounded-full bg-amber-100 px-2 py-0.5 text-[0.68rem] font-semibold uppercase tracking-wide text-amber-700">
+                        <span className="ml-2 inline-flex items-center gap-0.5 rounded-full bg-[var(--color-blue-wash)] px-2 py-0.5 text-[0.68rem] font-semibold uppercase tracking-wide text-[var(--color-blue)]">
                           <Zap size={8} strokeWidth={2.5} /> Early Bird
                         </span>
                       )}
@@ -463,7 +463,7 @@ export default function TicketForm() {
                           {rawTicketPriceStr}
                         </span>
                       )}
-                      <span className={`font-semibold ${discountedTicketPriceStr ? "text-amber-700" : "text-[var(--color-ink)]"}`}>
+                      <span className={`font-semibold ${discountedTicketPriceStr ? "text-[var(--color-blue)]" : "text-[var(--color-ink)]"}`}>
                         {ticketPriceStr}
                       </span>
                     </span>
@@ -480,7 +480,7 @@ export default function TicketForm() {
                   <span>${total % 1 === 0 ? total.toFixed(0) : total.toFixed(2)}</span>
                 </div>
                 {discount && (
-                  <p className="text-[0.72rem] text-amber-600">
+                  <p className="text-[0.72rem] text-[var(--color-blue)]">
                     Early Bird discount applied to forum pass only.
                   </p>
                 )}
@@ -499,7 +499,7 @@ export default function TicketForm() {
       <button
         type="submit"
         disabled={submitting || certStatus === "checking"}
-        className="ibpa-button ibpa-button-primary w-full disabled:cursor-not-allowed disabled:opacity-60"
+        className="ibpa-button ibpa-button-blue w-full disabled:cursor-not-allowed disabled:opacity-60"
       >
         {submitting
           ? "Creating your checkout..."

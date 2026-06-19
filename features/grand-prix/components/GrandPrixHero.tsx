@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import {
   EditorialHero,
@@ -42,7 +41,7 @@ export default function GrandPrixPagePremium() {
         </div>
       }
       floatingCard={
-      <article className="page-card rounded-[var(--radius)] p-[var(--space-md)] lg:p-[var(--space-sm)]">
+      <article className="premium-glass rounded-[var(--radius)] p-[var(--space-md)] lg:p-[var(--space-sm)]">
         <p className="text-[0.62rem] uppercase tracking-[0.2em] text-[var(--color-hover-accent)]">
           {t.grandPrixPage.copy.rule}
         </p>

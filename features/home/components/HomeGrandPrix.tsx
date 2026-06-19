@@ -66,7 +66,7 @@ export default function HomeGrandPrix() {
 
           <Reveal delay={0.28}>
             <div className="mt-[var(--space-xl)] flex flex-wrap items-center gap-4">
-              <Link href="/apply" className="ibpa-button ibpa-button-primary">
+              <Link href="/apply" className="ibpa-button ibpa-button-blue">
                 {gp.cta}
               </Link>
               <Link href="/grand-prix" className="ibpa-button ibpa-button-ghost">

@@ -19,7 +19,7 @@ export default function HomeHero() {
   const loopTicker = [...ticker, ...ticker, ...ticker];
 
   return (
-    <section className="relative flex min-h-[100svh] items-center justify-center overflow-hidden bg-[#030213]">
+    <section className="relative flex min-h-[92svh] items-center justify-center overflow-hidden bg-[var(--color-off-white)] pt-[var(--site-header-height)]">
       {/* Background image */}
       <div className="absolute inset-0 z-0">
         <Image
@@ -27,46 +27,60 @@ export default function HomeHero() {
           alt="IBPA Beauty Award 2026"
           fill
           style={{ objectPosition: "50% 20%" }}
-          className="object-cover opacity-55"
+          className="object-cover opacity-30"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#030213]/60 via-[#030213]/30 to-[#030213]/75" />
+        <div className="absolute inset-0 bg-[linear-gradient(105deg,rgba(255,255,255,0.96)_0%,rgba(248,248,246,0.9)_38%,rgba(185,217,235,0.35)_100%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[var(--color-off-white)] to-transparent" />
       </div>
 
-      {/* Center content */}
-      <div className="relative z-10 flex w-full max-w-[var(--content-width)] flex-col items-center px-[var(--page-gutter)] text-center">
-        <div className="flex w-full flex-col gap-8 py-24 sm:py-36 md:py-52">
-          <p className="font-[var(--font-accent-family)] text-[clamp(0.9rem,1.2vw,1rem)] italic tracking-wide text-white/65">
+      {/* Editorial content */}
+      <div className="relative z-10 grid w-full max-w-[var(--content-width)] items-end gap-[var(--space-xl)] px-[var(--page-gutter)] py-[clamp(4rem,10vw,8rem)] lg:grid-cols-[minmax(0,0.92fr)_minmax(320px,0.48fr)]">
+        <div className="flex w-full flex-col gap-7 text-left">
+          <p className="font-[var(--font-accent-family)] text-[clamp(1rem,1.4vw,1.25rem)] italic tracking-wide text-[var(--color-hover-accent)]">
             Beauty Business Forum
           </p>
 
           <h1
-            className="font-[var(--font-title-family)] text-[clamp(3.2rem,12vw,9rem)] font-light leading-[0.88] tracking-[-0.03em] text-white"
-            style={{ textShadow: "0 6px 32px rgba(0,0,0,0.35)" }}
+            className="max-w-[10ch] font-[var(--font-title-family)] text-[clamp(3.4rem,11vw,8.4rem)] font-light leading-[0.9] tracking-[-0.025em] text-[var(--color-ink)]"
           >
             {t.home.hero.title}
           </h1>
 
-          <p className="mx-auto max-w-xl font-[var(--font-accent-family)] text-[clamp(1.1rem,3.5vw,1.55rem)] italic leading-[1.6] text-[var(--color-blue-soft)]">
+          <p className="max-w-xl font-[var(--font-accent-family)] text-[clamp(1.12rem,3vw,1.58rem)] italic leading-[1.58] text-[var(--color-ink-soft)]">
             {t.home.hero.description}
           </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-            <Link href="/apply" className="ibpa-button ibpa-button-white inline-flex items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-4 pt-2">
+            <Link href="/apply" className="ibpa-button ibpa-button-blue inline-flex items-center gap-2.5">
               {t.common.applyAsParticipant} <ArrowRight size={16} />
             </Link>
             <Link
               href="/jury"
-              className="ibpa-button ibpa-button-white"
+              className="ibpa-button ibpa-button-soft"
             >
               {t.common.applyAsJury}
             </Link>
           </div>
         </div>
+
+        <div className="premium-glass ml-auto hidden w-full max-w-sm p-[var(--space-lg)] lg:block">
+          <p className="premium-label">IBPA 2026</p>
+          <div className="mt-[var(--space-md)] grid gap-3">
+            {ticker.slice(1, 5).map((item) => (
+              <div key={item} className="flex items-center justify-between gap-4 border-b border-[var(--border-soft)] pb-3 last:border-0 last:pb-0">
+                <span className="font-[var(--font-accent-family)] text-[1.05rem] italic text-[var(--color-ink)]">
+                  {item}
+                </span>
+                <span className="h-px w-10 shrink-0 bg-[var(--color-blue-soft)]" />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Bottom ticker */}
-      <div className="absolute bottom-0 left-0 z-20 w-full overflow-hidden border-t border-white/10 bg-[#030213]/60 py-4 backdrop-blur-sm">
+      <div className="absolute bottom-0 left-0 z-20 w-full overflow-hidden border-y border-[var(--border-soft)] bg-white/72 py-4 backdrop-blur-xl">
         <div
           className="flex gap-10 whitespace-nowrap"
           style={{
@@ -77,10 +91,10 @@ export default function HomeHero() {
           {loopTicker.map((item, index) => (
             <span
               key={`${item}-${index}`}
-              className="inline-flex items-center gap-10 font-[var(--font-accent-family)] text-[0.85rem] italic tracking-[0.08em] text-white/45"
+              className="inline-flex items-center gap-10 font-[var(--font-accent-family)] text-[0.85rem] italic tracking-[0.08em] text-[var(--color-ink-muted)]"
             >
               <span>{item}</span>
-              <span className="text-white/25">◆</span>
+              <span className="text-[var(--color-blue)]/60">◆</span>
             </span>
           ))}
         </div>

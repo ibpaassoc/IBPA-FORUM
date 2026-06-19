@@ -30,7 +30,7 @@ export default function HomeConversionBlock() {
         style={{ top: "var(--site-header-height)" }}
         data-testid="conversion-sticky-bar"
       >
-        <div className="border-b border-[var(--border-soft)] bg-[var(--surface)]/96 py-3 shadow-[0_2px_12px_rgba(3,2,19,0.06)] backdrop-blur-md">
+        <div className="border-b border-[var(--color-blue-soft)]/50 bg-white/86 py-3 shadow-[0_12px_32px_rgba(114,160,193,0.12)] backdrop-blur-xl">
           <div className="page-section flex items-center justify-center gap-3 sm:justify-between">
 
             {/* Left: icon + context label */}
@@ -66,12 +66,12 @@ export default function HomeConversionBlock() {
               role="group"
               aria-label="Select pricing tier"
               data-testid="pricing-tier-toggle"
-              className="relative flex shrink-0 rounded-[var(--radius-pill)] border-2 border-[var(--border-default)] bg-[var(--surface-muted)] p-1"
+              className="relative flex shrink-0 rounded-[var(--radius-pill)] border border-[var(--color-blue-soft)] bg-white p-1 shadow-[var(--shadow-sm)]"
             >
               {/* Animated sliding pill */}
               <motion.div
                 aria-hidden
-                className="pointer-events-none absolute inset-y-1 rounded-[var(--radius-pill)] bg-[var(--color-ink)]"
+                className="pointer-events-none absolute inset-y-1 rounded-[var(--radius-pill)] bg-[var(--color-blue)]"
                 layout
                 style={
                   tier === "ibpa"
@@ -85,7 +85,7 @@ export default function HomeConversionBlock() {
                 onClick={() => setTier("ibpa")}
                 className={`relative z-10 rounded-[var(--radius-pill)] px-4 py-2 text-[0.75rem] font-semibold uppercase tracking-[0.12em] transition-colors duration-150 sm:px-5 ${
                   tier === "ibpa"
-                    ? "text-white"
+                    ? "text-[var(--color-ink)]"
                     : "text-[var(--color-ink-soft)] hover:text-[var(--color-ink)]"
                 }`}
               >
@@ -96,7 +96,7 @@ export default function HomeConversionBlock() {
                 onClick={() => setTier("standard")}
                 className={`relative z-10 rounded-[var(--radius-pill)] px-4 py-2 text-[0.75rem] font-semibold uppercase tracking-[0.12em] transition-colors duration-150 sm:px-5 ${
                   tier === "standard"
-                    ? "text-white"
+                    ? "text-[var(--color-ink)]"
                     : "text-[var(--color-ink-soft)] hover:text-[var(--color-ink)]"
                 }`}
               >

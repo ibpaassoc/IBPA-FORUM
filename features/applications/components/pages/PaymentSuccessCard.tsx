@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { Mail, Users, Trophy } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
@@ -83,16 +83,19 @@ const copy = {
   },
 };
 
-const fade = {
+const editorialEase = [0.22, 1, 0.36, 1] as const;
+
+const fade: Variants = {
   hidden: { opacity: 0, y: 20 },
   show: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.1, duration: 0.54, ease: [0.22, 1, 0.36, 1] },
+    transition: { delay: i * 0.1, duration: 0.54, ease: editorialEase },
   }),
 };
 
 export default function PaymentSuccessCard({ sessionId: _sessionId }: { sessionId?: string }) {
+  void _sessionId;
   const { language } = useLanguage();
   const t = copy[language] ?? copy.en;
 
@@ -178,7 +181,7 @@ export default function PaymentSuccessCard({ sessionId: _sessionId }: { sessionI
             {t.nextLabel}
           </motion.p>
 
-          <div className="grid gap-px overflow-hidden rounded-[28px] border border-black/8 bg-black/6 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-3">
             {t.steps.map((step, i) => {
               const Icon = step.icon;
               return (
@@ -188,10 +191,10 @@ export default function PaymentSuccessCard({ sessionId: _sessionId }: { sessionI
                   variants={fade}
                   initial="hidden"
                   animate="show"
-                  className="flex flex-col gap-5 bg-[var(--color-off-white)] p-8"
+                  className="premium-glass flex flex-col gap-5 p-8"
                 >
-                  <div className="flex h-11 w-11 items-center justify-center rounded-[16px] border border-black/8 bg-white shadow-[0_8px_20px_rgba(3,2,19,0.05)]">
-                    <Icon size={18} strokeWidth={1.6} className="text-[var(--color-ink)]" />
+                  <div className="flex h-11 w-11 items-center justify-center rounded-[16px] border border-[var(--color-blue-soft)] bg-[var(--color-blue-wash)] shadow-[0_8px_20px_rgba(114,160,193,0.12)]">
+                    <Icon size={18} strokeWidth={1.6} className="text-[var(--color-blue)]" />
                   </div>
 
                   <div>
@@ -220,7 +223,7 @@ export default function PaymentSuccessCard({ sessionId: _sessionId }: { sessionI
           >
             <Link
               href="/"
-              className="inline-flex items-center gap-2 rounded-full border border-[var(--color-ink)] bg-[var(--color-ink)] px-8 py-3.5 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-white shadow-[0_18px_36px_rgba(3,2,19,0.14)] transition-all duration-300 hover:bg-white hover:text-[var(--color-ink)]"
+              className="ibpa-button ibpa-button-blue"
             >
               {t.cta}
             </Link>

@@ -18,9 +18,9 @@ export default function Process() {
         {t.home.process.steps.map((step) => (
           <div
             key={step.number}
-            className="page-card p-(--space-md) text-center"
+            className="premium-glass p-(--space-md) text-center"
           >
-            <div className="mx-auto flex size-14 items-center justify-center rounded-full border border-(--border-default) bg-(--color-white) text-sm font-medium tracking-widest text-(--color-hover-accent) transition">
+            <div className="mx-auto flex size-14 items-center justify-center rounded-full border border-(--color-blue-soft) bg-[var(--color-blue-wash)] text-sm font-medium tracking-widest text-(--color-blue) transition">
               {step.number}
             </div>
             <h3 className="mt-(--space-sm) font-(--font-display) text-[clamp(1.1rem,2vw,1.6rem)] text-(--color-ink)">

@@ -47,8 +47,8 @@ export function GlassCard({ children, className, accent = "none" }: GlassCardPro
     <article
       className={clsx(
         "premium-glass",
-        accent === "top" && "before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-[var(--color-blue-soft)]",
-        accent === "side" && "before:absolute before:inset-y-6 before:left-0 before:w-px before:bg-[var(--color-blue)]",
+        accent === "top" && "before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-[var(--color-blue-soft)] before:content-['']",
+        accent === "side" && "before:absolute before:inset-y-6 before:left-0 before:w-px before:bg-[var(--color-blue)] before:content-['']",
         className,
       )}
     >

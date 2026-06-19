@@ -21,13 +21,13 @@ export default function JuryBenefits() {
             </p>
           </div>
 
-          <div className="rounded-[var(--radius)] border border-[var(--border-default)] bg-[var(--surface)] overflow-hidden">
+          <div className="premium-glass overflow-hidden rounded-[var(--radius)]">
             {b.items.map((item, i) => (
               <div
                 key={i}
                 className={`flex items-start gap-4 px-[var(--space-lg)] py-[var(--space-md)] ${
                   i < b.items.length - 1 ? "border-b border-[var(--border-soft)]" : ""
-                }`}
+                } transition-colors hover:bg-[var(--color-blue-wash)]/55`}
               >
                 <span className="mt-0.5 shrink-0 font-[var(--font-ui-family)] text-[0.68rem] font-black tracking-[0.08em] text-[var(--color-hover-accent)]">
                   {String(i + 1).padStart(2, "0")}

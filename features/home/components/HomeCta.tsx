@@ -41,7 +41,7 @@ export default function HomeCta() {
 
         <Reveal delay={0.18}>
           <div className="mx-auto mt-[var(--space-xl)] flex max-w-2xl flex-col items-center justify-center gap-4 sm:flex-row sm:flex-wrap">
-            <BuyTicketsButton className="ibpa-button ibpa-button-primary flex items-center gap-2">
+            <BuyTicketsButton className="ibpa-button ibpa-button-blue flex items-center gap-2">
               <Ticket size={16} strokeWidth={1.5} />
               {fc.buyTicket}
             </BuyTicketsButton>
@@ -65,11 +65,11 @@ export default function HomeCta() {
         {/* Bottom decorative rule */}
         <Reveal delay={0.26}>
           <div className="mx-auto mt-[var(--space-2xl)] flex items-center justify-center gap-4 opacity-30">
-            <div className="h-px w-16 bg-[var(--color-ink)]" />
+            <div className="h-px w-16 bg-[var(--color-blue)]" />
             <span className="font-[var(--font-title-family)] text-[0.7rem] uppercase tracking-[0.3em] text-[var(--color-ink)]">
               IBPA 2026
             </span>
-            <div className="h-px w-16 bg-[var(--color-ink)]" />
+            <div className="h-px w-16 bg-[var(--color-blue)]" />
           </div>
         </Reveal>
       </div>
