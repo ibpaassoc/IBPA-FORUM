@@ -28,8 +28,8 @@ export default function JurySidebar({
     <>
       <aside className="hidden w-[232px] shrink-0 lg:block">
         <div className="sticky top-5 flex flex-col gap-3">
-          <div className="rounded-lg border border-black bg-[#0A0A0A] p-4 text-white">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/50">
+          <div className="rounded-lg border border-[#6b8a9f] bg-[#7a98af] p-4 text-white">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/90">
               Jury panel
             </p>
             <p className="mt-2 text-lg font-semibold leading-tight">
@@ -40,7 +40,7 @@ export default function JurySidebar({
                 {expertiseAreas.slice(0, 3).map((area) => (
                   <span
                     key={area}
-                    className="rounded-md border border-white/10 bg-white/10 px-2 py-1 text-[11px] font-medium text-white/70"
+                    className="rounded-md border border-white/30 bg-white/20 px-2 py-1 text-[11px] font-medium text-white/70"
                   >
                     {area}
                   </span>

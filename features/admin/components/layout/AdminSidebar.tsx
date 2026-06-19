@@ -23,8 +23,8 @@ export default function AdminSidebar() {
     <>
       <aside className="hidden w-[232px] shrink-0 lg:block">
         <div className="sticky top-5 flex flex-col gap-3">
-          <div className="rounded-lg border border-black bg-[#0A0A0A] p-4 text-white">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/50">
+          <div className="rounded-lg border border-[#6b8a9f] bg-[#7a98af] p-4 text-white">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/90">
               IBPA
             </p>
             <p className="mt-2 text-lg font-semibold leading-tight">Admin dashboard</p>

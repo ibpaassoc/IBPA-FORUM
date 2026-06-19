@@ -97,7 +97,7 @@ export default function AdminScoringDetailPage({
 
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-[1.1fr_repeat(3,minmax(0,0.75fr))]">
         <DashboardAccentBlock>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/50">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/90">
             Average score
           </p>
           <p className="mt-2 text-3xl font-semibold tracking-[-0.03em]">

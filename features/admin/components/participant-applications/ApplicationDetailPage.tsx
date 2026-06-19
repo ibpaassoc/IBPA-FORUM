@@ -204,7 +204,7 @@ function FileLink({
 }
 
 const statusActionTone = {
-  primary: "border-black bg-[#0A0A0A] text-white hover:bg-black",
+  primary: "border-[#6b8a9f] bg-[#7a98af] text-white hover:bg-[#6b8a9f]",
   blue: "border-[#7DC8EE] bg-[#EAF6FF] text-[#0A0A0A] hover:bg-[#DFF2FF]",
   neutral: "border-black/10 bg-white text-[#0A0A0A] hover:border-[#7DC8EE] hover:bg-[#EAF6FF]",
   danger: "border-red-200 bg-white text-red-700 hover:bg-red-50",
@@ -535,18 +535,18 @@ export default function ApplicationDetailPage({
 
         <aside className="flex flex-col gap-4 xl:sticky xl:top-5 xl:self-start">
           <DashboardAccentBlock>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/50">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/90">
               Overview
             </p>
             <div className="mt-4 grid grid-cols-2 gap-3">
-              <div className="rounded-md border border-white/10 bg-white/10 p-3">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/50">
+              <div className="rounded-md border border-white/30 bg-white/20 p-3">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/90">
                   Nominations
                 </p>
                 <p className="mt-2 text-2xl font-semibold">{nominationSummaries.length}</p>
               </div>
-              <div className="rounded-md border border-white/10 bg-white/10 p-3">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/50">
+              <div className="rounded-md border border-white/30 bg-white/20 p-3">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/90">
                   Fee
                 </p>
                 <p className="mt-2 text-2xl font-semibold">
@@ -554,7 +554,7 @@ export default function ApplicationDetailPage({
                 </p>
               </div>
             </div>
-            <div className="mt-4 flex items-center gap-2 text-sm text-white/70">
+            <div className="mt-4 flex items-center gap-2 text-sm text-white">
               <Clock3 aria-hidden size={15} />
               Created {formatAdminDate(application.createdAt)}
             </div>

@@ -43,13 +43,13 @@ export default function JuryScoresPage({
       <DashboardAccentBlock>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/50">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/90">
               Submitted by
             </p>
             <p className="mt-2 text-2xl font-semibold tracking-[-0.02em]">{juryName}</p>
           </div>
-          <div className="rounded-md border border-white/10 bg-white/10 px-4 py-3">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/50">
+          <div className="rounded-md border border-white/30 bg-white/20 px-4 py-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/90">
               Completed
             </p>
             <p className="mt-1 text-2xl font-semibold">{applications.length}</p>

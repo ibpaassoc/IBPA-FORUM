@@ -138,7 +138,7 @@ function buttonClass(kind: "primary" | "secondary" | "danger", className: string
     "inline-flex min-h-10 items-center justify-center gap-2 rounded-md px-3.5 py-2 text-sm font-semibold leading-none transition disabled:cursor-not-allowed disabled:opacity-60";
 
   if (kind === "primary") {
-    return `${shared} bg-[#0A0A0A] text-white hover:bg-black ${className}`;
+    return `${shared} bg-[#7a98af] text-white hover:bg-[#6b8a9f] ${className}`;
   }
 
   if (kind === "danger") {
@@ -384,7 +384,7 @@ export function DashboardKpiBar({
   tone?: "light" | "dark";
 }) {
   const clamped = Math.max(0, Math.min(value, 100));
-  const labelClass = tone === "dark" ? "text-white/55" : "text-black/45";
+  const labelClass = tone === "dark" ? "text-white/90" : "text-black/45";
   const trackClass = tone === "dark" ? "bg-white/10" : "bg-black/10";
 
   return (
@@ -411,7 +411,7 @@ export function DashboardAccentBlock({
   className?: string;
 }) {
   return (
-    <div className={`rounded-lg border border-black bg-[#0A0A0A] p-4 text-white ${className}`}>
+    <div className={`rounded-lg border border-[#6b8a9f] bg-[#7a98af] p-4 text-white ${className}`}>
       {children}
     </div>
   );

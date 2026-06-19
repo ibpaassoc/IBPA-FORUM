@@ -76,15 +76,15 @@ export default function JuryDashboardPage({
         <DashboardAccentBlock>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/50">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/90">
                 Active judge
               </p>
               <p className="mt-2 text-2xl font-semibold tracking-[-0.02em]">{juryName}</p>
-              {professionalTitle ? <p className="mt-1 text-sm text-white/65">{professionalTitle}</p> : null}
+              {professionalTitle ? <p className="mt-1 text-sm text-white/90">{professionalTitle}</p> : null}
             </div>
             <div className="flex flex-wrap gap-1.5">
               {expertiseAreas.slice(0, 4).map((area) => (
-                <span key={area} className="rounded-md border border-white/10 bg-white/10 px-2 py-1 text-[11px] font-medium text-white/70">
+                <span key={area} className="rounded-md border border-white/30 bg-white/20 px-2 py-1 text-[11px] font-medium text-white">
                   {area}
                 </span>
               ))}
