@@ -8,10 +8,13 @@ import type {
   NominationAnswer,
   NominationFile,
 } from "@prisma/client";
+import type { ReactNode } from "react";
 import {
   ArrowLeft,
   BriefcaseBusiness,
+  CheckCircle2,
   Clock3,
+  CreditCard,
   ExternalLink,
   Files,
   Globe,
@@ -19,16 +22,22 @@ import {
   Mail,
   MapPin,
   Phone,
-  ShieldCheck,
-  Sparkles,
+  ReceiptText,
+  SearchCheck,
+  Send,
+  XCircle,
   UserRound,
 } from "lucide-react";
+import { updateParticipantApplicationStatus } from "@/features/admin/actions/participant.actions";
 import { formatAdminDate } from "@/features/admin/server/view-models";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import {
+  DashboardAccentBlock,
   DashboardBadge,
   DashboardCard,
   DashboardDetailCard,
+  DashboardPageHeader,
+  DashboardPanel,
   DashboardSecondaryBtn,
 } from "@/shared/components/admin/DashboardUI";
 
@@ -118,7 +127,7 @@ function applicationStatusBadge(status: Application["status"]) {
     case "SUBMITTED":
       return <DashboardBadge tone="blue">Submitted</DashboardBadge>;
     case "UNDER_REVIEW":
-      return <DashboardBadge tone="purple">Under review</DashboardBadge>;
+      return <DashboardBadge tone="blue">Under review</DashboardBadge>;
     case "PAYMENT_PENDING":
       return <DashboardBadge tone="amber">Payment pending</DashboardBadge>;
     case "REJECTED":
@@ -145,6 +154,21 @@ function paymentStatusBadge(status: Application["paymentStatus"]) {
   }
 }
 
+function SectionLabel({
+  icon: Icon,
+  children,
+}: {
+  icon: typeof UserRound;
+  children: ReactNode;
+}) {
+  return (
+    <div className="flex items-center gap-2 text-[#1673A5]">
+      <Icon aria-hidden size={16} />
+      <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">{children}</p>
+    </div>
+  );
+}
+
 function FileLink({
   href,
   name,
@@ -159,19 +183,66 @@ function FileLink({
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="group flex items-center justify-between gap-3 rounded-[18px] border border-slate-200 bg-white px-4 py-3 text-sm text-[#10203B] transition hover:border-[#4C7D9D]/35 hover:shadow-[0_12px_30px_rgba(16,32,59,0.08)]"
+      className="group flex items-center justify-between gap-3 rounded-lg border border-black/10 bg-white px-3 py-3 text-sm text-[#0A0A0A] transition hover:border-[#7DC8EE] hover:bg-[#EAF6FF]/45"
     >
       <div className="flex min-w-0 items-center gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#E9F1F8] text-[#4C7D9D]">
-          <Files size={16} />
+        <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-[#EAF6FF] text-[#1673A5]">
+          <Files aria-hidden size={15} />
         </div>
         <div className="min-w-0">
-          <p className="truncate font-medium text-[#10203B]">{name}</p>
-          <p className="text-xs text-slate-400">{(sizeBytes / 1024 / 1024).toFixed(2)} MB</p>
+          <p className="truncate font-semibold text-[#0A0A0A]">{name}</p>
+          <p className="text-xs text-black/45">{(sizeBytes / 1024 / 1024).toFixed(2)} MB</p>
         </div>
       </div>
-      <ExternalLink size={15} className="shrink-0 text-slate-400 transition group-hover:text-[#4C7D9D]" />
+      <ExternalLink
+        aria-hidden
+        size={15}
+        className="shrink-0 text-black/35 transition group-hover:text-[#1673A5]"
+      />
     </a>
+  );
+}
+
+const statusActionTone = {
+  primary: "border-[#6b8a9f] bg-[#7a98af] text-white hover:bg-[#6b8a9f]",
+  blue: "border-[#7DC8EE] bg-[#EAF6FF] text-[#0A0A0A] hover:bg-[#DFF2FF]",
+  neutral: "border-black/10 bg-white text-[#0A0A0A] hover:border-[#7DC8EE] hover:bg-[#EAF6FF]",
+  danger: "border-red-200 bg-white text-red-700 hover:bg-red-50",
+};
+
+function StatusActionButton({
+  applicationId,
+  status,
+  active,
+  tone = "neutral",
+  children,
+}: {
+  applicationId: string;
+  status: Application["status"];
+  active: boolean;
+  tone?: keyof typeof statusActionTone;
+  children: ReactNode;
+}) {
+  return (
+    <form action={updateParticipantApplicationStatus}>
+      <input type="hidden" name="id" value={applicationId} />
+      <input type="hidden" name="status" value={status} />
+      <button
+        type="submit"
+        disabled={active}
+        className={`inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm font-semibold transition disabled:cursor-default disabled:opacity-45 ${statusActionTone[tone]}`}
+      >
+        {children}
+      </button>
+    </form>
+  );
+}
+
+function EmptyInline({ children }: { children: ReactNode }) {
+  return (
+    <div className="rounded-lg border border-dashed border-black/15 bg-[#FAFAFA] px-4 py-4 text-sm text-black/50">
+      {children}
+    </div>
   );
 }
 
@@ -194,72 +265,63 @@ function NominationBlockB({
 
   const textFields = fields.filter((field) => field.type !== "file");
   const fileFields = fields.filter((field) => field.type === "file");
+  const hasTextAnswers = textFields.some((field) => answerMap.get(field.key));
 
   return (
-    <section id={`nomination-${nomination.awardId}`} className="scroll-mt-28">
-      <DashboardCard className="overflow-hidden border-slate-200/90 bg-[linear-gradient(135deg,#ffffff_0%,#fbfcfe_58%,#f1f6fb_100%)] p-0">
-        <div className="border-b border-slate-200/80 px-5 py-5 md:px-6">
-          <div className="flex flex-wrap items-start justify-between gap-4">
+    <section id={`nomination-${nomination.awardId}`} className="scroll-mt-24">
+      <DashboardCard className="p-0">
+        <div className="border-b border-black/10 p-4 md:p-5">
+          <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
             <div>
-              <div className="inline-flex rounded-full border border-[#4C7D9D]/20 bg-[#E9F1F8] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#4C7D9D]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#1673A5]">
                 Nomination {String(index + 1).padStart(2, "0")}
-              </div>
-              <h3 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-[#10203B]">
+              </p>
+              <h3 className="mt-2 text-2xl font-semibold normal-case tracking-[-0.02em] text-[#0A0A0A]">
                 {nomination.award.name}
               </h3>
-              <p className="mt-1 text-sm text-slate-500">{nomination.category.name}</p>
+              <p className="mt-1 text-sm text-black/55">{nomination.category.name}</p>
             </div>
-
-            <div className="rounded-[22px] border border-slate-200 bg-white/90 px-4 py-3">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#4C7D9D]">
-                Review set
-              </p>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                Responses and upload evidence for this nomination are isolated below.
-              </p>
-            </div>
+            <DashboardBadge tone="blue">Evidence set</DashboardBadge>
           </div>
         </div>
 
-        <div className="grid gap-5 px-5 py-5 md:px-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.9fr)]">
-          <div className="space-y-4">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">
-                Submission answers
-              </p>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                {textFields.map((field) => {
-                  const answer = answerMap.get(field.key);
-                  if (!answer) return null;
-                  return (
-                    <DashboardDetailCard
-                      key={field.key}
-                      label={field.label}
-                      value={formatAnswerValue(answer)}
-                    />
-                  );
-                })}
-              </div>
-              {textFields.every((field) => !answerMap.get(field.key)) ? (
-                <div className="mt-4 rounded-[22px] border border-dashed border-slate-200 bg-slate-50/70 px-4 py-5 text-sm text-slate-500">
-                  No text-based answers were saved for this nomination.
-                </div>
-              ) : null}
+        <div className="grid gap-4 p-4 md:p-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)]">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-black/45">
+              Answers
+            </p>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              {textFields.map((field) => {
+                const answer = answerMap.get(field.key);
+                if (!answer) return null;
+                return (
+                  <DashboardDetailCard
+                    key={field.key}
+                    label={field.label}
+                    value={formatAnswerValue(answer)}
+                  />
+                );
+              })}
             </div>
+            {!hasTextAnswers ? (
+              <div className="mt-3">
+                <EmptyInline>No text answers were saved for this nomination.</EmptyInline>
+              </div>
+            ) : null}
           </div>
 
-          <div className="rounded-[26px] border border-slate-200 bg-white/85 p-5 shadow-[0_14px_35px_rgba(15,23,42,0.05)]">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">
-              Supporting files
+          <DashboardPanel>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-black/45">
+              Files
             </p>
-            <div className="mt-4 space-y-4">
+            <div className="mt-3 flex flex-col gap-4">
               {fileFields.map((field) => {
                 const files = fileMap.get(field.key) ?? [];
 
                 return (
                   <div key={field.key}>
-                    <p className="text-sm font-semibold text-[#10203B]">{field.label}</p>
-                    <div className="mt-3 space-y-2">
+                    <p className="text-sm font-semibold text-[#0A0A0A]">{field.label}</p>
+                    <div className="mt-2 flex flex-col gap-2">
                       {files.map((file) => (
                         <FileLink
                           key={file.id}
@@ -268,22 +330,14 @@ function NominationBlockB({
                           sizeBytes={file.fileSize}
                         />
                       ))}
-                      {files.length === 0 ? (
-                        <div className="rounded-[18px] border border-dashed border-slate-200 bg-slate-50/70 px-4 py-4 text-sm text-slate-500">
-                          No files uploaded for this field.
-                        </div>
-                      ) : null}
+                      {files.length === 0 ? <EmptyInline>No files uploaded.</EmptyInline> : null}
                     </div>
                   </div>
                 );
               })}
-              {fileFields.length === 0 ? (
-                <div className="rounded-[18px] border border-dashed border-slate-200 bg-slate-50/70 px-4 py-4 text-sm text-slate-500">
-                  No file requirements are configured for this nomination.
-                </div>
-              ) : null}
+              {fileFields.length === 0 ? <EmptyInline>No file fields configured.</EmptyInline> : null}
             </div>
-          </div>
+          </DashboardPanel>
         </div>
       </DashboardCard>
     </section>
@@ -355,205 +409,102 @@ export default function ApplicationDetailPage({
       )
     : [];
 
+  const licenseFiles = fileMap.get("licenseCertification") ?? [];
+
   return (
-    <div className="space-y-6">
-      <DashboardCard className="overflow-hidden border-[#10203B]/10 bg-[radial-gradient(circle_at_top_left,_rgba(76,125,157,0.18),_transparent_35%),linear-gradient(135deg,#ffffff_0%,#f5f8fc_55%,#eef3f8_100%)] p-0">
-        <div className="grid gap-6 px-6 py-6 md:px-8 md:py-8 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.9fr)]">
-          <div>
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="inline-flex rounded-full border border-[#4C7D9D]/20 bg-[#E9F1F8] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#4C7D9D]">
-                Participant application
-              </div>
-              {applicationStatusBadge(application.status)}
-              {paymentStatusBadge(application.paymentStatus)}
-            </div>
+    <div className="flex flex-col gap-5">
+      <DashboardPageHeader
+        label="Application review"
+        title={application.fullName}
+        description={nominationSummaryLabel}
+        actions={
+          <DashboardSecondaryBtn href="/admin/applications">
+            <ArrowLeft aria-hidden size={15} />
+            Back
+          </DashboardSecondaryBtn>
+        }
+      />
 
-            <h1 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-[#10203B] md:text-4xl">
-              {application.fullName}
-            </h1>
-            <p className="mt-2 max-w-2xl text-[15px] leading-7 text-slate-600">
-              {nominationSummaryLabel}
-            </p>
-
-            <div className="mt-5 flex flex-wrap gap-2">
-              <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-500">
-                <Mail size={13} />
-                {application.email}
-              </span>
-              <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-500">
-                <Phone size={13} />
-                {application.phone}
-              </span>
-              <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-500">
-                <MapPin size={13} />
-                {application.city}, {application.country}
-              </span>
-            </div>
-
-            <div className="mt-6 flex flex-wrap gap-2">
-              {nominationSummaries.map((item, index) => (
-                <a
-                  key={item.awardId}
-                  href={`#nomination-${item.awardId}`}
-                  className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-[#4C7D9D]/30 hover:text-[#10203B]"
-                >
-                  {String(index + 1).padStart(2, "0")} {item.awardName}
-                </a>
-              ))}
-            </div>
+      <DashboardCard>
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-wrap gap-2">
+            {applicationStatusBadge(application.status)}
+            {paymentStatusBadge(application.paymentStatus)}
           </div>
-
-          <div className="grid gap-3">
-            <div className="rounded-[28px] border border-[#10203B]/10 bg-[#10203B] p-5 text-white shadow-[0_18px_50px_rgba(16,32,59,0.16)]">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/55">
-                Submission overview
-              </p>
-              <div className="mt-5 grid grid-cols-2 gap-3">
-                <div className="rounded-[22px] border border-white/10 bg-white/5 p-4">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/55">
-                    Nominations
-                  </p>
-                  <p className="mt-2 text-3xl font-semibold tracking-[-0.04em]">
-                    {nominationSummaries.length}
-                  </p>
-                </div>
-                <div className="rounded-[22px] border border-white/10 bg-white/5 p-4">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/55">
-                    Fee
-                  </p>
-                  <p className="mt-2 text-3xl font-semibold tracking-[-0.04em]">
-                    {formatAmount(application.amount, application.currency)}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-[28px] border border-slate-200/80 bg-white/85 p-5 shadow-[0_14px_40px_rgba(15,23,42,0.06)]">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">
-                Timeline
-              </p>
-              <div className="mt-4 space-y-3">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#E9F1F8] text-[#4C7D9D]">
-                    <Clock3 size={16} />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-[#10203B]">Created</p>
-                    <p className="text-sm text-slate-500">{formatAdminDate(application.createdAt)}</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#E9F1F8] text-[#4C7D9D]">
-                    <ShieldCheck size={16} />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-[#10203B]">Current state</p>
-                    <p className="text-sm text-slate-500">
-                      {application.status.replaceAll("_", " ").toLowerCase()}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="flex flex-wrap gap-2 text-xs text-black/55">
+            <span className="inline-flex items-center gap-2 rounded-md border border-black/10 bg-[#FAFAFA] px-2.5 py-1">
+              <Mail aria-hidden size={13} />
+              {application.email}
+            </span>
+            <span className="inline-flex items-center gap-2 rounded-md border border-black/10 bg-[#FAFAFA] px-2.5 py-1">
+              <Phone aria-hidden size={13} />
+              {application.phone}
+            </span>
+            <span className="inline-flex items-center gap-2 rounded-md border border-black/10 bg-[#FAFAFA] px-2.5 py-1">
+              <MapPin aria-hidden size={13} />
+              {application.city}, {application.country}
+            </span>
           </div>
         </div>
       </DashboardCard>
 
-      <div className="flex justify-between">
-        <DashboardSecondaryBtn href="/admin/applications" className="gap-2">
-          <ArrowLeft size={15} />
-          Back to applications
-        </DashboardSecondaryBtn>
-      </div>
-
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_360px]">
-        <div className="space-y-6">
-          <DashboardCard className="overflow-hidden border-slate-200/90 bg-[linear-gradient(135deg,#ffffff_0%,#fbfcfe_60%,#f2f6fb_100%)] p-0">
-            <div className="border-b border-slate-200/80 px-5 py-5 md:px-6">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">
-                Applicant profile
-              </p>
-              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-[#10203B]">
-                Premium application summary
-              </h2>
-              <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-600">
-                Personal details, professional profile, and digital footprint for this application.
-              </p>
-            </div>
-
-            <div className="space-y-6 px-5 py-5 md:px-6">
-              <div>
-                <div className="flex items-center gap-2 text-[#4C7D9D]">
-                  <UserRound size={16} />
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.24em]">
-                    Identity and contact
-                  </p>
-                </div>
-                <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  <DashboardDetailCard label="Full legal name" value={application.fullName} />
-                  <DashboardDetailCard label="Email address" value={application.email} />
-                  <DashboardDetailCard label="Phone / WhatsApp" value={application.phone} />
-                  <DashboardDetailCard
-                    label="Country / City"
-                    value={`${application.country}, ${application.city}`}
-                  />
-                  <DashboardDetailCard
-                    label="State / Province"
-                    value={application.stateProvince || "Not required"}
-                  />
-                  <DashboardDetailCard label="Heard about us" value={
-                    answerMap.get("heardAboutOther")?.valueText
-                      ? `${application.heardAbout || "Other"}: ${answerMap.get("heardAboutOther")?.valueText}`
-                      : application.heardAbout || "Not provided"
-                  } />
-                </div>
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="flex flex-col gap-5">
+          <section id="profile" className="scroll-mt-24">
+            <DashboardCard className="p-0">
+              <div className="border-b border-black/10 p-4 md:p-5">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#1673A5]">
+                  Applicant
+                </p>
+                <h2 className="mt-2 text-2xl font-semibold normal-case tracking-[-0.02em] text-[#0A0A0A]">
+                  Profile and eligibility
+                </h2>
               </div>
 
-              <div>
-                <div className="flex items-center gap-2 text-[#4C7D9D]">
-                  <BriefcaseBusiness size={16} />
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.24em]">
-                    Professional profile
-                  </p>
+              <div className="flex flex-col gap-6 p-4 md:p-5">
+                <div>
+                  <SectionLabel icon={UserRound}>Identity</SectionLabel>
+                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                    <DashboardDetailCard label="Full legal name" value={application.fullName} />
+                    <DashboardDetailCard label="Email address" value={application.email} />
+                    <DashboardDetailCard label="Phone / WhatsApp" value={application.phone} />
+                    <DashboardDetailCard label="Country / City" value={`${application.country}, ${application.city}`} />
+                    <DashboardDetailCard label="State / Province" value={application.stateProvince || "Not required"} />
+                    <DashboardDetailCard
+                      label="Heard about us"
+                      value={
+                        answerMap.get("heardAboutOther")?.valueText
+                          ? `${application.heardAbout || "Other"}: ${answerMap.get("heardAboutOther")?.valueText}`
+                          : application.heardAbout || "Not provided"
+                      }
+                    />
+                  </div>
                 </div>
-                <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  <DashboardDetailCard label="Professional title" value={application.professionalTitle} />
-                  <DashboardDetailCard
-                    label="Years of experience"
-                    value={String(application.yearsExperience)}
-                  />
-                  <DashboardDetailCard label="Category scope" value={categorySummary || application.category.name} />
-                  <DashboardDetailCard label="Nomination path" value={nominationSummaryLabel} />
-                  <DashboardDetailCard
-                    label="IBPA membership no."
-                    value={application.membershipNumber || "Not provided"}
-                  />
-                  <DashboardDetailCard
-                    label="Membership level"
-                    value={application.membershipLevel || "Not available"}
-                  />
-                </div>
-              </div>
 
-              <div>
-                <div className="flex items-center gap-2 text-[#4C7D9D]">
-                  <Globe size={16} />
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.24em]">
-                    Online presence
-                  </p>
+                <div>
+                  <SectionLabel icon={BriefcaseBusiness}>Professional</SectionLabel>
+                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                    <DashboardDetailCard label="Professional title" value={application.professionalTitle} />
+                    <DashboardDetailCard label="Years of experience" value={String(application.yearsExperience)} />
+                    <DashboardDetailCard label="Category scope" value={categorySummary || application.category.name} />
+                    <DashboardDetailCard label="Nomination path" value={nominationSummaryLabel} />
+                    <DashboardDetailCard label="IBPA membership no." value={application.membershipNumber || "Not provided"} />
+                    <DashboardDetailCard label="Membership level" value={application.membershipLevel || "Not available"} />
+                  </div>
                 </div>
-                <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  <DashboardDetailCard label="Website" value={application.websiteUrl || "Not provided"} />
-                  <DashboardDetailCard label="Instagram / Social" value={application.socialUrl || "Not provided"} />
-                  <DashboardDetailCard label="Client reviews" value={application.reviewsUrl || "Not provided"} />
-                  <DashboardDetailCard
-                    label="Payment total"
-                    value={formatAmount(application.amount, application.currency)}
-                  />
+
+                <div>
+                  <SectionLabel icon={Globe}>Online presence</SectionLabel>
+                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                    <DashboardDetailCard label="Website" value={application.websiteUrl || "Not provided"} />
+                    <DashboardDetailCard label="Instagram / Social" value={application.socialUrl || "Not provided"} />
+                    <DashboardDetailCard label="Client reviews" value={application.reviewsUrl || "Not provided"} />
+                    <DashboardDetailCard label="Payment total" value={formatAmount(application.amount, application.currency)} />
+                  </div>
                 </div>
               </div>
-            </div>
-          </DashboardCard>
+            </DashboardCard>
+          </section>
 
           {hasNominationData ? (
             orderedNominations.map((nomination, index) => (
@@ -561,10 +512,10 @@ export default function ApplicationDetailPage({
             ))
           ) : (
             <DashboardCard>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4C7D9D]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#1673A5]">
                 Legacy nomination answers
               </p>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <div className="mt-3 grid gap-3 sm:grid-cols-2">
                 {legacyAnswerEntries.map((answer) => (
                   <DashboardDetailCard
                     key={answer.id}
@@ -574,66 +525,144 @@ export default function ApplicationDetailPage({
                 ))}
               </div>
               {legacyAnswerEntries.length === 0 ? (
-                <div className="mt-4 rounded-[22px] border border-dashed border-slate-200 bg-slate-50/70 px-4 py-5 text-sm text-slate-500">
-                  No Block B answers were recorded for this application.
+                <div className="mt-3">
+                  <EmptyInline>No Block B answers were recorded for this application.</EmptyInline>
                 </div>
               ) : null}
             </DashboardCard>
           )}
         </div>
 
-        <div className="space-y-5 xl:sticky xl:top-6 xl:self-start">
-          <DashboardCard className="overflow-hidden border-slate-200/90 bg-[linear-gradient(135deg,#ffffff_0%,#fbfcfe_65%,#f2f6fb_100%)] p-0">
-            <div className="border-b border-slate-200/80 px-5 py-5">
-              <div className="flex items-center gap-2 text-[#4C7D9D]">
-                <Layers3 size={16} />
-                <p className="text-[11px] font-semibold uppercase tracking-[0.24em]">
+        <aside className="flex flex-col gap-4 xl:sticky xl:top-5 xl:self-start">
+          <DashboardAccentBlock>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/90">
+              Overview
+            </p>
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <div className="rounded-md border border-white/30 bg-white/20 p-3">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/90">
                   Nominations
                 </p>
+                <p className="mt-2 text-2xl font-semibold">{nominationSummaries.length}</p>
               </div>
-              <h2 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-[#10203B]">
-                Section map
-              </h2>
+              <div className="rounded-md border border-white/30 bg-white/20 p-3">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/90">
+                  Fee
+                </p>
+                <p className="mt-2 text-2xl font-semibold">
+                  {formatAmount(application.amount, application.currency)}
+                </p>
+              </div>
             </div>
-            <div className="space-y-3 px-5 py-5">
+            <div className="mt-4 flex items-center gap-2 text-sm text-white">
+              <Clock3 aria-hidden size={15} />
+              Created {formatAdminDate(application.createdAt)}
+            </div>
+          </DashboardAccentBlock>
+
+          <DashboardCard>
+            <div className="flex items-center gap-2 text-[#1673A5]">
+              <SearchCheck aria-hidden size={16} />
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">Decision</p>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {applicationStatusBadge(application.status)}
+              {paymentStatusBadge(application.paymentStatus)}
+            </div>
+            <div className="mt-4 grid gap-2">
+              <StatusActionButton
+                applicationId={application.id}
+                status="UNDER_REVIEW"
+                active={application.status === "UNDER_REVIEW"}
+                tone="blue"
+              >
+                <SearchCheck aria-hidden size={15} />
+                Start review
+              </StatusActionButton>
+              <StatusActionButton
+                applicationId={application.id}
+                status="APPROVED"
+                active={application.status === "APPROVED"}
+                tone="primary"
+              >
+                <CheckCircle2 aria-hidden size={15} />
+                Approve
+              </StatusActionButton>
+              <StatusActionButton
+                applicationId={application.id}
+                status="REJECTED"
+                active={application.status === "REJECTED"}
+                tone="danger"
+              >
+                <XCircle aria-hidden size={15} />
+                Reject
+              </StatusActionButton>
+              <div className="grid grid-cols-2 gap-2">
+                <StatusActionButton
+                  applicationId={application.id}
+                  status="SUBMITTED"
+                  active={application.status === "SUBMITTED"}
+                >
+                  <Send aria-hidden size={14} />
+                  Submitted
+                </StatusActionButton>
+                <StatusActionButton
+                  applicationId={application.id}
+                  status="PAYMENT_PENDING"
+                  active={application.status === "PAYMENT_PENDING"}
+                >
+                  <CreditCard aria-hidden size={14} />
+                  Payment
+                </StatusActionButton>
+              </div>
+            </div>
+          </DashboardCard>
+
+          <DashboardCard>
+            <div className="flex items-center gap-2 text-[#1673A5]">
+              <Layers3 aria-hidden size={16} />
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">Review map</p>
+            </div>
+            <div className="mt-3 flex flex-col gap-2">
+              <a
+                href="#profile"
+                className="rounded-lg border border-black/10 bg-[#FAFAFA] px-3 py-3 text-sm font-semibold text-[#0A0A0A] transition hover:border-[#7DC8EE] hover:bg-[#EAF6FF]"
+              >
+                Applicant profile
+              </a>
               {nominationSummaries.map((nomination, index) => (
                 <a
                   key={nomination.awardId}
                   href={`#nomination-${nomination.awardId}`}
-                  className="block rounded-[22px] border border-slate-200 bg-white px-4 py-4 transition hover:border-[#4C7D9D]/30 hover:shadow-[0_12px_30px_rgba(16,32,59,0.08)]"
+                  className="rounded-lg border border-black/10 bg-white px-3 py-3 text-sm transition hover:border-[#7DC8EE] hover:bg-[#EAF6FF]/45"
                 >
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#4C7D9D]">
+                  <span className="block text-[11px] font-semibold uppercase tracking-[0.14em] text-black/45">
                     Nomination {String(index + 1).padStart(2, "0")}
-                  </p>
-                  <p className="mt-2 text-sm font-semibold leading-6 text-[#10203B]">
+                  </span>
+                  <span className="mt-1 block font-semibold text-[#0A0A0A]">
                     {nomination.awardName}
-                  </p>
-                  <p className="mt-1 text-xs text-slate-500">{nomination.categoryName}</p>
+                  </span>
+                  <span className="mt-0.5 block text-xs text-black/50">
+                    {nomination.categoryName}
+                  </span>
                 </a>
               ))}
             </div>
           </DashboardCard>
 
-          <DashboardCard className="overflow-hidden border-slate-200/90 bg-[linear-gradient(135deg,#ffffff_0%,#fbfcfe_65%,#f2f6fb_100%)] p-0">
-            <div className="border-b border-slate-200/80 px-5 py-5">
-              <div className="flex items-center gap-2 text-[#4C7D9D]">
-                <Sparkles size={16} />
-                <p className="text-[11px] font-semibold uppercase tracking-[0.24em]">
-                  Files and evidence
-                </p>
-              </div>
-              <h2 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-[#10203B]">
-                Shared uploads
-              </h2>
+          <DashboardCard>
+            <div className="flex items-center gap-2 text-[#1673A5]">
+              <ReceiptText aria-hidden size={16} />
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">Shared files</p>
             </div>
 
-            <div className="space-y-5 px-5 py-5">
+            <div className="mt-4 flex flex-col gap-4">
               <div>
-                <p className="text-sm font-semibold text-[#10203B]">
+                <p className="text-sm font-semibold text-[#0A0A0A]">
                   Professional license / Certification
                 </p>
-                <div className="mt-3 space-y-2">
-                  {(fileMap.get("licenseCertification") ?? []).map((file) => (
+                <div className="mt-2 flex flex-col gap-2">
+                  {licenseFiles.map((file) => (
                     <FileLink
                       key={file.id}
                       href={`/api/admin/application-files/${file.id}`}
@@ -641,20 +670,16 @@ export default function ApplicationDetailPage({
                       sizeBytes={file.fileSize}
                     />
                   ))}
-                  {(fileMap.get("licenseCertification") ?? []).length === 0 ? (
-                    <div className="rounded-[18px] border border-dashed border-slate-200 bg-slate-50/70 px-4 py-4 text-sm text-slate-500">
-                      No license file uploaded.
-                    </div>
-                  ) : null}
+                  {licenseFiles.length === 0 ? <EmptyInline>No license file uploaded.</EmptyInline> : null}
                 </div>
               </div>
 
               {legacyFileEntries.map(([key, files]) => (
                 <div key={key}>
-                  <p className="text-sm font-semibold text-[#10203B]">
+                  <p className="text-sm font-semibold text-[#0A0A0A]">
                     {formatLegacyFieldLabel(key)} (Legacy)
                   </p>
-                  <div className="mt-3 space-y-2">
+                  <div className="mt-2 flex flex-col gap-2">
                     {files.map((file) => (
                       <FileLink
                         key={file.id}
@@ -668,7 +693,7 @@ export default function ApplicationDetailPage({
               ))}
             </div>
           </DashboardCard>
-        </div>
+        </aside>
       </div>
     </div>
   );

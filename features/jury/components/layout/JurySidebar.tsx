@@ -2,68 +2,73 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ClipboardList, CheckSquare, LogOut } from "lucide-react";
+import { CheckSquare, ClipboardList, LogOut } from "lucide-react";
 import { signOut } from "next-auth/react";
 
 const navItems = [
-  { href: "/jury/dashboard", label: "Review Applications", icon: ClipboardList },
-  { href: "/jury/dashboard/scores", label: "Submitted Scores", icon: CheckSquare },
+  { href: "/jury/dashboard", label: "Review queue", shortLabel: "Review", icon: ClipboardList },
+  { href: "/jury/dashboard/scores", label: "Submitted scores", shortLabel: "Scores", icon: CheckSquare },
 ];
 
 function isActive(pathname: string, href: string) {
-  if (href === "/jury/dashboard/scores") return pathname === "/jury/dashboard/scores";
-  if (href === "/jury/dashboard") return pathname === "/jury/dashboard" || pathname.startsWith("/jury/dashboard/applications");
-  return false;
+  if (href === "/jury/dashboard/scores") return pathname === href;
+  return pathname === href || pathname.startsWith("/jury/dashboard/applications");
 }
 
-export default function JurySidebar({ juryName, expertiseAreas }: { juryName?: string; expertiseAreas?: string[] }) {
+export default function JurySidebar({
+  juryName,
+  expertiseAreas,
+}: {
+  juryName?: string;
+  expertiseAreas?: string[];
+}) {
   const pathname = usePathname();
 
   return (
     <>
-      {/* ── Desktop sidebar ──────────────────────────────────────────── */}
-      <aside className="hidden lg:flex lg:w-[260px] lg:flex-col lg:shrink-0">
-        <div className="sticky top-6 flex flex-col gap-3">
-          {/* Member card */}
-          <div className="rounded-[22px] bg-[#10203B] p-5 text-white">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/50">
-              Jury Panel
+      <aside className="hidden w-[232px] shrink-0 lg:block">
+        <div className="sticky top-5 flex flex-col gap-3">
+          <div className="rounded-lg border border-[#6b8a9f] bg-[#7a98af] p-4 text-white">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/90">
+              Jury panel
             </p>
-            {juryName ? (
-              <p className="mt-1.5 text-base font-semibold">{juryName}</p>
-            ) : (
-              <p className="mt-1.5 text-base font-semibold">Jury Dashboard</p>
-            )}
-            {expertiseAreas && expertiseAreas.length > 0 && (
-              <div className="mt-3 flex flex-wrap gap-1">
+            <p className="mt-2 text-lg font-semibold leading-tight">
+              {juryName || "Jury dashboard"}
+            </p>
+            {expertiseAreas && expertiseAreas.length > 0 ? (
+              <div className="mt-3 flex flex-wrap gap-1.5">
                 {expertiseAreas.slice(0, 3).map((area) => (
-                  <span key={area} className="inline-flex rounded-full bg-white/10 px-2 py-0.5 text-[10px] text-white/70">
+                  <span
+                    key={area}
+                    className="rounded-md border border-white/30 bg-white/20 px-2 py-1 text-[11px] font-medium text-white/70"
+                  >
                     {area}
                   </span>
                 ))}
               </div>
-            )}
+            ) : null}
           </div>
 
-          {/* Nav */}
-          <div className="rounded-[22px] border border-slate-200/80 bg-white p-3 shadow-[0_12px_34px_rgba(15,23,42,0.06)]">
-            <nav className="space-y-1">
+          <div className="rounded-lg border border-black/10 bg-white p-2 shadow-[0_18px_50px_rgba(10,10,10,0.06)]">
+            <nav className="flex flex-col gap-1">
               {navItems.map(({ href, label, icon: Icon }) => {
                 const active = isActive(pathname, href);
+
                 return (
                   <Link
                     key={href}
                     href={href}
-                    className={`flex w-full items-center gap-3 rounded-2xl px-3.5 py-2.5 text-sm font-medium transition-all ${
+                    className={`flex min-h-11 items-center gap-3 rounded-md px-3 text-sm font-semibold transition ${
                       active
-                        ? "bg-[#10203B] text-white shadow-[0_10px_24px_rgba(16,32,59,0.16)]"
-                        : "text-slate-600 hover:bg-slate-50 hover:text-[#10203B]"
+                        ? "bg-[#EAF6FF] text-[#0A0A0A]"
+                        : "text-black/55 hover:bg-[#FAFAFA] hover:text-[#0A0A0A]"
                     }`}
                   >
                     <Icon
-                      size={16}
-                      className={active ? "text-white" : "text-[#4C7D9D]"}
-                      strokeWidth={1.8}
+                      aria-hidden
+                      size={17}
+                      strokeWidth={1.9}
+                      className={active ? "text-[#1673A5]" : "text-black/35"}
                     />
                     <span className="truncate">{label}</span>
                   </Link>
@@ -71,13 +76,13 @@ export default function JurySidebar({ juryName, expertiseAreas }: { juryName?: s
               })}
             </nav>
 
-            <div className="mt-3 border-t border-slate-100 pt-3">
+            <div className="mt-2 border-t border-black/10 pt-2">
               <button
                 type="button"
                 onClick={() => void signOut({ callbackUrl: "/jury/login" })}
-                className="flex w-full items-center gap-3 rounded-2xl px-3.5 py-2.5 text-sm font-medium text-slate-500 transition hover:bg-red-50 hover:text-red-700"
+                className="flex min-h-11 w-full items-center gap-3 rounded-md px-3 text-sm font-semibold text-black/55 transition hover:bg-red-50 hover:text-red-700"
               >
-                <LogOut size={16} strokeWidth={1.8} />
+                <LogOut aria-hidden size={17} strokeWidth={1.9} />
                 Sign out
               </button>
             </div>
@@ -85,23 +90,26 @@ export default function JurySidebar({ juryName, expertiseAreas }: { juryName?: s
         </div>
       </aside>
 
-      {/* ── Mobile bottom nav ────────────────────────────────────────── */}
-      <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 backdrop-blur-md lg:hidden">
-        <div className="mx-auto grid max-w-sm grid-cols-2">
-          {navItems.map(({ href, label, icon: Icon }) => {
+      <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-black/10 bg-white/95 shadow-[0_-12px_30px_rgba(10,10,10,0.08)] backdrop-blur lg:hidden">
+        <div className="mx-auto grid max-w-xs grid-cols-2 gap-1 px-2 py-2">
+          {navItems.map(({ href, shortLabel, icon: Icon }) => {
             const active = isActive(pathname, href);
+
             return (
               <Link
                 key={href}
                 href={href}
-                className={`flex flex-col items-center gap-1 px-4 py-3 text-center transition-colors ${
-                  active ? "text-[#10203B]" : "text-slate-400 hover:text-[#4C7D9D]"
+                className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-md px-2 text-center text-[11px] font-semibold transition ${
+                  active ? "bg-[#EAF6FF] text-[#0A0A0A]" : "text-black/45"
                 }`}
               >
-                <Icon size={20} strokeWidth={active ? 2 : 1.8} />
-                <span className="text-[10px] font-semibold leading-none">
-                  {label.split(" ")[0]}
-                </span>
+                <Icon
+                  aria-hidden
+                  size={18}
+                  strokeWidth={active ? 2 : 1.8}
+                  className={active ? "text-[#1673A5]" : ""}
+                />
+                <span className="truncate">{shortLabel}</span>
               </Link>
             );
           })}

@@ -19,7 +19,7 @@ A Next.js 16 application for the IBPA Beauty Championship website. The project c
 - Tailwind CSS 4
 - Prisma 7 with PostgreSQL
 - Stripe dependency installed for future payment work  
-
+ 
 ## Main Flows  
 
 ```mermaid

@@ -2,10 +2,17 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { PenSquare, Sparkles } from "lucide-react";
+import { CheckCircle2, PenSquare, Save } from "lucide-react";
 import { formatAdminDate } from "@/features/admin/server/view-models";
 import ScoreStatusBadge from "@/features/admin/components/scoring/ScoreStatusBadge";
-import { DashboardCard, dashboardInputClass, dashboardTextareaClass } from "@/shared/components/admin/DashboardUI";
+import {
+  DashboardAccentBlock,
+  DashboardCard,
+  DashboardPrimaryBtn,
+  DashboardSecondaryBtn,
+  dashboardInputClass,
+  dashboardTextareaClass,
+} from "@/shared/components/admin/DashboardUI";
 
 type ScoreFormValue = "" | `${number}`;
 
@@ -27,11 +34,11 @@ type JuryScoreFormProps = {
 };
 
 const criteria = [
-  { key: "technical", label: "Technical Execution" },
-  { key: "aesthetic", label: "Aesthetic Appeal" },
-  { key: "creativity", label: "Creativity / Originality" },
-  { key: "impact", label: "Professional Impact" },
-  { key: "presentation", label: "Presentation / Portfolio" },
+  { key: "technical", label: "Technical" },
+  { key: "aesthetic", label: "Aesthetic" },
+  { key: "creativity", label: "Creativity" },
+  { key: "impact", label: "Impact" },
+  { key: "presentation", label: "Presentation" },
 ] as const;
 
 function toValue(value: number | null | undefined): ScoreFormValue {
@@ -90,157 +97,139 @@ export default function JuryScoreForm({ nominationApplicationId, initialScore }:
     });
   }
 
+  const valueMap = {
+    technical,
+    aesthetic,
+    creativity,
+    impact,
+    presentation,
+  } satisfies Record<(typeof criteria)[number]["key"], ScoreFormValue>;
+  const setterMap = {
+    technical: setTechnical,
+    aesthetic: setAesthetic,
+    creativity: setCreativity,
+    impact: setImpact,
+    presentation: setPresentation,
+  } satisfies Record<(typeof criteria)[number]["key"], (value: ScoreFormValue) => void>;
+
   return (
-    <DashboardCard className="overflow-hidden border-slate-200/90 bg-[linear-gradient(135deg,#ffffff_0%,#fbfcfe_62%,#f2f6fb_100%)] p-0">
-      <div className="border-b border-slate-200/80 px-5 py-5">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+    <DashboardCard className="p-0">
+      <div className="border-b border-black/10 p-4 md:p-5">
+        <div className="flex items-start justify-between gap-3">
           <div>
-            <div className="flex items-center gap-2 text-[#4C7D9D]">
-              <PenSquare size={16} />
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em]">
-                Judge scorecard
-              </p>
+            <div className="flex items-center gap-2 text-[#1673A5]">
+              <PenSquare aria-hidden size={16} />
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">Scorecard</p>
             </div>
-            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-[#10203B]">
-              Score this nomination
+            <h2 className="mt-2 text-2xl font-semibold normal-case tracking-[-0.02em] text-[#0A0A0A]">
+              Judge score
             </h2>
           </div>
           <div className="text-right">
             <ScoreStatusBadge status={initialScore?.status ?? "NOT_STARTED"} />
-            {initialScore?.submittedAt && (
-              <p className="mt-1.5 text-xs text-slate-500">
-                Submitted {formatAdminDate(new Date(initialScore.submittedAt))}
+            {initialScore?.submittedAt ? (
+              <p className="mt-1.5 text-xs text-black/45">
+                {formatAdminDate(new Date(initialScore.submittedAt))}
               </p>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
 
-      <div className="space-y-5 px-5 py-5">
-        <div className="rounded-[24px] border border-[#10203B]/8 bg-[#10203B] p-5 text-white shadow-[0_18px_40px_rgba(16,32,59,0.16)]">
-          <div className="flex items-center gap-2 text-white/70">
-            <Sparkles size={15} />
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em]">Live total</p>
-          </div>
-          <p className="mt-3 text-4xl font-semibold tracking-[-0.05em]">{total} / 50</p>
-          <p className="mt-2 text-sm leading-6 text-white/70">
-            Score each criterion from 0 to 10. Final submission remains locked until reopened by
-            an admin.
+      <div className="flex flex-col gap-4 p-4 md:p-5">
+        <DashboardAccentBlock>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/90">
+            Current total
           </p>
+          <p className="mt-2 text-4xl font-semibold tracking-[-0.04em]">{total} / 50</p>
+        </DashboardAccentBlock>
+
+        {initialScore?.status === "REOPENED" ? (
+          <div className="rounded-lg border border-[#7DC8EE] bg-[#EAF6FF] px-4 py-3 text-sm text-[#0A0A0A]">
+            This score was reopened by an admin.
+          </div>
+        ) : null}
+
+        {isSubmitted ? (
+          <div className="rounded-lg border border-black/10 bg-[#FAFAFA] px-4 py-3 text-sm text-black/60">
+            Submitted scores are read-only until reopened.
+          </div>
+        ) : null}
+
+        <div className="grid gap-2">
+          {criteria.map((criterion) => (
+            <label
+              key={criterion.key}
+              htmlFor={criterion.key}
+              className="grid gap-2 rounded-lg border border-black/10 bg-[#FAFAFA] p-3 sm:grid-cols-[1fr_96px] sm:items-center"
+            >
+              <span>
+                <span className="block text-sm font-semibold text-[#0A0A0A]">{criterion.label}</span>
+                <span className="text-xs text-black/45">0 to 10</span>
+              </span>
+              <input
+                id={criterion.key}
+                type="number"
+                min={0}
+                max={10}
+                step={1}
+                inputMode="numeric"
+                value={valueMap[criterion.key]}
+                disabled={isSubmitted || isPending}
+                onChange={(event) => setterMap[criterion.key](event.target.value as ScoreFormValue)}
+                className={`${dashboardInputClass} text-lg font-semibold disabled:cursor-not-allowed disabled:opacity-65`}
+              />
+            </label>
+          ))}
         </div>
 
-        {initialScore?.status === "REOPENED" && (
-          <div className="rounded-[18px] border border-[#4C7D9D]/30 bg-[#4C7D9D]/5 px-4 py-3 text-sm text-[#10203B]">
-            An admin reopened this score. You can update your draft and submit again.
-          </div>
-        )}
-
-        {isSubmitted && (
-          <div className="rounded-[18px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-            This score has been submitted and is now read-only. Only an admin can reopen it.
-          </div>
-        )}
-
-        <div className="grid gap-3 md:grid-cols-2">
-          {criteria.map((criterion) => {
-            const valueMap = {
-              technical,
-              aesthetic,
-              creativity,
-              impact,
-              presentation,
-            } satisfies Record<(typeof criteria)[number]["key"], ScoreFormValue>;
-            const setterMap = {
-              technical: setTechnical,
-              aesthetic: setAesthetic,
-              creativity: setCreativity,
-              impact: setImpact,
-              presentation: setPresentation,
-            } satisfies Record<(typeof criteria)[number]["key"], (value: ScoreFormValue) => void>;
-
-            return (
-              <div
-                key={criterion.key}
-                className="rounded-[22px] border border-slate-200 bg-white p-4 shadow-[0_12px_30px_rgba(16,32,59,0.04)]"
-              >
-                <label
-                  htmlFor={criterion.key}
-                  className="block text-sm font-semibold leading-6 text-[#10203B]"
-                >
-                  {criterion.label}
-                </label>
-                <p className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-400">
-                  0 to 10 points
-                </p>
-                <input
-                  id={criterion.key}
-                  type="number"
-                  min={0}
-                  max={10}
-                  step={1}
-                  inputMode="numeric"
-                  value={valueMap[criterion.key]}
-                  disabled={isSubmitted || isPending}
-                  onChange={(e) => setterMap[criterion.key](e.target.value as ScoreFormValue)}
-                  className={`${dashboardInputClass} mt-4 text-lg font-semibold disabled:cursor-not-allowed disabled:opacity-65`}
-                />
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="rounded-[22px] border border-slate-200 bg-white p-4 shadow-[0_12px_30px_rgba(16,32,59,0.04)]">
-          <label htmlFor="comment" className="block text-sm font-semibold text-[#10203B]">
-            Judge comment (optional)
-          </label>
-          <p className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-400">
-            Internal scoring note
-          </p>
+        <label className="block rounded-lg border border-black/10 bg-[#FAFAFA] p-3" htmlFor="comment">
+          <span className="text-sm font-semibold text-[#0A0A0A]">Judge comment</span>
           <textarea
             id="comment"
             value={comment}
             disabled={isSubmitted || isPending}
-            onChange={(e) => setComment(e.target.value)}
+            onChange={(event) => setComment(event.target.value)}
             rows={4}
-            className={`${dashboardTextareaClass} mt-4 disabled:cursor-not-allowed disabled:opacity-65`}
+            className={`${dashboardTextareaClass} mt-2 disabled:cursor-not-allowed disabled:opacity-65`}
           />
-        </div>
+        </label>
 
-        {error && (
-          <div className="rounded-[18px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        {error ? (
+          <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
             {error}
           </div>
-        )}
-        {notice && (
-          <div className="rounded-[18px] border border-[#4C7D9D]/30 bg-[#4C7D9D]/5 px-4 py-3 text-sm text-[#10203B]">
+        ) : null}
+        {notice ? (
+          <div className="rounded-lg border border-[#7DC8EE] bg-[#EAF6FF] px-4 py-3 text-sm text-[#0A0A0A]">
             {notice}
           </div>
-        )}
+        ) : null}
 
-        {!isSubmitted && (
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <button
+        {!isSubmitted ? (
+          <div className="grid gap-2 sm:grid-cols-2">
+            <DashboardSecondaryBtn
               type="button"
               disabled={isPending}
               onClick={() => {
                 void sendScoreRequest("draft");
               }}
-              className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-700 transition hover:border-[#4C7D9D]/40 hover:text-[#10203B] disabled:cursor-not-allowed disabled:opacity-65"
             >
-              Save Draft
-            </button>
-            <button
+              <Save aria-hidden size={15} />
+              Save draft
+            </DashboardSecondaryBtn>
+            <DashboardPrimaryBtn
               type="button"
               disabled={isPending}
               onClick={() => {
                 void sendScoreRequest("submit");
               }}
-              className="inline-flex items-center justify-center rounded-2xl bg-[#10203B] px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-[#1a3357] disabled:cursor-not-allowed disabled:opacity-65"
             >
-              Submit Final Score
-            </button>
+              <CheckCircle2 aria-hidden size={15} />
+              Submit final
+            </DashboardPrimaryBtn>
           </div>
-        )}
+        ) : null}
       </div>
     </DashboardCard>
   );

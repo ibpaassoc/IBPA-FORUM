@@ -1,6 +1,7 @@
 "use client";
 
 import { deleteJuryApplicationAction } from "@/features/admin/actions/jury.actions";
+import { DashboardDangerBtn } from "@/shared/components/admin/DashboardUI";
 
 export default function DeleteJuryApplicationButton({
   id,
@@ -18,12 +19,9 @@ export default function DeleteJuryApplicationButton({
   return (
     <form action={deleteJuryApplicationAction} onSubmit={handleSubmit}>
       <input type="hidden" name="id" value={id} />
-      <button
-        type="submit"
-        className="inline-flex items-center justify-center rounded-2xl border border-red-200 bg-white px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-red-600 transition hover:border-red-300 hover:bg-red-50"
-      >
+      <DashboardDangerBtn type="submit">
         Delete Application
-      </button>
+      </DashboardDangerBtn>
     </form>
   );
 }

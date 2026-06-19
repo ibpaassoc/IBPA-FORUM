@@ -8,6 +8,7 @@ const statusTones = {
   PAYMENT_PENDING: "amber",
   SUBMITTED: "blue",
   UNDER_REVIEW: "amber",
+  ADDITIONAL_INFO_REQUIRED: "amber",
   APPROVED: "green",
   REJECTED: "red",
   PAID: "green",

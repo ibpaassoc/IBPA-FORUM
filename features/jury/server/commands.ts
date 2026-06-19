@@ -3,9 +3,11 @@ import { del } from "@vercel/blob";
 import type { JuryApplicationStatus } from "@prisma/client";
 import { sendApplicationReceivedNotificationEmail } from "@/features/email/server/application-email.workflow";
 import {
+  sendJuryAdditionalInfoRequestedEmail,
   sendJuryApplicationReceivedEmail,
   sendJuryApprovedPaymentLinkEmail,
   sendJuryRejectedEmail,
+  sendJuryResubmittedAdminNotificationEmail,
 } from "@/features/email/server/jury-email.workflow";
 import { createJuryCheckoutSession } from "@/features/payments/server/checkout-sessions";
 import { buildJuryFieldErrors } from "@/features/jury/schemas/jury-application.schema";
@@ -14,7 +16,12 @@ import {
   getText,
   toOptionalText,
 } from "@/features/jury/server/uploads";
+import { readEnv } from "@/lib/env";
 import { prisma } from "@/shared/lib/prisma";
+
+function getAppUrl() {
+  return readEnv(["APP_URL", "FRONTEND_URL", "NEXT_PUBLIC_APP_URL"]).replace(/\/+$/, "");
+}
 
 export async function submitJuryApplication(formData: FormData) {
   const fieldErrors = buildJuryFieldErrors(formData);
@@ -404,6 +411,161 @@ export async function updateJuryApplicationStatus({
   }
 
   throw new Error("Paid status can only be set by Stripe webhook confirmation.");
+}
+
+export async function requestAdditionalInfoFromJuryApplication({
+  id,
+  infoRequestDetails,
+}: {
+  id: string;
+  infoRequestDetails: string;
+}) {
+  const application = await prisma.juryApplication.findUnique({
+    where: { id },
+    select: { id: true, fullName: true, email: true, status: true },
+  });
+
+  if (!application) throw new Error("Jury application not found.");
+  if (application.status === "PAID") {
+    throw new Error("Cannot request additional information from a paid application.");
+  }
+
+  const token = randomUUID();
+  const appUrl = getAppUrl();
+  const actionUrl = `${appUrl}/jury-update/${token}`;
+
+  await prisma.juryApplication.update({
+    where: { id },
+    data: {
+      status: "ADDITIONAL_INFO_REQUIRED",
+      infoRequestToken: token,
+      infoRequestDetails: infoRequestDetails.trim(),
+      infoRequestedAt: new Date(),
+      infoResubmittedAt: null,
+    },
+  });
+
+  let emailDelivered = false;
+  let emailSkipReason: string | undefined;
+
+  try {
+    const result = await sendJuryAdditionalInfoRequestedEmail({
+      to: application.email,
+      fullName: application.fullName,
+      details: infoRequestDetails,
+      actionUrl,
+    });
+    emailDelivered = result.delivered;
+    emailSkipReason = result.reason;
+  } catch (error) {
+    console.error("Failed to send additional info request email", error);
+  }
+
+  return { emailDelivered, emailSkipReason };
+}
+
+export async function processJuryAdditionalInfoResubmission({
+  token,
+  professionalBio,
+  motivation,
+  conflictDisclosure,
+  professionalWebsite,
+  profilePhotoBlob,
+  certificationBlobs,
+}: {
+  token: string;
+  professionalBio: string;
+  motivation: string;
+  conflictDisclosure: string;
+  professionalWebsite?: string;
+  profilePhotoBlob?: BlobFileInfo | null;
+  certificationBlobs?: BlobFileInfo[];
+}) {
+  const application = await prisma.juryApplication.findUnique({
+    where: { infoRequestToken: token },
+    select: {
+      id: true,
+      fullName: true,
+      email: true,
+      status: true,
+      files: { select: { id: true, fieldKey: true, storageKey: true } },
+    },
+  });
+
+  if (!application) throw new Error("Invalid or expired link.");
+  if (application.status !== "ADDITIONAL_INFO_REQUIRED") {
+    throw new Error("This link has already been used or is no longer valid.");
+  }
+
+  const oldProfilePhotos = application.files.filter((f) => f.fieldKey === "profilePhoto");
+
+  await prisma.$transaction(async (tx) => {
+    if (profilePhotoBlob && oldProfilePhotos.length > 0) {
+      await tx.juryApplicationFile.deleteMany({
+        where: { juryApplicationId: application.id, fieldKey: "profilePhoto" },
+      });
+    }
+
+    const newFiles: Array<{
+      fieldKey: string;
+      fileName: string;
+      mimeType: string;
+      fileSize: number;
+      storageKey: string;
+    }> = [];
+
+    if (profilePhotoBlob) {
+      newFiles.push({ fieldKey: "profilePhoto", ...profilePhotoBlob });
+    }
+
+    if (certificationBlobs && certificationBlobs.length > 0) {
+      for (const blob of certificationBlobs) {
+        newFiles.push({ fieldKey: "certifications", ...blob });
+      }
+    }
+
+    await tx.juryApplication.update({
+      where: { id: application.id },
+      data: {
+        status: "SUBMITTED",
+        professionalBio,
+        motivation,
+        conflictDisclosure,
+        professionalWebsite: professionalWebsite?.trim() || null,
+        infoRequestToken: null,
+        infoResubmittedAt: new Date(),
+        files: newFiles.length > 0 ? { create: newFiles } : undefined,
+      },
+    });
+  });
+
+  if (profilePhotoBlob && oldProfilePhotos.length > 0) {
+    const keysToDelete = oldProfilePhotos
+      .map((f) => f.storageKey)
+      .filter((k): k is string => Boolean(k));
+    if (keysToDelete.length > 0) {
+      try {
+        await del(keysToDelete);
+      } catch (error) {
+        console.error("Failed to delete old profile photo blobs", error);
+      }
+    }
+  }
+
+  const appUrl = getAppUrl();
+  const adminReviewUrl = `${appUrl}/admin/jury-applications/${application.id}`;
+
+  try {
+    await sendJuryResubmittedAdminNotificationEmail({
+      fullName: application.fullName,
+      applicantEmail: application.email,
+      adminReviewUrl,
+    });
+  } catch (error) {
+    console.error("Failed to send resubmission admin notification", error);
+  }
+
+  return { applicationId: application.id };
 }
 
 export async function deleteJuryApplication(id: string) {

@@ -99,6 +99,10 @@ model JuryApplication {
   rejectedAt                       DateTime?
   paidAt                           DateTime?
   stripeCheckoutSessionId          String?               @unique
+  infoRequestToken                 String?               @unique
+  infoRequestDetails               String?
+  infoRequestedAt                  DateTime?
+  infoResubmittedAt                DateTime?
   files                            JuryApplicationFile[]
   judgeScores                      JudgeScore[]
   account                          JuryAccount?
@@ -286,6 +290,7 @@ enum PaymentSource {
 
 enum JuryApplicationStatus {
   SUBMITTED
+  ADDITIONAL_INFO_REQUIRED
   APPROVED
   REJECTED
   PAID

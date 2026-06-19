@@ -1,8 +1,11 @@
+import { EMAIL_APPLICATIONS } from "@/lib/email/config";
 import { sendEmail } from "@/features/email/server/send-email";
 import { juryApplicationReceived } from "@/features/email/templates/jury-application-received";
+import { juryAdditionalInfoRequested } from "@/features/email/templates/jury-additional-info-requested";
 import { juryApprovedPaymentLink } from "@/features/email/templates/jury-approved-payment-link";
 import { juryPaymentConfirmed } from "@/features/email/templates/jury-payment-confirmed";
 import { juryRejected } from "@/features/email/templates/jury-rejected";
+import { buildTextBody, wrapEmail } from "@/features/email/templates/layout";
 
 export async function sendJuryApplicationReceivedEmail({
   to,
@@ -52,6 +55,46 @@ export async function sendJuryPaymentConfirmedEmail({
 }) {
   const template = juryPaymentConfirmed({ fullName, amount, currency });
   return sendEmail(templateToPayload(to, template));
+}
+
+export async function sendJuryAdditionalInfoRequestedEmail({
+  to,
+  fullName,
+  details,
+  actionUrl,
+}: {
+  to: string;
+  fullName: string;
+  details: string;
+  actionUrl: string;
+}) {
+  const template = juryAdditionalInfoRequested({ fullName, details, actionUrl });
+  return sendEmail(templateToPayload(to, template));
+}
+
+export async function sendJuryResubmittedAdminNotificationEmail({
+  fullName,
+  applicantEmail,
+  adminReviewUrl,
+}: {
+  fullName: string;
+  applicantEmail: string;
+  adminReviewUrl: string;
+}) {
+  const paragraphs = [
+    `Jury application updated by applicant.`,
+    `Applicant: ${fullName}`,
+    `Email: ${applicantEmail}`,
+    `Review the updated application: ${adminReviewUrl}`,
+  ];
+
+  return sendEmail({
+    type: "application",
+    to: EMAIL_APPLICATIONS,
+    subject: `IBPA Jury Application Updated: ${fullName}`,
+    html: wrapEmail(`${fullName} has updated their jury application`, paragraphs),
+    text: buildTextBody(paragraphs),
+  });
 }
 
 function templateToPayload(
