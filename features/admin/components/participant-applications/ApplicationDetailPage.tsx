@@ -12,7 +12,9 @@ import type { ReactNode } from "react";
 import {
   ArrowLeft,
   BriefcaseBusiness,
+  CheckCircle2,
   Clock3,
+  CreditCard,
   ExternalLink,
   Files,
   Globe,
@@ -21,8 +23,12 @@ import {
   MapPin,
   Phone,
   ReceiptText,
+  SearchCheck,
+  Send,
+  XCircle,
   UserRound,
 } from "lucide-react";
+import { updateParticipantApplicationStatus } from "@/features/admin/actions/participant.actions";
 import { formatAdminDate } from "@/features/admin/server/view-models";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import {
@@ -194,6 +200,41 @@ function FileLink({
         className="shrink-0 text-black/35 transition group-hover:text-[#1673A5]"
       />
     </a>
+  );
+}
+
+const statusActionTone = {
+  primary: "border-black bg-[#0A0A0A] text-white hover:bg-black",
+  blue: "border-[#7DC8EE] bg-[#EAF6FF] text-[#0A0A0A] hover:bg-[#DFF2FF]",
+  neutral: "border-black/10 bg-white text-[#0A0A0A] hover:border-[#7DC8EE] hover:bg-[#EAF6FF]",
+  danger: "border-red-200 bg-white text-red-700 hover:bg-red-50",
+};
+
+function StatusActionButton({
+  applicationId,
+  status,
+  active,
+  tone = "neutral",
+  children,
+}: {
+  applicationId: string;
+  status: Application["status"];
+  active: boolean;
+  tone?: keyof typeof statusActionTone;
+  children: ReactNode;
+}) {
+  return (
+    <form action={updateParticipantApplicationStatus}>
+      <input type="hidden" name="id" value={applicationId} />
+      <input type="hidden" name="status" value={status} />
+      <button
+        type="submit"
+        disabled={active}
+        className={`inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm font-semibold transition disabled:cursor-default disabled:opacity-45 ${statusActionTone[tone]}`}
+      >
+        {children}
+      </button>
+    </form>
   );
 }
 
@@ -518,6 +559,64 @@ export default function ApplicationDetailPage({
               Created {formatAdminDate(application.createdAt)}
             </div>
           </DashboardAccentBlock>
+
+          <DashboardCard>
+            <div className="flex items-center gap-2 text-[#1673A5]">
+              <SearchCheck aria-hidden size={16} />
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">Decision</p>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {applicationStatusBadge(application.status)}
+              {paymentStatusBadge(application.paymentStatus)}
+            </div>
+            <div className="mt-4 grid gap-2">
+              <StatusActionButton
+                applicationId={application.id}
+                status="UNDER_REVIEW"
+                active={application.status === "UNDER_REVIEW"}
+                tone="blue"
+              >
+                <SearchCheck aria-hidden size={15} />
+                Start review
+              </StatusActionButton>
+              <StatusActionButton
+                applicationId={application.id}
+                status="APPROVED"
+                active={application.status === "APPROVED"}
+                tone="primary"
+              >
+                <CheckCircle2 aria-hidden size={15} />
+                Approve
+              </StatusActionButton>
+              <StatusActionButton
+                applicationId={application.id}
+                status="REJECTED"
+                active={application.status === "REJECTED"}
+                tone="danger"
+              >
+                <XCircle aria-hidden size={15} />
+                Reject
+              </StatusActionButton>
+              <div className="grid grid-cols-2 gap-2">
+                <StatusActionButton
+                  applicationId={application.id}
+                  status="SUBMITTED"
+                  active={application.status === "SUBMITTED"}
+                >
+                  <Send aria-hidden size={14} />
+                  Submitted
+                </StatusActionButton>
+                <StatusActionButton
+                  applicationId={application.id}
+                  status="PAYMENT_PENDING"
+                  active={application.status === "PAYMENT_PENDING"}
+                >
+                  <CreditCard aria-hidden size={14} />
+                  Payment
+                </StatusActionButton>
+              </div>
+            </div>
+          </DashboardCard>
 
           <DashboardCard>
             <div className="flex items-center gap-2 text-[#1673A5]">
