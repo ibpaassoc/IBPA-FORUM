@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ticketApiSchema } from "@/features/tickets/schemas/ticket-form-schema";
 import { initiateTicketPurchase, TicketConflictError, InvalidCertError } from "@/features/tickets/server/ticket-service";
-import { EnvConfigError, isProduction, validateProductionEnv } from "@/lib/env";
+import { isProduction, validateProductionEnv } from "@/lib/env";
 
 function getErrorMessage(error: unknown) {
   if (error instanceof Error) return error.message;

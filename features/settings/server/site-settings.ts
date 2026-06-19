@@ -1,13 +1,21 @@
 import "server-only";
 import { prisma } from "@/shared/lib/prisma";
 
+function hasPrismaCode(error: unknown, code: string) {
+  if (typeof error !== "object" || error === null || !("code" in error)) {
+    return false;
+  }
+
+  return (error as { code?: unknown }).code === code;
+}
+
 export async function getSiteSetting(key: string): Promise<string | null> {
   try {
     const setting = await prisma.siteSetting.findUnique({ where: { key } });
     return setting?.value ?? null;
-  } catch (e: any) {
+  } catch (e: unknown) {
     // Table may not exist yet if migration hasn't run
-    if (e?.code === "P2021") return null;
+    if (hasPrismaCode(e, "P2021")) return null;
     throw e;
   }
 }

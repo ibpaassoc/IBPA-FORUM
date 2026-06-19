@@ -1,5 +1,3 @@
-import { copy } from "@vercel/blob";
-
 export const languages = ["en", "ru", "ua"] as const;
 
 export type Language = (typeof languages)[number];

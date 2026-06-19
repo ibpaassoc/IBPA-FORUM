@@ -67,6 +67,7 @@ export default function AdditionalInfoForm({
   const [certFiles, setCertFiles] = useState<File[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formState, setFormState] = useState<FormState>({ type: "idle" });
+  void adminRequest;
 
   const photoInputRef = useRef<HTMLInputElement>(null);
   const certInputRef = useRef<HTMLInputElement>(null);
