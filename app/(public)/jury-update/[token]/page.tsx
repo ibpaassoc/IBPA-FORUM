@@ -41,8 +41,8 @@ export default async function JuryUpdatePage({
             <h1 className="text-xl font-semibold text-[#1a1a1a]">Link not found</h1>
             <p className="mt-2 text-sm leading-7 text-black/60">
               This link is invalid or has already been used. If you believe this is an error, please contact{" "}
-              <a href="mailto:forum@ibpa.world" className="font-medium text-[#1673A5] hover:underline">
-                forum@ibpa.world
+              <a href="mailto:forum-support@ibpassociations.org" className="font-medium text-[#1673A5] hover:underline">
+                forum-support@ibpassociations.org
               </a>
               .
             </p>
@@ -63,8 +63,8 @@ export default async function JuryUpdatePage({
             <h1 className="text-xl font-semibold text-[#1a1a1a]">Link no longer active</h1>
             <p className="mt-2 text-sm leading-7 text-black/60">
               This update link has already been used or is no longer active. If you need to make further changes, please contact{" "}
-              <a href="mailto:forum@ibpa.world" className="font-medium text-[#1673A5] hover:underline">
-                forum@ibpa.world
+              <a href="mailto:forum-support@ibpassociations.org" className="font-medium text-[#1673A5] hover:underline">
+                forum-support@ibpassociations.org
               </a>
               .
             </p>
@@ -131,7 +131,7 @@ export default async function JuryUpdatePage({
 
       <p className="mt-6 text-center text-xs leading-6 text-black/40">
         This page is personal and intended only for {application.fullName}.{" "}
-        <a href="mailto:forum@ibpa.world" className="hover:text-[#1673A5] hover:underline">
+        <a href="mailto:forum-support@ibpassociations.org" className="hover:text-[#1673A5] hover:underline">
           Contact support
         </a>{" "}
         if you need assistance.
