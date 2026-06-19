@@ -16,6 +16,7 @@ export { default as IconBadge } from "./IconBadge";
 export { default as ImageContainer } from "./ImageContainer";
 export { default as PageHero } from "./PageHero";
 export { default as PageSection } from "./PageSection";
+export { GlassCard, InfoPanel, PremiumButton, SectionShell } from "./PremiumPrimitives";
 export { default as PremiumCTA } from "./PremiumCTA";
 export { default as ProcessTimeline } from "./ProcessTimeline";
 export { default as Reveal } from "./Reveal";
