@@ -6,7 +6,6 @@ import type { CSSProperties, ReactNode } from "react";
 /* ─── Design tokens ─────────────────────────────────────── */
 const IBPA_BLUE      = "#72a0c1";
 const IBPA_BLUE_DEEP = "#4d86ad";
-const IBPA_BLUE_WASH = "#f2f8fb";
 const IBPA_BLUE_SOFT = "#b9d9eb";
 const IBPA_INK       = "#030213";
 const IBPA_MUTED     = "#46525a";
@@ -14,7 +13,7 @@ const IBPA_MUTED     = "#46525a";
 /* ─── Shell ─────────────────────────────────────────────── */
 export function DashboardShell({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#f8f8f6] pb-24 text-[var(--color-ink)] lg:pb-0">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(185,217,235,0.22),transparent_32%),linear-gradient(180deg,var(--color-white),var(--surface-tint))] pb-24 text-[var(--color-ink)] lg:pb-0">
       <div className="mx-auto w-full max-w-[1440px] px-4 py-5 md:px-6 lg:py-7">
         {children}
       </div>
@@ -32,7 +31,7 @@ export function DashboardCard({
 }) {
   return (
     <section
-      className={`rounded-[14px] border border-black/[0.08] bg-white p-5 shadow-[0_8px_28px_rgba(3,2,19,0.05)] ${className}`}
+      className={`rounded-[18px] border border-[var(--border-default)] bg-white/84 p-5 shadow-[0_18px_50px_rgba(3,2,19,0.06)] backdrop-blur-xl ${className}`}
     >
       {children}
     </section>
@@ -49,7 +48,7 @@ export function DashboardPanel({
 }) {
   return (
     <div
-      className={`rounded-[10px] border border-black/[0.07] bg-[#fafaf9] p-4 ${className}`}
+      className={`rounded-[14px] border border-[var(--border-soft)] bg-white/62 p-4 shadow-[0_10px_28px_rgba(3,2,19,0.04)] backdrop-blur-xl ${className}`}
     >
       {children}
     </div>
@@ -69,7 +68,7 @@ export function DashboardPageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-4 border-b border-black/[0.08] pb-6 lg:flex-row lg:items-end lg:justify-between">
+    <div className="flex flex-col gap-4 border-b border-[var(--border-soft)] pb-6 lg:flex-row lg:items-end lg:justify-between">
       <div className="min-w-0">
         {label ? (
           <p
@@ -118,7 +117,7 @@ export function DashboardMetricTile({
   const valueColor = tone ? toneColor[tone] : IBPA_INK;
 
   return (
-    <div className="rounded-[12px] border border-black/[0.07] bg-white p-4 shadow-[0_4px_16px_rgba(3,2,19,0.04)]">
+    <div className="rounded-[16px] border border-[var(--border-default)] bg-white/82 p-4 shadow-[0_14px_34px_rgba(3,2,19,0.05)] backdrop-blur-xl">
       <p
         className="text-[0.65rem] font-semibold uppercase tracking-[0.18em]"
         style={{ fontFamily: "var(--font-ui-family)", color: IBPA_MUTED }}
@@ -177,12 +176,12 @@ function buildButtonClass(
     "inline-flex min-h-[38px] items-center justify-center gap-2 rounded-full px-5 py-2 text-[0.72rem] font-medium uppercase tracking-[0.1em] leading-none transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50";
 
   if (kind === "primary") {
-    return `${base} bg-[${IBPA_BLUE}] text-white border border-[${IBPA_BLUE}] hover:bg-[${IBPA_BLUE_DEEP}] hover:border-[${IBPA_BLUE_DEEP}] shadow-[0_4px_14px_rgba(114,160,193,0.25)] hover:shadow-[0_6px_20px_rgba(114,160,193,0.3)] hover:-translate-y-px ${extra}`;
+    return `${base} border border-[var(--color-blue)] bg-[var(--color-blue)] text-[var(--color-ink)] shadow-[0_10px_24px_rgba(114,160,193,0.22)] hover:border-[var(--color-blue-dark)] hover:bg-[var(--color-blue-soft)] hover:-translate-y-px hover:shadow-[0_14px_34px_rgba(114,160,193,0.28)] ${extra}`;
   }
   if (kind === "danger") {
     return `${base} border border-red-200 bg-white text-red-700 hover:bg-red-50 hover:border-red-300 ${extra}`;
   }
-  return `${base} border border-black/[0.1] bg-white text-[${IBPA_INK}] hover:border-[${IBPA_BLUE}] hover:bg-[${IBPA_BLUE_WASH}] hover:text-[${IBPA_BLUE_DEEP}] ${extra}`;
+  return `${base} border border-[var(--border-default)] bg-white/86 text-[var(--color-ink)] shadow-[0_8px_20px_rgba(3,2,19,0.04)] hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-wash)] ${extra}`;
 }
 
 type BtnProps = {
@@ -240,8 +239,8 @@ export function DashboardFilterChip({
       href={href}
       className={`inline-flex min-h-[34px] items-center justify-center rounded-full border px-4 py-1.5 text-[0.7rem] font-medium uppercase tracking-[0.1em] transition-all duration-200 ${
         active
-          ? "border-[#72a0c1] bg-[#f2f8fb] text-[#030213]"
-          : "border-black/[0.08] bg-white text-black/50 hover:border-[#72a0c1] hover:bg-[#f2f8fb] hover:text-[#030213]"
+          ? "border-[var(--color-blue)] bg-[var(--color-blue-wash)] text-[var(--color-ink)]"
+          : "border-[var(--border-soft)] bg-white/78 text-[var(--color-ink-soft)] hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-wash)] hover:text-[var(--color-ink)]"
       }`}
     >
       {children}
@@ -253,12 +252,12 @@ export function DashboardFilterChip({
 type BadgeTone = "neutral" | "blue" | "green" | "amber" | "red" | "purple";
 
 const badgeTone: Record<BadgeTone, string> = {
-  neutral: "border-black/10 bg-[#f5f5f5] text-black/60",
-  blue:    "border-[#b9d9eb] bg-[#f2f8fb] text-[#2d6080]",
+  neutral: "border-[var(--border-soft)] bg-white/72 text-[var(--color-ink-soft)]",
+  blue:    "border-[var(--color-blue-soft)] bg-[var(--color-blue-wash)] text-[var(--color-blue-dark)]",
   green:   "border-emerald-200 bg-emerald-50 text-emerald-800",
   amber:   "border-amber-200 bg-amber-50 text-amber-800",
   red:     "border-red-200 bg-red-50 text-red-800",
-  purple:  "border-[#b9d9eb] bg-[#f2f8fb] text-[#2d6080]",
+  purple:  "border-[var(--color-blue-soft)] bg-[var(--color-blue-wash)] text-[var(--color-blue-dark)]",
 };
 
 export function DashboardBadge({
@@ -289,9 +288,9 @@ export function DashboardTable({
   className?: string;
 }) {
   return (
-    <div className={`overflow-hidden rounded-[12px] border border-black/[0.08] ${className}`}>
+    <div className={`overflow-hidden rounded-[16px] border border-[var(--border-default)] bg-white/72 shadow-[0_14px_36px_rgba(3,2,19,0.05)] backdrop-blur-xl ${className}`}>
       <div
-        className="hidden gap-4 border-b border-black/[0.07] bg-[#fafaf9] px-5 py-3 text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-black/40 lg:grid"
+        className="hidden gap-4 border-b border-[var(--border-soft)] bg-[var(--surface-tint)]/80 px-5 py-3 text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)] lg:grid"
         style={{
           gridTemplateColumns: `repeat(${headers.length}, minmax(0, 1fr))`,
           fontFamily: "var(--font-ui-family)",
@@ -299,7 +298,7 @@ export function DashboardTable({
       >
         {headers.map((header, i) => <span key={i}>{header}</span>)}
       </div>
-      <div className="divide-y divide-black/[0.06]">{children}</div>
+      <div className="divide-y divide-[var(--border-soft)]">{children}</div>
     </div>
   );
 }
@@ -315,7 +314,7 @@ export function DashboardTableRow({
 }) {
   const inner = (
     <div
-      className={`grid gap-3 px-5 py-4 transition-colors ${href ? "hover:bg-[#f2f8fb]/60" : ""} ${cols ? `lg:grid-cols-[repeat(${cols},minmax(0,1fr))]` : ""}`}
+      className={`grid gap-3 px-5 py-4 transition-colors ${href ? "hover:bg-[var(--color-blue-wash)]/60" : ""} ${cols ? `lg:grid-cols-[repeat(${cols},minmax(0,1fr))]` : ""}`}
     >
       {children}
     </div>
@@ -325,12 +324,12 @@ export function DashboardTableRow({
 
 /* ─── Form inputs ────────────────────────────────────────── */
 export const dashboardInputClass =
-  "h-10 w-full rounded-[8px] border border-black/[0.1] bg-white px-3.5 text-sm leading-none text-[#030213] outline-none transition placeholder:text-black/30 focus:border-[#72a0c1] focus:ring-4 focus:ring-[#f2f8fb]";
+  "h-10 w-full rounded-[10px] border border-[var(--border-default)] bg-white/88 px-3.5 text-sm leading-none text-[var(--color-ink)] outline-none transition placeholder:text-[var(--color-ink-muted)] focus:border-[var(--color-blue)] focus:ring-4 focus:ring-[var(--color-blue-wash)]";
 
 export const dashboardSelectClass = `${dashboardInputClass} cursor-pointer`;
 
 export const dashboardTextareaClass =
-  "min-h-[128px] w-full rounded-[8px] border border-black/[0.1] bg-white px-3.5 py-3 text-sm leading-6 text-[#030213] outline-none transition placeholder:text-black/30 focus:border-[#72a0c1] focus:ring-4 focus:ring-[#f2f8fb]";
+  "min-h-[128px] w-full rounded-[10px] border border-[var(--border-default)] bg-white/88 px-3.5 py-3 text-sm leading-6 text-[var(--color-ink)] outline-none transition placeholder:text-[var(--color-ink-muted)] focus:border-[var(--color-blue)] focus:ring-4 focus:ring-[var(--color-blue-wash)]";
 
 /* ─── Empty state ────────────────────────────────────────── */
 export function DashboardEmptyState({
@@ -343,10 +342,10 @@ export function DashboardEmptyState({
   description?: string;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-[10px] border border-dashed border-black/[0.12] bg-[#fafaf9] px-5 py-12 text-center">
+    <div className="flex flex-col items-center justify-center gap-3 rounded-[16px] border border-dashed border-[var(--color-blue-soft)] bg-white/64 px-5 py-12 text-center shadow-[0_12px_32px_rgba(3,2,19,0.04)]">
       {icon ? (
         <div
-          className="flex size-11 items-center justify-center rounded-full border border-[#b9d9eb] bg-[#f2f8fb]"
+          className="flex size-11 items-center justify-center rounded-full border border-[var(--color-blue-soft)] bg-[var(--color-blue-wash)]"
           style={{ color: IBPA_BLUE }}
         >
           {icon}
@@ -379,9 +378,9 @@ export function DashboardDetailCard({
   value: ReactNode;
 }) {
   return (
-    <div className="rounded-[10px] border border-black/[0.07] bg-[#fafaf9] p-4">
+    <div className="rounded-[14px] border border-[var(--border-soft)] bg-white/64 p-4 shadow-[0_10px_24px_rgba(3,2,19,0.04)]">
       <p
-        className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-black/40"
+        className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]"
         style={{ fontFamily: "var(--font-ui-family)" }}
       >
         {label}
@@ -400,7 +399,7 @@ export function DashboardDetailCard({
 export function DashboardChip({ children }: { children: ReactNode }) {
   return (
     <span
-      className="inline-flex items-center rounded-full border border-[#b9d9eb] bg-[#f2f8fb] px-3 py-0.5 text-[0.62rem] font-semibold leading-none tracking-[0.08em] text-[#2d6080]"
+      className="inline-flex items-center rounded-full border border-[var(--color-blue-soft)] bg-[var(--color-blue-wash)] px-3 py-0.5 text-[0.62rem] font-semibold leading-none tracking-[0.08em] text-[var(--color-blue-dark)]"
       style={{ fontFamily: "var(--font-ui-family)" }}
     >
       {children}
@@ -454,10 +453,9 @@ export function DashboardAccentBlock({
 }) {
   return (
     <div
-      className={`rounded-[14px] border border-[#5c8aaa] p-5 text-white ${className}`}
+      className={`rounded-[18px] border border-[var(--color-blue-soft)] p-5 text-[var(--color-ink)] shadow-[0_18px_44px_rgba(114,160,193,0.16)] backdrop-blur-xl ${className}`}
       style={{
-        background: "linear-gradient(135deg, #7a98af 0%, #5c8aaa 100%)",
-        boxShadow: "0 8px 32px rgba(114,160,193,0.28)",
+        background: "linear-gradient(135deg, rgba(185,217,235,0.42) 0%, rgba(255,255,255,0.82) 100%)",
       }}
     >
       {children}

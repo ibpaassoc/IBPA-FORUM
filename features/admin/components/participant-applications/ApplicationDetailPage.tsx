@@ -204,7 +204,7 @@ function FileLink({
 }
 
 const statusActionTone = {
-  primary: "border-[#6b8a9f] bg-[#7a98af] text-white hover:bg-[#6b8a9f]",
+  primary: "border-[var(--color-blue)] bg-[var(--color-blue)] text-[var(--color-ink)] hover:bg-[var(--color-blue-soft)]",
   blue: "border-[#7DC8EE] bg-[#EAF6FF] text-[#0A0A0A] hover:bg-[#DFF2FF]",
   neutral: "border-black/10 bg-white text-[#0A0A0A] hover:border-[#7DC8EE] hover:bg-[#EAF6FF]",
   danger: "border-red-200 bg-white text-red-700 hover:bg-red-50",
@@ -535,18 +535,18 @@ export default function ApplicationDetailPage({
 
         <aside className="flex flex-col gap-4 xl:sticky xl:top-5 xl:self-start">
           <DashboardAccentBlock>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/90">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-soft)]">
               Overview
             </p>
             <div className="mt-4 grid grid-cols-2 gap-3">
-              <div className="rounded-md border border-white/30 bg-white/20 p-3">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/90">
+              <div className="rounded-md border border-[var(--color-blue-soft)] bg-white/72 p-3">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">
                   Nominations
                 </p>
                 <p className="mt-2 text-2xl font-semibold">{nominationSummaries.length}</p>
               </div>
-              <div className="rounded-md border border-white/30 bg-white/20 p-3">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/90">
+              <div className="rounded-md border border-[var(--color-blue-soft)] bg-white/72 p-3">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">
                   Fee
                 </p>
                 <p className="mt-2 text-2xl font-semibold">
@@ -554,7 +554,7 @@ export default function ApplicationDetailPage({
                 </p>
               </div>
             </div>
-            <div className="mt-4 flex items-center gap-2 text-sm text-white">
+            <div className="mt-4 flex items-center gap-2 text-sm text-[var(--color-ink-soft)]">
               <Clock3 aria-hidden size={15} />
               Created {formatAdminDate(application.createdAt)}
             </div>

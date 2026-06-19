@@ -138,7 +138,7 @@ export default function JuryScoreForm({ nominationApplicationId, initialScore }:
 
       <div className="flex flex-col gap-4 p-4 md:p-5">
         <DashboardAccentBlock>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/90">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-soft)]">
             Current total
           </p>
           <p className="mt-2 text-4xl font-semibold tracking-[-0.04em]">{total} / 50</p>

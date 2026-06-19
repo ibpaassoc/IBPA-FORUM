@@ -44,27 +44,27 @@ export default function JuryScoresPage({
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p
-              className="text-[0.65rem] uppercase tracking-[0.18em] text-white/75"
+              className="text-[0.65rem] uppercase tracking-[0.18em] text-[var(--color-ink-soft)]"
               style={{ fontFamily: "var(--font-ui-family)" }}
             >
               Submitted by
             </p>
             <p
-              className="mt-1.5 text-[1.4rem] font-light leading-tight text-white"
+              className="mt-1.5 text-[1.4rem] font-light leading-tight text-[var(--color-ink)]"
               style={{ fontFamily: "var(--font-display)" }}
             >
               {juryName}
             </p>
           </div>
-          <div className="rounded-[10px] border border-white/20 bg-white/12 px-5 py-3">
+          <div className="rounded-[14px] border border-[var(--color-blue-soft)] bg-white/72 px-5 py-3 shadow-[0_10px_24px_rgba(3,2,19,0.04)]">
             <p
-              className="text-[0.62rem] uppercase tracking-[0.16em] text-white/70"
+              className="text-[0.62rem] uppercase tracking-[0.16em] text-[var(--color-ink-soft)]"
               style={{ fontFamily: "var(--font-ui-family)" }}
             >
               Completed
             </p>
             <p
-              className="mt-1 text-[1.8rem] font-light leading-none text-white"
+              className="mt-1 text-[1.8rem] font-light leading-none text-[var(--color-ink)]"
               style={{ fontFamily: "var(--font-display)" }}
             >
               {applications.length}
@@ -132,7 +132,7 @@ export default function JuryScoresPage({
                       {app.email}
                     </p>
                     <p
-                      className="mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-black/[0.08] bg-white px-2.5 py-1 text-[0.7rem]"
+                      className="mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-[var(--border-soft)] bg-white/82 px-2.5 py-1 text-[0.7rem]"
                       style={{ fontFamily: "var(--font-ui-family)", color: "#46525a" }}
                     >
                       <MapPin aria-hidden size={11} />
@@ -141,7 +141,7 @@ export default function JuryScoresPage({
                   </DashboardPanel>
 
                   {/* Archive CTA */}
-                  <div className="flex items-center justify-between rounded-[10px] border border-black/[0.07] bg-[#fafaf9] p-4 transition-colors group-hover:border-[#72a0c1]/30 group-hover:bg-[#f2f8fb]/60">
+                  <div className="flex items-center justify-between rounded-[14px] border border-[var(--border-soft)] bg-white/68 p-4 transition-colors group-hover:border-[var(--color-blue)]/35 group-hover:bg-[var(--color-blue-wash)]/60">
                     <div>
                       <div className="flex items-center gap-2" style={{ color: "#72a0c1" }}>
                         <ShieldCheck aria-hidden size={14} />
