@@ -15,11 +15,11 @@
   --color-hover-accent: #6a98ba;
   --color-title-accent: #72a0c1;
 
-  --font-title-family: var(--font-display), "Bodoni Moda", serif;
-  --font-body-family: var(--font-body), "Lora", serif;
-  --font-ui-family: var(--font-ui), var(--font-sans), "Raleway", sans-serif;
-  --font-accent-family: var(--font-accent), "Cormorant Garamond", italic;
-  --font-legal-family: var(--font-inter), "Inter", sans-serif;
+  --font-title-family: var(--font-display), "Bodoni Moda", Georgia, serif;
+  --font-body-family: var(--font-body), "Lora", Georgia, serif;
+  --font-ui-family: var(--font-inter), "Inter", system-ui, sans-serif;
+  --font-accent-family: var(--font-accent), "Cormorant Garamond", Georgia, serif;
+  --font-legal-family: var(--font-inter), "Inter", system-ui, sans-serif;
 
   --border-default: rgba(3, 2, 19, 0.1);
   --border-soft: rgba(3, 2, 19, 0.06);
@@ -115,13 +115,12 @@ body {
 }
 
 h1 {
-  font-family: var(--font-ui-family);
-  font-weight: 800;
+  font-family: var(--font-title-family);
+  font-weight: 400;
   font-style: normal;
   line-height: 0.94;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.03em;
   text-wrap: balance;
-  text-transform: uppercase;
 }
 
 h2 {
@@ -139,14 +138,14 @@ h4 {
   font-weight: 400;
   font-style: normal;
   line-height: 1.18;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
   text-wrap: balance;
 }
 
 p,
 li {
-  font-family: var(--font-ui-family);
-  line-height: 1.7;
+  font-family: var(--font-body-family);
+  line-height: 1.75;
 }
 
 a,
@@ -221,11 +220,11 @@ a:hover:not(.ibpa-button) {
   flex-wrap: wrap;
   gap: var(--space-sm);
   color: var(--color-hover-accent);
-  font-family: var(--font-ui-family);
-  font-size: clamp(0.65rem, 1vw, 0.75rem);
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+  font-family: var(--font-accent-family);
+  font-size: clamp(0.8rem, 1.2vw, 0.95rem);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0.04em;
 }
 
 @utility page-copy {
@@ -233,7 +232,7 @@ a:hover:not(.ibpa-button) {
   font-family: var(--font-body-family);
   font-size: clamp(0.95rem, 1.5vw, 1.05rem);
   font-weight: 400;
-  line-height: 1.75;
+  line-height: 1.78;
   overflow-wrap: anywhere;
   text-wrap: pretty;
 }
@@ -271,45 +270,55 @@ a:hover:not(.ibpa-button) {
   border-radius: var(--radius-pill);
   cursor: pointer;
   font-family: var(--font-ui-family);
-  font-size: clamp(0.72rem, 1vw, 0.85rem);
+  font-size: clamp(0.72rem, 1vw, 0.8rem);
   font-weight: 500;
   line-height: 1.25;
-  letter-spacing: 0.08em;
-  padding: clamp(0.6rem, 1.2vw, 0.75rem) clamp(1.2rem, 2.5vw, 2rem);
+  letter-spacing: 0.1em;
+  padding: clamp(0.6rem, 1.2vw, 0.72rem) clamp(1.4rem, 2.5vw, 2.2rem);
   text-align: center;
   text-wrap: balance;
   text-transform: uppercase;
   white-space: normal;
-  transition: all 0.36s var(--motion-editorial);
+  transition:
+    background 0.28s var(--motion-editorial),
+    border-color 0.28s var(--motion-editorial),
+    color 0.28s var(--motion-editorial),
+    box-shadow 0.28s var(--motion-editorial),
+    transform 0.28s var(--motion-editorial);
 }
 
+/* Primary — ink fill */
 @utility ibpa-button-primary {
   background: var(--color-ink);
-  border: 0;
+  border: 1.5px solid var(--color-ink);
   color: var(--color-white);
 }
 
+/* Blue — brand blue fill */
 @utility ibpa-button-blue {
-  background: var(--color-hover-accent);
-  border: 0;
+  background: var(--color-blue);
+  border: 1.5px solid var(--color-blue);
   color: var(--color-white);
 }
 
-@utility ibpa-button-gold {
-  background: var(--color-title-accent);
-  border: 0;
-  color: var(--color-white);
-}
-
+/* Ghost — outlined, transparent */
 @utility ibpa-button-ghost {
   background: transparent;
-  border: 1.5px solid var(--border-default);
+  border: 1.5px solid var(--border-strong);
   color: var(--color-ink);
 }
 
+/* Soft — light blue fill */
+@utility ibpa-button-soft {
+  background: var(--color-blue-wash);
+  border: 1.5px solid var(--color-blue-light);
+  color: var(--color-ink);
+}
+
+/* White — for use on photo/dark sections */
 @utility ibpa-button-white {
-  background: transparent;
-  border: 1.5px solid rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
   color: var(--color-white);
 }
 
@@ -484,41 +493,44 @@ a:hover:not(.ibpa-button) {
 }
 
 .page-eyebrow::before {
-  content: "";
-  display: block;
-  width: clamp(16px, 2vw, 28px);
-  height: 1px;
-  background: var(--color-hover-accent);
+  content: "–";
+  font-style: normal;
+  font-size: 0.85em;
+  opacity: 0.5;
 }
 
 .ibpa-button-primary:hover {
-  background: #1a1a2e;
-  box-shadow: var(--shadow-md);
+  background: var(--color-blue);
+  border-color: var(--color-blue);
+  box-shadow: 0 8px 28px rgba(114, 160, 193, 0.35);
   transform: translateY(-1px);
 }
 
 .ibpa-button-blue:hover {
   background: #4d86ad;
-  box-shadow: var(--shadow-md);
+  border-color: #4d86ad;
+  box-shadow: 0 8px 28px rgba(114, 160, 193, 0.35);
   transform: translateY(-1px);
-}
-
-.ibpa-button-gold:hover {
-  background: #4d86ad;
-  color: var(--color-white);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
 }
 
 .ibpa-button-ghost:hover {
   background: var(--color-ink);
   border-color: var(--color-ink);
   color: var(--color-white);
+  transform: translateY(-1px);
+}
+
+.ibpa-button-soft:hover {
+  background: var(--color-white);
+  border-color: var(--color-blue);
+  box-shadow: 0 4px 16px rgba(114, 160, 193, 0.18);
+  transform: translateY(-1px);
 }
 
 .ibpa-button-white:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.22);
   border-color: rgba(255, 255, 255, 0.85);
+  transform: translateY(-1px);
 }
 
 .ibpa-button:hover {

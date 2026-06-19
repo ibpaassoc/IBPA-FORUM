@@ -66,7 +66,7 @@ export default function GrandPrixTimeline() {
                       <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-ink-soft)]">
                         Grand Prix Step
                       </p>
-                      <h3 className="mt-3 font-[var(--font-ui-family)] text-[1.15rem] font-semibold uppercase leading-[1.2] tracking-[0.03em] text-[var(--color-ink)]">
+                      <h3 className="mt-3 font-[var(--font-title-family)] text-[clamp(1.1rem,1.6vw,1.4rem)] font-light leading-[1.12] text-[var(--color-ink)]">
                         {step.title}
                       </h3>
                       <p className="mt-3 text-[0.94rem] leading-[1.75] text-[var(--color-ink-soft)]">

@@ -83,7 +83,7 @@ export default async function TicketPaymentPage({
         )}
 
         <div className="mt-8">
-          <Link href="/" className="ibpa-button ibpa-button-secondary w-full text-center">
+          <Link href="/" className="ibpa-button ibpa-button-ghost w-full text-center">
             Back to Home
           </Link>
         </div>

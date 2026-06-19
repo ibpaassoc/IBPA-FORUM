@@ -25,17 +25,10 @@ export default function GrandPrixCTA() {
           </p>
 
           <div className="mt-auto flex flex-wrap items-center gap-3 pt-8">
-            <Link
-              href="/apply"
-              className="inline-flex items-center gap-2 rounded-full bg-[var(--color-ink)] px-6 py-3 text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-white transition-all duration-300 hover:bg-black"
-            >
+            <Link href="/apply" className="ibpa-button ibpa-button-primary inline-flex items-center gap-2">
               {t.common.applyNow} <ArrowRight size={15} />
             </Link>
-
-            <Link
-              href="/grand-prix"
-              className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-6 py-3 text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink)] transition-all duration-300 hover:border-black hover:bg-black hover:text-white"
-            >
+            <Link href="/grand-prix" className="ibpa-button ibpa-button-ghost inline-flex items-center gap-2">
               <Trophy size={14} strokeWidth={1.7} />
               {t.home.grandPrixSpotlight.learnMore}
             </Link>

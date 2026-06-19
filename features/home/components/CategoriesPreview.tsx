@@ -20,7 +20,7 @@ export default function CategoriesPreview() {
 
           <Link
             href="/directions"
-            className="font-(--font-sans) text-[clamp(0.72rem,1vw,0.85rem)] uppercase tracking-widest text-(--color-ink) transition hover:text-(--color-hover-accent)"
+            className="font-[var(--font-ui-family)] text-[clamp(0.72rem,1vw,0.85rem)] uppercase tracking-widest text-(--color-ink) transition hover:text-(--color-hover-accent)"
           >
             {t.home.categoriesPreview.viewAll} {"->"}
           </Link>

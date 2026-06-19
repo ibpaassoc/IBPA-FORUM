@@ -76,15 +76,34 @@ export default function JuryDashboardPage({
         <DashboardAccentBlock>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/90">
+              <p
+                className="text-[0.65rem] uppercase tracking-[0.18em] text-white/75"
+                style={{ fontFamily: "var(--font-inter)" }}
+              >
                 Active judge
               </p>
-              <p className="mt-2 text-2xl font-semibold tracking-[-0.02em]">{juryName}</p>
-              {professionalTitle ? <p className="mt-1 text-sm text-white/90">{professionalTitle}</p> : null}
+              <p
+                className="mt-2 text-[1.4rem] font-light leading-tight text-white"
+                style={{ fontFamily: "var(--font-display)" }}
+              >
+                {juryName}
+              </p>
+              {professionalTitle ? (
+                <p
+                  className="mt-1 text-[0.85rem] italic text-white/75"
+                  style={{ fontFamily: "var(--font-accent)" }}
+                >
+                  {professionalTitle}
+                </p>
+              ) : null}
             </div>
             <div className="flex flex-wrap gap-1.5">
               {expertiseAreas.slice(0, 4).map((area) => (
-                <span key={area} className="rounded-md border border-white/30 bg-white/20 px-2 py-1 text-[11px] font-medium text-white">
+                <span
+                  key={area}
+                  className="rounded-full border border-white/25 bg-white/15 px-2.5 py-0.5 text-[0.62rem] font-medium text-white/85"
+                  style={{ fontFamily: "var(--font-inter)" }}
+                >
                   {area}
                 </span>
               ))}
@@ -124,61 +143,101 @@ export default function JuryDashboardPage({
       {applications.length === 0 ? (
         <DashboardCard>
           <DashboardEmptyState
-            icon={<ClipboardList size={22} />}
+            icon={<ClipboardList size={20} />}
             title="No applications to review"
-            description={activeCategory ? "Switch filters to see another category." : "No nominations are assigned yet."}
+            description={
+              activeCategory
+                ? "Switch filters to see another category."
+                : "No nominations are assigned yet."
+            }
           />
         </DashboardCard>
       ) : (
         <div className="flex flex-col gap-3">
           {applications.map((app) => (
             <Link key={app.id} href={`/jury/dashboard/applications/${app.id}`} className="group block">
-              <DashboardCard className="p-0 transition hover:border-[#7DC8EE] hover:shadow-[0_22px_60px_rgba(10,10,10,0.1)]">
-                <div className="grid gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.8fr)_160px] lg:items-center">
+              <DashboardCard className="p-0 transition-all duration-200 hover:border-[#72a0c1]/40 hover:shadow-[0_12px_40px_rgba(114,160,193,0.14)]">
+                <div className="grid gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(260px,0.8fr)_148px] lg:items-center">
+
+                  {/* Award info */}
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       {scoreStatusBadge(app.scoreStatus)}
                       <DashboardChip>{app.category.name}</DashboardChip>
                     </div>
-                    <h2 className="mt-3 text-xl font-semibold normal-case tracking-[-0.02em] text-[#0A0A0A]">
+                    <h2
+                      className="mt-3 text-[clamp(1rem,1.6vw,1.3rem)] font-light leading-[1.12] tracking-[-0.01em]"
+                      style={{ fontFamily: "var(--font-display)", color: "#030213" }}
+                    >
                       {app.award.name}
                     </h2>
-                    <p className="mt-1 text-sm text-black/55">
+                    <p
+                      className="mt-1 text-[0.8rem] italic"
+                      style={{ fontFamily: "var(--font-accent)", color: "#46525a" }}
+                    >
                       Submitted {formatAdminDate(app.submittedAt ?? app.createdAt)}
                     </p>
                   </div>
 
+                  {/* Applicant panel */}
                   <DashboardPanel>
-                    <div className="flex items-center gap-2 text-[#1673A5]">
-                      <UserRound aria-hidden size={16} />
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">
+                    <div className="flex items-center gap-2" style={{ color: "#72a0c1" }}>
+                      <UserRound aria-hidden size={14} />
+                      <p
+                        className="text-[0.6rem] font-semibold uppercase tracking-[0.14em]"
+                        style={{ fontFamily: "var(--font-inter)" }}
+                      >
                         Applicant
                       </p>
                     </div>
-                    <p className="mt-2 text-sm font-semibold text-[#0A0A0A]">{app.fullName}</p>
-                    <p className="mt-1 truncate text-xs text-black/50">{app.email}</p>
-                    <p className="mt-3 inline-flex items-center gap-2 rounded-md border border-black/10 bg-white px-2 py-1 text-xs text-black/50">
-                      <MapPin aria-hidden size={13} />
+                    <p
+                      className="mt-2 text-[0.9rem] font-light leading-tight"
+                      style={{ fontFamily: "var(--font-display)", color: "#030213" }}
+                    >
+                      {app.fullName}
+                    </p>
+                    <p
+                      className="mt-1 truncate text-[0.78rem]"
+                      style={{ fontFamily: "var(--font-body)", color: "#46525a" }}
+                    >
+                      {app.email}
+                    </p>
+                    <p
+                      className="mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-black/[0.08] bg-white px-2.5 py-1 text-[0.7rem]"
+                      style={{ fontFamily: "var(--font-inter)", color: "#46525a" }}
+                    >
+                      <MapPin aria-hidden size={11} />
                       {app.city}, {app.country}
                     </p>
                   </DashboardPanel>
 
-                  <div className="flex items-center justify-between rounded-lg border border-black/10 bg-white p-4">
+                  {/* Review CTA */}
+                  <div className="flex items-center justify-between rounded-[10px] border border-black/[0.07] bg-[#fafaf9] p-4 transition-colors group-hover:border-[#72a0c1]/30 group-hover:bg-[#f2f8fb]/60">
                     <div>
-                      <div className="flex items-center gap-2 text-black/45">
-                        <PenSquare aria-hidden size={15} />
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">
+                      <div className="flex items-center gap-2" style={{ color: "#72a0c1" }}>
+                        <PenSquare aria-hidden size={14} />
+                        <p
+                          className="text-[0.6rem] font-semibold uppercase tracking-[0.14em]"
+                          style={{ fontFamily: "var(--font-inter)" }}
+                        >
                           Review
                         </p>
                       </div>
-                      <p className="mt-2 text-sm font-semibold text-[#0A0A0A]">Open</p>
+                      <p
+                        className="mt-1.5 text-[0.85rem] font-light"
+                        style={{ fontFamily: "var(--font-display)", color: "#030213" }}
+                      >
+                        Open entry
+                      </p>
                     </div>
                     <ArrowRight
                       aria-hidden
-                      size={17}
-                      className="text-black/45 transition group-hover:translate-x-0.5 group-hover:text-[#1673A5]"
+                      size={16}
+                      className="transition-transform duration-200 group-hover:translate-x-0.5"
+                      style={{ color: "#72a0c1" }}
                     />
                   </div>
+
                 </div>
               </DashboardCard>
             </Link>

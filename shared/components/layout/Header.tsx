@@ -134,7 +134,7 @@ export default function Header() {
                   href={item.href}
                   target="_blank"
                   rel="noreferrer"
-                  className={`relative font-[var(--font-sans)] text-[clamp(0.7rem,1vw,0.78rem)] font-semibold uppercase tracking-[0.12em] transition after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:bg-current after:transition-transform after:duration-300 ${useTransparent ? "text-white/72 after:scale-x-0 hover:text-white hover:after:scale-x-100" : "text-[var(--color-ink)]/68 after:scale-x-0 hover:text-[var(--color-ink)] hover:after:scale-x-100"}`}
+                  className={`relative font-[var(--font-ui-family)] text-[clamp(0.7rem,1vw,0.78rem)] font-semibold uppercase tracking-[0.12em] transition after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:bg-current after:transition-transform after:duration-300 ${useTransparent ? "text-white/72 after:scale-x-0 hover:text-white hover:after:scale-x-100" : "text-[var(--color-ink)]/68 after:scale-x-0 hover:text-[var(--color-ink)] hover:after:scale-x-100"}`}
                 >
                   {item.label}
                 </a>
@@ -142,7 +142,7 @@ export default function Header() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`relative font-[var(--font-sans)] text-[clamp(0.7rem,1vw,0.78rem)] font-semibold uppercase tracking-[0.12em] transition after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:bg-current after:transition-transform after:duration-300 ${useTransparent ? isActive(item.href) ? "text-white after:scale-x-100" : "text-white/70 after:scale-x-0 hover:text-white hover:after:scale-x-100" : isActive(item.href) ? "text-[var(--color-ink)] after:scale-x-100" : "text-[var(--color-ink)]/68 after:scale-x-0 hover:text-[var(--color-ink)] hover:after:scale-x-100"}`}
+                  className={`relative font-[var(--font-ui-family)] text-[clamp(0.7rem,1vw,0.78rem)] font-semibold uppercase tracking-[0.12em] transition after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:bg-current after:transition-transform after:duration-300 ${useTransparent ? isActive(item.href) ? "text-white after:scale-x-100" : "text-white/70 after:scale-x-0 hover:text-white hover:after:scale-x-100" : isActive(item.href) ? "text-[var(--color-ink)] after:scale-x-100" : "text-[var(--color-ink)]/68 after:scale-x-0 hover:text-[var(--color-ink)] hover:after:scale-x-100"}`}
                 >
                   {item.label}
                 </Link>

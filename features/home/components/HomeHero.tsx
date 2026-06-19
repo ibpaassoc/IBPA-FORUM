@@ -36,31 +36,28 @@ export default function HomeHero() {
       {/* Center content */}
       <div className="relative z-10 flex w-full max-w-[var(--content-width)] flex-col items-center px-[var(--page-gutter)] text-center">
         <div className="flex w-full flex-col gap-8 py-24 sm:py-36 md:py-52">
-          <p className="font-[var(--font-ui-family)] text-[0.72rem] font-semibold uppercase tracking-[0.28em] text-white/55">
+          <p className="font-[var(--font-accent-family)] text-[clamp(0.9rem,1.2vw,1rem)] italic tracking-wide text-white/65">
             Beauty Business Forum
           </p>
 
           <h1
-            className="font-[var(--font-ui-family)] text-[clamp(3.2rem,12vw,9rem)] font-black uppercase leading-[0.88] tracking-[-0.04em] text-white"
-            style={{ textShadow: "0 6px 32px rgba(0,0,0,0.45)" }}
+            className="font-[var(--font-title-family)] text-[clamp(3.2rem,12vw,9rem)] font-light leading-[0.88] tracking-[-0.03em] text-white"
+            style={{ textShadow: "0 6px 32px rgba(0,0,0,0.35)" }}
           >
             {t.home.hero.title}
           </h1>
 
-          <p className="mx-auto max-w-xl font-[var(--font-accent-family)] text-[clamp(1.1rem,3.5vw,1.6rem)] italic leading-[1.55] text-[var(--color-blue-soft)]">
+          <p className="mx-auto max-w-xl font-[var(--font-accent-family)] text-[clamp(1.1rem,3.5vw,1.55rem)] italic leading-[1.6] text-[var(--color-blue-soft)]">
             {t.home.hero.description}
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-            <Link
-              href="/apply"
-              className="inline-flex items-center gap-2.5 rounded-full bg-white px-8 py-4 text-[0.78rem] font-semibold uppercase tracking-[0.1em] text-[var(--color-ink)] shadow-2xl transition-all duration-300 hover:scale-105 hover:bg-white/95"
-            >
+            <Link href="/apply" className="ibpa-button ibpa-button-white inline-flex items-center gap-2.5">
               {t.common.applyAsParticipant} <ArrowRight size={16} />
             </Link>
             <Link
               href="/jury"
-              className="ibpa-button ibpa-button-white text-[0.78rem]"
+              className="ibpa-button ibpa-button-white"
             >
               {t.common.applyAsJury}
             </Link>
@@ -80,7 +77,7 @@ export default function HomeHero() {
           {loopTicker.map((item, index) => (
             <span
               key={`${item}-${index}`}
-              className="inline-flex items-center gap-10 font-[var(--font-ui-family)] text-[0.65rem] font-semibold uppercase tracking-[0.38em] text-white/45"
+              className="inline-flex items-center gap-10 font-[var(--font-accent-family)] text-[0.85rem] italic tracking-[0.08em] text-white/45"
             >
               <span>{item}</span>
               <span className="text-white/25">◆</span>

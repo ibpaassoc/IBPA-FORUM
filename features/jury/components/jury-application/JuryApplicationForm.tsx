@@ -427,7 +427,7 @@ export default function JuryApplicationForm() {
           <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-hover-accent)]">
             {STEPS[step].label} — {step + 1} / {STEPS.length}
           </p>
-          <h2 className="mt-2 font-[var(--font-ui-family)] text-[2rem] font-black uppercase leading-none tracking-[-0.02em] text-[var(--color-ink)] md:text-[2.5rem]">
+          <h2 className="mt-2 font-[var(--font-title-family)] text-[clamp(1.8rem,3.5vw,2.6rem)] font-light leading-[1.05] tracking-[-0.02em] text-[var(--color-ink)]">
             {currentStepInfo.title}
           </h2>
           <p className="mt-2 font-[var(--font-accent-family)] text-[1rem] italic leading-[1.6] text-[var(--color-ink-soft)]">

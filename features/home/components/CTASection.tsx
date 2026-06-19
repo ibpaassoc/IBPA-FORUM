@@ -24,7 +24,7 @@ export default function CTASection() {
         <div className="mt-[var(--space-lg)] flex flex-wrap items-center justify-center gap-[var(--space-sm)]">
           <Link
             href="/apply"
-            className="ibpa-button ibpa-button-gold"
+            className="ibpa-button ibpa-button-blue"
           >
             {t.common.applyNow}
           </Link>

@@ -47,7 +47,7 @@ export default function JuryApplyHero() {
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <a
               href="#jury-application-form"
-              className="ibpa-button ibpa-button-gold"
+              className="ibpa-button ibpa-button-blue"
             >
               Start Application
             </a>

@@ -148,7 +148,7 @@ export default function PaymentSuccessCard({ sessionId: _sessionId }: { sessionI
             variants={fade}
             initial="hidden"
             animate="show"
-            className="font-[var(--font-title-family)] text-[clamp(3.2rem,8vw,6rem)] font-light leading-[0.96] tracking-[-0.03em] text-[var(--color-ink)]"
+            className="font-[var(--font-title-family)] text-[clamp(3rem,8vw,6rem)] font-light leading-[0.96] tracking-[-0.03em] text-[var(--color-ink)]"
           >
             {t.headline}
           </motion.h1>
@@ -198,7 +198,7 @@ export default function PaymentSuccessCard({ sessionId: _sessionId }: { sessionI
                     <p className="mb-1 text-[0.6rem] font-bold uppercase tracking-[0.26em] text-[var(--color-ink-soft)]">
                       {String(i + 1).padStart(2, "0")}
                     </p>
-                    <h2 className="font-[var(--font-ui-family)] text-[1.18rem] font-black uppercase leading-tight tracking-[-0.01em] text-[var(--color-ink)]">
+                    <h2 className="font-[var(--font-title-family)] text-[clamp(1.1rem,1.6vw,1.35rem)] font-light leading-[1.1] text-[var(--color-ink)]">
                       {step.title}
                     </h2>
                     <p className="mt-3 text-[0.9rem] leading-[1.75] text-[var(--color-ink-soft)]">

@@ -101,7 +101,7 @@ export default function ApplyPageIntro() {
               key={step.title}
               className="group flex h-full flex-col bg-[var(--surface)] p-[var(--space-lg)] transition-colors duration-300 hover:bg-[var(--surface-muted)]"
             >
-              <p className="mb-[var(--space-md)] select-none font-[var(--font-ui-family)] text-[3rem] font-black leading-[1] tracking-[-0.06em] text-[var(--color-ink)]/6">
+              <p className="mb-[var(--space-md)] select-none font-[var(--font-title-family)] text-[3rem] font-light italic leading-[1] tracking-[-0.04em] text-[var(--color-ink)]/8">
                 {stepNumbers[index]}
               </p>
               <div className="mb-[var(--space-sm)] inline-flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-muted)]">
@@ -111,7 +111,7 @@ export default function ApplyPageIntro() {
                   className="text-[var(--color-hover-accent)]"
                 />
               </div>
-              <h3 className="font-[var(--font-ui-family)] text-[0.82rem] font-semibold uppercase tracking-[0.1em] text-[var(--color-ink)]">
+              <h3 className="font-[var(--font-title-family)] text-[clamp(1rem,1.4vw,1.15rem)] font-light leading-[1.1] text-[var(--color-ink)]">
                 {step.title}
               </h3>
               <p className="mt-2 text-[0.88rem] leading-[1.72] text-[var(--color-ink-soft)]">
