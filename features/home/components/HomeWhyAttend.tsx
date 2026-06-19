@@ -61,8 +61,8 @@ export default function HomeWhyAttend() {
                       className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                     />
                     {/* Number overlay */}
-                    <div className="absolute right-[var(--space-md)] top-[var(--space-md)] flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-ink)]/60 backdrop-blur-sm">
-                      <span className="font-[var(--font-title-family)] text-[0.8rem] text-white/80">
+                    <div className="absolute right-[var(--space-md)] top-[var(--space-md)] flex h-9 w-9 items-center justify-center rounded-full bg-white/80 backdrop-blur-sm shadow-[var(--shadow-sm)]">
+                      <span className="font-[var(--font-title-family)] text-[0.8rem] text-[var(--color-ink)]">
                         {String(index + 1).padStart(2, "0")}
                       </span>
                     </div>

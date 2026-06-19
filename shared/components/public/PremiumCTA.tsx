@@ -24,7 +24,7 @@ export default function PremiumCTA({
   secondary,
   aside,
   className,
-  dark = true,
+  dark = false,
 }: PremiumCTAProps) {
   return (
     <section

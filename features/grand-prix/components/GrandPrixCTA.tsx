@@ -42,41 +42,41 @@ export default function GrandPrixCTA() {
           </div>
         </article>
 
-        <article className="rounded-[36px] bg-[var(--color-ink)] p-8 text-white shadow-[0_24px_60px_rgba(3,2,19,0.12)] md:p-10">
-          <p className="text-[0.62rem] font-semibold uppercase tracking-[0.26em] text-white/65">
+        <article className="rounded-[36px] border border-[var(--color-blue-light)] bg-[var(--color-blue-wash)] p-8 shadow-[var(--shadow-md)] md:p-10">
+          <p className="text-[0.62rem] font-semibold uppercase tracking-[0.26em] text-[var(--color-blue)]">
             {c.nominationFees}
           </p>
           <div className="mt-5 space-y-4">
-            <div className="rounded-[24px] border border-white/10 bg-white/6 px-5 py-5">
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-white/62">
+            <div className="rounded-[24px] border border-[var(--color-blue-light)] bg-white px-5 py-5 shadow-[var(--shadow-sm)]">
+              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-blue)]">
                 {c.members}
               </p>
-              <p className="mt-2 text-[2rem] font-semibold tracking-[-0.03em] text-white">
+              <p className="mt-2 font-[var(--font-title-family)] text-[2rem] font-light tracking-[-0.03em] text-[var(--color-ink)]">
                 {PRICING.awardParticipation.ibpaMembers.oneNomination}
               </p>
-              <p className="mt-1 text-[0.78rem] leading-[1.6] text-white/55">
+              <p className="mt-1 text-[0.78rem] leading-[1.6] text-[var(--color-ink-soft)]">
                 {c.perNomSubmission}
               </p>
             </div>
-            <div className="rounded-[24px] border border-white/10 bg-white/6 px-5 py-5">
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-white/62">
+            <div className="rounded-[24px] border border-[var(--color-blue-light)] bg-white px-5 py-5 shadow-[var(--shadow-sm)]">
+              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-blue)]">
                 {ps.nonMembers}
               </p>
-              <p className="mt-2 text-[2rem] font-semibold tracking-[-0.03em] text-white">
+              <p className="mt-2 font-[var(--font-title-family)] text-[2rem] font-light tracking-[-0.03em] text-[var(--color-ink)]">
                 {PRICING.awardParticipation.nonMembers.oneNomination}
               </p>
-              <p className="mt-1 text-[0.78rem] leading-[1.6] text-white/55">
+              <p className="mt-1 text-[0.78rem] leading-[1.6] text-[var(--color-ink-soft)]">
                 {c.perNomSubmission}
               </p>
             </div>
-            <div className="rounded-[24px] border border-white/10 bg-white/6 px-5 py-5">
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-white/62">
+            <div className="rounded-[24px] border border-[var(--color-blue-light)] bg-white px-5 py-5 shadow-[var(--shadow-sm)]">
+              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-blue)]">
                 {t.common.grandPrix}
               </p>
-              <p className="mt-2 text-[2rem] font-semibold tracking-[-0.03em] text-white">
+              <p className="mt-2 font-[var(--font-title-family)] text-[2rem] font-light tracking-[-0.03em] text-[var(--color-ink)]">
                 5+
               </p>
-              <p className="mt-1 text-[0.78rem] leading-[1.6] text-white/55">
+              <p className="mt-1 text-[0.78rem] leading-[1.6] text-[var(--color-ink-soft)]">
                 {c.nominationsActivate}
               </p>
             </div>

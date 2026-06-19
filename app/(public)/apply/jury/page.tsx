@@ -11,28 +11,28 @@ export default function JuryApplyPage() {
 
   return (
     <main className="page-shell">
-      {/* Dark editorial hero */}
-      <section className="relative flex min-h-[42vh] items-end overflow-hidden bg-[var(--color-ink)] pb-12 pt-24 md:pt-36">
+      {/* Light editorial hero */}
+      <section className="relative flex min-h-[42vh] items-end overflow-hidden bg-[var(--color-blue-wash)] pb-12 pt-24 md:pt-36">
         <Image
           src="/images/editorial/makeup.jpg"
           alt=""
           fill
           priority
-          className="object-cover opacity-20"
+          className="object-cover opacity-10"
         />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--color-ink)] via-[var(--color-ink)]/60 to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--color-off-white)] via-[var(--color-blue-wash)]/70 to-transparent" />
 
         <div className="relative mx-auto w-full max-w-[var(--content-width)] px-[var(--page-gutter)]">
           <Link
             href="/apply"
-            className="mb-4 inline-flex items-center gap-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-white/50 transition hover:text-white/80"
+            className="mb-4 inline-flex items-center gap-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-soft)] transition hover:text-[var(--color-ink)]"
           >
             ← {t.applyPage.intro.title}
           </Link>
-          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-hover-accent)]">
+          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-blue)]">
             {t.juryPage.apply.eyebrow}
           </p>
-          <h1 className="mt-2 max-w-xl font-[var(--font-title-family)] text-[clamp(2rem,5vw,3.2rem)] font-light leading-[1.1] text-white">
+          <h1 className="mt-2 max-w-xl font-[var(--font-title-family)] text-[clamp(2rem,5vw,3.2rem)] font-light leading-[1.1] text-[var(--color-ink)]">
             {t.juryPage.apply.title}
           </h1>
         </div>

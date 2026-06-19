@@ -99,14 +99,14 @@ export default function PaymentSuccessCard({ sessionId: _sessionId }: { sessionI
   return (
     <main className="page-shell">
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden border-b border-black/6 bg-[var(--color-ink)] px-[var(--page-gutter)] pb-20 pt-[calc(var(--site-header-height)+4rem)]">
+      <section className="relative overflow-hidden border-b border-[var(--color-blue-light)] bg-[var(--color-blue-wash)] px-[var(--page-gutter)] pb-20 pt-[calc(var(--site-header-height)+4rem)]">
         {/* Subtle grid texture */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.03]"
+          className="pointer-events-none absolute inset-0 opacity-[0.04]"
           style={{
             backgroundImage:
-              "linear-gradient(var(--color-white) 1px, transparent 1px), linear-gradient(90deg, var(--color-white) 1px, transparent 1px)",
+              "linear-gradient(var(--color-blue) 1px, transparent 1px), linear-gradient(90deg, var(--color-blue) 1px, transparent 1px)",
             backgroundSize: "48px 48px",
           }}
         />
@@ -116,13 +116,13 @@ export default function PaymentSuccessCard({ sessionId: _sessionId }: { sessionI
             initial={{ opacity: 0, scale: 0.88 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="mb-8 flex h-16 w-16 items-center justify-center rounded-[22px] border border-white/10 bg-white/6"
+            className="mb-8 flex h-16 w-16 items-center justify-center rounded-[22px] border border-[var(--color-blue)]/30 bg-white shadow-[var(--shadow-sm)]"
           >
             {/* Animated check */}
             <svg viewBox="0 0 32 32" fill="none" className="h-8 w-8">
               <motion.path
                 d="M6 16.5L13 23.5L26 9"
-                stroke="white"
+                stroke="var(--color-blue)"
                 strokeWidth="2.4"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -138,7 +138,7 @@ export default function PaymentSuccessCard({ sessionId: _sessionId }: { sessionI
             variants={fade}
             initial="hidden"
             animate="show"
-            className="mb-4 text-[0.65rem] font-bold uppercase tracking-[0.32em] text-white/40"
+            className="mb-4 text-[0.65rem] font-bold uppercase tracking-[0.32em] text-[var(--color-blue)]"
           >
             {t.eyebrow}
           </motion.p>
@@ -148,7 +148,7 @@ export default function PaymentSuccessCard({ sessionId: _sessionId }: { sessionI
             variants={fade}
             initial="hidden"
             animate="show"
-            className="font-[var(--font-ui-family)] text-[clamp(3.2rem,8vw,6rem)] font-black uppercase leading-none tracking-[-0.03em] text-white"
+            className="font-[var(--font-title-family)] text-[clamp(3.2rem,8vw,6rem)] font-light leading-[0.96] tracking-[-0.03em] text-[var(--color-ink)]"
           >
             {t.headline}
           </motion.h1>
@@ -158,7 +158,7 @@ export default function PaymentSuccessCard({ sessionId: _sessionId }: { sessionI
             variants={fade}
             initial="hidden"
             animate="show"
-            className="mt-6 max-w-xl text-[1.05rem] leading-[1.75] text-white/55"
+            className="mt-6 max-w-xl text-[1.05rem] leading-[1.75] text-[var(--color-ink-soft)]"
           >
             {t.sub}
           </motion.p>

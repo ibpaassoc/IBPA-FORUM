@@ -182,7 +182,7 @@ function GalleryRow({
 export default function HomeSlidingGallery() {
   return (
     <section className="section-rhythm-tight overflow-hidden">
-      <div key="gallery" className="w-screen overflow-hidden border-y border-[var(--border-default)] bg-[var(--color-ink)] py-[clamp(1.1rem,2vw,1.9rem)]">
+      <div key="gallery" className="w-screen overflow-hidden border-y border-[var(--border-default)] bg-[var(--surface-tint)] py-[clamp(1.1rem,2vw,1.9rem)]">
         <div className="space-y-[clamp(0.7rem,1.4vw,1.1rem)] overflow-hidden">
           {galleryRows.map((row, index) => (
             <GalleryRow
