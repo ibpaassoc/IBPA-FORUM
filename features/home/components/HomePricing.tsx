@@ -128,7 +128,7 @@ export default function HomePricing({
       : PRICING.awardParticipation.nonMembers.oneNomination;
 
   return (
-    <section className="section-rhythm-loose bg-[var(--surface-tint)]">
+    <section className="section-rhythm-loose bg-[var(--color-blue-wash)]">
       <div className="page-section">
         <Reveal className="mb-[var(--space-xl)]">
           <p className="page-eyebrow mb-[var(--space-sm)]">{ps.eyebrow}</p>
