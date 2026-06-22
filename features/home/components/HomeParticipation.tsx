@@ -68,9 +68,11 @@ export default function HomeParticipation({
                 alt="Forum Tickets"
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 55vw, 700px"
-                className="object-cover opacity-30 transition-transform duration-700 group-hover:scale-[1.03]"
+                className="object-cover opacity-68 transition-transform duration-700 group-hover:scale-[1.03]"
               />
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--color-blue-wash)] via-[var(--color-blue-wash)]/50 to-transparent" />
+              {/* Blur gradient on BOTTOM half only — top is clear */}
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-white via-white/55 to-transparent" style={{ top: "50%" }} />
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[55%] bg-gradient-to-t from-white/96 via-white/70 to-transparent" />
 
               <div className="relative flex h-full flex-col justify-between p-[var(--space-lg)]">
                 <div className="flex items-center justify-between">
@@ -90,7 +92,7 @@ export default function HomeParticipation({
                   <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-blue)]">
                     {p.tickets.label}
                   </p>
-                  <h3 className="mt-2 font-[var(--font-title-family)] text-[clamp(1.8rem,3.5vw,3rem)] font-light leading-[1.05] text-[var(--color-ink)]">
+                  <h3 className="mt-2 font-[var(--font-body-family)] text-[clamp(1.8rem,3.5vw,3rem)] font-light leading-[1.05] text-[var(--color-ink)]">
                     {ps.startingFrom}
                     <br />
                     <div className="flex items-baseline gap-3">
@@ -130,88 +132,114 @@ export default function HomeParticipation({
             </button>
           </Reveal>
 
-          {/* Award Participation — light card */}
+          {/* Award Participation — glassmorphic card */}
           <Reveal delay={0.1}>
             <Link
               href="/apply"
-              className="premium-glass group flex h-full flex-col p-[var(--space-lg)] transition-all duration-300 hover:border-[var(--color-blue)]/40 hover:shadow-[var(--shadow-md)]"
+              className="group relative flex h-full flex-col overflow-hidden rounded-[var(--radius)] border border-[var(--border-glass)] bg-white/80 shadow-[var(--shadow-glass)] backdrop-blur-[16px] transition-all duration-300 hover:border-[var(--color-blue)]/40 hover:shadow-[var(--shadow-md)]"
             >
-              <div className="mb-[var(--space-md)] flex items-center justify-between">
-                <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--color-blue)]/20 bg-[var(--color-blue-wash)]">
-                  <Trophy size={18} className="text-[var(--color-blue)]" strokeWidth={1.5} />
+              {/* Header */}
+              <div className="border-b border-[var(--border-soft)] px-6 py-5">
+                <div className="flex items-center justify-between">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--color-blue)]/25 bg-[var(--color-blue-wash)]">
+                    <Trophy size={16} className="text-[var(--color-blue)]" strokeWidth={1.5} />
+                  </div>
+                  <span className="text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-[var(--color-blue)]">
+                    {tierLabel}
+                  </span>
                 </div>
-                <span className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">
-                  {tierLabel}
-                </span>
+                <p className="mt-3 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-soft)]">
+                  {p.award.label}
+                </p>
+                <div className="mt-1 flex items-baseline gap-1.5">
+                  <span className="text-[0.7rem] text-[var(--color-ink-soft)]">{ps.startingFrom}</span>
+                  <span className="font-[var(--font-title-family)] text-[2rem] font-light leading-none text-[var(--color-ink)]">
+                    {awardPrice}
+                  </span>
+                </div>
               </div>
 
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-soft)] transition-colors duration-300 group-hover:text-[var(--color-blue)]">
-                {p.award.label}
-              </p>
-
-              <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-[0.72rem] text-[var(--color-ink-soft)]">{ps.startingFrom}</span>
-                <motion.span
-                  key={awardPrice}
-                  initial={{ opacity: 0, y: -5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2, ease: "easeOut" }}
-                  className="font-[var(--font-title-family)] text-[2.2rem] font-light leading-none text-[var(--color-ink)] transition-colors duration-300 group-hover:text-[var(--color-blue)]"
-                >
-                  {awardPrice}
-                </motion.span>
+              {/* Included list */}
+              <div className="flex-1 px-6 py-5">
+                <p className="mb-3 text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-soft)]">
+                  WHAT'S INCLUDED:
+                </p>
+                <ul className="space-y-2.5">
+                  {[p.award.description, p.tickets?.mostPopular, ps.oneDayPass].filter(Boolean).map((f, i) => (
+                    <li key={i} className="flex items-start gap-2.5 text-[0.84rem] leading-[1.55] text-[var(--color-ink-soft)]">
+                      <CheckCircle size={13} strokeWidth={2} className="mt-0.5 shrink-0 text-[var(--color-blue)]" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
               </div>
 
-              <p className="mt-3 flex-1 text-[0.87rem] leading-[1.65] text-[var(--color-ink-soft)]">
-                {p.award.description}
-              </p>
-
-              <div className="mt-[var(--space-lg)]">
-                <span className="ibpa-button ibpa-button-soft inline-flex text-[0.72rem]">
+              {/* Value statement + CTA */}
+              <div className="border-t border-[var(--border-soft)] px-6 py-5">
+                <p className="mb-3 text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-soft)]">
+                  VALUE STATEMENT:
+                </p>
+                <p className="mb-4 text-[0.83rem] leading-[1.6] text-[var(--color-ink-soft)]">
+                  {p.award.description}
+                </p>
+                <span className="inline-flex items-center gap-2 rounded-full bg-black px-6 py-3 font-[var(--font-ui-family)] text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-white shadow-lg transition-all duration-300 group-hover:scale-[1.03]">
                   {p.award.cta}
                 </span>
               </div>
             </Link>
           </Reveal>
 
-          {/* Judge Registration — light card */}
+          {/* Judge Registration — glassmorphic card */}
           <Reveal delay={0.16}>
             <Link
               href="/jury"
-              className="premium-glass group flex h-full flex-col p-[var(--space-lg)] transition-all duration-300 hover:border-[var(--color-blue)]/40 hover:shadow-[var(--shadow-md)]"
+              className="group relative flex h-full flex-col overflow-hidden rounded-[var(--radius)] border border-[var(--border-glass)] bg-white/80 shadow-[var(--shadow-glass)] backdrop-blur-[16px] transition-all duration-300 hover:border-[var(--color-blue)]/40 hover:shadow-[var(--shadow-md)]"
             >
-              <div className="mb-[var(--space-md)] flex items-center justify-between">
-                <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--color-blue)]/20 bg-[var(--color-blue-wash)]">
-                  <Star size={18} className="text-[var(--color-blue)]" strokeWidth={1.5} />
+              {/* Header */}
+              <div className="border-b border-[var(--border-soft)] px-6 py-5">
+                <div className="flex items-center justify-between">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--color-blue)]/25 bg-[var(--color-blue-wash)]">
+                    <Star size={16} className="text-[var(--color-blue)]" strokeWidth={1.5} />
+                  </div>
+                  <span className="text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-[var(--color-blue)]">
+                    {tierLabel}
+                  </span>
                 </div>
-                <span className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">
-                  {tierLabel}
-                </span>
+                <p className="mt-3 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-soft)]">
+                  {p.judge.label}
+                </p>
+                <div className="mt-1 flex items-baseline gap-1.5">
+                  <span className="text-[0.7rem] text-[var(--color-ink-soft)]">{ps.startingFrom}</span>
+                  <span className="font-[var(--font-title-family)] text-[2rem] font-light leading-none text-[var(--color-ink)]">
+                    {judgePrice}
+                  </span>
+                </div>
               </div>
 
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-soft)] transition-colors duration-300 group-hover:text-[var(--color-blue)]">
-                {p.judge.label}
-              </p>
-
-              <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-[0.72rem] text-[var(--color-ink-soft)]">{ps.startingFrom}</span>
-                <motion.span
-                  key={judgePrice}
-                  initial={{ opacity: 0, y: -5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2, ease: "easeOut" }}
-                  className="font-[var(--font-title-family)] text-[2.2rem] font-light leading-none text-[var(--color-ink)] transition-colors duration-300 group-hover:text-[var(--color-blue)]"
-                >
-                  {judgePrice}
-                </motion.span>
+              {/* Included list */}
+              <div className="flex-1 px-6 py-5">
+                <p className="mb-3 text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-soft)]">
+                  WHAT'S INCLUDED:
+                </p>
+                <ul className="space-y-2.5">
+                  {[p.judge.description, ps.perJudge, ps.judgePaidAfterApproval].filter(Boolean).map((f, i) => (
+                    <li key={i} className="flex items-start gap-2.5 text-[0.84rem] leading-[1.55] text-[var(--color-ink-soft)]">
+                      <CheckCircle size={13} strokeWidth={2} className="mt-0.5 shrink-0 text-[var(--color-blue)]" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
               </div>
 
-              <p className="mt-3 flex-1 text-[0.87rem] leading-[1.65] text-[var(--color-ink-soft)]">
-                {p.judge.description}
-              </p>
-
-              <div className="mt-[var(--space-lg)]">
-                <span className="ibpa-button ibpa-button-soft inline-flex text-[0.72rem]">
+              {/* Value statement + CTA */}
+              <div className="border-t border-[var(--border-soft)] px-6 py-5">
+                <p className="mb-3 text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-soft)]">
+                  VALUE STATEMENT:
+                </p>
+                <p className="mb-4 text-[0.83rem] leading-[1.6] text-[var(--color-ink-soft)]">
+                  {p.judge.description}
+                </p>
+                <span className="inline-flex items-center gap-2 rounded-full border border-[var(--border-strong)] bg-transparent px-6 py-3 font-[var(--font-ui-family)] text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink)] transition-all duration-300 group-hover:bg-[var(--color-ink)] group-hover:text-white">
                   {p.judge.cta}
                 </span>
               </div>

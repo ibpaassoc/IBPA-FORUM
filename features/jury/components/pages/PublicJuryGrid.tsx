@@ -60,7 +60,8 @@ export default function PublicJuryGrid({
         return (
           <HoverCard key={member.id} className="h-full" lift={-8} scale={1.012}>
             <article
-              className="premium-glass flex h-full flex-col overflow-hidden rounded-[28px]"
+              className="flex h-full flex-col overflow-hidden rounded-[28px] border border-[var(--border-glass)] shadow-[var(--shadow-glass)]"
+              style={{ background: "rgba(255,255,255,0.52)", backdropFilter: "blur(20px) saturate(160%)" }}
             >
               {/* Photo */}
               <div className="relative aspect-[4/5] shrink-0 overflow-hidden">
@@ -76,11 +77,11 @@ export default function PublicJuryGrid({
                   className="object-cover"
                   unoptimized={Boolean(member.profilePhotoFileId)}
                 />
-                {/* Gradient fading photo into card bg */}
+                {/* Gradient fading photo into card bg — more transparent */}
                 <div
                   className="absolute inset-x-0 bottom-0 h-44"
                   style={{
-                    background: "linear-gradient(to top, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.72) 34%, transparent 100%)",
+                    background: "linear-gradient(to top, rgba(255,255,255,0.80) 0%, rgba(255,255,255,0.50) 34%, transparent 100%)",
                   }}
                 />
               </div>

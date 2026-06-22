@@ -14,6 +14,7 @@ export default function CategoriesHero() {
       description={t.categoriesPage.copy.ctaText}
       primary={{ href: "/apply", label: t.common.applyAsParticipant }}
       secondary={{ href: "/grand-prix", label: t.common.grandPrix }}
+      backgroundImage="/images/gallery/0K9A4883.jpg"
     />
   );
 }

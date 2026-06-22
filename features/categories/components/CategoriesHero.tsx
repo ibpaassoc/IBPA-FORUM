@@ -1,45 +1,57 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import {
-  EditorialHero,
-  EditorialPhotoCard,
-} from "@/shared/components/public";
 
 export default function CategoriesHero() {
   const { t } = useLanguage();
 
   return (
-    <EditorialHero
-      eyebrow={t.categoriesPage.hero.eyebrow}
-      title={t.categoriesPage.hero.title}
-      description={t.categoriesPage.hero.description}
-      media={
-        <div className="relative mx-auto w-full max-w-[720px] pb-[clamp(2.5rem,7vw,4rem)] md:pb-0">
-          <EditorialPhotoCard
-            src="/images/events/CategoriesHero2.jpg"
-            alt="Category competition closeup"
-            aspect="portrait"
-            overlay="soft"
-            objectPosition="center 34%"
-            mobileObjectPosition="center 30%"
-            priority
-            className="relative z-10 overflow-hidden rounded-[var(--radius-lg)] shadow-[0_28px_80px_rgba(37,42,45,0.12)]"
-          />
+    <section className="relative flex min-h-[100svh] items-center justify-center overflow-hidden bg-[#0a0a0a]">
+      {/* Full-screen background image */}
+      <div className="absolute inset-0 z-[1]">
+        <Image
+          src="/images/events/CategoriesHero2.jpg"
+          alt="IBPA Award Categories"
+          fill
+          style={{ objectPosition: "center 34%" }}
+          className="object-cover opacity-70"
+          priority
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.28)_0%,rgba(0,0,0,0.18)_50%,rgba(0,0,0,0.65)_100%)]" />
+      </div>
 
-          <div className="relative z-20 -mt-[clamp(4rem,14vw,7rem)] ml-auto w-[88%] md:absolute md:-bottom-14 md:-left-16 md:mt-0 md:w-[88%]">
-            <EditorialPhotoCard
-              src="/images/events/CategoriesHero1.jpg"
-              alt="Editorial beauty category hero image"
-              aspect="landscape"
-              overlay="soft"
-              objectPosition="center 28%"
-              mobileObjectPosition="center 24%"
-              className="overflow-hidden rounded-[var(--radius)] shadow-[0_24px_60px_rgba(37,42,45,0.16)] ring-8 ring-[var(--surface-tint)]"
-            />
-          </div>
+      {/* Centered content */}
+      <div className="relative z-10 flex w-full flex-col items-center px-[var(--page-gutter)] pb-24 pt-[calc(var(--site-header-height)+clamp(2rem,6vw,5rem))] text-center">
+        <p className="font-[var(--font-accent-family)] text-[clamp(0.9rem,1.4vw,1.15rem)] italic tracking-wide text-white/70">
+          {t.categoriesPage.hero.eyebrow}
+        </p>
+
+        <h1 className="mt-4 max-w-[14ch] font-[var(--font-title-family)] text-[clamp(3rem,10vw,7.5rem)] font-light leading-[0.90] tracking-[-0.03em] text-white [text-shadow:0_8px_32px_rgba(0,0,0,0.45)]">
+          {t.categoriesPage.hero.title}
+        </h1>
+
+        <p className="mt-6 max-w-lg font-[var(--font-accent-family)] text-[clamp(1rem,1.8vw,1.25rem)] italic leading-[1.65] text-white/80">
+          {t.categoriesPage.hero.description}
+        </p>
+
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+          <Link
+            href="/apply"
+            className="inline-flex items-center gap-2.5 rounded-full bg-black px-8 py-4 font-[var(--font-ui-family)] text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-white shadow-2xl transition-all duration-300 hover:scale-[1.04] hover:bg-[var(--color-blue)]"
+          >
+            {t.common.applyAsParticipant} <ArrowRight size={16} />
+          </Link>
+          <Link
+            href="#categories"
+            className="inline-flex items-center rounded-full border border-white/50 bg-white/10 px-8 py-4 font-[var(--font-ui-family)] text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-white backdrop-blur-md transition-all duration-300 hover:bg-white/20"
+          >
+            {t.categoriesPage.hero.secondary ?? "Browse Categories"}
+          </Link>
         </div>
-      }
-    />
+      </div>
+    </section>
   );
 }

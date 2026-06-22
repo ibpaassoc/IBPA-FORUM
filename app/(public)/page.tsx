@@ -6,6 +6,7 @@ import {
   HomeGrandPrix,
   HomeWhyAttend,
   HomeCategoriesRow,
+  HomeJuryStandards,
   HomeSlidingGallery,
   HomeCta,
 } from "@/features/home/components";
@@ -18,6 +19,7 @@ export default function HomePagePremium() {
       <HomeGrandPrix />
       <HomeWhyAttend />
       <HomeCategoriesRow />
+      <HomeJuryStandards />
       <HomeSlidingGallery />
       <HomeCta />
     </main>
