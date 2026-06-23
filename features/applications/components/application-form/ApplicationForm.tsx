@@ -52,6 +52,19 @@ import {
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
+const HERO_PRIMARY_BUTTON_CLASS =
+  "group relative inline-flex items-center justify-center gap-3 overflow-hidden rounded-full border border-white/10 bg-gradient-to-r from-[#050505] via-[#111111] to-[#050505] px-8 py-4 font-[var(--font-ui-family)] text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-white shadow-[0_12px_40px_rgba(0,0,0,0.35)] transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-[2px] hover:border-[#7a98af]/60 hover:shadow-[0_20px_60px_rgba(122,152,175,0.2)] disabled:pointer-events-none disabled:opacity-60";
+
+function HeroPrimaryButtonLayers() {
+  return (
+    <>
+      <span className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-[#7a98af]/10 opacity-60 transition-opacity duration-700 group-hover:opacity-100" />
+      <span className="absolute inset-x-6 bottom-0 h-px bg-gradient-to-r from-transparent via-[#b9d9eb]/0 to-transparent transition-all duration-700 group-hover:inset-x-4 group-hover:via-[#b9d9eb]/70" />
+      <span className="absolute inset-0 before:absolute before:left-[-130%] before:top-0 before:h-full before:w-1/2 before:rotate-12 before:bg-gradient-to-r before:from-transparent before:via-[#b9d9eb]/25 before:to-transparent before:transition-all before:duration-700 group-hover:before:left-[130%]" />
+    </>
+  );
+}
+
 const NOM_FORM_PREFIX = "__nom__";
 
 // Fixed step index where Block B sections begin (one per selected nomination)
@@ -91,12 +104,26 @@ function getSavingsAmount(count: number): number {
 
 type CertStatus = "idle" | "checking" | "valid" | "invalid" | "error";
 
-const CERT_STATUS_CONTENT: Record<Exclude<CertStatus, "idle">, React.ReactNode> = {
+const CERT_STATUS_CONTENT: Record<
+  Exclude<CertStatus, "idle">,
+  React.ReactNode
+> = {
   checking: (
     <span className="flex items-center gap-1.5 text-[var(--color-ink-soft)]">
       <svg className="h-3 w-3 animate-spin" viewBox="0 0 24 24" fill="none">
-        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+        <circle
+          className="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          strokeWidth="4"
+        />
+        <path
+          className="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8v8H4z"
+        />
       </svg>
       Verifying…
     </span>
@@ -104,7 +131,11 @@ const CERT_STATUS_CONTENT: Record<Exclude<CertStatus, "idle">, React.ReactNode> 
   valid: (
     <span className="flex items-center gap-1.5 text-emerald-600">
       <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+        <path
+          fillRule="evenodd"
+          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+          clipRule="evenodd"
+        />
       </svg>
       Valid IBPA member certificate
     </span>
@@ -112,15 +143,23 @@ const CERT_STATUS_CONTENT: Record<Exclude<CertStatus, "idle">, React.ReactNode> 
   invalid: (
     <span className="flex items-center gap-1.5 text-red-500">
       <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+        <path
+          fillRule="evenodd"
+          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+          clipRule="evenodd"
+        />
       </svg>
       Certificate not found
     </span>
   ),
   error: (
-    <span className="flex items-center gap-1.5 text-amber-600">
+    <span className="flex items-center gap-1.5 text-[var(--color-blue)]">
       <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-        <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+        <path
+          fillRule="evenodd"
+          d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+          clipRule="evenodd"
+        />
       </svg>
       Could not verify – non-member rate applies
     </span>
@@ -129,7 +168,9 @@ const CERT_STATUS_CONTENT: Record<Exclude<CertStatus, "idle">, React.ReactNode> 
 
 function CertStatusBadge({ status }: { status: CertStatus }) {
   if (status === "idle") return null;
-  return <div className="mt-1.5 text-[0.72rem]">{CERT_STATUS_CONTENT[status]}</div>;
+  return (
+    <div className="mt-1.5 text-[0.72rem]">{CERT_STATUS_CONTENT[status]}</div>
+  );
 }
 
 const categoryCardTransition = {
@@ -151,7 +192,9 @@ function isFieldComplete(value: ApplicationValues[string]) {
 
 function getSelectedAwardIds(values: ApplicationValues) {
   return Array.isArray(values.selectedAwardIds)
-    ? values.selectedAwardIds.filter((item): item is string => typeof item === "string")
+    ? values.selectedAwardIds.filter(
+        (item): item is string => typeof item === "string",
+      )
     : [];
 }
 
@@ -260,7 +303,8 @@ const formCopy = {
     grandPrixEligible: "Grand Prix eligible",
     selectForPricing: "Select nominations to see pricing",
     savings: "Save",
-    certInvalidError: "Your IBPA certificate could not be verified. Please check the number or uncheck IBPA Member to proceed at standard rate.",
+    certInvalidError:
+      "Your IBPA certificate could not be verified. Please check the number or uncheck IBPA Member to proceed at standard rate.",
     certCheckingError: "Please wait while we verify your IBPA certificate.",
   },
   ru: {
@@ -360,7 +404,8 @@ const formCopy = {
     grandPrixEligible: "Участие в Гран-При",
     selectForPricing: "Выберите номинации для расчёта цены",
     savings: "Скидка",
-    certInvalidError: "Ваш сертификат IBPA не прошёл проверку. Проверьте номер или снимите галочку «Член IBPA» для стандартного тарифа.",
+    certInvalidError:
+      "Ваш сертификат IBPA не прошёл проверку. Проверьте номер или снимите галочку «Член IBPA» для стандартного тарифа.",
     certCheckingError: "Подождите, идёт проверка вашего сертификата IBPA.",
   },
   ua: {
@@ -460,23 +505,33 @@ const formCopy = {
     grandPrixEligible: "Участь у Гран-Прі",
     selectForPricing: "Оберіть номінації для розрахунку ціни",
     savings: "Знижка",
-    certInvalidError: "Ваш сертифікат IBPA не пройшов перевірку. Перевірте номер або зніміть позначку «Член IBPA» для стандартного тарифу.",
+    certInvalidError:
+      "Ваш сертифікат IBPA не пройшов перевірку. Перевірте номер або зніміть позначку «Член IBPA» для стандартного тарифу.",
     certCheckingError: "Зачекайте, йде перевірка вашого сертифіката IBPA.",
   },
 } as const;
 
-export default function ApplyForm({ categories }: { categories: CategoryOption[] }) {
+export default function ApplyForm({
+  categories,
+}: {
+  categories: CategoryOption[];
+}) {
   const { language, t } = useLanguage();
   const formRef = useRef<HTMLFormElement>(null);
   const [step, setStep] = useState(0);
+  const [maxUnlockedStep, setMaxUnlockedStep] = useState(0);
   const [stepDirection, setStepDirection] = useState<1 | -1>(1);
   const [openCategoryId, setOpenCategoryId] = useState<string | null>(
-    categories[0]?.id ?? null
+    categories[0]?.id ?? null,
   );
   const [values, setValues] = useState<ApplicationValues>({});
   const [errors, setErrors] = useState<ValidationErrors>({});
-  const [blockBValues, setBlockBValues] = useState<BlockBValuesByNomination>({});
-  const [blockBErrors, setBlockBErrors] = useState<Record<string, ValidationErrors>>({});
+  const [blockBValues, setBlockBValues] = useState<BlockBValuesByNomination>(
+    {},
+  );
+  const [blockBErrors, setBlockBErrors] = useState<
+    Record<string, ValidationErrors>
+  >({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionState, setSubmissionState] = useState<{
     type: "idle" | "success" | "error";
@@ -504,7 +559,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
     certDebounceRef.current = setTimeout(async () => {
       try {
         const res = await fetch(
-          `/api/tickets/verify-cert?certNumber=${encodeURIComponent(trimmed)}`
+          `/api/tickets/verify-cert?certNumber=${encodeURIComponent(trimmed)}`,
         );
         const data = (await res.json()) as { valid: boolean };
         if (res.status === 503) {
@@ -540,8 +595,14 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
   } as const;
 
   const localizedCategoryBySlug = useMemo(
-    () => new Map(t.categoriesPage.directions.map((category) => [category.slug, category])),
-    [t.categoriesPage.directions]
+    () =>
+      new Map(
+        t.categoriesPage.directions.map((category) => [
+          category.slug,
+          category,
+        ]),
+      ),
+    [t.categoriesPage.directions],
   );
 
   const nominationLookup = useMemo(() => {
@@ -576,24 +637,37 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
     .map((awardId) => nominationLookup.get(awardId))
     .filter(
       (
-        item
+        item,
       ): item is {
         award: CategoryOption["awards"][number];
         category: CategoryOption;
         categoryTitle: string;
         nominationTitle: string;
-      } => Boolean(item)
+      } => Boolean(item),
     );
 
   // Computed pricing (depends on selectedAwardIds which is above)
-  const displayPrice = getDisplayPrice(selectedAwardIds.length, effectivelyMember);
+  const displayPrice = getDisplayPrice(
+    selectedAwardIds.length,
+    effectivelyMember,
+  );
   const savings = getSavingsAmount(selectedAwardIds.length);
 
   // Dynamic step boundaries — change when nomination count changes
-  const MOTIVATION_STEP = BLOCK_B_START + Math.max(1, selectedNominations.length);
+  const MOTIVATION_STEP =
+    BLOCK_B_START + Math.max(1, selectedNominations.length);
   const CONFIRM_STEP = MOTIVATION_STEP + 1;
 
-  function handleBlockBChange(awardId: string, name: string, value: string | string[]) {
+  useEffect(() => {
+    setStep((current) => Math.min(current, CONFIRM_STEP));
+    setMaxUnlockedStep((current) => Math.min(current, CONFIRM_STEP));
+  }, [CONFIRM_STEP]);
+
+  function handleBlockBChange(
+    awardId: string,
+    name: string,
+    value: string | string[],
+  ) {
     setBlockBValues((current) => ({
       ...current,
       [awardId]: { ...(current[awardId] ?? {}), [name]: value },
@@ -605,7 +679,11 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
     });
   }
 
-  function handleBlockBFilesChange(awardId: string, name: string, files: File[]) {
+  function handleBlockBFilesChange(
+    awardId: string,
+    name: string,
+    files: File[],
+  ) {
     setBlockBValues((current) => ({
       ...current,
       [awardId]: { ...(current[awardId] ?? {}), [name]: files },
@@ -619,7 +697,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
 
   const { leftCategories, rightCategories } = useMemo(
     () => splitCategories(categories),
-    [categories]
+    [categories],
   );
 
   function updatePrimarySelection(nextSelectedAwardIds: string[]) {
@@ -681,7 +759,9 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
   function handleSelectedNominationRemove(awardId: string) {
     startTransition(() => {
       setValues((current) => {
-        const nextIds = getSelectedAwardIds(current).filter((item) => item !== awardId);
+        const nextIds = getSelectedAwardIds(current).filter(
+          (item) => item !== awardId,
+        );
 
         return {
           ...current,
@@ -763,11 +843,15 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
       if (nom) {
         const nomErrors = validateNominationBlockB(
           nom.category.slug,
-          blockBValues[nom.award.id] ?? {}
+          blockBValues[nom.award.id] ?? {},
         );
-        setBlockBErrors((current) => ({ ...current, [nom.award.id]: nomErrors }));
+        setBlockBErrors((current) => ({
+          ...current,
+          [nom.award.id]: nomErrors,
+        }));
         if (Object.keys(nomErrors).length > 0) {
-          nextErrors._blockB = "Please complete all required fields for this nomination.";
+          nextErrors._blockB =
+            "Please complete all required fields for this nomination.";
         }
       }
     }
@@ -782,9 +866,12 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
       return;
     }
 
+    const nextStep = Math.min(step + 1, CONFIRM_STEP);
+
     setErrors({});
+    setMaxUnlockedStep((current) => Math.max(current, nextStep));
     setStepDirection(1);
-    setStep((current) => Math.min(current + 1, CONFIRM_STEP));
+    setStep(nextStep);
     formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
@@ -792,6 +879,34 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
     setStepDirection(-1);
     setStep((current) => Math.max(current - 1, 0));
     formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function handleStepChange(targetStep: number) {
+    if (targetStep === step) {
+      return;
+    }
+
+    if (targetStep <= maxUnlockedStep) {
+      setErrors({});
+      setStepDirection(targetStep > step ? 1 : -1);
+      setStep(targetStep);
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+
+    if (targetStep === step + 1) {
+      const nextErrors = validateStep(step);
+      if (Object.keys(nextErrors).length > 0) {
+        setErrors(nextErrors);
+        return;
+      }
+
+      setErrors({});
+      setMaxUnlockedStep((current) => Math.max(current, targetStep));
+      setStepDirection(1);
+      setStep(targetStep);
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   }
 
   async function handleSubmit(event: React.FormEvent) {
@@ -915,7 +1030,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
     const localizedCategory = localizedCategoryBySlug.get(category.slug);
     const isOpen = openCategoryId === category.id;
     const selectedCount = category.awards.filter((award) =>
-      selectedAwardIds.includes(award.id)
+      selectedAwardIds.includes(award.id),
     ).length;
     const Icon = categoryIconBySlug[category.slug] ?? Award;
 
@@ -925,8 +1040,8 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
         layout
         transition={categoryCardTransition}
         whileHover={{ y: -1.5 }}
-        className={`overflow-hidden rounded-[28px] border bg-white shadow-[0_16px_36px_rgba(3,2,19,0.05)] ${
-          isOpen ? "border-[var(--color-ink)]" : "border-black/8"
+        className={`premium-glass ${
+          isOpen ? "border-[var(--color-blue)]" : "border-[var(--border-soft)]"
         }`}
       >
         <button
@@ -934,12 +1049,12 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
           aria-expanded={isOpen}
           onClick={() =>
             setOpenCategoryId((current) =>
-              current === category.id ? null : category.id
+              current === category.id ? null : category.id,
             )
           }
           className="flex w-full items-start gap-4 p-5 text-left"
         >
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[18px] border border-black/8 bg-[var(--surface-tint)] text-[var(--color-ink)]">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[18px] border border-[var(--color-blue-soft)] bg-[var(--color-blue-wash)] text-[var(--color-ink)]">
             <Icon size={18} strokeWidth={1.6} />
           </span>
 
@@ -956,8 +1071,8 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
           <span
             className={`shrink-0 rounded-full border px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] transition-all ${
               selectedCount > 0
-                ? "border-[var(--color-ink)] bg-[var(--color-ink)] text-white"
-                : "border-black/8 bg-[var(--surface-tint)] text-[var(--color-ink-soft)]"
+                ? "border-[var(--color-blue)] bg-[var(--color-blue-wash)] text-[var(--color-ink)]"
+                : "border-[var(--border-soft)] bg-[var(--surface-tint)] text-[var(--color-ink-soft)]"
             }`}
           >
             {selectedCount}
@@ -973,7 +1088,7 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
               transition={categoryCardTransition}
               className="overflow-hidden"
             >
-              <div className="border-t border-black/6 px-5 pb-5 pt-4">
+              <div className="border-t border-[var(--border-soft)] px-5 pb-5 pt-4">
                 <div className="space-y-2">
                   {category.awards.map((award, index) => {
                     const selected = selectedAwardIds.includes(award.id);
@@ -989,10 +1104,10 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
                         onClick={() => handleNominationToggle(award.id)}
                         className={`flex w-full items-start gap-3 rounded-[20px] border px-4 py-3 text-left transition-all duration-300 ${
                           selected
-                            ? "border-black bg-black text-white shadow-[0_18px_36px_rgba(3,2,19,0.16)]"
+                            ? "border-[var(--color-blue)] bg-[var(--color-blue-wash)] text-[var(--color-ink)] shadow-[0_18px_36px_rgba(114,160,193,0.16)]"
                             : locked
-                              ? "cursor-not-allowed border-black/6 bg-black/[0.03] text-[var(--color-ink-soft)] opacity-55"
-                              : "border-black/8 bg-[var(--surface-tint)] text-[var(--color-ink)] hover:border-black hover:bg-white"
+                              ? "cursor-not-allowed border-[var(--border-soft)] bg-[var(--surface-muted)] text-[var(--color-ink-soft)] opacity-55"
+                              : "border-[var(--border-soft)] bg-[var(--surface-tint)] text-[var(--color-ink)] hover:border-[var(--color-blue)] hover:bg-white"
                         }`}
                       >
                         <span className="min-w-[1.8rem] pt-0.5 text-[0.78rem] font-semibold uppercase tracking-[0.12em]">
@@ -1004,8 +1119,8 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
                         <span
                           className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
                             selected
-                              ? "border-white/30 bg-white/12"
-                              : "border-black/10 bg-black/[0.03]"
+                              ? "border-[var(--color-blue)] bg-white text-[var(--color-blue)]"
+                              : "border-[var(--border-soft)] bg-[var(--surface-tint)]"
                           }`}
                         >
                           {selected ? <Check size={13} /> : null}
@@ -1023,13 +1138,14 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
   }
 
   // Build dynamic step list — one Block B step per selected nomination
-  const nomSteps: StepDef[] = selectedNominations.length > 0
-    ? selectedNominations.map((_, i) => ({
-        id: `blockb-${i}`,
-        label: `Details ${i + 1}`,
-        icon: ClipboardList,
-      }))
-    : [{ id: "details", label: "Details", icon: ClipboardList }];
+  const nomSteps: StepDef[] =
+    selectedNominations.length > 0
+      ? selectedNominations.map((_, i) => ({
+          id: `blockb-${i}`,
+          label: `Details ${i + 1}`,
+          icon: ClipboardList,
+        }))
+      : [{ id: "details", label: "Details", icon: ClipboardList }];
   const dynamicSteps: StepDef[] = [
     { id: "category", label: "Category", icon: Layers },
     { id: "contact", label: "Contact", icon: User },
@@ -1059,14 +1175,19 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
 
   return (
     <form ref={formRef} onSubmit={handleSubmit} className="space-y-6 pb-12">
-      <StepBar steps={dynamicSteps} current={step} />
+      <StepBar
+        steps={dynamicSteps}
+        current={step}
+        maxUnlockedStep={maxUnlockedStep}
+        onStepChange={handleStepChange}
+      />
 
-      <div className="mx-auto max-w-6xl rounded-2xl border border-black/6 bg-[#F3F3F1] p-5 shadow-[0_28px_80px_rgba(3,2,19,0.08)] sm:rounded-[32px] sm:p-6 md:rounded-[40px] md:p-10 xl:p-14">
+      <div className="mx-auto max-w-6xl rounded-2xl border border-slate-100 bg-[#F1F3F5] p-5 shadow-xl sm:rounded-[32px] sm:p-8 md:rounded-[40px] md:p-10 xl:p-14">
         <div className="mb-10">
           <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-ink-soft)]">
             {dynamicSteps[step]?.label} - {step + 1} / {dynamicSteps.length}
           </p>
-          <h2 className="mt-2 font-[var(--font-ui-family)] text-[2rem] font-black uppercase leading-none tracking-[-0.02em] text-[var(--color-ink)] md:text-[2.5rem]">
+          <h2 className="mt-2 font-[var(--font-title-family)] text-[clamp(1.8rem,3.5vw,2.6rem)] font-light leading-[1.05] tracking-[-0.02em] text-[var(--color-ink)]">
             {currentStepInfo.title}
           </h2>
           {currentStepInfo.desc ? (
@@ -1088,490 +1209,541 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
               transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
               className="relative z-10"
             >
-          {step === 0 ? (
-            <div className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(300px,0.9fr)]">
-              <div>
-                <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-                  <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-ink-soft)]">
-                    {copy.selectUpTo}
-                  </p>
-                  <span className="rounded-full border border-black/10 bg-white px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink)]">
-                    {selectedAwardIds.length} / {MAX_SELECTED_NOMINATIONS}
-                  </span>
-                </div>
-
-                {errors.selectedAwardIds ? (
-                  <div className="mb-5 rounded-[20px] border border-red-200 bg-red-50/90 px-4 py-3 text-sm text-red-700">
-                    {errors.selectedAwardIds}
-                  </div>
-                ) : null}
-
-                <div className="space-y-4 md:hidden">
-                  {categories.map(renderCategoryCard)}
-                </div>
-
-                <div className="hidden gap-4 md:grid md:grid-cols-2">
-                  <div className="flex flex-col gap-4">
-                    {leftCategories.map(renderCategoryCard)}
-                  </div>
-                  <div className="flex flex-col gap-4">
-                    {rightCategories.map(renderCategoryCard)}
-                  </div>
-                </div>
-              </div>
-
-              <aside className="h-fit rounded-[32px] border border-black/8 bg-white p-5 shadow-[0_16px_36px_rgba(3,2,19,0.05)] xl:sticky xl:top-6">
-                <div className="flex items-center justify-between gap-3">
+              {step === 0 ? (
+                <div className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(300px,0.9fr)]">
                   <div>
-                    <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-ink-soft)]">
-                      {copy.selectedTitle}
-                    </p>
-                    <p className="mt-2 text-[1.5rem] font-semibold uppercase tracking-[0.02em] text-[var(--color-ink)]">
-                      {selectedAwardIds.length}
-                    </p>
-                  </div>
-
-                  <span className="rounded-full border border-black/8 bg-[var(--surface-tint)] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-soft)]">
-                    {MAX_SELECTED_NOMINATIONS} max
-                  </span>
-                </div>
-
-                <div className="mt-5 space-y-3">
-                  {selectedNominations.length === 0 ? (
-                    <div className="rounded-[24px] border border-dashed border-black/12 bg-[var(--surface-tint)] px-4 py-6 text-center">
-                      <p className="text-sm font-medium text-[var(--color-ink)]">
-                        {copy.selectedEmpty}
+                    <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+                      <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-ink-soft)]">
+                        {copy.selectUpTo}
                       </p>
-                    </div>
-                  ) : (
-                    selectedNominations.map((item) => {
-                      return (
-                        <div
-                          key={item.award.id}
-                          className="rounded-[24px] border border-black/8 bg-[var(--surface-tint)] px-4 py-4 text-[var(--color-ink)] transition-all duration-300"
-                        >
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="min-w-0">
-                              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-ink-soft)]">
-                                {item.categoryTitle}
-                              </p>
-                              <p className="mt-2 text-sm leading-[1.6]">
-                                {item.nominationTitle}
-                              </p>
-                            </div>
-
-                            <button
-                              type="button"
-                              onClick={() => handleSelectedNominationRemove(item.award.id)}
-                              aria-label={`${copy.remove} ${item.nominationTitle}`}
-                              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-black/10 bg-white transition hover:border-black/20"
-                            >
-                              <X size={14} />
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-
-                {/* IBPA Membership + Pricing */}
-                <div className="mt-5 space-y-5 border-t border-black/6 pt-5">
-                  {/* Membership toggle */}
-                  <div>
-                    <p className="mb-3 text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-ink-soft)]">
-                      {copy.ibpaMembership}
-                    </p>
-                    <label className="flex cursor-pointer items-start gap-3">
-                      <input
-                        type="checkbox"
-                        checked={isIbpaMember}
-                        onChange={(e) => {
-                          setIsIbpaMember(e.target.checked);
-                          if (!e.target.checked) {
-                            setIbpaMemberNumber("");
-                            setCertStatus("idle");
-                          }
-                        }}
-                        className="mt-0.5 h-[14px] w-[14px] shrink-0 rounded border-black/20 accent-[var(--color-ink)]"
-                      />
-                      <span className="flex flex-col gap-0.5">
-                        <span className="text-[0.87rem] font-medium text-[var(--color-ink)]">
-                          {copy.ibpaMemberLabel}
-                        </span>
-                        <span className="text-[0.72rem] leading-[1.55] text-[var(--color-ink-soft)]">
-                          {copy.ibpaMemberSub}
-                        </span>
+                      <span className="rounded-full border border-[var(--color-blue-soft)] bg-white px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink)]">
+                        {selectedAwardIds.length} / {MAX_SELECTED_NOMINATIONS}
                       </span>
-                    </label>
-
-                    <AnimatePresence initial={false}>
-                      {isIbpaMember && (
-                        <motion.div
-                          key="cert-input"
-                          initial={{ opacity: 0, height: 0, y: -4 }}
-                          animate={{ opacity: 1, height: "auto", y: 0 }}
-                          exit={{ opacity: 0, height: 0, y: -4 }}
-                          transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-                          className="overflow-hidden"
-                        >
-                          <div className="mt-3">
-                            <p className="mb-1.5 text-[0.65rem] font-bold uppercase tracking-[0.2em] text-[var(--color-ink-soft)]">
-                              {copy.ibpaCertNumber}
-                            </p>
-                            <input
-                              type="text"
-                              value={ibpaMemberNumber}
-                              onChange={(e) => setIbpaMemberNumber(e.target.value)}
-                              placeholder="CERT-20240124-A00A"
-                              className={`w-full rounded-[14px] border bg-white px-3 py-2.5 text-[0.85rem] text-[var(--color-ink)] placeholder-[var(--color-ink-soft)] outline-none transition focus:ring-2 ${
-                                certStatus === "valid"
-                                  ? "border-emerald-400 focus:border-emerald-500 focus:ring-emerald-100"
-                                  : certStatus === "invalid"
-                                    ? "border-red-300 bg-red-50/40 focus:ring-red-100"
-                                    : "border-black/12 focus:border-[var(--color-ink)] focus:ring-black/8"
-                              }`}
-                            />
-                            <CertStatusBadge status={certStatus} />
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-
-                  {/* Entry fee */}
-                  <div className="border-t border-black/6 pt-4">
-                    <div className="flex items-center justify-between gap-2 mb-2">
-                      <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-ink-soft)]">
-                        {copy.entryFee}
-                      </p>
-                      {effectivelyMember ? (
-                        <span className="flex items-center gap-1 rounded-full border border-[var(--color-ink)]/15 bg-[var(--surface-tint)] px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink)]">
-                          <ShieldCheck size={9} strokeWidth={2} />
-                          {copy.memberRate}
-                        </span>
-                      ) : null}
                     </div>
 
-                    {displayPrice !== null ? (
+                    {errors.selectedAwardIds ? (
+                      <div className="mb-5 rounded-[20px] border border-red-200 bg-red-50/90 px-4 py-3 text-sm text-red-700">
+                        {errors.selectedAwardIds}
+                      </div>
+                    ) : null}
+
+                    <div className="space-y-4 md:hidden">
+                      {categories.map(renderCategoryCard)}
+                    </div>
+
+                    <div className="hidden gap-4 md:grid md:grid-cols-2">
+                      <div className="flex flex-col gap-4">
+                        {leftCategories.map(renderCategoryCard)}
+                      </div>
+                      <div className="flex flex-col gap-4">
+                        {rightCategories.map(renderCategoryCard)}
+                      </div>
+                    </div>
+                  </div>
+
+                  <aside className="premium-glass h-fit p-5 xl:sticky xl:top-6">
+                    <div className="flex items-center justify-between gap-3">
                       <div>
-                        <div className="flex items-baseline gap-2">
-                          <p className="text-[1.5rem] font-semibold tracking-[-0.02em] text-[var(--color-ink)]">
-                            ${displayPrice}
+                        <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-ink-soft)]">
+                          {copy.selectedTitle}
+                        </p>
+                        <p className="mt-2 text-[1.5rem] font-semibold uppercase tracking-[0.02em] text-[var(--color-ink)]">
+                          {selectedAwardIds.length}
+                        </p>
+                      </div>
+
+                      <span className="rounded-full border border-[var(--color-blue-soft)] bg-[var(--color-blue-wash)] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-soft)]">
+                        {MAX_SELECTED_NOMINATIONS} max
+                      </span>
+                    </div>
+
+                    <div className="mt-5 space-y-3">
+                      {selectedNominations.length === 0 ? (
+                        <div className="rounded-[24px] border border-dashed border-[var(--color-blue-soft)] bg-[var(--surface-tint)] px-4 py-6 text-center">
+                          <p className="text-sm font-medium text-[var(--color-ink)]">
+                            {copy.selectedEmpty}
                           </p>
-                          {savings > 0 && (
-                            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-emerald-700">
-                              {copy.savings} ${savings}
-                            </span>
-                          )}
                         </div>
-                        {selectedAwardIds.length === 5 && (
-                          <p className="mt-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-emerald-600">
-                            {copy.grandPrixEligible}
+                      ) : (
+                        selectedNominations.map((item) => {
+                          return (
+                            <div
+                              key={item.award.id}
+                              className="rounded-[24px] border border-[var(--border-soft)] bg-white/72 px-4 py-4 text-[var(--color-ink)] transition-all duration-300"
+                            >
+                              <div className="flex items-start justify-between gap-3">
+                                <div className="min-w-0">
+                                  <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-ink-soft)]">
+                                    {item.categoryTitle}
+                                  </p>
+                                  <p className="mt-2 text-sm leading-[1.6]">
+                                    {item.nominationTitle}
+                                  </p>
+                                </div>
+
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleSelectedNominationRemove(
+                                      item.award.id,
+                                    )
+                                  }
+                                  aria-label={`${copy.remove} ${item.nominationTitle}`}
+                                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--border-soft)] bg-white transition hover:border-[var(--color-blue)]"
+                                >
+                                  <X size={14} />
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+
+                    {/* IBPA Membership + Pricing */}
+                    <div className="mt-5 space-y-5 border-t border-[var(--border-soft)] pt-5">
+                      {/* Membership toggle */}
+                      <div>
+                        <p className="mb-3 text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-ink-soft)]">
+                          {copy.ibpaMembership}
+                        </p>
+                        <label
+                          className={`group relative flex cursor-pointer items-start gap-4 overflow-hidden rounded-[1.5rem] border p-4 transition-all duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] ${
+                            isIbpaMember
+                              ? "border-[var(--color-blue)]/45 bg-[linear-gradient(135deg,rgba(185,217,235,0.48),rgba(255,255,255,0.92))] shadow-[0_18px_44px_rgba(114,160,193,0.18)]"
+                              : "border-white/70 bg-white/72 shadow-[0_14px_36px_rgba(42,66,82,0.06)] hover:-translate-y-[2px] hover:border-[var(--color-blue)]/35 hover:bg-white hover:shadow-[0_22px_54px_rgba(114,160,193,0.16)]"
+                          }`}
+                        >
+                          <span className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-[var(--color-blue-wash)] opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100" />
+                          <input
+                            type="checkbox"
+                            checked={isIbpaMember}
+                            onChange={(e) => {
+                              setIsIbpaMember(e.target.checked);
+                              if (!e.target.checked) {
+                                setIbpaMemberNumber("");
+                                setCertStatus("idle");
+                              }
+                            }}
+                            className="sr-only"
+                          />
+
+                          <span
+                            className={`relative z-10 mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-all duration-500 ${
+                              isIbpaMember
+                                ? "scale-105 border-[var(--color-blue)] bg-[var(--color-blue)] text-white shadow-[0_0_0_5px_rgba(185,217,235,0.55)]"
+                                : "border-[var(--color-blue)]/20 bg-white text-transparent shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] group-hover:scale-105 group-hover:border-[var(--color-blue)]/55 group-hover:bg-[var(--color-blue-wash)] group-hover:text-[var(--color-blue)]"
+                            }`}
+                          >
+                            <Check size={14} strokeWidth={2.4} />
+                          </span>
+
+                          <span className="relative z-10 flex flex-col gap-1">
+                            <span className="text-[0.9rem] font-semibold text-[var(--color-ink)]">
+                              {copy.ibpaMemberLabel}
+                            </span>
+                            <span className="text-[0.72rem] leading-[1.55] text-[var(--color-ink-soft)]">
+                              {copy.ibpaMemberSub}
+                            </span>
+                          </span>
+                        </label>
+
+                        <AnimatePresence initial={false}>
+                          {isIbpaMember && (
+                            <motion.div
+                              key="cert-input"
+                              initial={{ opacity: 0, height: 0, y: -4 }}
+                              animate={{ opacity: 1, height: "auto", y: 0 }}
+                              exit={{ opacity: 0, height: 0, y: -4 }}
+                              transition={{
+                                duration: 0.24,
+                                ease: [0.22, 1, 0.36, 1],
+                              }}
+                              className="overflow-hidden"
+                            >
+                              <div className="mt-3">
+                                <p className="mb-1.5 text-[0.65rem] font-bold uppercase tracking-[0.2em] text-[var(--color-ink-soft)]">
+                                  {copy.ibpaCertNumber}
+                                </p>
+                                <input
+                                  type="text"
+                                  value={ibpaMemberNumber}
+                                  onChange={(e) =>
+                                    setIbpaMemberNumber(e.target.value)
+                                  }
+                                  placeholder="CERT-20240124-A00A"
+                                  className={`w-full rounded-[14px] border bg-white px-3 py-2.5 text-[0.85rem] text-[var(--color-ink)] placeholder-[var(--color-ink-soft)] outline-none transition focus:ring-2 ${
+                                    certStatus === "valid"
+                                      ? "border-emerald-400 focus:border-emerald-500 focus:ring-emerald-100"
+                                      : certStatus === "invalid"
+                                        ? "border-red-300 bg-red-50/40 focus:ring-red-100"
+                                        : "border-[var(--border-soft)] focus:border-[var(--color-blue)] focus:ring-[var(--color-blue-soft)]/50"
+                                  }`}
+                                />
+                                <CertStatusBadge status={certStatus} />
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+
+                      {/* Entry fee */}
+                      <div className="border-t border-[var(--border-soft)] pt-4">
+                        <div className="flex items-center justify-between gap-2 mb-2">
+                          <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-ink-soft)]">
+                            {copy.entryFee}
+                          </p>
+                          {effectivelyMember ? (
+                            <span className="flex items-center gap-1 rounded-full border border-[var(--color-ink)]/15 bg-[var(--surface-tint)] px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink)]">
+                              <ShieldCheck size={9} strokeWidth={2} />
+                              {copy.memberRate}
+                            </span>
+                          ) : null}
+                        </div>
+
+                        {displayPrice !== null ? (
+                          <div>
+                            <div className="flex items-baseline gap-2">
+                              <p className="text-[1.5rem] font-semibold tracking-[-0.02em] text-[var(--color-ink)]">
+                                ${displayPrice}
+                              </p>
+                              {savings > 0 && (
+                                <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-emerald-700">
+                                  {copy.savings} ${savings}
+                                </span>
+                              )}
+                            </div>
+                            {selectedAwardIds.length === 5 && (
+                              <p className="mt-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-emerald-600">
+                                {copy.grandPrixEligible}
+                              </p>
+                            )}
+                          </div>
+                        ) : (
+                          <p className="text-[0.8rem] italic text-[var(--color-ink-soft)]">
+                            {copy.selectForPricing}
                           </p>
                         )}
                       </div>
-                    ) : (
-                      <p className="text-[0.8rem] italic text-[var(--color-ink-soft)]">
-                        {copy.selectForPricing}
-                      </p>
-                    )}
+                    </div>
+                  </aside>
+                </div>
+              ) : null}
+
+              {step === 1 ? (
+                <div className="grid gap-6 md:grid-cols-2">
+                  <TextField
+                    label={copy.firstName}
+                    name="firstName"
+                    value={String(values.firstName ?? "")}
+                    required
+                    placeholder="As shown on official documents"
+                    error={errors.firstName}
+                    onChange={handleChange}
+                  />
+                  <TextField
+                    label={copy.lastName}
+                    name="lastName"
+                    value={String(values.lastName ?? "")}
+                    required
+                    placeholder="As shown on official documents"
+                    error={errors.lastName}
+                    onChange={handleChange}
+                  />
+                  <TextField
+                    label={copy.email}
+                    name="email"
+                    type="email"
+                    value={String(values.email ?? "")}
+                    required
+                    placeholder="name@example.com"
+                    error={errors.email}
+                    onChange={handleChange}
+                  />
+                  <TextField
+                    label={copy.phone}
+                    name="phone"
+                    type="tel"
+                    value={String(values.phone ?? "")}
+                    required
+                    placeholder="+1 (555) 123-4567"
+                    error={errors.phone}
+                    onChange={handleChange}
+                  />
+                  <SelectField
+                    label={copy.country}
+                    name="country"
+                    value={String(values.country ?? "")}
+                    required
+                    placeholder={copy.selectCountry}
+                    options={countryOptions}
+                    error={errors.country}
+                    onChange={handleChange}
+                  />
+                  {String(values.country ?? "") === "Other" ? (
+                    <TextField
+                      label={copy.countryOther}
+                      name="countryOther"
+                      value={String(values.countryOther ?? "")}
+                      required
+                      placeholder="Enter your country"
+                      error={errors.countryOther}
+                      onChange={handleChange}
+                    />
+                  ) : null}
+                  {String(values.country ?? "") === "USA" ? (
+                    <TextField
+                      label={copy.stateProvince}
+                      name="stateProvince"
+                      value={String(values.stateProvince ?? "")}
+                      required
+                      placeholder="California"
+                      error={errors.stateProvince}
+                      onChange={handleChange}
+                    />
+                  ) : null}
+                  <TextField
+                    label={copy.city}
+                    name="city"
+                    value={String(values.city ?? "")}
+                    required
+                    placeholder="Los Angeles"
+                    error={errors.city}
+                    onChange={handleChange}
+                  />
+                </div>
+              ) : null}
+
+              {step === 2 ? (
+                <div className="grid gap-6 md:grid-cols-2">
+                  <TextField
+                    label={copy.professionalTitle}
+                    name="professionalTitle"
+                    value={String(values.professionalTitle ?? "")}
+                    required
+                    placeholder={copy.professionalTitlePh}
+                    error={errors.professionalTitle}
+                    onChange={handleChange}
+                  />
+                  <TextField
+                    label={copy.yearsExperience}
+                    name="yearsExperience"
+                    type="number"
+                    min={2}
+                    value={String(values.yearsExperience ?? "")}
+                    required
+                    placeholder="2"
+                    description={copy.yearsExperienceHint}
+                    error={errors.yearsExperience}
+                    onChange={handleChange}
+                  />
+                </div>
+              ) : null}
+
+              {step === 3 ? (
+                <UploadField
+                  label={copy.licenseCertification}
+                  name="licenseCertification"
+                  files={
+                    Array.isArray(values.licenseCertification)
+                      ? values.licenseCertification.filter(
+                          (file): file is File => file instanceof File,
+                        )
+                      : []
+                  }
+                  required
+                  multiple={false}
+                  accept={["image/jpeg", "image/png", "application/pdf"]}
+                  description={copy.licenseCertificationHint}
+                  error={errors.licenseCertification}
+                  onChange={handleFilesChange}
+                />
+              ) : null}
+
+              {step >= BLOCK_B_START && step < MOTIVATION_STEP ? (
+                <div className="space-y-5">
+                  {errors._blockB ? (
+                    <div className="rounded-[20px] border border-red-200 bg-red-50/90 px-4 py-3 text-sm text-red-700">
+                      {errors._blockB}
+                    </div>
+                  ) : null}
+                  {currentBlockBNom ? (
+                    <BlockBRenderer
+                      fields={
+                        categoryFieldConfigs[currentBlockBNom.category.slug] ??
+                        []
+                      }
+                      values={blockBValues[currentBlockBNom.award.id] ?? {}}
+                      errors={blockBErrors[currentBlockBNom.award.id] ?? {}}
+                      onChange={(name, value) =>
+                        handleBlockBChange(
+                          currentBlockBNom.award.id,
+                          name,
+                          value,
+                        )
+                      }
+                      onFilesChange={(name, files) =>
+                        handleBlockBFilesChange(
+                          currentBlockBNom.award.id,
+                          name,
+                          files,
+                        )
+                      }
+                    />
+                  ) : (
+                    <BlockBRenderer
+                      fields={[]}
+                      values={{}}
+                      errors={{}}
+                      onChange={() => undefined}
+                      onFilesChange={() => undefined}
+                    />
+                  )}
+                </div>
+              ) : null}
+
+              {step === MOTIVATION_STEP ? (
+                <div className="grid gap-6 md:grid-cols-2">
+                  <TextField
+                    label={copy.website}
+                    name="websiteUrl"
+                    type="url"
+                    value={String(values.websiteUrl ?? "")}
+                    placeholder="https://"
+                    error={errors.websiteUrl}
+                    onChange={handleChange}
+                  />
+                  <TextField
+                    label={copy.social}
+                    name="socialUrl"
+                    type="url"
+                    value={String(values.socialUrl ?? "")}
+                    placeholder="https://instagram.com/yourprofile"
+                    error={errors.socialUrl}
+                    onChange={handleChange}
+                  />
+                  <TextField
+                    label={copy.reviews}
+                    name="reviewsUrl"
+                    type="url"
+                    value={String(values.reviewsUrl ?? "")}
+                    placeholder="https://"
+                    error={errors.reviewsUrl}
+                    onChange={handleChange}
+                  />
+                  <SelectField
+                    label={copy.heardAbout}
+                    name="heardAbout"
+                    value={String(values.heardAbout ?? "")}
+                    placeholder={copy.selectOption}
+                    options={heardAboutOptions.map((option) => ({
+                      ...option,
+                      label:
+                        copy.heardAboutLabels[
+                          option.value as keyof typeof copy.heardAboutLabels
+                        ] ?? option.label,
+                    }))}
+                    error={errors.heardAbout}
+                    onChange={handleChange}
+                  />
+                  {String(values.heardAbout ?? "") === "other" ? (
+                    <TextField
+                      label={copy.heardAboutOther}
+                      name="heardAboutOther"
+                      value={String(values.heardAboutOther ?? "")}
+                      placeholder="Tell us the source"
+                      error={errors.heardAboutOther}
+                      onChange={handleChange}
+                    />
+                  ) : null}
+                </div>
+              ) : null}
+
+              {step === CONFIRM_STEP ? (
+                <div className="space-y-5">
+                  <div className="premium-glass rounded-[28px] bg-white/86 p-6">
+                    <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-ink-soft)]">
+                      {copy.confirmTitle}
+                    </p>
+                    <p className="mt-3 text-[0.92rem] leading-[1.75] text-[var(--color-ink-soft)]">
+                      {copy.confirmNote}
+                    </p>
+                    <dl className="mt-6 grid gap-x-8 gap-y-4 sm:grid-cols-2">
+                      {[
+                        {
+                          label: "Name",
+                          value:
+                            `${values.firstName ?? ""} ${values.lastName ?? ""}`.trim(),
+                        },
+                        { label: "Email", value: String(values.email ?? "") },
+                        {
+                          label: "Country",
+                          value: String(values.country ?? ""),
+                        },
+                        {
+                          label: copy.nominationCount,
+                          value: `${selectedAwardIds.length}`,
+                        },
+                        {
+                          label: copy.ibpaMembership,
+                          value: effectivelyMember
+                            ? copy.ibpaMemberLabel
+                            : copy.standardRate,
+                        },
+                        {
+                          label: copy.entryFee,
+                          value:
+                            displayPrice !== null ? `$${displayPrice}` : "—",
+                        },
+                      ].map((row) => (
+                        <div key={row.label}>
+                          <dt className="text-[0.62rem] font-bold uppercase tracking-[0.18em] text-[var(--color-ink)]/40">
+                            {row.label}
+                          </dt>
+                          <dd className="mt-1 text-[0.95rem] font-semibold text-[var(--color-ink)]">
+                            {row.value || "-"}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+
+                    <div className="mt-6 grid gap-3">
+                      {selectedNominations.map((item) => (
+                        <div
+                          key={item.award.id}
+                          className="rounded-[22px] border border-[var(--border-soft)] bg-[var(--surface-tint)] px-4 py-3 text-[var(--color-ink)]"
+                        >
+                          <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-ink-soft)]">
+                            {item.categoryTitle}
+                          </p>
+                          <p className="mt-2 text-sm leading-[1.6]">
+                            {item.nominationTitle}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </aside>
-            </div>
-          ) : null}
 
-          {step === 1 ? (
-            <div className="grid gap-6 md:grid-cols-2">
-              <TextField
-                label={copy.firstName}
-                name="firstName"
-                value={String(values.firstName ?? "")}
-                required
-                placeholder="As shown on official documents"
-                error={errors.firstName}
-                onChange={handleChange}
-              />
-              <TextField
-                label={copy.lastName}
-                name="lastName"
-                value={String(values.lastName ?? "")}
-                required
-                placeholder="As shown on official documents"
-                error={errors.lastName}
-                onChange={handleChange}
-              />
-              <TextField
-                label={copy.email}
-                name="email"
-                type="email"
-                value={String(values.email ?? "")}
-                required
-                placeholder="name@example.com"
-                error={errors.email}
-                onChange={handleChange}
-              />
-              <TextField
-                label={copy.phone}
-                name="phone"
-                type="tel"
-                value={String(values.phone ?? "")}
-                required
-                placeholder="+1 (555) 123-4567"
-                error={errors.phone}
-                onChange={handleChange}
-              />
-              <SelectField
-                label={copy.country}
-                name="country"
-                value={String(values.country ?? "")}
-                required
-                placeholder={copy.selectCountry}
-                options={countryOptions}
-                error={errors.country}
-                onChange={handleChange}
-              />
-              {String(values.country ?? "") === "Other" ? (
-                <TextField
-                  label={copy.countryOther}
-                  name="countryOther"
-                  value={String(values.countryOther ?? "")}
-                  required
-                  placeholder="Enter your country"
-                  error={errors.countryOther}
-                  onChange={handleChange}
-                />
-              ) : null}
-              {String(values.country ?? "") === "USA" ? (
-                <TextField
-                  label={copy.stateProvince}
-                  name="stateProvince"
-                  value={String(values.stateProvince ?? "")}
-                  required
-                  placeholder="California"
-                  error={errors.stateProvince}
-                  onChange={handleChange}
-                />
-              ) : null}
-              <TextField
-                label={copy.city}
-                name="city"
-                value={String(values.city ?? "")}
-                required
-                placeholder="Los Angeles"
-                error={errors.city}
-                onChange={handleChange}
-              />
-            </div>
-          ) : null}
-
-          {step === 2 ? (
-            <div className="grid gap-6 md:grid-cols-2">
-              <TextField
-                label={copy.professionalTitle}
-                name="professionalTitle"
-                value={String(values.professionalTitle ?? "")}
-                required
-                placeholder={copy.professionalTitlePh}
-                error={errors.professionalTitle}
-                onChange={handleChange}
-              />
-              <TextField
-                label={copy.yearsExperience}
-                name="yearsExperience"
-                type="number"
-                min={2}
-                value={String(values.yearsExperience ?? "")}
-                required
-                placeholder="2"
-                description={copy.yearsExperienceHint}
-                error={errors.yearsExperience}
-                onChange={handleChange}
-              />
-            </div>
-          ) : null}
-
-          {step === 3 ? (
-            <UploadField
-              label={copy.licenseCertification}
-              name="licenseCertification"
-              files={
-                Array.isArray(values.licenseCertification)
-                  ? values.licenseCertification.filter(
-                      (file): file is File => file instanceof File
-                    )
-                  : []
-              }
-              required
-              multiple={false}
-              accept={["image/jpeg", "image/png", "application/pdf"]}
-              description={copy.licenseCertificationHint}
-              error={errors.licenseCertification}
-              onChange={handleFilesChange}
-            />
-          ) : null}
-
-          {step >= BLOCK_B_START && step < MOTIVATION_STEP ? (
-            <div className="space-y-5">
-              {errors._blockB ? (
-                <div className="rounded-[20px] border border-red-200 bg-red-50/90 px-4 py-3 text-sm text-red-700">
-                  {errors._blockB}
-                </div>
-              ) : null}
-              {currentBlockBNom ? (
-                <BlockBRenderer
-                  fields={categoryFieldConfigs[currentBlockBNom.category.slug] ?? []}
-                  values={blockBValues[currentBlockBNom.award.id] ?? {}}
-                  errors={blockBErrors[currentBlockBNom.award.id] ?? {}}
-                  onChange={(name, value) => handleBlockBChange(currentBlockBNom.award.id, name, value)}
-                  onFilesChange={(name, files) => handleBlockBFilesChange(currentBlockBNom.award.id, name, files)}
-                />
-              ) : (
-                <BlockBRenderer
-                  fields={[]}
-                  values={{}}
-                  errors={{}}
-                  onChange={() => undefined}
-                  onFilesChange={() => undefined}
-                />
-              )}
-            </div>
-          ) : null}
-
-          {step === MOTIVATION_STEP ? (
-            <div className="grid gap-6 md:grid-cols-2">
-              <TextField
-                label={copy.website}
-                name="websiteUrl"
-                type="url"
-                value={String(values.websiteUrl ?? "")}
-                placeholder="https://"
-                error={errors.websiteUrl}
-                onChange={handleChange}
-              />
-              <TextField
-                label={copy.social}
-                name="socialUrl"
-                type="url"
-                value={String(values.socialUrl ?? "")}
-                placeholder="https://instagram.com/yourprofile"
-                error={errors.socialUrl}
-                onChange={handleChange}
-              />
-              <TextField
-                label={copy.reviews}
-                name="reviewsUrl"
-                type="url"
-                value={String(values.reviewsUrl ?? "")}
-                placeholder="https://"
-                error={errors.reviewsUrl}
-                onChange={handleChange}
-              />
-              <SelectField
-                label={copy.heardAbout}
-                name="heardAbout"
-                value={String(values.heardAbout ?? "")}
-                placeholder={copy.selectOption}
-                options={heardAboutOptions.map((option) => ({
-                  ...option,
-                  label:
-                    copy.heardAboutLabels[
-                      option.value as keyof typeof copy.heardAboutLabels
-                    ] ?? option.label,
-                }))}
-                error={errors.heardAbout}
-                onChange={handleChange}
-              />
-              {String(values.heardAbout ?? "") === "other" ? (
-                <TextField
-                  label={copy.heardAboutOther}
-                  name="heardAboutOther"
-                  value={String(values.heardAboutOther ?? "")}
-                  placeholder="Tell us the source"
-                  error={errors.heardAboutOther}
-                  onChange={handleChange}
-                />
-              ) : null}
-            </div>
-          ) : null}
-
-          {step === CONFIRM_STEP ? (
-            <div className="space-y-5">
-              <div className="rounded-[28px] border border-black/8 bg-white p-6 shadow-[0_16px_36px_rgba(3,2,19,0.05)]">
-                <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-ink-soft)]">
-                  {copy.confirmTitle}
-                </p>
-                <p className="mt-3 text-[0.92rem] leading-[1.75] text-[var(--color-ink-soft)]">
-                  {copy.confirmNote}
-                </p>
-                <dl className="mt-6 grid gap-x-8 gap-y-4 sm:grid-cols-2">
-                  {[
-                    {
-                      label: "Name",
-                      value: `${values.firstName ?? ""} ${values.lastName ?? ""}`.trim(),
-                    },
-                    { label: "Email", value: String(values.email ?? "") },
-                    { label: "Country", value: String(values.country ?? "") },
-                    {
-                      label: copy.nominationCount,
-                      value: `${selectedAwardIds.length}`,
-                    },
-                    {
-                      label: copy.ibpaMembership,
-                      value: effectivelyMember ? copy.ibpaMemberLabel : copy.standardRate,
-                    },
-                    {
-                      label: copy.entryFee,
-                      value: displayPrice !== null ? `$${displayPrice}` : "—",
-                    },
-                  ].map((row) => (
-                    <div key={row.label}>
-                      <dt className="text-[0.62rem] font-bold uppercase tracking-[0.18em] text-[var(--color-ink)]/40">
-                        {row.label}
-                      </dt>
-                      <dd className="mt-1 text-[0.95rem] font-semibold text-[var(--color-ink)]">
-                        {row.value || "-"}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-
-                <div className="mt-6 grid gap-3">
-                  {selectedNominations.map((item) => (
+                  {submissionState.message ? (
                     <div
-                      key={item.award.id}
-                      className="rounded-[22px] border border-black/8 bg-[var(--surface-tint)] px-4 py-3 text-[var(--color-ink)]"
+                      className={`rounded-[18px] border px-5 py-4 text-sm ${submissionState.type === "success" ? "border-green-200 bg-green-50 text-green-800" : "border-red-200 bg-red-50 text-red-700"}`}
+                      aria-live="polite"
                     >
-                      <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-ink-soft)]">
-                        {item.categoryTitle}
-                      </p>
-                      <p className="mt-2 text-sm leading-[1.6]">{item.nominationTitle}</p>
+                      {submissionState.message}
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              {submissionState.message ? (
-                <div
-                  className={`rounded-[18px] border px-5 py-4 text-sm ${submissionState.type === "success" ? "border-green-200 bg-green-50 text-green-800" : "border-red-200 bg-red-50 text-red-700"}`}
-                  aria-live="polite"
-                >
-                  {submissionState.message}
+                  ) : null}
                 </div>
               ) : null}
-            </div>
-          ) : null}
             </motion.div>
           </AnimatePresence>
         </div>
 
-        <div className="mt-10 flex items-center justify-between border-t border-black/6 pt-8">
+        <div className="mt-10 flex items-center justify-between border-t border-[var(--border-soft)] pt-8">
           <button
             type="button"
             onClick={back}
             disabled={step === 0}
-            className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-6 py-3 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-[var(--color-ink)] shadow-[0_12px_24px_rgba(3,2,19,0.04)] transition-all duration-300 hover:border-[var(--color-ink)] hover:bg-[var(--color-ink)] hover:text-white disabled:pointer-events-none disabled:opacity-30"
+            className="inline-flex items-center gap-2 rounded-full border border-[var(--border-soft)] bg-white px-6 py-3 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-[var(--color-ink)] shadow-[0_12px_24px_rgba(3,2,19,0.04)] transition-all duration-300 hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-wash)] disabled:pointer-events-none disabled:opacity-30"
           >
             <ChevronLeft size={14} /> {copy.back}
           </button>
@@ -1580,17 +1752,29 @@ export default function ApplyForm({ categories }: { categories: CategoryOption[]
             <button
               type="button"
               onClick={advance}
-              className="inline-flex items-center gap-2 rounded-full border border-[var(--color-ink)] bg-[var(--color-ink)] px-8 py-3 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-white shadow-[0_18px_36px_rgba(3,2,19,0.14)] transition-all duration-300 hover:bg-white hover:text-[var(--color-ink)]"
+              className={HERO_PRIMARY_BUTTON_CLASS}
             >
-              {copy.continue} <ChevronRight size={14} />
+              <HeroPrimaryButtonLayers />
+              <span className="relative z-10">{copy.continue}</span>
+              <ChevronRight
+                size={16}
+                className="relative z-10 text-[#b9d9eb] transition-all duration-500 group-hover:translate-x-1 group-hover:text-white"
+              />
             </button>
           ) : (
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex items-center gap-2 rounded-full border border-[var(--color-ink)] bg-[var(--color-ink)] px-8 py-3 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-white shadow-[0_18px_36px_rgba(3,2,19,0.14)] transition-all duration-300 hover:bg-white hover:text-[var(--color-ink)] disabled:opacity-60"
+              className={HERO_PRIMARY_BUTTON_CLASS}
             >
-              {isSubmitting ? copy.submitting : copy.submit} <ChevronRight size={14} />
+              <HeroPrimaryButtonLayers />
+              <span className="relative z-10">
+                {isSubmitting ? copy.submitting : copy.submit}
+              </span>
+              <ChevronRight
+                size={16}
+                className="relative z-10 text-[#b9d9eb] transition-all duration-500 group-hover:translate-x-1 group-hover:text-white"
+              />
             </button>
           )}
         </div>

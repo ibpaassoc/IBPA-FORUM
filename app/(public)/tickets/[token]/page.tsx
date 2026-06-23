@@ -41,7 +41,7 @@ export default async function TicketPaymentPage({
 
   return (
     <main className="page-shell flex min-h-screen items-center justify-center p-6">
-      <div className="w-full max-w-md rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-white px-8 py-10 shadow-[var(--shadow-md)]">
+      <div className="premium-glass w-full max-w-md px-8 py-10">
         <p className="mb-5 text-[10px] font-bold tracking-[0.22em] uppercase text-[var(--color-blue)]">
           IBPA BEAUTY AWARD 2026
         </p>
@@ -54,8 +54,8 @@ export default async function TicketPaymentPage({
         </p>
 
         {/* Ticket info */}
-        <div className="mb-4 rounded-xl bg-[#f9fafb] px-5 py-4">
-          <p className="mb-3 text-[10px] font-bold tracking-[0.14em] uppercase text-[#9ca3af]">
+        <div className="mb-4 rounded-xl border border-[var(--border-soft)] bg-white/72 px-5 py-4">
+          <p className="mb-3 text-[10px] font-bold tracking-[0.14em] uppercase text-[var(--color-ink-muted)]">
             Ticket
           </p>
           <Row label="Type" value={TICKET_LABELS[ticket.type] ?? ticket.type} />
@@ -72,8 +72,8 @@ export default async function TicketPaymentPage({
 
         {/* Payment info */}
         {payment && (
-          <div className="rounded-xl bg-[#f9fafb] px-5 py-4">
-            <p className="mb-3 text-[10px] font-bold tracking-[0.14em] uppercase text-[#9ca3af]">
+          <div className="rounded-xl border border-[var(--border-soft)] bg-white/72 px-5 py-4">
+            <p className="mb-3 text-[10px] font-bold tracking-[0.14em] uppercase text-[var(--color-ink-muted)]">
               Payment
             </p>
             {amountFormatted && <Row label="Amount" value={amountFormatted} />}
@@ -83,7 +83,7 @@ export default async function TicketPaymentPage({
         )}
 
         <div className="mt-8">
-          <Link href="/" className="ibpa-button ibpa-button-secondary w-full text-center">
+          <Link href="/" className="ibpa-button ibpa-button-ghost w-full text-center">
             Back to Home
           </Link>
         </div>
@@ -103,12 +103,12 @@ function Row({
 }) {
   return (
     <div className="flex items-center justify-between py-1.5 text-sm">
-      <span className="text-[#6b7280]">{label}</span>
+      <span className="text-[var(--color-ink-soft)]">{label}</span>
       <span
         className={
           highlight
             ? "font-semibold text-[var(--color-blue)]"
-            : "font-medium text-[#111827]"
+            : "font-medium text-[var(--color-ink)]"
         }
       >
         {value}

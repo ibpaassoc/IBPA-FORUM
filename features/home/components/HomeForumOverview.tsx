@@ -71,11 +71,11 @@ export default function HomeForumOverview() {
                 priority={false}
               />
               {/* Floating label card */}
-              <div className="absolute bottom-[var(--space-md)] left-[var(--space-md)] rounded-[var(--radius)] bg-[var(--color-ink)]/85 px-4 py-3 backdrop-blur-sm">
-                <p className="text-[0.62rem] uppercase tracking-[0.18em] text-[var(--color-blue-soft)]">
+              <div className="absolute bottom-[var(--space-md)] left-[var(--space-md)] rounded-[var(--radius)] bg-white/88 px-4 py-3 backdrop-blur-sm shadow-[var(--shadow-sm)]">
+                <p className="text-[0.62rem] uppercase tracking-[0.18em] text-[var(--color-blue)]">
                   Official Event
                 </p>
-                <p className="mt-0.5 font-[var(--font-title-family)] text-[0.95rem] text-white">
+                <p className="mt-0.5 font-[var(--font-title-family)] text-[0.95rem] text-[var(--color-ink)]">
                   IBPA BEAUTY AWARD 2026
                 </p>
               </div>

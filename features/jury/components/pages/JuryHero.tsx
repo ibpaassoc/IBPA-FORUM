@@ -1,71 +1,50 @@
 "use client";
 
-import Link from "next/link";
+import Image from "next/image";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import {
-  EditorialHero,
-  EditorialPhotoCard,
-} from "@/shared/components/public";
-
+import { HeroPrimaryButton, HeroSecondaryButton } from "@/shared/components/public";
 
 export default function JuryHero() {
   const { t } = useLanguage();
 
   return (
-    <EditorialHero
-        eyebrow={t.juryPage.copy.heroEyebrow}
-        title={t.juryPage.copy.heroTitle}
-        description={t.juryPage.copy.heroText}
-        actions={
-          <div className="flex flex-wrap gap-3">
-            <Link href="/apply/jury" className="ibpa-button ibpa-button-primary">
-              {t.common.applyAsJury}
-            </Link>
-            <Link href="/jury/register" className="ibpa-button ibpa-button-ghost">
-              {t.common.juryAccount}
-            </Link>
-          </div>
-        }
-        media={
-          <div className="grid gap-[var(--space-md)]">
-            <EditorialPhotoCard
-              src="/images/events/JuryHero1.jpg"
-              alt="Jury hero leadership portrait"
-              aspect="landscape"
-              overlay="soft"
-              objectPosition="center 30%"
-              mobileObjectPosition="center 24%"
-              priority
-            />
-            <div className="grid gap-[var(--space-md)] md:grid-cols-2">
-              <EditorialPhotoCard
-                src="/images/DSC01460.jpg"
-                alt="Jury collaboration close-up"
-                aspect="square"
-                overlay="soft"
-                objectPosition="center 30%"
-                mobileObjectPosition="center 24%"
-              />
-              <EditorialPhotoCard
-                src="/images/gallery/DSC00659.jpg"
-                alt="Judge reviewing application materials"
-                aspect="square"
-                overlay="soft"
-                objectPosition="center 30%"
-                mobileObjectPosition="center 24%"
-              />
-            </div>
-          </div>
-        }
-        floatingCard={
-          <article className="page-card rounded-[var(--radius)] p-[var(--space-md)]">
-            <p className="text-[0.67rem] uppercase tracking-[0.2em] text-[var(--color-hover-accent)]">{t.juryPage.copy.credibility}</p>
-            <p className="mt-1 font-[var(--font-title-family)] text-[clamp(1.6rem,2.1vw,2.2rem)] leading-[1.1] text-[var(--color-ink)]">
-              {t.juryPage.hero.experienceValue}
-            </p>
-            <p className="mt-2 text-sm leading-[1.7] text-[var(--color-ink-soft)]">{t.juryPage.copy.credibilityText}</p>
-          </article>
-        }
-      />
+    <section className="relative flex min-h-[100svh] items-center justify-center overflow-hidden bg-[#0a0a0a]">
+      {/* Full-screen background image */}
+      <div className="absolute inset-0 z-[1]">
+        <Image
+          src="/images/events/JuryHero1.jpg"
+          alt="IBPA Jury"
+          fill
+          style={{ objectPosition: "50% 20%" }}
+          className="object-cover opacity-70"
+          priority
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.30)_0%,rgba(0,0,0,0.20)_50%,rgba(0,0,0,0.65)_100%)]" />
+      </div>
+
+      {/* Centered content */}
+      <div className="relative z-10 flex w-full flex-col items-center px-[var(--page-gutter)] pb-24 pt-[calc(var(--site-header-height)+clamp(2rem,6vw,5rem))] text-center">
+        <p className="font-[var(--font-accent-family)] text-[clamp(0.9rem,1.4vw,1.15rem)] italic tracking-wide text-white/70">
+          {t.juryPage.copy.heroEyebrow}
+        </p>
+
+        <h1 className="mt-4 max-w-[12ch] font-[var(--font-title-family)] text-[clamp(3rem,10vw,7.5rem)] font-light leading-[0.90] tracking-[-0.03em] text-white [text-shadow:0_8px_32px_rgba(0,0,0,0.45)]">
+          {t.juryPage.copy.heroTitle}
+        </h1>
+
+        <p className="mt-6 max-w-lg font-[var(--font-accent-family)] text-[clamp(1rem,1.8vw,1.25rem)] italic leading-[1.65] text-white/80">
+          {t.juryPage.copy.heroText}
+        </p>
+
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+          <HeroPrimaryButton href="/apply/jury">
+            {t.common.applyAsJury}
+          </HeroPrimaryButton>
+          <HeroSecondaryButton href="/jury/register">
+            {t.common.juryAccount}
+          </HeroSecondaryButton>
+        </div>
+      </div>
+    </section>
   );
 }

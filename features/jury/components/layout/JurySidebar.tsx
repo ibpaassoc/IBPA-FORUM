@@ -26,13 +26,24 @@ export default function JurySidebar({
 
   return (
     <>
+      {/* Desktop sidebar */}
       <aside className="hidden w-[232px] shrink-0 lg:block">
         <div className="sticky top-5 flex flex-col gap-3">
-          <div className="rounded-lg border border-[#6b8a9f] bg-[#7a98af] p-4 text-white">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/90">
+
+          {/* Identity card */}
+          <div
+            className="rounded-[18px] border border-[var(--color-blue-soft)] bg-[linear-gradient(135deg,rgba(185,217,235,0.4),rgba(255,255,255,0.82))] p-4 text-[var(--color-ink)] shadow-[0_18px_44px_rgba(114,160,193,0.16)] backdrop-blur-xl"
+          >
+            <p
+              className="text-[0.65rem] uppercase tracking-[0.18em] text-[var(--color-blue)]"
+              style={{ fontFamily: "var(--font-ui-family)" }}
+            >
               Jury panel
             </p>
-            <p className="mt-2 text-lg font-semibold leading-tight">
+            <p
+              className="mt-1.5 text-[1.1rem] font-light leading-tight text-[var(--color-ink)]"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
               {juryName || "Jury dashboard"}
             </p>
             {expertiseAreas && expertiseAreas.length > 0 ? (
@@ -40,7 +51,8 @@ export default function JurySidebar({
                 {expertiseAreas.slice(0, 3).map((area) => (
                   <span
                     key={area}
-                    className="rounded-md border border-white/30 bg-white/20 px-2 py-1 text-[11px] font-medium text-white/70"
+                    className="rounded-full border border-[var(--color-blue-soft)] bg-[var(--color-blue-wash)] px-2.5 py-0.5 text-[0.62rem] font-medium text-[var(--color-ink-soft)]"
+                    style={{ fontFamily: "var(--font-ui-family)" }}
                   >
                     {area}
                   </span>
@@ -49,26 +61,27 @@ export default function JurySidebar({
             ) : null}
           </div>
 
-          <div className="rounded-lg border border-black/10 bg-white p-2 shadow-[0_18px_50px_rgba(10,10,10,0.06)]">
-            <nav className="flex flex-col gap-1">
+          {/* Nav card */}
+          <div className="rounded-[18px] border border-[var(--border-default)] bg-white/84 p-2 shadow-[0_18px_44px_rgba(3,2,19,0.06)] backdrop-blur-xl">
+            <nav className="flex flex-col gap-0.5">
               {navItems.map(({ href, label, icon: Icon }) => {
                 const active = isActive(pathname, href);
-
                 return (
                   <Link
                     key={href}
                     href={href}
-                    className={`flex min-h-11 items-center gap-3 rounded-md px-3 text-sm font-semibold transition ${
+                    className={`flex min-h-[42px] items-center gap-3 rounded-[10px] px-3 text-[0.8rem] transition-all duration-150 ${
                       active
-                        ? "bg-[#EAF6FF] text-[#0A0A0A]"
-                        : "text-black/55 hover:bg-[#FAFAFA] hover:text-[#0A0A0A]"
+                        ? "bg-[var(--color-blue-wash)] text-[var(--color-ink)]"
+                        : "text-[var(--color-ink-soft)] hover:bg-[var(--surface-tint)] hover:text-[var(--color-ink)]"
                     }`}
+                    style={{ fontFamily: "var(--font-ui-family)" }}
                   >
                     <Icon
                       aria-hidden
-                      size={17}
-                      strokeWidth={1.9}
-                      className={active ? "text-[#1673A5]" : "text-black/35"}
+                      size={16}
+                      strokeWidth={1.8}
+                      className={active ? "text-[var(--color-blue)]" : "text-[var(--color-ink-muted)]"}
                     />
                     <span className="truncate">{label}</span>
                   </Link>
@@ -76,13 +89,14 @@ export default function JurySidebar({
               })}
             </nav>
 
-            <div className="mt-2 border-t border-black/10 pt-2">
+            <div className="mt-2 border-t border-[var(--border-soft)] pt-2">
               <button
                 type="button"
                 onClick={() => void signOut({ callbackUrl: "/jury/login" })}
-                className="flex min-h-11 w-full items-center gap-3 rounded-md px-3 text-sm font-semibold text-black/55 transition hover:bg-red-50 hover:text-red-700"
+                className="flex min-h-[42px] w-full items-center gap-3 rounded-[10px] px-3 text-[0.8rem] text-[var(--color-ink-soft)] transition-all duration-150 hover:bg-red-50 hover:text-red-600"
+                style={{ fontFamily: "var(--font-ui-family)" }}
               >
-                <LogOut aria-hidden size={17} strokeWidth={1.9} />
+                <LogOut aria-hidden size={16} strokeWidth={1.8} />
                 Sign out
               </button>
             </div>
@@ -90,24 +104,25 @@ export default function JurySidebar({
         </div>
       </aside>
 
-      <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-black/10 bg-white/95 shadow-[0_-12px_30px_rgba(10,10,10,0.08)] backdrop-blur lg:hidden">
+      {/* Mobile bottom nav */}
+      <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-[var(--border-default)] bg-white/92 shadow-[0_-12px_32px_rgba(3,2,19,0.06)] backdrop-blur-xl lg:hidden">
         <div className="mx-auto grid max-w-xs grid-cols-2 gap-1 px-2 py-2">
           {navItems.map(({ href, shortLabel, icon: Icon }) => {
             const active = isActive(pathname, href);
-
             return (
               <Link
                 key={href}
                 href={href}
-                className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-md px-2 text-center text-[11px] font-semibold transition ${
-                  active ? "bg-[#EAF6FF] text-[#0A0A0A]" : "text-black/45"
+                className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-[10px] px-2 text-center text-[0.65rem] transition-all duration-150 ${
+                  active ? "bg-[var(--color-blue-wash)] text-[var(--color-ink)]" : "text-[var(--color-ink-soft)]"
                 }`}
+                style={{ fontFamily: "var(--font-ui-family)" }}
               >
                 <Icon
                   aria-hidden
                   size={18}
-                  strokeWidth={active ? 2 : 1.8}
-                  className={active ? "text-[#1673A5]" : ""}
+                  strokeWidth={active ? 2 : 1.7}
+                  className={active ? "text-[var(--color-blue)]" : ""}
                 />
                 <span className="truncate">{shortLabel}</span>
               </Link>

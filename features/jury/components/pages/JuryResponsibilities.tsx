@@ -38,7 +38,7 @@ export default function JuryResponsibilities() {
           {responsibilities.map((item) => (
             <div
               key={item.number}
-              className="page-card p-[var(--space-md)]"
+              className="premium-glass p-[var(--space-md)]"
             >
               <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-[var(--color-hover-accent)]">
                 {item.number}

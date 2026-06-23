@@ -21,7 +21,7 @@ export default function JuryRequirements() {
           {t.juryPage.requirements.items.map((item) => (
             <div
               key={item.label}
-              className="page-card p-(--space-md)"
+              className="premium-glass p-(--space-md)"
             >
               <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-(--color-hover-accent)">
                 {item.label}

@@ -55,7 +55,7 @@ export default function RequestAdditionalInfoPanel({
               <div className="flex gap-2">
                 <button
                   type="submit"
-                  className="inline-flex min-h-9 items-center gap-1.5 rounded-md bg-amber-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-amber-700"
+                  className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800 transition hover:bg-amber-100"
                 >
                   <Send size={13} />
                   Send Request
@@ -63,7 +63,7 @@ export default function RequestAdditionalInfoPanel({
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-[#0A0A0A] transition hover:bg-[#FAFAFA]"
+                  className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-[var(--border-soft)] bg-white px-3 py-2 text-xs font-semibold text-[var(--color-ink)] transition hover:bg-[var(--surface-tint)]"
                 >
                   <X size={13} />
                   Cancel
@@ -111,7 +111,7 @@ export default function RequestAdditionalInfoPanel({
               <div className="flex gap-2">
                 <button
                   type="submit"
-                  className="inline-flex min-h-9 items-center gap-1.5 rounded-md bg-[#7a98af] px-3 py-2 text-xs font-semibold text-white transition hover:bg-[#6b8a9f]"
+                  className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-[var(--color-blue)] bg-[var(--color-blue)] px-3 py-2 text-xs font-semibold text-[var(--color-ink)] transition hover:bg-[var(--color-blue-soft)]"
                 >
                   <Send size={13} />
                   Send Request
@@ -119,7 +119,7 @@ export default function RequestAdditionalInfoPanel({
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-[#0A0A0A] transition hover:bg-[#FAFAFA]"
+                  className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-[var(--border-soft)] bg-white px-3 py-2 text-xs font-semibold text-[var(--color-ink)] transition hover:bg-[var(--surface-tint)]"
                 >
                   <X size={13} />
                   Cancel
@@ -155,7 +155,7 @@ export default function RequestAdditionalInfoPanel({
             <div className="flex gap-2">
               <button
                 type="submit"
-                className="inline-flex min-h-9 items-center gap-1.5 rounded-md bg-[#7a98af] px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-[#6b8a9f]"
+                className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-[var(--color-blue)] bg-[var(--color-blue)] px-3.5 py-2 text-xs font-semibold text-[var(--color-ink)] transition hover:bg-[var(--color-blue-soft)]"
               >
                 <Send size={13} />
                 Send Request
@@ -163,7 +163,7 @@ export default function RequestAdditionalInfoPanel({
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-[#0A0A0A] transition hover:bg-[#FAFAFA]"
+                className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-[var(--border-soft)] bg-white px-3 py-2 text-xs font-semibold text-[var(--color-ink)] transition hover:bg-[var(--surface-tint)]"
               >
                 <X size={13} />
                 Cancel

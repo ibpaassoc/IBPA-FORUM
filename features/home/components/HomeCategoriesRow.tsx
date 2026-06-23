@@ -31,39 +31,34 @@ export default function HomeCategoriesRow() {
 
   return (
     <section className="section-rhythm-tight overflow-hidden">
-      <div className="page-section">
-        <div className="overflow-hidden">
-          <div className="flex w-max animate-[marquee_24s_linear_infinite] items-center gap-3 hover:[animation-play-state:paused]">
-            {loopItems.map((item, index) => {
-              const Icon = categoryIconMap[index % categoryIconMap.length];
+      {/* Full-screen width strip — no page-section padding */}
+      <div className="w-screen overflow-hidden border-y border-[var(--border-glass)] bg-white py-[clamp(1.2rem,2.5vw,2rem)]">
+        <div className="flex w-max animate-[marquee_28s_linear_infinite] items-center gap-4 hover:[animation-play-state:paused]">
+          {loopItems.map((item, index) => {
+            const Icon = categoryIconMap[index % categoryIconMap.length];
 
-              return (
-                <a key={`${item}-${index}`} href="/apply">
-                  <span
-                    className="group inline-flex shrink-0 items-center gap-2 rounded-full border border-[var(--border-soft)] bg-[var(--surface-tint)] px-4 py-2 text-sm text-[var(--color-ink-soft)] transition hover:border-[var(--color-hover-accent)] hover:bg-[var(--color-hover-accent)] hover:text-white"
-                  >
-                    <Icon
-                      size={18}
-                      strokeWidth={1.5}
-                      className="text-[var(--color-hover-accent)] transition group-hover:text-white"
-                    />
-                    {item}
-                  </span>
-                </a>
-              );
-            })}
-          </div>
+            return (
+              <a key={`${item}-${index}`} href="/apply">
+                <span
+                  className="group inline-flex shrink-0 items-center gap-2.5 rounded-full border border-[var(--border-glass)] bg-white px-5 py-2.5 text-sm font-[var(--font-ui-family)] font-medium tracking-[0.04em] text-[var(--color-ink-soft)] transition-all duration-300 hover:border-[var(--color-ink)] hover:bg-[var(--color-ink)] hover:text-white"
+                >
+                  <Icon
+                    size={16}
+                    strokeWidth={1.5}
+                    className="text-[var(--color-hover-accent)] transition-colors duration-300 group-hover:text-white"
+                  />
+                  {item}
+                </span>
+              </a>
+            );
+          })}
         </div>
       </div>
 
       <style jsx>{`
         @keyframes marquee {
-          from {
-            transform: translateX(0);
-          }
-          to {
-            transform: translateX(-50%);
-          }
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
         }
       `}</style>
     </section>

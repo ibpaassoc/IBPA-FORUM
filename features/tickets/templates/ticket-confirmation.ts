@@ -26,7 +26,7 @@ export function ticketConfirmationTemplate({
 <!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#0d1120;font-family:Inter,Arial,sans-serif;">
+<body style="margin:0;padding:0;background:#0d1120;font-family:Lora,Georgia,'Times New Roman',serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#0d1120;padding:40px 16px;">
     <tr><td align="center">
       <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;">

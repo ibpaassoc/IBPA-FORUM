@@ -1,12 +1,13 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, type FormEvent, type ReactNode } from "react";
 import { upload } from "@vercel/blob/client";
 import {
+  ArrowRight,
   Award,
   BadgeCheck,
+  Check,
   ChevronLeft,
-  ChevronRight,
   ClipboardList,
   FileCheck,
   Send,
@@ -15,11 +16,35 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import UploadField from "@/features/applications/components/application-form/fields/UploadField";
-import StepBar, { type StepDef } from "@/features/applications/components/application-form/StepBar";
 import { SelectField, TextField, TextareaField, ChoiceGroupField } from "@/features/applications/components/application-form/fields/FormControls";
 import { countryOptions } from "@/features/applications/config/countries";
 import { categories as expertiseCategories } from "@/data/home";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+
+type StepDef = { id: string; label: string; icon: typeof User };
+
+const heroPrimaryButtonClass =
+  "group relative inline-flex items-center justify-center gap-3 overflow-hidden rounded-full border border-white/10 bg-gradient-to-r from-[#050505] via-[#111111] to-[#050505] px-8 py-4 font-[var(--font-ui-family)] text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-white shadow-[0_12px_40px_rgba(0,0,0,0.35)] transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-[2px] hover:border-[#7a98af]/60 hover:shadow-[0_20px_60px_rgba(122,152,175,0.2)] disabled:pointer-events-none disabled:opacity-55";
+
+const heroSecondaryButtonClass =
+  "group relative inline-flex items-center justify-center gap-3 overflow-hidden rounded-full border border-[var(--color-blue)]/16 bg-white/72 px-7 py-4 font-[var(--font-ui-family)] text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink)] shadow-[0_10px_35px_rgba(42,66,82,0.08)] backdrop-blur-xl transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-[2px] hover:border-[var(--color-blue)]/36 hover:bg-white hover:shadow-[0_18px_50px_rgba(122,152,175,0.14)] disabled:pointer-events-none disabled:opacity-35";
+
+function HeroButtonInner({ children, arrow = true }: { children: ReactNode; arrow?: boolean }) {
+  return (
+    <>
+      <span className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-[#7a98af]/10 opacity-60 transition-opacity duration-700 group-hover:opacity-100" />
+      <span className="absolute inset-x-6 bottom-0 h-px bg-gradient-to-r from-transparent via-[#b9d9eb]/0 to-transparent transition-all duration-700 group-hover:inset-x-4 group-hover:via-[#b9d9eb]/70" />
+      <span className="absolute inset-0 before:absolute before:left-[-130%] before:top-0 before:h-full before:w-1/2 before:rotate-12 before:bg-gradient-to-r before:from-transparent before:via-[#b9d9eb]/25 before:to-transparent before:transition-all before:duration-700 group-hover:before:left-[130%]" />
+      <span className="relative z-10">{children}</span>
+      {arrow ? (
+        <ArrowRight
+          size={16}
+          className="relative z-10 text-[#b9d9eb] transition-all duration-500 group-hover:translate-x-1 group-hover:text-white"
+        />
+      ) : null}
+    </>
+  );
+}
 
 const STEPS: StepDef[] = [
   { id: "contact", label: "Contact", icon: User },
@@ -325,7 +350,7 @@ export default function JuryApplicationForm() {
     return name.replace(/[^a-zA-Z0-9._-]/g, "_");
   }
 
-  async function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     setIsSubmitting(true);
     try {
@@ -417,17 +442,96 @@ export default function JuryApplicationForm() {
 
   return (
     <form ref={formRef} onSubmit={handleSubmit} className="space-y-6 pb-12">
-      {/* Step bar — top nav */}
-      <StepBar steps={STEPS} current={step} />
+      <nav
+        aria-label="Jury application steps"
+        className="mx-auto w-full max-w-5xl rounded-full border border-[var(--color-blue)]/18 bg-white/86 px-4 py-4 shadow-[0_18px_55px_rgba(42,66,82,0.07)] backdrop-blur-xl sm:px-6"
+      >
+        <div className="flex items-center justify-center gap-2 sm:gap-3">
+          {STEPS.map((item, index) => {
+            const Icon = item.icon;
+            const isActive = index === step;
+            const isComplete = index < step;
+            const currentStepValid = Object.keys(validateStep(step)).length === 0;
+            const canNavigate =
+              index === step ||
+              index < step ||
+              (currentStepValid &&
+                Array.from({ length: index }).every(
+                  (_, stepIndex) => Object.keys(validateStep(stepIndex)).length === 0
+                ));
 
-      {/* Form card */}
+            return (
+              <div key={item.id} className="flex min-w-0 items-center">
+                <button
+                  type="button"
+                  disabled={!canNavigate}
+                  aria-current={isActive ? "step" : undefined}
+                  aria-label={`${item.label} step`}
+                  title={item.label}
+                  onClick={() => {
+                    if (index === step || !canNavigate) return;
+                    setStepDirection(index > step ? 1 : -1);
+                    setErrors({});
+                    setStep(index);
+                    scrollToForm();
+                  }}
+                  className={`group flex min-w-[58px] flex-col items-center justify-start gap-2 rounded-[1.35rem] px-1 py-1.5 text-center transition duration-300 sm:min-w-[70px] ${
+                    canNavigate ? "cursor-pointer" : "cursor-not-allowed opacity-55"
+                  }`}
+                >
+                  <span
+                    className={`relative flex h-10 w-10 items-center justify-center rounded-full border transition duration-300 sm:h-11 sm:w-11 ${
+                      isActive
+                        ? "border-[var(--color-blue)]/65 bg-white text-[var(--color-blue)] shadow-[0_10px_28px_rgba(114,160,193,0.18)]"
+                        : isComplete
+                          ? "border-[var(--color-blue)]/24 bg-[var(--color-blue-wash)] text-[var(--color-blue)] group-hover:border-[var(--color-blue)]/38 group-hover:bg-white"
+                          : canNavigate
+                            ? "border-transparent bg-[var(--color-off-white)] text-[var(--color-ink-soft)] group-hover:border-[var(--color-blue)]/28 group-hover:bg-[rgba(185,217,235,0.2)] group-hover:text-[var(--color-blue)]"
+                            : "border-transparent bg-[var(--color-off-white)] text-[var(--color-ink)]/24"
+                    }`}
+                  >
+                    {isComplete ? (
+                      <Check size={15} strokeWidth={2.15} />
+                    ) : (
+                      <Icon size={15} strokeWidth={1.55} />
+                    )}
+                  </span>
+
+                  <span
+                    className={`hidden text-[0.55rem] font-bold uppercase leading-none tracking-[0.18em] sm:block ${
+                      isActive
+                        ? "text-[var(--color-ink)]"
+                        : isComplete
+                          ? "text-[var(--color-blue)]"
+                          : "text-[var(--color-ink-soft)]/70"
+                    }`}
+                  >
+                    {item.label}
+                  </span>
+                </button>
+
+                {index < STEPS.length - 1 ? (
+                  <span
+                    aria-hidden
+                    className={`mx-1 hidden h-px w-4 shrink-0 sm:block md:w-5 ${
+                      index < step
+                        ? "bg-[var(--color-blue)]/24"
+                        : "bg-[var(--color-blue)]/10"
+                    }`}
+                  />
+                ) : null}
+              </div>
+            );
+          })}
+        </div>
+      </nav>
+
       <div className="mx-auto max-w-4xl rounded-2xl border border-slate-100 bg-[#F1F3F5] p-5 shadow-xl sm:rounded-[32px] sm:p-8 md:rounded-[40px] md:p-14">
-        {/* Step heading */}
         <div className="mb-10">
           <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-hover-accent)]">
             {STEPS[step].label} — {step + 1} / {STEPS.length}
           </p>
-          <h2 className="mt-2 font-[var(--font-ui-family)] text-[2rem] font-black uppercase leading-none tracking-[-0.02em] text-[var(--color-ink)] md:text-[2.5rem]">
+          <h2 className="mt-2 font-[var(--font-title-family)] text-[clamp(1.8rem,3.5vw,2.6rem)] font-light leading-[1.05] tracking-[-0.02em] text-[var(--color-ink)]">
             {currentStepInfo.title}
           </h2>
           <p className="mt-2 font-[var(--font-accent-family)] text-[1rem] italic leading-[1.6] text-[var(--color-ink-soft)]">
@@ -533,13 +637,28 @@ export default function JuryApplicationForm() {
             <div className="space-y-6">
               <TextareaField label={copy.motivation} name="motivation" value={String(values.motivation ?? "")} required placeholder={copy.motivationPh} description={copy.motivationHint} rows={6} error={errors.motivation} onChange={handleChange} />
               <div>
-                <label className={`flex cursor-pointer items-start gap-3 rounded-[14px] border-2 px-5 py-4 transition-all duration-200 ${isFieldFilled(values.confidentialityAgreement) ? "border-[var(--color-hover-accent)] bg-[rgba(114,160,193,0.08)]" : "border-transparent bg-[var(--surface-muted)] hover:border-[var(--color-hover-accent)]/30 hover:bg-white"}`}>
+                <label
+                  className={`group flex cursor-pointer items-start gap-4 rounded-[1.5rem] border p-4 transition-all duration-300 ${
+                    isFieldFilled(values.confidentialityAgreement)
+                      ? "border-[var(--color-blue)]/45 bg-[var(--color-blue-wash)] shadow-[0_18px_40px_rgba(114,160,193,0.14)]"
+                      : "border-[var(--border-default)] bg-white/70 hover:border-[var(--color-blue)]/35 hover:bg-[rgba(185,217,235,0.16)]"
+                  }`}
+                >
                   <input
                     type="checkbox"
                     checked={isFieldFilled(values.confidentialityAgreement)}
                     onChange={(e) => handleChange("confidentialityAgreement", e.target.checked ? "yes" : "")}
-                    className="mt-0.5 h-4 w-4 rounded accent-[var(--color-hover-accent)]"
+                    className="sr-only"
                   />
+                  <span
+                    className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-all duration-300 ${
+                      isFieldFilled(values.confidentialityAgreement)
+                        ? "border-[var(--color-blue)] bg-[var(--color-blue)] text-white"
+                        : "border-[var(--border-default)] bg-white text-transparent group-hover:border-[var(--color-blue)]/60 group-hover:bg-[var(--color-blue-wash)]"
+                    }`}
+                  >
+                    <Check size={14} strokeWidth={2.4} />
+                  </span>
                   <span className="text-[0.93rem] leading-[1.6] text-[var(--color-ink-soft)]">{copy.confidentiality}</span>
                 </label>
                 {errors.confidentialityAgreement && (
@@ -551,8 +670,8 @@ export default function JuryApplicationForm() {
 
           {step === 6 && (
             <div className="space-y-5">
-              <div className="rounded-[24px] bg-white/80 p-6 border border-slate-100 shadow-sm">
-                <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-hover-accent)]">{copy.confirmTitle}</p>
+              <div className="rounded-[2rem] border border-[var(--color-blue)]/12 bg-white/78 p-6 shadow-[0_18px_55px_rgba(42,66,82,0.07)] backdrop-blur-xl">
+                <p className="page-eyebrow">{copy.confirmTitle}</p>
                 <p className="mt-2 text-[0.9rem] leading-[1.7] text-[var(--color-ink-soft)]">{copy.confirmNote}</p>
                 <dl className="mt-5 grid gap-x-8 gap-y-4 sm:grid-cols-2">
                   {[
@@ -581,14 +700,15 @@ export default function JuryApplicationForm() {
         </div>
 
         {/* Navigation */}
-        <div className="mt-10 flex items-center justify-between border-t border-black/6 pt-8">
+        <div className="mt-10 flex flex-col gap-4 border-t border-[var(--color-blue)]/10 pt-8 sm:flex-row sm:items-center sm:justify-between">
           <button
             type="button"
             onClick={back}
             disabled={step === 0}
-            className="inline-flex items-center gap-2 rounded-full border border-[var(--border-default)] bg-white px-6 py-3 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-[var(--color-ink)] shadow-sm transition hover:border-[var(--color-ink)] hover:shadow-md disabled:pointer-events-none disabled:opacity-30"
+            className={heroSecondaryButtonClass}
           >
-            <ChevronLeft size={14} /> {copy.back}
+            <ChevronLeft size={15} className="relative z-10 transition duration-500 group-hover:-translate-x-1" />
+            <span className="relative z-10">{copy.back}</span>
           </button>
 
           {step < STEPS.length - 1 ? (
@@ -596,18 +716,18 @@ export default function JuryApplicationForm() {
               key="continue"
               type="button"
               onClick={advance}
-              className="inline-flex items-center gap-2 rounded-full bg-[var(--color-ink)] px-8 py-3 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-white shadow-lg transition hover:bg-[var(--color-ink)]/90 hover:shadow-xl"
+              className={heroPrimaryButtonClass}
             >
-              {copy.continue} <ChevronRight size={14} />
+              <HeroButtonInner>{copy.continue}</HeroButtonInner>
             </button>
           ) : (
             <button
               key="submit"
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex items-center gap-2 rounded-full bg-[var(--color-ink)] px-8 py-3 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-white shadow-lg transition hover:bg-[var(--color-ink)]/90 disabled:opacity-60"
+              className={heroPrimaryButtonClass}
             >
-              {isUploading ? copy.uploading : isSubmitting ? copy.submitting : copy.submit} <ChevronRight size={14} />
+              <HeroButtonInner>{isUploading ? copy.uploading : isSubmitting ? copy.submitting : copy.submit}</HeroButtonInner>
             </button>
           )}
         </div>

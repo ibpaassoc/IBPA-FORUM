@@ -39,7 +39,7 @@ export default function AdminLoginForm() {
       <button
         type="submit"
         disabled={pending}
-        className="inline-flex w-full items-center justify-center rounded-2xl bg-[#10203B] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-[#1a3357] disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex w-full items-center justify-center rounded-2xl border border-[var(--color-blue)] bg-[var(--color-blue)] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink)] shadow-[0_12px_28px_rgba(114,160,193,0.22)] transition hover:bg-[var(--color-blue-soft)] disabled:cursor-not-allowed disabled:opacity-60"
       >
         {pending ? t.admin.login.opening : t.admin.login.open}
       </button>

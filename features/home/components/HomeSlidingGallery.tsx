@@ -100,7 +100,7 @@ function GalleryImageCard({
   return (
     <figure
       className={clsx(
-        "sliding-gallery-card relative shrink-0 overflow-hidden rounded-[var(--radius)] border border-[var(--border-soft)] bg-[var(--surface)] shadow-[var(--shadow-sm)]",
+        "sliding-gallery-card relative shrink-0 overflow-hidden rounded-[var(--radius)] border border-[var(--border-glass)] bg-[var(--surface)] shadow-[var(--shadow-sm)]",
         cardClassName
       )}
     >
@@ -182,7 +182,7 @@ function GalleryRow({
 export default function HomeSlidingGallery() {
   return (
     <section className="section-rhythm-tight overflow-hidden">
-      <div key="gallery" className="w-screen overflow-hidden border-y border-[var(--border-default)] bg-[var(--color-ink)] py-[clamp(1.1rem,2vw,1.9rem)]">
+      <div key="gallery" className="w-screen overflow-hidden border-y border-[var(--border-glass)] bg-[var(--color-blue-wash)] py-[clamp(1.1rem,2vw,1.9rem)]">
         <div className="space-y-[clamp(0.7rem,1.4vw,1.1rem)] overflow-hidden">
           {galleryRows.map((row, index) => (
             <GalleryRow

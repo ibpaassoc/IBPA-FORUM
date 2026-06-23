@@ -1,15 +1,18 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { Reveal } from "@/shared/components/public";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowRight, Check, Star, Ticket, Trophy, Zap } from "lucide-react";
+
 import { PRICING } from "@/data/pricing";
-import { Ticket, Trophy, Star, Zap } from "lucide-react";
 import { applyDiscountToPrice } from "@/features/tickets/types";
 import type { EarlyBirdStatus } from "@/features/tickets/types";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { ButtonLayers, LANDING_PRIMARY_BTN_CLASS, Reveal } from "@/shared/components/public";
 
 type Tier = "ibpa" | "standard";
+type PricingOption = "tickets" | "award" | "judge";
 
 function PriceRow({
   label,
@@ -21,37 +24,29 @@ function PriceRow({
   discountedValue?: string | null;
 }) {
   return (
-    <div className="flex items-center justify-between border-b border-white/[0.1] py-3 last:border-0">
-      <span className="text-[0.88rem] text-white/65">{label}</span>
-      <div className="flex flex-col items-end gap-0.5">
+    <div className="flex items-center justify-between border-b border-[#b9d9eb]/35 py-4 last:border-0">
+      <span className="text-[0.92rem] text-[var(--color-ink-soft)]">{label}</span>
+
+      <div className="flex items-baseline gap-2">
         {discountedValue ? (
           <>
-            <span className="text-[0.72rem] text-white/40 line-through">{value}</span>
-            <motion.span
-              key={discountedValue}
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.18, ease: "easeOut" }}
-              className="font-[var(--font-title-family)] text-[1.1rem] font-medium text-amber-300"
-            >
+            <span className="text-[0.78rem] text-[var(--color-ink-soft)] line-through">
+              {value}
+            </span>
+            <span className="font-[var(--font-title-family)] text-[1.35rem] font-medium text-[var(--color-blue)]">
               {discountedValue}
-            </motion.span>
+            </span>
           </>
         ) : (
-          <motion.span
-            key={value}
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.18, ease: "easeOut" }}
-            className="font-[var(--font-title-family)] text-[1.1rem] font-medium text-white"
-          >
+          <span className="font-[var(--font-title-family)] text-[1.35rem] font-medium text-[var(--color-ink)]">
             {value}
-          </motion.span>
+          </span>
         )}
       </div>
     </div>
   );
 }
+
 
 export default function HomePricing({
   tier,
@@ -65,243 +60,247 @@ export default function HomePricing({
   const { t } = useLanguage();
   const ps = t.home.pricingSection;
 
+  const [active, setActive] = useState<PricingOption>("tickets");
+  const [direction, setDirection] = useState(1);
+
   const discount = earlyBird.enabled ? earlyBird.discount : null;
 
   const forumPrices =
     tier === "ibpa"
-      ? {
-          oneDay: PRICING.forumTickets.ibpaMembers.oneDay,
-          twoDays: PRICING.forumTickets.ibpaMembers.twoDays,
-          galaDinner: PRICING.forumTickets.ibpaMembers.galaDinner,
-        }
-      : {
-          oneDay: PRICING.forumTickets.standard.oneDay,
-          twoDays: PRICING.forumTickets.standard.twoDays,
-          galaDinner: PRICING.forumTickets.standard.galaDinner,
-        };
+      ? PRICING.forumTickets.ibpaMembers
+      : PRICING.forumTickets.standard;
 
-  const forumRows = [
-    {
-      label: ps.oneDayPass,
-      value: forumPrices.oneDay,
-      discountedValue: applyDiscountToPrice(forumPrices.oneDay, discount),
-    },
-    {
-      label: ps.twoDayPass,
-      value: forumPrices.twoDays,
-      discountedValue: applyDiscountToPrice(forumPrices.twoDays, discount),
-    },
-    {
-      label: ps.galaDinner,
-      value: forumPrices.galaDinner,
-      discountedValue: null,
-    },
-  ];
-
-  const awardRows =
+  const awardPrices =
     tier === "ibpa"
-      ? [
-          { label: ps.oneNomination, value: PRICING.awardParticipation.ibpaMembers.oneNomination },
-          { label: ps.threeNominations, value: PRICING.awardParticipation.ibpaMembers.threeNominations },
-          { label: ps.fiveNominations, value: PRICING.awardParticipation.ibpaMembers.fiveNominations },
-        ]
-      : [
-          { label: ps.oneNomination, value: PRICING.awardParticipation.nonMembers.oneNomination },
-          { label: ps.threeNominations, value: PRICING.awardParticipation.nonMembers.threeNominations },
-          { label: ps.fiveNominations, value: PRICING.awardParticipation.nonMembers.fiveNominations },
-        ];
+      ? PRICING.awardParticipation.ibpaMembers
+      : PRICING.awardParticipation.nonMembers;
 
   const judgePrice =
     tier === "ibpa"
       ? PRICING.judgeRegistration.ibpaMembers
       : PRICING.judgeRegistration.standard;
 
-  const rawForumStarting = tier === "ibpa"
-    ? PRICING.forumTickets.ibpaMembers.oneDay
-    : PRICING.forumTickets.standard.oneDay;
+  const options = useMemo(
+    () => [
+      {
+        key: "tickets" as const,
+        label: "Tickets",
+        title: ps.forumTickets,
+        eyebrow: "Forum Access",
+        icon: Ticket,
+        cta: t.home.participation.tickets.cta,
+        href: null,
+        note: discount ? "Gala dinner price not discounted." : "Choose your forum pass.",
+        rows: [
+          {
+            label: ps.oneDayPass,
+            value: forumPrices.oneDay,
+            discountedValue: applyDiscountToPrice(forumPrices.oneDay, discount),
+          },
+          {
+            label: ps.twoDayPass,
+            value: forumPrices.twoDays,
+            discountedValue: applyDiscountToPrice(forumPrices.twoDays, discount),
+          },
+          {
+            label: ps.galaDinner,
+            value: forumPrices.galaDinner,
+            discountedValue: null,
+          },
+        ],
+      },
+      {
+        key: "award" as const,
+        label: "Award",
+        title: ps.awardParticipation,
+        eyebrow: "Nomination Pricing",
+        icon: Trophy,
+        cta: t.home.participation.award.cta,
+        href: "/apply",
+        note: ps.grandPrixNote,
+        rows: [
+          { label: ps.oneNomination, value: awardPrices.oneNomination },
+          { label: ps.threeNominations, value: awardPrices.threeNominations },
+          { label: ps.fiveNominations, value: awardPrices.fiveNominations },
+        ],
+      },
+      {
+        key: "judge" as const,
+        label: "Judge",
+        title: ps.judgeRegistration,
+        eyebrow: tier === "ibpa" ? "IBPA Member Fee" : "Judge Registration",
+        icon: Star,
+        cta: t.home.participation.judge.cta,
+        href: "/jury",
+        note: ps.judgePaidAfterApproval,
+        rows: [
+          {
+            label: tier === "ibpa" ? ps.ibpaMembers : ps.standard,
+            value: judgePrice,
+          },
+        ],
+      },
+    ],
+    [ps, t.home.participation, discount, forumPrices, awardPrices, judgePrice, tier],
+  );
 
-  const forumStarting = applyDiscountToPrice(rawForumStarting, discount) ?? rawForumStarting;
+  const activeIndex = options.findIndex((option) => option.key === active);
+  const current = options[activeIndex];
 
-  const awardStarting =
-    tier === "ibpa"
-      ? PRICING.awardParticipation.ibpaMembers.oneNomination
-      : PRICING.awardParticipation.nonMembers.oneNomination;
+  const handleSelect = (key: PricingOption) => {
+    const nextIndex = options.findIndex((option) => option.key === key);
+    setDirection(nextIndex > activeIndex ? 1 : -1);
+    setActive(key);
+  };
+
+  const slideVariants = {
+    enter: (dir: number) => ({
+      x: dir > 0 ? 90 : -90,
+      opacity: 0,
+      scale: 0.985,
+      filter: "blur(16px)",
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+      scale: 1,
+      filter: "blur(0px)",
+    },
+    exit: (dir: number) => ({
+      x: dir > 0 ? -90 : 90,
+      opacity: 0,
+      scale: 0.985,
+      filter: "blur(16px)",
+    }),
+  };
+
+  const ctaClass = `${LANDING_PRIMARY_BTN_CLASS} w-full`;
 
   return (
-    <section className="section-rhythm-loose bg-[var(--surface-tint)]">
+    <section className="section-rhythm-loose relative overflow-hidden bg-transparent">
       <div className="page-section">
-        <Reveal className="mb-[var(--space-xl)]">
-          <p className="page-eyebrow mb-[var(--space-sm)]">{ps.eyebrow}</p>
-          <h2 className="font-[var(--font-title-family)] text-[clamp(1.9rem,3.5vw,3rem)] font-light leading-[1.1] text-[var(--color-ink)]">
-            {ps.title}
-          </h2>
-        </Reveal>
+        <Reveal className="mx-auto max-w-5xl">
+          <div className="relative overflow-hidden rounded-[2.5rem] border border-[#b9d9eb]/45 bg-white/[0.28] p-3 shadow-[0_28px_80px_rgba(20,49,71,0.08)] backdrop-blur-2xl">
+            <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white/90 to-transparent" />
 
-        {/* Early bird banner */}
-        {discount && (
-          <Reveal className="mb-6">
-            <div className="flex items-center gap-3 rounded-[var(--radius-md)] border border-amber-300/40 bg-gradient-to-r from-amber-500/10 to-amber-400/5 px-5 py-3.5">
-              <Zap size={16} className="shrink-0 text-amber-500" strokeWidth={2} />
-              <p className="text-[0.84rem] font-medium text-[var(--color-ink)]">
-                <span className="font-semibold text-amber-600">Early Bird Pricing Active</span>
-                {discount.type === "percent" && (
-                  <span className="text-[var(--color-ink-soft)]"> — {discount.value}% off forum passes. Limited time only.</span>
-                )}
-                {discount.type === "amount" && (
-                  <span className="text-[var(--color-ink-soft)]"> — ${(discount.value / 100).toFixed(0)} off forum passes. Limited time only.</span>
-                )}
-              </p>
+            <div className="relative mx-auto mb-5 flex w-full max-w-2xl rounded-full border border-[#b9d9eb]/60 bg-white/60 p-1.5 shadow-[0_10px_40px_rgba(122,152,175,0.10)] backdrop-blur-2xl">
+              <motion.div
+                layout
+                aria-hidden
+                transition={{ type: "spring", stiffness: 380, damping: 34 }}
+                className="pointer-events-none absolute inset-y-1.5 rounded-full border border-[#8eb6d3]/55 bg-gradient-to-b from-white/95 via-[#fafdff] to-[#eef7fc] shadow-[0_0_0_1px_rgba(255,255,255,0.65),0_8px_24px_rgba(122,152,175,0.15),0_0_36px_rgba(122,152,175,0.18)] backdrop-blur-xl"
+                style={{
+                  left: `calc(${activeIndex} * 33.333% + 6px)`,
+                  width: "calc(33.333% - 8px)",
+                }}
+              >
+                <span className="absolute inset-x-5 top-0 h-px rounded-full bg-gradient-to-r from-transparent via-[#72a0c1]/90 to-transparent" />
+                <span className="absolute inset-0 rounded-full bg-[#72a0c1]/5" />
+                <span className="absolute inset-x-6 top-[2px] h-[40%] rounded-full bg-gradient-to-b from-white/70 to-transparent" />
+              </motion.div>
+
+              {options.map((option) => {
+                const isActive = active === option.key;
+
+                return (
+                  <button
+                    key={option.key}
+                    type="button"
+                    onClick={() => handleSelect(option.key)}
+                    className={`relative z-10 min-w-0 flex-1 rounded-full px-4 py-3 text-[0.72rem] font-semibold uppercase tracking-[0.18em] transition-all duration-500 ${
+                      isActive
+                        ? "text-[#24394b]"
+                        : "text-[var(--color-ink-soft)] hover:text-[#24394b]"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                );
+              })}
             </div>
-          </Reveal>
-        )}
 
-        <div className="grid gap-4 md:grid-cols-3">
-
-          {/* ── Forum Tickets ── */}
-          <Reveal delay={0.05}>
-            <article className="group flex h-full flex-col overflow-hidden rounded-[var(--radius-lg)] border border-white/[0.07] bg-gradient-to-br from-[#1c2236] to-[#0d1120] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-all duration-300 hover:border-white/[0.14] hover:shadow-xl">
-              {/* Card header */}
-              <div className="border-b border-white/[0.1] p-[var(--space-md)]">
-                <div className="mb-3 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Ticket size={14} className="text-white/50" strokeWidth={1.5} />
-                    <span className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/55 transition-colors duration-300 group-hover:text-[var(--color-blue)]">
-                      {ps.forumTickets}
-                    </span>
-                  </div>
-                  {discount && (
-                    <span className="flex items-center gap-1 rounded-full bg-amber-500/20 px-2.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wider text-amber-300">
-                      <Zap size={9} strokeWidth={2.5} />
-                      Early Bird
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-[0.72rem] text-white/50">{ps.from}</span>
-                  {discount && (
-                    <span className="text-[0.9rem] text-white/35 line-through">{rawForumStarting}</span>
-                  )}
-                  <motion.span
-                    key={forumStarting}
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2, ease: "easeOut" }}
-                    className={`font-[var(--font-title-family)] text-[2rem] font-light leading-none ${discount ? "text-amber-300" : "text-white"}`}
-                  >
-                    {forumStarting}
-                  </motion.span>
-                  <span className="text-[0.72rem] text-white/45">{ps.perPerson}</span>
-                </div>
-              </div>
-
-              {/* Rows */}
-              <div className="flex-1 px-[var(--space-md)] pt-[var(--space-sm)]">
-                {forumRows.map((row) => (
-                  <PriceRow key={row.label} label={row.label} value={row.value} discountedValue={row.discountedValue} />
-                ))}
-                {discount && (
-                  <p className="mt-2 text-[0.66rem] text-white/40 italic">Gala dinner price not discounted</p>
-                )}
-              </div>
-
-              <div className="p-[var(--space-md)]">
-                <button
-                  type="button"
-                  onClick={onBuyTickets}
-                  className="ibpa-button ibpa-button-white w-full"
+            <div className="relative overflow-hidden rounded-[2.1rem] border border-white/70 bg-white/[0.42] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] backdrop-blur-2xl">
+              <AnimatePresence mode="wait" custom={direction}>
+                <motion.article
+                  key={current.key}
+                  custom={direction}
+                  variants={slideVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ duration: 0.46, ease: [0.19, 1, 0.22, 1] }}
+                  className="rounded-[1.85rem] border border-white/65 bg-white/[0.34] p-5 backdrop-blur-2xl md:p-8"
                 >
-                  {t.home.participation.tickets.cta}
-                </button>
-              </div>
-            </article>
-          </Reveal>
+                  <div className="grid gap-7 lg:grid-cols-[0.85fr_1.15fr] lg:items-stretch">
+                    <div className="flex flex-col justify-between rounded-[1.6rem] border border-white/55 bg-white/[0.28] p-6 backdrop-blur-xl">
+                      <div>
+                        <p className="mb-4 text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--color-blue)]">
+                          {current.eyebrow}
+                        </p>
 
-          {/* ── Award Participation ── */}
-          <Reveal delay={0.1}>
-            <article className="group flex h-full flex-col overflow-hidden rounded-[var(--radius-lg)] border border-white/[0.07] bg-gradient-to-br from-[#1c2236] to-[#0d1120] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-all duration-300 hover:border-white/[0.14] hover:shadow-xl">
-              <div className="border-b border-white/[0.1] p-[var(--space-md)]">
-                <div className="mb-3 flex items-center gap-2">
-                  <Trophy size={14} className="text-white/50" strokeWidth={1.5} />
-                  <span className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/55 transition-colors duration-300 group-hover:text-[var(--color-blue)]">
-                    {ps.awardParticipation}
-                  </span>
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-[0.72rem] text-white/50">{ps.from}</span>
-                  <motion.span
-                    key={awardStarting}
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2, ease: "easeOut" }}
-                    className="font-[var(--font-title-family)] text-[2rem] font-light leading-none text-white"
-                  >
-                    {awardStarting}
-                  </motion.span>
-                  <span className="text-[0.72rem] text-white/45">{ps.perNom}</span>
-                </div>
-              </div>
+                        <h3 className="max-w-[9ch] font-[var(--font-title-family)] text-[clamp(2.65rem,5vw,4.25rem)] font-light leading-[0.95] text-[var(--color-ink)]">
+                          {current.title}
+                        </h3>
 
-              <div className="flex-1 px-[var(--space-md)] pt-[var(--space-sm)]">
-                {awardRows.map((row) => (
-                  <PriceRow key={row.label} label={row.label} value={row.value} />
-                ))}
-                <p className="mt-3 rounded-[var(--radius-sm)] bg-white/[0.06] px-3 py-2 text-[0.69rem] italic text-white/50">
-                  {ps.grandPrixNote}
-                </p>
-              </div>
+                        {active === "tickets" && discount && (
+                          <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#b9d9eb]/50 bg-white/58 px-3.5 py-2 text-[0.72rem] font-semibold text-[var(--color-ink-soft)] shadow-[0_8px_24px_rgba(122,152,175,0.10)] backdrop-blur-xl">
+                            <Zap size={13} className="text-[var(--color-blue)]" />
+                            <span>
+                              <span className="text-[var(--color-blue)]">Early Bird</span>
+                              {discount.type === "percent"
+                                ? ` — ${discount.value}% off`
+                                : ` — $${(discount.value / 100).toFixed(0)} off`}
+                            </span>
+                          </div>
+                        )}
+                      </div>
 
-              <div className="p-[var(--space-md)]">
-                <Link href="/apply" className="ibpa-button ibpa-button-white w-full text-center">
-                  {t.home.participation.award.cta}
-                </Link>
-              </div>
-            </article>
-          </Reveal>
+                      <div className="mt-8">
+                        {current.href ? (
+                          <Link href={current.href} className={ctaClass}>
+                            <ButtonLayers />
+                            <span className="relative z-10">{current.cta}</span>
+                            <ArrowRight
+                              size={16}
+                              className="relative z-10 text-[#72a0c1] transition-all duration-500 group-hover:translate-x-1.5 group-hover:scale-110"
+                            />
+                          </Link>
+                        ) : (
+                          <button type="button" onClick={onBuyTickets} className={ctaClass}>
+                            <ButtonLayers />
+                            <span className="relative z-10">{current.cta}</span>
+                            <ArrowRight
+                              size={16}
+                              className="relative z-10 text-[#72a0c1] transition-all duration-500 group-hover:translate-x-1.5 group-hover:scale-110"
+                            />
+                          </button>
+                        )}
+                      </div>
+                    </div>
 
-          {/* ── Judge Registration ── */}
-          <Reveal delay={0.15}>
-            <article className="group flex h-full flex-col overflow-hidden rounded-[var(--radius-lg)] border border-white/[0.07] bg-gradient-to-br from-[#1c2236] to-[#0d1120] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-all duration-300 hover:border-white/[0.14] hover:shadow-xl">
-              <div className="border-b border-white/[0.1] p-[var(--space-md)]">
-                <div className="mb-3 flex items-center gap-2">
-                  <Star size={14} className="text-white/50" strokeWidth={1.5} />
-                  <span className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/55 transition-colors duration-300 group-hover:text-[var(--color-blue)]">
-                    {ps.judgeRegistration}
-                  </span>
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-[0.72rem] text-white/50">{ps.fee}</span>
-                  <motion.span
-                    key={judgePrice}
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2, ease: "easeOut" }}
-                    className="font-[var(--font-title-family)] text-[2rem] font-light leading-none text-white"
-                  >
-                    {judgePrice}
-                  </motion.span>
-                  <span className="text-[0.72rem] text-white/45">{ps.perJudge}</span>
-                </div>
-              </div>
+                    <div className="flex flex-col justify-center rounded-[1.6rem] border border-white/60 bg-white/[0.36] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] backdrop-blur-xl md:p-7">
+                      <div>
+                        {current.rows.map((row) => (
+                          <PriceRow
+                            key={row.label}
+                            label={row.label}
+                            value={row.value}
+                            discountedValue={"discountedValue" in row ? row.discountedValue : null}
+                          />
+                        ))}
+                      </div>
 
-              <div className="flex-1 px-[var(--space-md)] pt-[var(--space-sm)]">
-                <PriceRow
-                  label={tier === "ibpa" ? ps.ibpaMembers : ps.standard}
-                  value={judgePrice}
-                />
-                <p className="mt-3 rounded-[var(--radius-sm)] bg-white/[0.06] px-3 py-2 text-[0.69rem] italic text-white/50">
-                  {ps.judgePaidAfterApproval}
-                </p>
-              </div>
-
-              <div className="p-[var(--space-md)]">
-                <Link href="/jury" className="ibpa-button ibpa-button-white w-full text-center">
-                  {t.home.participation.judge.cta}
-                </Link>
-              </div>
-            </article>
-          </Reveal>
-
-        </div>
+                      <div className="mt-5 flex items-start gap-2 rounded-full border border-white/65 bg-[#f4fbff]/70 px-4 py-3 text-[0.76rem] italic text-[var(--color-ink-soft)] backdrop-blur-xl">
+                        <Check size={15} className="mt-0.5 shrink-0 text-[var(--color-blue)]" />
+                        <span>{current.note}</span>
+                      </div>
+                    </div>
+                  </div>
+                </motion.article>
+              </AnimatePresence>
+            </div>
+          </div>
+        </Reveal>
       </div>
     </section>
   );

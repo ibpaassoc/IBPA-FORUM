@@ -5,9 +5,9 @@ import type { TicketType } from "@prisma/client";
 
 function getTicketPriceId(type: TicketType, isIbpaMember: boolean): string {
   if (type === "ONE_DAY") {
-    return requireEnv([isIbpaMember ? "1_DAY_MEMBER" : "1_DAY_NON_MEMBER"]);
+    return requireEnv([isIbpaMember ? "ONE_DAY_MEMBER" : "ONE_DAY_NON_MEMBER"]);
   }
-  return requireEnv([isIbpaMember ? "2_DAY_MEMBER" : "2_DAY_NON_MEMBER"]);
+  return requireEnv([isIbpaMember ? "TWO_DAYS_MEMBER" : "TWO_DAYS_NON_MEMBER"]);
 }
 
 function getGalaDinnerPriceId(): string {

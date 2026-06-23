@@ -8,7 +8,7 @@ A Next.js 16 application for the IBPA Beauty Championship website. The project c
 | --- | --- |
 | Public pages | Present the championship, categories, grand prix rules, and jury information |
 | Jury application | Accept jury applications with uploaded files and store them locally + in Postgres |
-| Admin review | Let internal reviewers inspect applications, open files, and update status |
+| Admin review | Let internal reviewers inspect applications, open files, and update status | 
 | Prisma layer | Manage categories, awards, participant applications, jury applications, and payments |
 
 ## Stack

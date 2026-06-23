@@ -3,12 +3,17 @@
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 
-const ink = "#0A0A0A";
-const accent = "#7DC8EE";
+/* ─── Design tokens ─────────────────────────────────────── */
+const IBPA_BLUE      = "#72a0c1";
+const IBPA_BLUE_DEEP = "#4d86ad";
+const IBPA_BLUE_SOFT = "#b9d9eb";
+const IBPA_INK       = "#030213";
+const IBPA_MUTED     = "#46525a";
 
+/* ─── Shell ─────────────────────────────────────────────── */
 export function DashboardShell({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-white pb-24 text-[#0A0A0A] lg:pb-0">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(185,217,235,0.22),transparent_32%),linear-gradient(180deg,var(--color-white),var(--surface-tint))] pb-24 text-[var(--color-ink)] lg:pb-0">
       <div className="mx-auto w-full max-w-[1440px] px-4 py-5 md:px-6 lg:py-7">
         {children}
       </div>
@@ -16,6 +21,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   );
 }
 
+/* ─── Card ───────────────────────────────────────────────── */
 export function DashboardCard({
   children,
   className = "",
@@ -25,13 +31,14 @@ export function DashboardCard({
 }) {
   return (
     <section
-      className={`rounded-lg border border-black/10 bg-white p-4 shadow-[0_18px_50px_rgba(10,10,10,0.06)] md:p-5 ${className}`}
+      className={`rounded-[18px] border border-[var(--border-default)] bg-white/84 p-5 shadow-[0_18px_50px_rgba(3,2,19,0.06)] backdrop-blur-xl ${className}`}
     >
       {children}
     </section>
   );
 }
 
+/* ─── Panel (sub-card inside a card) ─────────────────────── */
 export function DashboardPanel({
   children,
   className = "",
@@ -40,12 +47,15 @@ export function DashboardPanel({
   className?: string;
 }) {
   return (
-    <div className={`rounded-lg border border-black/10 bg-[#FAFAFA] p-4 ${className}`}>
+    <div
+      className={`rounded-[14px] border border-[var(--border-soft)] bg-white/62 p-4 shadow-[0_10px_28px_rgba(3,2,19,0.04)] backdrop-blur-xl ${className}`}
+    >
       {children}
     </div>
   );
 }
 
+/* ─── Page header ────────────────────────────────────────── */
 export function DashboardPageHeader({
   label,
   title,
@@ -58,18 +68,27 @@ export function DashboardPageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-4 border-b border-black/10 pb-5 lg:flex-row lg:items-end lg:justify-between">
+    <div className="flex flex-col gap-4 border-b border-[var(--border-soft)] pb-6 lg:flex-row lg:items-end lg:justify-between">
       <div className="min-w-0">
         {label ? (
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#347DA5]">
+          <p
+            className="text-[clamp(0.85rem,1.1vw,0.95rem)] italic tracking-wide"
+            style={{ fontFamily: "var(--font-accent)", color: IBPA_BLUE }}
+          >
             {label}
           </p>
         ) : null}
-        <h1 className="mt-2 max-w-4xl text-3xl font-semibold normal-case leading-tight tracking-[-0.02em] text-[#0A0A0A] md:text-4xl">
+        <h1
+          className="mt-1 max-w-4xl text-[clamp(1.9rem,3.5vw,2.8rem)] font-light leading-[1.08] tracking-[-0.02em]"
+          style={{ fontFamily: "var(--font-display)", color: IBPA_INK }}
+        >
           {title}
         </h1>
         {description ? (
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-black/60 md:text-[15px]">
+          <p
+            className="mt-2 max-w-2xl text-[0.94rem] leading-[1.72]"
+            style={{ fontFamily: "var(--font-body)", color: IBPA_MUTED }}
+          >
             {description}
           </p>
         ) : null}
@@ -79,6 +98,7 @@ export function DashboardPageHeader({
   );
 }
 
+/* ─── Metric tile ────────────────────────────────────────── */
 export function DashboardMetricTile({
   label,
   value,
@@ -88,25 +108,33 @@ export function DashboardMetricTile({
   value: ReactNode;
   accent?: "blue" | "green" | "amber" | "red";
 }) {
-  const toneClass = {
-    blue: "text-[#1673A5]",
-    green: "text-emerald-700",
-    amber: "text-amber-700",
-    red: "text-red-700",
-  }[tone ?? "blue"];
+  const toneColor: Record<string, string> = {
+    blue: IBPA_BLUE_DEEP,
+    green: "#166534",
+    amber: "#92400e",
+    red: "#991b1b",
+  };
+  const valueColor = tone ? toneColor[tone] : IBPA_INK;
 
   return (
-    <div className="rounded-lg border border-black/10 bg-[#FAFAFA] p-4">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-black/45">
+    <div className="rounded-[16px] border border-[var(--border-default)] bg-white/82 p-4 shadow-[0_14px_34px_rgba(3,2,19,0.05)] backdrop-blur-xl">
+      <p
+        className="text-[0.65rem] font-semibold uppercase tracking-[0.18em]"
+        style={{ fontFamily: "var(--font-ui-family)", color: IBPA_MUTED }}
+      >
         {label}
       </p>
-      <p className={`mt-2 text-2xl font-semibold tracking-[-0.02em] ${tone ? toneClass : "text-[#0A0A0A]"}`}>
+      <p
+        className="mt-2 text-[2rem] font-light leading-none tracking-[-0.02em]"
+        style={{ fontFamily: "var(--font-display)", color: valueColor }}
+      >
         {value}
       </p>
     </div>
   );
 }
 
+/* ─── Section header ─────────────────────────────────────── */
 export function DashboardSectionHeader({
   eyebrow,
   title,
@@ -120,11 +148,17 @@ export function DashboardSectionHeader({
     <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div>
         {eyebrow ? (
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#347DA5]">
+          <p
+            className="text-[clamp(0.82rem,1vw,0.9rem)] italic"
+            style={{ fontFamily: "var(--font-accent)", color: IBPA_BLUE }}
+          >
             {eyebrow}
           </p>
         ) : null}
-        <h2 className={`text-lg font-semibold normal-case tracking-[-0.01em] text-[#0A0A0A] ${eyebrow ? "mt-1" : ""}`}>
+        <h2
+          className={`text-[clamp(1.1rem,1.8vw,1.4rem)] font-light leading-[1.1] tracking-[-0.01em] ${eyebrow ? "mt-1" : ""}`}
+          style={{ fontFamily: "var(--font-display)", color: IBPA_INK }}
+        >
           {title}
         </h2>
       </div>
@@ -133,94 +167,64 @@ export function DashboardSectionHeader({
   );
 }
 
-function buttonClass(kind: "primary" | "secondary" | "danger", className: string) {
-  const shared =
-    "inline-flex min-h-10 items-center justify-center gap-2 rounded-md px-3.5 py-2 text-sm font-semibold leading-none transition disabled:cursor-not-allowed disabled:opacity-60";
+/* ─── Buttons ────────────────────────────────────────────── */
+function buildButtonClass(
+  kind: "primary" | "secondary" | "danger",
+  extra: string,
+) {
+  const base =
+    "inline-flex min-h-[38px] items-center justify-center gap-2 rounded-full px-5 py-2 text-[0.72rem] font-medium uppercase tracking-[0.1em] leading-none transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50";
 
   if (kind === "primary") {
-    return `${shared} bg-[#7a98af] text-white hover:bg-[#6b8a9f] ${className}`;
+    return `${base} border border-[var(--color-blue)] bg-[var(--color-blue)] text-[var(--color-ink)] shadow-[0_10px_24px_rgba(114,160,193,0.22)] hover:border-[var(--color-blue-dark)] hover:bg-[var(--color-blue-soft)] hover:-translate-y-px hover:shadow-[0_14px_34px_rgba(114,160,193,0.28)] ${extra}`;
   }
-
   if (kind === "danger") {
-    return `${shared} border border-red-200 bg-white text-red-700 hover:bg-red-50 ${className}`;
+    return `${base} border border-red-200 bg-white text-red-700 hover:bg-red-50 hover:border-red-300 ${extra}`;
   }
-
-  return `${shared} border border-black/10 bg-white text-[#0A0A0A] hover:border-[#7DC8EE] hover:bg-[#EAF6FF] ${className}`;
+  return `${base} border border-[var(--border-default)] bg-white/86 text-[var(--color-ink)] shadow-[0_8px_20px_rgba(3,2,19,0.04)] hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-wash)] ${extra}`;
 }
 
-export function DashboardPrimaryBtn({
-  children,
-  href,
-  onClick,
-  type = "button",
-  disabled,
-  className = "",
-}: {
+type BtnProps = {
   children: ReactNode;
   href?: string;
   onClick?: () => void;
   type?: "button" | "submit";
   disabled?: boolean;
   className?: string;
-}) {
-  const cls = buttonClass("primary", className);
+};
+
+export function DashboardPrimaryBtn({
+  children, href, onClick, type = "button", disabled, className = "",
+}: BtnProps) {
+  const cls = buildButtonClass("primary", className);
   if (href) return <Link href={href} className={cls}>{children}</Link>;
-  return (
-    <button type={type} onClick={onClick} disabled={disabled} className={cls}>
-      {children}
-    </button>
-  );
+  return <button type={type} onClick={onClick} disabled={disabled} className={cls}>{children}</button>;
 }
 
 export function DashboardSecondaryBtn({
-  children,
-  href,
-  onClick,
-  type = "button",
-  disabled,
-  className = "",
-}: {
-  children: ReactNode;
-  href?: string;
-  onClick?: () => void;
-  type?: "button" | "submit";
-  disabled?: boolean;
-  className?: string;
-}) {
-  const cls = buttonClass("secondary", className);
+  children, href, onClick, type = "button", disabled, className = "",
+}: BtnProps) {
+  const cls = buildButtonClass("secondary", className);
   if (href) return <Link href={href} className={cls}>{children}</Link>;
-  return (
-    <button type={type} onClick={onClick} disabled={disabled} className={cls}>
-      {children}
-    </button>
-  );
+  return <button type={type} onClick={onClick} disabled={disabled} className={cls}>{children}</button>;
 }
 
 export function DashboardDangerBtn({
-  children,
-  onClick,
-  type = "button",
-  disabled,
-  className = "",
-}: {
-  children: ReactNode;
-  onClick?: () => void;
-  type?: "button" | "submit";
-  disabled?: boolean;
-  className?: string;
-}) {
+  children, onClick, type = "button", disabled, className = "",
+}: Omit<BtnProps, "href">) {
   return (
     <button
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={buttonClass("danger", className)}
+      className={buildButtonClass("danger", className)}
     >
       {children}
     </button>
   );
 }
 
+/* ─── Filter chip ────────────────────────────────────────── */
 export function DashboardFilterChip({
   children,
   href,
@@ -233,10 +237,10 @@ export function DashboardFilterChip({
   return (
     <Link
       href={href}
-      className={`inline-flex min-h-9 items-center justify-center rounded-md border px-3 py-2 text-sm font-semibold transition ${
+      className={`inline-flex min-h-[34px] items-center justify-center rounded-full border px-4 py-1.5 text-[0.7rem] font-medium uppercase tracking-[0.1em] transition-all duration-200 ${
         active
-          ? "border-[#7DC8EE] bg-[#EAF6FF] text-[#0A0A0A]"
-          : "border-black/10 bg-white text-black/60 hover:border-[#7DC8EE] hover:bg-[#EAF6FF] hover:text-[#0A0A0A]"
+          ? "border-[var(--color-blue)] bg-[var(--color-blue-wash)] text-[var(--color-ink)]"
+          : "border-[var(--border-soft)] bg-white/78 text-[var(--color-ink-soft)] hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-wash)] hover:text-[var(--color-ink)]"
       }`}
     >
       {children}
@@ -244,15 +248,16 @@ export function DashboardFilterChip({
   );
 }
 
+/* ─── Badge ──────────────────────────────────────────────── */
 type BadgeTone = "neutral" | "blue" | "green" | "amber" | "red" | "purple";
 
-const badgeToneClasses: Record<BadgeTone, string> = {
-  neutral: "border-black/10 bg-[#F5F5F5] text-black/65",
-  blue: "border-[#7DC8EE] bg-[#EAF6FF] text-[#0A0A0A]",
-  green: "border-emerald-200 bg-emerald-50 text-emerald-800",
-  amber: "border-amber-200 bg-amber-50 text-amber-800",
-  red: "border-red-200 bg-red-50 text-red-800",
-  purple: "border-[#7DC8EE] bg-[#EAF6FF] text-[#0A0A0A]",
+const badgeTone: Record<BadgeTone, string> = {
+  neutral: "border-[var(--border-soft)] bg-white/72 text-[var(--color-ink-soft)]",
+  blue:    "border-[var(--color-blue-soft)] bg-[var(--color-blue-wash)] text-[var(--color-blue-dark)]",
+  green:   "border-emerald-200 bg-emerald-50 text-emerald-800",
+  amber:   "border-amber-200 bg-amber-50 text-amber-800",
+  red:     "border-red-200 bg-red-50 text-red-800",
+  purple:  "border-[var(--color-blue-soft)] bg-[var(--color-blue-wash)] text-[var(--color-blue-dark)]",
 };
 
 export function DashboardBadge({
@@ -264,13 +269,15 @@ export function DashboardBadge({
 }) {
   return (
     <span
-      className={`inline-flex items-center rounded-md border px-2 py-1 text-[11px] font-semibold uppercase leading-none tracking-[0.08em] ${badgeToneClasses[tone]}`}
+      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[0.62rem] font-semibold uppercase leading-none tracking-[0.1em] ${badgeTone[tone]}`}
+      style={{ fontFamily: "var(--font-ui-family)" }}
     >
       {children}
     </span>
   );
 }
 
+/* ─── Table ──────────────────────────────────────────────── */
 export function DashboardTable({
   headers,
   children,
@@ -281,16 +288,17 @@ export function DashboardTable({
   className?: string;
 }) {
   return (
-    <div className={`overflow-hidden rounded-lg border border-black/10 ${className}`}>
+    <div className={`overflow-hidden rounded-[16px] border border-[var(--border-default)] bg-white/72 shadow-[0_14px_36px_rgba(3,2,19,0.05)] backdrop-blur-xl ${className}`}>
       <div
-        className="hidden gap-4 border-b border-black/10 bg-[#FAFAFA] px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-black/45 lg:grid"
-        style={{ gridTemplateColumns: `repeat(${headers.length}, minmax(0, 1fr))` } as CSSProperties}
+        className="hidden gap-4 border-b border-[var(--border-soft)] bg-[var(--surface-tint)]/80 px-5 py-3 text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)] lg:grid"
+        style={{
+          gridTemplateColumns: `repeat(${headers.length}, minmax(0, 1fr))`,
+          fontFamily: "var(--font-ui-family)",
+        } as CSSProperties}
       >
-        {headers.map((header, index) => (
-          <span key={index}>{header}</span>
-        ))}
+        {headers.map((header, i) => <span key={i}>{header}</span>)}
       </div>
-      <div className="divide-y divide-black/10">{children}</div>
+      <div className="divide-y divide-[var(--border-soft)]">{children}</div>
     </div>
   );
 }
@@ -306,29 +314,24 @@ export function DashboardTableRow({
 }) {
   const inner = (
     <div
-      className={`grid gap-3 px-4 py-4 transition-colors ${href ? "hover:bg-[#EAF6FF]/45" : ""} ${cols ? `lg:grid-cols-[repeat(${cols},minmax(0,1fr))]` : ""}`}
+      className={`grid gap-3 px-5 py-4 transition-colors ${href ? "hover:bg-[var(--color-blue-wash)]/60" : ""} ${cols ? `lg:grid-cols-[repeat(${cols},minmax(0,1fr))]` : ""}`}
     >
       {children}
     </div>
   );
-
-  return href ? (
-    <Link href={href} className="block">
-      {inner}
-    </Link>
-  ) : (
-    inner
-  );
+  return href ? <Link href={href} className="block">{inner}</Link> : inner;
 }
 
+/* ─── Form inputs ────────────────────────────────────────── */
 export const dashboardInputClass =
-  "h-10 w-full rounded-md border border-black/10 bg-white px-3 text-sm text-[#0A0A0A] outline-none transition placeholder:text-black/35 focus:border-[#7DC8EE] focus:ring-4 focus:ring-[#EAF6FF]";
+  "h-10 w-full rounded-[10px] border border-[var(--border-default)] bg-white/88 px-3.5 text-sm leading-none text-[var(--color-ink)] outline-none transition placeholder:text-[var(--color-ink-muted)] focus:border-[var(--color-blue)] focus:ring-4 focus:ring-[var(--color-blue-wash)]";
 
 export const dashboardSelectClass = `${dashboardInputClass} cursor-pointer`;
 
 export const dashboardTextareaClass =
-  "min-h-[128px] w-full rounded-md border border-black/10 bg-white px-3 py-3 text-sm leading-6 text-[#0A0A0A] outline-none transition placeholder:text-black/35 focus:border-[#7DC8EE] focus:ring-4 focus:ring-[#EAF6FF]";
+  "min-h-[128px] w-full rounded-[10px] border border-[var(--border-default)] bg-white/88 px-3.5 py-3 text-sm leading-6 text-[var(--color-ink)] outline-none transition placeholder:text-[var(--color-ink-muted)] focus:border-[var(--color-blue)] focus:ring-4 focus:ring-[var(--color-blue-wash)]";
 
+/* ─── Empty state ────────────────────────────────────────── */
 export function DashboardEmptyState({
   icon,
   title,
@@ -339,18 +342,34 @@ export function DashboardEmptyState({
   description?: string;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-black/15 bg-[#FAFAFA] px-5 py-10 text-center">
+    <div className="flex flex-col items-center justify-center gap-3 rounded-[16px] border border-dashed border-[var(--color-blue-soft)] bg-white/64 px-5 py-12 text-center shadow-[0_12px_32px_rgba(3,2,19,0.04)]">
       {icon ? (
-        <div className="flex size-11 items-center justify-center rounded-md bg-[#EAF6FF] text-[#1673A5]">
+        <div
+          className="flex size-11 items-center justify-center rounded-full border border-[var(--color-blue-soft)] bg-[var(--color-blue-wash)]"
+          style={{ color: IBPA_BLUE }}
+        >
           {icon}
         </div>
       ) : null}
-      <p className="text-sm font-semibold text-[#0A0A0A]">{title}</p>
-      {description ? <p className="max-w-sm text-sm leading-6 text-black/55">{description}</p> : null}
+      <p
+        className="text-[0.95rem] font-light"
+        style={{ fontFamily: "var(--font-display)", color: IBPA_INK }}
+      >
+        {title}
+      </p>
+      {description ? (
+        <p
+          className="max-w-sm text-[0.88rem] leading-[1.65]"
+          style={{ fontFamily: "var(--font-body)", color: IBPA_MUTED }}
+        >
+          {description}
+        </p>
+      ) : null}
     </div>
   );
 }
 
+/* ─── Detail card ────────────────────────────────────────── */
 export function DashboardDetailCard({
   label,
   value,
@@ -359,21 +378,36 @@ export function DashboardDetailCard({
   value: ReactNode;
 }) {
   return (
-    <div className="rounded-lg border border-black/10 bg-[#FAFAFA] p-3.5">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-black/45">{label}</p>
-      <p className="mt-2 break-words text-sm leading-6 text-[#0A0A0A]">{value}</p>
+    <div className="rounded-[14px] border border-[var(--border-soft)] bg-white/64 p-4 shadow-[0_10px_24px_rgba(3,2,19,0.04)]">
+      <p
+        className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]"
+        style={{ fontFamily: "var(--font-ui-family)" }}
+      >
+        {label}
+      </p>
+      <p
+        className="mt-1.5 break-words text-[0.92rem] leading-[1.6]"
+        style={{ fontFamily: "var(--font-body)", color: IBPA_INK }}
+      >
+        {value}
+      </p>
     </div>
   );
 }
 
+/* ─── Chip ───────────────────────────────────────────────── */
 export function DashboardChip({ children }: { children: ReactNode }) {
   return (
-    <span className="inline-flex items-center rounded-md border border-[#7DC8EE] bg-[#EAF6FF] px-2.5 py-1 text-[11px] font-semibold leading-none text-[#0A0A0A]">
+    <span
+      className="inline-flex items-center rounded-full border border-[var(--color-blue-soft)] bg-[var(--color-blue-wash)] px-3 py-0.5 text-[0.62rem] font-semibold leading-none tracking-[0.08em] text-[var(--color-blue-dark)]"
+      style={{ fontFamily: "var(--font-ui-family)" }}
+    >
       {children}
     </span>
   );
 }
 
+/* ─── KPI progress bar ───────────────────────────────────── */
 export function DashboardKpiBar({
   value,
   label,
@@ -384,25 +418,32 @@ export function DashboardKpiBar({
   tone?: "light" | "dark";
 }) {
   const clamped = Math.max(0, Math.min(value, 100));
-  const labelClass = tone === "dark" ? "text-white/90" : "text-black/45";
-  const trackClass = tone === "dark" ? "bg-white/10" : "bg-black/10";
+  const labelColor = tone === "dark" ? "rgba(255,255,255,0.85)" : IBPA_MUTED;
+  const trackBg = tone === "dark" ? "rgba(255,255,255,0.15)" : "rgba(3,2,19,0.08)";
 
   return (
     <div>
-      <div className={`flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.14em] ${labelClass}`}>
+      <div
+        className="flex items-center justify-between text-[0.65rem] font-semibold uppercase tracking-[0.14em]"
+        style={{ fontFamily: "var(--font-ui-family)", color: labelColor }}
+      >
         <span>{label}</span>
         <span>{clamped}%</span>
       </div>
-      <div className={`mt-2 h-2 rounded-full ${trackClass}`}>
+      <div
+        className="mt-2 h-1.5 rounded-full overflow-hidden"
+        style={{ background: trackBg }}
+      >
         <div
-          className="h-2 rounded-full bg-[#7DC8EE]"
-          style={{ width: `${clamped}%` }}
+          className="h-full rounded-full transition-all duration-500"
+          style={{ width: `${clamped}%`, background: IBPA_BLUE_SOFT }}
         />
       </div>
     </div>
   );
 }
 
+/* ─── Accent block (jury identity card) ──────────────────── */
 export function DashboardAccentBlock({
   children,
   className = "",
@@ -411,10 +452,16 @@ export function DashboardAccentBlock({
   className?: string;
 }) {
   return (
-    <div className={`rounded-lg border border-[#6b8a9f] bg-[#7a98af] p-4 text-white ${className}`}>
+    <div
+      className={`rounded-[18px] border border-[var(--color-blue-soft)] p-5 text-[var(--color-ink)] shadow-[0_18px_44px_rgba(114,160,193,0.16)] backdrop-blur-xl ${className}`}
+      style={{
+        background: "linear-gradient(135deg, rgba(185,217,235,0.42) 0%, rgba(255,255,255,0.82) 100%)",
+      }}
+    >
       {children}
     </div>
   );
 }
 
-export { accent, ink };
+export const ink = IBPA_INK;
+export const accent = IBPA_BLUE;

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, Globe } from "lucide-react";
+
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import {
   languageLabels,
@@ -23,9 +24,7 @@ export default function LanguageSwitcher({
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!open || mobile) {
-      return;
-    }
+    if (!open || mobile) return;
 
     function handlePointerDown(event: MouseEvent) {
       if (!containerRef.current?.contains(event.target as Node)) {
@@ -34,9 +33,7 @@ export default function LanguageSwitcher({
     }
 
     function handleEscape(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setOpen(false);
-      }
+      if (event.key === "Escape") setOpen(false);
     }
 
     window.addEventListener("mousedown", handlePointerDown);
@@ -57,9 +54,10 @@ export default function LanguageSwitcher({
   if (mobile) {
     return (
       <div className="grid gap-3">
-        <p className="px-1 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-ink-soft)]">
+        <p className="px-1 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-[#172430]/65">
           {t.header.language}
         </p>
+
         <div className="grid grid-cols-3 gap-2">
           {languages.map((item) => {
             const active = item === language;
@@ -69,9 +67,17 @@ export default function LanguageSwitcher({
                 key={item}
                 type="button"
                 onClick={() => chooseLanguage(item)}
-                className={`rounded-full border px-4 py-3 text-[0.72rem] font-semibold uppercase tracking-[0.18em] transition-all duration-300 ${active ? "border-[var(--color-ink)] bg-[var(--color-ink)] text-white shadow-[0_16px_30px_rgba(3,2,19,0.14)]" : "border-black/10 bg-white text-[var(--color-ink)] hover:border-black/24 hover:bg-black hover:text-white"}`}
+                className={`group relative overflow-hidden rounded-full border px-4 py-3 text-[0.72rem] font-semibold uppercase tracking-[0.18em] shadow-[0_10px_26px_rgba(20,49,71,0.08)] backdrop-blur-2xl transition-all duration-500 hover:-translate-y-0.5 ${
+                  active
+                    ? "border-[#8eb6d3]/75 bg-white/72 text-[#172430]"
+                    : "border-white/65 bg-[#eef2f4]/62 text-[#172430]/72 hover:border-white/80 hover:bg-white/62 hover:text-[#172430]"
+                }`}
               >
-                {languageLabels[item].short}
+                <span className="absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-white/80 to-transparent" />
+                <span className="absolute inset-0 bg-[#72a0c1]/[0.03]" />
+                <span className="relative z-10">
+                  {languageLabels[item].short}
+                </span>
               </button>
             );
           })}
@@ -81,45 +87,80 @@ export default function LanguageSwitcher({
   }
 
   return (
-    <div ref={containerRef} className="relative">
+    <div ref={containerRef} className="relative z-[999]">
       <button
         type="button"
         aria-label={t.header.language}
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => setOpen((current) => !current)}
-        className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-[0.7rem] font-semibold uppercase tracking-[0.12em] transition-all duration-300 ${transparent ? "border-white/30 bg-white/10 text-white backdrop-blur-md hover:border-white hover:bg-white hover:text-[var(--color-ink)]" : "border-black/10 bg-white text-[var(--color-ink)] shadow-[0_10px_24px_rgba(3,2,19,0.05)] hover:border-[var(--color-ink)] hover:bg-[var(--color-ink)] hover:text-white"}`}
+        className={`group relative inline-flex items-center gap-2 overflow-hidden rounded-full border px-4 py-2.5 text-[0.7rem] font-semibold uppercase tracking-[0.13em] backdrop-blur-2xl transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-[1px] ${
+          transparent
+            ? "border-white/48 bg-white/10 text-white shadow-[0_14px_34px_rgba(0,0,0,0.18)] hover:border-white/70 hover:bg-white/18"
+            : "border-[#b9d9eb]/65 bg-white/64 text-[#172430] shadow-[0_14px_34px_rgba(114,160,193,0.16)] hover:border-[#8eb6d3]/75 hover:bg-white/82"
+        }`}
       >
-        <Globe size={14} className="shrink-0" />
-        <span>{languageLabels[language].short}</span>
+        <span className="absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-white/80 to-transparent" />
+        <span className="absolute inset-0 rounded-full bg-[#72a0c1]/5" />
+
+        <Globe size={14} className="relative z-10 shrink-0" />
+        <span className="relative z-10">{languageLabels[language].short}</span>
         <ChevronDown
           size={14}
-          className={`shrink-0 transition-transform duration-300 ${open ? "rotate-180" : ""}`}
+          className={`relative z-10 shrink-0 transition-transform duration-500 ${
+            open ? "rotate-180" : ""
+          }`}
         />
       </button>
 
       <div
-        className={`absolute right-0 top-[calc(100%+0.65rem)] z-50 min-w-44 overflow-hidden rounded-[24px] border border-black/10 bg-white p-2 shadow-[0_24px_60px_rgba(3,2,19,0.14)] transition-all duration-300 ${open ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none -translate-y-2 opacity-0"}`}
+        role="listbox"
+        className={`absolute right-0 top-[calc(100%+0.85rem)] z-[999] min-w-52 overflow-hidden rounded-[28px] border border-white/35 bg-[#eef2f4]/72 p-2 shadow-[0_30px_90px_rgba(0,0,0,0.22)] backdrop-blur-[28px] transition-all duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] ${
+          open
+            ? "pointer-events-auto translate-y-0 scale-100 opacity-100"
+            : "pointer-events-none -translate-y-2 scale-[0.98] opacity-0"
+        }`}
       >
-        {languages.map((item) => {
-          const active = item === language;
+        <span className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/90 to-transparent" />
+        <span className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.28),rgba(255,255,255,0.08))]" />
+        <span className="pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full bg-[#b9d9eb]/28 blur-3xl" />
+        <span className="pointer-events-none absolute -left-12 bottom-0 h-32 w-32 rounded-full bg-white/28 blur-3xl" />
 
-          return (
-            <button
-              key={item}
-              type="button"
-              onClick={() => chooseLanguage(item)}
-              className={`flex w-full items-center justify-between rounded-[18px] px-4 py-3 text-left text-sm transition ${active ? "bg-[var(--color-ink)] text-white" : "text-[var(--color-ink)] hover:bg-black/[0.04]"}`}
-            >
-              <span>{languageLabels[item].label}</span>
-              <span
-                className={`inline-flex h-5 w-5 items-center justify-center rounded-full border text-[0.68rem] ${active ? "border-white/30 bg-white/10" : "border-black/10 bg-black/[0.03] text-transparent"}`}
+        <div className="relative z-10 grid gap-1">
+          {languages.map((item) => {
+            const active = item === language;
+
+            return (
+              <button
+                key={item}
+                type="button"
+                role="option"
+                aria-selected={active}
+                onClick={() => chooseLanguage(item)}
+                className={`group relative flex w-full items-center justify-between overflow-hidden rounded-[20px] px-4 py-3.5 text-left text-sm font-medium text-[#172430] transition-all duration-500 ${
+                  active
+                    ? "bg-white/52 shadow-[inset_0_1px_0_rgba(255,255,255,0.55),0_10px_28px_rgba(20,49,71,0.10)]"
+                    : "hover:bg-white/45 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.55),0_10px_28px_rgba(20,49,71,0.10)]"
+                }`}
               >
-                •
-              </span>
-            </button>
-          );
-        })}
+                <span className="absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-white/0 to-transparent transition-all duration-500 group-hover:via-white/90" />
+                <span className="absolute inset-0 bg-[#72a0c1]/0 transition-colors duration-500 group-hover:bg-[#72a0c1]/[0.035]" />
+
+                <span className="relative z-10">{languageLabels[item].label}</span>
+
+                <span
+                  className={`relative z-10 inline-flex h-5 w-5 items-center justify-center rounded-full border text-[0.68rem] transition-all duration-500 ${
+                    active
+                      ? "border-[#72a0c1]/70 bg-white/75 text-[#4d88b2] shadow-[0_6px_16px_rgba(114,160,193,0.18)]"
+                      : "border-white/45 bg-white/30 text-transparent group-hover:border-[#b9d9eb]/70 group-hover:bg-white/60"
+                  }`}
+                >
+                  •
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

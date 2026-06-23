@@ -4,8 +4,7 @@ import {
   GrandPrixHero,
   GrandPrixFlow,
   GrandPrixTimeline,
-  GrandPrixFullBleed,
-  GrandPrixCTA
+  GrandPrixCTA,
 } from "@/features/grand-prix/components/";
 
 export default function GrandPrixPagePremium() {
@@ -14,7 +13,6 @@ export default function GrandPrixPagePremium() {
       <GrandPrixHero />
       <GrandPrixFlow />
       <GrandPrixTimeline />
-      <GrandPrixFullBleed />
       <GrandPrixCTA />
     </main>
   );

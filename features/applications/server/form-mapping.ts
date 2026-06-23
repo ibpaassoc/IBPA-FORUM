@@ -1,4 +1,3 @@
-import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import type {
   ApplicationValues,
   BlockBValuesByNomination,
@@ -15,47 +14,12 @@ function getTextValue(formData: FormData, key: string) {
   return String(formData.get(key) ?? "").trim();
 }
 
-function getSelectedCategories(
-  selectedAwardIds: string[],
-  categories: CategoryOption[]
-) {
-  const selectedCategories: CategoryOption[] = [];
-  const categoryIds = new Set<string>();
-
-  for (const awardId of selectedAwardIds) {
-    const category = categories.find((item) =>
-      item.awards.some((award) => award.id === awardId)
-    );
-
-    if (category && !categoryIds.has(category.id)) {
-      categoryIds.add(category.id);
-      selectedCategories.push(category);
-    }
-  }
-
-  return selectedCategories;
-}
-
-function getUniqueCategoryFields(selectedCategories: CategoryOption[]) {
-  const fieldMap = new Map<string, (typeof categoryFieldConfigs)[string][number]>();
-
-  for (const category of selectedCategories) {
-    const fields = categoryFieldConfigs[category.slug] ?? [];
-
-    for (const field of fields) {
-      if (!fieldMap.has(field.key)) {
-        fieldMap.set(field.key, field);
-      }
-    }
-  }
-
-  return Array.from(fieldMap.values());
-}
-
 export function extractApplicationValues(
   formData: FormData,
   categories: CategoryOption[]
 ): ApplicationValues {
+  void categories;
+
   const selectedAwardIds = formData
     .getAll("selectedAwardIds")
     .map((item) => String(item).trim())

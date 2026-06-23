@@ -31,7 +31,7 @@ export default function JurySection() {
 
           <Link
             href="/jury"
-            className="ibpa-button ibpa-button-gold mt-(--space-lg)"
+            className="ibpa-button ibpa-button-blue mt-(--space-lg)"
           >
             {t.home.juryCta.button}
           </Link>

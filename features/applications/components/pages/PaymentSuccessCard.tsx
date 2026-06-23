@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { Mail, Users, Trophy } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
@@ -83,7 +83,9 @@ const copy = {
   },
 };
 
-const fade = {
+const editorialEase = [0.22, 1, 0.36, 1] as const;
+
+const fade: Variants = {
   hidden: { opacity: 0, y: 20 },
   show: (i: number) => ({
     opacity: 1,
@@ -97,20 +99,21 @@ const fade = {
 };
 
 export default function PaymentSuccessCard({ sessionId: _sessionId }: { sessionId?: string }) {
+  void _sessionId;
   const { language } = useLanguage();
   const t = copy[language] ?? copy.en;
 
   return (
     <main className="page-shell">
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden border-b border-black/6 bg-[var(--color-ink)] px-[var(--page-gutter)] pb-20 pt-[calc(var(--site-header-height)+4rem)]">
+      <section className="relative overflow-hidden border-b border-[var(--color-blue-light)] bg-[var(--color-blue-wash)] px-[var(--page-gutter)] pb-20 pt-[calc(var(--site-header-height)+4rem)]">
         {/* Subtle grid texture */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.03]"
+          className="pointer-events-none absolute inset-0 opacity-[0.04]"
           style={{
             backgroundImage:
-              "linear-gradient(var(--color-white) 1px, transparent 1px), linear-gradient(90deg, var(--color-white) 1px, transparent 1px)",
+              "linear-gradient(var(--color-blue) 1px, transparent 1px), linear-gradient(90deg, var(--color-blue) 1px, transparent 1px)",
             backgroundSize: "48px 48px",
           }}
         />
@@ -120,13 +123,13 @@ export default function PaymentSuccessCard({ sessionId: _sessionId }: { sessionI
             initial={{ opacity: 0, scale: 0.88 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="mb-8 flex h-16 w-16 items-center justify-center rounded-[22px] border border-white/10 bg-white/6"
+            className="mb-8 flex h-16 w-16 items-center justify-center rounded-[22px] border border-[var(--color-blue)]/30 bg-white shadow-[var(--shadow-sm)]"
           >
             {/* Animated check */}
             <svg viewBox="0 0 32 32" fill="none" className="h-8 w-8">
               <motion.path
                 d="M6 16.5L13 23.5L26 9"
-                stroke="white"
+                stroke="var(--color-blue)"
                 strokeWidth="2.4"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -142,7 +145,7 @@ export default function PaymentSuccessCard({ sessionId: _sessionId }: { sessionI
             variants={fade}
             initial="hidden"
             animate="show"
-            className="mb-4 text-[0.65rem] font-bold uppercase tracking-[0.32em] text-white/40"
+            className="mb-4 text-[0.65rem] font-bold uppercase tracking-[0.32em] text-[var(--color-blue)]"
           >
             {t.eyebrow}
           </motion.p>
@@ -152,7 +155,7 @@ export default function PaymentSuccessCard({ sessionId: _sessionId }: { sessionI
             variants={fade}
             initial="hidden"
             animate="show"
-            className="font-[var(--font-ui-family)] text-[clamp(3.2rem,8vw,6rem)] font-black uppercase leading-none tracking-[-0.03em] text-white"
+            className="font-[var(--font-title-family)] text-[clamp(3rem,8vw,6rem)] font-light leading-[0.96] tracking-[-0.03em] text-[var(--color-ink)]"
           >
             {t.headline}
           </motion.h1>
@@ -162,7 +165,7 @@ export default function PaymentSuccessCard({ sessionId: _sessionId }: { sessionI
             variants={fade}
             initial="hidden"
             animate="show"
-            className="mt-6 max-w-xl text-[1.05rem] leading-[1.75] text-white/55"
+            className="mt-6 max-w-xl text-[1.05rem] leading-[1.75] text-[var(--color-ink-soft)]"
           >
             {t.sub}
           </motion.p>
@@ -182,7 +185,7 @@ export default function PaymentSuccessCard({ sessionId: _sessionId }: { sessionI
             {t.nextLabel}
           </motion.p>
 
-          <div className="grid gap-px overflow-hidden rounded-[28px] border border-black/8 bg-black/6 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-3">
             {t.steps.map((step, i) => {
               const Icon = step.icon;
               return (
@@ -192,17 +195,17 @@ export default function PaymentSuccessCard({ sessionId: _sessionId }: { sessionI
                   variants={fade}
                   initial="hidden"
                   animate="show"
-                  className="flex flex-col gap-5 bg-[var(--color-off-white)] p-8"
+                  className="premium-glass flex flex-col gap-5 p-8"
                 >
-                  <div className="flex h-11 w-11 items-center justify-center rounded-[16px] border border-black/8 bg-white shadow-[0_8px_20px_rgba(3,2,19,0.05)]">
-                    <Icon size={18} strokeWidth={1.6} className="text-[var(--color-ink)]" />
+                  <div className="flex h-11 w-11 items-center justify-center rounded-[16px] border border-[var(--color-blue-soft)] bg-[var(--color-blue-wash)] shadow-[0_8px_20px_rgba(114,160,193,0.12)]">
+                    <Icon size={18} strokeWidth={1.6} className="text-[var(--color-blue)]" />
                   </div>
 
                   <div>
                     <p className="mb-1 text-[0.6rem] font-bold uppercase tracking-[0.26em] text-[var(--color-ink-soft)]">
                       {String(i + 1).padStart(2, "0")}
                     </p>
-                    <h2 className="font-[var(--font-ui-family)] text-[1.18rem] font-black uppercase leading-tight tracking-[-0.01em] text-[var(--color-ink)]">
+                    <h2 className="font-[var(--font-title-family)] text-[clamp(1.1rem,1.6vw,1.35rem)] font-light leading-[1.1] text-[var(--color-ink)]">
                       {step.title}
                     </h2>
                     <p className="mt-3 text-[0.9rem] leading-[1.75] text-[var(--color-ink-soft)]">
@@ -224,7 +227,7 @@ export default function PaymentSuccessCard({ sessionId: _sessionId }: { sessionI
           >
             <Link
               href="/"
-              className="inline-flex items-center gap-2 rounded-full border border-[var(--color-ink)] bg-[var(--color-ink)] px-8 py-3.5 text-[0.75rem] font-bold uppercase tracking-[0.12em] text-white shadow-[0_18px_36px_rgba(3,2,19,0.14)] transition-all duration-300 hover:bg-white hover:text-[var(--color-ink)]"
+              className="ibpa-button ibpa-button-blue"
             >
               {t.cta}
             </Link>

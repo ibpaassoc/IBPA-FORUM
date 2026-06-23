@@ -13,15 +13,15 @@ export default function CategoriesGrid() {
         {categories.map((category, index) => (
           <PageCard
             key={category}
-            className="group bg-[var(--color-off-white)] transition hover:border-[var(--color-hover-accent)] hover:bg-[var(--color-hover-accent)]"
+            className="group bg-white/80 backdrop-blur-xl transition hover:border-[var(--color-blue)]/45 hover:bg-[var(--color-blue-wash)] hover:shadow-[var(--shadow-md)]"
           >
-            <p className="text-sm font-medium tracking-[0.12em] text-[var(--color-hover-accent)] group-hover:text-[var(--color-title-accent)]">
+            <p className="text-sm font-medium tracking-[0.12em] text-[var(--color-blue)]">
               {String(index + 1).padStart(2, "0")}
             </p>
-            <p className="mt-[var(--space-xs)] font-[var(--font-display)] text-[clamp(1.1rem,2vw,1.6rem)] font-normal text-[var(--color-ink)] group-hover:text-white">
+            <p className="mt-[var(--space-xs)] font-[var(--font-display)] text-[clamp(1.1rem,2vw,1.6rem)] font-normal text-[var(--color-ink)]">
               {category}
             </p>
-            <p className="mt-[var(--space-sm)] text-sm leading-[1.7] text-[var(--color-ink-soft)] group-hover:text-white/80">
+            <p className="mt-[var(--space-sm)] text-sm leading-[1.7] text-[var(--color-ink-soft)]">
               {t.categoriesPage.cardText}
             </p>
           </PageCard>

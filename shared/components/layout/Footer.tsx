@@ -9,7 +9,7 @@ import Modal from "@/shared/components/ui/Modal";
 import { legalContent } from "@/shared/components/layout/legal-content";
 
 export default function Footer() {
-  const { language, t } = useLanguage();
+  const { language } = useLanguage();
   const [activeLegalModal, setActiveLegalModal] = useState<"terms" | "privacy" | null>(null);
 
   const copy = {

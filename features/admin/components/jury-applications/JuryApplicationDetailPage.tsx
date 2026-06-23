@@ -258,14 +258,14 @@ export default function JuryApplicationDetailPage({
 
         <aside className="flex flex-col gap-4 xl:sticky xl:top-5 xl:self-start">
           <DashboardAccentBlock>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/90">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-soft)]">
               Review status
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <ApplicationStatusBadge status={application.status} />
               <PaymentStatusBadge status={application.paymentStatus} />
             </div>
-            <div className="mt-4 grid gap-2 text-sm text-white">
+            <div className="mt-4 grid gap-2 text-sm text-[var(--color-ink-soft)]">
               <span className="inline-flex items-center gap-2">
                 <Mail aria-hidden size={14} />
                 {application.email}

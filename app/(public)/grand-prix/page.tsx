@@ -14,7 +14,6 @@ export default function GrandPrixPagePremium() {
       <GrandPrixHero />
       <GrandPrixFlow />
       <GrandPrixTimeline />
-      <GrandPrixFullBleed />
       <GrandPrixCTA />
     </main>
   );

@@ -14,7 +14,7 @@ const introCopy = {
     steps: [
       {
         title: "Choose nominations",
-        text: "Open the category grid and select up to five nominations before uploading materials.",
+        text: "Open the category grid and select nominations before uploading materials.",
       },
       {
         title: "Prepare portfolio",
@@ -36,7 +36,7 @@ const introCopy = {
     steps: [
       {
         title: "Выберите номинации",
-        text: "Откройте сетку категорий и выберите до пяти номинаций перед загрузкой материалов.",
+        text: "Откройте сетку категорий и выберите номинации перед загрузкой материалов.",
       },
       {
         title: "Подготовьте портфолио",
@@ -58,7 +58,7 @@ const introCopy = {
     steps: [
       {
         title: "Оберіть номінації",
-        text: "Відкрийте сітку категорій та оберіть до п'яти номінацій перед завантаженням матеріалів.",
+        text: "Відкрийте сітку категорій та оберіть номінації перед завантаженням матеріалів.",
       },
       {
         title: "Підготуйте портфоліо",
@@ -81,16 +81,17 @@ export default function ApplyPageIntro() {
   const copy = introCopy[language] ?? introCopy.en;
 
   return (
-    <div className="space-y-[var(--space-xl)]">
-      <div className="max-w-2xl">
+    <div className="space-y-10">
+      <div className="max-w-3xl">
         <p className="page-eyebrow">{copy.eyebrow}</p>
-        <h1 className="mt-[var(--space-sm)] font-[var(--font-title-family)] text-[clamp(2.2rem,4.5vw,3.6rem)] font-light leading-[1.06] text-[var(--color-ink)]">
+
+        <h1 className="mt-4 font-[var(--font-title-family)] text-[clamp(2.45rem,5vw,4.65rem)] font-light leading-[0.95] tracking-[-0.065em] text-[var(--color-ink)]">
           {copy.title}
         </h1>
       </div>
 
       <StaggerContainer
-        className="grid gap-px overflow-hidden rounded-[var(--radius)] border border-[var(--border-default)] bg-[var(--border-default)] sm:grid-cols-2 xl:grid-cols-4"
+        className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
         stagger={0.08}
       >
         {copy.steps.map((step, index) => {
@@ -99,22 +100,21 @@ export default function ApplyPageIntro() {
           return (
             <article
               key={step.title}
-              className="group flex h-full flex-col bg-[var(--surface)] p-[var(--space-lg)] transition-colors duration-300 hover:bg-[var(--surface-muted)]"
+              className="group relative min-h-[230px] overflow-hidden rounded-[2rem] border border-white/70 bg-white/70 p-6 shadow-[0_22px_70px_rgba(42,66,82,0.08)] backdrop-blur-2xl transition duration-500 hover:-translate-y-1 hover:bg-white"
             >
-              <p className="mb-[var(--space-md)] select-none font-[var(--font-ui-family)] text-[3rem] font-black leading-[1] tracking-[-0.06em] text-[var(--color-ink)]/6">
+              <p className="select-none font-[var(--font-title-family)] text-[4rem] font-light italic leading-none tracking-[-0.07em] text-[var(--color-ink)]/8">
                 {stepNumbers[index]}
               </p>
-              <div className="mb-[var(--space-sm)] inline-flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-muted)]">
-                <Icon
-                  size={18}
-                  strokeWidth={1.5}
-                  className="text-[var(--color-hover-accent)]"
-                />
+
+              <div className="mt-5 inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--color-blue)]/15 bg-[var(--color-blue-wash)] text-[var(--color-blue)] transition duration-500 group-hover:scale-105">
+                <Icon size={18} strokeWidth={1.6} />
               </div>
-              <h3 className="font-[var(--font-ui-family)] text-[0.82rem] font-semibold uppercase tracking-[0.1em] text-[var(--color-ink)]">
+
+              <h3 className="mt-5 font-[var(--font-title-family)] text-[1.45rem] font-light leading-[1] tracking-[-0.045em] text-[var(--color-ink)]">
                 {step.title}
               </h3>
-              <p className="mt-2 text-[0.88rem] leading-[1.72] text-[var(--color-ink-soft)]">
+
+              <p className="mt-3 text-[0.9rem] leading-[1.7] text-[var(--color-ink-soft)]">
                 {step.text}
               </p>
             </article>

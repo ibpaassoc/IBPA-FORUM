@@ -88,24 +88,24 @@ export default async function JuryUpdatePage({
         </p>
       </div>
 
-      <div className="mb-8 rounded-2xl border border-[#d4b483]/50 bg-gradient-to-br from-[#fdf8f0] to-[#faf5e8] p-6">
+      <div className="premium-glass mb-8 rounded-2xl bg-[linear-gradient(145deg,rgba(185,217,235,0.28),rgba(255,255,255,0.84))] p-6">
         <div className="flex items-start gap-3">
-          <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#e8d5a8]/60">
-            <MessageSquare size={15} className="text-[#8c6d3f]" />
+          <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-[var(--color-blue-wash)]">
+            <MessageSquare size={15} className="text-[var(--color-blue)]" />
           </div>
           <div className="min-w-0">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#8c6d3f]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-blue)]">
               Message from the review committee
             </p>
-            <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-[#4a3a28]">
+            <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-[var(--color-ink-soft)]">
               {application.infoRequestDetails}
             </p>
           </div>
         </div>
       </div>
 
-      <div className="rounded-2xl border border-black/8 bg-white p-6 shadow-[0_8px_40px_rgba(10,10,10,0.06)] md:p-8">
-        <div className="mb-7 flex items-center gap-2.5 border-b border-black/8 pb-5">
+      <div className="premium-glass rounded-2xl p-6 md:p-8">
+        <div className="mb-7 flex items-center gap-2.5 border-b border-[var(--border-soft)] pb-5">
           <div className="flex size-8 items-center justify-center rounded-lg bg-[#EAF6FF]">
             <ClipboardEdit size={15} className="text-[#1673A5]" />
           </div>

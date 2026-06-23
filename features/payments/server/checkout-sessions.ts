@@ -57,11 +57,10 @@ function getCompetitorPriceId(isIbpaMember: boolean): string {
 
 function getCompetitorCouponId(nominationCount: number): string | null {
   if (nominationCount >= 5) {
-    // 5_NOMINATIONS_DSICOUNT — note: intentional typo matches the env var name
-    return process.env["5_NOMINATIONS_DSICOUNT"] ?? null;
+    return process.env["FIVE_NOMINATIONS_DSICOUNT"] ?? null;
   }
   if (nominationCount >= 3) {
-    return process.env["3_NOMINATIONS_DISCOUNT"] ?? null;
+    return process.env["THREE_NOMINATIONS_DISCOUNT"] ?? null;
   }
   return null;
 }

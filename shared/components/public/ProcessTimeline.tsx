@@ -40,7 +40,7 @@ export default function ProcessTimeline({
               key={step.id}
               className="group relative bg-[var(--surface)] p-[var(--space-lg)] transition-colors duration-300 hover:bg-[var(--surface-muted)]"
             >
-              <p className="mb-[var(--space-md)] font-[var(--font-ui-family)] text-[2.8rem] font-black leading-[1] tracking-[-0.06em] text-[var(--color-ink)]/8 select-none">
+              <p className="mb-[var(--space-md)] font-[var(--font-title-family)] text-[3rem] font-light leading-[1] tracking-[-0.04em] text-[var(--color-ink)]/10 select-none italic">
                 {String(index + 1).padStart(2, "0")}
               </p>
               {step.icon ? (
@@ -48,7 +48,7 @@ export default function ProcessTimeline({
                   {step.icon}
                 </div>
               ) : null}
-              <h3 className="font-[var(--font-ui-family)] text-[0.82rem] font-semibold uppercase tracking-[0.1em] text-[var(--color-hover-accent)]">
+              <h3 className="font-[var(--font-title-family)] text-[clamp(1rem,1.4vw,1.2rem)] font-light leading-[1.15] text-[var(--color-ink)]">
                 {step.title}
               </h3>
               <p className="mt-2 text-[0.92rem] leading-[1.72] text-[var(--color-ink-soft)]">
