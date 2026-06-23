@@ -6,21 +6,9 @@ import { ArrowRight, Sparkles } from "lucide-react";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import BuyTicketsButton from "@/features/tickets/components/BuyTicketsButton";
+import { ButtonLayers, LANDING_PRIMARY_BTN_CLASS } from "@/shared/components/public";
 
-const buttonClass =
-  "group relative inline-flex min-h-[56px] items-center justify-center gap-3 overflow-hidden rounded-full border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(248,252,255,0.78))] px-8 py-4 font-[var(--font-ui-family)] text-[0.74rem] font-semibold uppercase tracking-[0.16em] text-[#0b1420] shadow-[0_1px_0_rgba(255,255,255,0.95),0_12px_34px_rgba(122,152,175,0.14),inset_0_1px_0_rgba(255,255,255,0.85)] transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-[2px] hover:border-[#8eb6d3]/75 hover:shadow-[0_18px_50px_rgba(122,152,175,0.2)]";
-
-function ButtonLayers() {
-  return (
-    <>
-      <span className="absolute inset-0 rounded-full bg-[#72a0c1]/5" />
-      <span className="absolute inset-x-8 top-[1px] h-[45%] rounded-full bg-gradient-to-b from-white/85 to-transparent" />
-      <span className="absolute inset-x-10 bottom-0 h-px bg-gradient-to-r from-transparent via-[#72a0c1]/65 to-transparent opacity-70" />
-      <span className="absolute inset-[1px] rounded-full border border-white/65" />
-      <span className="absolute inset-0 before:absolute before:left-[-130%] before:top-0 before:h-full before:w-[40%] before:rotate-[18deg] before:bg-gradient-to-r before:from-transparent before:via-white/70 before:to-transparent before:transition-all before:duration-1000 group-hover:before:left-[140%]" />
-    </>
-  );
-}
+const buttonClass = LANDING_PRIMARY_BTN_CLASS;
 
 export default function HomeCta() {
   const { t } = useLanguage();
