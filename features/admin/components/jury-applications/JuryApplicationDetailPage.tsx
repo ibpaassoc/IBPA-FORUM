@@ -9,7 +9,9 @@ import {
   Globe,
   Mail,
   MapPin,
+  Pencil,
   Phone,
+  ShieldCheck,
   UserRound,
   XCircle,
 } from "lucide-react";
@@ -17,6 +19,8 @@ import ApplicationStatusBadge from "@/features/admin/components/badges/Applicati
 import PaymentStatusBadge from "@/features/admin/components/badges/PaymentStatusBadge";
 import {
   approveJuryApplicationAction,
+  approveJuryApplicationWithoutPaymentAction,
+  overrideJuryApplicationStatusAction,
   rejectJuryApplicationAction,
   saveJuryApplicationNotesAction,
 } from "@/features/admin/actions/jury.actions";
@@ -32,6 +36,7 @@ import {
   DashboardPanel,
   DashboardPrimaryBtn,
   DashboardSecondaryBtn,
+  dashboardSelectClass,
   dashboardTextareaClass,
 } from "@/shared/components/admin/DashboardUI";
 
@@ -124,6 +129,10 @@ export default function JuryApplicationDetailPage({
             <DashboardSecondaryBtn href="/admin/jury-applications">
               <ArrowLeft aria-hidden size={15} />
               Back
+            </DashboardSecondaryBtn>
+            <DashboardSecondaryBtn href={`/admin/jury-applications/${application.id}/edit`}>
+              <Pencil aria-hidden size={15} />
+              Edit application
             </DashboardSecondaryBtn>
             <DeleteJuryApplicationButton id={application.id} fullName={application.fullName} />
           </>
@@ -294,9 +303,12 @@ export default function JuryApplicationDetailPage({
               </DashboardSecondaryBtn>
             </form>
 
-            <div className="mt-4 grid gap-2">
-              {canDecide ? (
-                <>
+            {canDecide ? (
+              <div className="mt-4 border-t border-black/[0.06] pt-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-black/40">
+                  Approve with payment
+                </p>
+                <div className="mt-2 grid gap-2">
                   <form action={approveJuryApplicationAction}>
                     <input type="hidden" name="id" value={application.id} />
                     <input type="hidden" name="isIbpaMember" value="true" />
@@ -313,9 +325,29 @@ export default function JuryApplicationDetailPage({
                       Approve non-member
                     </DashboardPrimaryBtn>
                   </form>
-                </>
-              ) : null}
-              {canReject ? (
+                </div>
+
+                <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-black/40">
+                  Approve without payment
+                </p>
+                <form action={approveJuryApplicationWithoutPaymentAction} className="mt-2">
+                  <input type="hidden" name="id" value={application.id} />
+                  <button
+                    type="submit"
+                    className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-md border border-amber-200 bg-amber-50 px-3.5 py-2 text-sm font-semibold leading-none text-amber-800 transition hover:bg-amber-100"
+                  >
+                    <ShieldCheck aria-hidden size={15} />
+                    Activate without payment
+                  </button>
+                </form>
+                <p className="mt-1.5 text-xs leading-5 text-black/40">
+                  Marks the judge as active (PAID) immediately — no Stripe session or email is sent.
+                </p>
+              </div>
+            ) : null}
+
+            {canReject ? (
+              <div className="mt-4 border-t border-black/[0.06] pt-4">
                 <form action={rejectJuryApplicationAction}>
                   <input type="hidden" name="id" value={application.id} />
                   <button
@@ -326,8 +358,8 @@ export default function JuryApplicationDetailPage({
                     Reject application
                   </button>
                 </form>
-              ) : null}
-            </div>
+              </div>
+            ) : null}
 
             <RequestAdditionalInfoPanel
               applicationId={application.id}
@@ -336,6 +368,32 @@ export default function JuryApplicationDetailPage({
               infoRequestedAt={application.infoRequestedAt}
               infoResubmittedAt={application.infoResubmittedAt}
             />
+          </DashboardCard>
+
+          <DashboardCard>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#1673A5]">
+              Status override
+            </p>
+            <p className="mt-1 text-xs leading-5 text-black/45">
+              Force a specific status without triggering emails or Stripe sessions.
+            </p>
+            <form action={overrideJuryApplicationStatusAction} className="mt-3 flex flex-col gap-2">
+              <input type="hidden" name="id" value={application.id} />
+              <select
+                name="status"
+                defaultValue={application.status}
+                className={dashboardSelectClass}
+              >
+                <option value="SUBMITTED">Submitted</option>
+                <option value="ADDITIONAL_INFO_REQUIRED">Additional info required</option>
+                <option value="APPROVED">Approved</option>
+                <option value="REJECTED">Rejected</option>
+                <option value="PAID">Paid / Active</option>
+              </select>
+              <DashboardSecondaryBtn type="submit" className="w-full">
+                Set status
+              </DashboardSecondaryBtn>
+            </form>
           </DashboardCard>
 
           <DashboardCard>
