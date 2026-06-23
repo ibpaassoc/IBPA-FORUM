@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { LandingSecondaryButton } from "@/shared/components/public";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
@@ -33,7 +34,6 @@ export default function CategoriesAbout() {
         />
 
         <div className="absolute inset-0 bg-[linear-gradient(90deg,#fff_0%,rgba(255,255,255,0.96)_18%,rgba(255,255,255,0.72)_34%,rgba(255,255,255,0.22)_52%,rgba(255,255,255,0)_70%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,#fff_0%,rgba(255,255,255,0.10)_16%,rgba(255,255,255,0)_50%,rgba(255,255,255,0.16)_88%,#fff_100%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_50%,rgba(255,255,255,0.98)_0%,rgba(255,255,255,0.86)_24%,rgba(255,255,255,0.52)_42%,rgba(255,255,255,0)_64%)]" />
       </div>
 
@@ -67,17 +67,9 @@ export default function CategoriesAbout() {
           </blockquote>
 
           <div className="mt-10 flex justify-center lg:justify-start">
-            <a
-              href="https://ibpassociations.org/about"
-              target="_blank"
-              rel="noreferrer"
-              className="group inline-flex min-h-12 items-center justify-center gap-3 rounded-full border border-[var(--color-blue)]/28 bg-white/58 px-6 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink)] shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_20px_52px_rgba(114,160,193,0.16)] backdrop-blur-xl transition duration-300 hover:-translate-y-0.5 hover:border-[var(--color-blue)]/55 hover:bg-white/82 hover:shadow-[inset_0_1px_0_rgba(255,255,255,1),0_26px_66px_rgba(114,160,193,0.24)]"
-            >
-              <span>{t.categoriesPage.copy.associationButton}</span>
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-blue-wash)] text-[var(--color-hover-accent)] transition duration-300 group-hover:translate-x-0.5 group-hover:bg-[var(--color-blue-lightest)]">
-                →
-              </span>
-            </a>
+            <LandingSecondaryButton href="/grand-prix">
+              {t.categoriesPage.copy.associationButton}
+            </LandingSecondaryButton>
           </div>
         </motion.div>
 
