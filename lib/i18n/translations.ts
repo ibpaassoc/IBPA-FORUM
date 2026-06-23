@@ -262,7 +262,6 @@ const en = {
       stats: [
         { value: "5+", label: "Nominations required" },
         { value: "Auto", label: "Qualification" },
-        { value: "#1", label: "Highest distinction" },
       ],
     },
     whyAttend: {
@@ -1181,7 +1180,6 @@ const ru: typeof en = {
       stats: [
         { value: "5+", label: "Номинаций требуется" },
         { value: "Авто", label: "Квалификация" },
-        { value: "#1", label: "Высшее отличие" },
       ],
     },
     whyAttend: {
@@ -2103,7 +2101,6 @@ const ua: typeof en = {
       stats: [
         { value: "5+", label: "Номінацій потрібно" },
         { value: "Авто", label: "Кваліфікація" },
-        { value: "#1", label: "Найвища відзнака" },
       ],
     },
     whyAttend: {
