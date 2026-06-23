@@ -56,7 +56,7 @@ export default function HomeParticipation({
         <Reveal delay={0.05}>
           <div className="group relative min-h-[720px] overflow-hidden rounded-[36px] border border-[#b9d9eb]/55 bg-white shadow-[0_34px_110px_rgba(17,24,39,0.10)]">
             <Image
-              src="/images/events/HomeHero.jpg"
+              src="/images/gallery/DSC09871.jpg"
               alt="Beauty Business Forum"
               fill
               sizes="100vw"
