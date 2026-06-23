@@ -19,7 +19,6 @@ export default function HomePagePremium() {
       <HomeGrandPrix />
       <HomeWhyAttend />
       <HomeCategoriesRow />
-      <HomeJuryStandards />
       <HomeSlidingGallery />
       <HomeCta />
     </main>
