@@ -19,7 +19,7 @@ export default function CategoriesCTA() {
           src="/images/gallery/podium.png"
           alt="IBPA Beauty Award categories"
           fill
-          className="object-cover object-[50%_30%]"
+          className="object-cover object-[50%_40%]"
           priority={false}
         />
 

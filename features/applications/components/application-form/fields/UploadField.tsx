@@ -175,8 +175,12 @@ export default function UploadField({
     ? `${zoneBase} cursor-not-allowed border-[var(--border-default)] bg-[var(--color-off-white)] opacity-50`
     : error
       ? `${zoneBase} cursor-pointer border-red-300 bg-red-50`
-      : `${zoneBase} cursor-pointer border-[var(--border-default)] bg-[var(--color-white)] hover:border-[var(--color-hover-accent)] hover:bg-[var(--color-mist)]`;
-
+      : `${zoneBase}
+          cursor-pointer
+          border-[var(--border-default)]
+          bg-[var(--color-white)]
+          hover:border-[var(--color-blue)]/40
+          hover:bg-[rgba(185,217,235,0.22)]`;
   return (
     <FormFieldShell
       label={label}
@@ -221,8 +225,8 @@ export default function UploadField({
           {files.map((file, index) => (
             <li
               key={`${file.name}-${file.size}-${index}`}
-              className="flex items-center justify-between gap-3 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--color-off-white)] px-[var(--space-sm)] py-2 text-sm"
-            >
+              className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-blue)]/12 bg-white/80 px-4 py-3 text-sm shadow-[0_10px_30px_rgba(42,66,82,0.04)] backdrop-blur-xl transition hover:border-[var(--color-blue)]/30 hover:bg-[var(--color-blue-wash)]/30"            
+            > 
               <div className="flex min-w-0 items-center gap-2">
                 {IMAGE_TYPES.includes(file.type) ? (
                   <ImageIcon size={14} className="shrink-0 text-[var(--color-hover-accent)]" strokeWidth={1.5} />
