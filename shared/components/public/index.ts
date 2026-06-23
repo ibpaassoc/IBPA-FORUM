@@ -18,7 +18,7 @@ export { default as PageHero } from "./PageHero";
 export { default as PageSection } from "./PageSection";
 export { GlassCard, InfoPanel, OvalBlob, PremiumButton, PremiumSection, PremiumSectionHeader, SectionShell } from "./PremiumPrimitives";
 export { default as PremiumCTA } from "./PremiumCTA";
-export { ButtonLayers, LandingPrimaryButton, LandingSecondaryButton, LANDING_PRIMARY_BTN_CLASS } from "./LandingButtons";
+export { ButtonLayers, LandingPrimaryButton, LandingSecondaryButton, LANDING_PRIMARY_BTN_CLASS, LANDING_SECONDARY_BTN_CLASS } from "./LandingButtons";
 export { HeroPrimaryButton, HeroSecondaryButton } from "./HeroButtons";
 export { LandingCtaBlock } from "./LandingCtaBlock";
 export { default as ProcessTimeline } from "./ProcessTimeline";

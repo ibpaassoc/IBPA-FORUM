@@ -93,7 +93,7 @@ type LandingSecondaryButtonProps = {
   external?: boolean;
 };
 
-const secondaryCls =
+export const LANDING_SECONDARY_BTN_CLASS =
   "group relative inline-flex min-h-[56px] items-center justify-center gap-2 overflow-hidden rounded-full border border-[#b9d9eb]/60 bg-white/35 px-8 py-4 font-[var(--font-ui-family)] text-[0.76rem] font-semibold uppercase tracking-[0.18em] text-[#24394b] backdrop-blur-2xl shadow-[0_10px_30px_rgba(122,152,175,0.10)] transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-[2px] hover:border-[#8eb6d3]/75 hover:bg-white/55 hover:shadow-[0_18px_46px_rgba(122,152,175,0.16)]";
 
 export function LandingSecondaryButton({
@@ -103,7 +103,7 @@ export function LandingSecondaryButton({
   className,
   external,
 }: LandingSecondaryButtonProps) {
-  const cls = clsx(secondaryCls, className);
+  const cls = clsx(LANDING_SECONDARY_BTN_CLASS, className);
 
   const inner = (
     <>
