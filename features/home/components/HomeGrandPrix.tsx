@@ -60,11 +60,10 @@ export default function HomeGrandPrix() {
     <section className="relative min-h-[clamp(640px,82vh,900px)] overflow-hidden bg-white">
       <div className="absolute inset-y-0 right-0 w-full lg:w-[64%]">
         <Image
-          src="/images/DSC00962.jpg"
+          src="/images/winners.png"
           alt="IBPA Grand Prix"
           fill
           priority={false}
-          sizes="(max-width: 1024px) 100vw, 64vw"
           className="object-cover"
           style={{ objectPosition: "63% 20%" }}
         />

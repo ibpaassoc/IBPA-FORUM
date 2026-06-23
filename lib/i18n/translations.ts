@@ -280,7 +280,7 @@ const en = {
           description: "Showcase your talent and receive global industry recognition at the highest level.",
         },
         {
-          title: "Award Ceremony & Gala Dinner",
+          title: "Award Ceremony",
           description: "Celebrate excellence in an unforgettable evening with the beauty industry's finest.",
         },
       ],
@@ -1198,7 +1198,7 @@ const ru: typeof en = {
           description: "Продемонстрируйте свой талант и получите мировое признание на высочайшем уровне.",
         },
         {
-          title: "Церемония награждения и Гала-ужин",
+          title: "Церемония награждения",
           description: "Отпразднуйте профессиональное совершенство в незабываемый вечер с лучшими индустрии красоты.",
         },
       ],
@@ -2119,7 +2119,7 @@ const ua: typeof en = {
           description: "Продемонструйте свій талант і отримайте світове визнання на найвищому рівні.",
         },
         {
-          title: "Церемонія нагородження та Гала-вечеря",
+          title: "Церемонія нагородження",
           description: "Відсвяткуйте досконалість у незабутній вечір із кращими представниками б'юті-індустрії.",
         },
       ],
