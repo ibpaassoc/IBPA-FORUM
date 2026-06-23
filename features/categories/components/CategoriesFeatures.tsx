@@ -138,7 +138,7 @@ export default function CategoriesFeatures() {
             </span>
 
             <div className="min-w-0 flex-1 pt-0.5">
-              <h3 className="font-[var(--font-display)] text-[clamp(1.18rem,1.7vw,1.58rem)] leading-[1.05] text-[var(--color-ink)]">
+              <h3 className="font-[var(--font-title-family)] text-[clamp(1.18rem,1.7vw,1.58rem)] leading-[1.05] text-[var(--color-ink)]">
                 {direction.title}
               </h3>
 

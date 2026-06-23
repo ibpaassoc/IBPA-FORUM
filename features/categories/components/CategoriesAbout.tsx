@@ -18,7 +18,8 @@ export default function CategoriesAbout() {
     <motion.section
       layout
       transition={lowerSectionTransition}
-      className="bg-[var(--color-off-white)] py-[clamp(4rem,9vw,8rem)]"
+      className="py-[clamp(4rem,9vw,8rem)]"
+      style={{ background: "var(--surface-blue-tint)" }}
     >
       <motion.div
         layout

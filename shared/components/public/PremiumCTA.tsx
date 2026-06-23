@@ -1,11 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import type { ReactNode } from "react";
 import clsx from "clsx";
-import { ArrowRight } from "lucide-react";
 import FadeUp from "./FadeUp";
+import { LandingPrimaryButton, LandingSecondaryButton } from "./LandingButtons";
 
 type PremiumCTAProps = {
   eyebrow?: string;
@@ -16,7 +15,7 @@ type PremiumCTAProps = {
   aside?: ReactNode;
   className?: string;
   dark?: boolean;
-  /** When provided, renders as IBPA-WEB style full-bleed photo CTA */
+  /** When provided, renders as full-bleed photo CTA */
   backgroundImage?: string;
 };
 
@@ -63,19 +62,13 @@ export default function PremiumCTA({
               </p>
             ) : null}
             <div className="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row">
-              <Link
-                href={primary.href}
-                className="inline-flex items-center gap-2.5 rounded-full bg-black px-10 py-5 font-[var(--font-ui-family)] text-xs font-semibold uppercase tracking-[0.14em] text-white shadow-2xl transition-all duration-300 hover:scale-[1.04]"
-              >
-                {primary.label} <ArrowRight size={15} />
-              </Link>
+              <LandingPrimaryButton href={primary.href}>
+                {primary.label}
+              </LandingPrimaryButton>
               {secondary ? (
-                <Link
-                  href={secondary.href}
-                  className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white/72 px-10 py-5 font-[var(--font-ui-family)] text-xs font-semibold uppercase tracking-[0.14em] text-slate-800 transition-all duration-300 hover:bg-white"
-                >
+                <LandingSecondaryButton href={secondary.href}>
                   {secondary.label}
-                </Link>
+                </LandingSecondaryButton>
               ) : null}
             </div>
           </FadeUp>
@@ -118,19 +111,13 @@ export default function PremiumCTA({
                 {description}
               </p>
               <div className="mt-[var(--space-lg)] flex flex-wrap gap-3">
-                <Link
-                  href={primary.href}
-                  className="inline-flex items-center gap-2.5 rounded-full bg-black px-8 py-4 font-[var(--font-ui-family)] text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-white shadow-xl transition-all duration-300 hover:scale-[1.04]"
-                >
-                  {primary.label} <ArrowRight size={15} />
-                </Link>
+                <LandingPrimaryButton href={primary.href}>
+                  {primary.label}
+                </LandingPrimaryButton>
                 {secondary ? (
-                  <Link
-                    href={secondary.href}
-                    className="inline-flex items-center rounded-full border border-[var(--border-strong)] bg-transparent px-8 py-4 font-[var(--font-ui-family)] text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink)] transition-all duration-300 hover:bg-[var(--color-ink)] hover:text-white"
-                  >
+                  <LandingSecondaryButton href={secondary.href}>
                     {secondary.label}
-                  </Link>
+                  </LandingSecondaryButton>
                 ) : null}
               </div>
             </div>
