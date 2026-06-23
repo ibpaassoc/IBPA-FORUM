@@ -172,10 +172,6 @@ textarea {
   color: var(--color-ink);
 }
 
-a:hover:not(.ibpa-button) {
-  color: var(--color-hover-accent);
-}
-
 @utility page-shell {
   min-height: 100vh;
   background: var(--background);
