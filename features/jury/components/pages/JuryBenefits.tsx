@@ -7,7 +7,7 @@ export default function JuryBenefits() {
   const b = t.juryPage.benefits;
 
   return (
-    <section className="bg-[var(--color-off-white)] py-[var(--space-2xl)]">
+    <section className="bg-white py-[var(--space-2xl)]">
       <div className="mx-auto max-w-[var(--content-width)] px-[var(--page-gutter)]">
         <div className="grid gap-[var(--space-xl)] lg:grid-cols-[1fr_1.2fr] lg:items-start">
 

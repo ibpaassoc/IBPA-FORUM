@@ -1,16 +1,15 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { HeroPrimaryButton, HeroSecondaryButton } from "@/shared/components/public";
 
 export default function JuryHero() {
   const { t } = useLanguage();
 
   return (
     <section className="relative flex min-h-[100svh] items-center justify-center overflow-hidden bg-[#0a0a0a]">
-      {/* Full-screen background image — no blur */}
+      {/* Full-screen background image */}
       <div className="absolute inset-0 z-[1]">
         <Image
           src="/images/events/JuryHero1.jpg"
@@ -38,18 +37,12 @@ export default function JuryHero() {
         </p>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-          <Link
-            href="/apply/jury"
-            className="inline-flex items-center gap-2.5 rounded-full bg-black px-8 py-4 font-[var(--font-ui-family)] text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-white shadow-2xl transition-all duration-300 hover:scale-[1.04] hover:bg-[var(--color-blue)]"
-          >
-            {t.common.applyAsJury} <ArrowRight size={16} />
-          </Link>
-          <Link
-            href="/jury/register"
-            className="inline-flex items-center rounded-full border border-white/50 bg-white/10 px-8 py-4 font-[var(--font-ui-family)] text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-white backdrop-blur-md transition-all duration-300 hover:bg-white/20"
-          >
+          <HeroPrimaryButton href="/apply/jury">
+            {t.common.applyAsJury}
+          </HeroPrimaryButton>
+          <HeroSecondaryButton href="/jury/register">
             {t.common.juryAccount}
-          </Link>
+          </HeroSecondaryButton>
         </div>
       </div>
     </section>
