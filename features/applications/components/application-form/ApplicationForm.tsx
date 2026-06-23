@@ -519,6 +519,7 @@ export default function ApplyForm({
   const { language, t } = useLanguage();
   const formRef = useRef<HTMLFormElement>(null);
   const [step, setStep] = useState(0);
+  const [maxUnlockedStep, setMaxUnlockedStep] = useState(0);
   const [stepDirection, setStepDirection] = useState<1 | -1>(1);
   const [openCategoryId, setOpenCategoryId] = useState<string | null>(
     categories[0]?.id ?? null,
@@ -656,6 +657,11 @@ export default function ApplyForm({
   const MOTIVATION_STEP =
     BLOCK_B_START + Math.max(1, selectedNominations.length);
   const CONFIRM_STEP = MOTIVATION_STEP + 1;
+
+  useEffect(() => {
+    setStep((current) => Math.min(current, CONFIRM_STEP));
+    setMaxUnlockedStep((current) => Math.min(current, CONFIRM_STEP));
+  }, [CONFIRM_STEP]);
 
   function handleBlockBChange(
     awardId: string,
@@ -860,9 +866,12 @@ export default function ApplyForm({
       return;
     }
 
+    const nextStep = Math.min(step + 1, CONFIRM_STEP);
+
     setErrors({});
+    setMaxUnlockedStep((current) => Math.max(current, nextStep));
     setStepDirection(1);
-    setStep((current) => Math.min(current + 1, CONFIRM_STEP));
+    setStep(nextStep);
     formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
@@ -870,6 +879,34 @@ export default function ApplyForm({
     setStepDirection(-1);
     setStep((current) => Math.max(current - 1, 0));
     formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function handleStepChange(targetStep: number) {
+    if (targetStep === step) {
+      return;
+    }
+
+    if (targetStep <= maxUnlockedStep) {
+      setErrors({});
+      setStepDirection(targetStep > step ? 1 : -1);
+      setStep(targetStep);
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+
+    if (targetStep === step + 1) {
+      const nextErrors = validateStep(step);
+      if (Object.keys(nextErrors).length > 0) {
+        setErrors(nextErrors);
+        return;
+      }
+
+      setErrors({});
+      setMaxUnlockedStep((current) => Math.max(current, targetStep));
+      setStepDirection(1);
+      setStep(targetStep);
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   }
 
   async function handleSubmit(event: React.FormEvent) {
@@ -1138,9 +1175,14 @@ export default function ApplyForm({
 
   return (
     <form ref={formRef} onSubmit={handleSubmit} className="space-y-6 pb-12">
-      <StepBar steps={dynamicSteps} current={step} />
+      <StepBar
+        steps={dynamicSteps}
+        current={step}
+        maxUnlockedStep={maxUnlockedStep}
+        onStepChange={handleStepChange}
+      />
 
-      <div className="mx-auto max-w-6xl rounded-2xl border border-[var(--border-soft)] bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(248,248,246,0.86))] p-5 shadow-[0_28px_80px_rgba(114,160,193,0.11)] sm:rounded-[32px] sm:p-6 md:rounded-[40px] md:p-10 xl:p-14">
+      <div className="mx-auto max-w-6xl rounded-2xl border border-slate-100 bg-[#F1F3F5] p-5 shadow-xl sm:rounded-[32px] sm:p-8 md:rounded-[40px] md:p-10 xl:p-14">
         <div className="mb-10">
           <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-ink-soft)]">
             {dynamicSteps[step]?.label} - {step + 1} / {dynamicSteps.length}
