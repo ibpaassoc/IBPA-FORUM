@@ -51,7 +51,7 @@ export default function GrandPrixHero() {
             {t.grandPrixPage.hero.cta ?? "Apply Now"}
           </HeroPrimaryButton>
           <HeroSecondaryButton href="#flow">
-            {t.grandPrixPage.hero.secondary ?? "Learn More"}
+            {(t.grandPrixPage.hero as { secondary?: string }).secondary ?? "Learn More"}
           </HeroSecondaryButton>
         </div>
       </div>

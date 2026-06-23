@@ -41,7 +41,7 @@ export default function CategoriesHero() {
             {t.common.applyAsParticipant}
           </HeroPrimaryButton>
           <HeroSecondaryButton href="#categories">
-            {t.categoriesPage.hero.secondary ?? "Browse Categories"}
+            {(t.categoriesPage.hero as { secondary?: string }).secondary ?? "Browse Categories"}
           </HeroSecondaryButton>
         </div>
       </div>
