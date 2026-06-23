@@ -10,15 +10,21 @@ export default async function JuryApproved() {
   }
 
   return (
-    <div className="bg-(--color-white)">
+    <div className="relative overflow-hidden bg-[var(--color-white)] py-4">
       <PageSection>
-        <section className="space-y-(--space-xl)">
-          <div className="max-w-3xl">
+        <section className="relative space-y-8 md:space-y-10">
+          <div className="max-w-5xl">
             <p className="page-eyebrow">Approved Jury</p>
 
-            <h2 className="mt-(--space-sm) font-(--font-display) text-[clamp(2rem,4vw,3.6rem)] leading-[1.05] text-(--color-ink)">
-              Meet the IBPA Jury
-            </h2>
+            <div className="mt-(--space-sm) flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+              <h2 className="max-w-4xl font-(--font-display) text-[clamp(2.35rem,5vw,5.15rem)] leading-[0.95] tracking-[-0.055em] text-(--color-ink)">
+                Current IBPA Beauty Award 2026 Jury Members
+              </h2>
+
+              <p className="max-w-sm text-sm leading-6 text-[var(--color-ink-soft)] md:text-base">
+                Approved experts, educators, founders, and competition judges selected for the IBPA Beauty Award standard.
+              </p>
+            </div>
           </div>
 
           <PublicJuryGrid members={juryMembers} />
