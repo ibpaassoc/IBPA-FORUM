@@ -16,11 +16,10 @@ export default function CategoriesCTA() {
     <section className="relative min-h-[680px] overflow-hidden bg-white md:min-h-[82vh]">
       <div className="absolute inset-0">
         <Image
-          src="/images/gallery/0K9A4883.jpg"
+          src="/images/gallery/podium.png"
           alt="IBPA Beauty Award categories"
           fill
-          className="object-cover object-center"
-          sizes="100vw"
+          className="object-cover object-[50%_30%]"
           priority={false}
         />
 
