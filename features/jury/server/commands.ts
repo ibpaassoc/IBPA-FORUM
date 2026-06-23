@@ -596,3 +596,119 @@ export async function deleteJuryApplication(id: string) {
 
   await prisma.juryApplication.delete({ where: { id } });
 }
+
+export async function approveJuryApplicationWithoutPayment(id: string) {
+  const application = await prisma.juryApplication.findUnique({
+    where: { id },
+    select: { id: true, status: true, approvedAt: true },
+  });
+
+  if (!application) throw new Error("Jury application not found.");
+  if (application.status === "PAID") throw new Error("Application is already marked as paid.");
+
+  const now = new Date();
+
+  await prisma.$transaction([
+    prisma.payment.updateMany({
+      where: { juryApplicationId: id, status: "PENDING" },
+      data: { status: "EXPIRED" },
+    }),
+    prisma.juryApplication.update({
+      where: { id },
+      data: {
+        status: "PAID",
+        paymentStatus: "PAID",
+        approvedAt: application.approvedAt ?? now,
+        paidAt: now,
+        rejectedAt: null,
+        stripeCheckoutSessionId: null,
+      },
+    }),
+  ]);
+}
+
+export async function setJuryApplicationStatusDirectly(
+  id: string,
+  status: JuryApplicationStatus,
+) {
+  const application = await prisma.juryApplication.findUnique({
+    where: { id },
+    select: { id: true },
+  });
+  if (!application) throw new Error("Jury application not found.");
+  await prisma.juryApplication.update({ where: { id }, data: { status } });
+}
+
+export async function editJuryApplicationFields(
+  id: string,
+  data: {
+    fullName: string;
+    email: string;
+    phone: string;
+    country: string;
+    city: string;
+    professionalTitle: string;
+    employerAffiliation: string;
+    yearsExperience: number;
+    membershipStatus: string | null;
+    membershipLevel: string | null;
+    ibpaAssociationMember: boolean;
+    ibpaNumber: string | null;
+    previousJudgingExperience: boolean;
+    previousJudgingDetails: string | null;
+    expertiseAreas: string[];
+    professionalBio: string;
+    professionalWebsite: string | null;
+    conflictDisclosure: string;
+    motivation: string;
+  },
+) {
+  const application = await prisma.juryApplication.findUnique({
+    where: { id },
+    select: { id: true },
+  });
+  if (!application) throw new Error("Jury application not found.");
+
+  const normalizedEmail = data.email.trim().toLowerCase();
+  const conflict = await prisma.juryApplication.findFirst({
+    where: { email: normalizedEmail, NOT: { id } },
+    select: { id: true },
+  });
+  if (conflict) throw new Error("This email is already registered with another application.");
+
+  await prisma.juryApplication.update({
+    where: { id },
+    data: { ...data, email: normalizedEmail },
+  });
+}
+
+export async function editParticipantApplicationFields(
+  id: string,
+  data: {
+    fullName: string;
+    email: string;
+    phone: string;
+    country: string;
+    stateProvince: string | null;
+    city: string;
+    professionalTitle: string;
+    yearsExperience: number;
+    membershipNumber: string | null;
+    membershipLevel: string | null;
+    websiteUrl: string | null;
+    socialUrl: string | null;
+    reviewsUrl: string | null;
+    heardAbout: string | null;
+  },
+) {
+  const application = await prisma.application.findUnique({
+    where: { id },
+    select: { id: true },
+  });
+  if (!application) throw new Error("Application not found.");
+
+  await prisma.application.update({
+    where: { id },
+    data: { ...data, email: data.email.trim().toLowerCase() },
+  });
+}
