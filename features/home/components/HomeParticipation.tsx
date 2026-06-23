@@ -15,6 +15,24 @@ import { Reveal } from "@/shared/components/public";
 
 type Tier = "ibpa" | "standard";
 
+const glassButtonClass =
+  "group/btn relative inline-flex min-h-[54px] items-center justify-center gap-3 overflow-hidden rounded-full border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(248,252,255,0.76))] px-8 py-4 font-[var(--font-ui-family)] text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-[#0b1420] shadow-[0_1px_0_rgba(255,255,255,0.95),0_12px_34px_rgba(122,152,175,0.14),inset_0_1px_0_rgba(255,255,255,0.85)] transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-[2px] hover:border-[#8eb6d3]/75 hover:shadow-[0_18px_50px_rgba(122,152,175,0.2)]";
+
+const smallGlassButtonClass =
+  "group/btn relative mt-5 inline-flex min-h-[46px] w-full items-center justify-center gap-2 overflow-hidden rounded-full border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(248,252,255,0.76))] px-4 py-3 font-[var(--font-ui-family)] text-[0.56rem] font-semibold uppercase tracking-[0.13em] text-[#0b1420] shadow-[0_1px_0_rgba(255,255,255,0.95),0_10px_28px_rgba(122,152,175,0.13),inset_0_1px_0_rgba(255,255,255,0.85)] transition-all duration-700 group-hover/card:-translate-y-[1px] group-hover/card:border-[#8eb6d3]/75 group-hover/card:shadow-[0_16px_42px_rgba(122,152,175,0.2)]";
+
+function ButtonLayers() {
+  return (
+    <>
+      <span className="absolute inset-0 rounded-full bg-[#72a0c1]/5" />
+      <span className="absolute inset-x-8 top-[1px] h-[45%] rounded-full bg-gradient-to-b from-white/85 to-transparent" />
+      <span className="absolute inset-x-10 bottom-0 h-px bg-gradient-to-r from-transparent via-[#72a0c1]/65 to-transparent opacity-70" />
+      <span className="absolute inset-[1px] rounded-full border border-white/65" />
+      <span className="absolute inset-0 before:absolute before:left-[-130%] before:top-0 before:h-full before:w-[40%] before:rotate-[18deg] before:bg-gradient-to-r before:from-transparent before:via-white/70 before:to-transparent before:transition-all before:duration-1000 group-hover/btn:before:left-[140%]" />
+    </>
+  );
+}
+
 export default function HomeParticipation({
   tier,
   earlyBird,
@@ -83,7 +101,6 @@ export default function HomeParticipation({
 
               <div className="grid items-end gap-5 lg:grid-cols-[1fr_0.92fr]">
                 <div className="max-w-[500px]">
-
                   <h3 className="mt-3 max-w-[460px] font-[var(--font-title-family)] text-[clamp(2.5rem,4.4vw,4.8rem)] font-light leading-[0.92] text-[var(--color-ink)]">
                     Beauty Business Forum
                   </h3>
@@ -113,13 +130,13 @@ export default function HomeParticipation({
                   <button
                     type="button"
                     onClick={() => setIsTicketModalOpen(true)}
-                    className="group/btn relative mt-7 inline-flex items-center justify-center gap-2 overflow-hidden rounded-full border border-[#72a0c1]/50 bg-[#72a0c1] px-8 py-4 font-[var(--font-ui-family)] text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-white shadow-[0_18px_42px_rgba(114,160,193,0.32)] transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-[2px] hover:bg-[#5f91b4] hover:shadow-[0_24px_60px_rgba(114,160,193,0.42)]"
+                    className={`${glassButtonClass} mt-7`}
                   >
-                    <span className="absolute inset-0 before:absolute before:left-[-130%] before:top-0 before:h-full before:w-1/2 before:rotate-12 before:bg-gradient-to-r before:from-transparent before:via-white/35 before:to-transparent before:transition-all before:duration-700 group-hover/btn:before:left-[130%]" />
+                    <ButtonLayers />
                     <span className="relative z-10">{p.tickets.cta}</span>
                     <ArrowRight
                       size={15}
-                      className="relative z-10 transition-transform duration-500 group-hover/btn:translate-x-1"
+                      className="relative z-10 text-[#4d88b2] transition-all duration-500 group-hover/btn:translate-x-1.5 group-hover/btn:scale-110"
                     />
                   </button>
                 </div>
@@ -206,12 +223,12 @@ function OverlayPricingCard({
           </div>
         </div>
 
-        <span className="group/btn relative mt-5 inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-full border border-[#72a0c1]/50 bg-[#72a0c1] px-4 py-3 font-[var(--font-ui-family)] text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-white shadow-[0_14px_32px_rgba(114,160,193,0.24)] transition-all duration-700 group-hover/card:bg-[#5f91b4] group-hover/card:shadow-[0_18px_44px_rgba(114,160,193,0.34)]">
-          <span className="absolute inset-0 before:absolute before:left-[-130%] before:top-0 before:h-full before:w-1/2 before:rotate-12 before:bg-gradient-to-r before:from-transparent before:via-white/35 before:to-transparent before:transition-all before:duration-700 group-hover/card:before:left-[130%]" />
+        <span className={smallGlassButtonClass}>
+          <ButtonLayers />
           <span className="relative z-10 line-clamp-1">{cta}</span>
           <ArrowRight
             size={13}
-            className="relative z-10 shrink-0 transition-transform duration-500 group-hover/card:translate-x-1"
+            className="relative z-10 shrink-0 text-[#4d88b2] transition-all duration-500 group-hover/card:translate-x-1.5 group-hover/card:scale-110"
           />
         </span>
       </div>
