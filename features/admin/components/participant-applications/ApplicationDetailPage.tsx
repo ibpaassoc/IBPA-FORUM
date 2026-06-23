@@ -14,17 +14,16 @@ import {
   BriefcaseBusiness,
   CheckCircle2,
   Clock3,
-  CreditCard,
   ExternalLink,
   Files,
   Globe,
   Layers3,
   Mail,
   MapPin,
+  Pencil,
   Phone,
   ReceiptText,
   SearchCheck,
-  Send,
   XCircle,
   UserRound,
 } from "lucide-react";
@@ -38,7 +37,9 @@ import {
   DashboardDetailCard,
   DashboardPageHeader,
   DashboardPanel,
+  DashboardPrimaryBtn,
   DashboardSecondaryBtn,
+  dashboardSelectClass,
 } from "@/shared/components/admin/DashboardUI";
 
 type NominationDetail = NominationApplication & {
@@ -344,10 +345,22 @@ function NominationBlockB({
   );
 }
 
+function AlertMessage({ tone, children }: { tone: "error" | "notice"; children: string }) {
+  const cls =
+    tone === "error"
+      ? "border-red-200 bg-red-50 text-red-700"
+      : "border-[#7DC8EE] bg-[#EAF6FF] text-[#0A0A0A]";
+  return <div className={`rounded-lg border px-4 py-3 text-sm ${cls}`}>{children}</div>;
+}
+
 export default function ApplicationDetailPage({
   application,
+  error,
+  notice,
 }: {
   application: ParticipantApplicationDetail;
+  error?: string;
+  notice?: string;
 }) {
   const answerMap = new Map(application.answers.map((answer) => [answer.fieldKey, answer]));
   const selectedAwards = parseSelectedAwards(answerMap.get("selectedAwards")?.valueJson);
@@ -418,12 +431,21 @@ export default function ApplicationDetailPage({
         title={application.fullName}
         description={nominationSummaryLabel}
         actions={
-          <DashboardSecondaryBtn href="/admin/applications">
-            <ArrowLeft aria-hidden size={15} />
-            Back
-          </DashboardSecondaryBtn>
+          <>
+            <DashboardSecondaryBtn href="/admin/applications">
+              <ArrowLeft aria-hidden size={15} />
+              Back
+            </DashboardSecondaryBtn>
+            <DashboardSecondaryBtn href={`/admin/applications/${application.id}/edit`}>
+              <Pencil aria-hidden size={15} />
+              Edit application
+            </DashboardSecondaryBtn>
+          </>
         }
       />
+
+      {error ? <AlertMessage tone="error">{error}</AlertMessage> : null}
+      {notice ? <AlertMessage tone="notice">{notice}</AlertMessage> : null}
 
       <DashboardCard>
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -569,16 +591,34 @@ export default function ApplicationDetailPage({
               {applicationStatusBadge(application.status)}
               {paymentStatusBadge(application.paymentStatus)}
             </div>
-            <div className="mt-4 grid gap-2">
-              <StatusActionButton
-                applicationId={application.id}
-                status="UNDER_REVIEW"
-                active={application.status === "UNDER_REVIEW"}
-                tone="blue"
-              >
-                <SearchCheck aria-hidden size={15} />
-                Start review
-              </StatusActionButton>
+
+            <div className="mt-4 border-t border-black/[0.06] pt-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-black/40">
+                Change status
+              </p>
+              <form action={updateParticipantApplicationStatus} className="mt-2 flex flex-col gap-2">
+                <input type="hidden" name="id" value={application.id} />
+                <select
+                  name="status"
+                  defaultValue={application.status}
+                  className={dashboardSelectClass}
+                >
+                  <option value="PAYMENT_PENDING">Payment pending</option>
+                  <option value="SUBMITTED">Submitted</option>
+                  <option value="UNDER_REVIEW">Under review</option>
+                  <option value="APPROVED">Approved</option>
+                  <option value="REJECTED">Rejected</option>
+                </select>
+                <DashboardSecondaryBtn type="submit" className="w-full">
+                  Apply status
+                </DashboardSecondaryBtn>
+              </form>
+            </div>
+
+            <div className="mt-4 grid gap-2 border-t border-black/[0.06] pt-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-black/40">
+                Quick actions
+              </p>
               <StatusActionButton
                 applicationId={application.id}
                 status="APPROVED"
@@ -597,24 +637,6 @@ export default function ApplicationDetailPage({
                 <XCircle aria-hidden size={15} />
                 Reject
               </StatusActionButton>
-              <div className="grid grid-cols-2 gap-2">
-                <StatusActionButton
-                  applicationId={application.id}
-                  status="SUBMITTED"
-                  active={application.status === "SUBMITTED"}
-                >
-                  <Send aria-hidden size={14} />
-                  Submitted
-                </StatusActionButton>
-                <StatusActionButton
-                  applicationId={application.id}
-                  status="PAYMENT_PENDING"
-                  active={application.status === "PAYMENT_PENDING"}
-                >
-                  <CreditCard aria-hidden size={14} />
-                  Payment
-                </StatusActionButton>
-              </div>
             </div>
           </DashboardCard>
 

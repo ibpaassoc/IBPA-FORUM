@@ -5,10 +5,13 @@ import { redirect } from "next/navigation";
 import type { JuryApplicationStatus } from "@prisma/client";
 import {
   approveJuryApplication,
+  approveJuryApplicationWithoutPayment,
   deleteJuryApplication,
+  editJuryApplicationFields,
   rejectJuryApplication,
   requestAdditionalInfoFromJuryApplication,
   saveJuryApplicationNotes,
+  setJuryApplicationStatusDirectly,
   updateJuryApplicationStatus,
 } from "@/features/jury/server/commands";
 import { requireAdmin } from "@/shared/lib/admin-auth";
@@ -259,4 +262,127 @@ export async function deleteJuryApplicationAction(formData: FormData) {
 
   revalidatePath("/admin/jury-applications");
   redirect("/admin/jury-applications");
+}
+
+export async function approveJuryApplicationWithoutPaymentAction(formData: FormData) {
+  await requireAdmin();
+
+  const id = String(formData.get("id") ?? "");
+  if (!id) throw new Error("Missing jury application id.");
+
+  try {
+    await approveJuryApplicationWithoutPayment(id);
+  } catch (error) {
+    redirect(getJuryApplicationDetailPath(id, { error: getActionErrorMessage(error) }));
+  }
+
+  revalidatePath("/admin/jury-applications");
+  revalidatePath(`/admin/jury-applications/${id}`);
+  redirect(getJuryApplicationDetailPath(id, { notice: "Judge approved and activated without payment." }));
+}
+
+export async function overrideJuryApplicationStatusAction(formData: FormData) {
+  await requireAdmin();
+
+  const id = String(formData.get("id") ?? "");
+  const status = String(formData.get("status") ?? "") as JuryApplicationStatus;
+
+  if (!id) throw new Error("Missing jury application id.");
+
+  const validStatuses: JuryApplicationStatus[] = [
+    "SUBMITTED",
+    "ADDITIONAL_INFO_REQUIRED",
+    "APPROVED",
+    "REJECTED",
+    "PAID",
+  ];
+  if (!validStatuses.includes(status)) {
+    redirect(getJuryApplicationDetailPath(id, { error: "Invalid status value." }));
+  }
+
+  try {
+    await setJuryApplicationStatusDirectly(id, status);
+  } catch (error) {
+    redirect(getJuryApplicationDetailPath(id, { error: getActionErrorMessage(error) }));
+  }
+
+  revalidatePath("/admin/jury-applications");
+  revalidatePath(`/admin/jury-applications/${id}`);
+  redirect(
+    getJuryApplicationDetailPath(id, {
+      notice: `Status overridden to ${status.replace(/_/g, " ").toLowerCase()}.`,
+    }),
+  );
+}
+
+export async function editJuryApplicationAction(formData: FormData) {
+  await requireAdmin();
+
+  const id = String(formData.get("id") ?? "");
+  if (!id) throw new Error("Missing jury application id.");
+
+  const fullName = String(formData.get("fullName") ?? "").trim();
+  const email = String(formData.get("email") ?? "").trim();
+  const phone = String(formData.get("phone") ?? "").trim();
+  const country = String(formData.get("country") ?? "").trim();
+  const city = String(formData.get("city") ?? "").trim();
+  const professionalTitle = String(formData.get("professionalTitle") ?? "").trim();
+  const employerAffiliation = String(formData.get("employerAffiliation") ?? "").trim();
+  const yearsExperience = parseInt(String(formData.get("yearsExperience") ?? "0"), 10);
+  const membershipStatus = String(formData.get("membershipStatus") ?? "").trim() || null;
+  const membershipLevel = String(formData.get("membershipLevel") ?? "").trim() || null;
+  const ibpaAssociationMember = formData.get("ibpaAssociationMember") === "true";
+  const ibpaNumber = String(formData.get("ibpaNumber") ?? "").trim() || null;
+  const previousJudgingExperience = formData.get("previousJudgingExperience") === "true";
+  const previousJudgingDetails =
+    String(formData.get("previousJudgingDetails") ?? "").trim() || null;
+  const expertiseAreasRaw = String(formData.get("expertiseAreas") ?? "").trim();
+  const expertiseAreas = expertiseAreasRaw
+    ? expertiseAreasRaw
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
+    : [];
+  const professionalBio = String(formData.get("professionalBio") ?? "").trim();
+  const professionalWebsite = String(formData.get("professionalWebsite") ?? "").trim() || null;
+  const conflictDisclosure = String(formData.get("conflictDisclosure") ?? "").trim();
+  const motivation = String(formData.get("motivation") ?? "").trim();
+
+  if (!fullName || !email || !phone || !country || !city || !professionalTitle) {
+    redirect(
+      getJuryApplicationDetailPath(id, {
+        error: "Please fill in all required fields (name, email, phone, location, title).",
+      }),
+    );
+  }
+
+  try {
+    await editJuryApplicationFields(id, {
+      fullName,
+      email,
+      phone,
+      country,
+      city,
+      professionalTitle,
+      employerAffiliation,
+      yearsExperience,
+      membershipStatus,
+      membershipLevel,
+      ibpaAssociationMember,
+      ibpaNumber,
+      previousJudgingExperience,
+      previousJudgingDetails,
+      expertiseAreas,
+      professionalBio,
+      professionalWebsite,
+      conflictDisclosure,
+      motivation,
+    });
+  } catch (error) {
+    redirect(getJuryApplicationDetailPath(id, { error: getActionErrorMessage(error) }));
+  }
+
+  revalidatePath("/admin/jury-applications");
+  revalidatePath(`/admin/jury-applications/${id}`);
+  redirect(getJuryApplicationDetailPath(id, { notice: "Application updated successfully." }));
 }

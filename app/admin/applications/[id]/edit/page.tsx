@@ -1,19 +1,16 @@
 import { notFound } from "next/navigation";
-import ApplicationDetailPage from "@/features/admin/components/participant-applications/ApplicationDetailPage";
+import ApplicationEditPage from "@/features/admin/components/participant-applications/ApplicationEditPage";
 import { getParticipantApplicationDetail } from "@/features/admin/server/participant-queries";
 import { requireAdmin } from "@/shared/lib/admin-auth";
 
-export default async function AdminApplicationDetailPage({
+export default async function AdminApplicationEditPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ error?: string; notice?: string }>;
 }) {
   await requireAdmin();
 
   const { id } = await params;
-  const { error, notice } = await searchParams;
 
   if (!id) {
     notFound();
@@ -25,5 +22,5 @@ export default async function AdminApplicationDetailPage({
     notFound();
   }
 
-  return <ApplicationDetailPage application={application} error={error} notice={notice} />;
+  return <ApplicationEditPage application={application} />;
 }
