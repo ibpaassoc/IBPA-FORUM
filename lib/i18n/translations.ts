@@ -34,7 +34,7 @@ const en = {
   home: {
     hero: {
       title: "IBPA Beauty Award 2026",
-      description: "Recognition of outstanding achievements in beauty, beauty education, health, and innovationin branding",
+      description: "",
       categoriesCta: "Explore Categories",
     },
     copy: {

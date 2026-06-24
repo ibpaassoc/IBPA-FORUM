@@ -37,15 +37,23 @@ export default function HomeHero() {
       {/* Centered editorial content */}
       <div className="relative z-10 flex w-full flex-col items-center px-[var(--page-gutter)] pb-28 pt-[calc(var(--site-header-height)+clamp(2rem,6vw,5rem))] text-center">
         <p className="font-[var(--font-accent-family)] text-[clamp(0.95rem,1.4vw,1.2rem)] italic tracking-wide text-white/70">
-          Beauty Business Forum
+          Industry Leadership Conference
         </p>
 
         <h1 className="mt-4 max-w-[14ch] font-[var(--font-title-family)] text-[clamp(3.2rem,11vw,8.5rem)] font-light leading-[0.90] tracking-[-0.03em] text-white [text-shadow:0_8px_32px_rgba(0,0,0,0.45)]">
-          {t.home.hero.title}
+          IBPA Beauty Award 2026
         </h1>
 
-        <p className="mt-6 max-w-xl font-[var(--font-accent-family)] text-[clamp(1.05rem,2vw,1.35rem)] italic leading-[1.65] text-white/80">
-          {t.home.hero.description}
+        <p className="mt-4 mb-0 max-w-xl font-[var(--font-accent-family)] text-[clamp(2.05rem,3.5vw,3.35rem)] italic leading-[1.65] text-white/80">
+          Beauty Business Forum & Beauty Award
+        </p>
+
+        <p className="mt-1 mb-0 max-w-xl font-[var(--font-accent-family)] text-[clamp(1.05rem,2vw,1.35rem)] italic leading-[1.65] text-white/80">
+          September 25-26, 2026
+        </p>
+
+        <p className="mt-0 max-w-xl font-[var(--font-accent-family)] text-[clamp(1.05rem,2vw,1.35rem)] italic leading-[1.65] text-white/80">
+          Los-Angeles, California
         </p>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
