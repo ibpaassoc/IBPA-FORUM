@@ -5,7 +5,7 @@ import {
   HomeAwardsInfo,
   HomeThreeExperiences,
   HomeConversionBlock,
-  HomeGrandPrix,
+  HomePreviousForum,
   HomeWhyAttend,
   HomeCategoriesRow,
   HomeSlidingGallery,
@@ -19,7 +19,7 @@ export default function HomePagePremium() {
       <HomeAwardsInfo />
       <HomeThreeExperiences />
       <HomeConversionBlock />
-      <HomeGrandPrix />
+      <HomePreviousForum />
       <HomeWhyAttend />
       <HomeCategoriesRow />
       <HomeSlidingGallery />
