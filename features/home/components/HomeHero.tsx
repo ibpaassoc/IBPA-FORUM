@@ -36,27 +36,27 @@ export default function HomeHero() {
 
       {/* Centered editorial content */}
       <div className="relative z-10 flex w-full flex-col items-center px-[var(--page-gutter)] pb-28 pt-[calc(var(--site-header-height)+clamp(2rem,6vw,5rem))] text-center">
-        <p className="font-[var(--font-accent-family)] text-[clamp(0.95rem,1.4vw,1.2rem)] italic tracking-wide text-white/70">
+        <p className="font-[var(--font-accent-family)] text-[clamp(0.85rem,1.1vw,1rem)] italic tracking-[0.08em] text-white/72">
           Industry Leadership Conference
         </p>
 
-        <h1 className="mt-4 max-w-[14ch] font-[var(--font-title-family)] text-[clamp(3.2rem,11vw,8.5rem)] font-light leading-[0.90] tracking-[-0.03em] text-white [text-shadow:0_8px_32px_rgba(0,0,0,0.45)]">
+        <h1 className="mt-5 max-w-[12ch] font-[var(--font-title-family)] text-[clamp(3.4rem,10vw,8rem)] font-light leading-[0.86] tracking-[-0.045em] text-white [text-shadow:0_10px_38px_rgba(0,0,0,0.48)]">
           IBPA Beauty Award 2026
         </h1>
 
-        <p className="mt-4 mb-0 max-w-xl font-[var(--font-accent-family)] text-[clamp(2.05rem,3.5vw,3.35rem)] italic leading-[1.65] text-white/80">
-          Beauty Business Forum & Beauty Award
-        </p>
+        <div className="mt-8 flex max-w-3xl flex-col items-center gap-5">
+          <p className="max-w-[18ch] font-[var(--font-accent-family)] text-[clamp(1.75rem,3.4vw,3.15rem)] italic leading-[1.08] tracking-[-0.02em] text-white/86 [text-shadow:0_8px_28px_rgba(0,0,0,0.35)]">
+            Beauty Business Forum & Beauty Award
+          </p>
 
-        <p className="mt-1 mb-0 max-w-xl font-[var(--font-accent-family)] text-[clamp(1.05rem,2vw,1.35rem)] italic leading-[1.65] text-white/80">
-          September 25-26, 2026
-        </p>
+          <div className="inline-flex flex-wrap items-center justify-center gap-x-4 gap-y-1 rounded-full border border-white/18 bg-black/22 px-5 py-2.5 font-[var(--font-accent-family)] text-[clamp(0.95rem,1.35vw,1.12rem)] italic text-white/78 backdrop-blur-xl">
+            <span>September 25–26, 2026</span>
+            <span className="hidden text-white/35 sm:inline">◆</span>
+            <span>Los Angeles, California</span>
+          </div>
+        </div>
 
-        <p className="mt-0 max-w-xl font-[var(--font-accent-family)] text-[clamp(1.05rem,2vw,1.35rem)] italic leading-[1.65] text-white/80">
-          Los-Angeles, California
-        </p>
-
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+        <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
           <Link
             href="/apply"
             className="group relative inline-flex items-center justify-center gap-3 overflow-hidden rounded-full border border-white/10 bg-gradient-to-r from-[#050505] via-[#111111] to-[#050505] px-8 py-4 font-[var(--font-ui-family)] text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-white shadow-[0_12px_40px_rgba(0,0,0,0.35)] transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-[2px] hover:border-[#7a98af]/60 hover:shadow-[0_20px_60px_rgba(122,152,175,0.2)]"
