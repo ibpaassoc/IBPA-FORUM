@@ -173,14 +173,13 @@ export default function AdminOverviewPage({
             Live items across review, judging, payment, and scoring.
           </p>
         </DashboardAccentBlock>
-        <DashboardMetricTile label="Applications" value={participantTotals.total} accent="blue" icon={FileText} />
-        <DashboardMetricTile label="Active judges" value={juryStats.activeJudgeCount} accent="green" icon={Users} />
-        <DashboardMetricTile label="Paid tickets" value={paidTickets.length} accent="blue" icon={Ticket} />
+        <DashboardMetricTile label="Applications" value={participantTotals.total} accent="blue" />
+        <DashboardMetricTile label="Active judges" value={juryStats.activeJudgeCount} accent="green" />
+        <DashboardMetricTile label="Paid tickets" value={paidTickets.length} accent="blue" />
         <DashboardMetricTile
           label="Early bird"
           value={earlyBirdEnabled ? "On" : "Off"}
           accent={earlyBirdEnabled ? "green" : "neutral"}
-          icon={CheckCircle2}
         />
       </StatGrid>
 
