@@ -175,6 +175,13 @@ const en = {
       muteLabel: "Mute",
       unmuteLabel: "Unmute",
     },
+    previousWinners: {
+      eyebrow: "Previous Winners",
+      title: "Winners who shaped the previous forum",
+      prevLabel: "Previous winners",
+      nextLabel: "Next winners",
+      goToLabel: "Перейти до переможця",
+    },
     copy: {
       whyEyebrow: "Why IBPA Beauty Award 2026",
       whyTitle: "Designed for professional beauty leadership",
@@ -1237,6 +1244,13 @@ const ru: typeof en = {
       pauseLabel: "Пауза",
       muteLabel: "Выключить звук",
       unmuteLabel: "Включить звук",
+    },
+    previousWinners: {
+      eyebrow: "Победители прошлого форума",
+      title: "Победители, ставшие частью Beauty Business Forum 2025",
+      prevLabel: "Предыдущие победители",
+      nextLabel: "Следующие победители",
+      goToLabel: "Перейти к победителю",
     },
     copy: {
       whyEyebrow: "Почему IBPA Beauty Award 2026",
@@ -2303,6 +2317,13 @@ const ua: typeof en = {
       pauseLabel: "Пауза",
       muteLabel: "Вимкнути звук",
       unmuteLabel: "Увімкнути звук",
+    },
+    previousWinners: {
+      eyebrow: "Переможці попереднього форуму",
+      title: "Переможці, які стали частиною Beauty Business Forum 2025",
+      prevLabel: "Попередні переможці",
+      nextLabel: "Наступні переможці",
+      goToLabel: "Перейти до переможця",
     },
     copy: {
       whyEyebrow: "Чому IBPA Beauty Award 2026",
