@@ -161,6 +161,20 @@ const en = {
           "Professionals of all levels and from all countries are welcome."
       }
     },
+    previousForum: {
+      eyebrow: "Previous Event",
+      title: "Beauty Business Forum 2025",
+      award: "Top Beauty Master Award",
+      date: "November 7–8, 2025",
+      location: "San Francisco, California",
+      videoLabel: "Forum Video",
+      quote:"A look back at the atmosphere, professional community, and industry moments that shaped our previous forum.",
+      videoTitle: "Beauty Business Forum 2025 video",
+      playLabel: "Play",
+      pauseLabel: "Pause",
+      muteLabel: "Mute",
+      unmuteLabel: "Unmute",
+    },
     copy: {
       whyEyebrow: "Why IBPA Beauty Award 2026",
       whyTitle: "Designed for professional beauty leadership",
@@ -1209,6 +1223,20 @@ const ru: typeof en = {
         description:
           "Подать заявку могут специалисты любого уровня из любой страны."
       }
+    },
+    previousForum: {
+      eyebrow: "Предыдущий ивент",
+      title: "Beauty Business Forum 2025",
+      award: "Премия Top Beauty Master",
+      date: "7–8 ноября 2025",
+      location: "Сан-Франциско, Калифорния",
+      videoLabel: "Видео форума",
+      quote:"Вспоминаем атмосферу, профессиональное сообщество и ключевые моменты индустрии, которые стали частью предыдущего форума.",
+      videoTitle: "Видео Beauty Business Forum 2025",
+      playLabel: "Воспроизвести",
+      pauseLabel: "Пауза",
+      muteLabel: "Выключить звук",
+      unmuteLabel: "Включить звук",
     },
     copy: {
       whyEyebrow: "Почему IBPA Beauty Award 2026",
@@ -2261,6 +2289,20 @@ const ua: typeof en = {
         description:
           "Подати заявку можуть спеціалісти будь-якого рівня з будь-якої країни."
       }
+    },
+    previousForum: {
+      eyebrow: "Попередній івент",
+      title: "Beauty Business Forum 2025",
+      award: "Премія Top Beauty Master",
+      date: "7–8 листопада 2025",
+      location: "Сан-Франциско, Каліфорнія",
+      videoLabel: "Відео форуму",
+      quote:"Згадуємо атмосферу, професійну спільноту та ключові моменти індустрії, які стали частиною попереднього форуму.",
+      videoTitle: "Відео Beauty Business Forum 2025",
+      playLabel: "Відтворити",
+      pauseLabel: "Пауза",
+      muteLabel: "Вимкнути звук",
+      unmuteLabel: "Увімкнути звук",
     },
     copy: {
       whyEyebrow: "Чому IBPA Beauty Award 2026",
