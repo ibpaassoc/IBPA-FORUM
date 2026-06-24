@@ -37,7 +37,6 @@ import {
   DashboardDetailCard,
   DashboardPageHeader,
   DashboardPanel,
-  DashboardPrimaryBtn,
   DashboardSecondaryBtn,
   dashboardSelectClass,
 } from "@/shared/components/admin/DashboardUI";

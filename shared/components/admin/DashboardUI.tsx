@@ -7,7 +7,6 @@ import {
   useReducedMotion,
 } from "framer-motion";
 import {
-  ChevronRight,
   Loader2,
   MoreHorizontal,
   Plus,
@@ -21,7 +20,6 @@ import type {
   FormEvent,
   ReactNode,
 } from "react";
-import { useId, useState } from "react";
 import clsx from "clsx";
 
 const IBPA_BLUE = "#72a0c1";
