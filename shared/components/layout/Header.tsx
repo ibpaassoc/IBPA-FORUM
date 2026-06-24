@@ -120,9 +120,9 @@ export default function Header() {
             className="group min-w-0 shrink"
           >
             <Image
-              src={useTransparent ? "/logo_white.png" : "/logo_black.png"}
+              src={useTransparent ? "/logo1.png" : "/logo2.png"}
               alt="IBPA Logo"
-              width={320}
+              width={420}
               height={80}
               priority
               className="h-10 w-auto max-w-42.5 object-contain transition-all duration-700 group-hover:scale-[1.02] sm:h-12 sm:max-w-none"
