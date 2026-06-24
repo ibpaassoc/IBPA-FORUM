@@ -180,7 +180,36 @@ const en = {
       title: "Winners who shaped the previous forum",
       prevLabel: "Previous winners",
       nextLabel: "Next winners",
-      goToLabel: "Перейти до переможця",
+      goToLabel: "Go to winner",
+    },
+    contactUs: {
+      eyebrow: "Contact Us",
+      title: "Let's create something exceptional together",
+      description:
+        "Whether you have questions about participation, partnerships, sponsorships, or IBPA membership, our team is here to help.",
+
+      email: "forum-support@ibpassociations.org",
+      note: "We usually reply within one business day.",
+
+      nameLabel: "Full Name",
+      namePlaceholder: "Enter your full name",
+
+      emailLabel: "Email",
+      emailPlaceholder: "Enter your email",
+
+      subjectLabel: "Subject",
+      subjectPlaceholder: "What would you like to discuss?",
+
+      messageLabel: "Message",
+      messagePlaceholder: "Tell us more about your request...",
+
+      submitLabel: "Send Message",
+
+      privacyNote:
+        "By submitting this form you agree to our privacy policy.",
+
+      successMessage:
+        "Frontend preview only. Backend will be connected later.",
     },
     copy: {
       whyEyebrow: "Why IBPA Beauty Award 2026",
@@ -1251,6 +1280,35 @@ const ru: typeof en = {
       prevLabel: "Предыдущие победители",
       nextLabel: "Следующие победители",
       goToLabel: "Перейти к победителю",
+    },
+    contactUs: {
+      eyebrow: "Свяжитесь с нами",
+      title: "Давайте создадим что-то исключительное вместе",
+      description:
+        "Если у вас есть вопросы об участии, партнерстве, спонсорстве или членстве в IBPA — наша команда всегда готова помочь.",
+
+      email: "forum-support@ibpassociations.org",
+      note: "Обычно мы отвечаем в течение одного рабочего дня.",
+
+      nameLabel: "Полное имя",
+      namePlaceholder: "Введите ваше полное имя",
+
+      emailLabel: "Email",
+      emailPlaceholder: "Введите ваш email",
+
+      subjectLabel: "Тема",
+      subjectPlaceholder: "О чем вы хотите поговорить?",
+
+      messageLabel: "Сообщение",
+      messagePlaceholder: "Расскажите подробнее о вашем запросе...",
+
+      submitLabel: "Отправить сообщение",
+
+      privacyNote:
+        "Отправляя форму, вы соглашаетесь с нашей политикой конфиденциальности.",
+
+      successMessage:
+        "Это демонстрация интерфейса. Backend будет подключен позже.",
     },
     copy: {
       whyEyebrow: "Почему IBPA Beauty Award 2026",
@@ -2324,6 +2382,35 @@ const ua: typeof en = {
       prevLabel: "Попередні переможці",
       nextLabel: "Наступні переможці",
       goToLabel: "Перейти до переможця",
+    },
+    contactUs: {
+      eyebrow: "Зв'яжіться з нами",
+      title: "Створімо щось виняткове разом",
+      description:
+        "Якщо у вас є запитання щодо участі, партнерства, спонсорства або членства в IBPA — наша команда із задоволенням допоможе.",
+
+      email: "forum-support@ibpassociations.org",
+      note: "Зазвичай ми відповідаємо протягом одного робочого дня.",
+
+      nameLabel: "Повне ім'я",
+      namePlaceholder: "Введіть ваше повне ім'я",
+
+      emailLabel: "Email",
+      emailPlaceholder: "Введіть вашу електронну пошту",
+
+      subjectLabel: "Тема",
+      subjectPlaceholder: "Про що ви хочете поговорити?",
+
+      messageLabel: "Повідомлення",
+      messagePlaceholder: "Розкажіть детальніше про ваш запит...",
+
+      submitLabel: "Надіслати повідомлення",
+
+      privacyNote:
+        "Надсилаючи форму, ви погоджуєтесь з нашою політикою конфіденційності.",
+
+      successMessage:
+        "Це демонстрація інтерфейсу. Backend буде підключено пізніше.",
     },
     copy: {
       whyEyebrow: "Чому IBPA Beauty Award 2026",

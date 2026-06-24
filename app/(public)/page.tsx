@@ -7,10 +7,8 @@ import {
   HomeConversionBlock,
   HomePreviousForum,
   HomePreviousWinners,
+  HomeContactUs,
   HomeWhyAttend,
-  HomeCategoriesRow,
-  HomeSlidingGallery,
-  HomeCta,
 } from "@/features/home/components";
 
 export default function HomePagePremium() {
@@ -23,9 +21,7 @@ export default function HomePagePremium() {
       <HomePreviousForum />
       <HomePreviousWinners />
       <HomeWhyAttend />
-      <HomeCategoriesRow />
-      <HomeSlidingGallery />
-      <HomeCta />
+      <HomeContactUs />
     </main>
   );
 }
