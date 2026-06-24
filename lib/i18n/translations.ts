@@ -266,7 +266,7 @@ const en = {
       cta: "Apply for Award",
       learnMore: "Learn More",
       stats: [
-        { value: "5+", label: "Nominations required" },
+        { value: "5+", label: "Nominations" },
         { value: "Auto", label: "Qualification" },
       ],
     },
@@ -958,7 +958,7 @@ const ru: typeof en = {
   home: {
     hero: {
       title: "IBPA Beauty Award 2026",
-      description: "Признание выдающихся достижений в сфере красоты, обучения в бьюти-индустрии, здоровья и инноваций вбрендинге",
+      description: "Признание выдающихся достижений в сфере красоты, обучения в бьюти-индустрии, здоровья и инноваций в брендинге",
       categoriesCta: "Изучить категории",
     },
     copy: {
@@ -1190,7 +1190,7 @@ const ru: typeof en = {
       cta: "Подать заявку на участие",
       learnMore: "Подробнее",
       stats: [
-        { value: "5+", label: "Номинаций требуется" },
+        { value: "5+", label: "Номинаций" },
         { value: "Авто", label: "Квалификация" },
       ],
     },
@@ -2117,7 +2117,7 @@ const ua: typeof en = {
       cta: "Подати заявку на участь",
       learnMore: "Докладніше",
       stats: [
-        { value: "5+", label: "Номінацій потрібно" },
+        { value: "5+", label: "Номінацій" },
         { value: "Авто", label: "Кваліфікація" },
       ],
     },
