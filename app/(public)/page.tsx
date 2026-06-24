@@ -3,6 +3,7 @@
 import {
   HomeHero,
   HomeAwardsInfo,
+  HomeThreeExperiences,
   HomeConversionBlock,
   HomeGrandPrix,
   HomeWhyAttend,
@@ -16,11 +17,12 @@ export default function HomePagePremium() {
     <main className="page-shell">
       <HomeHero />
       <HomeAwardsInfo />
-      <HomeConversionBlock />
+      <HomeThreeExperiences />
       <HomeGrandPrix />
       <HomeWhyAttend />
       <HomeCategoriesRow />
       <HomeSlidingGallery />
+      <HomeConversionBlock />
       <HomeCta />
     </main>
   );

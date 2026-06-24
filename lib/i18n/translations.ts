@@ -42,6 +42,49 @@ const en = {
       title: "IBPA Beauty Awards 2026",
       text: "IBPA Beauty Awards 2026 is an international award in beauty, education, and beauty business, held as part of the IBPA Beauty Business Forum. Our mission is to recognize outstanding professionals, support professional development, and unite industry leaders for the exchange of experience, innovation, and new growth opportunities.",
     },
+    threeExperiences: {
+      eyebrow: "One Event",
+      title: "Three Powerful Experiences",
+
+      forum: {
+        title: "Beauty Business Forum",
+        subtitle: "Knowledge. Connections. Growth.",
+        bullets: [
+          "Insights from successful entrepreneurs and beauty industry experts.",
+          "Practical strategies for business growth and scaling.",
+          "Networking opportunities with salon owners, educators, brands, and industry leaders.",
+          "A space for collaboration, innovation, and new business opportunities."
+        ],
+        footer:
+          "Designed for beauty professionals, educators, business owners, and brands seeking growth, meaningful connections, and long-term success."
+      },
+
+      awards: {
+        title: "IBPA Beauty Awards 2026",
+        subtitle: "Recognition. Prestige. Opportunity.",
+        bullets: [
+          "An international award celebrating excellence in the beauty industry.",
+          "Independent evaluation by a panel of respected international experts.",
+          "An opportunity to strengthen your professional reputation and personal brand.",
+          "Awards that highlight outstanding achievements and industry leadership."
+        ],
+        footer:
+          "Created for beauty professionals, educators, business owners, and brands seeking recognition, credibility, and greater visibility within the industry."
+      },
+
+      exhibition: {
+        title: "Brand Exhibition",
+        subtitle: "Innovation. Partnership. Growth.",
+        bullets: [
+          "Discover the latest beauty products and technologies.",
+          "Connect with leading brands and industry suppliers.",
+          "Test products and receive professional consultations.",
+          "Access exclusive offers and valuable business connections."
+        ],
+        footer:
+          "For beauty professionals and business owners looking for new opportunities and industry innovations."
+      }
+    },
     copy: {
       whyEyebrow: "Why IBPA Beauty Award 2026",
       whyTitle: "Designed for professional beauty leadership",
@@ -970,6 +1013,49 @@ const ru: typeof en = {
       eyebrow: "О премии",
       title: "IBPA Beauty Awards 2026",
       text: "IBPA Beauty Awards 2026 — международная премия в сфере красоты, образования и бьюти-бизнеса, проводимая в рамках IBPA Beauty Business Forum. Наша миссия — признавать выдающихся специалистов, поддерживать профессиональное развитие и объединять лидеров индустрии для обмена опытом, инновациями и новыми возможностями роста.",
+    },
+    threeExperiences: {
+      eyebrow: "Одно событие",
+      title: "Три мощных направления",
+
+      forum: {
+        title: "Beauty Business Forum",
+        subtitle: "Знания. Связи. Рост.",
+        bullets: [
+          "Выступления успешных предпринимателей и экспертов индустрии красоты.",
+          "Практические стратегии развития и масштабирования бизнеса.",
+          "Нетворкинг с владельцами салонов, брендами и лидерами рынка.",
+          "Пространство для новых партнерств, идей и возможностей."
+        ],
+        footer:
+          "Для специалистов, преподавателей, владельцев бизнеса и брендов, которые стремятся к профессиональному развитию, сильному окружению и новым возможностям роста."
+      },
+
+      awards: {
+        title: "IBPA Beauty Awards 2026",
+        subtitle: "Признание. Статус. Возможности.",
+        bullets: [
+          "Международная премия для лучших специалистов индустрии красоты.",
+          "Независимая оценка работ международной коллегией экспертов.",
+          "Возможность укрепить профессиональную репутацию и личный бренд.",
+          "Награды, подтверждающие высокий уровень мастерства и профессионализма."
+        ],
+        footer:
+          "Для специалистов, преподавателей, владельцев бизнеса и брендов, которые стремятся получить признание своих достижений и укрепить позиции на рынке."
+      },
+
+      exhibition: {
+        title: "Выставка брендов",
+        subtitle: "Инновации. Партнерство. Развитие.",
+        bullets: [
+          "Новинки продукции и технологий индустрии красоты.",
+          "Общение с представителями ведущих брендов.",
+          "Тестирование продукции и профессиональные консультации.",
+          "Специальные предложения и новые деловые контакты."
+        ],
+        footer:
+          "Для специалистов и владельцев бизнеса, которые хотят быть в курсе трендов и находить новые возможности для роста."
+      }
     },
     copy: {
       whyEyebrow: "Почему IBPA Beauty Award 2026",
@@ -1902,6 +1988,49 @@ const ua: typeof en = {
       eyebrow: "Про премію",
       title: "IBPA Beauty Awards 2026",
       text: "IBPA Beauty Awards 2026 — міжнародна премія у сфері краси, освіти та beauty-бізнесу, що проводиться в межах IBPA Beauty Business Forum. Наша місія — визнавати видатних спеціалістів, підтримувати професійний розвиток і об’єднувати лідерів індустрії для обміну досвідом, інноваціями та новими можливостями зростання.",
+    },
+    threeExperiences: {
+      eyebrow: "Одна подія",
+      title: "Три потужні напрями",
+
+      forum: {
+        title: "Beauty Business Forum",
+        subtitle: "Знання. Зв'язки. Зростання.",
+        bullets: [
+          "Виступи успішних підприємців та експертів індустрії краси.",
+          "Практичні стратегії розвитку та масштабування бізнесу.",
+          "Нетворкінг із власниками салонів, брендами та лідерами ринку.",
+          "Простір для нових партнерств, ідей та можливостей."
+        ],
+        footer:
+          "Для фахівців, викладачів, власників бізнесу та брендів, які прагнуть професійного розвитку, сильного оточення та нових можливостей."
+      },
+
+      awards: {
+        title: "IBPA Beauty Awards 2026",
+        subtitle: "Визнання. Статус. Можливості.",
+        bullets: [
+          "Міжнародна премія для найкращих спеціалістів індустрії краси.",
+          "Незалежне оцінювання робіт міжнародною колегією експертів.",
+          "Можливість зміцнити професійну репутацію та особистий бренд.",
+          "Нагороди, що підтверджують високий рівень майстерності та професіоналізму."
+        ],
+        footer:
+          "Для фахівців, викладачів, власників бізнесу та брендів, які прагнуть отримати визнання своїх досягнень та зміцнити свої позиції на ринку."
+      },
+
+      exhibition: {
+        title: "Виставка брендів",
+        subtitle: "Інновації. Партнерство. Розвиток.",
+        bullets: [
+          "Новинки продукції та технологій індустрії краси.",
+          "Спілкування з представниками провідних брендів.",
+          "Тестування продукції та професійні консультації.",
+          "Спеціальні пропозиції та нові ділові контакти."
+        ],
+        footer:
+          "Для фахівців та власників бізнесу, які хочуть бути в курсі трендів та знаходити нові можливості для розвитку."
+      }
     },
     copy: {
       whyEyebrow: "Чому IBPA Beauty Award 2026",
