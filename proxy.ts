@@ -18,6 +18,7 @@ function isProtectedJuryPath(pathname: string) {
 // Routes accessible during the site-wide maintenance lock.
 // All other page routes are rewritten to /under-development.
 const ALLOWED_PATH_PREFIXES = [
+  "/",
   "/apply",
   "/apply/jury",
   "/under-development",

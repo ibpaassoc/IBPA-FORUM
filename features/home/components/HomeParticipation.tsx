@@ -138,7 +138,7 @@ export default function HomeParticipation({
                     </div>
 
                     <p className="mt-4 max-w-[430px] text-[0.94rem] leading-7 text-[var(--color-ink-soft)]">
-                      Access the forum, connect with beauty professionals, and join the main IBPA business program.
+                      {p.description}
                     </p>
 
                     <button
@@ -200,6 +200,9 @@ function OverlayPricingCard({
   price: string;
   cta: string;
 }) {
+
+  const { t } = useLanguage()
+
   return (
     <Link
       href={href}
@@ -223,7 +226,7 @@ function OverlayPricingCard({
 
           <div className="mt-5 flex items-end gap-2">
             <span className="mb-1.5 text-[0.72rem] text-[var(--color-ink-soft)]">
-              From
+              {t.common.from}
             </span>
 
             <motion.span

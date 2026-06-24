@@ -18,6 +18,7 @@ const en = {
     categories: "Categories",
     grandPrix: "Grand Prix",
     home: "Home",
+    from: "from",
   },
   header: {
     navigation: {
@@ -215,6 +216,7 @@ const en = {
     },
     participation: {
       eyebrow: "Choose Your Participation",
+      description: "Access the forum, connect with beauty professionals, and join the main IBPA business program.",
       tickets: {
         label: "FORUM TICKETS",
         mostPopular: "Most Popular",
@@ -940,6 +942,7 @@ const ru: typeof en = {
     categories: "Категории",
     grandPrix: "Гран-при",
     home: "Главная",
+    from: "от",
   },
   header: {
     navigation: {
@@ -1137,6 +1140,7 @@ const ru: typeof en = {
     },
     participation: {
       eyebrow: "Выберите участие",
+      description: "Посетите форум, пообщайтесь с экспертами индустрии красоты и присоединитесь к основной бизнес-программе IBPA.",
       tickets: {
         label: "БИЛЕТЫ НА ФОРУМ",
         mostPopular: "Самое популярное",
@@ -1865,6 +1869,7 @@ const ua: typeof en = {
     categories: "Категорії",
     grandPrix: "Гран-прі",
     home: "Головна",
+    from: "від",
   },
   header: {
     navigation: {
@@ -2062,6 +2067,7 @@ const ua: typeof en = {
     },
     participation: {
       eyebrow: "Оберіть участь",
+      description: "Відвідайте форум, поспілкуйтеся з експертами краси та приєднайтеся до основної бізнес-програми IBPA.",
       tickets: {
         label: "КВИТКИ НА ФОРУМ",
         mostPopular: "Найпопулярніше",

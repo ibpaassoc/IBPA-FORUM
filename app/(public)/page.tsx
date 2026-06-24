@@ -6,7 +6,6 @@ import {
   HomeGrandPrix,
   HomeWhyAttend,
   HomeCategoriesRow,
-  HomeJuryStandards,
   HomeSlidingGallery,
   HomeCta,
 } from "@/features/home/components";
