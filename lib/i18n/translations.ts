@@ -58,7 +58,6 @@ const en = {
         footer:
           "Designed for beauty professionals, educators, business owners, and brands seeking growth, meaningful connections, and long-term success."
       },
-
       awards: {
         title: "IBPA Beauty Awards 2026",
         subtitle: "Recognition. Prestige. Opportunity.",
@@ -83,6 +82,83 @@ const en = {
         ],
         footer:
           "For beauty professionals and business owners looking for new opportunities and industry innovations."
+      }
+    },
+    registrationSection: {
+      eyebrow: "Participation",
+      title: "Everything You Need to Join",
+
+      registration: {
+        title: "Registration Period",
+        date: "20 June – 15 August 2026",
+        description:
+          "Applications are accepted from June 20 through August 15, 2026."
+      },
+
+      tabs: {
+        tickets: "Tickets",
+        awards: "Awards",
+        jury: "Jury"
+      },
+
+      tickets: {
+        title: "Beauty Business Forum",
+        price: "$395",
+        suffix: "from / day",
+        description:
+          "Business growth, networking, education, and industry connections.",
+        cta: "Buy Ticket",
+
+        items: [
+          ["1 Day Forum", "$395"],
+          ["2 Day Forum", "$695"],
+          ["Gala Dinner", "$150"]
+        ]
+      },
+
+      awards: {
+        title: "IBPA Beauty Awards",
+        price: "$50",
+        suffix: "per nomination",
+        description:
+          "International recognition, professional credibility, and visibility.",
+        cta: "Submit Nomination",
+
+        member: "IBPA Member",
+        standard: "Non-member",
+
+        rows: [
+          ["1 Nomination", "$50", "$70"],
+          ["3 Nominations", "$130", "$190"],
+          ["5 Nominations", "$200", "$300"]
+        ],
+
+        grandPrixTitle: "Grand Prix",
+        grandPrixDescription:
+          "Automatically included for participants with 5 or more nominations."
+      },
+
+      jury: {
+        title: "Jury Registration",
+        price: "$100+",
+        description:
+          "Open to professionals with 5+ years of industry experience.",
+        cta: "Apply as Jury",
+
+        points: [
+          "Minimum 5 years of professional experience",
+          "International jury community",
+          "Recognition as an industry expert"
+        ],
+
+        note:
+          "Registration fee is paid only after the application is approved."
+      },
+
+      openParticipation: {
+        title: "Open Participation",
+        description:
+          "Professionals of all levels and from all countries are welcome."
       }
     },
     copy: {
@@ -1055,6 +1131,83 @@ const ru: typeof en = {
         ],
         footer:
           "Для специалистов и владельцев бизнеса, которые хотят быть в курсе трендов и находить новые возможности для роста."
+      }
+    },
+    registrationSection: {
+      eyebrow: "Участие",
+      title: "Всё необходимое для участия",
+
+      registration: {
+        title: "Период регистрации",
+        date: "20 июня – 15 августа 2026",
+        description:
+          "Приём заявок осуществляется с 20 июня по 15 августа 2026 года включительно."
+      },
+
+      tabs: {
+        tickets: "Форум",
+        awards: "Премия",
+        jury: "Жюри"
+      },
+
+      tickets: {
+        title: "Beauty Business Forum",
+        price: "$395",
+        suffix: "от / день",
+        description:
+          "Развитие бизнеса, нетворкинг, образование и новые возможности.",
+        cta: "Купить билет",
+
+        items: [
+          ["1 день форума", "$395"],
+          ["2 дня форума", "$695"],
+          ["Гала-ужин", "$150"]
+        ]
+      },
+
+      awards: {
+        title: "IBPA Beauty Awards",
+        price: "$50",
+        suffix: "за номинацию",
+        description:
+          "Признание, профессиональный статус и новые возможности.",
+        cta: "Подать заявку",
+
+        member: "Член IBPA",
+        standard: "Не член",
+
+        rows: [
+          ["1 номинация", "$50", "$70"],
+          ["3 номинации", "$130", "$190"],
+          ["5 номинаций", "$200", "$300"]
+        ],
+
+        grandPrixTitle: "Гран-при",
+        grandPrixDescription:
+          "Автоматическое участие при подаче 5 и более номинаций."
+      },
+
+      jury: {
+        title: "Регистрация судьи",
+        price: "$100+",
+        description:
+          "Для специалистов с опытом работы от 5 лет.",
+        cta: "Подать заявку",
+
+        points: [
+          "Минимум 5 лет профессионального опыта",
+          "Международное сообщество судей",
+          "Статус эксперта индустрии"
+        ],
+
+        note:
+          "Регистрационный взнос оплачивается только после одобрения кандидатуры."
+      },
+
+      openParticipation: {
+        title: "Открыто для всех",
+        description:
+          "Подать заявку могут специалисты любого уровня из любой страны."
       }
     },
     copy: {
@@ -2030,6 +2183,83 @@ const ua: typeof en = {
         ],
         footer:
           "Для фахівців та власників бізнесу, які хочуть бути в курсі трендів та знаходити нові можливості для розвитку."
+      }
+    },
+    registrationSection: {
+      eyebrow: "Участь",
+      title: "Усе необхідне для участі",
+
+      registration: {
+        title: "Період реєстрації",
+        date: "20 червня – 15 серпня 2026",
+        description:
+          "Прийом заявок триває з 20 червня до 15 серпня 2026 року включно."
+      },
+
+      tabs: {
+        tickets: "Форум",
+        awards: "Премія",
+        jury: "Журі"
+      },
+
+      tickets: {
+        title: "Beauty Business Forum",
+        price: "$395",
+        suffix: "від / день",
+        description:
+          "Розвиток бізнесу, нетворкінг, освіта та нові можливості.",
+        cta: "Купити квиток",
+
+        items: [
+          ["1 день форуму", "$395"],
+          ["2 дні форуму", "$695"],
+          ["Гала-вечеря", "$150"]
+        ]
+      },
+
+      awards: {
+        title: "IBPA Beauty Awards",
+        price: "$50",
+        suffix: "за номінацію",
+        description:
+          "Визнання, професійний статус та нові можливості.",
+        cta: "Подати заявку",
+
+        member: "Член IBPA",
+        standard: "Не член",
+
+        rows: [
+          ["1 номінація", "$50", "$70"],
+          ["3 номінації", "$130", "$190"],
+          ["5 номінацій", "$200", "$300"]
+        ],
+
+        grandPrixTitle: "Гран-прі",
+        grandPrixDescription:
+          "Автоматична участь при подачі 5 і більше номінацій."
+      },
+
+      jury: {
+        title: "Реєстрація журі",
+        price: "$100+",
+        description:
+          "Для спеціалістів з досвідом роботи від 5 років.",
+        cta: "Подати заявку",
+
+        points: [
+          "Мінімум 5 років професійного досвіду",
+          "Міжнародна спільнота журі",
+          "Статус експерта індустрії"
+        ],
+
+        note:
+          "Реєстраційний внесок сплачується лише після схвалення заявки."
+      },
+
+      openParticipation: {
+        title: "Відкрито для всіх",
+        description:
+          "Подати заявку можуть спеціалісти будь-якого рівня з будь-якої країни."
       }
     },
     copy: {

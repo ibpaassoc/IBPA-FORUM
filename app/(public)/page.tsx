@@ -18,11 +18,11 @@ export default function HomePagePremium() {
       <HomeHero />
       <HomeAwardsInfo />
       <HomeThreeExperiences />
+      <HomeConversionBlock />
       <HomeGrandPrix />
       <HomeWhyAttend />
       <HomeCategoriesRow />
       <HomeSlidingGallery />
-      <HomeConversionBlock />
       <HomeCta />
     </main>
   );
