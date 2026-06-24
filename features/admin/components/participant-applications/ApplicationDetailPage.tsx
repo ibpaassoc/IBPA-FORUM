@@ -163,7 +163,7 @@ function SectionLabel({
   children: ReactNode;
 }) {
   return (
-    <div className="flex items-center gap-2 text-[#1673A5]">
+    <div className="flex items-center gap-2 text-[var(--color-blue)]">
       <Icon aria-hidden size={16} />
       <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">{children}</p>
     </div>
@@ -184,21 +184,21 @@ function FileLink({
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="group flex items-center justify-between gap-3 rounded-lg border border-black/10 bg-white px-3 py-3 text-sm text-[#0A0A0A] transition hover:border-[#7DC8EE] hover:bg-[#EAF6FF]/45"
+      className="group flex items-center justify-between gap-3 rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white px-3 py-3 text-sm text-[var(--color-ink)] transition hover:border-[rgba(114,160,193,0.34)] hover:bg-[var(--color-blue-wash)]/60"
     >
       <div className="flex min-w-0 items-center gap-3">
-        <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-[#EAF6FF] text-[#1673A5]">
+        <div className="flex size-9 shrink-0 items-center justify-center rounded-[18px] bg-[var(--color-blue-wash)] text-[var(--color-blue)]">
           <Files aria-hidden size={15} />
         </div>
         <div className="min-w-0">
-          <p className="truncate font-semibold text-[#0A0A0A]">{name}</p>
-          <p className="text-xs text-black/45">{(sizeBytes / 1024 / 1024).toFixed(2)} MB</p>
+          <p className="truncate font-semibold text-[var(--color-ink)]">{name}</p>
+          <p className="text-xs text-[var(--color-ink-muted)]">{(sizeBytes / 1024 / 1024).toFixed(2)} MB</p>
         </div>
       </div>
       <ExternalLink
         aria-hidden
         size={15}
-        className="shrink-0 text-black/35 transition group-hover:text-[#1673A5]"
+        className="shrink-0 text-[var(--color-ink-muted)] transition group-hover:text-[var(--color-blue)]"
       />
     </a>
   );
@@ -206,8 +206,8 @@ function FileLink({
 
 const statusActionTone = {
   primary: "border-[var(--color-blue)] bg-[var(--color-blue)] text-[var(--color-ink)] hover:bg-[var(--color-blue-soft)]",
-  blue: "border-[#7DC8EE] bg-[#EAF6FF] text-[#0A0A0A] hover:bg-[#DFF2FF]",
-  neutral: "border-black/10 bg-white text-[#0A0A0A] hover:border-[#7DC8EE] hover:bg-[#EAF6FF]",
+  blue: "border-[rgba(114,160,193,0.34)] bg-[var(--color-blue-wash)] text-[var(--color-ink)] hover:bg-[var(--color-blue-light)]",
+  neutral: "border-[rgba(37,42,45,0.08)] bg-white text-[var(--color-ink)] hover:border-[rgba(114,160,193,0.34)] hover:bg-[var(--color-blue-wash)]",
   danger: "border-red-200 bg-white text-red-700 hover:bg-red-50",
 };
 
@@ -231,7 +231,7 @@ function StatusActionButton({
       <button
         type="submit"
         disabled={active}
-        className={`inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm font-semibold transition disabled:cursor-default disabled:opacity-45 ${statusActionTone[tone]}`}
+        className={`inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-[18px] border px-3 py-2 text-sm font-semibold transition disabled:cursor-default disabled:opacity-45 ${statusActionTone[tone]}`}
       >
         {children}
       </button>
@@ -241,7 +241,7 @@ function StatusActionButton({
 
 function EmptyInline({ children }: { children: ReactNode }) {
   return (
-    <div className="rounded-lg border border-dashed border-black/15 bg-[#FAFAFA] px-4 py-4 text-sm text-black/50">
+    <div className="rounded-[22px] border border-dashed border-[rgba(37,42,45,0.14)] bg-white/62 px-4 py-4 text-sm text-[var(--color-ink-soft)]">
       {children}
     </div>
   );
@@ -271,16 +271,16 @@ function NominationBlockB({
   return (
     <section id={`nomination-${nomination.awardId}`} className="scroll-mt-24">
       <DashboardCard className="p-0">
-        <div className="border-b border-black/10 p-4 md:p-5">
+        <div className="border-b border-[rgba(37,42,45,0.08)] p-4 md:p-5">
           <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#1673A5]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-blue)]">
                 Nomination {String(index + 1).padStart(2, "0")}
               </p>
-              <h3 className="mt-2 text-2xl font-semibold normal-case tracking-[-0.02em] text-[#0A0A0A]">
+              <h3 className="mt-2 font-[var(--font-title-family)] text-3xl font-light tracking-[-0.025em] text-[var(--color-ink)]">
                 {nomination.award.name}
               </h3>
-              <p className="mt-1 text-sm text-black/55">{nomination.category.name}</p>
+              <p className="mt-1 text-sm text-[var(--color-ink-soft)]">{nomination.category.name}</p>
             </div>
             <DashboardBadge tone="blue">Evidence set</DashboardBadge>
           </div>
@@ -288,7 +288,7 @@ function NominationBlockB({
 
         <div className="grid gap-4 p-4 md:p-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)]">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-black/45">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
               Answers
             </p>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
@@ -312,7 +312,7 @@ function NominationBlockB({
           </div>
 
           <DashboardPanel>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-black/45">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
               Files
             </p>
             <div className="mt-3 flex flex-col gap-4">
@@ -321,7 +321,7 @@ function NominationBlockB({
 
                 return (
                   <div key={field.key}>
-                    <p className="text-sm font-semibold text-[#0A0A0A]">{field.label}</p>
+                    <p className="text-sm font-medium text-[var(--color-ink)]">{field.label}</p>
                     <div className="mt-2 flex flex-col gap-2">
                       {files.map((file) => (
                         <FileLink
@@ -349,8 +349,8 @@ function AlertMessage({ tone, children }: { tone: "error" | "notice"; children: 
   const cls =
     tone === "error"
       ? "border-red-200 bg-red-50 text-red-700"
-      : "border-[#7DC8EE] bg-[#EAF6FF] text-[#0A0A0A]";
-  return <div className={`rounded-lg border px-4 py-3 text-sm ${cls}`}>{children}</div>;
+      : "border-[rgba(114,160,193,0.34)] bg-[var(--color-blue-wash)] text-[var(--color-ink)]";
+  return <div className={`rounded-[22px] border px-4 py-3 text-sm ${cls}`}>{children}</div>;
 }
 
 export default function ApplicationDetailPage({
@@ -453,16 +453,16 @@ export default function ApplicationDetailPage({
             {applicationStatusBadge(application.status)}
             {paymentStatusBadge(application.paymentStatus)}
           </div>
-          <div className="flex flex-wrap gap-2 text-xs text-black/55">
-            <span className="inline-flex items-center gap-2 rounded-md border border-black/10 bg-[#FAFAFA] px-2.5 py-1">
+          <div className="flex flex-wrap gap-2 text-xs text-[var(--color-ink-soft)]">
+            <span className="inline-flex items-center gap-2 rounded-[18px] border border-[rgba(37,42,45,0.08)] bg-white/62 px-2.5 py-1">
               <Mail aria-hidden size={13} />
               {application.email}
             </span>
-            <span className="inline-flex items-center gap-2 rounded-md border border-black/10 bg-[#FAFAFA] px-2.5 py-1">
+            <span className="inline-flex items-center gap-2 rounded-[18px] border border-[rgba(37,42,45,0.08)] bg-white/62 px-2.5 py-1">
               <Phone aria-hidden size={13} />
               {application.phone}
             </span>
-            <span className="inline-flex items-center gap-2 rounded-md border border-black/10 bg-[#FAFAFA] px-2.5 py-1">
+            <span className="inline-flex items-center gap-2 rounded-[18px] border border-[rgba(37,42,45,0.08)] bg-white/62 px-2.5 py-1">
               <MapPin aria-hidden size={13} />
               {application.city}, {application.country}
             </span>
@@ -474,11 +474,11 @@ export default function ApplicationDetailPage({
         <div className="flex flex-col gap-5">
           <section id="profile" className="scroll-mt-24">
             <DashboardCard className="p-0">
-              <div className="border-b border-black/10 p-4 md:p-5">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#1673A5]">
+              <div className="border-b border-[rgba(37,42,45,0.08)] p-4 md:p-5">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-blue)]">
                   Applicant
                 </p>
-                <h2 className="mt-2 text-2xl font-semibold normal-case tracking-[-0.02em] text-[#0A0A0A]">
+                <h2 className="mt-2 font-[var(--font-title-family)] text-3xl font-light tracking-[-0.025em] text-[var(--color-ink)]">
                   Profile and eligibility
                 </h2>
               </div>
@@ -534,7 +534,7 @@ export default function ApplicationDetailPage({
             ))
           ) : (
             <DashboardCard>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#1673A5]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-blue)]">
                 Legacy nomination answers
               </p>
               <div className="mt-3 grid gap-3 sm:grid-cols-2">
@@ -561,13 +561,13 @@ export default function ApplicationDetailPage({
               Overview
             </p>
             <div className="mt-4 grid grid-cols-2 gap-3">
-              <div className="rounded-md border border-[var(--color-blue-soft)] bg-white/72 p-3">
+              <div className="rounded-[18px] border border-[var(--color-blue-soft)] bg-white/72 p-3">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">
                   Nominations
                 </p>
                 <p className="mt-2 text-2xl font-semibold">{nominationSummaries.length}</p>
               </div>
-              <div className="rounded-md border border-[var(--color-blue-soft)] bg-white/72 p-3">
+              <div className="rounded-[18px] border border-[var(--color-blue-soft)] bg-white/72 p-3">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">
                   Fee
                 </p>
@@ -583,7 +583,7 @@ export default function ApplicationDetailPage({
           </DashboardAccentBlock>
 
           <DashboardCard>
-            <div className="flex items-center gap-2 text-[#1673A5]">
+            <div className="flex items-center gap-2 text-[var(--color-blue)]">
               <SearchCheck aria-hidden size={16} />
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">Decision</p>
             </div>
@@ -592,8 +592,8 @@ export default function ApplicationDetailPage({
               {paymentStatusBadge(application.paymentStatus)}
             </div>
 
-            <div className="mt-4 border-t border-black/[0.06] pt-4">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-black/40">
+            <div className="mt-4 border-t border-[rgba(37,42,45,0.06)] pt-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-muted)]">
                 Change status
               </p>
               <form action={updateParticipantApplicationStatus} className="mt-2 flex flex-col gap-2">
@@ -615,8 +615,8 @@ export default function ApplicationDetailPage({
               </form>
             </div>
 
-            <div className="mt-4 grid gap-2 border-t border-black/[0.06] pt-4">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-black/40">
+            <div className="mt-4 grid gap-2 border-t border-[rgba(37,42,45,0.06)] pt-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-muted)]">
                 Quick actions
               </p>
               <StatusActionButton
@@ -641,14 +641,14 @@ export default function ApplicationDetailPage({
           </DashboardCard>
 
           <DashboardCard>
-            <div className="flex items-center gap-2 text-[#1673A5]">
+            <div className="flex items-center gap-2 text-[var(--color-blue)]">
               <Layers3 aria-hidden size={16} />
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">Review map</p>
             </div>
             <div className="mt-3 flex flex-col gap-2">
               <a
                 href="#profile"
-                className="rounded-lg border border-black/10 bg-[#FAFAFA] px-3 py-3 text-sm font-semibold text-[#0A0A0A] transition hover:border-[#7DC8EE] hover:bg-[#EAF6FF]"
+                className="rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white/62 px-3 py-3 text-sm font-medium text-[var(--color-ink)] transition hover:border-[rgba(114,160,193,0.34)] hover:bg-[var(--color-blue-wash)]"
               >
                 Applicant profile
               </a>
@@ -656,15 +656,15 @@ export default function ApplicationDetailPage({
                 <a
                   key={nomination.awardId}
                   href={`#nomination-${nomination.awardId}`}
-                  className="rounded-lg border border-black/10 bg-white px-3 py-3 text-sm transition hover:border-[#7DC8EE] hover:bg-[#EAF6FF]/45"
+                  className="rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white px-3 py-3 text-sm transition hover:border-[rgba(114,160,193,0.34)] hover:bg-[var(--color-blue-wash)]/60"
                 >
-                  <span className="block text-[11px] font-semibold uppercase tracking-[0.14em] text-black/45">
+                  <span className="block text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
                     Nomination {String(index + 1).padStart(2, "0")}
                   </span>
-                  <span className="mt-1 block font-semibold text-[#0A0A0A]">
+                  <span className="mt-1 block font-semibold text-[var(--color-ink)]">
                     {nomination.awardName}
                   </span>
-                  <span className="mt-0.5 block text-xs text-black/50">
+                  <span className="mt-0.5 block text-xs text-[var(--color-ink-soft)]">
                     {nomination.categoryName}
                   </span>
                 </a>
@@ -673,14 +673,14 @@ export default function ApplicationDetailPage({
           </DashboardCard>
 
           <DashboardCard>
-            <div className="flex items-center gap-2 text-[#1673A5]">
+            <div className="flex items-center gap-2 text-[var(--color-blue)]">
               <ReceiptText aria-hidden size={16} />
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">Shared files</p>
             </div>
 
             <div className="mt-4 flex flex-col gap-4">
               <div>
-                <p className="text-sm font-semibold text-[#0A0A0A]">
+                <p className="text-sm font-medium text-[var(--color-ink)]">
                   Professional license / Certification
                 </p>
                 <div className="mt-2 flex flex-col gap-2">
@@ -698,7 +698,7 @@ export default function ApplicationDetailPage({
 
               {legacyFileEntries.map(([key, files]) => (
                 <div key={key}>
-                  <p className="text-sm font-semibold text-[#0A0A0A]">
+                  <p className="text-sm font-medium text-[var(--color-ink)]">
                     {formatLegacyFieldLabel(key)} (Legacy)
                   </p>
                   <div className="mt-2 flex flex-col gap-2">

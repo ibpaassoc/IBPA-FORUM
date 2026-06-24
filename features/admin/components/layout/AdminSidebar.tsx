@@ -123,7 +123,7 @@ export default function AdminSidebar() {
                 </div>
                 {!collapsed ? (
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-[var(--color-ink)]">Admin desk</p>
+                    <p className="truncate text-sm font-medium text-[var(--color-ink)]">Admin desk</p>
                     <p className="text-xs text-[var(--color-ink-soft)]">IBPA 2026</p>
                   </div>
                 ) : null}

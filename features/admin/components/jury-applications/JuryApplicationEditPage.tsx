@@ -30,8 +30,8 @@ function SectionHeader({
   label: string;
 }) {
   return (
-    <div className="border-b border-black/10 p-4 md:p-5">
-      <div className="flex items-center gap-2 text-[#1673A5]">
+    <div className="border-b border-[rgba(37,42,45,0.08)] p-4 md:p-5">
+      <div className="flex items-center gap-2 text-[var(--color-blue)]">
         <Icon aria-hidden size={16} />
         <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">{label}</p>
       </div>
@@ -42,7 +42,7 @@ function SectionHeader({
 function FormField({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-black/50">{label}</p>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-soft)]">{label}</p>
       {children}
     </div>
   );
@@ -258,7 +258,7 @@ export default function JuryApplicationEditPage({
                   className={dashboardTextareaClass}
                 />
               </FormField>
-              <FormField label="Motivation — why they want to judge *">
+              <FormField label="Motivation - why they want to judge *">
                 <textarea
                   name="motivation"
                   defaultValue={application.motivation}
@@ -286,10 +286,10 @@ export default function JuryApplicationEditPage({
           </DashboardAccentBlock>
 
           <DashboardCard>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#1673A5]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-blue)]">
               Save changes
             </p>
-            <p className="mt-2 text-sm leading-6 text-black/55">
+            <p className="mt-2 text-sm leading-6 text-[var(--color-ink-soft)]">
               All updated fields are saved immediately to the database.
             </p>
             <div className="mt-4 flex flex-col gap-2">
