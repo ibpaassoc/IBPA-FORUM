@@ -24,7 +24,7 @@ import { useLanguage } from "@/lib/i18n/LanguageProvider";
 type StepDef = { id: string; label: string; icon: typeof User };
 
 const heroPrimaryButtonClass =
-  "group relative inline-flex items-center justify-center gap-3 overflow-hidden rounded-full border border-white/10 bg-gradient-to-r from-[#050505] via-[#111111] to-[#050505] px-8 py-4 font-[var(--font-ui-family)] text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-white shadow-[0_12px_40px_rgba(0,0,0,0.35)] transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-[2px] hover:border-[#7a98af]/60 hover:shadow-[0_20px_60px_rgba(122,152,175,0.2)] disabled:pointer-events-none disabled:opacity-55";
+  "group relative inline-flex items-center justify-center gap-3 overflow-hidden rounded-full border border-[var(--color-blue)] bg-[var(--color-blue)] px-8 py-4 font-[var(--font-ui-family)] text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-white shadow-[0_18px_48px_rgba(114,160,193,0.24)] transition-all duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-[2px] hover:bg-[var(--color-hover-accent)] hover:shadow-[0_22px_60px_rgba(114,160,193,0.26)] disabled:pointer-events-none disabled:opacity-55";
 
 const heroSecondaryButtonClass =
   "group relative inline-flex items-center justify-center gap-3 overflow-hidden rounded-full border border-[var(--color-blue)]/16 bg-white/72 px-7 py-4 font-[var(--font-ui-family)] text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink)] shadow-[0_10px_35px_rgba(42,66,82,0.08)] backdrop-blur-xl transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-[2px] hover:border-[var(--color-blue)]/36 hover:bg-white hover:shadow-[0_18px_50px_rgba(122,152,175,0.14)] disabled:pointer-events-none disabled:opacity-35";
@@ -32,14 +32,14 @@ const heroSecondaryButtonClass =
 function HeroButtonInner({ children, arrow = true }: { children: ReactNode; arrow?: boolean }) {
   return (
     <>
-      <span className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-[#7a98af]/10 opacity-60 transition-opacity duration-700 group-hover:opacity-100" />
-      <span className="absolute inset-x-6 bottom-0 h-px bg-gradient-to-r from-transparent via-[#b9d9eb]/0 to-transparent transition-all duration-700 group-hover:inset-x-4 group-hover:via-[#b9d9eb]/70" />
-      <span className="absolute inset-0 before:absolute before:left-[-130%] before:top-0 before:h-full before:w-1/2 before:rotate-12 before:bg-gradient-to-r before:from-transparent before:via-[#b9d9eb]/25 before:to-transparent before:transition-all before:duration-700 group-hover:before:left-[130%]" />
+      <span className="absolute inset-0 bg-gradient-to-b from-white/22 via-transparent to-white/0 opacity-70 transition-opacity duration-500 group-hover:opacity-100" />
+      <span className="absolute inset-x-6 bottom-0 h-px bg-gradient-to-r from-transparent via-white/0 to-transparent transition-all duration-500 group-hover:inset-x-4 group-hover:via-white/70" />
+      <span className="absolute inset-0 before:absolute before:left-[-130%] before:top-0 before:h-full before:w-1/2 before:rotate-12 before:bg-gradient-to-r before:from-transparent before:via-white/26 before:to-transparent before:transition-all before:duration-700 group-hover:before:left-[130%]" />
       <span className="relative z-10">{children}</span>
       {arrow ? (
         <ArrowRight
           size={16}
-          className="relative z-10 text-[#b9d9eb] transition-all duration-500 group-hover:translate-x-1 group-hover:text-white"
+          className="relative z-10 text-white/80 transition-all duration-500 group-hover:translate-x-1 group-hover:text-white"
         />
       ) : null}
     </>
@@ -89,7 +89,7 @@ export default function JuryApplicationForm() {
       back: "Back",
       continue: "Continue",
       submit: "Submit Application",
-      submitting: "Submitting…",
+      submitting: "Submitting...",
       firstName: "First Name",
       lastName: "Last Name",
       email: "Email Address",
@@ -135,7 +135,7 @@ export default function JuryApplicationForm() {
       confirmNote: "Please review the details below. Once submitted, your jury application will be forwarded to the IBPA committee.",
       received: "Your jury application has been received for review.",
       submitError: "Something went wrong. Please try again.",
-      uploading: "Uploading files…",
+      uploading: "Uploading files...",
     },
     ru: {
       steps: [
@@ -526,10 +526,10 @@ export default function JuryApplicationForm() {
         </div>
       </nav>
 
-      <div className="mx-auto max-w-4xl rounded-2xl border border-slate-100 bg-[#F1F3F5] p-5 shadow-xl sm:rounded-[32px] sm:p-8 md:rounded-[40px] md:p-14">
+      <div className="mx-auto max-w-4xl rounded-[28px] border border-white/70 bg-white/68 p-5 shadow-[0_28px_90px_rgba(42,66,82,0.1)] backdrop-blur-2xl sm:rounded-[32px] sm:p-8 md:rounded-[40px] md:p-14">
         <div className="mb-10">
           <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-hover-accent)]">
-            {STEPS[step].label} — {step + 1} / {STEPS.length}
+            {STEPS[step].label} - {step + 1} / {STEPS.length}
           </p>
           <h2 className="mt-2 font-[var(--font-title-family)] text-[clamp(1.8rem,3.5vw,2.6rem)] font-light leading-[1.05] tracking-[-0.02em] text-[var(--color-ink)]">
             {currentStepInfo.title}
@@ -683,7 +683,7 @@ export default function JuryApplicationForm() {
                   ].map((row) => (
                     <div key={row.label}>
                       <dt className="text-[0.62rem] font-bold uppercase tracking-[0.18em] text-[var(--color-ink)]/40">{row.label}</dt>
-                      <dd className="mt-1 text-[0.95rem] font-semibold text-[var(--color-ink)]">{row.value || "—"}</dd>
+                      <dd className="mt-1 text-[0.95rem] font-semibold text-[var(--color-ink)]">{row.value || "-"}</dd>
                     </div>
                   ))}
                 </dl>
@@ -699,7 +699,6 @@ export default function JuryApplicationForm() {
           </AnimatePresence>
         </div>
 
-        {/* Navigation */}
         <div className="mt-10 flex flex-col gap-4 border-t border-[var(--color-blue)]/10 pt-8 sm:flex-row sm:items-center sm:justify-between">
           <button
             type="button"
