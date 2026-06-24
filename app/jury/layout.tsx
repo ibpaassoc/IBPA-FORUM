@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { getAuthenticatedJudgeScoringContext } from "@/features/admin/server/jury";
 import JurySidebar from "@/features/jury/components/layout/JurySidebar";
+import { DashboardShell } from "@/shared/components/admin/DashboardUI";
 
 export default async function JuryLayout({ children }: { children: ReactNode }) {
   let juryName: string | undefined;
@@ -15,11 +16,15 @@ export default async function JuryLayout({ children }: { children: ReactNode }) 
   }
 
   return (
-    <div className="min-h-screen bg-white font-[var(--font-ui-family)] text-[#0A0A0A]">
-      <div className="mx-auto flex w-full max-w-[1440px] items-start gap-5 px-4 py-5 md:px-6 lg:py-7">
-        <JurySidebar juryName={juryName} expertiseAreas={expertiseAreas} />
-        <main className="min-w-0 flex-1 pb-24 lg:pb-0">{children}</main>
+    <DashboardShell className="font-[var(--font-ui-family)]">
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute -left-28 bottom-12 size-[24rem] rounded-full bg-[rgba(185,217,235,0.28)] blur-3xl" />
+        <div className="absolute right-[-7rem] top-[-5rem] size-[24rem] rounded-full bg-[rgba(114,160,193,0.15)] blur-3xl" />
       </div>
-    </div>
+      <div className="relative mx-auto flex w-full max-w-[1520px] items-start gap-5 px-3 pb-28 pt-4 sm:px-5 md:px-6 lg:px-7 lg:py-6">
+        <JurySidebar juryName={juryName} expertiseAreas={expertiseAreas} />
+        <main className="min-w-0 flex-1">{children}</main>
+      </div>
+    </DashboardShell>
   );
 }

@@ -17,7 +17,7 @@ export default function AdminLoginForm() {
   return (
     <form action={action} className="space-y-5">
       <div>
-        <label htmlFor="password" className="mb-1.5 block text-sm font-semibold text-[#10203B]">
+        <label htmlFor="password" className="mb-2 block text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">
           {t.admin.login.password}
         </label>
         <input
@@ -39,7 +39,7 @@ export default function AdminLoginForm() {
       <button
         type="submit"
         disabled={pending}
-        className="inline-flex w-full items-center justify-center rounded-2xl border border-[var(--color-blue)] bg-[var(--color-blue)] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink)] shadow-[0_12px_28px_rgba(114,160,193,0.22)] transition hover:bg-[var(--color-blue-soft)] disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex min-h-12 w-full items-center justify-center rounded-full border border-[var(--color-blue)] bg-[var(--color-blue)] px-6 py-3 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-white shadow-[0_16px_38px_rgba(114,160,193,0.3)] transition hover:-translate-y-0.5 hover:bg-[#4d86ad] disabled:cursor-not-allowed disabled:opacity-60"
       >
         {pending ? t.admin.login.opening : t.admin.login.open}
       </button>

@@ -2,17 +2,45 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CheckSquare, ClipboardList, LogOut } from "lucide-react";
+import {
+  CheckSquare,
+  ClipboardList,
+  LogOut,
+  MoreHorizontal,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Star,
+} from "lucide-react";
 import { signOut } from "next-auth/react";
+import { useState } from "react";
+import {
+  Drawer,
+  FloatingActionButton,
+  IconButton,
+  MobileBottomNavigation,
+} from "@/shared/components/admin/DashboardUI";
 
 const navItems = [
-  { href: "/jury/dashboard", label: "Review queue", shortLabel: "Review", icon: ClipboardList },
-  { href: "/jury/dashboard/scores", label: "Submitted scores", shortLabel: "Scores", icon: CheckSquare },
+  { href: "/jury/dashboard", label: "Review Queue", shortLabel: "Queue", icon: ClipboardList },
+  { href: "/jury/dashboard/scores", label: "Scores", shortLabel: "Scores", icon: CheckSquare },
 ];
 
 function isActive(pathname: string, href: string) {
   if (href === "/jury/dashboard/scores") return pathname === href;
   return pathname === href || pathname.startsWith("/jury/dashboard/applications");
+}
+
+function SignOutButton({ compact = false }: { compact?: boolean }) {
+  return (
+    <button
+      type="button"
+      onClick={() => void signOut({ callbackUrl: "/jury/login" })}
+      className="flex min-h-11 w-full items-center justify-center gap-3 rounded-[18px] border border-transparent px-3 text-[0.76rem] font-semibold uppercase tracking-[0.1em] text-[var(--color-ink-soft)] transition hover:border-red-200 hover:bg-red-50 hover:text-red-700"
+    >
+      <LogOut aria-hidden size={16} strokeWidth={1.8} />
+      {compact ? null : <span>Sign out</span>}
+    </button>
+  );
 }
 
 export default function JurySidebar({
@@ -23,36 +51,140 @@ export default function JurySidebar({
   expertiseAreas?: string[];
 }) {
   const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const mobileItems = navItems.map((item) => ({
+    href: item.href,
+    label: item.shortLabel,
+    icon: item.icon,
+    active: isActive(pathname, item.href),
+  }));
 
   return (
     <>
-      {/* Desktop sidebar */}
-      <aside className="hidden w-[232px] shrink-0 lg:block">
-        <div className="sticky top-5 flex flex-col gap-3">
+      <aside
+        className={`hidden shrink-0 transition-[width] duration-300 lg:block ${
+          collapsed ? "w-[96px]" : "w-[260px]"
+        }`}
+      >
+        <div className="sticky top-6 flex max-h-[calc(100vh-3rem)] flex-col gap-3">
+          <div className="rounded-[34px] border border-[rgba(114,160,193,0.2)] bg-white/76 p-3 shadow-[0_28px_90px_rgba(37,42,45,0.09)] backdrop-blur-2xl">
+            <div className="rounded-[26px] bg-[linear-gradient(135deg,rgba(185,217,235,0.34),rgba(255,255,255,0.78))] p-3">
+              <div className="flex items-start justify-between gap-2">
+                <Link href="/jury/dashboard" className="min-w-0">
+                  <p className="font-[var(--font-title-family)] text-[1.45rem] font-light leading-none tracking-[-0.03em] text-[var(--color-ink)]">
+                    IBPA
+                  </p>
+                  {!collapsed ? (
+                    <p className="mt-1 text-[0.58rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-ink-soft)]">
+                      Jury panel
+                    </p>
+                  ) : null}
+                </Link>
+                <IconButton
+                  label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                  icon={collapsed ? PanelLeftOpen : PanelLeftClose}
+                  onClick={() => setCollapsed((value) => !value)}
+                  className="size-9 shrink-0"
+                />
+              </div>
 
-          {/* Identity card */}
-          <div
-            className="rounded-[18px] border border-[var(--color-blue-soft)] bg-[linear-gradient(135deg,rgba(185,217,235,0.4),rgba(255,255,255,0.82))] p-4 text-[var(--color-ink)] shadow-[0_18px_44px_rgba(114,160,193,0.16)] backdrop-blur-xl"
-          >
-            <p
-              className="text-[0.65rem] uppercase tracking-[0.18em] text-[var(--color-blue)]"
-              style={{ fontFamily: "var(--font-ui-family)" }}
-            >
-              Jury panel
-            </p>
-            <p
-              className="mt-1.5 text-[1.1rem] font-light leading-tight text-[var(--color-ink)]"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
+              {!collapsed ? (
+                <div className="mt-5">
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white/72 font-[var(--font-title-family)] text-lg text-[var(--color-blue)] shadow-sm">
+                      {(juryName || "J").slice(0, 1)}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-[var(--color-ink)]">
+                        {juryName || "Jury dashboard"}
+                      </p>
+                      <p className="font-[var(--font-accent-family)] text-sm italic text-[var(--color-blue)]">
+                        Review with excellence.
+                      </p>
+                    </div>
+                  </div>
+                  {expertiseAreas && expertiseAreas.length > 0 ? (
+                    <div className="mt-3 flex flex-wrap gap-1.5">
+                      {expertiseAreas.slice(0, 3).map((area) => (
+                        <span
+                          key={area}
+                          className="rounded-full border border-[rgba(114,160,193,0.22)] bg-white/68 px-2.5 py-1 text-[0.62rem] font-semibold text-[var(--color-ink-soft)]"
+                        >
+                          {area}
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
+
+            <nav className="mt-3 flex flex-col gap-1" aria-label="Jury navigation">
+              {navItems.map(({ href, label, icon: Icon }) => {
+                const active = isActive(pathname, href);
+
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    aria-current={active ? "page" : undefined}
+                    title={collapsed ? label : undefined}
+                    className={`group flex min-h-12 items-center gap-3 rounded-[20px] px-3 text-[0.86rem] transition ${
+                      active
+                        ? "bg-[var(--color-blue)] text-white shadow-[0_14px_34px_rgba(114,160,193,0.28)]"
+                        : "text-[var(--color-ink-soft)] hover:bg-[var(--color-blue-wash)] hover:text-[var(--color-ink)]"
+                    } ${collapsed ? "justify-center" : ""}`}
+                  >
+                    <Icon aria-hidden size={18} strokeWidth={active ? 2 : 1.75} />
+                    {!collapsed ? <span className="truncate">{label}</span> : null}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {!collapsed ? (
+              <div className="mt-3 rounded-[24px] bg-white/58 p-4">
+                <div className="flex items-center gap-2 text-[var(--color-blue)]">
+                  <Star aria-hidden size={15} />
+                  <p className="text-[0.62rem] font-semibold uppercase tracking-[0.16em]">
+                    Nomination focus
+                  </p>
+                </div>
+                <p className="mt-2 text-sm leading-6 text-[var(--color-ink-soft)]">
+                  Score assigned entries and keep drafts calm until final submit.
+                </p>
+              </div>
+            ) : null}
+
+            <div className="mt-3 border-t border-[rgba(37,42,45,0.08)] pt-3">
+              <SignOutButton compact={collapsed} />
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <MobileBottomNavigation items={mobileItems} className="max-w-sm sm:left-1/2 sm:right-auto sm:w-full sm:-translate-x-1/2" />
+      <FloatingActionButton
+        label="Open jury menu"
+        icon={MoreHorizontal}
+        onClick={() => setDrawerOpen(true)}
+        className="lg:hidden"
+      />
+
+      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} title="Jury Panel">
+        <div className="space-y-4">
+          <div className="rounded-[24px] bg-[linear-gradient(135deg,rgba(185,217,235,0.32),rgba(255,255,255,0.86))] p-4">
+            <p className="font-[var(--font-title-family)] text-2xl font-light text-[var(--color-ink)]">
               {juryName || "Jury dashboard"}
             </p>
             {expertiseAreas && expertiseAreas.length > 0 ? (
               <div className="mt-3 flex flex-wrap gap-1.5">
-                {expertiseAreas.slice(0, 3).map((area) => (
+                {expertiseAreas.map((area) => (
                   <span
                     key={area}
-                    className="rounded-full border border-[var(--color-blue-soft)] bg-[var(--color-blue-wash)] px-2.5 py-0.5 text-[0.62rem] font-medium text-[var(--color-ink-soft)]"
-                    style={{ fontFamily: "var(--font-ui-family)" }}
+                    className="rounded-full border border-[rgba(114,160,193,0.22)] bg-white/70 px-2.5 py-1 text-[0.65rem] font-semibold text-[var(--color-ink-soft)]"
                   >
                     {area}
                   </span>
@@ -60,76 +192,31 @@ export default function JurySidebar({
               </div>
             ) : null}
           </div>
-
-          {/* Nav card */}
-          <div className="rounded-[18px] border border-[var(--border-default)] bg-white/84 p-2 shadow-[0_18px_44px_rgba(3,2,19,0.06)] backdrop-blur-xl">
-            <nav className="flex flex-col gap-0.5">
-              {navItems.map(({ href, label, icon: Icon }) => {
-                const active = isActive(pathname, href);
-                return (
-                  <Link
-                    key={href}
-                    href={href}
-                    className={`flex min-h-[42px] items-center gap-3 rounded-[10px] px-3 text-[0.8rem] transition-all duration-150 ${
-                      active
-                        ? "bg-[var(--color-blue-wash)] text-[var(--color-ink)]"
-                        : "text-[var(--color-ink-soft)] hover:bg-[var(--surface-tint)] hover:text-[var(--color-ink)]"
-                    }`}
-                    style={{ fontFamily: "var(--font-ui-family)" }}
-                  >
-                    <Icon
-                      aria-hidden
-                      size={16}
-                      strokeWidth={1.8}
-                      className={active ? "text-[var(--color-blue)]" : "text-[var(--color-ink-muted)]"}
-                    />
-                    <span className="truncate">{label}</span>
-                  </Link>
-                );
-              })}
-            </nav>
-
-            <div className="mt-2 border-t border-[var(--border-soft)] pt-2">
-              <button
-                type="button"
-                onClick={() => void signOut({ callbackUrl: "/jury/login" })}
-                className="flex min-h-[42px] w-full items-center gap-3 rounded-[10px] px-3 text-[0.8rem] text-[var(--color-ink-soft)] transition-all duration-150 hover:bg-red-50 hover:text-red-600"
-                style={{ fontFamily: "var(--font-ui-family)" }}
-              >
-                <LogOut aria-hidden size={16} strokeWidth={1.8} />
-                Sign out
-              </button>
-            </div>
-          </div>
+          <nav className="grid gap-2" aria-label="Jury drawer navigation">
+            {navItems.map(({ href, label, icon: Icon }) => {
+              const active = isActive(pathname, href);
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={() => setDrawerOpen(false)}
+                  className={`flex min-h-12 items-center justify-between rounded-[18px] px-4 text-sm font-semibold transition ${
+                    active
+                      ? "bg-[var(--color-blue)] text-white"
+                      : "bg-white/72 text-[var(--color-ink)] hover:bg-[var(--color-blue-wash)]"
+                  }`}
+                >
+                  <span className="inline-flex items-center gap-3">
+                    <Icon aria-hidden size={17} />
+                    {label}
+                  </span>
+                </Link>
+              );
+            })}
+          </nav>
+          <SignOutButton />
         </div>
-      </aside>
-
-      {/* Mobile bottom nav */}
-      <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-[var(--border-default)] bg-white/92 shadow-[0_-12px_32px_rgba(3,2,19,0.06)] backdrop-blur-xl lg:hidden">
-        <div className="mx-auto grid max-w-xs grid-cols-2 gap-1 px-2 py-2">
-          {navItems.map(({ href, shortLabel, icon: Icon }) => {
-            const active = isActive(pathname, href);
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-[10px] px-2 text-center text-[0.65rem] transition-all duration-150 ${
-                  active ? "bg-[var(--color-blue-wash)] text-[var(--color-ink)]" : "text-[var(--color-ink-soft)]"
-                }`}
-                style={{ fontFamily: "var(--font-ui-family)" }}
-              >
-                <Icon
-                  aria-hidden
-                  size={18}
-                  strokeWidth={active ? 2 : 1.7}
-                  className={active ? "text-[var(--color-blue)]" : ""}
-                />
-                <span className="truncate">{shortLabel}</span>
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
+      </Drawer>
     </>
   );
 }
