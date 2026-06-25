@@ -9,7 +9,7 @@ export default function JuryApplyPage() {
   return (
     <LandingPageShell>
       <JuryApplyHero></JuryApplyHero>
-      <PageSection id="jury-form" className="py-8">
+      <PageSection id="jury-form" className="landing-section py-8">
         <JuryApplicationForm />
       </PageSection>
     </LandingPageShell>

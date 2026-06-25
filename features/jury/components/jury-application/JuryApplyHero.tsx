@@ -6,7 +6,7 @@ export default function JuryApplyHero() {
   const { t } = useLanguage();
 
   return (
-    <section className="relative flex min-h-[42vh] items-end overflow-hidden bg-[var(--color-blue-wash)] pb-12 pt-24 md:pt-36">
+    <section className="landing-section-strong relative flex min-h-[42vh] items-end overflow-hidden pb-12 pt-24 md:pt-36">
       <Image
         src="/images/winners.png"
         alt=""
