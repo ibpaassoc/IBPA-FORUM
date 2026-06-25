@@ -105,9 +105,8 @@ export default function HomeRegistrationSection() {
 
   return (
     <>
-      <section className="relative overflow-hidden bg-[linear-gradient(180deg,#eef8fc_0%,#ffffff_46%,#f7fbfd_100%)] py-16 md:py-24">
-        <div className="pointer-events-none absolute left-[-10%] top-0 h-96 w-96 rounded-full bg-[#b9d9eb]/30 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-[-16%] right-[-10%] h-[32rem] w-[32rem] rounded-full bg-[#72a0c1]/12 blur-3xl" />
+      <section className="landing-section-strong relative overflow-hidden py-16 md:py-24">
+        <div className="pointer-events-none absolute left-[-10%] top-0 h-80 w-80 rounded-full bg-[#b9d9eb]/18 blur-2xl" />
 
         <div className="page-section relative">
           <div className="mx-auto max-w-3xl text-center">
@@ -238,7 +237,7 @@ function InfoCard({
   return (
     <article
       className={[
-        "relative flex flex-col overflow-hidden rounded-[1.8rem] border border-[#d8edf7] bg-white/72 p-5 shadow-[0_18px_55px_rgba(114,160,193,0.09)] backdrop-blur-2xl transition duration-500 hover:-translate-y-0.5 hover:border-[#b9d9eb] hover:bg-white",
+        "relative flex flex-col overflow-hidden rounded-[1.8rem] border border-[#d8edf7] bg-white/72 p-5 shadow-[0_16px_46px_rgba(114,160,193,0.08)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:border-[#b9d9eb] hover:bg-white",
         featured ? "min-h-[220px] md:p-6" : "min-h-[210px]",
       ].join(" ")}
     >
@@ -286,7 +285,7 @@ function PricingCard({
   footer: ReactNode;
 }) {
   return (
-    <article className="relative flex min-h-[420px] flex-col overflow-hidden rounded-[1.9rem] border border-[#d8edf7] bg-white/72 p-5 shadow-[0_18px_55px_rgba(114,160,193,0.09)] backdrop-blur-2xl transition duration-500 hover:-translate-y-0.5 hover:bg-white">
+    <article className="relative flex min-h-[420px] flex-col overflow-hidden rounded-[1.9rem] border border-[#d8edf7] bg-white/72 p-5 shadow-[0_16px_46px_rgba(114,160,193,0.08)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:bg-white">
       <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
 
       <div className="mb-5 flex items-start justify-between gap-4">

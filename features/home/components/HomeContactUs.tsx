@@ -77,14 +77,13 @@ export default function ContactUsFormSection() {
         : "text-[#10182a]/48";
 
   return (
-    <section className="relative overflow-hidden bg-white py-16 md:py-24">
-      <div className="absolute left-[-14%] top-0 h-96 w-96 rounded-full bg-[#b9d9eb]/25 blur-3xl" />
-      <div className="absolute bottom-[-18%] right-[-12%] h-[30rem] w-[30rem] rounded-full bg-[#72a0c1]/10 blur-3xl" />
+    <section className="landing-section relative overflow-hidden py-16 md:py-24">
+      <div className="absolute left-[-14%] top-0 h-80 w-80 rounded-full bg-[#b9d9eb]/16 blur-2xl" />
 
       <div className="page-section relative">
         <form
           onSubmit={handleSubmit}
-          className="relative mx-auto w-full overflow-hidden rounded-[2.8rem] border border-[#b9d9eb]/65 bg-white/60 p-5 shadow-[0_24px_80px_rgba(114,160,193,0.14)] backdrop-blur-2xl md:p-8 lg:p-10"
+          className="relative mx-auto w-full overflow-hidden rounded-[2.8rem] border border-[#b9d9eb]/65 bg-white/64 p-5 shadow-[0_20px_64px_rgba(114,160,193,0.12)] backdrop-blur-xl md:p-8 lg:p-10"
         >
           <div className="absolute inset-x-16 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
 

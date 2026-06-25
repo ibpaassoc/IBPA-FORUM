@@ -28,14 +28,14 @@ export default function HomeThreeExperiences() {
   const tE = t.home.threeExperiences;
 
   return (
-    <section className="relative overflow-hidden bg-white py-16 sm:py-20 lg:py-24">
+    <section className="landing-section relative overflow-hidden py-16 sm:py-20 lg:py-24">
       <div
         aria-hidden
-        className="absolute left-1/2 top-0 h-[460px] w-[min(900px,100%)] -translate-x-1/2 rounded-full bg-[#b9d9eb]/28 blur-3xl"
+        className="absolute left-1/2 top-0 h-[360px] w-[min(760px,100%)] -translate-x-1/2 rounded-full bg-[#b9d9eb]/18 blur-2xl"
       />
       <div
         aria-hidden
-        className="absolute -right-32 bottom-10 h-72 w-72 rounded-full bg-[#72a0c1]/16 blur-3xl"
+        className="absolute -right-32 bottom-10 h-72 w-72 rounded-full bg-[#72a0c1]/10 blur-2xl"
       />
 
       <div className="relative z-10 mx-auto w-full max-w-[1720px] px-4 sm:px-6 lg:px-8">
@@ -55,11 +55,10 @@ export default function HomeThreeExperiences() {
 
             return (
               <Reveal key={card.key} delay={index * 0.08}>
-                <article className="group relative flex h-full min-h-[540px] overflow-hidden rounded-[34px] border border-white/70 bg-white/58 shadow-[0_20px_64px_rgba(114,160,193,0.14)] backdrop-blur-2xl transition duration-500 hover:-translate-y-1 hover:shadow-[0_28px_84px_rgba(114,160,193,0.22)]">
+                <article className="group relative flex h-full min-h-[540px] overflow-hidden rounded-[34px] border border-white/70 bg-white/62 shadow-[0_18px_54px_rgba(114,160,193,0.11)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_22px_62px_rgba(114,160,193,0.15)]">
                   <div className="absolute inset-0 bg-[linear-gradient(145deg,rgba(255,255,255,0.94)_0%,rgba(255,255,255,0.62)_48%,rgba(185,217,235,0.28)_100%)]" />
 
-                  <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#b9d9eb]/38 blur-3xl transition duration-700 group-hover:bg-[#72a0c1]/24" />
-                  <div className="absolute -bottom-24 left-8 h-64 w-64 rounded-full bg-[#7a98af]/8 blur-3xl" />
+                  <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#b9d9eb]/24 blur-2xl" />
 
                   <div className="absolute right-6 top-6 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/70 bg-white/55 shadow-[0_12px_32px_rgba(122,152,175,0.16)] backdrop-blur-xl">
                     <Icon

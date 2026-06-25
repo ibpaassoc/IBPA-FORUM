@@ -9,12 +9,11 @@ export default function HomeAwardsInfo() {
   const c = t.home.awardsInfo;
 
   return (
-    <section className="relative overflow-hidden bg-white py-8 md:py-12">
+    <section className="landing-section relative overflow-hidden py-8 md:py-12">
       <div className="page-section">
         <Reveal>
-          <div className="premium-glass relative overflow-hidden rounded-[34px] border border-[#b9d9eb]/45 bg-white/72 p-6 shadow-[0_24px_70px_rgba(114,160,193,0.14)] backdrop-blur-2xl md:p-8">
-            <div className="absolute -right-20 -top-24 h-56 w-56 rounded-full bg-[#b9d9eb]/35 blur-3xl" />
-            <div className="absolute -bottom-24 -left-20 h-56 w-56 rounded-full bg-[#72a0c1]/15 blur-3xl" />
+          <div className="premium-glass relative overflow-hidden rounded-[34px] border border-[#b9d9eb]/45 bg-white/72 p-6 shadow-[0_18px_56px_rgba(114,160,193,0.12)] backdrop-blur-xl md:p-8">
+            <div className="absolute -right-20 -top-24 h-56 w-56 rounded-full bg-[#b9d9eb]/22 blur-2xl" />
 
             <div className="relative flex flex-col gap-5 md:flex-row md:items-center md:gap-8">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#b9d9eb]/70 bg-white/75 text-[#72a0c1] shadow-[0_10px_24px_rgba(114,160,193,0.14)]">

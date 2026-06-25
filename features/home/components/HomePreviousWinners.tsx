@@ -113,9 +113,8 @@ export default function PreviousWinnersSection() {
   };
 
   return (
-    <section className="relative overflow-hidden bg-white py-20 md:py-28">
-      <div className="absolute left-[-10%] top-1/4 h-80 w-80 rounded-full bg-[#b9d9eb]/20 blur-3xl" />
-      <div className="absolute right-[-12%] top-10 h-72 w-72 rounded-full bg-[#72a0c1]/8 blur-3xl" />
+    <section className="landing-section relative overflow-hidden py-20 md:py-28">
+      <div className="absolute left-[-10%] top-1/4 h-72 w-72 rounded-full bg-[#b9d9eb]/14 blur-2xl" />
 
       <div className="page-section relative">
         <div className="mb-10 flex flex-col gap-5 md:mb-14 md:flex-row md:items-end md:justify-between">
@@ -158,14 +157,14 @@ export default function PreviousWinnersSection() {
           <article
             key={winner.name}
             data-winner-card
-            className="group relative w-[78vw] max-w-[390px] shrink-0 snap-start overflow-hidden rounded-[2.3rem] border border-[#b9d9eb]/60 bg-white p-2 backdrop-blur-2xl transition duration-500 hover:-translate-y-1 sm:w-[390px]"
+            className="group relative w-[78vw] max-w-[390px] shrink-0 snap-start overflow-hidden rounded-[2.3rem] border border-[#b9d9eb]/60 bg-white/86 p-2 backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 sm:w-[390px]"
           >
             <div className="relative aspect-[4/5] overflow-hidden rounded-[1.9rem] bg-[#eef5f9]">
               <Image
                 src={winner.image}
                 alt={winner.name}
                 fill
-                className="object-cover transition duration-700 group-hover:scale-[1.035]"
+                className="object-cover transition duration-300 group-hover:scale-[1.02]"
                 sizes="(max-width: 640px) 78vw, 390px"
               />
 

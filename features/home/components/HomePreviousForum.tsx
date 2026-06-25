@@ -43,9 +43,8 @@ export default function PreviousForumSection() {
   };
 
   return (
-    <section className="relative overflow-hidden bg-white py-20 md:py-28">
-      <div className="absolute left-[-12%] top-10 h-72 w-72 rounded-full bg-[#b9d9eb]/35 blur-3xl" />
-      <div className="absolute bottom-[-8%] right-[-10%] h-96 w-96 rounded-full bg-[#72a0c1]/15 blur-3xl" />
+    <section className="landing-section relative overflow-hidden py-20 md:py-28">
+      <div className="absolute left-[-12%] top-10 h-72 w-72 rounded-full bg-[#b9d9eb]/16 blur-2xl" />
 
       <div className="page-section relative grid gap-12 lg:grid-cols-[1fr_0.72fr] lg:items-center">
         <div className="max-w-2xl">
@@ -66,7 +65,7 @@ export default function PreviousForumSection() {
               return (
                 <div
                   key={item.text}
-                  className="group flex items-center gap-3 rounded-full border border-[#b9d9eb]/55 bg-white/60 px-3 py-2 shadow-[0_16px_42px_rgba(114,160,193,0.10)] backdrop-blur-xl transition duration-500 hover:border-[#72a0c1]/45 hover:bg-white/80"
+                  className="group flex items-center gap-3 rounded-full border border-[#b9d9eb]/55 bg-white/60 px-3 py-2 shadow-[0_12px_34px_rgba(114,160,193,0.08)] backdrop-blur-xl transition duration-200 hover:border-[#72a0c1]/45 hover:bg-white/80"
                 >
                   <span className="flex size-10 shrink-0 items-center justify-center rounded-full border border-white/80 bg-[#f7fbfd]/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_10px_24px_rgba(114,160,193,0.14)]">
                     <Icon size={17} className="text-[#72a0c1]" />
@@ -89,8 +88,8 @@ export default function PreviousForumSection() {
 
         <div className="relative mx-auto w-full max-w-[390px] lg:mr-0">
           <div className="absolute -left-12 top-20 h-40 w-40 rounded-full border border-[#b9d9eb]/45" />
-          <div className="absolute -right-7 bottom-20 h-32 w-32 rounded-full bg-[#b9d9eb]/35 blur-2xl" />
-          <div className="absolute -inset-8 rounded-[4rem] bg-[#72a0c1]/10 blur-3xl" />
+          <div className="absolute -right-7 bottom-20 h-32 w-32 rounded-full bg-[#b9d9eb]/22 blur-xl" />
+          <div className="absolute -inset-8 rounded-[4rem] bg-[#72a0c1]/8 blur-2xl" />
 
           <div className="relative aspect-[9/16] overflow-hidden rounded-[40px] bg-[#EEF5F9] shadow-[0_24px_80px_rgba(39,54,72,0.14)] md:rounded-[56px]">
             <iframe
