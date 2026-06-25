@@ -1,6 +1,11 @@
 export {default as JuryHero} from "./JuryHero";
 export {default as JuryTimeline} from "./JuryTimeline";
+export {default as JuryRequirements} from "./JuryRequirements";
+export {default as JuryProcess} from "./JuryProcess";
+export {default as JuryResponsibilities} from "./JuryResponsibilities";
 export {default as JuryBenefits} from "./JuryBenefits";
 export {default as JuryCredibility} from "./JuryCredibility";
 export {default as JuryActiveMembers} from "./JuryActiveMembers";
+export {default as JuryFeeCard} from "./JuryFeeCard";
 export {default as JuryCta} from "./JuryCta";
+export {default as JuryFaq} from "./JuryFaq";

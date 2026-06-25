@@ -1,56 +1,18 @@
-"use client"
+"use client";
 
-import { useState } from "react"
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { FaqAccordion } from "@/shared/components/public";
 
 export default function JuryFaq() {
-  const [openIndex, setOpenIndex] = useState<number | null>(0)
   const { t } = useLanguage();
+  const faq = t.juryPage.faq;
 
   return (
-    <section>
-      <div className="mx-auto max-w-(--content-width) px-(--page-gutter) page-section-pad">
-        <div className="mb-(--space-lg) max-w-3xl">
-          <p className="page-eyebrow">
-            {t.juryPage.faq.label}
-          </p>
-          <h2 className="mt-(--space-sm) font-(--font-display) text-[clamp(1.8rem,3.5vw,3rem)] leading-[1.15] text-(--color-ink)">
-            {t.juryPage.faq.title}
-          </h2>
-        </div>
-
-        <div className="rounded-(--radius) border border-(--border-default) bg-(--color-white) shadow-(--shadow-sm)">
-          {t.juryPage.faq.items.map((faq, index) => {
-            const isOpen = openIndex === index
-
-            return (
-              <div
-                key={faq.question}
-                className="border-b border-(--border-default) last:border-b-0"
-              >
-                <button
-                  type="button"
-                  onClick={() => setOpenIndex(isOpen ? null : index)}
-                  className="flex w-full items-center justify-between gap-(--space-md) px-(--space-md) py-(--space-md) text-left"
-                >
-                  <span className="text-sm font-medium text-(--color-ink) sm:text-base">
-                    {faq.question}
-                  </span>
-                  <span className="text-xl text-(--color-hover-accent)">{isOpen ? "-" : "+"}</span>
-                </button>
-
-                {isOpen && (
-                  <div className="px-5 pb-5">
-                    <p className="max-w-3xl text-sm leading-[1.65] text-(--color-ink-soft)">
-                      {faq.answer}
-                    </p>
-                  </div>
-                )}
-              </div>
-            )
-          })}
-        </div>
-      </div>
-    </section>
-  )
+    <FaqAccordion
+      eyebrow={faq.label}
+      title={faq.title}
+      items={faq.items}
+      surface="blue-tint"
+    />
+  );
 }
