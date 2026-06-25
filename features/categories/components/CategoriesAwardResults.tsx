@@ -1,106 +1,210 @@
 "use client";
 
-import { Calendar, CreditCard, Megaphone, ShieldAlert, Trophy } from "lucide-react";
+import Link from "next/link";
+import {
+  ArrowRight,
+  CheckCircle2,
+  Info,
+  ShieldCheck,
+  Trophy,
+  UsersRound,
+} from "lucide-react";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { GlassCard, Reveal } from "@/shared/components/public";
-
-const PRICING_ICONS = [Calendar, CreditCard, Trophy];
+import { LandingPrimaryButton } from "@/shared/components/public";
 
 export default function CategoriesAwardResults() {
   const { t } = useLanguage();
   const c = t.categoriesPage.awardResults;
 
+  const timeline = [
+    c.timeline.applicationsOpen,
+    c.timeline.registrationCloses,
+    c.timeline.awardCeremony,
+  ];
+
+  const pricingRows = [
+    c.pricing.oneNomination,
+    c.pricing.threeNominations,
+    c.pricing.fiveNominations,
+  ];
+
   return (
-    <section className="relative overflow-hidden bg-[linear-gradient(160deg,#f2f8fb,#ffffff)] py-20 md:py-28">
+    <section className="relative overflow-hidden bg-[linear-gradient(155deg,#f4f9fc_0%,#ffffff_46%,#eef7fb_100%)] py-20 md:py-28">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute right-[-16%] top-10 h-[440px] w-[440px] rounded-full bg-[#b9d9eb]/30 blur-3xl" />
-        <div className="absolute bottom-[-18%] left-[-12%] h-[520px] w-[520px] rounded-full bg-[#72a0c1]/12 blur-3xl" />
+        <div className="absolute right-[-18%] top-[-16%] h-[620px] w-[620px] rounded-full bg-[#b9d9eb]/35 blur-3xl" />
+        <div className="absolute bottom-[-24%] left-[-18%] h-[580px] w-[580px] rounded-full bg-[#72a0c1]/14 blur-3xl" />
       </div>
 
-      <div className="page-section relative">
+      <div className="page-section relative z-10">
         <Reveal>
-          <div className="max-w-3xl">
+          <div className="max-w-5xl">
             <p className="page-eyebrow text-[#72a0c1]">{c.eyebrow}</p>
-
-            <h2 className="mt-5 font-(--font-display) text-[clamp(2.6rem,5.6vw,5.4rem)] leading-[0.93] tracking-[-0.055em] text-[#1e2430]">
+            <h2 className="mt-5 font-(--font-display) text-[clamp(2.75rem,6vw,5.8rem)] leading-[0.9] tracking-[-0.06em] text-[#1e2430]">
               {c.title}
             </h2>
           </div>
         </Reveal>
 
-        <Reveal delay={0.12}>
-          <GlassCard className="mt-12 overflow-hidden rounded-[34px] border border-[#b9d9eb]/45 px-6 py-7 shadow-[0_24px_60px_rgba(114,160,193,0.12)] sm:px-8">
-            <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#72a0c1]/10 text-[#72a0c1] ring-1 ring-[#72a0c1]/12">
-                <Megaphone className="h-6 w-6" strokeWidth={1.7} />
-              </div>
+        <Reveal delay={0.08}>
+          <GlassCard className="mt-12 overflow-hidden rounded-[42px] border border-[#b9d9eb]/45 bg-white/68 p-6 shadow-[0_30px_90px_rgba(114,160,193,0.16),inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-2xl sm:p-8 lg:p-10">
+            <div className="relative">
+              <div className="absolute left-[10%] right-[10%] top-[38px] hidden h-[2px] rounded-full bg-gradient-to-r from-[#72a0c1]/20 via-[#72a0c1]/70 to-[#72a0c1]/20 md:block" />
 
-              <div>
-                <p className="font-(--font-display) text-[clamp(1.35rem,2.4vw,1.95rem)] leading-[1.18] tracking-[-0.03em] text-[#1e2430]">
-                  {c.announcement}
-                </p>
+              <div className="grid gap-4 md:grid-cols-3">
+                {timeline.map((item, index) => {
+                  const featured = index === timeline.length - 1;
 
-                <p className="mt-3 max-w-2xl text-[0.98rem] leading-7 text-[#5d6877]">
-                  {c.juryNote}
-                </p>
+                  return (
+                    <div
+                      key={item.label}
+                      className={[
+                        "relative rounded-[32px] border p-5 backdrop-blur-xl transition-all duration-500",
+                        featured
+                          ? "border-[#72a0c1]/45 bg-[#eef7fb]/90 shadow-[0_24px_70px_rgba(114,160,193,0.22)]"
+                          : "border-[#b9d9eb]/38 bg-white/72 shadow-[0_18px_50px_rgba(114,160,193,0.12)]",
+                      ].join(" ")}
+                    >
+                      <div className="mb-6 flex items-center gap-3">
+                        <div
+                          className={[
+                            "relative z-10 flex h-12 w-12 items-center justify-center rounded-full ring-8 ring-white/80",
+                            featured
+                              ? "bg-[#72a0c1] text-white"
+                              : "bg-[#72a0c1]/10 text-[#72a0c1]",
+                          ].join(" ")}
+                        >
+                          {featured ? (
+                            <Trophy className="h-5 w-5" strokeWidth={1.65} />
+                          ) : (
+                            <span className="text-sm font-semibold">
+                              {index + 1}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="h-px flex-1 bg-gradient-to-r from-[#72a0c1]/35 to-transparent md:hidden" />
+                      </div>
+
+                      <p className="text-[0.67rem] font-semibold uppercase tracking-[0.18em] text-[#72a0c1]">
+                        {item.label}
+                      </p>
+
+                      <p className="mt-5 font-(--font-display) text-[2.35rem] leading-none tracking-[-0.055em] text-[#1e2430]">
+                        {item.date}
+                      </p>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </GlassCard>
         </Reveal>
 
-        <Reveal delay={0.18}>
-          <p className="page-eyebrow mt-16 text-[#72a0c1]">{c.pricing.eyebrow}</p>
+        <div className="mt-6 grid gap-6 lg:grid-cols-[0.82fr_1.18fr]">
+          <Reveal delay={0.14}>
+            <GlassCard className="relative h-full overflow-hidden rounded-[42px] border border-white/70 bg-white/58 p-7 shadow-[0_28px_80px_rgba(114,160,193,0.12),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-2xl sm:p-8">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#72a0c1]/10 text-[#72a0c1] ring-1 ring-[#72a0c1]/12">
+                <UsersRound className="h-6 w-6" strokeWidth={1.65} />
+              </div>
 
-          <h3 className="mt-3 font-(--font-display) text-[clamp(1.9rem,3.6vw,3rem)] leading-[0.98] tracking-[-0.045em] text-[#1e2430]">
-            {c.pricing.title}
-          </h3>
+              <p className="mt-8 text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-[#72a0c1]">
+                {c.jury.title}
+              </p>
 
-          <div className="mt-8 grid gap-4 md:grid-cols-3 md:gap-5">
-            {c.pricing.items.map((item, index) => {
-              const Icon = PRICING_ICONS[index] ?? CreditCard;
+              <p className="mt-4 max-w-md text-[1rem] leading-7 text-[#5d6877]">
+                {c.jury.note}
+              </p>
 
-              return (
-                <GlassCard
-                  key={item.label}
-                  className="group relative overflow-hidden rounded-[30px] border border-white/65 px-6 py-7 transition-all duration-500 hover:-translate-y-1 hover:border-[#72a0c1]/25"
-                >
-                  <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[#72a0c1]/40 to-transparent opacity-70" />
+              <div className="mt-8 grid gap-3">
+                {c.jury.points.map((point) => (
+                  <div
+                    key={point}
+                    className="flex items-center gap-3 rounded-full border border-[#b9d9eb]/35 bg-white/58 px-4 py-3"
+                  >
+                    <CheckCircle2
+                      className="h-4.5 w-4.5 shrink-0 text-[#72a0c1]"
+                      strokeWidth={1.8}
+                    />
+                    <span className="text-[0.88rem] font-medium text-[#1e2430]">
+                      {point}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </GlassCard>
+          </Reveal>
 
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/80 shadow-[0_10px_24px_rgba(114,160,193,0.13)] ring-1 ring-[#72a0c1]/12">
-                      <Icon className="h-5 w-5 text-[#72a0c1]" strokeWidth={1.65} />
+          <Reveal delay={0.2}>
+            <GlassCard className="relative h-full overflow-hidden rounded-[42px] border border-[#b9d9eb]/45 bg-white/66 p-5 shadow-[0_30px_90px_rgba(114,160,193,0.16),inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-2xl sm:p-7 lg:p-8">
+              <p className="page-eyebrow text-[#72a0c1]">
+                {c.pricing.eyebrow}
+              </p>
+
+              <div className="mt-8 overflow-hidden rounded-[32px] border border-[#b9d9eb]/40 bg-white/62">
+                <div className="grid grid-cols-[1.25fr_0.85fr_0.95fr] border-b border-[#b9d9eb]/35 bg-[#eef7fb]/70 px-4 py-4 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[#72a0c1] sm:px-6">
+                  <span>{c.pricing.headers.nominations}</span>
+                  <span className="text-right">
+                    {c.pricing.headers.members}
+                  </span>
+                  <span className="text-right">
+                    {c.pricing.headers.nonMembers}
+                  </span>
+                </div>
+
+                {pricingRows.map((row, index) => (
+                  <div
+                    key={row.label}
+                    className={[
+                      "grid grid-cols-[1.25fr_0.85fr_0.95fr] items-center gap-3 border-b border-[#b9d9eb]/25 px-4 py-5 last:border-b-0 sm:px-6",
+                      index === 2 ? "bg-[#eef7fb]/56" : "bg-white/32",
+                    ].join(" ")}
+                  >
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="font-medium text-[#1e2430]">
+                          {row.label}
+                        </p>
+
+                        {index === 2 && (
+                          <span className="rounded-full bg-white/82 px-3 py-1 text-[0.55rem] font-semibold uppercase tracking-[0.16em] text-[#72a0c1] ring-1 ring-[#72a0c1]/14">
+                            {c.pricing.grandPrixEligibility}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
-                    <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-[#72a0c1]">
-                      {item.label}
+                    <p className="font-(--font-display) text-right text-[1.65rem] leading-none tracking-[-0.04em] text-[#1e2430]">
+                      {row.member}
+                    </p>
+
+                    <p className="font-(--font-display) text-right text-[1.65rem] leading-none tracking-[-0.04em] text-[#1e2430]">
+                      {row.nonMember}
                     </p>
                   </div>
+                ))}
+              </div>
 
-                  <p className="mt-6 font-(--font-display) text-[clamp(2.1rem,3.4vw,2.75rem)] leading-none tracking-[-0.04em] text-[#1e2430]">
-                    {item.value}
+              <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
+                <div className="flex items-start gap-3 rounded-[26px] border border-[#72a0c1]/16 bg-white/62 px-5 py-4">
+                  <Info
+                    className="mt-0.5 h-5 w-5 shrink-0 text-[#72a0c1]"
+                    strokeWidth={1.7}
+                  />
+
+                  <p className="text-[0.88rem] leading-6 text-[#6b7582]">
+                    {c.pricing.nonRefundable}
                   </p>
+                </div>
 
-                  <p className="mt-2 text-[0.95rem] leading-6 text-[#5d6877]">
-                    {item.note}
-                  </p>
-                </GlassCard>
-              );
-            })}
-          </div>
-        </Reveal>
-
-        <Reveal delay={0.24}>
-          <div className="mt-5 flex items-center gap-4 rounded-[26px] border border-[#72a0c1]/22 bg-white/70 px-6 py-5 backdrop-blur-xl">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#72a0c1]/10 text-[#72a0c1] ring-1 ring-[#72a0c1]/12">
-              <ShieldAlert className="h-5 w-5" strokeWidth={1.7} />
-            </div>
-
-            <p className="text-[0.98rem] font-medium leading-7 text-[#1e2430]">
-              {c.pricing.nonRefundable}
-            </p>
-          </div>
-        </Reveal>
+                <LandingPrimaryButton href="/apply">
+                  {t.common.applyNow}
+                </LandingPrimaryButton>
+              </div>
+            </GlassCard>
+          </Reveal>
+        </div>
       </div>
     </section>
   );

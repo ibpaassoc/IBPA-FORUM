@@ -703,34 +703,59 @@ const en = {
         ctaButton: "Registration",
     },
     awardResults: {
-      eyebrow: "Award Results",
+      eyebrow: "Award results",
       title: "Award results",
-      announcement:
-        "Official announcement of results: September 26, 2026, at the Beauty Business Forum.",
-      juryNote:
-        "The jury panel is made up of international trainers and leading industry experts.",
-      pricing: {
-        eyebrow: "Registration",
-        title: "Award entry details",
-        items: [
-          {
-            label: "Registration period",
-            value: "Jun 20 – Aug 15, 2026",
-            note: "Applications open",
-          },
-          {
-            label: "Registration fee",
-            value: "$50",
-            note: "Per nomination",
-          },
-          {
-            label: "Grand Prix",
-            value: "5+",
-            note: "Auto-entry, no extra fee",
-          },
+      timeline: {
+        applicationsOpen: {
+          label: "Applications open",
+          date: "Jun 20",
+          sub: "2026",
+        },
+        registrationCloses: {
+          label: "Registration closes",
+          date: "Aug 15",
+          sub: "2026",
+        },
+        awardCeremony: {
+          label: "Award ceremony",
+          date: "Sep 26",
+          sub: "Beauty Business Forum",
+        },
+      },
+      jury: {
+        title: "International jury",
+        note: "The jury panel is made up of international trainers and leading industry experts.",
+        points: [
+          "International experts",
+          "Independent evaluation",
+          "Professional scoring",
         ],
+      },
+      pricing: {
+        eyebrow: "Participation fees",
+        headers: {
+          nominations: "Nominations",
+          members: "IBPA members",
+          nonMembers: "Non-members",
+        },
+        oneNomination: {
+          label: "1 nomination",
+          member: "$50",
+          nonMember: "$70",
+        },
+        threeNominations: {
+          label: "3 nominations",
+          member: "$130",
+          nonMember: "$190",
+        },
+        fiveNominations: {
+          label: "5 nominations",
+          member: "$200",
+          nonMember: "$300",
+        },
+        grandPrixEligibility: "Grand Prix eligibility",
         nonRefundable:
-          "The registration fee is non-refundable once the application has been submitted.",
+          "The registration fee is non-refundable after the application has been submitted.",
       },
     },
     faq: {
@@ -2155,30 +2180,55 @@ const ru: typeof en = {
     awardResults: {
       eyebrow: "Результаты премии",
       title: "Результаты премии",
-      announcement:
-        "Торжественное оглашение результатов: 26 сентября 2026 года на Beauty Business Forum.",
-      juryNote:
-        "В состав жюри входят международные тренеры и ведущие эксперты отрасли.",
-      pricing: {
-        eyebrow: "Регистрация",
-        title: "Условия участия в премии",
-        items: [
-          {
-            label: "Период регистрации",
-            value: "20 июня – 15 августа 2026",
-            note: "Приём заявок",
-          },
-          {
-            label: "Регистрационный взнос",
-            value: "$50",
-            note: "За каждую номинацию",
-          },
-          {
-            label: "Гран-при",
-            value: "5+",
-            note: "Автоматически, без доплаты",
-          },
+      timeline: {
+        applicationsOpen: {
+          label: "Прием заявок открыт",
+          date: "20 июня",
+          sub: "2026",
+        },
+        registrationCloses: {
+          label: "Регистрация закрывается",
+          date: "15 августа",
+          sub: "2026",
+        },
+        awardCeremony: {
+          label: "Церемония награждения",
+          date: "26 сентября",
+          sub: "Beauty Business Forum",
+        },
+      },
+      jury: {
+        title: "Международное жюри",
+        note: "В состав жюри входят международные тренеры и ведущие эксперты отрасли.",
+        points: [
+          "Международные эксперты",
+          "Независимая оценка",
+          "Профессиональная система оценивания",
         ],
+      },
+      pricing: {
+        eyebrow: "Стоимость участия",
+        headers: {
+          nominations: "Номинации",
+          members: "Члены IBPA",
+          nonMembers: "Не члены IBPA",
+        },
+        oneNomination: {
+          label: "1 номинация",
+          member: "$50",
+          nonMember: "$70",
+        },
+        threeNominations: {
+          label: "3 номинации",
+          member: "$130",
+          nonMember: "$190",
+        },
+        fiveNominations: {
+          label: "5 номинаций",
+          member: "$200",
+          nonMember: "$300",
+        },
+        grandPrixEligibility: "Участие в Гран-при",
         nonRefundable:
           "Регистрационный взнос является невозвратным после подачи заявки.",
       },
@@ -3605,32 +3655,57 @@ const ua: typeof en = {
     awardResults: {
       eyebrow: "Результати премії",
       title: "Результати премії",
-      announcement:
-        "Урочисте оголошення результатів: 26 вересня 2026 року на Beauty Business Forum.",
-      juryNote:
-        "До складу журі входять міжнародні тренери та провідні експерти галузі.",
-      pricing: {
-        eyebrow: "Реєстрація",
-        title: "Умови участі в премії",
-        items: [
-          {
-            label: "Період реєстрації",
-            value: "20 червня – 15 серпня 2026",
-            note: "Прийом заявок",
-          },
-          {
-            label: "Реєстраційний внесок",
-            value: "$50",
-            note: "За кожну номінацію",
-          },
-          {
-            label: "Гран-прі",
-            value: "5+",
-            note: "Автоматично, без доплати",
-          },
+      timeline: {
+        applicationsOpen: {
+          label: "Прийом заявок відкрито",
+          date: "20 червня",
+          sub: "2026",
+        },
+        registrationCloses: {
+          label: "Реєстрація завершується",
+          date: "15 серпня",
+          sub: "2026",
+        },
+        awardCeremony: {
+          label: "Церемонія нагородження",
+          date: "26 вересня",
+          sub: "Beauty Business Forum",
+        },
+      },
+      jury: {
+        title: "Міжнародне журі",
+        note: "До складу журі входять міжнародні тренери та провідні експерти галузі.",
+        points: [
+          "Міжнародні експерти",
+          "Незалежне оцінювання",
+          "Професійна система оцінювання",
         ],
+      },
+      pricing: {
+        eyebrow: "Вартість участі",
+        headers: {
+          nominations: "Номінації",
+          members: "Члени IBPA",
+          nonMembers: "Не члени IBPA",
+        },
+        oneNomination: {
+          label: "1 номінація",
+          member: "$50",
+          nonMember: "$70",
+        },
+        threeNominations: {
+          label: "3 номінації",
+          member: "$130",
+          nonMember: "$190",
+        },
+        fiveNominations: {
+          label: "5 номінацій",
+          member: "$200",
+          nonMember: "$300",
+        },
+        grandPrixEligibility: "Участь у Гран-прі",
         nonRefundable:
-          "Реєстраційний внесок є неповоротним після подачі заявки.",
+          "Реєстраційний внесок не повертається після подання заявки.",
       },
     },
     faq: {
