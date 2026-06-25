@@ -204,12 +204,17 @@ const en = {
       messagePlaceholder: "Tell us more about your request...",
 
       submitLabel: "Send Message",
+      sendingLabel: "Sending…",
 
       privacyNote:
         "By submitting this form you agree to our privacy policy.",
 
       successMessage:
-        "Frontend preview only. Backend will be connected later.",
+        "Thank you! Your message has been sent — we'll get back to you shortly.",
+      errorMessage:
+        "Something went wrong. Please try again or email us directly.",
+      validationMessage:
+        "Please fill in your name, a valid email, and a short message.",
     },
     copy: {
       whyEyebrow: "Why IBPA Beauty Award 2026",
@@ -1361,12 +1366,17 @@ const ru: typeof en = {
       messagePlaceholder: "Расскажите подробнее о вашем запросе...",
 
       submitLabel: "Отправить сообщение",
+      sendingLabel: "Отправляем…",
 
       privacyNote:
         "Отправляя форму, вы соглашаетесь с нашей политикой конфиденциальности.",
 
       successMessage:
-        "Это демонстрация интерфейса. Backend будет подключен позже.",
+        "Спасибо! Ваше сообщение отправлено — мы скоро свяжемся с вами.",
+      errorMessage:
+        "Что-то пошло не так. Попробуйте ещё раз или напишите нам напрямую.",
+      validationMessage:
+        "Пожалуйста, укажите имя, корректный email и короткое сообщение.",
     },
     copy: {
       whyEyebrow: "Почему IBPA Beauty Award 2026",
@@ -2522,12 +2532,17 @@ const ua: typeof en = {
       messagePlaceholder: "Розкажіть детальніше про ваш запит...",
 
       submitLabel: "Надіслати повідомлення",
+      sendingLabel: "Надсилаємо…",
 
       privacyNote:
         "Надсилаючи форму, ви погоджуєтесь з нашою політикою конфіденційності.",
 
       successMessage:
-        "Це демонстрація інтерфейсу. Backend буде підключено пізніше.",
+        "Дякуємо! Ваше повідомлення надіслано — ми скоро зв'яжемося з вами.",
+      errorMessage:
+        "Щось пішло не так. Спробуйте ще раз або напишіть нам напряму.",
+      validationMessage:
+        "Будь ласка, вкажіть ім'я, коректний email і коротке повідомлення.",
     },
     copy: {
       whyEyebrow: "Чому IBPA Beauty Award 2026",

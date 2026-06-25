@@ -1,20 +1,74 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { ArrowRight, Mail, MessageCircle, User } from "lucide-react";
+import { Mail, MessageCircle, User } from "lucide-react";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { LandingSecondaryButton } from "@/shared/components/public";
 
+type Status = "idle" | "sending" | "sent" | "error" | "invalid";
+
 export default function ContactUsFormSection() {
   const { t } = useLanguage();
   const c = t.home.contactUs;
-  const [status, setStatus] = useState<"idle" | "sent">("idle");
+  const [status, setStatus] = useState<Status>("idle");
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setStatus("sent");
+
+    if (status === "sending") return;
+
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    const payload = {
+      name: String(data.get("name") ?? "").trim(),
+      email: String(data.get("email") ?? "").trim(),
+      subject: String(data.get("subject") ?? "").trim(),
+      message: String(data.get("message") ?? "").trim(),
+      company: String(data.get("company") ?? ""),
+    };
+
+    if (payload.name.length < 2 || !payload.email.includes("@") || payload.message.length < 10) {
+      setStatus("invalid");
+      return;
+    }
+
+    setStatus("sending");
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        setStatus("error");
+        return;
+      }
+
+      setStatus("sent");
+      form.reset();
+    } catch {
+      setStatus("error");
+    }
   };
+
+  const statusMessage =
+    status === "sent"
+      ? c.successMessage
+      : status === "error"
+        ? c.errorMessage
+        : status === "invalid"
+          ? c.validationMessage
+          : c.privacyNote;
+
+  const statusToneClass =
+    status === "sent"
+      ? "text-[#3f7d57]"
+      : status === "error" || status === "invalid"
+        ? "text-[#b4543f]"
+        : "text-[#10182a]/48";
 
   return (
     <section className="relative overflow-hidden bg-white py-16 md:py-24">
@@ -63,6 +117,14 @@ export default function ContactUsFormSection() {
           className="relative overflow-hidden rounded-[2.7rem] border border-[#b9d9eb]/65 bg-white/58 p-4 backdrop-blur-2xl md:p-5 lg:p-6"
         >
           <div className="absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
+
+          {/* Honeypot — hidden from users, catches naive bots. */}
+          <div aria-hidden="true" className="absolute -left-[9999px] top-0 h-0 w-0 overflow-hidden">
+            <label>
+              Company
+              <input name="company" type="text" tabIndex={-1} autoComplete="off" />
+            </label>
+          </div>
 
           <div className="grid gap-4 md:grid-cols-2">
             <label>
@@ -128,12 +190,16 @@ export default function ContactUsFormSection() {
           </label>
 
           <div className="mt-5 grid gap-4 sm:grid-cols-[1fr_auto] sm:items-center">
-            <p className="max-w-sm text-sm leading-5 text-[#10182a]/48">
-              {status === "sent" ? c.successMessage : c.privacyNote}
+            <p
+              role={status === "error" || status === "invalid" ? "alert" : undefined}
+              aria-live="polite"
+              className={`max-w-sm text-sm leading-5 transition-colors ${statusToneClass}`}
+            >
+              {statusMessage}
             </p>
 
-            <LandingSecondaryButton href="">
-                {c.submitLabel}
+            <LandingSecondaryButton type="submit" disabled={status === "sending"}>
+              {status === "sending" ? c.sendingLabel : c.submitLabel}
             </LandingSecondaryButton>
           </div>
         </form>

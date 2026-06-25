@@ -19,6 +19,7 @@ export type SendEmailInput = {
   subject: string;
   html: string;
   text?: string;
+  replyTo?: string;
   attachments?: EmailAttachment[];
 };
 
@@ -53,6 +54,7 @@ function getNormalizedEmailPayload(input: SendEmailInput) {
     subject: input.subject,
     html: input.html,
     text: input.text,
+    replyTo: input.replyTo,
     attachments: input.attachments,
   };
 }
@@ -130,6 +132,7 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
     subject: payload.subject,
     html: payload.html,
     text: payload.text,
+    replyTo: payload.replyTo,
     attachments: payload.attachments,
   });
 
