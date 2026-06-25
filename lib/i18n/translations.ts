@@ -1183,7 +1183,7 @@ const en = {
     },
     whoCanJoin: {
       eyebrow: "Who can join?",
-      title: "IBPA welcomes professionals at every stage of their career.",
+      title: "IBPA welcomes:",
       items: [
         "Beauty industry specialists",
         "Educators and trainers",
@@ -2633,7 +2633,7 @@ const ru: typeof en = {
     },
     whoCanJoin: {
       eyebrow: "Кто может присоединиться?",
-      title: "IBPA открыта для профессионалов на разных этапах развития.",
+      title: "IBPA открыта для:",
       items: [
         "Специалисты индустрии красоты",
         "Преподаватели и тренеры",
@@ -4083,7 +4083,7 @@ const ua: typeof en = {
     },
     whoCanJoin: {
       eyebrow: "Хто може приєднатися?",
-      title: "IBPA відкрита для професіоналів на різних етапах розвитку.",
+      title: "IBPA відкрита для:",
       items: [
         "Фахівці індустрії краси",
         "Викладачі та тренери",
