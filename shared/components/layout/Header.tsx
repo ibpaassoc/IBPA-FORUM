@@ -34,9 +34,9 @@ export default function Header() {
     { href: "/jury", label: t.header.navigation.jury },
     { href: "/grand-prix", label: t.header.navigation.grandPrix },
     {
-      href: "https://ibpassociations.org/about",
+      href: "/association",
       label: associationLabel,
-      external: true,
+      external:false
     },
   ];
 
