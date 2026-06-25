@@ -1171,6 +1171,75 @@ const en = {
       nominationsActivate: "Nominations activate eligibility",
     },
   },
+  associationPage: {
+    hero: {
+      eyebrow: "IBPA Association",
+      title: "International Beauty Professionals Association",
+      subtitle: "International association of beauty industry professionals",
+      description:
+        "The International Beauty Professionals Association (IBPA) unites specialists, educators, business owners, academies, studios, salons, and beauty brands from around the world.",
+      applyButton: "Apply for Membership",
+      websiteButton: "Visit IBPA Website",
+    },
+    whoCanJoin: {
+      eyebrow: "Who can join?",
+      title: "IBPA welcomes professionals at every stage of their career.",
+      items: [
+        "Beauty industry specialists",
+        "Educators and trainers",
+        "Owners of studios, salons, and academies",
+        "Beauty brands and companies",
+        "Emerging specialists and students in beauty-related fields",
+      ],
+    },
+    advantages: {
+      eyebrow: "Membership benefits",
+      title: "More trust, connections, and professional growth.",
+      description:
+        "IBPA membership helps strengthen your personal brand, expand professional opportunities, and become part of an international beauty community.",
+      items: [
+        "Educational webinars and professional resources",
+        "Discounts on association events, awards, and projects",
+        "Access to a private professional community",
+        "Opportunities for publications, speaking, and promotion",
+        "Participation in international forums, awards, and business events",
+        "Profile in the association directory",
+        "IBPA membership certificate",
+        "Partner programs, special offers, and many other privileges",
+      ],
+    },
+    process: {
+      eyebrow: "How does membership work?",
+      title: "A clear and simple membership process.",
+      stepLabel: "Step",
+      steps: [
+        {
+          title: "Choose a category",
+          text: "Select the membership category that best fits your professional path.",
+        },
+        {
+          title: "Submit an application",
+          text: "Complete and send your membership application through the online form.",
+        },
+        {
+          title: "Wait for review",
+          text: "The IBPA team will review your application and confirm the next steps.",
+        },
+        {
+          title: "Complete registration",
+          text: "After approval, complete the payment, finalize registration, and get access to the benefits of your selected category.",
+        },
+      ],
+    },
+    cta: {
+      eyebrow: "Learn more",
+      title: "Ready to join the international beauty community?",
+      description:
+        "Detailed information about membership categories, pricing, benefits, and conditions is available on the official IBPA website.",
+      applyButton: "Apply for Membership",
+      websiteButton: "Visit IBPA Website",
+    },
+  },
   applyPage: {
     intro: {
       eyebrow: "Candidate Application",
@@ -2552,6 +2621,75 @@ const ru: typeof en = {
       nominationsActivate: "Номинации активируют право участия",
     },
   },
+  associationPage: {
+    hero: {
+      eyebrow: "Ассоциация IBPA",
+      title: "International Beauty Professionals Association",
+      subtitle: "Международная ассоциация профессионалов индустрии красоты",
+      description:
+        "International Beauty Professionals Association (IBPA) объединяет специалистов, преподавателей, владельцев бизнеса, академии, студии, салоны и бренды индустрии красоты из разных стран мира.",
+      applyButton: "Подать заявку",
+      websiteButton: "Перейти на сайт IBPA",
+    },
+    whoCanJoin: {
+      eyebrow: "Кто может присоединиться?",
+      title: "IBPA открыта для профессионалов на разных этапах развития.",
+      items: [
+        "Специалисты индустрии красоты",
+        "Преподаватели и тренеры",
+        "Владельцы студий, салонов и академий",
+        "Бьюти-бренды и компании",
+        "Начинающие специалисты и студенты профильных направлений",
+      ],
+    },
+    advantages: {
+      eyebrow: "Преимущества участия",
+      title: "Больше доверия, связей и профессионального роста.",
+      description:
+        "Участие в IBPA помогает усиливать личный бренд, расширять профессиональные возможности и быть частью международного beauty-сообщества.",
+      items: [
+        "Образовательные вебинары и профессиональные материалы",
+        "Скидки на мероприятия, премии и проекты ассоциации",
+        "Доступ к закрытому профессиональному сообществу",
+        "Возможности для публикаций, выступлений и продвижения",
+        "Участие в международных форумах, премиях и бизнес-мероприятиях",
+        "Профиль в каталоге ассоциации",
+        "Сертификат участника IBPA",
+        "Партнерские программы, специальные предложения и множество других привилегий",
+      ],
+    },
+    process: {
+      eyebrow: "Как проходит вступление?",
+      title: "Четкий и понятный процесс вступления.",
+      stepLabel: "Шаг",
+      steps: [
+        {
+          title: "Выберите категорию",
+          text: "Выберите подходящую категорию участия в ассоциации.",
+        },
+        {
+          title: "Заполните заявку",
+          text: "Заполните заявку на вступление через форму сайта.",
+        },
+        {
+          title: "Дождитесь рассмотрения",
+          text: "Команда IBPA рассмотрит заявку и подтвердит дальнейшие шаги.",
+        },
+        {
+          title: "Завершите регистрацию",
+          text: "После одобрения проведите оплату, завершите регистрацию и получите доступ к преимуществам выбранной категории.",
+        },
+      ],
+    },
+    cta: {
+      eyebrow: "Узнать больше",
+      title: "Готовы присоединиться к международному сообществу профессионалов?",
+      description:
+        "Подробная информация о категориях участия, стоимости, преимуществах и условиях вступления доступна на официальном сайте IBPA.",
+      applyButton: "Подать заявку на вступление",
+      websiteButton: "Перейти на сайт IBPA",
+    },
+  },
   applyPage: {
     intro: {
       eyebrow: "Заявка участника",
@@ -3931,6 +4069,75 @@ const ua: typeof en = {
       members: "Учасники",
       perNomSubmission: "За одну номінацію",
       nominationsActivate: "Номінації активують право участі",
+    },
+  },
+  associationPage: {
+    hero: {
+      eyebrow: "Асоціація IBPA",
+      title: "International Beauty Professionals Association",
+      subtitle: "Міжнародна асоціація професіоналів індустрії краси",
+      description:
+        "International Beauty Professionals Association (IBPA) об'єднує фахівців, викладачів, власників бізнесу, академії, студії, салони та бренди індустрії краси з різних країн світу.",
+      applyButton: "Подати заявку",
+      websiteButton: "Перейти на сайт IBPA",
+    },
+    whoCanJoin: {
+      eyebrow: "Хто може приєднатися?",
+      title: "IBPA відкрита для професіоналів на різних етапах розвитку.",
+      items: [
+        "Фахівці індустрії краси",
+        "Викладачі та тренери",
+        "Власники студій, салонів та академій",
+        "Beauty-бренди та компанії",
+        "Початківці та студенти профільних напрямів",
+      ],
+    },
+    advantages: {
+      eyebrow: "Переваги участі",
+      title: "Більше довіри, зв'язків і професійного розвитку.",
+      description:
+        "Участь в IBPA допомагає посилити особистий бренд, розширити професійні можливості та стати частиною міжнародної beauty-спільноти.",
+      items: [
+        "Освітні вебінари та професійні матеріали",
+        "Знижки на заходи, премії та проєкти асоціації",
+        "Доступ до закритої професійної спільноти",
+        "Можливості для публікацій, виступів і просування",
+        "Участь у міжнародних форумах, преміях і бізнес-заходах",
+        "Профіль у каталозі асоціації",
+        "Сертифікат учасника IBPA",
+        "Партнерські програми, спеціальні пропозиції та багато інших привілеїв",
+      ],
+    },
+    process: {
+      eyebrow: "Як проходить вступ?",
+      title: "Чіткий і зрозумілий процес вступу.",
+      stepLabel: "Крок",
+      steps: [
+        {
+          title: "Оберіть категорію",
+          text: "Оберіть відповідну категорію участі в асоціації.",
+        },
+        {
+          title: "Заповніть заявку",
+          text: "Заповніть заявку на вступ через форму сайту.",
+        },
+        {
+          title: "Дочекайтеся розгляду",
+          text: "Команда IBPA розгляне заявку та підтвердить подальші кроки.",
+        },
+        {
+          title: "Завершіть реєстрацію",
+          text: "Після схвалення здійсніть оплату, завершіть реєстрацію та отримайте доступ до переваг обраної категорії.",
+        },
+      ],
+    },
+    cta: {
+      eyebrow: "Дізнатися більше",
+      title: "Готові приєднатися до міжнародної спільноти професіоналів?",
+      description:
+        "Детальна інформація про категорії участі, вартість, переваги та умови вступу доступна на офіційному сайті IBPA.",
+      applyButton: "Подати заявку на вступ",
+      websiteButton: "Перейти на сайт IBPA",
     },
   },
   applyPage: {
