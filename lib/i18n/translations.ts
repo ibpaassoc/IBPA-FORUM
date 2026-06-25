@@ -951,28 +951,34 @@ const en = {
       ],
     },
     requirements: {
-      label: "Requirements",
-      title: "Who can apply for the jury panel",
+      label: "Who can become a judge",
+      title: "Candidate requirements",
+      description:
+        "The jury panel is formed from experienced professionals who can provide fair, objective, and expert evaluation of competition entries.",
       items: [
         {
-          label: "Minimum Experience",
-          value: "5+ Years",
-          text: "Applicants must have at least five years of professional industry experience.",
+          label: "Experience",
+          text: "At least 5 years of experience in the beauty industry.",
         },
         {
           label: "Expertise",
-          value: "11 Categories",
-          text: "Judges are selected based on their expertise in relevant award areas.",
+          text: "Confirmed professional expertise in your category.",
         },
         {
           label: "Documents",
-          value: "Required",
-          text: "Professional certifications, bio, and profile materials must be submitted.",
+          text: "Certificates, diplomas, licenses, or other supporting documents.",
         },
         {
-          label: "Payment Rule",
-          value: "After Approval",
-          text: "The jury fee is never charged at the application stage.",
+          label: "Professional activity",
+          text: "Teaching, competition, or expert activity is welcomed.",
+        },
+        {
+          label: "Judging background",
+          text: "Previous judging experience is preferred, but not required.",
+        },
+        {
+          label: "Standards",
+          text: "Readiness to follow the regulations, confidentiality, and principles of objective evaluation.",
         },
       ],
     },
@@ -2541,28 +2547,34 @@ const ru: typeof en = {
       ],
     },
     requirements: {
-      label: "Требования",
-      title: "Кто может подать заявку в жюри",
+      label: "Кто может стать судьёй",
+      title: "Требования к кандидатам",
+      description:
+        "Судейская коллегия формируется из опытных профессионалов, способных обеспечить честную, объективную и экспертную оценку конкурсных работ.",
       items: [
         {
-          label: "Минимальный опыт",
-          value: "5+ лет",
-          text: "Кандидат должен иметь не менее пяти лет профессионального опыта в индустрии.",
+          label: "Опыт",
+          text: "Опыт работы в индустрии красоты от 5 лет.",
         },
         {
           label: "Экспертиза",
-          value: "11 категорий",
-          text: "Судьи отбираются с учетом экспертизы в соответствующих категориях премии.",
+          text: "Подтверждённая профессиональная экспертиза в своей категории.",
         },
         {
           label: "Документы",
-          value: "Обязательны",
-          text: "Необходимо предоставить сертификаты, биографию и профильные материалы.",
+          text: "Наличие сертификатов, дипломов, лицензий или других подтверждающих документов.",
         },
         {
-          label: "Правило оплаты",
-          value: "После одобрения",
-          text: "Взнос жюри не взимается на этапе подачи заявки.",
+          label: "Профессиональная деятельность",
+          text: "Преподавательская, конкурсная или экспертная деятельность приветствуется.",
+        },
+        {
+          label: "Опыт судейства",
+          text: "Опыт судейства желателен, но не является обязательным.",
+        },
+        {
+          label: "Стандарты",
+          text: "Готовность соблюдать регламент, конфиденциальность и принципы объективной оценки.",
         },
       ],
     },
@@ -4130,28 +4142,34 @@ const ua: typeof en = {
       ],
     },
     requirements: {
-      label: "Вимоги",
-      title: "Хто може подати заявку до журі",
+      label: "Хто може стати суддею",
+      title: "Вимоги до кандидатів",
+      description:
+        "Суддівська колегія формується з досвідчених професіоналів, здатних забезпечити чесну, об’єктивну та експертну оцінку конкурсних робіт.",
       items: [
         {
-          label: "Мінімальний досвід",
-          value: "5+ років",
-          text: "Кандидат повинен мати щонайменше п'ять років професійного досвіду в індустрії.",
+          label: "Досвід",
+          text: "Досвід роботи в індустрії краси від 5 років.",
         },
         {
           label: "Експертиза",
-          value: "11 Категорій",
-          text: "Суддів відбирають з урахуванням експертизи у відповідних категоріях премії.",
+          text: "Підтверджена професійна експертиза у своїй категорії.",
         },
         {
           label: "Документи",
-          value: "Обов'язкові",
-          text: "Потрібно надати сертифікати, біографію та профільні матеріали.",
+          text: "Наявність сертифікатів, дипломів, ліцензій або інших підтверджувальних документів.",
         },
         {
-          label: "Правило оплати",
-          value: "Після схвалення",
-          text: "Внесок журі не стягується на етапі подання заявки.",
+          label: "Професійна діяльність",
+          text: "Викладацька, конкурсна або експертна діяльність вітається.",
+        },
+        {
+          label: "Досвід суддівства",
+          text: "Досвід суддівства бажаний, але не є обов’язковим.",
+        },
+        {
+          label: "Стандарти",
+          text: "Готовність дотримуватися регламенту, конфіденційності та принципів об’єктивного оцінювання.",
         },
       ],
     },
