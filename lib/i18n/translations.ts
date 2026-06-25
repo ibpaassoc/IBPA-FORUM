@@ -33,9 +33,22 @@ const en = {
   },
   home: {
     hero: {
+      eyebrow: "Industry Leadership Conference",
       title: "IBPA Beauty Award 2026",
+      subtitle: "Beauty Business Forum + IBPA Beauty Award 2026",
+      date: "September 25–26, 2026",
+      location: "Los Angeles, California",
+      buyTickets: "Buy Forum Tickets",
       description: "",
       categoriesCta: "Explore Categories",
+      ticker: [
+        "IBPA Beauty Award 2026",
+        "International Recognition",
+        "Professional Excellence",
+        "11 Categories",
+        "Global Jury",
+        "Open to the World",
+      ],
     },
     awardsInfo: {
       eyebrow: "About the award",
@@ -1194,9 +1207,22 @@ const ru: typeof en = {
   },
   home: {
     hero: {
+      eyebrow: "Отраслевая конференция лидеров",
       title: "IBPA Beauty Award 2026",
+      subtitle: "Beauty Business Forum + IBPA Beauty Award 2026",
+      date: "25–26 сентября 2026",
+      location: "Лос-Анджелес, Калифорния",
+      buyTickets: "Купить билеты на форум",
       description: "Признание выдающихся достижений в сфере красоты, обучения в бьюти-индустрии, здоровья и инноваций в брендинге",
       categoriesCta: "Изучить категории",
+      ticker: [
+        "IBPA Beauty Award 2026",
+        "Международное признание",
+        "Профессиональное мастерство",
+        "11 категорий",
+        "Международное жюри",
+        "Открыто для всего мира",
+      ],
     },
     awardsInfo: {
       eyebrow: "О премии",
@@ -2360,9 +2386,22 @@ const ua: typeof en = {
   },
   home: {
     hero: {
+      eyebrow: "Галузева конференція лідерів",
       title: "IBPA Beauty Award 2026",
+      subtitle: "Beauty Business Forum + IBPA Beauty Award 2026",
+      date: "25–26 вересня 2026",
+      location: "Лос-Анджелес, Каліфорнія",
+      buyTickets: "Купити квитки на форум",
       description: "Визнання видатних досягнень у сфері краси, освіти у сфері краси, здоров'я та інновацій у брендингу",
       categoriesCta: "Переглянути категорії",
+      ticker: [
+        "IBPA Beauty Award 2026",
+        "Міжнародне визнання",
+        "Професійна майстерність",
+        "11 категорій",
+        "Міжнародне журі",
+        "Відкрито для всього світу",
+      ],
     },
     awardsInfo: {
       eyebrow: "Про премію",
