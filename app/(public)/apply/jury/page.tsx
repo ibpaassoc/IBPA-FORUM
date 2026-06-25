@@ -1,6 +1,6 @@
-"use client";
-
-import JuryApplicationForm from "@/features/jury/components/jury-application/JuryApplicationForm";
+import { Suspense } from "react";
+import ApplicationFormSkeleton from "@/features/applications/components/application-form/ApplicationFormSkeleton";
+import JuryApplicationFormLoader from "@/features/jury/components/jury-application/JuryApplicationFormLoader";
 import JuryApplyHero from "@/features/jury/components/jury-application/JuryApplyHero";
 import { LandingPageShell, PageSection } from "@/shared/components/public";
 
@@ -10,7 +10,9 @@ export default function JuryApplyPage() {
     <LandingPageShell>
       <JuryApplyHero></JuryApplyHero>
       <PageSection id="jury-form" className="landing-section py-8">
-        <JuryApplicationForm />
+        <Suspense fallback={<ApplicationFormSkeleton />}>
+          <JuryApplicationFormLoader />
+        </Suspense>
       </PageSection>
     </LandingPageShell>
   );

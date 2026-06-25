@@ -1,11 +1,16 @@
 "use client";
 
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { useState } from "react";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import TicketModal from "@/features/tickets/components/TicketModal";
 import { HeroPrimaryButton, HeroSecondaryButton } from "@/shared/components/public";
+
+const TicketModal = dynamic(() => import("@/features/tickets/components/TicketModal"), {
+  ssr: false,
+  loading: () => null,
+});
 
 export default function HomeHero() {
   const { t } = useLanguage();
@@ -25,6 +30,7 @@ export default function HomeHero() {
             style={{ objectPosition: "50% 20%" }}
             className="object-cover opacity-75"
             priority
+            sizes="100vw"
           />
 
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.30)_0%,rgba(0,0,0,0.18)_42%,rgba(0,0,0,0.68)_100%)]" />
@@ -108,10 +114,12 @@ export default function HomeHero() {
         `}</style>
       </section>
 
-      <TicketModal
-        isOpen={isTicketModalOpen}
-        onClose={() => setIsTicketModalOpen(false)}
-      />
+      {isTicketModalOpen ? (
+        <TicketModal
+          isOpen={isTicketModalOpen}
+          onClose={() => setIsTicketModalOpen(false)}
+        />
+      ) : null}
     </>
   );
 }

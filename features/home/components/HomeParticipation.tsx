@@ -3,15 +3,20 @@
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { ArrowRight, Star, Trophy, Zap } from "lucide-react";
 
 import { PRICING } from "@/data/pricing";
-import TicketModal from "@/features/tickets/components/TicketModal";
 import { applyDiscountToPrice } from "@/features/tickets/types";
 import type { EarlyBirdStatus } from "@/features/tickets/types";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { Reveal } from "@/shared/components/public";
+
+const TicketModal = dynamic(() => import("@/features/tickets/components/TicketModal"), {
+  ssr: false,
+  loading: () => null,
+});
 
 type Tier = "ibpa" | "standard";
 
@@ -178,10 +183,12 @@ export default function HomeParticipation({
         </Reveal>
       </div>
 
-      <TicketModal
-        isOpen={isTicketModalOpen}
-        onClose={() => setIsTicketModalOpen(false)}
-      />
+      {isTicketModalOpen ? (
+        <TicketModal
+          isOpen={isTicketModalOpen}
+          onClose={() => setIsTicketModalOpen(false)}
+        />
+      ) : null}
     </section>
   );
 }

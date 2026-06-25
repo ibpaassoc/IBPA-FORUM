@@ -1,7 +1,12 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState, type ReactNode } from "react";
-import TicketModal from "./TicketModal";
+
+const TicketModal = dynamic(() => import("./TicketModal"), {
+  ssr: false,
+  loading: () => null,
+});
 
 type Props = {
   className?: string;
@@ -16,7 +21,7 @@ export default function BuyTicketsButton({ className, children }: Props) {
       <button type="button" className={className} onClick={() => setIsOpen(true)}>
         {children}
       </button>
-      <TicketModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      {isOpen ? <TicketModal isOpen={isOpen} onClose={() => setIsOpen(false)} /> : null}
     </>
   );
 }
