@@ -1,88 +1,130 @@
 "use client";
 
-import { Award, BadgeCheck, FileBadge, Sparkles } from "lucide-react";
+import {
+  BadgeCheck,
+  BookOpenCheck,
+  ClipboardCheck,
+  FileBadge2,
+  FileHeart,
+  Globe2,
+  IdCard,
+  LayoutDashboard,
+  Megaphone,
+  Newspaper,
+} from "lucide-react";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { Reveal } from "@/shared/components/public";
 
-const BENEFIT_ICONS = [Award, FileBadge, Sparkles, BadgeCheck, Award];
+const BENEFIT_ICONS = [
+  BadgeCheck,
+  BookOpenCheck,
+  LayoutDashboard,
+  ClipboardCheck,
+  IdCard,
+  FileHeart,
+  FileBadge2,
+  Globe2,
+  Megaphone,
+  Newspaper,
+];
 
 export default function JuryBenefits() {
   const { t } = useLanguage();
   const b = t.juryPage.benefits;
 
+  const featuredItems = b.items.slice(0, 4);
+  const listItems = b.items.slice(4);
+
   return (
-    <section className="relative overflow-hidden bg-white py-[clamp(4.5rem,9vw,8rem)]">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute left-[-18%] top-[-28%] h-[34rem] w-[34rem] rounded-full bg-[radial-gradient(circle,rgba(185,217,235,0.42)_0%,rgba(185,217,235,0.14)_46%,transparent_74%)] blur-3xl"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute bottom-[-24%] right-[-14%] h-[36rem] w-[36rem] rounded-full bg-[radial-gradient(circle,rgba(114,160,193,0.20)_0%,rgba(185,217,235,0.12)_46%,transparent_74%)] blur-3xl"
-      />
+    <section className="relative overflow-hidden bg-[linear-gradient(160deg,#f2f8fb,#ffffff)] py-20 md:py-28">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-[-14%] top-[-18%] h-80 w-80 rounded-full bg-[#b9d9eb]/38 blur-3xl" />
+        <div className="absolute bottom-[-20%] right-[-12%] h-96 w-96 rounded-full bg-[#72a0c1]/13 blur-3xl" />
+      </div>
 
       <div className="page-section relative">
-        <div className="grid gap-[clamp(2rem,5vw,5rem)] lg:grid-cols-[0.9fr_1.25fr] lg:items-center">
-          <Reveal>
-            <div className="max-w-xl">
+        <Reveal>
+          <div className="mb-12 grid gap-6 lg:grid-cols-[0.92fr_1.08fr] lg:items-end">
+            <div>
               <p className="page-eyebrow">{b.eyebrow}</p>
 
-              <h2 className="mt-[var(--space-sm)] font-[var(--font-title-family)] text-[clamp(2.35rem,5vw,5rem)] font-light leading-[0.96] tracking-[-0.045em] text-[var(--color-ink)]">
+              <h2 className="mt-4 max-w-4xl font-(--font-display) text-[clamp(2.35rem,5vw,4.9rem)] leading-[0.95] tracking-[-0.045em] text-[#10283a]">
                 {b.title}
               </h2>
-
-              <p className="mt-6 max-w-md text-[0.98rem] leading-[1.85] text-[var(--color-ink-soft)]">
-                {b.description}
-              </p>
             </div>
-          </Reveal>
 
-          <Reveal delay={0.12}>
-            <div className="relative">
-              <div
-                aria-hidden
-                className="absolute -inset-6 rounded-[2.5rem] bg-[linear-gradient(135deg,rgba(185,217,235,0.30),rgba(255,255,255,0.1),rgba(114,160,193,0.12))] blur-2xl"
-              />
+            <p className="max-w-2xl text-sm leading-7 text-[#4f6f83] md:text-base">
+              {b.description}
+            </p>
+          </div>
+        </Reveal>
 
-              <div className="relative overflow-hidden rounded-[2rem] border border-white/70 bg-white/55 shadow-[0_28px_90px_rgba(35,62,82,0.10)] backdrop-blur-2xl">
-                <div
-                  aria-hidden
-                  className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.92)_0%,rgba(255,255,255,0.42)_52%,rgba(185,217,235,0.22)_100%)]"
-                />
+        <Reveal delay={0.1}>
+          <div className="grid gap-5 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
+            <div className="grid gap-4 sm:grid-cols-2">
+              {featuredItems.map((item, index) => {
+                const Icon = BENEFIT_ICONS[index];
 
-                <div className="relative divide-y divide-[rgba(114,160,193,0.16)]">
-                  {b.items.map((item, i) => {
-                    const Icon = BENEFIT_ICONS[i % BENEFIT_ICONS.length];
+                return (
+                  <article
+                    key={item}
+                    className="group relative min-h-[240px] overflow-hidden rounded-[2rem] border border-white/70 bg-white/66 p-6 shadow-[0_22px_64px_rgba(114,160,193,0.12)] backdrop-blur-2xl transition duration-500 hover:-translate-y-1 hover:border-[#72a0c1]/42 hover:bg-white/80 md:p-7"
+                  >
+                    <div className="absolute inset-x-7 top-0 h-px bg-gradient-to-r from-transparent via-[#72a0c1]/45 to-transparent" />
+                    <div className="absolute -right-16 -top-20 h-44 w-44 rounded-full bg-[#b9d9eb]/30 blur-2xl transition duration-700 group-hover:scale-125" />
 
-                    return (
-                      <div
-                        key={item}
-                        className="group grid gap-4 px-5 py-5 transition-all duration-300 hover:bg-white/45 sm:grid-cols-[auto_1fr_auto] sm:items-center sm:px-7"
-                      >
-                        <span className="font-[var(--font-ui-family)] text-[0.7rem] font-black tracking-[0.14em] text-[var(--color-blue)]">
-                          {String(i + 1).padStart(2, "0")}
-                        </span>
+                    <div className="relative flex h-full flex-col">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/80 bg-[#f7fbfd] text-[#72a0c1] shadow-[0_12px_32px_rgba(114,160,193,0.14)]">
+                          <Icon size={20} strokeWidth={1.7} />
+                        </div>
 
-                        <p className="text-[0.94rem] leading-[1.7] text-[var(--color-ink)]">
-                          {item}
-                        </p>
-
-                        <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/70 bg-white/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_12px_28px_rgba(114,160,193,0.14)] backdrop-blur-xl transition-all duration-300 group-hover:-translate-y-0.5 group-hover:bg-white/80">
-                          <Icon
-                            size={17}
-                            strokeWidth={1.55}
-                            className="text-[var(--color-blue)]"
-                          />
+                        <span className="rounded-full border border-[#b9d9eb]/45 bg-white/70 px-2.5 py-1 text-[0.65rem] font-medium text-[#72a0c1]">
+                          {String(index + 1).padStart(2, "0")}
                         </span>
                       </div>
-                    );
-                  })}
-                </div>
+
+                      <p className="mt-auto pt-12 text-[1rem] leading-7 text-[#2d5066]">
+                        {item}
+                      </p>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+
+            <div className="relative overflow-hidden rounded-[2rem] border border-white/70 bg-white/64 p-4 shadow-[0_22px_64px_rgba(114,160,193,0.12)] backdrop-blur-2xl md:p-5">
+              <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[#72a0c1]/45 to-transparent" />
+
+              <div className="relative divide-y divide-[#b9d9eb]/28">
+                {listItems.map((item, index) => {
+                  const itemIndex = index + 4;
+                  const Icon = BENEFIT_ICONS[itemIndex];
+
+                  return (
+                    <div
+                      key={item}
+                      className="group grid gap-4 py-4 sm:grid-cols-[auto_1fr_auto] sm:items-center"
+                    >
+                      <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/80 bg-[#f7fbfd] text-[#72a0c1] shadow-[0_10px_28px_rgba(114,160,193,0.12)]">
+                        <Icon size={17} strokeWidth={1.7} />
+                      </span>
+
+                      <p className="text-sm leading-7 text-[#2d5066]">
+                        {item}
+                      </p>
+
+                      <span className="hidden rounded-full border border-[#b9d9eb]/45 bg-white/70 px-2.5 py-1 text-[0.65rem] font-medium text-[#72a0c1] sm:block">
+                        {String(itemIndex + 1).padStart(2, "0")}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
-          </Reveal>
-        </div>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
