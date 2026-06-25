@@ -22,6 +22,7 @@ type LandingCtaBlockProps = {
   secondaryButton?: { href: string; label: ReactNode };
   feesLabel: string;
   pricingItems: PricingItem[];
+  pricingNote?: string;
 };
 
 export function LandingCtaBlock({
@@ -32,6 +33,7 @@ export function LandingCtaBlock({
   secondaryButton,
   feesLabel,
   pricingItems,
+  pricingNote,
 }: LandingCtaBlockProps) {
   return (
     <section className="section-rhythm-loose px-[var(--page-gutter)]">
@@ -83,8 +85,17 @@ export function LandingCtaBlock({
                     {item.detail}
                   </p>
                 )}
+                
               </div>
             ))}
+            {pricingNote && (
+              <div className="mt-5 flex gap-3 rounded-[22px] border border-[#b9d9eb]/45 bg-white/58 px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.82)] backdrop-blur-xl">
+                <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-blue)]" />
+                <p className="text-[0.72rem] leading-[1.65] text-[var(--color-ink-soft)]">
+                  {pricingNote}
+                </p>
+              </div>
+            )}
           </div>
         </article>
 

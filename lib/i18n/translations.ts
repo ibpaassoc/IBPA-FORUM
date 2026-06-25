@@ -1134,6 +1134,8 @@ const en = {
       title: "Join the international IBPA judging panel.",
       description: "Apply as a jury member to evaluate excellence in beauty, support professional standards, and contribute to a respected global award platform.",
       registrationFee: "Registration fee",
+      registrationNote:
+        "The registration fee is payable only after the candidate has been approved and is non-refundable.",
     },
   },
   grandPrixPage: {
@@ -2737,6 +2739,8 @@ const ru: typeof en = {
       title: "Присоединяйтесь к международному жюри IBPA.",
       description: "Подайте заявку как член жюри для оценки профессионального мастерства в индустрии красоты и участия в уважаемой международной премии.",
       registrationFee: "Регистрационный взнос",
+      registrationNote:
+        "Регистрационный взнос оплачивается только после одобрения кандидатуры и является невозвратным.",
     },
   },
   grandPrixPage: {
@@ -4340,6 +4344,8 @@ const ua: typeof en = {
       title: "Приєднуйтесь до міжнародного журі IBPA.",
       description: "Подайте заявку як член журі для оцінювання досконалості у сфері краси, підтримки професійних стандартів і участі у шанованій міжнародній премії.",
       registrationFee: "Реєстраційний внесок",
+      registrationNote:
+        "Реєстраційний внесок сплачується лише після схвалення кандидатури та не підлягає поверненню.",
     },
   },
   grandPrixPage: {

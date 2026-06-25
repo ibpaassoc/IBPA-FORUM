@@ -27,6 +27,7 @@ export default function JuryCta() {
           price: PRICING.judgeRegistration.ibpaMembers,
         },
       ]}
+      pricingNote={c.registrationNote}
     />
   );
 }
