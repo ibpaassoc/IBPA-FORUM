@@ -2,14 +2,14 @@ import { getPublicJuryMembers } from "@/features/jury/server/queries";
 
 import {
   JuryHero,
+  JuryAbout,
   JuryTimeline,
+  JurySteps,
   JuryRequirements,
-  JuryProcess,
   JuryResponsibilities,
   JuryBenefits,
   JuryCredibility,
   JuryActiveMembers,
-  JuryFeeCard,
   JuryCta,
   JuryFaq,
 } from "@/features/jury/components/pages";
@@ -19,14 +19,14 @@ export default async function JuryPage() {
   return (
     <main className="page-shell">
       <JuryHero />
+      <JuryAbout />
       <JuryTimeline />
       <JuryRequirements />
-      <JuryProcess />
+      <JurySteps />
       <JuryResponsibilities />
       <JuryBenefits />
       <JuryCredibility />
       <JuryActiveMembers juryMembers={juryMembers} />
-      <JuryFeeCard />
       <JuryCta />
       <JuryFaq />
     </main>

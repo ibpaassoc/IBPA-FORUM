@@ -1,5 +1,7 @@
 export {default as JuryHero} from "./JuryHero";
+export {default as JuryAbout} from "./JuryAbout";
 export {default as JuryTimeline} from "./JuryTimeline";
+export {default as JurySteps} from "./JurySteps";
 export {default as JuryRequirements} from "./JuryRequirements";
 export {default as JuryProcess} from "./JuryProcess";
 export {default as JuryResponsibilities} from "./JuryResponsibilities";

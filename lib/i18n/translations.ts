@@ -908,6 +908,48 @@ const en = {
       feeValue: "$250",
       feeNote: "Charged only after approval",
     },
+    about: {
+      eyebrow: "About the Award",
+      title: "IBPA Beauty Awards 2026",
+      description:
+        "IBPA Beauty Awards 2026 is an international award in the beauty industry, created to recognize the professionalism, talent, and outstanding achievements of specialists, educators, business owners, and brands.",
+      recognition:
+        "The award celebrates strong professional results, expertise, creativity, and contribution to the beauty industry.",
+      objectiveEvaluation:
+        "The jury panel plays a key role in providing objective, honest, and professional evaluation of competition entries.",
+      trust:
+        "Through expert judging, the jury helps build trust in the award and strengthens its international credibility.",
+    },
+    timeline: {
+      eyebrow: "Judging period",
+      title: "Important dates",
+      formatLabel: "Judging format",
+      formatValue: "Online",
+      yearLabel: "Year",
+      year: "2026",
+      items: [
+        {
+          label: "Applications to the jury panel",
+          title: "Jury applications",
+          date: "June 20 – August 15, 2026",
+        },
+        {
+          label: "Application review",
+          title: "Review period",
+          date: "Until August 20, 2026",
+        },
+        {
+          label: "Evaluation of competition entries",
+          title: "Judging period",
+          date: "August 16 – September 5, 2026",
+        },
+        {
+          label: "Final and announcement of results",
+          title: "Results announcement",
+          date: "September 26, 2026",
+        },
+      ],
+    },
     requirements: {
       label: "Requirements",
       title: "Who can apply for the jury panel",
@@ -2456,6 +2498,48 @@ const ru: typeof en = {
       feeValue: "$250",
       feeNote: "Оплачивается только после одобрения",
     },
+    about: {
+      eyebrow: "О премии",
+      title: "IBPA Beauty Awards 2026",
+      description:
+        "IBPA Beauty Awards 2026 — международная премия в сфере красоты, созданная для признания профессионализма, таланта и выдающихся достижений специалистов, преподавателей, владельцев бизнеса и брендов.",
+      recognition:
+        "Премия отмечает сильные профессиональные результаты, экспертность, креативность и вклад в развитие индустрии красоты.",
+      objectiveEvaluation:
+        "Судейская коллегия играет ключевую роль в обеспечении объективной, честной и профессиональной оценки конкурсных работ.",
+      trust:
+        "Благодаря экспертному судейству жюри формирует доверие к премии и усиливает её международный статус.",
+    },
+    timeline: {
+      eyebrow: "Период судейства",
+      title: "Важные даты",
+      formatLabel: "Формат судейства",
+      formatValue: "Онлайн",
+      yearLabel: "Год",
+      year: "2026",
+      items: [
+        {
+          label: "Подача заявок в судейскую коллегию",
+          title: "Заявки в жюри",
+          date: "20 июня – 15 августа 2026",
+        },
+        {
+          label: "Рассмотрение заявок",
+          title: "Период рассмотрения",
+          date: "До 20 августа 2026",
+        },
+        {
+          label: "Период оценки конкурсных работ",
+          title: "Оценка работ",
+          date: "16 августа – 5 сентября 2026",
+        },
+        {
+          label: "Финал и оглашение результатов",
+          title: "Оглашение результатов",
+          date: "26 сентября 2026",
+        },
+      ],
+    },
     requirements: {
       label: "Требования",
       title: "Кто может подать заявку в жюри",
@@ -4002,6 +4086,48 @@ const ua: typeof en = {
       fee: "Внесок",
       feeValue: "$250",
       feeNote: "Сплачується тільки після схвалення",
+    },
+    about: {
+      eyebrow: "Про премію",
+      title: "IBPA Beauty Awards 2026",
+      description:
+        "IBPA Beauty Awards 2026 — міжнародна премія у сфері краси, створена для визнання професіоналізму, таланту та видатних досягнень спеціалістів, викладачів, власників бізнесу та брендів.",
+      recognition:
+        "Премія відзначає сильні професійні результати, експертність, креативність і внесок у розвиток індустрії краси.",
+      objectiveEvaluation:
+        "Суддівська колегія відіграє ключову роль у забезпеченні об’єктивної, чесної та професійної оцінки конкурсних робіт.",
+      trust:
+        "Завдяки експертному суддівству журі формує довіру до премії та посилює її міжнародний статус.",
+    },
+    timeline: {
+      eyebrow: "Період суддівства",
+      title: "Важливі дати",
+      formatLabel: "Формат суддівства",
+      formatValue: "Онлайн",
+      yearLabel: "Рік",
+      year: "2026",
+      items: [
+        {
+          label: "Подача заявок до суддівської колегії",
+          title: "Заявки до журі",
+          date: "20 червня – 15 серпня 2026",
+        },
+        {
+          label: "Розгляд заявок",
+          title: "Період розгляду",
+          date: "До 20 серпня 2026",
+        },
+        {
+          label: "Період оцінювання конкурсних робіт",
+          title: "Оцінювання робіт",
+          date: "16 серпня – 5 вересня 2026",
+        },
+        {
+          label: "Фінал і оголошення результатів",
+          title: "Оголошення результатів",
+          date: "26 вересня 2026",
+        },
+      ],
     },
     requirements: {
       label: "Вимоги",
