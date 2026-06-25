@@ -1,5 +1,6 @@
 export { default as GrandPrixHero } from "./GrandPrixHero";
 export { default as GrandPrixAbout } from "./GrandPrixAbout";
+export { default as GrandPrixWhoQualifies } from "./GrandPrixWhoQualifies";
 export { default as GrandPrixWhySpecial } from "./GrandPrixWhySpecial";
 export { default as GrandPrixDecision } from "./GrandPrixDecision";
 export { default as GrandPrixRewards } from "./GrandPrixRewards";

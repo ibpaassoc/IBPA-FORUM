@@ -1,6 +1,7 @@
 "use client";
 
-import { Sparkles, Trophy } from "lucide-react";
+import Image from "next/image";
+import { Sparkles } from "lucide-react";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { GlassCard, Reveal } from "@/shared/components/public";
@@ -10,62 +11,59 @@ export default function GrandPrixAbout() {
   const c = t.grandPrixPage.about;
 
   return (
-    <section className="relative overflow-hidden bg-white py-20 md:py-28">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-[-14%] top-16 h-[440px] w-[440px] rounded-full bg-[#b9d9eb]/22 blur-3xl" />
-        <div className="absolute bottom-[-18%] right-[-10%] h-[520px] w-[520px] rounded-full bg-[#72a0c1]/12 blur-3xl" />
+    <section className="relative min-h-[clamp(640px,78vh,860px)] overflow-hidden bg-white">
+      <div className="absolute inset-y-0 right-0 w-full lg:w-[58%]">
+        <Image
+          src="/images/prizes.png"
+          alt="IBPA Beauty Awards Grand Prix"
+          fill
+          priority={false}
+          sizes="100vw"
+          className="object-cover"
+          style={{ objectPosition: "52% 38%" }}
+        />
+
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.02)_0%,rgba(255,255,255,0)_48%,rgba(255,255,255,0.20)_100%)]" />
+        <div className="absolute inset-0 hidden lg:block bg-[linear-gradient(90deg,rgba(255,255,255,1)_0%,rgba(255,255,255,0.97)_20%,rgba(255,255,255,0.74)_42%,rgba(255,255,255,0.18)_68%,rgba(255,255,255,0)_100%)]" />
+        <div className="absolute inset-0 lg:hidden bg-[linear-gradient(180deg,rgba(255,255,255,0.94)_0%,rgba(255,255,255,0.72)_48%,rgba(255,255,255,0.12)_100%)]" />
       </div>
 
-      <div className="page-section relative">
-        {/* Block 2 — What is the Grand Prix */}
-        <Reveal>
-          <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-            <div>
-              <p className="page-eyebrow text-[#72a0c1]">{c.whatEyebrow}</p>
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-[-14%] top-12 h-[430px] w-[430px] rounded-full bg-[#b9d9eb]/24 blur-3xl" />
+        <div className="absolute bottom-[-18%] left-[22%] h-[360px] w-[360px] rounded-full bg-[#72a0c1]/10 blur-3xl" />
+      </div>
 
-              <h2 className="mt-5 font-(--font-display) text-[clamp(2.4rem,5vw,4.6rem)] leading-[0.95] tracking-[-0.05em] text-[#1e2430]">
-                {c.whatTitle}
-              </h2>
+      <div className="page-section relative z-10 flex min-h-[clamp(640px,78vh,860px)] items-center py-[clamp(4.5rem,8vw,7rem)]">
+        <div className="max-w-[590px]">
+          <Reveal>
+            <p className="page-eyebrow text-[#72a0c1]">{c.whatEyebrow}</p>
+          </Reveal>
+
+          <Reveal delay={0.08}>
+            <h2 className="mt-5 max-w-[10ch] font-[var(--font-title-family)] text-[clamp(3.1rem,7vw,5.8rem)] font-light leading-[0.9] tracking-[-0.045em] text-[#1e2430]">
+              {c.whatTitle}
+            </h2>
+          </Reveal>
+
+          <Reveal delay={0.14}>
+            <div className="my-7 flex items-center gap-4">
+              <div className="h-px w-14 bg-[#72a0c1]/35" />
+              <Sparkles className="h-4 w-4 text-[#72a0c1]/65" strokeWidth={1.7} />
+              <div className="h-px w-14 bg-[#72a0c1]/35" />
             </div>
+          </Reveal>
 
-            <p className="max-w-2xl text-[1.05rem] leading-8 text-[#5d6877] md:text-[1.12rem]">
-              {c.whatText}
-            </p>
-          </div>
-        </Reveal>
-
-        {/* Block 3 — Who qualifies */}
-        <Reveal delay={0.14}>
-          <GlassCard className="mt-14 overflow-hidden rounded-[34px] border border-[#b9d9eb]/45 px-6 py-8 shadow-[0_24px_60px_rgba(114,160,193,0.12)] sm:px-9 sm:py-10">
-            <div className="grid gap-8 lg:grid-cols-[1fr_1fr] lg:items-center">
-              <div>
-                <p className="page-eyebrow text-[#72a0c1]">{c.whoEyebrow}</p>
-
-                <h3 className="mt-4 font-(--font-display) text-[clamp(1.8rem,3.2vw,2.7rem)] leading-[1.02] tracking-[-0.04em] text-[#1e2430]">
-                  {c.whoTitle}
-                </h3>
-              </div>
-
-              <div>
-                <div className="inline-flex items-center gap-3 rounded-full border border-[#72a0c1]/25 bg-white/80 px-5 py-3 shadow-[0_12px_30px_rgba(114,160,193,0.12)]">
-                  <Trophy className="h-5 w-5 text-[#72a0c1]" strokeWidth={1.7} />
-                  <span className="font-(--font-display) text-[clamp(1.35rem,2.4vw,1.9rem)] leading-none tracking-[-0.02em] text-[#1e2430]">
-                    {c.whoHighlight}
-                  </span>
-                </div>
-
-                <p className="mt-5 max-w-xl text-[1.02rem] leading-8 text-[#5d6877]">
-                  {c.whoText}
-                </p>
-
-                <p className="mt-3 inline-flex items-center gap-2 text-[0.92rem] font-medium text-[#72a0c1]">
-                  <Sparkles className="h-4 w-4" strokeWidth={1.8} />
-                  {c.whoNote}
-                </p>
-              </div>
-            </div>
-          </GlassCard>
-        </Reveal>
+          <Reveal delay={0.18}>
+            <GlassCard
+              tone="blue"
+              className="max-w-[540px] rounded-[32px] border border-white/65 bg-white/48 px-6 py-6 shadow-[0_24px_70px_rgba(114,160,193,0.13)] backdrop-blur-2xl sm:px-8 sm:py-7"
+            >
+              <p className="text-[1.04rem] leading-8 text-[#5d6877] md:text-[1.1rem]">
+                {c.whatText}
+              </p>
+            </GlassCard>
+          </Reveal>
+        </div>
       </div>
     </section>
   );

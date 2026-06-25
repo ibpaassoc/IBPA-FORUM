@@ -20,12 +20,12 @@ export default function HomePagePremium() {
       <HomeHero />
       <HomeAwardsInfo />
       <HomeThreeExperiences />
-      <HomeProgram />
+      {/*<HomeProgram />*/}
       <HomeConversionBlock />
-      <HomeSpeakers />
+      {/*<HomeSpeakers />*/}
       <HomePreviousForum />
       <HomePreviousWinners />
-      <HomePartners />
+      {/*<HomePartners />*/}
       <HomeWhyAttend />
       <HomeContactUs />
     </main>

@@ -3,6 +3,7 @@
 import {
   GrandPrixHero,
   GrandPrixAbout,
+  GrandPrixWhoQualifies,
   GrandPrixWhySpecial,
   GrandPrixDecision,
   GrandPrixRewards,
@@ -16,6 +17,7 @@ export default function GrandPrixPagePremium() {
     <main className="page-shell">
       <GrandPrixHero />
       <GrandPrixAbout />
+      <GrandPrixWhoQualifies />
       <GrandPrixWhySpecial />
       <GrandPrixDecision />
       <GrandPrixRewards />
