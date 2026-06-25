@@ -6,21 +6,12 @@ import { LandingSecondaryButton } from "@/shared/components/public";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
-const sectionTransition = {
-  type: "spring",
-  stiffness: 420,
-  damping: 44,
-  mass: 0.7,
-} as const;
-
 export default function CategoriesAbout() {
   const { t } = useLanguage();
 
   return (
     <motion.section
-      layout
-      transition={sectionTransition}
-      className="relative min-h-[760px] overflow-hidden bg-white"
+      className="landing-photo-section relative min-h-[760px] overflow-hidden bg-white"
     >
       <div className="pointer-events-none absolute inset-0">
         <Image
@@ -38,15 +29,12 @@ export default function CategoriesAbout() {
       </div>
 
       <motion.div
-        layout
-        transition={sectionTransition}
         className="relative z-10 mx-auto grid min-h-[760px] max-w-[1280px] grid-cols-1 items-center px-[var(--page-gutter)] py-[clamp(5rem,9vw,8rem)] lg:grid-cols-[0.44fr_0.56fr]"
       >
         <motion.div
-          layout
-          transition={sectionTransition}
-          initial={{ opacity: 0, x: -22, filter: "blur(10px)" }}
-          whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+          initial={{ opacity: 0, x: -16 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
           viewport={{ once: true, margin: "-12% 0px" }}
           className="order-1 max-w-[510px] text-center lg:text-left"
         >

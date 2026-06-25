@@ -31,10 +31,9 @@ export default function CategoriesAwardResults() {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-[linear-gradient(155deg,#f4f9fc_0%,#ffffff_46%,#eef7fb_100%)] py-20 md:py-28">
+    <section className="landing-section-strong relative overflow-hidden py-20 md:py-28">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute right-[-18%] top-[-16%] h-[620px] w-[620px] rounded-full bg-[#b9d9eb]/35 blur-3xl" />
-        <div className="absolute bottom-[-24%] left-[-18%] h-[580px] w-[580px] rounded-full bg-[#72a0c1]/14 blur-3xl" />
+        <div className="absolute right-[-18%] top-[-16%] h-[520px] w-[520px] rounded-full bg-[#b9d9eb]/18 blur-2xl" />
       </div>
 
       <div className="page-section relative z-10">
@@ -48,7 +47,7 @@ export default function CategoriesAwardResults() {
         </Reveal>
 
         <Reveal delay={0.08}>
-          <GlassCard className="mt-12 overflow-hidden rounded-[42px] border border-[#b9d9eb]/45 bg-white/68 p-6 shadow-[0_30px_90px_rgba(114,160,193,0.16),inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-2xl sm:p-8 lg:p-10">
+          <GlassCard className="mt-12 overflow-hidden rounded-[42px] border border-[#b9d9eb]/45 bg-white/68 p-6 shadow-[0_24px_72px_rgba(114,160,193,0.13),inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-xl sm:p-8 lg:p-10">
             <div className="relative">
               <div className="absolute left-[10%] right-[10%] top-[38px] hidden h-[2px] rounded-full bg-gradient-to-r from-[#72a0c1]/20 via-[#72a0c1]/70 to-[#72a0c1]/20 md:block" />
 
@@ -60,7 +59,7 @@ export default function CategoriesAwardResults() {
                     <div
                       key={item.label}
                       className={[
-                        "relative rounded-[32px] border p-5 backdrop-blur-xl transition-all duration-500",
+                        "relative rounded-[32px] border p-5 backdrop-blur-xl transition duration-200",
                         featured
                           ? "border-[#72a0c1]/45 bg-[#eef7fb]/90 shadow-[0_24px_70px_rgba(114,160,193,0.22)]"
                           : "border-[#b9d9eb]/38 bg-white/72 shadow-[0_18px_50px_rgba(114,160,193,0.12)]",
@@ -104,7 +103,7 @@ export default function CategoriesAwardResults() {
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[0.82fr_1.18fr]">
           <Reveal delay={0.14}>
-            <GlassCard className="relative h-full overflow-hidden rounded-[42px] border border-white/70 bg-white/58 p-7 shadow-[0_28px_80px_rgba(114,160,193,0.12),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-2xl sm:p-8">
+            <GlassCard className="relative h-full overflow-hidden rounded-[42px] border border-white/70 bg-white/58 p-7 shadow-[0_22px_66px_rgba(114,160,193,0.1),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-xl sm:p-8">
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#72a0c1]/10 text-[#72a0c1] ring-1 ring-[#72a0c1]/12">
                 <UsersRound className="h-6 w-6" strokeWidth={1.65} />
               </div>
@@ -137,7 +136,7 @@ export default function CategoriesAwardResults() {
           </Reveal>
 
           <Reveal delay={0.2}>
-            <GlassCard className="relative h-full overflow-hidden rounded-[42px] border border-[#b9d9eb]/45 bg-white/66 p-5 shadow-[0_30px_90px_rgba(114,160,193,0.16),inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-2xl sm:p-7 lg:p-8">
+            <GlassCard className="relative h-full overflow-hidden rounded-[42px] border border-[#b9d9eb]/45 bg-white/66 p-5 shadow-[0_24px_72px_rgba(114,160,193,0.13),inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-xl sm:p-7 lg:p-8">
               <p className="page-eyebrow text-[#72a0c1]">
                 {c.pricing.eyebrow}
               </p>

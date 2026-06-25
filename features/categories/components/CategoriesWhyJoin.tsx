@@ -28,10 +28,9 @@ export default function CategoriesWhyJoin() {
   const c = t.categoriesPage.whyJoin;
 
   return (
-    <section className="relative overflow-hidden bg-white py-20 md:py-28">
+    <section className="landing-section relative overflow-hidden py-20 md:py-28">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-[-14%] top-12 h-[420px] w-[420px] rounded-full bg-[#b9d9eb]/22 blur-3xl" />
-        <div className="absolute bottom-[-18%] right-[-10%] h-[520px] w-[520px] rounded-full bg-[#72a0c1]/14 blur-3xl" />
+        <div className="absolute left-[-14%] top-12 h-[340px] w-[340px] rounded-full bg-[#b9d9eb]/14 blur-2xl" />
       </div>
 
       <div className="page-section relative">
@@ -53,7 +52,7 @@ export default function CategoriesWhyJoin() {
               return (
                 <GlassCard
                   key={benefit}
-                  className="group relative min-h-[150px] overflow-hidden rounded-[32px] border border-white/65 p-6 transition-all duration-500 hover:-translate-y-1 hover:border-[#72a0c1]/25"
+                  className="group relative min-h-[150px] overflow-hidden rounded-[32px] border border-white/65 p-6 transition duration-200 hover:-translate-y-0.5 hover:border-[#72a0c1]/25"
                 >
                   <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[#72a0c1]/40 to-transparent opacity-70" />
 

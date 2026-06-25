@@ -212,7 +212,7 @@ export default function CategoriesFeatures() {
   return (
     <section className="relative mt-[clamp(3rem,7vw,7rem)] overflow-hidden px-[var(--page-gutter)] pb-10 pt-3 sm:pb-14 sm:pt-4">
       <div className="pointer-events-none absolute left-1/2 top-16 h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-[var(--color-blue-light)]/18 blur-2xl" />
-      <div className="pointer-events-none absolute right-[-12rem] top-72 h-[28rem] w-[28rem] rounded-full bg-[var(--color-blue)]/8 blur-3xl" />
+      <div className="pointer-events-none absolute right-[-12rem] top-72 h-[24rem] w-[24rem] rounded-full bg-[var(--color-blue)]/6 blur-2xl" />
 
       <motion.div
         variants={listVariants}

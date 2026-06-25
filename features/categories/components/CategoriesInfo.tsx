@@ -27,10 +27,9 @@ export default function CategoriesInfo() {
   const c = t.categoriesPage.participation;
 
   return (
-    <section className="relative overflow-hidden bg-white py-20 md:py-28">
+    <section className="landing-section relative overflow-hidden py-20 md:py-28">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-[-18%] top-20 h-[440px] w-[440px] rounded-full bg-[#b9d9eb]/25 blur-3xl" />
-        <div className="absolute bottom-[-16%] right-[-12%] h-[520px] w-[520px] rounded-full bg-[#72a0c1]/14 blur-3xl" />
+        <div className="absolute left-[-18%] top-20 h-[360px] w-[360px] rounded-full bg-[#b9d9eb]/16 blur-2xl" />
       </div>
 
       <div className="page-section relative">
@@ -56,7 +55,7 @@ export default function CategoriesInfo() {
               return (
                 <GlassCard
                   key={step.number}
-                  className="group relative min-h-[116px] overflow-hidden rounded-[32px] border border-white/65 px-5 py-5 transition-all duration-500 hover:-translate-y-1 hover:border-[#72a0c1]/25 sm:px-7 sm:py-6"
+                  className="group relative min-h-[116px] overflow-hidden rounded-[32px] border border-white/65 px-5 py-5 transition duration-200 hover:-translate-y-0.5 hover:border-[#72a0c1]/25 sm:px-7 sm:py-6"
                 >
                   <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[#72a0c1]/45 to-transparent opacity-70" />
 
