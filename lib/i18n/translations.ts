@@ -1007,16 +1007,22 @@ const en = {
       title: "Grand Prix FAQ",
       items: [
         {
-          question: "Can I apply for the Grand Prix separately?",
-          answer: "No. Qualification happens automatically through participation.",
+          question: "Do I need to apply for the Grand Prix separately?",
+          answer:
+            "No. Entry is activated automatically once you submit applications in 5 or more nominations.",
         },
         {
-          question: "Do I need to compete in different categories or nominations?",
-          answer: "No. Nominations can be within one category or across multiple categories.",
+          question: "Is there an additional fee for the Grand Prix?",
+          answer: "No. There is no separate registration fee.",
         },
         {
-          question: "How is the winner selected?",
-          answer: "Based on the total combined score across all nominations.",
+          question: "Can I take part in the Grand Prix with only one entry?",
+          answer:
+            "No. To take part you must submit applications in at least 5 nominations.",
+        },
+        {
+          question: "How many Grand Prix winners are chosen each year?",
+          answer: "One Grand Prix holder within the award.",
         },
       ],
     },
@@ -1031,11 +1037,11 @@ const en = {
       timelineTitle: "Designed for clarity at each award stage",
       timelineDescription: "Visual emphasis across nomination, review, and award presentation.",
       appWindow: "Application window",
-      appWindowText: "Participants submit category entries within official campaign dates.",
+      appWindowText: "Submit your nominations from June 20 to August 15, 2026.",
       scorePeriod: "Panel scoring period",
-      scorePeriodText: "Judges evaluate entries and finalize category-level scores.",
+      scorePeriodText: "Judges evaluate entries from August 16 to September 5, 2026.",
       reveal: "Grand reveal",
-      revealText: "Finalists and the Grand Prix winner are announced at the ceremony.",
+      revealText: "Winners are announced at the IBPA Beauty Awards 2026 ceremony on September 26, 2026.",
       breakEyebrow: "Grand Prix Atmosphere",
       breakTitle: "A final stage built for standout multi-category performance",
       breakText: "A premium award environment where cumulative excellence is visibly recognized.",
@@ -1049,10 +1055,71 @@ const en = {
       qualificationRule: "Submit entries in 5 or more categories, and you automatically become a nominee for the IBPA Grand Prix—no additional applications required.",
       decision: "Award Decision",
     },
+    about: {
+      whatEyebrow: "About the Grand Prix",
+      whatTitle: "What is the Grand Prix",
+      whatText:
+        "The Grand Prix is the main award of IBPA Beauty Awards 2026, granted to the participant with the highest combined score among the contenders.",
+      whoEyebrow: "Who qualifies",
+      whoTitle: "Who becomes a Grand Prix contender",
+      whoHighlight: "5+ nominations = automatic entry",
+      whoText:
+        "Participants who submit work in five or more nominations automatically become candidates for the Grand Prix.",
+      whoNote: "No additional registration is required.",
+    },
+    whySpecial: {
+      eyebrow: "Why it matters",
+      title: "Why the Grand Prix is considered a special award",
+      lead: "The Grand Prix evaluates not a single piece of work, but the overall professional level of a specialist.",
+      cards: [
+        { title: "Mastery", text: "Strong results across several categories at once." },
+        { title: "Consistency", text: "Confirmation of quality across different disciplines." },
+        { title: "Versatility", text: "Broad professional expertise." },
+        { title: "Recognition", text: "The highest level of award within the program." },
+      ],
+    },
+    decision: {
+      eyebrow: "Selection",
+      title: "How the winner is determined",
+      steps: [
+        {
+          number: "01",
+          title: "Automatic selection",
+          text: "Five or more nominations automatically add a participant to the list of Grand Prix contenders.",
+        },
+        {
+          number: "02",
+          title: "Independent evaluation",
+          text: "Each entry is evaluated by an international panel of judges against unified criteria.",
+        },
+        {
+          number: "03",
+          title: "Score tallying",
+          text: "Points are summed across all of the participant's nominations.",
+        },
+        {
+          number: "04",
+          title: "Determining the winner",
+          text: "The Grand Prix goes to the participant with the highest total result.",
+        },
+      ],
+    },
+    rewards: {
+      eyebrow: "Rewards",
+      title: "What the Grand Prix winner receives",
+      items: [
+        "The main Grand Prix trophy",
+        "A special winner's diploma",
+        "International recognition",
+        "Publication on IBPA resources",
+        "Coverage of the win on the award's social media",
+        "Grand Prix holder status at IBPA Beauty Awards 2026",
+      ],
+    },
     participationCta: {
       eyebrow: "Award participation",
-      title: "Participation cost with Grand Prix access built in.",
-      description: "Enter the main award with the nomination path that fits your profile. When you submit five or more nominations, Grand Prix consideration is included automatically.",
+      title: "Ready to declare your professional level?",
+      description: "Submit your work in the selected nominations and earn the chance to become a contender for the Grand Prix of IBPA Beauty Awards 2026.",
       nominationFees: "Nomination fees",
       members: "Members",
       perNomSubmission: "Per nomination submission",
@@ -2276,19 +2343,22 @@ const ru: typeof en = {
       title: "FAQ Гран-при",
       items: [
         {
-          question: "Можно ли подать заявку на Гран-при отдельно?",
+          question: "Нужно ли отдельно подаваться на Гран-при?",
           answer:
-            "Нет. Участие формируется автоматически при участии в 5 и более номинациях.",
+            "Нет. Участие активируется автоматически после подачи заявок в 5 и более номинациях.",
         },
         {
-          question: "Обязательно ли участвовать в разных категориях?",
-          answer:
-            "Нет. Номинации могут быть как в одной категории, так и в разных.",
+          question: "Есть ли дополнительный взнос за Гран-при?",
+          answer: "Нет. Отдельный регистрационный взнос не предусмотрен.",
         },
         {
-          question: "Как выбирается победитель?",
+          question: "Можно ли участвовать в Гран-при только с одной работой?",
           answer:
-            "По сумме всех баллов, полученных за каждую номинацию.",
+            "Нет. Для участия необходимо подать заявки минимум в 5 номинациях.",
+        },
+        {
+          question: "Сколько победителей Гран-при определяется ежегодно?",
+          answer: "Один обладатель Гран-при в рамках премии.",
         },
       ],
     },
@@ -2303,11 +2373,11 @@ const ru: typeof en = {
       timelineTitle: "Понятная логика на каждом этапе премии",
       timelineDescription: "Акцент на номинации, оценивании и финальной презентации премии.",
       appWindow: "Период подачи заявок",
-      appWindowText: "Участники подают заявки по категориям в официальные сроки кампании.",
+      appWindowText: "Подавайте номинации с 20 июня по 15 августа 2026 года.",
       scorePeriod: "Период оценивания",
-      scorePeriodText: "Жюри оценивает заявки и фиксирует баллы по каждой категории.",
+      scorePeriodText: "Жюри оценивает работы с 16 августа по 5 сентября 2026 года.",
       reveal: "Финальное объявление",
-      revealText: "Финалисты и победитель Гран-при объявляются на церемонии.",
+      revealText: "Победителей объявляют на церемонии IBPA Beauty Awards 2026 — 26 сентября 2026 года.",
       breakEyebrow: "Атмосфера Гран-при",
       breakTitle: "Финальная сцена для сильного результата в нескольких категориях",
       breakText: "Премиальная среда, где суммарное мастерство получает заметное признание.",
@@ -2321,10 +2391,71 @@ const ru: typeof en = {
       qualificationRule: "Подайте заявки в 5 и более номинаций - и вы автоматически становитесь номинантом на Гран-при IBPA. Без дополнительных заявок.",
       decision: "Решение премии",
     },
+    about: {
+      whatEyebrow: "О Гран-при",
+      whatTitle: "Что такое Гран-при",
+      whatText:
+        "Гран-при — это главная награда IBPA Beauty Awards 2026, которая присуждается участнику с самым высоким суммарным результатом среди претендентов.",
+      whoEyebrow: "Кто претендует",
+      whoTitle: "Кто становится претендентом на Гран-при",
+      whoHighlight: "5+ номинаций = автоматическое участие",
+      whoText:
+        "Участники, подавшие работы в пяти и более номинациях, автоматически становятся кандидатами на получение Гран-при.",
+      whoNote: "Дополнительная регистрация не требуется.",
+    },
+    whySpecial: {
+      eyebrow: "Почему это важно",
+      title: "Почему Гран-при считается особой наградой",
+      lead: "Гран-при оценивает не отдельную работу, а общий профессиональный уровень специалиста.",
+      cards: [
+        { title: "Мастерство", text: "Высокие результаты сразу в нескольких категориях." },
+        { title: "Стабильность", text: "Подтверждение качества работы в разных направлениях." },
+        { title: "Универсальность", text: "Широкая профессиональная экспертиза." },
+        { title: "Признание", text: "Высший уровень награды в рамках премии." },
+      ],
+    },
+    decision: {
+      eyebrow: "Отбор",
+      title: "Как определяется победитель",
+      steps: [
+        {
+          number: "01",
+          title: "Автоматический отбор",
+          text: "5 и более номинаций автоматически включают участника в список претендентов на Гран-при.",
+        },
+        {
+          number: "02",
+          title: "Независимая оценка",
+          text: "Каждая работа оценивается международной коллегией судей по единым критериям.",
+        },
+        {
+          number: "03",
+          title: "Подсчёт результатов",
+          text: "Баллы суммируются по всем номинациям участника.",
+        },
+        {
+          number: "04",
+          title: "Определение победителя",
+          text: "Гран-при получает участник с наивысшим итоговым результатом.",
+        },
+      ],
+    },
+    rewards: {
+      eyebrow: "Награды",
+      title: "Что получает обладатель Гран-при",
+      items: [
+        "Главный трофей Гран-при",
+        "Специальный диплом победителя",
+        "Международное признание",
+        "Публикация на ресурсах IBPA",
+        "Освещение победы в социальных сетях премии",
+        "Статус обладателя Гран-при IBPA Beauty Awards 2026",
+      ],
+    },
     participationCta: {
-      eyebrow: "Участие в конкурсе",
-      title: "Стоимость участия с доступом к Гран-при.",
-      description: "Войдите в основную премию с путём номинации, который соответствует вашему профилю. При подаче пяти и более номинаций участие в Гран-при включается автоматически.",
+      eyebrow: "Участие в премии",
+      title: "Готовы заявить о своём профессиональном уровне?",
+      description: "Подайте работы в выбранные номинации и получите возможность стать претендентом на Гран-при IBPA Beauty Awards 2026.",
       nominationFees: "Взносы за номинации",
       members: "Участники",
       perNomSubmission: "За одну номинацию",
@@ -3548,19 +3679,22 @@ const ua: typeof en = {
       title: "FAQ Гран-прі",
       items: [
         {
-          question: "Чи можна подати заявку на Гран-прі окремо?",
+          question: "Чи потрібно окремо подаватися на Гран-прі?",
           answer:
-            "Ні. Участь формується автоматично за участі у 5 або більше номінаціях.",
+            "Ні. Участь активується автоматично після подання заявок у 5 і більше номінаціях.",
         },
         {
-          question: "Чи обов'язково брати участь у різних категоріях?",
-          answer:
-            "Ні. Номінації можуть бути як в одній категорії, так і в різних.",
+          question: "Чи є додатковий внесок за Гран-прі?",
+          answer: "Ні. Окремий реєстраційний внесок не передбачено.",
         },
         {
-          question: "Як обирається переможець?",
+          question: "Чи можна брати участь у Гран-прі лише з однією роботою?",
           answer:
-            "За сумою всіх балів, отриманих за кожну номінацію.",
+            "Ні. Для участі необхідно подати заявки щонайменше у 5 номінаціях.",
+        },
+        {
+          question: "Скільки переможців Гран-прі визначається щороку?",
+          answer: "Один володар Гран-прі в межах премії.",
         },
       ],
     },
@@ -3575,11 +3709,11 @@ const ua: typeof en = {
       timelineTitle: "Зрозуміла логіка на кожному етапі премії",
       timelineDescription: "Акцент на номінації, оцінюванні та фінальній презентації премії.",
       appWindow: "Період подання заявок",
-      appWindowText: "Учасники подають заявки за категоріями в офіційні строки кампанії.",
+      appWindowText: "Подавайте номінації з 20 червня по 15 серпня 2026 року.",
       scorePeriod: "Період оцінювання",
-      scorePeriodText: "Журі оцінює заявки та фіксує бали за кожною категорією.",
+      scorePeriodText: "Журі оцінює роботи з 16 серпня по 5 вересня 2026 року.",
       reveal: "Фінальне оголошення",
-      revealText: "Фіналісти та переможець Гран-прі оголошуються на церемонії.",
+      revealText: "Переможців оголошують на церемонії IBPA Beauty Awards 2026 — 26 вересня 2026 року.",
       breakEyebrow: "Атмосфера Гран-прі",
       breakTitle: "Фінальна сцена для сильного результату в кількох категоріях",
       breakText: "Преміальне середовище, де сумарна майстерність отримує помітне визнання.",
@@ -3593,10 +3727,71 @@ const ua: typeof en = {
       qualificationRule: "Подайте заявки в 5 і більше номінацій - і ви автоматично стаєте номінантом на Гран-прі IBPA. Без додаткових заявок.",
       decision: "Рішення премії",
     },
+    about: {
+      whatEyebrow: "Про Гран-прі",
+      whatTitle: "Що таке Гран-прі",
+      whatText:
+        "Гран-прі — це головна нагорода IBPA Beauty Awards 2026, яку присуджують учаснику з найвищим сумарним результатом серед претендентів.",
+      whoEyebrow: "Хто претендує",
+      whoTitle: "Хто стає претендентом на Гран-прі",
+      whoHighlight: "5+ номінацій = автоматична участь",
+      whoText:
+        "Учасники, які подали роботи у п'яти та більше номінаціях, автоматично стають кандидатами на отримання Гран-прі.",
+      whoNote: "Додаткова реєстрація не потрібна.",
+    },
+    whySpecial: {
+      eyebrow: "Чому це важливо",
+      title: "Чому Гран-прі вважається особливою нагородою",
+      lead: "Гран-прі оцінює не окрему роботу, а загальний професійний рівень спеціаліста.",
+      cards: [
+        { title: "Майстерність", text: "Високі результати одразу в кількох категоріях." },
+        { title: "Стабільність", text: "Підтвердження якості роботи в різних напрямах." },
+        { title: "Універсальність", text: "Широка професійна експертиза." },
+        { title: "Визнання", text: "Найвищий рівень нагороди в межах премії." },
+      ],
+    },
+    decision: {
+      eyebrow: "Відбір",
+      title: "Як визначається переможець",
+      steps: [
+        {
+          number: "01",
+          title: "Автоматичний відбір",
+          text: "5 і більше номінацій автоматично включають учасника до списку претендентів на Гран-прі.",
+        },
+        {
+          number: "02",
+          title: "Незалежне оцінювання",
+          text: "Кожна робота оцінюється міжнародною колегією суддів за єдиними критеріями.",
+        },
+        {
+          number: "03",
+          title: "Підрахунок результатів",
+          text: "Бали підсумовуються за всіма номінаціями учасника.",
+        },
+        {
+          number: "04",
+          title: "Визначення переможця",
+          text: "Гран-прі отримує учасник із найвищим підсумковим результатом.",
+        },
+      ],
+    },
+    rewards: {
+      eyebrow: "Нагороди",
+      title: "Що отримує володар Гран-прі",
+      items: [
+        "Головний трофей Гран-прі",
+        "Спеціальний диплом переможця",
+        "Міжнародне визнання",
+        "Публікація на ресурсах IBPA",
+        "Висвітлення перемоги в соціальних мережах премії",
+        "Статус володаря Гран-прі IBPA Beauty Awards 2026",
+      ],
+    },
     participationCta: {
-      eyebrow: "Участь у конкурсі",
-      title: "Вартість участі з доступом до Гран-прі.",
-      description: "Увійдіть до основної премії зі шляхом номінації, що відповідає вашому профілю. При поданні п'яти і більше номінацій участь у Гран-прі включається автоматично.",
+      eyebrow: "Участь у премії",
+      title: "Готові заявити про свій професійний рівень?",
+      description: "Подайте роботи в обрані номінації та отримайте можливість стати претендентом на Гран-прі IBPA Beauty Awards 2026.",
       nominationFees: "Внески за номінації",
       members: "Учасники",
       perNomSubmission: "За одну номінацію",

@@ -23,6 +23,8 @@ export { HeroPrimaryButton, HeroSecondaryButton } from "./HeroButtons";
 export { LandingCtaBlock } from "./LandingCtaBlock";
 export { default as ProcessTimeline } from "./ProcessTimeline";
 export { default as Reveal } from "./Reveal";
+export { default as FaqAccordion } from "./FaqAccordion";
+export type { FaqItem } from "./FaqAccordion";
 export { default as SafeImage } from "./SafeImage";
 export { default as SectionHeading } from "./SectionHeading";
 export { default as StaggerContainer } from "./StaggerContainer";
