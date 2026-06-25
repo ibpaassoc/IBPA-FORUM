@@ -1101,6 +1101,7 @@ const en = {
       statementEyebrow: "Credibility Statement",
       statementTitle: "Every score should reflect both artistry and professional integrity",
       statementText: "IBPA Beauty Award 2026 judges are selected for expertise, neutrality, and commitment to fair evaluation.",
+      statementText2: "Each member of the jury acts independently and evaluates works exclusively on the basis of approved award criteria.",
       statementQuote: "Judging is not only about outcomes. It is about trust in the process.",
       approvedEyebrow: "Approved Jury",
       approvedTitle: "Current IBPA Beauty Award 2026 Jury Members",
@@ -2703,6 +2704,7 @@ const ru: typeof en = {
       statementEyebrow: "Позиция доверия",
       statementTitle: "Каждый балл должен отражать мастерство и профессиональную честность",
       statementText: "Судьи IBPA Beauty Award 2026 отбираются по экспертизе, нейтральности и приверженности справедливой оценке.",
+      statementText2: "Каждый член жюри действует независимо и оценивает работы исключительно на основании утверждённых критериев премии.",
       statementQuote: "Судейство - это не только результат. Это доверие к процессу.",
       approvedEyebrow: "Одобренное жюри",
       approvedTitle: "Текущий состав жюри IBPA Beauty Award 2026",
@@ -4304,6 +4306,7 @@ const ua: typeof en = {
       statementEyebrow: "Позиція довіри",
       statementTitle: "Кожен бал має відображати майстерність і професійну доброчесність",
       statementText: "Суддів IBPA Beauty Award 2026 відбирають за експертизою, нейтральністю та відданістю справедливому оцінюванню.",
+      statementText2: "Кожен член журі діє незалежно та оцінює роботи виключно на основі затверджених критеріїв нагородження.",
       statementQuote: "Суддівство - це не лише результат. Це довіра до процесу.",
       approvedEyebrow: "Схвалене журі",
       approvedTitle: "Поточний склад журі IBPA Beauty Award 2026",
@@ -4313,6 +4316,7 @@ const ua: typeof en = {
       ctaText: "Подайте заявку до журі та долучайтеся до справедливих професійних рішень за номінаціями.",
       ctaAside: "Оплата реєстрації доступна лише після схвалення.",
     },
+
     benefits: {
       eyebrow: "Привілеї офіційного судді",
       title: "Привілеї офіційного судді IBPA Beauty Awards 2026",

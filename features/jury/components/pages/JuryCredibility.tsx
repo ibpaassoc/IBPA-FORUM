@@ -43,6 +43,10 @@ export default function JuryCredibility() {
                 {t.juryPage.copy.statementText}
               </p>
 
+              <p className="mt-2 max-w-md text-[0.98rem] leading-[1.85] text-[var(--color-ink-soft)]">
+                {t.juryPage.copy.statementText2}
+              </p>
+
               {t.juryPage.copy.statementQuote ? (
                 <blockquote className="mt-8 border-l-2 border-[var(--color-blue)] pl-5 font-[var(--font-accent-family)] text-[clamp(1.1rem,1.7vw,1.45rem)] italic leading-[1.5] text-[var(--color-ink-soft)]">
                   {t.juryPage.copy.statementQuote}
