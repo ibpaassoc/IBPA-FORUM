@@ -19,8 +19,12 @@ function isProtectedJuryPath(pathname: string) {
 // All other page routes are rewritten to /under-development.
 const ALLOWED_PATH_PREFIXES = [
   "/",
+  "/association",
   "/apply",
   "/apply/jury",
+  "/categories",
+  "/grand-prix",
+  "/jury",
   "/under-development",
   // Admin panel — staff must still review applications
   "/admin",
