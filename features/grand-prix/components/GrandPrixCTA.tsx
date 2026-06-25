@@ -11,7 +11,7 @@ export default function GrandPrixCTA() {
   const c = t.grandPrixPage.participationCta;
 
   return (
-    <section className="relative min-h-[clamp(620px,78vh,860px)] overflow-hidden bg-white">
+    <section className="landing-photo-section relative min-h-[clamp(620px,78vh,860px)] overflow-hidden bg-white">
       <Image
         src="/images/events/badges.jpg"
         alt="Grand Prix event moment"

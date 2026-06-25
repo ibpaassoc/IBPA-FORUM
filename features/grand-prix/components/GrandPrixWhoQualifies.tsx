@@ -11,7 +11,7 @@ export default function GrandPrixWhoQualifies() {
   const c = t.grandPrixPage.about;
 
   return (
-    <section className="relative min-h-[clamp(640px,78vh,860px)] overflow-hidden bg-white">
+    <section className="landing-photo-section relative min-h-[clamp(640px,78vh,860px)] overflow-hidden bg-white">
       <div className="absolute inset-y-0 left-0 w-full lg:w-[64%]">
         <Image
           src="/images/winners.png"
@@ -29,8 +29,7 @@ export default function GrandPrixWhoQualifies() {
       </div>
 
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute bottom-[-18%] right-[-8%] h-[520px] w-[520px] rounded-full bg-[#72a0c1]/12 blur-3xl" />
-        <div className="absolute right-[16%] top-16 h-[360px] w-[360px] rounded-full bg-[#b9d9eb]/18 blur-3xl" />
+        <div className="absolute right-[16%] top-16 h-[320px] w-[320px] rounded-full bg-[#b9d9eb]/12 blur-2xl" />
       </div>
 
       <div className="page-section relative z-10 flex min-h-[clamp(640px,78vh,860px)] items-center justify-end py-[clamp(4.5rem,8vw,7rem)]">
@@ -49,7 +48,7 @@ export default function GrandPrixWhoQualifies() {
             <GlassCard
               tone="blue"
               hoverLift
-              className="mt-8 overflow-hidden rounded-[34px] border border-white/65 bg-white/50 px-6 py-6 shadow-[0_28px_80px_rgba(114,160,193,0.14)] backdrop-blur-2xl sm:px-8 sm:py-7"
+              className="mt-8 overflow-hidden rounded-[34px] border border-white/65 bg-white/54 px-6 py-6 shadow-[0_22px_68px_rgba(114,160,193,0.12)] backdrop-blur-xl sm:px-8 sm:py-7"
             >
               <div className="inline-flex items-center gap-3 rounded-full border border-[#72a0c1]/25 bg-white/72 px-5 py-3 shadow-[0_12px_34px_rgba(114,160,193,0.12)]">
                 <Trophy className="h-5 w-5 text-[#72a0c1]" strokeWidth={1.7} />

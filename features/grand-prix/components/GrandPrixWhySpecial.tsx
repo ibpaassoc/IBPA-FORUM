@@ -13,9 +13,9 @@ export default function GrandPrixWhySpecial() {
   const c = t.grandPrixPage.whySpecial;
 
   return (
-    <section className="relative overflow-hidden bg-[linear-gradient(160deg,#f2f8fb,#ffffff)] py-20 md:py-28">
+    <section className="landing-section-strong relative overflow-hidden py-20 md:py-28">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute right-[-16%] top-10 h-[440px] w-[440px] rounded-full bg-[#b9d9eb]/28 blur-3xl" />
+        <div className="absolute right-[-16%] top-10 h-[360px] w-[360px] rounded-full bg-[#b9d9eb]/16 blur-2xl" />
       </div>
 
       <div className="page-section relative">
@@ -41,7 +41,7 @@ export default function GrandPrixWhySpecial() {
               return (
                 <GlassCard
                   key={card.title}
-                  className="group relative min-h-[210px] overflow-hidden rounded-[28px] border border-white/65 p-6 transition-all duration-500 hover:-translate-y-1 hover:border-[#72a0c1]/25"
+                  className="group relative min-h-[210px] overflow-hidden rounded-[28px] border border-white/65 p-6 transition duration-200 hover:-translate-y-0.5 hover:border-[#72a0c1]/25"
                 >
                   <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[#72a0c1]/40 to-transparent opacity-70" />
 

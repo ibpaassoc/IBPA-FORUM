@@ -29,14 +29,14 @@ export default function GrandPrixTimeline() {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-white py-[var(--space-2xl)]">
+    <section className="landing-section relative overflow-hidden py-[var(--space-2xl)]">
       <div
         aria-hidden
-        className="absolute left-1/2 top-0 h-[42rem] w-[42rem] -translate-x-1/2 rounded-full bg-[var(--color-blue-wash)] blur-3xl"
+        className="absolute left-1/2 top-0 h-[32rem] w-[32rem] -translate-x-1/2 rounded-full bg-[var(--color-blue-wash)]/70 blur-2xl"
       />
       <div
         aria-hidden
-        className="absolute -right-28 bottom-10 h-[24rem] w-[24rem] rounded-full bg-[var(--color-blue-soft)]/20 blur-3xl"
+        className="absolute -right-28 bottom-10 h-[20rem] w-[20rem] rounded-full bg-[var(--color-blue-soft)]/12 blur-2xl"
       />
 
       <div className="page-section relative z-10">
@@ -53,7 +53,7 @@ export default function GrandPrixTimeline() {
 
           <div className="grid gap-5 lg:grid-cols-[220px_1fr] lg:gap-10">
             <Reveal delay={0.08}>
-              <div className="sticky top-28 hidden h-fit rounded-[2rem] border border-white/70 bg-white/50 p-6 shadow-[0_24px_80px_rgba(25,39,52,0.08)] backdrop-blur-2xl lg:block">
+              <div className="sticky top-28 hidden h-fit rounded-[2rem] border border-white/70 bg-white/54 p-6 shadow-[0_20px_62px_rgba(25,39,52,0.08)] backdrop-blur-xl lg:block">
                 <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[var(--color-blue)]/20 bg-white/70 shadow-[0_14px_34px_rgba(114,160,193,0.16)]">
                   <Trophy
                     size={19}
@@ -83,7 +83,7 @@ export default function GrandPrixTimeline() {
 
                 return (
                   <Reveal key={step.title} delay={index * 0.12}>
-                    <article className="group relative overflow-hidden rounded-[2.2rem] border border-white/70 bg-white/52 p-5 shadow-[0_24px_80px_rgba(25,39,52,0.09),inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-2xl transition-all duration-500 hover:-translate-y-1 hover:bg-white/72 hover:shadow-[0_34px_100px_rgba(25,39,52,0.14)] sm:p-7 lg:p-8">
+                    <article className="group relative overflow-hidden rounded-[2.2rem] border border-white/70 bg-white/56 p-5 shadow-[0_20px_64px_rgba(25,39,52,0.08),inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:bg-white/72 sm:p-7 lg:p-8">
                       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
 
                       <div className="grid gap-6 lg:grid-cols-[120px_1fr_64px] lg:items-center">
@@ -121,7 +121,7 @@ export default function GrandPrixTimeline() {
                               <Trophy size={18} strokeWidth={1.6} />
                             </div>
                           ) : (
-                            <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[var(--color-blue)]/18 bg-white/50 text-[var(--color-blue)] transition-transform duration-500 group-hover:translate-x-1">
+                            <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[var(--color-blue)]/18 bg-white/50 text-[var(--color-blue)] transition-transform duration-200 group-hover:translate-x-0.5">
                               <ArrowRight size={18} strokeWidth={1.6} />
                             </div>
                           )}

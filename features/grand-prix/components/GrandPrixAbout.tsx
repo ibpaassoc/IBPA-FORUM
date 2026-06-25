@@ -11,7 +11,7 @@ export default function GrandPrixAbout() {
   const c = t.grandPrixPage.about;
 
   return (
-    <section className="relative min-h-[clamp(640px,78vh,860px)] overflow-hidden bg-white">
+    <section className="landing-photo-section relative min-h-[clamp(640px,78vh,860px)] overflow-hidden bg-white">
       <div className="absolute inset-y-0 right-0 w-full lg:w-[58%]">
         <Image
           src="/images/prizes.png"
@@ -29,8 +29,7 @@ export default function GrandPrixAbout() {
       </div>
 
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-[-14%] top-12 h-[430px] w-[430px] rounded-full bg-[#b9d9eb]/24 blur-3xl" />
-        <div className="absolute bottom-[-18%] left-[22%] h-[360px] w-[360px] rounded-full bg-[#72a0c1]/10 blur-3xl" />
+        <div className="absolute left-[-14%] top-12 h-[360px] w-[360px] rounded-full bg-[#b9d9eb]/14 blur-2xl" />
       </div>
 
       <div className="page-section relative z-10 flex min-h-[clamp(640px,78vh,860px)] items-center py-[clamp(4.5rem,8vw,7rem)]">
@@ -56,7 +55,7 @@ export default function GrandPrixAbout() {
           <Reveal delay={0.18}>
             <GlassCard
               tone="blue"
-              className="max-w-[540px] rounded-[32px] border border-white/65 bg-white/48 px-6 py-6 shadow-[0_24px_70px_rgba(114,160,193,0.13)] backdrop-blur-2xl sm:px-8 sm:py-7"
+              className="max-w-[540px] rounded-[32px] border border-white/65 bg-white/52 px-6 py-6 shadow-[0_20px_62px_rgba(114,160,193,0.11)] backdrop-blur-xl sm:px-8 sm:py-7"
             >
               <p className="text-[1.04rem] leading-8 text-[#5d6877] md:text-[1.1rem]">
                 {c.whatText}

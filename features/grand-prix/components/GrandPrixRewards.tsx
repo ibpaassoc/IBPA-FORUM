@@ -10,9 +10,9 @@ export default function GrandPrixRewards() {
   const c = t.grandPrixPage.rewards;
 
   return (
-    <section className="relative overflow-hidden bg-[linear-gradient(160deg,#f2f8fb,#ffffff)] py-20 md:py-28">
+    <section className="landing-section-strong relative overflow-hidden py-20 md:py-28">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-[-12%] bottom-[-16%] h-[480px] w-[480px] rounded-full bg-[#72a0c1]/12 blur-3xl" />
+        <div className="absolute left-[-12%] bottom-[-16%] h-[380px] w-[380px] rounded-full bg-[#72a0c1]/8 blur-2xl" />
       </div>
 
       <div className="page-section relative">
@@ -31,7 +31,7 @@ export default function GrandPrixRewards() {
             {c.items.map((item) => (
               <GlassCard
                 key={item}
-                className="flex items-center gap-4 rounded-[24px] border border-white/65 px-5 py-5 transition-all duration-500 hover:-translate-y-1 hover:border-[#72a0c1]/25"
+                className="flex items-center gap-4 rounded-[24px] border border-white/65 px-5 py-5 transition duration-200 hover:-translate-y-0.5 hover:border-[#72a0c1]/25"
               >
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#72a0c1]/10 text-[#72a0c1] ring-1 ring-[#72a0c1]/12">
                   <Check className="h-5 w-5" strokeWidth={2} />
