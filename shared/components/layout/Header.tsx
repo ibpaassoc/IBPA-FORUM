@@ -21,13 +21,6 @@ export default function Header() {
   const isHeroPage = HERO_PAGES.includes(pathname);
   const useTransparent = isHeroPage && !scrolled;
 
-  const associationLabel =
-    language === "ru"
-      ? "Association"
-      : language === "ua"
-        ? "Association"
-        : "Association";
-
   const navigation = [
     { href: "/", label: t.header.navigation.home },
     { href: "/categories", label: t.header.navigation.categories },
@@ -35,7 +28,7 @@ export default function Header() {
     { href: "/grand-prix", label: t.header.navigation.grandPrix },
     {
       href: "/association",
-      label: associationLabel,
+      label: "IBPA",
       external:false
     },
   ];

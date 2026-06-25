@@ -15,7 +15,7 @@ export default function Footer() {
   const copy = {
     en: {
       about: "About",
-      association: "Association",
+      association: "IBPA",
       aboutAward: "Award",
       timeline: "Timeline",
       juryCouncil: "Jury Council",
@@ -36,7 +36,7 @@ export default function Footer() {
     },
     ru: {
       about: "О проекте",
-      association: "Ассоциация",
+      association: "IBPA",
       aboutAward: "Премия",
       timeline: "Таймлайн",
       juryCouncil: "Совет жюри",
@@ -57,7 +57,7 @@ export default function Footer() {
     },
     ua: {
       about: "Про проєкт",
-      association: "Асоціація",
+      association: "IBPA",
       aboutAward: "Премія",
       timeline: "Таймлайн",
       juryCouncil: "Рада журі",
@@ -82,7 +82,7 @@ export default function Footer() {
     {
       title: copy.about,
       links: [
-        { href: "https://ibpassociations.org/about", label: copy.association },
+        { href: "/association", label: copy.association },
         { href: "/", label: copy.aboutAward },
         { href: "/#timeline", label: copy.timeline },
         { href: "/jury#JuryCouncil", label: copy.juryCouncil },
