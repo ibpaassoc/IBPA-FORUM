@@ -15,7 +15,7 @@ import {
   Trophy,
   Users,
 } from "lucide-react";
-import { AnimatePresence, motion, type Variants } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 
 import { categoryCatalog } from "@/features/applications/config/category-catalog";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
@@ -47,18 +47,18 @@ const listVariants: Variants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.055,
-      delayChildren: 0.08,
+      staggerChildren: 0.035,
+      delayChildren: 0.04,
     },
   },
 };
 
 const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 16 },
+  hidden: { opacity: 0, y: 10 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.35, ease: "easeOut" },
+    transition: { duration: 0.24, ease: "easeOut" },
   },
 };
 
@@ -101,22 +101,20 @@ export default function CategoriesFeatures() {
     return (
       <motion.article
         key={direction.slug}
-        layout
         variants={cardVariants}
-        whileHover={{ y: -4 }}
-        transition={{ duration: 0.25, ease: "easeOut" }}
+        whileHover={{ y: -2 }}
+        transition={{ duration: 0.18, ease: "easeOut" }}
         className={[
           "group relative overflow-hidden rounded-[2rem] p-px",
-          "shadow-[0_24px_80px_rgba(15,23,42,0.07)] backdrop-blur-2xl",
-          "transition-shadow duration-500",
+          "shadow-[0_18px_56px_rgba(15,23,42,0.06)] backdrop-blur-xl",
+          "transition-shadow duration-200",
           isOpen
-            ? "bg-[linear-gradient(135deg,rgba(114,160,193,0.85),rgba(255,255,255,0.9),rgba(185,217,235,0.75))] shadow-[0_36px_110px_rgba(114,160,193,0.24)]"
+            ? "bg-[linear-gradient(135deg,rgba(114,160,193,0.72),rgba(255,255,255,0.9),rgba(185,217,235,0.64))] shadow-[0_24px_72px_rgba(114,160,193,0.18)]"
             : "bg-[linear-gradient(135deg,rgba(255,255,255,0.95),rgba(185,217,235,0.34),rgba(255,255,255,0.72))]",
         ].join(" ")}
       >
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(255,255,255,0.95),transparent_34%),radial-gradient(circle_at_90%_10%,rgba(185,217,235,0.42),transparent_38%)]" />
-        <div className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-[var(--color-blue-lightest)]/50 blur-3xl transition duration-700 group-hover:scale-125" />
-        <div className="pointer-events-none absolute -bottom-24 left-10 h-44 w-44 rounded-full bg-white/80 blur-3xl transition duration-700 group-hover:scale-125" />
+        <div className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-[var(--color-blue-light)]/28 blur-2xl" />
 
         <button
           type="button"
@@ -127,15 +125,15 @@ export default function CategoriesFeatures() {
           className="absolute inset-0 z-20 rounded-[2rem] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-hover-accent)] focus-visible:ring-offset-2"
         />
 
-        <div className="relative rounded-[calc(2rem-1px)] bg-white/[0.62] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.95)] backdrop-blur-2xl sm:p-6">
+        <div className="relative rounded-[calc(2rem-1px)] bg-white/[0.66] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.95)] backdrop-blur-xl sm:p-6">
           <div className="flex items-start gap-4">
             <span
               className={[
                 "flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.15rem]",
                 "border border-[var(--color-blue)]/20 bg-white/70 text-[var(--color-hover-accent)]",
                 "shadow-[0_18px_40px_rgba(114,160,193,0.16),inset_0_1px_0_rgba(255,255,255,0.9)]",
-                "transition duration-300",
-                isOpen ? "-rotate-6 scale-105" : "",
+                "transition duration-200",
+                isOpen ? "-rotate-3 scale-[1.02]" : "",
               ].join(" ")}
             >
               <Icon className="h-[18px] w-[18px]" aria-hidden="true" />
@@ -160,7 +158,7 @@ export default function CategoriesFeatures() {
               className={[
                 "relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
                 "border border-[var(--color-blue)]/18 bg-white/60 text-[var(--color-hover-accent)]",
-                "shadow-sm backdrop-blur-xl transition duration-300",
+                "shadow-sm backdrop-blur-xl transition duration-200",
                 isOpen ? "rotate-180 opacity-100" : "opacity-55",
               ].join(" ")}
             >
@@ -177,39 +175,35 @@ export default function CategoriesFeatures() {
             </span>
           </div>
 
-          <AnimatePresence initial={false}>
-            {isOpen && (
-              <motion.div
-                id={contentId}
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.25, ease: "easeOut" }}
-                className="overflow-hidden"
+          {isOpen && (
+            <div id={contentId} className="overflow-hidden">
+              <motion.ol
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.18, ease: "easeOut" }}
+                className="mt-6 space-y-2.5 rounded-[1.35rem] border border-white/75 bg-white/50 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-xl"
               >
-                <ol className="mt-6 space-y-2.5 rounded-[1.35rem] border border-white/75 bg-white/45 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-2xl">
-                  {direction.nominations.map(
-                    (nomination, nominationIndex) => (
-                      <li
-                        key={`${direction.slug}-${nominationIndex}`}
-                        className="rounded-[1.05rem] border border-white/70 bg-white/72 px-4 py-3 shadow-[0_12px_30px_rgba(15,23,42,0.045)] transition duration-300 hover:-translate-y-0.5 hover:border-[var(--color-blue)]/30 hover:bg-white/90"
-                      >
-                        <div className="flex items-start gap-3">
-                          <span className="min-w-[2rem] font-[var(--font-ui-family)] text-[0.78rem] font-semibold tracking-[0.14em] text-[var(--color-hover-accent)]">
-                            {String(nominationIndex + 1).padStart(2, "0")}
-                          </span>
+                {direction.nominations.map(
+                  (nomination, nominationIndex) => (
+                    <li
+                      key={`${direction.slug}-${nominationIndex}`}
+                      className="rounded-[1.05rem] border border-white/70 bg-white/76 px-4 py-3 shadow-[0_10px_24px_rgba(15,23,42,0.04)] transition duration-200 hover:border-[var(--color-blue)]/30 hover:bg-white/90"
+                    >
+                      <div className="flex items-start gap-3">
+                        <span className="min-w-[2rem] font-[var(--font-ui-family)] text-[0.78rem] font-semibold tracking-[0.14em] text-[var(--color-hover-accent)]">
+                          {String(nominationIndex + 1).padStart(2, "0")}
+                        </span>
 
-                          <span className="text-sm leading-6 text-[var(--color-ink-soft)]">
-                            {nomination}
-                          </span>
-                        </div>
-                      </li>
-                    )
-                  )}
-                </ol>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                        <span className="text-sm leading-6 text-[var(--color-ink-soft)]">
+                          {nomination}
+                        </span>
+                      </div>
+                    </li>
+                  )
+                )}
+              </motion.ol>
+            </div>
+          )}
         </div>
       </motion.article>
     );
@@ -217,23 +211,23 @@ export default function CategoriesFeatures() {
 
   return (
     <section className="relative mt-[clamp(3rem,7vw,7rem)] overflow-hidden px-[var(--page-gutter)] pb-10 pt-3 sm:pb-14 sm:pt-4">
-      <div className="pointer-events-none absolute left-1/2 top-16 h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-[var(--color-blue-lightest)]/24 blur-3xl" />
+      <div className="pointer-events-none absolute left-1/2 top-16 h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-[var(--color-blue-light)]/18 blur-2xl" />
       <div className="pointer-events-none absolute right-[-12rem] top-72 h-[28rem] w-[28rem] rounded-full bg-[var(--color-blue)]/8 blur-3xl" />
 
       <motion.div
         variants={listVariants}
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, margin: "-80px" }}
+        viewport={{ once: true, margin: "-40px" }}
         className="relative mx-auto grid max-w-[1040px] grid-cols-1 gap-4 md:grid-cols-2 md:gap-5"
       >
-        <motion.div layout className="flex flex-col gap-4 md:gap-5">
+        <div className="flex flex-col gap-4 md:gap-5">
           {leftDirections.map(renderDirectionCard)}
-        </motion.div>
+        </div>
 
-        <motion.div layout className="flex flex-col gap-4 md:gap-5">
+        <div className="flex flex-col gap-4 md:gap-5">
           {rightDirections.map(renderDirectionCard)}
-        </motion.div>
+        </div>
       </motion.div>
     </section>
   );
