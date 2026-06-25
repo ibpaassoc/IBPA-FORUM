@@ -950,6 +950,16 @@ const en = {
         },
       ],
     },
+    gallery: {
+      eyebrow: "Forum moments",
+      title: "Highlights from the IBPA community",
+      description:
+        "A visual look at the atmosphere, guests, professionals, and moments that make the IBPA Beauty Business Forum special.",
+      prevLabel: "Previous photo",
+      nextLabel: "Next photo",
+      goToLabel: "Go to photo",
+      photoAlt: "IBPA Forum photo",
+    },
     requirements: {
       label: "Who can become a judge",
       title: "Candidate requirements",
@@ -2575,6 +2585,16 @@ const ru: typeof en = {
         },
       ],
     },
+    gallery: {
+      eyebrow: "Моменты форума",
+      title: "Атмосфера сообщества IBPA",
+      description:
+        "Визуальный взгляд на атмосферу, гостей, профессионалов и моменты, которые делают IBPA Beauty Business Forum особенным.",
+      prevLabel: "Предыдущее фото",
+      nextLabel: "Следующее фото",
+      goToLabel: "Перейти к фото",
+      photoAlt: "Фото IBPA Forum",
+    },
     requirements: {
       label: "Кто может стать судьёй",
       title: "Требования к кандидатам",
@@ -4199,6 +4219,16 @@ const ua: typeof en = {
           date: "26 вересня 2026",
         },
       ],
+    },
+    gallery: {
+      eyebrow: "Моменти форуму",
+      title: "Атмосфера спільноти IBPA",
+      description:
+        "Візуальний погляд на атмосферу, гостей, професіоналів і моменти, які роблять IBPA Beauty Business Forum особливим.",
+      prevLabel: "Попереднє фото",
+      nextLabel: "Наступне фото",
+      goToLabel: "Перейти до фото",
+      photoAlt: "Фото IBPA Forum",
     },
     requirements: {
       label: "Хто може стати суддею",

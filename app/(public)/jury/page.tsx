@@ -4,8 +4,9 @@ import {
   JuryHero,
   JuryAbout,
   JuryTimeline,
-  JurySteps,
   JuryRequirements,
+  JuryGallery,
+  JurySteps,
   JuryResponsibilities,
   JuryBenefits,
   JuryCredibility,
@@ -23,6 +24,7 @@ export default async function JuryPage() {
       <JuryAbout />
       <JuryTimeline />
       <JuryRequirements />
+      <JuryGallery />
       <JurySteps />
       <JuryResponsibilities />
       <JuryBenefits />
