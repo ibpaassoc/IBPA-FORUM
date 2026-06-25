@@ -20,7 +20,7 @@ export default function CategoriesHero() {
     <section className="landing-hero-section relative flex min-h-[100svh] items-center justify-center overflow-hidden bg-[#0a0a0a]">
       <div className="absolute inset-0 z-[1]">
         <Image
-          src="/images/editorial/Styling.jpg"
+          src="/images/editorial/styling.jpg"
           alt="IBPA Award Categories"
           fill
           style={{ objectPosition: "center 34%" }}
