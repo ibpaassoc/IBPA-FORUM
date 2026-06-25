@@ -53,14 +53,13 @@ import {
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 const HERO_PRIMARY_BUTTON_CLASS =
-  "group relative inline-flex items-center justify-center gap-3 overflow-hidden rounded-full border border-white/10 bg-gradient-to-r from-[#050505] via-[#111111] to-[#050505] px-8 py-4 font-[var(--font-ui-family)] text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-white shadow-[0_12px_40px_rgba(0,0,0,0.35)] transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-[2px] hover:border-[#7a98af]/60 hover:shadow-[0_20px_60px_rgba(122,152,175,0.2)] disabled:pointer-events-none disabled:opacity-60";
+  "group relative inline-flex items-center justify-center gap-3 overflow-hidden rounded-full border border-white/10 bg-gradient-to-r from-[#050505] via-[#111111] to-[#050505] px-8 py-4 font-[var(--font-ui-family)] text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-white shadow-[0_10px_32px_rgba(0,0,0,0.3)] transition duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-px hover:border-[#7a98af]/60 hover:shadow-[0_16px_44px_rgba(122,152,175,0.16)] disabled:pointer-events-none disabled:opacity-60";
 
 function HeroPrimaryButtonLayers() {
   return (
     <>
-      <span className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-[#7a98af]/10 opacity-60 transition-opacity duration-700 group-hover:opacity-100" />
-      <span className="absolute inset-x-6 bottom-0 h-px bg-gradient-to-r from-transparent via-[#b9d9eb]/0 to-transparent transition-all duration-700 group-hover:inset-x-4 group-hover:via-[#b9d9eb]/70" />
-      <span className="absolute inset-0 before:absolute before:left-[-130%] before:top-0 before:h-full before:w-1/2 before:rotate-12 before:bg-gradient-to-r before:from-transparent before:via-[#b9d9eb]/25 before:to-transparent before:transition-all before:duration-700 group-hover:before:left-[130%]" />
+      <span className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-[#7a98af]/10 opacity-60 transition-opacity duration-200 group-hover:opacity-90" />
+      <span className="absolute inset-x-6 bottom-0 h-px bg-gradient-to-r from-transparent via-[#b9d9eb]/0 to-transparent transition duration-200 group-hover:via-[#b9d9eb]/60" />
     </>
   );
 }
@@ -174,8 +173,8 @@ function CertStatusBadge({ status }: { status: CertStatus }) {
 }
 
 const categoryCardTransition = {
-  duration: 0.36,
-  ease: [0.16, 1, 0.3, 1],
+  duration: 0.2,
+  ease: [0.22, 1, 0.36, 1],
 } as const;
 
 function isFieldComplete(value: ApplicationValues[string]) {
@@ -581,7 +580,7 @@ export default function ApplyForm({
 
   const stepContentVariants = {
     enter: (direction: 1 | -1) => ({
-      x: direction > 0 ? 48 : -48,
+      x: direction > 0 ? 16 : -16,
       opacity: 0,
     }),
     center: {
@@ -589,7 +588,7 @@ export default function ApplyForm({
       opacity: 1,
     },
     exit: (direction: 1 | -1) => ({
-      x: direction > 0 ? -48 : 48,
+      x: direction > 0 ? -16 : 16,
       opacity: 0,
     }),
   } as const;
@@ -1037,9 +1036,8 @@ export default function ApplyForm({
     return (
       <motion.article
         key={category.id}
-        layout
         transition={categoryCardTransition}
-        whileHover={{ y: -1.5 }}
+        whileHover={{ y: -1 }}
         className={`premium-glass ${
           isOpen ? "border-[var(--color-blue)]" : "border-[var(--border-soft)]"
         }`}
@@ -1079,14 +1077,12 @@ export default function ApplyForm({
           </span>
         </button>
 
-        <AnimatePresence initial={false}>
-          {isOpen ? (
+        {isOpen ? (
+          <div className="overflow-hidden">
             <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={categoryCardTransition}
-              className="overflow-hidden"
             >
               <div className="border-t border-[var(--border-soft)] px-5 pb-5 pt-4">
                 <div className="space-y-2">
@@ -1131,8 +1127,8 @@ export default function ApplyForm({
                 </div>
               </div>
             </motion.div>
-          ) : null}
-        </AnimatePresence>
+          </div>
+        ) : null}
       </motion.article>
     );
   }
@@ -1206,7 +1202,7 @@ export default function ApplyForm({
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
               className="relative z-10"
             >
               {step === 0 ? (
@@ -1308,13 +1304,13 @@ export default function ApplyForm({
                           {copy.ibpaMembership}
                         </p>
                         <label
-                          className={`group relative flex cursor-pointer items-start gap-4 overflow-hidden rounded-[1.5rem] border p-4 transition-all duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] ${
+                          className={`group relative flex cursor-pointer items-start gap-4 overflow-hidden rounded-[1.5rem] border p-4 transition duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] ${
                             isIbpaMember
                               ? "border-[var(--color-blue)]/45 bg-[linear-gradient(135deg,rgba(185,217,235,0.48),rgba(255,255,255,0.92))] shadow-[0_18px_44px_rgba(114,160,193,0.18)]"
-                              : "border-white/70 bg-white/72 shadow-[0_14px_36px_rgba(42,66,82,0.06)] hover:-translate-y-[2px] hover:border-[var(--color-blue)]/35 hover:bg-white hover:shadow-[0_22px_54px_rgba(114,160,193,0.16)]"
+                              : "border-white/70 bg-white/72 shadow-[0_14px_36px_rgba(42,66,82,0.06)] hover:-translate-y-px hover:border-[var(--color-blue)]/35 hover:bg-white hover:shadow-[0_18px_44px_rgba(114,160,193,0.13)]"
                           }`}
                         >
-                          <span className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-[var(--color-blue-wash)] opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100" />
+                          <span className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-[var(--color-blue-wash)] opacity-0 blur-xl transition-opacity duration-200 group-hover:opacity-80" />
                           <input
                             type="checkbox"
                             checked={isIbpaMember}
@@ -1329,7 +1325,7 @@ export default function ApplyForm({
                           />
 
                           <span
-                            className={`relative z-10 mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-all duration-500 ${
+                            className={`relative z-10 mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition duration-200 ${
                               isIbpaMember
                                 ? "scale-105 border-[var(--color-blue)] bg-[var(--color-blue)] text-white shadow-[0_0_0_5px_rgba(185,217,235,0.55)]"
                                 : "border-[var(--color-blue)]/20 bg-white text-transparent shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] group-hover:scale-105 group-hover:border-[var(--color-blue)]/55 group-hover:bg-[var(--color-blue-wash)] group-hover:text-[var(--color-blue)]"
@@ -1758,7 +1754,7 @@ export default function ApplyForm({
               <span className="relative z-10">{copy.continue}</span>
               <ChevronRight
                 size={16}
-                className="relative z-10 text-[#b9d9eb] transition-all duration-500 group-hover:translate-x-1 group-hover:text-white"
+                className="relative z-10 text-[#b9d9eb] transition duration-200 group-hover:translate-x-0.5 group-hover:text-white"
               />
             </button>
           ) : (
@@ -1773,7 +1769,7 @@ export default function ApplyForm({
               </span>
               <ChevronRight
                 size={16}
-                className="relative z-10 text-[#b9d9eb] transition-all duration-500 group-hover:translate-x-1 group-hover:text-white"
+                className="relative z-10 text-[#b9d9eb] transition duration-200 group-hover:translate-x-0.5 group-hover:text-white"
               />
             </button>
           )}

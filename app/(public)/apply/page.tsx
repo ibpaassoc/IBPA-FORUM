@@ -22,7 +22,7 @@ export default function ApplyPage() {
     <LandingPageShell>
       <ApplyHero heroStats={heroStats} />
 
-      <PageSection id="apply-form" className="py-16">
+      <PageSection id="apply-form" className="landing-section py-16">
         <Suspense fallback={<ApplicationFormSkeleton />}>
           <ApplicationFormLoader />
         </Suspense>
