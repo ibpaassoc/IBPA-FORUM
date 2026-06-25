@@ -10,7 +10,7 @@ export default function JuryResponsibilities() {
   const c = t.juryPage.responsibilities;
 
   return (
-    <section className="relative overflow-hidden bg-white py-20 md:py-28">
+    <section className="landing-section relative overflow-hidden py-20 md:py-28">
       <div className="page-section relative">
         <Reveal>
           <div className="max-w-3xl">
@@ -27,7 +27,7 @@ export default function JuryResponsibilities() {
             {c.items.map((item) => (
               <GlassCard
                 key={item}
-                className="flex items-start gap-4 rounded-[24px] border border-white/65 px-5 py-5 transition-all duration-500 hover:-translate-y-1 hover:border-[#72a0c1]/25"
+                className="flex items-start gap-4 rounded-[24px] border border-white/65 px-5 py-5 transition duration-200 hover:-translate-y-0.5 hover:border-[#72a0c1]/25"
               >
                 <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#72a0c1]/10 text-[#72a0c1] ring-1 ring-[#72a0c1]/12">
                   <Check className="h-4 w-4" strokeWidth={2.2} />

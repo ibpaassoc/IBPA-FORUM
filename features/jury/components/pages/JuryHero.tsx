@@ -8,7 +8,7 @@ export default function JuryHero() {
   const { t } = useLanguage();
 
   return (
-    <section className="relative flex min-h-[100svh] items-center justify-center overflow-hidden bg-[#0a0a0a]">
+    <section className="landing-hero-section relative flex min-h-[100svh] items-center justify-center overflow-hidden bg-[#0a0a0a]">
       {/* Full-screen background image */}
       <div className="absolute inset-0 z-[1]">
         <Image

@@ -21,7 +21,7 @@ export default function JuryActiveMembers({ juryMembers }: { juryMembers: JuryMe
   if (juryMembers.length === 0) return null;
 
   return (
-    <section id="JuryCouncil" className="section-rhythm-loose px-[var(--page-gutter)]">
+    <section id="JuryCouncil" className="landing-section section-rhythm-loose px-[var(--page-gutter)]">
       <div className="mx-auto max-w-7xl">
         <SectionHeading
           eyebrow={t.juryPage.copy.approvedEyebrow}

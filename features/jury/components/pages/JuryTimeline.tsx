@@ -17,17 +17,16 @@ export default function JuryTimeline() {
   }));
 
   return (
-    <section className="relative overflow-hidden bg-white py-20 md:py-28">
+    <section className="landing-section relative overflow-hidden py-20 md:py-28">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-[-14%] top-10 h-80 w-80 rounded-full bg-[#b9d9eb]/35 blur-3xl" />
-        <div className="absolute bottom-[-16%] right-[-10%] h-96 w-96 rounded-full bg-[#72a0c1]/12 blur-3xl" />
+        <div className="absolute left-[-14%] top-10 h-72 w-72 rounded-full bg-[#b9d9eb]/16 blur-2xl" />
       </div>
 
       <div className="page-section relative">
         <Reveal>
           <div className="grid gap-6 lg:grid-cols-[0.86fr_1.14fr] lg:items-stretch">
-            <aside className="relative overflow-hidden rounded-[2.2rem] border border-white/70 bg-[linear-gradient(145deg,rgba(255,255,255,0.8),rgba(242,248,251,0.62))] p-7 shadow-[0_24px_70px_rgba(114,160,193,0.14)] backdrop-blur-2xl md:p-9">
-              <div className="absolute right-[-20%] top-[-20%] h-56 w-56 rounded-full bg-[#b9d9eb]/35 blur-3xl" />
+            <aside className="relative overflow-hidden rounded-[2.2rem] border border-white/70 bg-[linear-gradient(145deg,rgba(255,255,255,0.8),rgba(242,248,251,0.62))] p-7 shadow-[0_20px_62px_rgba(114,160,193,0.12)] backdrop-blur-xl md:p-9">
+              <div className="absolute right-[-20%] top-[-20%] h-52 w-52 rounded-full bg-[#b9d9eb]/20 blur-2xl" />
 
               <div className="relative flex h-full flex-col justify-between gap-12">
                 <div>
@@ -66,7 +65,7 @@ export default function JuryTimeline() {
               </div>
             </aside>
 
-            <div className="rounded-[2.2rem] border border-white/70 bg-white/58 p-4 shadow-[0_24px_70px_rgba(114,160,193,0.12)] backdrop-blur-2xl md:p-5">
+            <div className="rounded-[2.2rem] border border-white/70 bg-white/62 p-4 shadow-[0_20px_58px_rgba(114,160,193,0.1)] backdrop-blur-xl md:p-5">
               <div className="grid gap-3">
                 {steps.map((step, index) => {
                   const Icon = step.icon;
@@ -74,7 +73,7 @@ export default function JuryTimeline() {
                   return (
                     <article
                       key={step.label}
-                      className="group relative overflow-hidden rounded-[1.7rem] border border-[#b9d9eb]/38 bg-[linear-gradient(135deg,rgba(255,255,255,0.82),rgba(247,251,253,0.72))] p-5 transition duration-500 hover:border-[#72a0c1]/45 md:p-6"
+                      className="group relative overflow-hidden rounded-[1.7rem] border border-[#b9d9eb]/38 bg-[linear-gradient(135deg,rgba(255,255,255,0.82),rgba(247,251,253,0.72))] p-5 transition duration-200 hover:border-[#72a0c1]/45 md:p-6"
                     >
                       <div className="absolute inset-y-5 left-[2.15rem] w-px bg-[#b9d9eb]/45" />
 

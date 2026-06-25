@@ -37,10 +37,9 @@ export default function JuryBenefits() {
   const listItems = b.items.slice(4);
 
   return (
-    <section className="relative overflow-hidden bg-[linear-gradient(160deg,#f2f8fb,#ffffff)] py-20 md:py-28">
+    <section className="landing-section-strong relative overflow-hidden py-20 md:py-28">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-[-14%] top-[-18%] h-80 w-80 rounded-full bg-[#b9d9eb]/38 blur-3xl" />
-        <div className="absolute bottom-[-20%] right-[-12%] h-96 w-96 rounded-full bg-[#72a0c1]/13 blur-3xl" />
+        <div className="absolute left-[-14%] top-[-18%] h-72 w-72 rounded-full bg-[#b9d9eb]/16 blur-2xl" />
       </div>
 
       <div className="page-section relative">
@@ -69,10 +68,10 @@ export default function JuryBenefits() {
                 return (
                   <article
                     key={item}
-                    className="group relative min-h-[240px] overflow-hidden rounded-[2rem] border border-white/70 bg-white/66 p-6 shadow-[0_22px_64px_rgba(114,160,193,0.12)] backdrop-blur-2xl transition duration-500 hover:-translate-y-1 hover:border-[#72a0c1]/42 hover:bg-white/80 md:p-7"
+                    className="group relative min-h-[240px] overflow-hidden rounded-[2rem] border border-white/70 bg-white/66 p-6 shadow-[0_18px_54px_rgba(114,160,193,0.1)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:border-[#72a0c1]/42 hover:bg-white/80 md:p-7"
                   >
                     <div className="absolute inset-x-7 top-0 h-px bg-gradient-to-r from-transparent via-[#72a0c1]/45 to-transparent" />
-                    <div className="absolute -right-16 -top-20 h-44 w-44 rounded-full bg-[#b9d9eb]/30 blur-2xl transition duration-700 group-hover:scale-125" />
+                    <div className="absolute -right-16 -top-20 h-44 w-44 rounded-full bg-[#b9d9eb]/20 blur-2xl" />
 
                     <div className="relative flex h-full flex-col">
                       <div className="flex items-start justify-between gap-4">
@@ -94,7 +93,7 @@ export default function JuryBenefits() {
               })}
             </div>
 
-            <div className="relative overflow-hidden rounded-[2rem] border border-white/70 bg-white/64 p-4 shadow-[0_22px_64px_rgba(114,160,193,0.12)] backdrop-blur-2xl md:p-5">
+            <div className="relative overflow-hidden rounded-[2rem] border border-white/70 bg-white/64 p-4 shadow-[0_18px_54px_rgba(114,160,193,0.1)] backdrop-blur-xl md:p-5">
               <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[#72a0c1]/45 to-transparent" />
 
               <div className="relative divide-y divide-[#b9d9eb]/28">

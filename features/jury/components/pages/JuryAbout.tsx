@@ -25,16 +25,15 @@ export default function JuryAbout() {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-[linear-gradient(160deg,#f2f8fb,#ffffff)] py-20 md:py-28">
+    <section className="landing-section-strong relative overflow-hidden py-20 md:py-28">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-[-12%] top-[-18%] h-80 w-80 rounded-full bg-[#b9d9eb]/40 blur-3xl" />
-        <div className="absolute bottom-[-18%] right-[-10%] h-96 w-96 rounded-full bg-[#72a0c1]/14 blur-3xl" />
+        <div className="absolute left-[-12%] top-[-18%] h-72 w-72 rounded-full bg-[#b9d9eb]/18 blur-2xl" />
       </div>
 
       <div className="page-section relative">
         <Reveal>
           <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-stretch">
-            <div className="flex min-h-[360px] flex-col justify-between rounded-[2rem] border border-white/70 bg-white/58 p-7 shadow-[0_24px_70px_rgba(114,160,193,0.14)] backdrop-blur-2xl md:p-9">
+            <div className="flex min-h-[360px] flex-col justify-between rounded-[2rem] border border-white/70 bg-white/62 p-7 shadow-[0_20px_62px_rgba(114,160,193,0.12)] backdrop-blur-xl md:p-9">
               <div>
                 <p className="page-eyebrow">{c.eyebrow}</p>
 
@@ -55,7 +54,7 @@ export default function JuryAbout() {
                 return (
                   <article
                     key={item.text}
-                    className="group relative overflow-hidden rounded-[1.7rem] border border-white/70 bg-white/62 p-6 shadow-[0_18px_54px_rgba(114,160,193,0.12)] backdrop-blur-2xl"
+                    className="group relative overflow-hidden rounded-[1.7rem] border border-white/70 bg-white/66 p-6 shadow-[0_16px_46px_rgba(114,160,193,0.1)] backdrop-blur-xl"
                   >
                     <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-[#72a0c1]/45 to-transparent" />
 

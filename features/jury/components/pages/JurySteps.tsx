@@ -29,7 +29,7 @@ export default function JuryTimeline() {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-white py-[clamp(4.5rem,9vw,8rem)]">
+    <section className="landing-section relative overflow-hidden py-[clamp(4.5rem,9vw,8rem)]">
       <div className="page-section relative">
         <Reveal>
           <div className="max-w-3xl">
@@ -55,14 +55,14 @@ export default function JuryTimeline() {
 
               return (
                 <Reveal key={step.title} delay={index * 0.1}>
-                  <article className="group relative flex h-full min-h-[25rem] overflow-hidden rounded-[2rem] border border-white/70 bg-white/55 p-6 shadow-[0_24px_70px_rgba(35,62,82,0.09)] backdrop-blur-2xl transition-all duration-500 hover:-translate-y-1.5 hover:border-[rgba(114,160,193,0.42)] hover:bg-white/70 hover:shadow-[0_34px_90px_rgba(35,62,82,0.14)] md:p-8">
+                  <article className="group relative flex h-full min-h-[25rem] overflow-hidden rounded-[2rem] border border-white/70 bg-white/58 p-6 shadow-[0_20px_58px_rgba(35,62,82,0.08)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:border-[rgba(114,160,193,0.42)] hover:bg-white/70 md:p-8">
                     <div
                       aria-hidden
                       className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.92)_0%,rgba(255,255,255,0.35)_48%,rgba(185,217,235,0.24)_100%)]"
                     />
                     <div
                       aria-hidden
-                      className="absolute -right-20 -top-24 h-56 w-56 rounded-full bg-[rgba(185,217,235,0.38)] blur-2xl transition-transform duration-700 group-hover:scale-125"
+                      className="absolute -right-20 -top-24 h-56 w-56 rounded-full bg-[rgba(185,217,235,0.24)] blur-2xl"
                     />
                     <div
                       aria-hidden
@@ -90,7 +90,7 @@ export default function JuryTimeline() {
                         </p>
 
                         <div className="mt-8 flex items-center gap-3 self-end">
-                          <span className="h-px w-10 bg-[var(--color-blue)] transition-all duration-500 group-hover:w-16" />
+                          <span className="h-px w-10 bg-[var(--color-blue)] transition duration-200 group-hover:w-14" />
                           <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-blue-soft)]" />
                         </div>
                       </div>

@@ -33,11 +33,10 @@ export default function JuryRequirements() {
   return (
     <section
       id="requirements"
-      className="relative overflow-hidden bg-[linear-gradient(160deg,#f2f8fb,#ffffff)] py-20 md:py-28"
+      className="landing-section-strong relative overflow-hidden py-20 md:py-28"
     >
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-[-12%] top-[-16%] h-80 w-80 rounded-full bg-[#b9d9eb]/40 blur-3xl" />
-        <div className="absolute bottom-[-18%] right-[-10%] h-96 w-96 rounded-full bg-[#72a0c1]/13 blur-3xl" />
+        <div className="absolute left-[-12%] top-[-16%] h-72 w-72 rounded-full bg-[#b9d9eb]/18 blur-2xl" />
       </div>
 
       <div className="page-section relative">
@@ -57,7 +56,7 @@ export default function JuryRequirements() {
               return (
                 <article
                   key={item.text}
-                  className="group relative min-h-[210px] overflow-hidden rounded-[1.8rem] border border-white/70 bg-white/68 p-6 shadow-[0_18px_54px_rgba(114,160,193,0.11)] backdrop-blur-2xl transition duration-500 hover:border-[#72a0c1]/45 md:p-7"
+                  className="group relative min-h-[210px] overflow-hidden rounded-[1.8rem] border border-white/70 bg-white/68 p-6 shadow-[0_16px_46px_rgba(114,160,193,0.1)] backdrop-blur-xl transition duration-200 hover:border-[#72a0c1]/45 md:p-7"
                 >
                   <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-[#72a0c1]/42 to-transparent" />
 
