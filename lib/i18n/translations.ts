@@ -674,8 +674,101 @@ const en = {
         associationQuote: "The association works with artists, educators, salon owners, and brands — those who strive to uphold quality, integrity, and professionalism.",
         associationButton: "Visit IBPA Association",
         ctaEyebrow: "Category Entry",
-        ctaTitle: "Ready? Submit your application for your category.",
-        ctaText: "From Artistry to Branding—Choose a Category and Submit Your Entry for the 2026 IBPA Awards",
+        ctaTitle: "Ready to showcase your professional mastery?",
+        ctaText: "Choose your nomination and become part of IBPA Beauty Awards 2026 — an international award created to recognize the outstanding achievements of professionals, educators, business owners, and brands in the beauty industry.",
+        ctaButton: "Registration",
+    },
+    awardResults: {
+      eyebrow: "Award Results",
+      title: "Award results",
+      announcement:
+        "Official announcement of results: September 26, 2026, at the Beauty Business Forum.",
+      juryNote:
+        "The jury panel is made up of international trainers and leading industry experts.",
+      pricing: {
+        eyebrow: "Registration",
+        title: "Award entry details",
+        items: [
+          {
+            label: "Registration period",
+            value: "Jun 20 – Aug 15, 2026",
+            note: "Applications open",
+          },
+          {
+            label: "Registration fee",
+            value: "$50",
+            note: "Per nomination",
+          },
+          {
+            label: "Grand Prix",
+            value: "5+",
+            note: "Auto-entry, no extra fee",
+          },
+        ],
+        nonRefundable:
+          "The registration fee is non-refundable once the application has been submitted.",
+      },
+    },
+    faq: {
+      eyebrow: "FAQ",
+      title: "Frequently asked questions",
+      items: [
+        {
+          question: "Who can take part in IBPA Beauty Awards 2026?",
+          answer:
+            "Professionals, educators, business owners, academies, studios, salons, and brands of the beauty industry are invited to participate.",
+        },
+        {
+          question: "Do I have to live in the USA to participate?",
+          answer:
+            "No. Candidates from any country in the world can take part in the award.",
+        },
+        {
+          question: "How does participation work?",
+          answer:
+            "Participants submit an application and competition materials through an online form. Entries are evaluated by an international panel of judges.",
+        },
+        {
+          question: "Do I need to attend the award ceremony?",
+          answer:
+            "No. Participation and the evaluation of entries take place independently of attendance at the ceremony.",
+        },
+        {
+          question: "How many entries can I submit?",
+          answer:
+            "A participant may submit several entries and take part in several categories.",
+        },
+        {
+          question: "Can one entry be submitted in several categories?",
+          answer:
+            "Yes, provided the entry meets the requirements of the selected categories.",
+        },
+        {
+          question: "When does the application period close?",
+          answer:
+            "Applications are open from June 20 to August 15, 2026, inclusive.",
+        },
+        {
+          question: "When will the results be announced?",
+          answer:
+            "The results will be announced during IBPA Beauty Awards 2026 and published on the official resources of the award.",
+        },
+        {
+          question: "What do winners and finalists receive?",
+          answer:
+            "Winners and finalists receive official awards, certificates, and publications within the framework of the award.",
+        },
+        {
+          question: "Can I apply if I have less than 5 years of experience?",
+          answer:
+            "Yes, provided the chosen category has no minimum work-experience requirement.",
+        },
+        {
+          question: "Is the registration fee refundable?",
+          answer:
+            "No. The registration fee is non-refundable after the application has been submitted.",
+        },
+      ],
     },
   },
   juryPage: {
@@ -1505,7 +1598,7 @@ const ru: typeof en = {
         {
           number: "01",
           title: "Выберите свою категорию",
-          text: "Премия охватывает 11 профессиональных категорий - от артистизма до брендинга. Выберите ту, которая ближе всего к вашей сфере деятельности.",
+          text: "Премия охватывает 11 профессиональных категорий — от мастерства до брендинга. Выберите ту, которая ближе всего к вашей сфере деятельности.",
         },
         {
           number: "02",
@@ -1786,7 +1879,7 @@ const ru: typeof en = {
       },
       {
         slug: "makeup-artistry",
-        title: "Исскуство Макияжа",
+        title: "Искусство макияжа",
         nominations: [
           "Премия за выдающиеся достижения в свадебном макияже",
           "Премия за выдающиеся достижения в креативном макияже",
@@ -1850,8 +1943,101 @@ const ru: typeof en = {
         associationQuote: "Ассоциация работает с мастерами, педагогами, салонами и брендами — всеми, кто стремится соответствовать высокой планке качества и профессиональной культуры.",
         associationButton: "Перейти в ассоциацию IBPA",
         ctaEyebrow: "Подача по категории",
-        ctaTitle: "Готовы? Подайте заявку в свою номинацию",
-        ctaText: "От артистизма до брендинга - выберите номинацию внутри своей категории и подайте заявку на премию IBPA 2026",
+        ctaTitle: "Готовы продемонстрировать своё профессиональное мастерство?",
+        ctaText: "Выберите свою номинацию и станьте частью IBPA Beauty Awards 2026 — международной премии, созданной для признания выдающихся достижений специалистов, преподавателей, владельцев бизнеса и брендов в индустрии красоты.",
+        ctaButton: "Регистрация",
+    },
+    awardResults: {
+      eyebrow: "Результаты премии",
+      title: "Результаты премии",
+      announcement:
+        "Торжественное оглашение результатов: 26 сентября 2026 года на Beauty Business Forum.",
+      juryNote:
+        "В состав жюри входят международные тренеры и ведущие эксперты отрасли.",
+      pricing: {
+        eyebrow: "Регистрация",
+        title: "Условия участия в премии",
+        items: [
+          {
+            label: "Период регистрации",
+            value: "20 июня – 15 августа 2026",
+            note: "Приём заявок",
+          },
+          {
+            label: "Регистрационный взнос",
+            value: "$50",
+            note: "За каждую номинацию",
+          },
+          {
+            label: "Гран-при",
+            value: "5+",
+            note: "Автоматически, без доплаты",
+          },
+        ],
+        nonRefundable:
+          "Регистрационный взнос является невозвратным после подачи заявки.",
+      },
+    },
+    faq: {
+      eyebrow: "Вопросы",
+      title: "Часто задаваемые вопросы",
+      items: [
+        {
+          question: "Кто может принять участие в IBPA Beauty Awards 2026?",
+          answer:
+            "К участию приглашаются специалисты, преподаватели, владельцы бизнеса, академии, студии, салоны и бренды индустрии красоты.",
+        },
+        {
+          question: "Обязательно ли проживать в США для участия?",
+          answer:
+            "Нет. В премии могут принимать участие кандидаты из любой страны мира.",
+        },
+        {
+          question: "Как проходит участие в премии?",
+          answer:
+            "Участники подают заявку и конкурсные материалы через онлайн-форму. Оценка работ проводится международной коллегией судей.",
+        },
+        {
+          question: "Нужно ли присутствовать на церемонии награждения?",
+          answer:
+            "Нет. Участие в премии и оценка работ проходят независимо от присутствия на церемонии.",
+        },
+        {
+          question: "Сколько работ можно подать?",
+          answer:
+            "Участник может подать несколько работ и участвовать в нескольких категориях.",
+        },
+        {
+          question: "Можно ли подать одну работу в несколько категорий?",
+          answer:
+            "Да, если работа соответствует требованиям выбранных категорий.",
+        },
+        {
+          question: "Когда заканчивается приём заявок?",
+          answer:
+            "Приём заявок открыт с 20 июня по 15 августа 2026 года включительно.",
+        },
+        {
+          question: "Когда будут объявлены результаты?",
+          answer:
+            "Результаты будут объявлены во время IBPA Beauty Awards 2026 и опубликованы на официальных ресурсах премии.",
+        },
+        {
+          question: "Что получают победители и призёры?",
+          answer:
+            "Победители и призёры получают официальные награды, сертификаты и публикации в рамках премии.",
+        },
+        {
+          question: "Могу ли я подать заявку, если работаю менее 5 лет?",
+          answer:
+            "Да, если выбранная категория не предусматривает требований к минимальному стажу работы.",
+        },
+        {
+          question: "Возвращается ли регистрационный взнос?",
+          answer:
+            "Нет. Регистрационный взнос является невозвратным после подачи заявки.",
+        },
+      ],
     },
   },
   juryPage: {
@@ -2684,7 +2870,7 @@ const ua: typeof en = {
         {
           number: "01",
           title: "Виберіть свою категорію",
-          text: "Премія охоплює 11 професійних категорій – від артистизму до брендингу. Виберіть ту, яка найближча до вашої сфери діяльності.",
+          text: "Премія охоплює 11 професійних категорій — від майстерності до брендингу. Виберіть ту, яка найближча до вашої сфери діяльності.",
         },
         {
           number: "02",
@@ -3029,8 +3215,101 @@ const ua: typeof en = {
         associationQuote: "Асоціація співпрацює з майстрами, викладачами, салонами та брендами — усіма, хто прагне відповідати високим стандартам якості та професійної культури.",
         associationButton: "Перейти до асоціації IBPA",
         ctaEyebrow: "Подача за категорією",
-        ctaTitle: "Готові? Подайте заявку на свою номінацію",
-        ctaText: "Від артистизму до брендингу – виберіть номінацію всередині своєї категорії та подайте заявку на премію IBPA 2026",
+        ctaTitle: "Готові продемонструвати свою професійну майстерність?",
+        ctaText: "Виберіть свою номінацію та станьте частиною IBPA Beauty Awards 2026 — міжнародної премії, створеної для визнання видатних досягнень спеціалістів, викладачів, власників бізнесу та брендів індустрії краси.",
+        ctaButton: "Реєстрація",
+    },
+    awardResults: {
+      eyebrow: "Результати премії",
+      title: "Результати премії",
+      announcement:
+        "Урочисте оголошення результатів: 26 вересня 2026 року на Beauty Business Forum.",
+      juryNote:
+        "До складу журі входять міжнародні тренери та провідні експерти галузі.",
+      pricing: {
+        eyebrow: "Реєстрація",
+        title: "Умови участі в премії",
+        items: [
+          {
+            label: "Період реєстрації",
+            value: "20 червня – 15 серпня 2026",
+            note: "Прийом заявок",
+          },
+          {
+            label: "Реєстраційний внесок",
+            value: "$50",
+            note: "За кожну номінацію",
+          },
+          {
+            label: "Гран-прі",
+            value: "5+",
+            note: "Автоматично, без доплати",
+          },
+        ],
+        nonRefundable:
+          "Реєстраційний внесок є неповоротним після подачі заявки.",
+      },
+    },
+    faq: {
+      eyebrow: "Питання",
+      title: "Часті запитання",
+      items: [
+        {
+          question: "Хто може взяти участь у IBPA Beauty Awards 2026?",
+          answer:
+            "До участі запрошуються спеціалісти, викладачі, власники бізнесу, академії, студії, салони та бренди індустрії краси.",
+        },
+        {
+          question: "Чи обов'язково проживати у США для участі?",
+          answer:
+            "Ні. У премії можуть брати участь кандидати з будь-якої країни світу.",
+        },
+        {
+          question: "Як проходить участь у премії?",
+          answer:
+            "Учасники подають заявку та конкурсні матеріали через онлайн-форму. Оцінювання робіт проводить міжнародна колегія суддів.",
+        },
+        {
+          question: "Чи потрібно бути присутнім на церемонії нагородження?",
+          answer:
+            "Ні. Участь у премії та оцінювання робіт відбуваються незалежно від присутності на церемонії.",
+        },
+        {
+          question: "Скільки робіт можна подати?",
+          answer:
+            "Учасник може подати кілька робіт і брати участь у кількох категоріях.",
+        },
+        {
+          question: "Чи можна подати одну роботу в кілька категорій?",
+          answer:
+            "Так, якщо робота відповідає вимогам обраних категорій.",
+        },
+        {
+          question: "Коли завершується прийом заявок?",
+          answer:
+            "Прийом заявок відкритий з 20 червня по 15 серпня 2026 року включно.",
+        },
+        {
+          question: "Коли будуть оголошені результати?",
+          answer:
+            "Результати будуть оголошені під час IBPA Beauty Awards 2026 та опубліковані на офіційних ресурсах премії.",
+        },
+        {
+          question: "Що отримують переможці та призери?",
+          answer:
+            "Переможці та призери отримують офіційні нагороди, сертифікати та публікації в рамках премії.",
+        },
+        {
+          question: "Чи можу я подати заявку, якщо працюю менше 5 років?",
+          answer:
+            "Так, якщо обрана категорія не передбачає вимог до мінімального стажу роботи.",
+        },
+        {
+          question: "Чи повертається реєстраційний внесок?",
+          answer:
+            "Ні. Реєстраційний внесок є неповоротним після подачі заявки.",
+        },
+      ],
     },
   },
   juryPage: {

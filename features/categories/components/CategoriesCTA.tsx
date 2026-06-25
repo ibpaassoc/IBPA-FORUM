@@ -45,7 +45,7 @@ export default function CategoriesCTA() {
 
             <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
               <LandingPrimaryButton href="/apply">
-                {t.common.applyAsParticipant}
+                {t.categoriesPage.copy.ctaButton}
               </LandingPrimaryButton>
 
               <LandingSecondaryButton href="/grand-prix">
