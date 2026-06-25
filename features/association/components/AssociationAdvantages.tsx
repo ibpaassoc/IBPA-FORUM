@@ -1,53 +1,53 @@
+"use client";
+
 import { BadgeCheck } from "lucide-react";
 
-const advantages = [
-  "Образовательные вебинары и профессиональные материалы",
-  "Скидки на мероприятия, премии и проекты ассоциации",
-  "Доступ к закрытому профессиональному сообществу",
-  "Возможности для публикаций, выступлений и продвижения",
-  "Участие в международных форумах, премиях и бизнес-мероприятиях",
-  "Профиль в каталоге ассоциации",
-  "Сертификат участника IBPA",
-  "Партнерские программы, специальные предложения и другие привилегии",
-];
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 export default function AssociationAdvantages() {
-  return (
-    <section className="relative overflow-hidden bg-[#f7fbfd] py-20 md:py-28">
-      <div className="absolute left-[-12%] top-10 h-96 w-96 rounded-full bg-[#b9d9eb]/35 blur-3xl" />
+  const { t } = useLanguage();
+  const c = t.associationPage.advantages;
 
-      <div className="page-section relative grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-        <div className="lg:sticky lg:top-28">
-          <p className="page-eyebrow">Преимущества участия</p>
-          <h2 className="mt-4 font-(--font-display) text-[clamp(2.5rem,5vw,5.4rem)] leading-[0.95] tracking-[-0.055em] text-[#111827]">
-            Больше доверия, связей и профессионального роста.
+  const shortItems = c.items.map((item) => item.split(" и ")[0].split(" та ")[0]);
+
+  return (
+    <section className="relative overflow-hidden bg-[#f6fbfd] py-20 md:py-28">
+      <div className="absolute left-[-14%] top-0 h-[32rem] w-[32rem] rounded-full bg-[#b9d9eb]/34 blur-3xl" />
+      <div className="absolute bottom-[-18%] right-[-10%] h-[34rem] w-[34rem] rounded-full bg-[#72a0c1]/14 blur-3xl" />
+
+      <div className="page-section relative">
+        <div className="max-w-4xl">
+          <p className="page-eyebrow">{c.eyebrow}</p>
+
+          <h2 className="mt-4 font-[var(--font-title-family)] text-[clamp(2.8rem,6vw,6rem)] font-light leading-[0.9] tracking-[-0.06em] text-[#111827]">
+            {c.title}
           </h2>
-          <p className="mt-6 max-w-xl text-base leading-8 text-[#536776]">
-            Участие в IBPA помогает усиливать личный бренд, расширять
-            профессиональные возможности и быть частью международного
-            beauty-сообщества.
-          </p>
         </div>
 
-        <div className="grid gap-3">
-          {advantages.map((item, index) => (
-            <div
-              key={item}
-              className="flex gap-4 rounded-[28px] border border-white/70 bg-white/68 p-5 shadow-[0_18px_55px_rgba(114,160,193,0.12)] backdrop-blur-2xl"
+        <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {shortItems.map((item, index) => (
+            <article
+              key={`${item}-${index}`}
+              className="group relative min-h-[150px] overflow-hidden rounded-[32px] border border-white/70 bg-white/66 p-5 shadow-[0_22px_60px_rgba(114,160,193,0.12)] backdrop-blur-2xl transition duration-500 hover:-translate-y-1 hover:bg-white"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#1f5876] text-white">
-                <BadgeCheck size={18} />
-              </div>
+              <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-[#b9d9eb]/30 blur-2xl transition duration-500 group-hover:scale-125" />
 
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#72a0c1]">
-                  0{index + 1}
-                </p>
-                <p className="mt-1 text-lg font-medium leading-snug text-[#17212b]">
-                  {item}
-                </p>
+              <div className="relative flex items-start gap-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#1f5876] text-white shadow-[0_14px_30px_rgba(31,88,118,0.22)]">
+                  <BadgeCheck size={17} strokeWidth={1.8} />
+                </div>
+
+                <div className="min-w-0">
+                  <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#72a0c1]">
+                    {String(index + 1).padStart(2, "0")}
+                  </p>
+
+                  <h3 className="mt-3 text-[0.98rem] font-[var(--font-body-family)] leading-snug text-[#17212b]">
+                    {item}
+                  </h3>
+                </div>
               </div>
-            </div>
+            </article>
           ))}
         </div>
       </div>
