@@ -195,6 +195,30 @@ const en = {
       nextLabel: "Next winners",
       goToLabel: "Go to winner",
     },
+    program: {
+      eyebrow: "Program",
+      title: "The full program is coming soon",
+      description:
+        "Speakers, masterclasses, the schedule, and more will be published here.",
+    },
+    speakers: {
+      eyebrow: "Speakers",
+      title: "Speakers to be announced",
+      description: "The forum lineup will be revealed closer to the event.",
+    },
+    partners: {
+      eyebrow: "Partners",
+      title: "Our partners",
+      description:
+        "The brands and organizations supporting IBPA Beauty Awards 2026.",
+      cta: "Become a partner",
+      items: [
+        { name: "Partner", text: "One sentence about the partner.", href: "#" },
+        { name: "Partner", text: "One sentence about the partner.", href: "#" },
+        { name: "Partner", text: "One sentence about the partner.", href: "#" },
+        { name: "Partner", text: "One sentence about the partner.", href: "#" },
+      ],
+    },
     contactUs: {
       eyebrow: "Contact Us",
       title: "Let's create something exceptional together",
@@ -1550,6 +1574,30 @@ const ru: typeof en = {
       prevLabel: "Предыдущие победители",
       nextLabel: "Следующие победители",
       goToLabel: "Перейти к победителю",
+    },
+    program: {
+      eyebrow: "Программа",
+      title: "Полная программа скоро появится",
+      description:
+        "Здесь будут опубликованы спикеры, мастер-классы, расписание и многое другое.",
+    },
+    speakers: {
+      eyebrow: "Спикеры",
+      title: "Спикеры будут объявлены",
+      description: "Состав форума будет раскрыт ближе к событию.",
+    },
+    partners: {
+      eyebrow: "Партнёры",
+      title: "Наши партнёры",
+      description:
+        "Бренды и организации, поддерживающие IBPA Beauty Awards 2026.",
+      cta: "Стать партнёром",
+      items: [
+        { name: "Партнёр", text: "Одно предложение о партнёре.", href: "#" },
+        { name: "Партнёр", text: "Одно предложение о партнёре.", href: "#" },
+        { name: "Партнёр", text: "Одно предложение о партнёре.", href: "#" },
+        { name: "Партнёр", text: "Одно предложение о партнёре.", href: "#" },
+      ],
     },
     contactUs: {
       eyebrow: "Свяжитесь с нами",
@@ -2907,6 +2955,30 @@ const ua: typeof en = {
       prevLabel: "Попередні переможці",
       nextLabel: "Наступні переможці",
       goToLabel: "Перейти до переможця",
+    },
+    program: {
+      eyebrow: "Програма",
+      title: "Повна програма скоро з'явиться",
+      description:
+        "Тут будуть опубліковані спікери, майстер-класи, розклад та багато іншого.",
+    },
+    speakers: {
+      eyebrow: "Спікери",
+      title: "Спікерів буде оголошено",
+      description: "Склад форуму розкриють ближче до події.",
+    },
+    partners: {
+      eyebrow: "Партнери",
+      title: "Наші партнери",
+      description:
+        "Бренди та організації, що підтримують IBPA Beauty Awards 2026.",
+      cta: "Стати партнером",
+      items: [
+        { name: "Партнер", text: "Одне речення про партнера.", href: "#" },
+        { name: "Партнер", text: "Одне речення про партнера.", href: "#" },
+        { name: "Партнер", text: "Одне речення про партнера.", href: "#" },
+        { name: "Партнер", text: "Одне речення про партнера.", href: "#" },
+      ],
     },
     contactUs: {
       eyebrow: "Зв'яжіться з нами",

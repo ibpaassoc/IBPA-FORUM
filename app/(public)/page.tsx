@@ -4,9 +4,12 @@ import {
   HomeHero,
   HomeAwardsInfo,
   HomeThreeExperiences,
+  HomeProgram,
   HomeConversionBlock,
+  HomeSpeakers,
   HomePreviousForum,
   HomePreviousWinners,
+  HomePartners,
   HomeContactUs,
   HomeWhyAttend,
 } from "@/features/home/components";
@@ -17,9 +20,12 @@ export default function HomePagePremium() {
       <HomeHero />
       <HomeAwardsInfo />
       <HomeThreeExperiences />
+      <HomeProgram />
       <HomeConversionBlock />
+      <HomeSpeakers />
       <HomePreviousForum />
       <HomePreviousWinners />
+      <HomePartners />
       <HomeWhyAttend />
       <HomeContactUs />
     </main>
