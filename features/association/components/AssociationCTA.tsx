@@ -14,7 +14,7 @@ export default function AssociationCTA() {
   const c = t.associationPage.cta;
 
   return (
-    <section className="relative min-h-[680px] overflow-hidden bg-white md:min-h-[82vh]">
+    <section className="landing-photo-section relative min-h-[680px] overflow-hidden bg-white md:min-h-[82vh]">
       <div className="absolute inset-0">
         <Image
           src="/images/funny.jpg"
@@ -30,12 +30,12 @@ export default function AssociationCTA() {
 
       <div className="relative z-10 flex min-h-[680px] items-center justify-center px-[var(--page-gutter)] py-[clamp(5rem,8vw,8rem)] md:min-h-[82vh]">
         <div className="max-w-4xl text-center">
-          <div className="mx-auto mb-5 inline-flex items-center gap-2 rounded-full border border-white/75 bg-white/62 px-4 py-2 text-[0.66rem] font-semibold uppercase tracking-[0.24em] text-[#172430] shadow-[0_14px_36px_rgba(20,49,71,0.16)] backdrop-blur-[18px]">
+          <div className="mx-auto mb-5 inline-flex items-center gap-2 rounded-full border border-white/75 bg-white/62 px-4 py-2 text-[0.66rem] font-semibold uppercase tracking-[0.24em] text-[#172430] shadow-[0_12px_30px_rgba(20,49,71,0.14)] backdrop-blur-xl">
             <Sparkles size={13} />
             {c.eyebrow}
           </div>
 
-          <div className="rounded-[2.5rem] border border-white/60 bg-[linear-gradient(180deg,rgba(255,255,255,0.42),rgba(255,255,255,0.22))] px-6 py-9 shadow-[0_44px_130px_rgba(0,0,0,0.22)] backdrop-blur-[28px] sm:px-12 sm:py-11">
+          <div className="rounded-[2.5rem] border border-white/60 bg-[linear-gradient(180deg,rgba(255,255,255,0.42),rgba(255,255,255,0.22))] px-6 py-9 shadow-[0_34px_100px_rgba(0,0,0,0.2)] backdrop-blur-xl sm:px-12 sm:py-11">
             <h2 className="font-[var(--font-title-family)] text-[clamp(2.8rem,7vw,6rem)] font-light leading-[0.9] tracking-[-0.055em] text-[#060712] [text-shadow:0_1px_0_rgba(255,255,255,0.62),0_8px_22px_rgba(255,255,255,0.22)]">
               {c.title}
             </h2>

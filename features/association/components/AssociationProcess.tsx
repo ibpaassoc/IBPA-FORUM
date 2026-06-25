@@ -9,9 +9,8 @@ export default function AssociationProcess() {
   const c = t.associationPage.process;
 
   return (
-    <section className="relative overflow-hidden bg-white py-20 md:py-28">
-      <div className="absolute left-[-12%] top-16 h-96 w-96 rounded-full bg-[#b9d9eb]/24 blur-3xl" />
-      <div className="absolute bottom-[-18%] right-[-12%] h-[30rem] w-[30rem] rounded-full bg-[#72a0c1]/12 blur-3xl" />
+    <section className="landing-section relative overflow-hidden py-20 md:py-28">
+      <div className="absolute left-[-12%] top-16 h-80 w-80 rounded-full bg-[#b9d9eb]/14 blur-2xl" />
 
       <div className="page-section relative">
         <div className="mx-auto max-w-4xl text-center">
@@ -29,7 +28,7 @@ export default function AssociationProcess() {
             {c.steps.map((step, index) => (
               <article
                 key={step.title}
-                className="group relative flex min-h-[360px] flex-col overflow-hidden rounded-[34px] border border-[#b9d9eb]/45 bg-white/72 p-6 shadow-[0_24px_70px_rgba(114,160,193,0.12)] backdrop-blur-2xl transition duration-500 hover:-translate-y-1 hover:bg-white"
+                className="group relative flex min-h-[360px] flex-col overflow-hidden rounded-[34px] border border-[#b9d9eb]/45 bg-white/72 p-6 shadow-[0_18px_56px_rgba(114,160,193,0.1)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:bg-white"
               >
 
                 <div className="relative flex h-11 w-11 items-center justify-center rounded-full bg-[#1f5876] text-sm font-semibold text-white shadow-[0_14px_34px_rgba(31,88,118,0.24)]">

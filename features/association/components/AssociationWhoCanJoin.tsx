@@ -11,9 +11,8 @@ export default function AssociationWhoCanJoin() {
   const c = t.associationPage.whoCanJoin;
 
   return (
-    <section className="relative overflow-hidden bg-white py-20 md:py-28">
-      <div className="absolute left-[-16%] top-10 h-96 w-96 rounded-full bg-[#b9d9eb]/28 blur-3xl" />
-      <div className="absolute bottom-[-18%] right-[-12%] h-[28rem] w-[28rem] rounded-full bg-[#72a0c1]/12 blur-3xl" />
+    <section className="landing-section relative overflow-hidden py-20 md:py-28">
+      <div className="absolute left-[-16%] top-10 h-80 w-80 rounded-full bg-[#b9d9eb]/16 blur-2xl" />
 
       <div className="page-section relative">
         <div className="grid gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-end">
@@ -33,9 +32,9 @@ export default function AssociationWhoCanJoin() {
             return (
               <article
                 key={title}
-                className="group relative min-h-[220px] overflow-hidden rounded-[34px] border border-[#b9d9eb]/45 bg-white/62 p-6 shadow-[0_24px_70px_rgba(114,160,193,0.13)] backdrop-blur-2xl transition duration-500 hover:-translate-y-1 hover:bg-white"
+                className="group relative min-h-[220px] overflow-hidden rounded-[34px] border border-[#b9d9eb]/45 bg-white/66 p-6 shadow-[0_18px_56px_rgba(114,160,193,0.11)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:bg-white"
               >
-                <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-[#b9d9eb]/32 blur-2xl transition duration-500 group-hover:scale-125" />
+                <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-[#b9d9eb]/22 blur-2xl" />
 
                 <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-white/70 bg-[#b9d9eb]/32 text-[#1f5876] shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]">
                   <Icon size={22} strokeWidth={1.6} />

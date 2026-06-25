@@ -10,7 +10,7 @@ export default function AssociationHero() {
   const h = t.associationPage.hero;
 
   return (
-    <section className="relative flex min-h-[100svh] items-center justify-center overflow-hidden bg-[#0a0a0a]">
+    <section className="landing-hero-section relative flex min-h-[100svh] items-center justify-center overflow-hidden bg-[#0a0a0a]">
       <div className="absolute inset-0 z-[1]">
         <Image
           src="/images/team/sitting_group.jpg"

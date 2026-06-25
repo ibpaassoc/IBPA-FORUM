@@ -11,9 +11,8 @@ export default function AssociationAdvantages() {
   const shortItems = c.items.map((item) => item.split(" и ")[0].split(" та ")[0]);
 
   return (
-    <section className="relative overflow-hidden bg-[#f6fbfd] py-20 md:py-28">
-      <div className="absolute left-[-14%] top-0 h-[32rem] w-[32rem] rounded-full bg-[#b9d9eb]/34 blur-3xl" />
-      <div className="absolute bottom-[-18%] right-[-10%] h-[34rem] w-[34rem] rounded-full bg-[#72a0c1]/14 blur-3xl" />
+    <section className="landing-section-strong relative overflow-hidden py-20 md:py-28">
+      <div className="absolute left-[-14%] top-0 h-[26rem] w-[26rem] rounded-full bg-[#b9d9eb]/16 blur-2xl" />
 
       <div className="page-section relative">
         <div className="max-w-4xl">
@@ -28,9 +27,9 @@ export default function AssociationAdvantages() {
           {shortItems.map((item, index) => (
             <article
               key={`${item}-${index}`}
-              className="group relative min-h-[150px] overflow-hidden rounded-[32px] border border-white/70 bg-white/66 p-5 shadow-[0_22px_60px_rgba(114,160,193,0.12)] backdrop-blur-2xl transition duration-500 hover:-translate-y-1 hover:bg-white"
+              className="group relative min-h-[150px] overflow-hidden rounded-[32px] border border-white/70 bg-white/68 p-5 shadow-[0_18px_52px_rgba(114,160,193,0.1)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:bg-white"
             >
-              <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-[#b9d9eb]/30 blur-2xl transition duration-500 group-hover:scale-125" />
+              <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-[#b9d9eb]/20 blur-2xl" />
 
               <div className="relative flex items-start gap-4">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#1f5876] text-white shadow-[0_14px_30px_rgba(31,88,118,0.22)]">
