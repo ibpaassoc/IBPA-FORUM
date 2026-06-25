@@ -126,9 +126,81 @@ const en = {
           ["1 Day Forum", "$395"],
           ["2 Day Forum", "$695"],
           ["Gala Dinner", "$150"]
-        ]
+        ],
       },
 
+      cta: "Apply Now",
+
+      registrationInfo: {
+        eyebrow: "Registration Period",
+        value: "June 20 – August 15",
+        text: "Applications are accepted from June 20 through August 15, 2026 inclusive.",
+      },
+
+      feeInfo: {
+        eyebrow: "Registration Fee",
+        value: "$50",
+        text: "Participation is paid separately for each selected nomination.",
+      },
+
+      juryInfo: {
+        eyebrow: "Jury Registration",
+        value: "$100+",
+        text: "Professionals with at least 5 years of experience may apply to join the jury. The registration fee is paid only after approval.",
+      },
+
+      participationInfo: {
+        eyebrow: "Participation",
+        value: "Open to Everyone",
+        text: "Specialists of all levels may apply, with no restrictions by country or years of experience.",
+      },
+
+      grandPrixInfo: {
+        eyebrow: "Grand Prix",
+        value: "5+",
+        text: "Participants who submit applications in 5 or more nominations automatically enter the Grand Prix category.",
+      },
+
+      pricing: {
+        eyebrow: "Pricing",
+        title: "Participation Pricing",
+        description:
+          "Forum tickets, award nominations, and jury registration are priced separately. Forum and award pricing differs for IBPA members and standard participants.",
+
+        option: "Option",
+        members: "Members",
+        standard: "Standard",
+        nonMembers: "Non-members",
+
+        forum: {
+          eyebrow: "Tickets",
+          title: "Forum Tickets",
+          oneDay: "1 Day Forum",
+          twoDays: "2 Days Forum",
+          galaDinner: "Gala Dinner",
+        },
+
+        award: {
+          eyebrow: "Award",
+          title: "Award Nominations",
+          oneNomination: "1 Nomination",
+          threeNominations: "3 Nominations",
+          fiveNominations: "5 Nominations",
+          note: "Grand Prix participation is activated automatically for participants with 5 or more nominations.",
+        },
+
+        jury: {
+          eyebrow: "Jury",
+          title: "Jury Registration",
+          member: "IBPA Member",
+          standard: "Standard",
+        },
+
+        ctaEyebrow: "Ready to Join",
+        ctaTitle: "Start your IBPA 2026 application",
+        ctaText:
+          "Choose the participation format that fits you best and submit your application online.",
+      },
       awards: {
         title: "IBPA Beauty Awards",
         price: "$50",
@@ -1601,6 +1673,79 @@ const ru: typeof en = {
           ["2 дня форума", "$695"],
           ["Гала-ужин", "$150"]
         ]
+      },
+
+      cta: "Подать заявку",
+
+      registrationInfo: {
+        eyebrow: "Период регистрации",
+        value: "20 июня – 15 августа 2026",
+        text: "Приём заявок на участие осуществляется с 20 июня по 15 августа 2026 года включительно.",
+      },
+
+      feeInfo: {
+        eyebrow: "Регистрационный взнос",
+        value: "$50",
+        text: "Стоимость участия оплачивается отдельно за каждую выбранную номинацию.",
+      },
+
+      juryInfo: {
+        eyebrow: "Регистрация судьи",
+        value: "$100+",
+        text: "Подать заявку в судейскую коллегию могут специалисты с опытом работы от 5 лет. Регистрационный взнос оплачивается только после одобрения кандидатуры.",
+      },
+
+      participationInfo: {
+        eyebrow: "Участие",
+        value: "Открыто для всех",
+        text: "Подать заявку на участие могут специалисты всех уровней без ограничений по стране и стажу.",
+      },
+
+      grandPrixInfo: {
+        eyebrow: "Гран-при",
+        value: "5+",
+        text: "Участники, подавшие заявки в 5 и более номинациях, автоматически участвуют в категории Гран-при.",
+      },
+
+      pricing: {
+        eyebrow: "Стоимость",
+        title: "Стоимость участия",
+        description:
+          "Билеты на форум, номинации премии и регистрация судей оплачиваются отдельно. Стоимость форума и премии отличается для членов IBPA и стандартных участников.",
+
+        option: "Опция",
+        members: "Члены IBPA",
+        standard: "Стандарт",
+        nonMembers: "Без членства",
+
+        forum: {
+          eyebrow: "Билеты",
+          title: "Билеты на форум",
+          oneDay: "1 день форума",
+          twoDays: "2 дня форума",
+          galaDinner: "Гала-ужин",
+        },
+
+        award: {
+          eyebrow: "Премия",
+          title: "Номинации премии",
+          oneNomination: "1 номинация",
+          threeNominations: "3 номинации",
+          fiveNominations: "5 номинаций",
+          note: "Участие в Гран-при активируется автоматически для участников с 5 и более номинациями.",
+        },
+
+        jury: {
+          eyebrow: "Жюри",
+          title: "Регистрация судьи",
+          member: "Член IBPA",
+          standard: "Стандарт",
+        },
+
+        ctaEyebrow: "Готовы участвовать",
+        ctaTitle: "Начните заявку IBPA 2026",
+        ctaText:
+          "Выберите подходящий формат участия и подайте заявку онлайн.",
       },
 
       awards: {
@@ -3078,6 +3223,78 @@ const ua: typeof en = {
         ]
       },
 
+      cta: "Подати заявку",
+
+      registrationInfo: {
+        eyebrow: "Період реєстрації",
+        value: "20 червня – 15 серпня 2026",
+        text: "Прийом заявок на участь здійснюється з 20 червня до 15 серпня 2026 року включно.",
+      },
+
+      feeInfo: {
+        eyebrow: "Реєстраційний внесок",
+        value: "$50",
+        text: "Вартість участі сплачується окремо за кожну обрану номінацію.",
+      },
+
+      juryInfo: {
+        eyebrow: "Реєстрація судді",
+        value: "$100+",
+        text: "Подати заявку до суддівської колегії можуть спеціалісти з досвідом роботи від 5 років. Реєстраційний внесок сплачується лише після схвалення кандидатури.",
+      },
+
+      participationInfo: {
+        eyebrow: "Участь",
+        value: "Відкрита для всіх",
+        text: "Подати заявку на участь можуть спеціалісти всіх рівнів без обмежень за країною чи стажем.",
+      },
+
+      grandPrixInfo: {
+        eyebrow: "Гран-прі",
+        value: "5+",
+        text: "Учасники, які подали заявки у 5 або більше номінаціях, автоматично беруть участь у категорії Гран-прі.",
+      },
+
+      pricing: {
+        eyebrow: "Вартість",
+        title: "Вартість участі",
+        description:
+          "Квитки на форум, номінації премії та реєстрація суддів оплачуються окремо. Вартість форуму й премії відрізняється для членів IBPA та стандартних учасників.",
+
+        option: "Опція",
+        members: "Члени IBPA",
+        standard: "Стандарт",
+        nonMembers: "Без членства",
+
+        forum: {
+          eyebrow: "Квитки",
+          title: "Квитки на форум",
+          oneDay: "1 день форуму",
+          twoDays: "2 дні форуму",
+          galaDinner: "Гала-вечеря",
+        },
+
+        award: {
+          eyebrow: "Премія",
+          title: "Номінації премії",
+          oneNomination: "1 номінація",
+          threeNominations: "3 номінації",
+          fiveNominations: "5 номінацій",
+          note: "Участь у Гран-прі активується автоматично для учасників із 5 або більше номінаціями.",
+        },
+
+        jury: {
+          eyebrow: "Журі",
+          title: "Реєстрація судді",
+          member: "Член IBPA",
+          standard: "Стандарт",
+        },
+
+        ctaEyebrow: "Готові долучитися",
+        ctaTitle: "Почніть заявку IBPA 2026",
+        ctaText:
+          "Оберіть відповідний формат участі та подайте заявку онлайн.",
+      },
       awards: {
         title: "IBPA Beauty Awards",
         price: "$50",
