@@ -485,6 +485,64 @@ const en = {
       eligibilityValue: "For IBPA Beauty Award 2026 Members",
       cta: "Apply In A Category",
     },
+    participation: {
+      eyebrow: "How to participate",
+
+      title: "An international award created for professionals shaping the future of the beauty industry.",
+
+      description:
+        "Transparent judging, structured evaluation, and international recognition designed for professionals, educators, clinics, academies, salons, and beauty businesses.",
+
+      steps: [
+        {
+          number: "01",
+          title: "Complete your application",
+        },
+        {
+          number: "02",
+          title: "Choose your category",
+        },
+        {
+          number: "03",
+          title: "Select your nomination",
+        },
+        {
+          number: "04",
+          title:
+            "Provide your personal information, upload photos/videos, and describe your achievements",
+        },
+        {
+          number: "05",
+          title: "Complete the payment",
+        },
+        {
+          number: "06",
+          title: "Submit before August 15, 2026",
+        },
+      ],
+
+      doneTitle: "Done!",
+
+      doneDescription:
+        "Your application will be evaluated by our international panel of judges.",
+    },
+    whyJoin: {
+      eyebrow: "Why join",
+      title: "Why it is worth joining IBPA Beauty Awards",
+      benefits: [
+        "International recognition of your professional achievements.",
+        "Evaluation by an international panel of experts.",
+        "Increased client trust and stronger personal brand.",
+        "Opportunity to receive the winner or finalist status at IBPA Beauty Awards 2026.",
+        "Publication and promotion of the best participants in the professional community.",
+        "No need to attend in person — participation takes place online.",
+      ],
+      grandPrixEyebrow: "Grand Prix rule",
+      grandPrixTitle: "5+ nominations — and you are in the Grand Prix",
+      grandPrixDescription:
+        "Submit applications in 5 or more nominations and automatically become a Grand Prix nominee of IBPA Beauty Awards. No additional application is required.",
+      grandPrixBadge: "Chance to win the Grand Prix trophy",
+    },
     cardText: "Professional submissions are reviewed within the official IBPA Beauty Award 2026 framework.",
     directions: [
       {
@@ -1583,6 +1641,65 @@ const ru: typeof en = {
       eligibilityLabel: "Участие",
       eligibilityValue: "Для членов IBPA Beauty Award 2026",
       cta: "Подать заявку по категории",
+    },
+    participation: {
+      eyebrow: "Как принять участие",
+
+      title:
+        "Премия, созданная для профессионального лидерства в индустрии красоты.",
+
+      description:
+        "Структурированный отбор, прозрачная оценка и международное признание для специалистов, преподавателей, клиник, академий, салонов и представителей beauty-бизнеса.",
+
+      steps: [
+        {
+          number: "01",
+          title: "Заполните заявку",
+        },
+        {
+          number: "02",
+          title: "Выберите свою категорию",
+        },
+        {
+          number: "03",
+          title: "Определите номинацию",
+        },
+        {
+          number: "04",
+          title:
+            "Укажите личные данные, загрузите фото и видео, подробно опишите ваши достижения",
+        },
+        {
+          number: "05",
+          title: "Произведите оплату",
+        },
+        {
+          number: "06",
+          title: "Приём заявок до 15 августа 2026 года",
+        },
+      ],
+
+      doneTitle: "Готово!",
+
+      doneDescription:
+        "Ваша работа будет оценена международной коллегией судей.",
+    },
+    whyJoin: {
+      eyebrow: "Почему стоит присоединиться",
+      title: "Почему стоит принять участие в IBPA Beauty Awards",
+      benefits: [
+        "Международное признание ваших профессиональных достижений.",
+        "Оценка работ международной коллегией экспертов.",
+        "Повышение доверия клиентов и укрепление личного бренда.",
+        "Возможность получить статус победителя или призёра IBPA Beauty Awards 2026.",
+        "Публикация и продвижение лучших участников в профессиональном сообществе.",
+        "Нет необходимости присутствовать лично — участие проходит онлайн.",
+      ],
+      grandPrixEyebrow: "Правило Гран-при",
+      grandPrixTitle: "5+ номинаций — и вы в Гран-при",
+      grandPrixDescription:
+        "Подайте заявки в 5 и более номинаций — и вы автоматически становитесь номинантом на Гран-при IBPA. Без дополнительных заявок.",
+      grandPrixBadge: "Шанс выиграть трофей Гран-при",
     },
     cardText: "Профессиональные заявки рассматриваются в рамках официальной премии IBPA Beauty Award 2026.",
     directions: [
@@ -2685,6 +2802,65 @@ const ua: typeof en = {
       eligibilityLabel: "Участь",
       eligibilityValue: "Для членів IBPA Beauty Award 2026",
       cta: "Подати заявку за категорією",
+    },
+    participation: {
+      eyebrow: "Як взяти участь",
+
+      title:
+        "Міжнародна премія для професіоналів, які формують майбутнє індустрії краси.",
+
+      description:
+        "Прозоре оцінювання, структурований відбір та міжнародне визнання для спеціалістів, викладачів, клінік, академій, салонів і beauty-бізнесу.",
+
+      steps: [
+        {
+          number: "01",
+          title: "Заповніть заявку",
+        },
+        {
+          number: "02",
+          title: "Оберіть свою категорію",
+        },
+        {
+          number: "03",
+          title: "Визначте номінацію",
+        },
+        {
+          number: "04",
+          title:
+            "Вкажіть особисті дані, завантажте фото й відео та детально опишіть свої досягнення",
+        },
+        {
+          number: "05",
+          title: "Оплатіть участь",
+        },
+        {
+          number: "06",
+          title: "Подайте заявку до 15 серпня 2026 року",
+        },
+      ],
+
+      doneTitle: "Готово!",
+
+      doneDescription:
+        "Вашу роботу оцінюватиме міжнародна колегія суддів.",
+    },
+    whyJoin: {
+      eyebrow: "Чому варто долучитися",
+      title: "Чому варто взяти участь в IBPA Beauty Awards",
+      benefits: [
+        "Міжнародне визнання ваших професійних досягнень.",
+        "Оцінювання робіт міжнародною колегією експертів.",
+        "Підвищення довіри клієнтів і зміцнення особистого бренду.",
+        "Можливість отримати статус переможця або призера IBPA Beauty Awards 2026.",
+        "Публікація та просування найкращих учасників у професійній спільноті.",
+        "Немає потреби бути присутнім особисто — участь проходить онлайн.",
+      ],
+      grandPrixEyebrow: "Правило Гран-прі",
+      grandPrixTitle: "5+ номінацій — і ви в Гран-прі",
+      grandPrixDescription:
+        "Подайте заявки у 5 або більше номінацій — і ви автоматично стаєте номінантом на Гран-прі IBPA. Без додаткових заявок.",
+      grandPrixBadge: "Шанс виграти трофей Гран-прі",
     },
     cardText: "Професійні заявки розглядаються в межах офіційної премії IBPA Beauty Award 2026.",
     directions: [
