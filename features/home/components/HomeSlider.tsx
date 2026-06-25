@@ -95,11 +95,9 @@ export default function HomeSlider({ tier, onTierChange }: HomeSliderProps) {
             data-testid="pricing-tier-toggle"
             className="relative flex rounded-full border border-[#b9d9eb]/60 bg-white/60 p-1.5 backdrop-blur-2xl shadow-[0_10px_40px_rgba(122,152,175,0.10)]"
           >
-            <motion.div
-              layout
+            <div
               aria-hidden
-              transition={{ type: "spring", stiffness: 380, damping: 34 }}
-              className="pointer-events-none absolute inset-y-1.5 rounded-full border border-[#8eb6d3]/55 bg-gradient-to-b from-white/95 via-[#fafdff] to-[#eef7fc] shadow-[0_0_0_1px_rgba(255,255,255,0.65),0_8px_24px_rgba(122,152,175,0.15),0_0_36px_rgba(122,152,175,0.18)] backdrop-blur-xl"
+              className="pointer-events-none absolute inset-y-1.5 rounded-full border border-[#8eb6d3]/55 bg-gradient-to-b from-white/95 via-[#fafdff] to-[#eef7fc] shadow-[0_0_0_1px_rgba(255,255,255,0.65),0_8px_24px_rgba(122,152,175,0.13)] backdrop-blur-xl transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]"
               style={
                 tier === "ibpa"
                   ? { left: 6, right: "50%" }
@@ -109,12 +107,12 @@ export default function HomeSlider({ tier, onTierChange }: HomeSliderProps) {
               <span className="absolute inset-x-5 top-0 h-px rounded-full bg-gradient-to-r from-transparent via-[#72a0c1]/90 to-transparent" />
               <span className="absolute inset-0 rounded-full bg-[#72a0c1]/5" />
               <span className="absolute inset-x-6 top-[2px] h-[40%] rounded-full bg-gradient-to-b from-white/70 to-transparent" />
-            </motion.div>
+            </div>
 
             <button
               type="button"
               onClick={() => onTierChange("ibpa")}
-              className={`relative z-10 min-w-[138px] rounded-full px-6 py-3 text-[0.72rem] font-semibold uppercase tracking-[0.18em] transition-all duration-500 ${
+              className={`relative z-10 min-w-[138px] rounded-full px-6 py-3 text-[0.72rem] font-semibold uppercase tracking-[0.18em] transition-colors duration-200 ${
                 tier === "ibpa"
                   ? "text-[#24394b]"
                   : "text-[var(--color-ink-soft)] hover:text-[#24394b]"
@@ -126,7 +124,7 @@ export default function HomeSlider({ tier, onTierChange }: HomeSliderProps) {
             <button
               type="button"
               onClick={() => onTierChange("standard")}
-              className={`relative z-10 min-w-[138px] rounded-full px-6 py-3 text-[0.72rem] font-semibold uppercase tracking-[0.18em] transition-all duration-500 ${
+              className={`relative z-10 min-w-[138px] rounded-full px-6 py-3 text-[0.72rem] font-semibold uppercase tracking-[0.18em] transition-colors duration-200 ${
                 tier === "standard"
                   ? "text-[#24394b]"
                   : "text-[var(--color-ink-soft)] hover:text-[#24394b]"

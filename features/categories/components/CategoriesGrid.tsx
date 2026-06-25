@@ -3,7 +3,7 @@
 import { motion, type Variants } from "framer-motion";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { PageSection } from "@/shared/components/layout/PageShell";
+import { PageSection } from "@/shared/components/public";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -36,7 +36,7 @@ export default function CategoriesGrid() {
   const categories = t.home.categoriesPreview.items;
 
   return (
-    <PageSection>
+    <PageSection className="landing-section">
       <motion.div
         variants={containerVariants}
         initial="hidden"

@@ -16,10 +16,10 @@ import { Reveal } from "@/shared/components/public";
 type Tier = "ibpa" | "standard";
 
 const glassButtonClass =
-  "group/btn relative inline-flex min-h-[54px] w-full items-center justify-center gap-3 overflow-hidden rounded-full border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(248,252,255,0.76))] px-8 py-4 font-[var(--font-ui-family)] text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-[#0b1420] shadow-[0_1px_0_rgba(255,255,255,0.95),0_12px_34px_rgba(122,152,175,0.14),inset_0_1px_0_rgba(255,255,255,0.85)] transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-[2px] hover:border-[#8eb6d3]/75 hover:shadow-[0_18px_50px_rgba(122,152,175,0.2)] sm:w-auto";
+  "group/btn relative inline-flex min-h-[54px] w-full items-center justify-center gap-3 overflow-hidden rounded-full border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(248,252,255,0.76))] px-8 py-4 font-[var(--font-ui-family)] text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-[#0b1420] shadow-[0_1px_0_rgba(255,255,255,0.95),0_10px_30px_rgba(122,152,175,0.12),inset_0_1px_0_rgba(255,255,255,0.85)] transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-px hover:border-[#8eb6d3]/70 hover:shadow-[0_14px_40px_rgba(122,152,175,0.15)] sm:w-auto";
 
 const smallGlassButtonClass =
-  "group/btn relative mt-5 inline-flex min-h-[46px] w-full items-center justify-center gap-2 overflow-hidden rounded-full border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(248,252,255,0.76))] px-4 py-3 font-[var(--font-ui-family)] text-[0.56rem] font-semibold uppercase tracking-[0.13em] text-[#0b1420] shadow-[0_1px_0_rgba(255,255,255,0.95),0_10px_28px_rgba(122,152,175,0.13),inset_0_1px_0_rgba(255,255,255,0.85)] transition-all duration-700 group-hover/card:-translate-y-[1px] group-hover/card:border-[#8eb6d3]/75 group-hover/card:shadow-[0_16px_42px_rgba(122,152,175,0.2)]";
+  "group/btn relative mt-5 inline-flex min-h-[46px] w-full items-center justify-center gap-2 overflow-hidden rounded-full border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(248,252,255,0.76))] px-4 py-3 font-[var(--font-ui-family)] text-[0.56rem] font-semibold uppercase tracking-[0.13em] text-[#0b1420] shadow-[0_1px_0_rgba(255,255,255,0.95),0_8px_24px_rgba(122,152,175,0.11),inset_0_1px_0_rgba(255,255,255,0.85)] transition-all duration-200 group-hover/card:-translate-y-px group-hover/card:border-[#8eb6d3]/70 group-hover/card:shadow-[0_12px_34px_rgba(122,152,175,0.14)]";
 
 function ButtonLayers() {
   return (
@@ -28,7 +28,6 @@ function ButtonLayers() {
       <span className="absolute inset-x-8 top-[1px] h-[45%] rounded-full bg-gradient-to-b from-white/85 to-transparent" />
       <span className="absolute inset-x-10 bottom-0 h-px bg-gradient-to-r from-transparent via-[#72a0c1]/65 to-transparent opacity-70" />
       <span className="absolute inset-[1px] rounded-full border border-white/65" />
-      <span className="absolute inset-0 before:absolute before:left-[-130%] before:top-0 before:h-full before:w-[40%] before:rotate-[18deg] before:bg-gradient-to-r before:from-transparent before:via-white/70 before:to-transparent before:transition-all before:duration-1000 group-hover/btn:before:left-[140%]" />
     </>
   );
 }
@@ -79,7 +78,7 @@ export default function HomeParticipation({
                 alt="Beauty Business Forum"
                 fill
                 sizes="100vw"
-                className="object-cover object-center opacity-90 transition-transform duration-700 lg:group-hover:scale-[1.02]"
+                className="object-cover object-center opacity-90 transition-transform duration-300"
               />
 
               <div className="absolute inset-0 bg-gradient-to-t from-white via-white/56 to-white/10 sm:via-white/46 lg:via-white/40 lg:to-black/5" />
@@ -150,7 +149,7 @@ export default function HomeParticipation({
                       <span className="relative z-10">{p.tickets.cta}</span>
                       <ArrowRight
                         size={15}
-                        className="relative z-10 text-[#4d88b2] transition-all duration-500 group-hover/btn:translate-x-1.5 group-hover/btn:scale-110"
+                        className="relative z-10 text-[#4d88b2] transition-all duration-200 group-hover/btn:translate-x-0.5"
                       />
                     </button>
                   </div>
@@ -206,16 +205,15 @@ function OverlayPricingCard({
   return (
     <Link
       href={href}
-      className="group/card relative min-h-[190px] overflow-hidden rounded-[26px] border border-white/65 bg-white/62 p-4 shadow-[0_18px_50px_rgba(17,24,39,0.09)] backdrop-blur-2xl transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-1 hover:border-[#b9d9eb]/80 hover:bg-white/76 hover:shadow-[0_24px_70px_rgba(114,160,193,0.20)] sm:min-h-[210px] lg:bg-white/44 lg:backdrop-blur-xl"
+      className="group/card relative min-h-[190px] overflow-hidden rounded-[26px] border border-white/65 bg-white/62 p-4 shadow-[0_16px_44px_rgba(17,24,39,0.08)] backdrop-blur-2xl transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-px hover:border-[#b9d9eb]/76 hover:bg-white/72 hover:shadow-[0_18px_52px_rgba(114,160,193,0.14)] sm:min-h-[210px] lg:bg-white/44 lg:backdrop-blur-xl"
     >
-      <span className="absolute inset-0 bg-gradient-to-b from-white/65 via-white/20 to-[#b9d9eb]/14 opacity-80 transition-opacity duration-700 group-hover/card:opacity-100" />
-      <span className="absolute inset-x-7 top-0 h-px bg-gradient-to-r from-transparent via-[#72a0c1]/0 to-transparent transition-all duration-700 group-hover/card:via-[#72a0c1]/75" />
-      <span className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-[#b9d9eb]/0 blur-3xl transition-all duration-700 group-hover/card:bg-[#b9d9eb]/40" />
+      <span className="absolute inset-0 bg-gradient-to-b from-white/65 via-white/20 to-[#b9d9eb]/14 opacity-80 transition-opacity duration-200 group-hover/card:opacity-95" />
+      <span className="absolute inset-x-7 top-0 h-px bg-gradient-to-r from-transparent via-[#72a0c1]/0 to-transparent transition-all duration-200 group-hover/card:via-[#72a0c1]/55" />
 
       <div className="relative z-10 flex h-full flex-col justify-between">
         <div>
           <div className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#b9d9eb]/70 bg-white/70 text-[#6f9fbe] shadow-[0_10px_26px_rgba(114,160,193,0.14)] backdrop-blur-xl transition-all duration-700 group-hover/card:scale-105 group-hover/card:border-[#72a0c1]/80 group-hover/card:bg-white group-hover/card:text-[#4f86aa]">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#b9d9eb]/70 bg-white/70 text-[#6f9fbe] shadow-[0_8px_22px_rgba(114,160,193,0.12)] backdrop-blur-xl transition-all duration-200 group-hover/card:border-[#72a0c1]/75 group-hover/card:bg-white group-hover/card:text-[#4f86aa]">
               {icon}
             </span>
 
@@ -246,7 +244,7 @@ function OverlayPricingCard({
           <span className="relative z-10 line-clamp-1">{cta}</span>
           <ArrowRight
             size={13}
-            className="relative z-10 shrink-0 text-[#4d88b2] transition-all duration-500 group-hover/card:translate-x-1.5 group-hover/card:scale-110"
+            className="relative z-10 shrink-0 text-[#4d88b2] transition-all duration-200 group-hover/card:translate-x-0.5"
           />
         </span>
       </div>
