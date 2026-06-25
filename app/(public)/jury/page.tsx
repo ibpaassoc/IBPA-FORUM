@@ -13,11 +13,12 @@ import {
   JuryCta,
   JuryFaq,
 } from "@/features/jury/components/pages";
+import { LandingPageShell } from "@/shared/components/public";
 
 export default async function JuryPage() {
   const juryMembers = await getPublicJuryMembers();
   return (
-    <main className="page-shell">
+    <LandingPageShell>
       <JuryHero />
       <JuryAbout />
       <JuryTimeline />
@@ -29,6 +30,6 @@ export default async function JuryPage() {
       <JuryActiveMembers juryMembers={juryMembers} />
       <JuryCta />
       <JuryFaq />
-    </main>
+    </LandingPageShell>
   );
 }

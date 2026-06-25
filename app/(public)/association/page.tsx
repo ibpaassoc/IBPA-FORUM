@@ -1,4 +1,3 @@
-import { PageShell } from "@/shared/components/layout/PageShell";
 import {
   AssociationHero,
   AssociationWhoCanJoin,
@@ -6,15 +5,16 @@ import {
   AssociationProcess,
   AssociationCTA,
 } from "@/features/association/components"
+import { LandingPageShell } from "@/shared/components/public";
 
 export default function AssociationPage() {
   return (
-    <PageShell>
+    <LandingPageShell>
       <AssociationHero />
       <AssociationWhoCanJoin />
       <AssociationAdvantages />
       <AssociationProcess />
       <AssociationCTA />
-    </PageShell>
+    </LandingPageShell>
   )
 }

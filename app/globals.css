@@ -35,6 +35,20 @@
   --shadow-glass: 0 12px 36px rgba(114, 160, 193, 0.16);
   --shadow-glass-lg: 0 24px 60px rgba(114, 160, 193, 0.22);
   --surface-blue-tint: linear-gradient(160deg, #f2f8fb 0%, #ffffff 100%);
+  --landing-background:
+    radial-gradient(circle at 8% 18%, rgba(185, 217, 235, 0.34), transparent 28rem),
+    radial-gradient(circle at 92% 36%, rgba(114, 160, 193, 0.14), transparent 30rem),
+    linear-gradient(180deg, #ffffff 0%, #f6fbfd 46%, #ffffff 100%);
+  --landing-divider: linear-gradient(
+    90deg,
+    transparent,
+    rgba(114, 160, 193, 0.2),
+    rgba(255, 255, 255, 0.78),
+    rgba(114, 160, 193, 0.16),
+    transparent
+  );
+  --landing-section-surface: rgba(255, 255, 255, 0.38);
+  --landing-section-surface-strong: rgba(255, 255, 255, 0.64);
 
   --radius: 10px;
   --radius-lg: 16px;
@@ -176,6 +190,54 @@ textarea {
   min-height: 100vh;
   background: var(--background);
   color: var(--color-ink);
+}
+
+.landing-page-shell {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  overflow: clip;
+  background: var(--landing-background);
+  color: var(--color-ink);
+}
+
+.landing-page-shell::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 18% 48%, rgba(216, 236, 248, 0.34), transparent 24rem),
+    radial-gradient(circle at 78% 72%, rgba(185, 217, 235, 0.18), transparent 28rem);
+}
+
+.landing-page-shell > section {
+  position: relative;
+}
+
+.landing-page-shell > section:not(:first-child)::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset-inline: max(var(--page-gutter), calc((100vw - var(--content-width)) / 2));
+  top: 0;
+  z-index: 3;
+  height: 1px;
+  background: var(--landing-divider);
+}
+
+.landing-section {
+  background: var(--landing-section-surface);
+}
+
+.landing-section-strong {
+  background: var(--landing-section-surface-strong);
+}
+
+.landing-photo-section::before,
+.landing-hero-section::before {
+  display: none;
 }
 
 @utility page-section {

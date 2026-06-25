@@ -13,10 +13,11 @@ import {
   HomeContactUs,
   HomeWhyAttend,
 } from "@/features/home/components";
+import { LandingPageShell } from "@/shared/components/public";
 
 export default function HomePagePremium() {
   return (
-    <main className="page-shell">
+    <LandingPageShell>
       <HomeHero />
       <HomeAwardsInfo />
       <HomeThreeExperiences />
@@ -28,6 +29,6 @@ export default function HomePagePremium() {
       {/*<HomePartners />*/}
       <HomeWhyAttend />
       <HomeContactUs />
-    </main>
+    </LandingPageShell>
   );
 }

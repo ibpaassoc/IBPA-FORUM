@@ -9,10 +9,11 @@ import {
   CategoriesCTA,
   CategoriesFAQ,
 } from "@/features/categories/components";
+import { LandingPageShell } from "@/shared/components/public";
 
 export default function CategoriesPagePremium() {
   return (
-    <main className="page-shell">
+    <LandingPageShell>
       <CategoriesHero />
       <CategoriesInfo />
       <CategoriesFeatures />
@@ -20,6 +21,6 @@ export default function CategoriesPagePremium() {
       <CategoriesAwardResults />
       <CategoriesCTA />
       <CategoriesFAQ />
-    </main>
+    </LandingPageShell>
   );
 }

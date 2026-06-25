@@ -21,6 +21,7 @@ export { default as PremiumCTA } from "./PremiumCTA";
 export { ButtonLayers, LandingPrimaryButton, LandingSecondaryButton, LANDING_PRIMARY_BTN_CLASS, LANDING_SECONDARY_BTN_CLASS } from "./LandingButtons";
 export { HeroPrimaryButton, HeroSecondaryButton } from "./HeroButtons";
 export { LandingCtaBlock } from "./LandingCtaBlock";
+export { default as LandingPageShell } from "./LandingPageShell";
 export { default as ProcessTimeline } from "./ProcessTimeline";
 export { default as Reveal } from "./Reveal";
 export { default as FaqAccordion } from "./FaqAccordion";

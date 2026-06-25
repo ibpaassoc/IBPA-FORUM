@@ -11,10 +11,11 @@ import {
   GrandPrixCTA,
   GrandPrixFaq,
 } from "@/features/grand-prix/components/";
+import { LandingPageShell } from "@/shared/components/public";
 
 export default function GrandPrixPagePremium() {
   return (
-    <main className="page-shell">
+    <LandingPageShell>
       <GrandPrixHero />
       <GrandPrixAbout />
       <GrandPrixWhoQualifies />
@@ -24,6 +25,6 @@ export default function GrandPrixPagePremium() {
       <GrandPrixTimeline />
       <GrandPrixCTA />
       <GrandPrixFaq />
-    </main>
+    </LandingPageShell>
   );
 }

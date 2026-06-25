@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import ApplicationFormLoader from "@/features/applications/components/application-form/ApplicationFormLoader";
 import ApplicationFormSkeleton from "@/features/applications/components/application-form/ApplicationFormSkeleton";
 import ApplyHero from "@/features/applications/components/pages/ApplyHero";
-import { PageSection } from "@/shared/components/public";
+import { LandingPageShell, PageSection } from "@/shared/components/public";
 
 export const metadata: Metadata = {
   title: "Apply | IBPA Beauty Award",
@@ -19,7 +19,7 @@ const heroStats = [
 
 export default function ApplyPage() {
   return (
-    <main className="page-shell">
+    <LandingPageShell>
       <ApplyHero heroStats={heroStats} />
 
       <PageSection id="apply-form" className="py-16">
@@ -27,6 +27,6 @@ export default function ApplyPage() {
           <ApplicationFormLoader />
         </Suspense>
       </PageSection>
-    </main>
+    </LandingPageShell>
   );
 }
