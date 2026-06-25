@@ -4,7 +4,6 @@ import {
   GrandPrixHero,
   GrandPrixFlow,
   GrandPrixTimeline,
-  GrandPrixFullBleed,
   GrandPrixCTA
 } from "@/features/grand-prix/components/";
 
