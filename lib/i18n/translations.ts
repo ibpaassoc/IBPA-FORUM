@@ -1035,28 +1035,48 @@ const en = {
       ],
     },
     faq: {
-      label: "Questions",
-      title: "Frequently asked questions",
+      label: "Frequently asked questions",
+      title: "FAQ",
       items: [
         {
-          question: "Do I pay when I submit the application?",
+          question: "Is judging conducted online?",
           answer:
-            "No. Jury applications are submitted free of charge. The $250 fee is charged only after approval.",
+            "Yes, all competition entries are evaluated remotely through the judge’s personal dashboard.",
         },
         {
-          question: "How long does the review take?",
+          question: "When will I know the result of my jury application review?",
           answer:
-            "Applications are reviewed individually and may take up to 14 business days.",
+            "After the professional experience and documents are reviewed, the candidate receives a notification with the commission’s decision.",
         },
         {
-          question: "Will every applicant be accepted?",
+          question: "Do I need to attend the award ceremony?",
           answer:
-            "No. Approval depends on professional background, qualifications, and jury fit.",
+            "No, attendance at the award ceremony is not required.",
         },
         {
-          question: "What happens after approval?",
+          question: "Is there financial compensation?",
           answer:
-            "Approved candidates receive payment instructions. After payment confirmation, they officially join the jury panel.",
+            "No, participation in the jury panel is voluntary.",
+        },
+        {
+          question: "When will I receive access to the entries?",
+          answer:
+            "Access is provided after the application period closes and the final list of competition entries is approved.",
+        },
+        {
+          question: "Can I be a judge if I do not live in the United States?",
+          answer:
+            "Yes, the jury panel may include specialists from different countries.",
+        },
+        {
+          question: "Is previous judging experience required?",
+          answer:
+            "Judging experience is welcomed, but it is not required. If the candidate does not have judging experience, they should have significant professional achievements, teaching, competition, or expert experience confirming a high level of qualification and understanding of professional evaluation.",
+        },
+        {
+          question: "How much time does the evaluation process take?",
+          answer:
+            "The number of entries depends on the category. The process is organized so that judging can be completed comfortably within the established deadlines.",
         },
       ],
     },
@@ -2640,28 +2660,49 @@ const ru: typeof en = {
       ],
     },
     faq: {
-      label: "Вопросы",
-      title: "Часто задаваемые вопросы",
+      label: "Часто задаваемые вопросы",
+      title: "FAQ",
       items: [
         {
-          question: "Нужно ли платить при подаче заявки?",
+          question: "Судейство проходит онлайн?",
           answer:
-            "Нет. Заявка в жюри подаётся бесплатно. Взнос $250 оплачивается только после одобрения.",
+            "Да, все конкурсные работы оцениваются дистанционно через личный кабинет судьи.",
         },
         {
-          question: "Сколько длится рассмотрение?",
+          question:
+            "Когда я узнаю результат рассмотрения моей заявки в судейскую коллегию?",
           answer:
-            "Заявки рассматриваются индивидуально, процесс может занимать до 14 рабочих дней.",
+            "После проверки профессионального опыта и документов кандидат получает уведомление о решении комиссии.",
         },
         {
-          question: "Все ли кандидаты будут приняты?",
+          question: "Нужно ли присутствовать на церемонии награждения?",
           answer:
-            "Нет. Одобрение зависит от профессионального опыта, квалификации и соответствия составу жюри.",
+            "Нет, присутствие на церемонии не является обязательным.",
         },
         {
-          question: "Что происходит после одобрения?",
+          question: "Есть ли финансовое вознаграждение?",
           answer:
-            "Одобренные кандидаты получают инструкции по оплате. После подтверждения оплаты они официально входят в состав жюри.",
+            "Нет, участие в судейской коллегии осуществляется на добровольной основе.",
+        },
+        {
+          question: "Когда я получу доступ к работам?",
+          answer:
+            "После завершения приёма заявок и утверждения списка конкурсных работ.",
+        },
+        {
+          question: "Могу ли я быть судьёй, если живу не в США?",
+          answer:
+            "Да, в состав жюри могут входить специалисты из разных стран.",
+        },
+        {
+          question: "Обязательно ли иметь опыт судейства?",
+          answer:
+            "Опыт судейства приветствуется, но не является обязательным требованием. При отсутствии опыта судейства кандидат должен иметь значительные профессиональные достижения, преподавательский, конкурсный или экспертный опыт, подтверждающий высокий уровень квалификации и понимание процесса профессиональной оценки работ.",
+        },
+        {
+          question: "Сколько времени занимает оценка работ?",
+          answer:
+            "Количество работ зависит от категории. Процесс организован так, чтобы судейство можно было пройти комфортно в установленные сроки.",
         },
       ],
     },
@@ -4244,28 +4285,49 @@ const ua: typeof en = {
       ],
     },
     faq: {
-      label: "Питання",
-      title: "Поширені запитання",
+      label: "Поширені запитання",
+      title: "FAQ",
       items: [
         {
-          question: "Чи потрібно платити під час подання заявки?",
+          question: "Суддівство проходить онлайн?",
           answer:
-            "Ні. Заявка до журі подається безкоштовно. Внесок $250 сплачується тільки після схвалення.",
+            "Так, усі конкурсні роботи оцінюються дистанційно через особистий кабінет судді.",
         },
         {
-          question: "Скільки триває розгляд?",
+          question:
+            "Коли я дізнаюся результат розгляду моєї заявки до суддівської колегії?",
           answer:
-            "Заявки розглядаються індивідуально, процес може тривати до 14 робочих днів.",
+            "Після перевірки професійного досвіду та документів кандидат отримує повідомлення з рішенням комісії.",
         },
         {
-          question: "Чи всіх кандидатів буде прийнято?",
+          question: "Чи потрібно бути присутнім на церемонії нагородження?",
           answer:
-            "Ні. Схвалення залежить від професійного досвіду, кваліфікації та відповідності складу журі.",
+            "Ні, присутність на церемонії не є обов’язковою.",
         },
         {
-          question: "Що відбувається після схвалення?",
+          question: "Чи передбачена фінансова винагорода?",
           answer:
-            "Схвалені кандидати отримують інструкції з оплати. Після підтвердження оплати вони офіційно входять до складу журі.",
+            "Ні, участь у суддівській колегії здійснюється на добровільній основі.",
+        },
+        {
+          question: "Коли я отримаю доступ до робіт?",
+          answer:
+            "Після завершення прийому заявок і затвердження списку конкурсних робіт.",
+        },
+        {
+          question: "Чи можу я бути суддею, якщо живу не в США?",
+          answer:
+            "Так, до складу журі можуть входити спеціалісти з різних країн.",
+        },
+        {
+          question: "Чи обов’язково мати досвід суддівства?",
+          answer:
+            "Досвід суддівства вітається, але не є обов’язковою вимогою. За відсутності досвіду суддівства кандидат повинен мати значні професійні досягнення, викладацький, конкурсний або експертний досвід, що підтверджує високий рівень кваліфікації та розуміння процесу професійного оцінювання робіт.",
+        },
+        {
+          question: "Скільки часу займає оцінювання робіт?",
+          answer:
+            "Кількість робіт залежить від категорії. Процес організований так, щоб суддівство можна було пройти комфортно у встановлені строки.",
         },
       ],
     },
