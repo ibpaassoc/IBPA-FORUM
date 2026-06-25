@@ -73,30 +73,34 @@ export default function CategoriesWhyJoin() {
         </Reveal>
 
         <Reveal delay={0.2}>
-          <GlassCard className="mt-6 overflow-hidden rounded-[34px] border border-[#b9d9eb]/45 px-7 py-7 shadow-[0_24px_60px_rgba(114,160,193,0.12)] md:px-8">
-            <div className="grid min-h-[170px] gap-8 lg:grid-cols-[300px_1fr]">
+          <GlassCard className="mt-6 overflow-hidden rounded-[32px] border border-[#b9d9eb]/45 p-6 shadow-[0_20px_52px_rgba(114,160,193,0.10)] md:p-7">
+           <div className="grid gap-8 lg:grid-cols-[1fr_440px]">
+              {/* Left */}
               <div className="flex flex-col justify-center">
-                <div className="flex h-13 w-13 items-center justify-center rounded-[18px] bg-[#72a0c1]/10 text-[#72a0c1] ring-1 ring-[#72a0c1]/10">
-                  <Trophy className="h-6 w-6" strokeWidth={1.7} />
+                <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-[#72a0c1]/10 text-[#72a0c1] ring-1 ring-[#72a0c1]/10">
+                  <Trophy className="h-5 w-5" />
                 </div>
 
                 <p className="page-eyebrow mt-5 text-[#72a0c1]">
                   {c.grandPrixEyebrow}
                 </p>
 
-                <h3 className="mt-3 font-(--font-display) text-[clamp(2rem,3.2vw,3rem)] leading-[0.98] tracking-[-0.05em] text-[#1e2430]">
+                <h3 className="mt-4 max-w-[480px] font-(--font-display) text-[clamp(2.3rem,4vw,3.8rem)] leading-[0.92] tracking-[-0.05em] text-[#1e2430]">
                   {c.grandPrixTitle}
                 </h3>
               </div>
 
-              <div className="flex flex-col justify-end pb-1 lg:items-end">
-                <p className="max-w-[620px] text-[1.02rem] leading-8 text-[#5d6877] lg:text-right">
+              {/* Right */}
+              <div className="flex flex-col rounded-[30px] border border-[#b9d9eb]/30 bg-[#f8fbfd]/70 p-8">
+                <p className="mt-5 text-[1.02rem] leading-8 text-[#5d6877]">
                   {c.grandPrixDescription}
                 </p>
 
-                <div className="mt-7 inline-flex items-center gap-2 rounded-full border border-[#72a0c1]/18 bg-white/80 px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#72a0c1] shadow-[0_10px_28px_rgba(114,160,193,0.10)]">
-                  <Sparkles className="h-3.5 w-3.5" strokeWidth={1.8} />
-                  {c.grandPrixBadge}
+                <div className="mt-auto pt-10">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-[#72a0c1]/18 bg-white px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#72a0c1] shadow-[0_8px_24px_rgba(114,160,193,0.08)]">
+                    <Sparkles className="h-3.5 w-3.5" />
+                    {c.grandPrixBadge}
+                  </div>
                 </div>
               </div>
             </div>
