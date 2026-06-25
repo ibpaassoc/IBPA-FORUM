@@ -14,7 +14,7 @@ export default function AnimatedReveal({
 }: AnimatedRevealProps) {
   return (
     <div
-      className={clsx("motion-safe:animate-[fadeUp_0.7s_ease_both]", className)}
+      className={clsx("motion-safe:animate-[fadeUp_0.36s_ease_both]", className)}
       style={{ animationDelay: `${delayMs}ms` }}
     >
       {children}

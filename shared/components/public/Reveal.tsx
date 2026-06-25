@@ -19,7 +19,7 @@ export default function Reveal({
   className,
   delay = 0,
   duration = PUBLIC_MOTION_DURATION.base,
-  y = 24,
+  y = 14,
   once = true,
 }: RevealProps) {
   const reducedMotion = useReducedMotion();
@@ -33,7 +33,7 @@ export default function Reveal({
       className={clsx(className)}
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once, amount: 0.25 }}
+      viewport={{ once, amount: 0.18 }}
       transition={{ duration, delay, ease: PUBLIC_MOTION_EASE }}
     >
       {children}

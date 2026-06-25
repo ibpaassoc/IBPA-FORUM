@@ -18,7 +18,7 @@ export default function StaggerContainer({
   children,
   className,
   itemClassName,
-  stagger = 0.12,
+  stagger = 0.055,
   delay = 0,
   once = true,
 }: StaggerContainerProps) {
@@ -39,7 +39,7 @@ export default function StaggerContainer({
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 12 },
     visible: {
       opacity: 1,
       y: 0,
@@ -56,7 +56,7 @@ export default function StaggerContainer({
       variants={containerVariants}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once, amount: 0.2 }}
+      viewport={{ once, amount: 0.16 }}
     >
       {Children.map(children, (child, index) => (
         <motion.div key={index} className={itemClassName} variants={itemVariants}>

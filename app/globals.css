@@ -171,7 +171,13 @@ li {
 
 a,
 button {
-  transition: all var(--motion-fast);
+  transition:
+    background-color var(--motion-fast),
+    border-color var(--motion-fast),
+    box-shadow var(--motion-fast),
+    color var(--motion-fast),
+    opacity var(--motion-fast),
+    transform var(--motion-fast);
 }
 
 button,
@@ -674,12 +680,12 @@ textarea {
 
 .editorial-image-frame img {
   transition:
-    transform 0.72s var(--motion-editorial),
-    filter 0.6s var(--motion-editorial);
+    transform 0.45s var(--motion-editorial),
+    filter 0.35s var(--motion-editorial);
 }
 
 .editorial-image-frame:hover img {
-  transform: scale(1.035);
+  transform: scale(1.02);
 }
 
 .safe-image-asset {
@@ -714,7 +720,7 @@ textarea {
 @keyframes fadeUp {
   from {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(12px);
   }
 
   to {
@@ -773,11 +779,11 @@ textarea {
 }
 
 .sliding-gallery-card img {
-  transition: transform 0.65s var(--motion-editorial);
+  transition: transform 0.42s var(--motion-editorial);
 }
 
 .sliding-gallery-card:hover img {
-  transform: scale(1.035);
+  transform: scale(1.02);
 }
 
 .marquee-left {

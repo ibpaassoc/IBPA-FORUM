@@ -110,8 +110,8 @@ export function GlassCard({
     return (
       <motion.article
         className={baseClass}
-        whileHover={{ y: -6, scale: 1.012 }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        whileHover={{ y: -3, scale: 1.005 }}
+        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
       >
         {children}
       </motion.article>
