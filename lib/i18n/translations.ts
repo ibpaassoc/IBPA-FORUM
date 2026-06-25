@@ -1801,7 +1801,7 @@ const ru: typeof en = {
           "Билеты на форум, номинации премии и регистрация судей оплачиваются отдельно. Стоимость форума и премии отличается для участников IBPA и стандартных участников.",
 
         option: "Опция",
-        members: "Участники IBPA",
+        members: "Участники",
         standard: "Стандарт",
         nonMembers: "Без участия",
 
@@ -2163,7 +2163,7 @@ const ru: typeof en = {
       awardParticipation: "Участие в конкурсе",
       judgeRegistration: "Регистрация судьи",
       standard: "Стандарт",
-      ibpaMembers: "Участники IBPA",
+      ibpaMembers: "Участники",
       nonMembers: "Не участники",
       oneDayPass: "1 день",
       twoDayPass: "2 дня",
@@ -2442,8 +2442,8 @@ const ru: typeof en = {
         eyebrow: "Стоимость участия",
         headers: {
           nominations: "Номинации",
-          members: "Участники IBPA",
-          nonMembers: "Не участники IBPA",
+          members: "Участники",
+          nonMembers: "Стандарт",
         },
         oneNomination: {
           label: "1 номинация",
@@ -2644,7 +2644,7 @@ const ru: typeof en = {
       title: "Стоимость участия в составе жюри",
       standardLabel: "Стандарт",
       standardPrice: "$250",
-      membersLabel: "Участники IBPA",
+      membersLabel: "Участники",
       membersPrice: "$100",
       note: "Регистрационный взнос оплачивается только после одобрения кандидатуры и является невозвратным.",
     },
@@ -3437,7 +3437,7 @@ const ua: typeof en = {
           "Квитки на форум, номінації премії та реєстрація суддів оплачуються окремо. Вартість форуму й премії відрізняється для учасників IBPA та стандартних учасників.",
 
         option: "Опція",
-        members: "Учасники IBPA",
+        members: "Учасники",
         standard: "Стандарт",
         nonMembers: "Без участі",
 
@@ -3644,7 +3644,7 @@ const ua: typeof en = {
           grandPrixNote: "від 5 номінацій — автоматично",
         },
         nonMember: {
-          label: "УЧАСНИКИ БЕЗ ЧЛЕНСТВА IBPA",
+          label: "Стандарт",
           rows: [
             { label: "1 номінація", value: "$70" },
             { label: "3 номінації", value: "$190" },
@@ -3798,7 +3798,7 @@ const ua: typeof en = {
       awardParticipation: "Участь у конкурсі",
       judgeRegistration: "Реєстрація судді",
       standard: "Стандарт",
-      ibpaMembers: "Учасники IBPA",
+      ibpaMembers: "Учасники",
       nonMembers: "Не учасники",
       oneDayPass: "1 день",
       twoDayPass: "2 дні",
@@ -4077,8 +4077,8 @@ const ua: typeof en = {
         eyebrow: "Вартість участі",
         headers: {
           nominations: "Номінації",
-          members: "Учасники IBPA",
-          nonMembers: "Не учасники IBPA",
+          members: "Учасники",
+          nonMembers: "Стандарт",
         },
         oneNomination: {
           label: "1 номінація",
@@ -4279,7 +4279,7 @@ const ua: typeof en = {
       title: "Вартість участі у складі журі",
       standardLabel: "Стандарт",
       standardPrice: "$250",
-      membersLabel: "Учасники IBPA",
+      membersLabel: "Учасники",
       membersPrice: "$100",
       note: "Реєстраційний внесок сплачується лише після схвалення кандидатури та є неповоротним.",
     },
