@@ -8,18 +8,20 @@ import { ArrowRight } from "lucide-react";
 // Dark gradient pill for full-screen photo hero sections.
 // Matches HomeHero primary button exactly.
 
+const HERO_PRIMARY_CLASS =
+  "group relative inline-flex items-center justify-center gap-3 overflow-hidden rounded-full border border-white/10 bg-gradient-to-r from-[#050505] via-[#111111] to-[#050505] px-8 py-4 font-[var(--font-ui-family)] text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-white shadow-[0_12px_40px_rgba(0,0,0,0.35)] transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-[2px] hover:border-[#7a98af]/60 hover:shadow-[0_20px_60px_rgba(122,152,175,0.2)]";
+
 export function HeroPrimaryButton({
   href,
+  onClick,
   children,
 }: {
-  href: string;
+  href?: string;
+  onClick?: () => void;
   children: ReactNode;
 }) {
-  return (
-    <Link
-      href={href}
-      className="group relative inline-flex items-center justify-center gap-3 overflow-hidden rounded-full border border-white/10 bg-gradient-to-r from-[#050505] via-[#111111] to-[#050505] px-8 py-4 font-[var(--font-ui-family)] text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-white shadow-[0_12px_40px_rgba(0,0,0,0.35)] transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-[2px] hover:border-[#7a98af]/60 hover:shadow-[0_20px_60px_rgba(122,152,175,0.2)]"
-    >
+  const inner = (
+    <>
       <span className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-[#7a98af]/10 opacity-60 transition-opacity duration-700 group-hover:opacity-100" />
       <span className="absolute inset-x-6 bottom-0 h-px bg-gradient-to-r from-transparent via-[#b9d9eb]/0 to-transparent transition-all duration-700 group-hover:inset-x-4 group-hover:via-[#b9d9eb]/70" />
       <span className="absolute inset-0 before:absolute before:left-[-130%] before:top-0 before:h-full before:w-1/2 before:rotate-12 before:bg-gradient-to-r before:from-transparent before:via-[#b9d9eb]/25 before:to-transparent before:transition-all before:duration-700 group-hover:before:left-[130%]" />
@@ -28,7 +30,21 @@ export function HeroPrimaryButton({
         size={16}
         className="relative z-10 text-[#b9d9eb] transition-all duration-500 group-hover:translate-x-1 group-hover:text-white"
       />
-    </Link>
+    </>
+  );
+
+  if (href) {
+    return (
+      <Link href={href} className={HERO_PRIMARY_CLASS}>
+        {inner}
+      </Link>
+    );
+  }
+
+  return (
+    <button type="button" onClick={onClick} className={HERO_PRIMARY_CLASS}>
+      {inner}
+    </button>
   );
 }
 

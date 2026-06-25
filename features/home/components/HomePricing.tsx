@@ -155,22 +155,16 @@ export default function HomePricing({
 
   const slideVariants = {
     enter: (dir: number) => ({
-      x: dir > 0 ? 90 : -90,
+      x: dir > 0 ? 18 : -18,
       opacity: 0,
-      scale: 0.985,
-      filter: "blur(16px)",
     }),
     center: {
       x: 0,
       opacity: 1,
-      scale: 1,
-      filter: "blur(0px)",
     },
     exit: (dir: number) => ({
-      x: dir > 0 ? -90 : 90,
+      x: dir > 0 ? -18 : 18,
       opacity: 0,
-      scale: 0.985,
-      filter: "blur(16px)",
     }),
   };
 
@@ -184,11 +178,9 @@ export default function HomePricing({
             <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white/90 to-transparent" />
 
             <div className="relative mx-auto mb-5 flex w-full max-w-2xl rounded-full border border-[#b9d9eb]/60 bg-white/60 p-1.5 shadow-[0_10px_40px_rgba(122,152,175,0.10)] backdrop-blur-2xl">
-              <motion.div
-                layout
+              <div
                 aria-hidden
-                transition={{ type: "spring", stiffness: 380, damping: 34 }}
-                className="pointer-events-none absolute inset-y-1.5 rounded-full border border-[#8eb6d3]/55 bg-gradient-to-b from-white/95 via-[#fafdff] to-[#eef7fc] shadow-[0_0_0_1px_rgba(255,255,255,0.65),0_8px_24px_rgba(122,152,175,0.15),0_0_36px_rgba(122,152,175,0.18)] backdrop-blur-xl"
+                className="pointer-events-none absolute inset-y-1.5 rounded-full border border-[#8eb6d3]/55 bg-gradient-to-b from-white/95 via-[#fafdff] to-[#eef7fc] shadow-[0_0_0_1px_rgba(255,255,255,0.65),0_8px_24px_rgba(122,152,175,0.13)] backdrop-blur-xl transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]"
                 style={{
                   left: `calc(${activeIndex} * 33.333% + 6px)`,
                   width: "calc(33.333% - 8px)",
@@ -197,7 +189,7 @@ export default function HomePricing({
                 <span className="absolute inset-x-5 top-0 h-px rounded-full bg-gradient-to-r from-transparent via-[#72a0c1]/90 to-transparent" />
                 <span className="absolute inset-0 rounded-full bg-[#72a0c1]/5" />
                 <span className="absolute inset-x-6 top-[2px] h-[40%] rounded-full bg-gradient-to-b from-white/70 to-transparent" />
-              </motion.div>
+              </div>
 
               {options.map((option) => {
                 const isActive = active === option.key;
@@ -207,7 +199,7 @@ export default function HomePricing({
                     key={option.key}
                     type="button"
                     onClick={() => handleSelect(option.key)}
-                    className={`relative z-10 min-w-0 flex-1 rounded-full px-4 py-3 text-[0.72rem] font-semibold uppercase tracking-[0.18em] transition-all duration-500 ${
+                    className={`relative z-10 min-w-0 flex-1 rounded-full px-4 py-3 text-[0.72rem] font-semibold uppercase tracking-[0.18em] transition-colors duration-200 ${
                       isActive
                         ? "text-[#24394b]"
                         : "text-[var(--color-ink-soft)] hover:text-[#24394b]"
@@ -228,7 +220,7 @@ export default function HomePricing({
                   initial="enter"
                   animate="center"
                   exit="exit"
-                  transition={{ duration: 0.46, ease: [0.19, 1, 0.22, 1] }}
+                  transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
                   className="rounded-[1.85rem] border border-white/65 bg-white/[0.34] p-5 backdrop-blur-2xl md:p-8"
                 >
                   <div className="grid gap-7 lg:grid-cols-[0.85fr_1.15fr] lg:items-stretch">
@@ -262,7 +254,7 @@ export default function HomePricing({
                             <span className="relative z-10">{current.cta}</span>
                             <ArrowRight
                               size={16}
-                              className="relative z-10 text-[#72a0c1] transition-all duration-500 group-hover:translate-x-1.5 group-hover:scale-110"
+                              className="relative z-10 text-[#72a0c1] transition-all duration-200 group-hover:translate-x-0.5"
                             />
                           </Link>
                         ) : (
@@ -271,7 +263,7 @@ export default function HomePricing({
                             <span className="relative z-10">{current.cta}</span>
                             <ArrowRight
                               size={16}
-                              className="relative z-10 text-[#72a0c1] transition-all duration-500 group-hover:translate-x-1.5 group-hover:scale-110"
+                              className="relative z-10 text-[#72a0c1] transition-all duration-200 group-hover:translate-x-0.5"
                             />
                           </button>
                         )}

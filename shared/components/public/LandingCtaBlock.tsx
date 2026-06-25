@@ -22,6 +22,7 @@ type LandingCtaBlockProps = {
   secondaryButton?: { href: string; label: ReactNode };
   feesLabel: string;
   pricingItems: PricingItem[];
+  pricingNote?: string;
 };
 
 export function LandingCtaBlock({
@@ -32,9 +33,10 @@ export function LandingCtaBlock({
   secondaryButton,
   feesLabel,
   pricingItems,
+  pricingNote,
 }: LandingCtaBlockProps) {
   return (
-    <section className="section-rhythm-loose px-[var(--page-gutter)]">
+    <section className="landing-section-strong section-rhythm-loose px-[var(--page-gutter)]">
       <div className="mx-auto grid max-w-7xl gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
 
         {/* Left: copy + actions */}
@@ -61,7 +63,7 @@ export function LandingCtaBlock({
         </article>
 
         {/* Right: pricing */}
-        <article className="premium-glass rounded-[36px] bg-[linear-gradient(145deg,rgba(185,217,235,0.34),rgba(255,255,255,0.78))] p-8 shadow-[var(--shadow-md)] md:p-10">
+        <article className="premium-glass rounded-[36px] bg-white/72 p-8 shadow-[0_18px_56px_rgba(42,66,82,0.1)] md:p-10">
           <p className="text-[0.62rem] font-semibold uppercase tracking-[0.26em] text-[var(--color-blue)]">
             {feesLabel}
           </p>
@@ -70,7 +72,7 @@ export function LandingCtaBlock({
             {pricingItems.map((item) => (
               <div
                 key={item.label}
-                className="rounded-[24px] border border-[var(--color-blue-light)] bg-white/82 px-5 py-5 shadow-[var(--shadow-sm)] backdrop-blur-xl"
+                className="rounded-[24px] border border-[var(--color-blue-light)] bg-white/82 px-5 py-5 shadow-[0_10px_30px_rgba(42,66,82,0.07)] backdrop-blur-xl"
               >
                 <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-blue)]">
                   {item.label}
@@ -83,8 +85,17 @@ export function LandingCtaBlock({
                     {item.detail}
                   </p>
                 )}
+                
               </div>
             ))}
+            {pricingNote && (
+              <div className="mt-5 flex gap-3 rounded-[22px] border border-[#b9d9eb]/45 bg-white/58 px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.82)] backdrop-blur-xl">
+                <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-blue)]" />
+                <p className="text-[0.72rem] leading-[1.65] text-[var(--color-ink-soft)]">
+                  {pricingNote}
+                </p>
+              </div>
+            )}
           </div>
         </article>
 

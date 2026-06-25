@@ -1,5 +1,11 @@
 export { default as GrandPrixHero } from "./GrandPrixHero";
+export { default as GrandPrixAbout } from "./GrandPrixAbout";
+export { default as GrandPrixWhoQualifies } from "./GrandPrixWhoQualifies";
+export { default as GrandPrixWhySpecial } from "./GrandPrixWhySpecial";
+export { default as GrandPrixDecision } from "./GrandPrixDecision";
+export { default as GrandPrixRewards } from "./GrandPrixRewards";
 export { default as GrandPrixFlow } from "./GrandPrixFlow";
 export { default as GrandPrixTimeline } from "./GrandPrixTimeline";
 export { default as GrandPrixFullBleed } from "./GrandPrixFullBleed";
+export { default as GrandPrixFaq } from "./GrandPrixFaq";
 export { default as GrandPrixCTA } from "./GrandPrixCTA";

@@ -2,19 +2,29 @@
 
 import {
   GrandPrixHero,
-  GrandPrixFlow,
+  GrandPrixAbout,
+  GrandPrixWhoQualifies,
+  GrandPrixWhySpecial,
+  GrandPrixDecision,
+  GrandPrixRewards,
   GrandPrixTimeline,
-  GrandPrixFullBleed,
-  GrandPrixCTA
+  GrandPrixCTA,
+  GrandPrixFaq,
 } from "@/features/grand-prix/components/";
+import { LandingPageShell } from "@/shared/components/public";
 
 export default function GrandPrixPagePremium() {
   return (
-    <main className="page-shell">
+    <LandingPageShell>
       <GrandPrixHero />
-      <GrandPrixFlow />
+      <GrandPrixAbout />
+      <GrandPrixWhoQualifies />
+      <GrandPrixWhySpecial />
+      <GrandPrixDecision />
+      <GrandPrixRewards />
       <GrandPrixTimeline />
       <GrandPrixCTA />
-    </main>
+      <GrandPrixFaq />
+    </LandingPageShell>
   );
 }

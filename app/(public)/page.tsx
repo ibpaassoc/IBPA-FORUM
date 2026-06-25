@@ -2,25 +2,33 @@
 
 import {
   HomeHero,
+  HomeAwardsInfo,
+  HomeThreeExperiences,
+  HomeProgram,
   HomeConversionBlock,
-  HomeGrandPrix,
+  HomeSpeakers,
+  HomePreviousForum,
+  HomePreviousWinners,
+  HomePartners,
+  HomeContactUs,
   HomeWhyAttend,
-  HomeCategoriesRow,
-  HomeJuryStandards,
-  HomeSlidingGallery,
-  HomeCta,
 } from "@/features/home/components";
+import { LandingPageShell } from "@/shared/components/public";
 
 export default function HomePagePremium() {
   return (
-    <main className="page-shell">
+    <LandingPageShell>
       <HomeHero />
+      <HomeAwardsInfo />
+      <HomeThreeExperiences />
+      {/*<HomeProgram />*/}
       <HomeConversionBlock />
-      <HomeGrandPrix />
+      {/*<HomeSpeakers />*/}
+      <HomePreviousForum />
+      <HomePreviousWinners />
+      {/*<HomePartners />*/}
       <HomeWhyAttend />
-      <HomeCategoriesRow />
-      <HomeSlidingGallery />
-      <HomeCta />
-    </main>
+      <HomeContactUs />
+    </LandingPageShell>
   );
 }

@@ -10,7 +10,7 @@ export default function JuryCredibility() {
 
   return (
     <section
-      className="relative min-h-[clamp(560px,76vh,820px)] overflow-hidden bg-white"
+      className="landing-photo-section relative min-h-[clamp(560px,76vh,820px)] overflow-hidden bg-white"
       aria-label={t.juryPage.copy.statementEyebrow}
     >
       <Image
@@ -24,7 +24,7 @@ export default function JuryCredibility() {
 
       <div className="page-section relative z-10 flex min-h-[clamp(560px,76vh,820px)] items-center justify-end py-[clamp(4rem,8vw,7rem)]">
         <Reveal>
-          <div className="relative w-full max-w-[39rem] overflow-hidden rounded-[2rem] border border-white/70 bg-white/48 p-7 shadow-[0_30px_90px_rgba(35,62,82,0.14)] backdrop-blur-2xl md:p-10">
+          <div className="relative w-full max-w-[39rem] overflow-hidden rounded-[2rem] border border-white/70 bg-white/52 p-7 shadow-[0_24px_72px_rgba(35,62,82,0.12)] backdrop-blur-xl md:p-10">
             <div
               aria-hidden
               className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.90)_0%,rgba(255,255,255,0.45)_54%,rgba(185,217,235,0.22)_100%)]"
@@ -41,6 +41,10 @@ export default function JuryCredibility() {
 
               <p className="mt-6 max-w-md text-[0.98rem] leading-[1.85] text-[var(--color-ink-soft)]">
                 {t.juryPage.copy.statementText}
+              </p>
+
+              <p className="mt-2 max-w-md text-[0.98rem] leading-[1.85] text-[var(--color-ink-soft)]">
+                {t.juryPage.copy.statementText2}
               </p>
 
               {t.juryPage.copy.statementQuote ? (

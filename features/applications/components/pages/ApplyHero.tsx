@@ -1,8 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { HeroPrimaryButton, LandingSecondaryButton } from "@/shared/components/public";
 
@@ -41,7 +39,7 @@ export default function ApplyHero({
   }[language];
 
   return (
-    <section className="relative flex min-h-[clamp(640px,78vh,860px)] items-end overflow-hidden bg-white">
+    <section className="landing-photo-section relative flex min-h-[clamp(640px,78vh,860px)] items-end overflow-hidden bg-white">
       <Image
         src="/images/winners.png"
         alt=""
@@ -52,7 +50,7 @@ export default function ApplyHero({
       />
 
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.98)_0%,rgba(255,255,255,0.92)_34%,rgba(255,255,255,0.48)_62%,rgba(255,255,255,0.18)_100%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_28%,rgba(185,217,235,0.72),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.18)_0%,rgba(255,255,255,0.92)_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_28%,rgba(185,217,235,0.46),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.18)_0%,rgba(255,255,255,0.92)_100%)]" />
 
       <div className="relative z-10 mx-auto w-full max-w-[var(--content-width)] px-[var(--page-gutter)] pb-[clamp(56px,8vw,96px)] pt-[clamp(120px,16vh,160px)]">
         <div className="max-w-2xl">

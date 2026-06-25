@@ -18,6 +18,7 @@ const en = {
     categories: "Categories",
     grandPrix: "Grand Prix",
     home: "Home",
+    from: "from",
   },
   header: {
     navigation: {
@@ -32,9 +33,297 @@ const en = {
   },
   home: {
     hero: {
+      eyebrow: "Industry Leadership Conference",
       title: "IBPA Beauty Award 2026",
-      description: "Recognition of outstanding achievements in beauty, beauty education, health, and innovationin branding",
+      subtitle: "Beauty Business Forum + IBPA Beauty Award 2026",
+      date: "September 25–26, 2026",
+      location: "Los Angeles, California",
+      buyTickets: "Buy Forum Tickets",
+      description: "",
       categoriesCta: "Explore Categories",
+      ticker: [
+        "IBPA Beauty Award 2026",
+        "International Recognition",
+        "Professional Excellence",
+        "11 Categories",
+        "Global Jury",
+        "Open to the World",
+      ],
+    },
+    awardsInfo: {
+      eyebrow: "About the award",
+      title: "IBPA Beauty Awards 2026",
+      text: "IBPA Beauty Awards 2026 is an international award in beauty, education, and beauty business, held as part of the IBPA Beauty Business Forum. Our mission is to recognize outstanding professionals, support professional development, and unite industry leaders for the exchange of experience, innovation, and new growth opportunities.",
+    },
+    threeExperiences: {
+      eyebrow: "One Event",
+      title: "Three Powerful Experiences",
+
+      forum: {
+        title: "Beauty Business Forum",
+        subtitle: "Knowledge. Connections. Growth.",
+        bullets: [
+          "Insights from successful entrepreneurs and beauty industry experts.",
+          "Practical strategies for business growth and scaling.",
+          "Networking opportunities with salon owners, educators, brands, and industry leaders.",
+          "A space for collaboration, innovation, and new business opportunities."
+        ],
+        footer:
+          "Designed for beauty professionals, educators, business owners, and brands seeking growth, meaningful connections, and long-term success."
+      },
+      awards: {
+        title: "IBPA Beauty Awards 2026",
+        subtitle: "Recognition. Prestige. Opportunity.",
+        bullets: [
+          "An international award celebrating excellence in the beauty industry.",
+          "Independent evaluation by a panel of respected international experts.",
+          "An opportunity to strengthen your professional reputation and personal brand.",
+          "Awards that highlight outstanding achievements and industry leadership."
+        ],
+        footer:
+          "Created for beauty professionals, educators, business owners, and brands seeking recognition, credibility, and greater visibility within the industry."
+      },
+
+      exhibition: {
+        title: "Brand Exhibition",
+        subtitle: "Innovation. Partnership. Growth.",
+        bullets: [
+          "Discover the latest beauty products and technologies.",
+          "Connect with leading brands and industry suppliers.",
+          "Test products and receive professional consultations.",
+          "Access exclusive offers and valuable business connections."
+        ],
+        footer:
+          "For beauty professionals and business owners looking for new opportunities and industry innovations."
+      }
+    },
+    registrationSection: {
+      eyebrow: "Participation",
+      title: "Everything You Need to Join",
+
+      registration: {
+        title: "Registration Period",
+        date: "20 June – 15 August 2026",
+        description:
+          "Applications are accepted from June 20 through August 15, 2026."
+      },
+
+      tabs: {
+        tickets: "Tickets",
+        awards: "Awards",
+        jury: "Jury"
+      },
+
+      tickets: {
+        title: "Beauty Business Forum",
+        price: "$395",
+        suffix: "from / day",
+        description:
+          "Business growth, networking, education, and industry connections.",
+        cta: "Buy Ticket",
+
+        items: [
+          ["1 Day Forum", "$395"],
+          ["2 Day Forum", "$695"],
+          ["Gala Dinner", "$150"]
+        ],
+      },
+
+      cta: "Apply Now",
+
+      registrationInfo: {
+        eyebrow: "Registration Period",
+        value: "June 20 – August 15",
+        text: "Applications are accepted from June 20 through August 15, 2026 inclusive.",
+      },
+
+      feeInfo: {
+        eyebrow: "Registration Fee",
+        value: "$50",
+        text: "Participation is paid separately for each selected nomination.",
+      },
+
+      juryInfo: {
+        eyebrow: "Jury Registration",
+        value: "$100+",
+        text: "Professionals with at least 5 years of experience may apply to join the jury. The registration fee is paid only after approval.",
+      },
+
+      participationInfo: {
+        eyebrow: "Participation",
+        value: "Open to Everyone",
+        text: "Specialists of all levels may apply, with no restrictions by country or years of experience.",
+      },
+
+      grandPrixInfo: {
+        eyebrow: "Grand Prix",
+        value: "5+",
+        text: "Participants who submit applications in 5 or more nominations automatically enter the Grand Prix category.",
+      },
+
+      pricing: {
+        eyebrow: "Pricing",
+        title: "Participation Pricing",
+        description:
+          "Forum tickets, award nominations, and jury registration are priced separately. Forum and award pricing differs for IBPA members and standard participants.",
+
+        option: "Option",
+        members: "Members",
+        standard: "Standard",
+        nonMembers: "Non-members",
+
+        forum: {
+          eyebrow: "Tickets",
+          title: "Forum Tickets",
+          oneDay: "1 Day Forum",
+          twoDays: "2 Days Forum",
+          galaDinner: "Gala Dinner",
+        },
+
+        award: {
+          eyebrow: "Award",
+          title: "Award Nominations",
+          oneNomination: "1 Nomination",
+          threeNominations: "3 Nominations",
+          fiveNominations: "5 Nominations",
+          note: "Grand Prix participation is activated automatically for participants with 5 or more nominations.",
+        },
+
+        jury: {
+          eyebrow: "Jury",
+          title: "Jury Registration",
+          member: "IBPA Member",
+          standard: "Standard",
+        },
+
+        ctaEyebrow: "Ready to Join",
+        ctaTitle: "Start your IBPA 2026 application",
+        ctaText:
+          "Choose the participation format that fits you best and submit your application online.",
+      },
+      awards: {
+        title: "IBPA Beauty Awards",
+        price: "$50",
+        suffix: "per nomination",
+        description:
+          "International recognition, professional credibility, and visibility.",
+        cta: "Submit Nomination",
+
+        member: "IBPA Member",
+        standard: "Non-member",
+
+        rows: [
+          ["1 Nomination", "$50", "$70"],
+          ["3 Nominations", "$130", "$190"],
+          ["5 Nominations", "$200", "$300"]
+        ],
+
+        grandPrixTitle: "Grand Prix",
+        grandPrixDescription:
+          "Automatically included for participants with 5 or more nominations."
+      },
+
+      jury: {
+        title: "Jury Registration",
+        price: "$100+",
+        description:
+          "Open to professionals with 5+ years of industry experience.",
+        cta: "Apply as Jury",
+
+        points: [
+          "Minimum 5 years of professional experience",
+          "International jury community",
+          "Recognition as an industry expert"
+        ],
+
+        note:
+          "Registration fee is paid only after the application is approved."
+      },
+
+      openParticipation: {
+        title: "Open Participation",
+        description:
+          "Professionals of all levels and from all countries are welcome."
+      }
+    },
+    previousForum: {
+      eyebrow: "Previous Event",
+      title: "Beauty Business Forum 2025",
+      award: "Top Beauty Master Award",
+      date: "November 7–8, 2025",
+      location: "San Francisco, California",
+      videoLabel: "Forum Video",
+      quote:"A look back at the atmosphere, professional community, and industry moments that shaped our previous forum.",
+      videoTitle: "Beauty Business Forum 2025 video",
+      playLabel: "Play",
+      pauseLabel: "Pause",
+      muteLabel: "Mute",
+      unmuteLabel: "Unmute",
+    },
+    previousWinners: {
+      eyebrow: "Previous Winners",
+      title: "Winners who shaped the previous forum",
+      prevLabel: "Previous winners",
+      nextLabel: "Next winners",
+      goToLabel: "Go to winner",
+    },
+    program: {
+      eyebrow: "Program",
+      title: "The full program is coming soon",
+      description:
+        "Speakers, masterclasses, the schedule, and more will be published here.",
+    },
+    speakers: {
+      eyebrow: "Speakers",
+      title: "Speakers to be announced",
+      description: "The forum lineup will be revealed closer to the event.",
+    },
+    partners: {
+      eyebrow: "Partners",
+      title: "Our partners",
+      description:
+        "The brands and organizations supporting IBPA Beauty Awards 2026.",
+      cta: "Become a partner",
+      items: [
+        { name: "Partner", text: "One sentence about the partner.", href: "#" },
+        { name: "Partner", text: "One sentence about the partner.", href: "#" },
+        { name: "Partner", text: "One sentence about the partner.", href: "#" },
+        { name: "Partner", text: "One sentence about the partner.", href: "#" },
+      ],
+    },
+    contactUs: {
+      eyebrow: "Contact Us",
+      title: "Let's create something exceptional together",
+      description:
+        "Whether you have questions about participation, partnerships, sponsorships, or IBPA membership, our team is here to help.",
+
+      email: "forum-support@ibpassociations.org",
+      note: "We usually reply within one business day.",
+
+      nameLabel: "Full Name",
+      namePlaceholder: "Enter your full name",
+
+      emailLabel: "Email",
+      emailPlaceholder: "Enter your email",
+
+      subjectLabel: "Subject",
+      subjectPlaceholder: "What would you like to discuss?",
+
+      messageLabel: "Message",
+      messagePlaceholder: "Tell us more about your request...",
+
+      submitLabel: "Send Message",
+      sendingLabel: "Sending…",
+
+      privacyNote:
+        "By submitting this form you agree to our privacy policy.",
+
+      successMessage:
+        "Thank you! Your message has been sent — we'll get back to you shortly.",
+      errorMessage:
+        "Something went wrong. Please try again or email us directly.",
+      validationMessage:
+        "Please fill in your name, a valid email, and a short message.",
     },
     copy: {
       whyEyebrow: "Why IBPA Beauty Award 2026",
@@ -215,6 +504,7 @@ const en = {
     },
     participation: {
       eyebrow: "Choose Your Participation",
+      description: "Access the forum, connect with beauty professionals, and join the main IBPA business program.",
       tickets: {
         label: "FORUM TICKETS",
         mostPopular: "Most Popular",
@@ -264,7 +554,7 @@ const en = {
       cta: "Apply for Award",
       learnMore: "Learn More",
       stats: [
-        { value: "5+", label: "Nominations required" },
+        { value: "5+", label: "Nominations" },
         { value: "Auto", label: "Qualification" },
       ],
     },
@@ -308,6 +598,64 @@ const en = {
       eligibilityLabel: "Participation",
       eligibilityValue: "For IBPA Beauty Award 2026 Members",
       cta: "Apply In A Category",
+    },
+    participation: {
+      eyebrow: "How to participate",
+
+      title: "An international award created for professionals shaping the future of the beauty industry.",
+
+      description:
+        "Transparent judging, structured evaluation, and international recognition designed for professionals, educators, clinics, academies, salons, and beauty businesses.",
+
+      steps: [
+        {
+          number: "01",
+          title: "Complete your application",
+        },
+        {
+          number: "02",
+          title: "Choose your category",
+        },
+        {
+          number: "03",
+          title: "Select your nomination",
+        },
+        {
+          number: "04",
+          title:
+            "Provide your personal information, upload photos/videos, and describe your achievements",
+        },
+        {
+          number: "05",
+          title: "Complete the payment",
+        },
+        {
+          number: "06",
+          title: "Submit before August 15, 2026",
+        },
+      ],
+
+      doneTitle: "Done!",
+
+      doneDescription:
+        "Your application will be evaluated by our international panel of judges.",
+    },
+    whyJoin: {
+      eyebrow: "Why join",
+      title: "Why it is worth joining IBPA Beauty Awards",
+      benefits: [
+        "International recognition of your professional achievements.",
+        "Evaluation by an international panel of experts.",
+        "Increased client trust and stronger personal brand.",
+        "Opportunity to receive the winner or finalist status at IBPA Beauty Awards 2026.",
+        "Publication and promotion of the best participants in the professional community.",
+        "No need to attend in person — participation takes place online.",
+      ],
+      grandPrixEyebrow: "Grand Prix rule",
+      grandPrixTitle: "5+ nominations — and you are in the Grand Prix",
+      grandPrixDescription:
+        "Submit applications in 5 or more nominations and automatically become a Grand Prix nominee of IBPA Beauty Awards. No additional application is required.",
+      grandPrixBadge: "Chance to win the Grand Prix trophy",
     },
     cardText: "Professional submissions are reviewed within the official IBPA Beauty Award 2026 framework.",
     directions: [
@@ -422,8 +770,126 @@ const en = {
         associationQuote: "The association works with artists, educators, salon owners, and brands — those who strive to uphold quality, integrity, and professionalism.",
         associationButton: "Visit IBPA Association",
         ctaEyebrow: "Category Entry",
-        ctaTitle: "Ready? Submit your application for your category.",
-        ctaText: "From Artistry to Branding—Choose a Category and Submit Your Entry for the 2026 IBPA Awards",
+        ctaTitle: "Ready to showcase your professional mastery?",
+        ctaText: "Choose your nomination and become part of IBPA Beauty Awards 2026 — an international award created to recognize the outstanding achievements of professionals, educators, business owners, and brands in the beauty industry.",
+        ctaButton: "Registration",
+    },
+    awardResults: {
+      eyebrow: "Award results",
+      title: "Award results",
+      timeline: {
+        applicationsOpen: {
+          label: "Applications open",
+          date: "Jun 20",
+          sub: "2026",
+        },
+        registrationCloses: {
+          label: "Registration closes",
+          date: "Aug 15",
+          sub: "2026",
+        },
+        awardCeremony: {
+          label: "Award ceremony",
+          date: "Sep 26",
+          sub: "Beauty Business Forum",
+        },
+      },
+      jury: {
+        title: "International jury",
+        note: "The jury panel is made up of international trainers and leading industry experts.",
+        points: [
+          "International experts",
+          "Independent evaluation",
+          "Professional scoring",
+        ],
+      },
+      pricing: {
+        eyebrow: "Participation fees",
+        headers: {
+          nominations: "Nominations",
+          members: "IBPA members",
+          nonMembers: "Non-members",
+        },
+        oneNomination: {
+          label: "1 nomination",
+          member: "$50",
+          nonMember: "$70",
+        },
+        threeNominations: {
+          label: "3 nominations",
+          member: "$130",
+          nonMember: "$190",
+        },
+        fiveNominations: {
+          label: "5 nominations",
+          member: "$200",
+          nonMember: "$300",
+        },
+        grandPrixEligibility: "Grand Prix eligibility",
+        nonRefundable:
+          "The registration fee is non-refundable after the application has been submitted.",
+      },
+    },
+    faq: {
+      eyebrow: "FAQ",
+      title: "Frequently asked questions",
+      items: [
+        {
+          question: "Who can take part in IBPA Beauty Awards 2026?",
+          answer:
+            "Professionals, educators, business owners, academies, studios, salons, and brands of the beauty industry are invited to participate.",
+        },
+        {
+          question: "Do I have to live in the USA to participate?",
+          answer:
+            "No. Candidates from any country in the world can take part in the award.",
+        },
+        {
+          question: "How does participation work?",
+          answer:
+            "Participants submit an application and competition materials through an online form. Entries are evaluated by an international panel of judges.",
+        },
+        {
+          question: "Do I need to attend the award ceremony?",
+          answer:
+            "No. Participation and the evaluation of entries take place independently of attendance at the ceremony.",
+        },
+        {
+          question: "How many entries can I submit?",
+          answer:
+            "A participant may submit several entries and take part in several categories.",
+        },
+        {
+          question: "Can one entry be submitted in several categories?",
+          answer:
+            "Yes, provided the entry meets the requirements of the selected categories.",
+        },
+        {
+          question: "When does the application period close?",
+          answer:
+            "Applications are open from June 20 to August 15, 2026, inclusive.",
+        },
+        {
+          question: "When will the results be announced?",
+          answer:
+            "The results will be announced during IBPA Beauty Awards 2026 and published on the official resources of the award.",
+        },
+        {
+          question: "What do winners and finalists receive?",
+          answer:
+            "Winners and finalists receive official awards, certificates, and publications within the framework of the award.",
+        },
+        {
+          question: "Can I apply if I have less than 5 years of experience?",
+          answer:
+            "Yes, provided the chosen category has no minimum work-experience requirement.",
+        },
+        {
+          question: "Is the registration fee refundable?",
+          answer:
+            "No. The registration fee is non-refundable after the application has been submitted.",
+        },
+      ],
     },
   },
   juryPage: {
@@ -442,31 +908,110 @@ const en = {
       feeValue: "$250",
       feeNote: "Charged only after approval",
     },
-    requirements: {
-      label: "Requirements",
-      title: "Who can apply for the jury panel",
+    about: {
+      eyebrow: "About the Award",
+      title: "IBPA Beauty Awards 2026",
+      description:
+        "IBPA Beauty Awards 2026 is an international award in the beauty industry, created to recognize the professionalism, talent, and outstanding achievements of specialists, educators, business owners, and brands.",
+      recognition:
+        "The award celebrates strong professional results, expertise, creativity, and contribution to the beauty industry.",
+      objectiveEvaluation:
+        "The jury panel plays a key role in providing objective, honest, and professional evaluation of competition entries.",
+      trust:
+        "Through expert judging, the jury helps build trust in the award and strengthens its international credibility.",
+    },
+    timeline: {
+      eyebrow: "Judging period",
+      title: "Important dates",
+      formatLabel: "Judging format",
+      formatValue: "Online",
+      yearLabel: "Year",
+      year: "2026",
       items: [
         {
-          label: "Minimum Experience",
-          value: "5+ Years",
-          text: "Applicants must have at least five years of professional industry experience.",
+          label: "Applications to the jury panel",
+          title: "Jury applications",
+          date: "June 20 – August 15, 2026",
+        },
+        {
+          label: "Application review",
+          title: "Review period",
+          date: "Until August 20, 2026",
+        },
+        {
+          label: "Evaluation of competition entries",
+          title: "Judging period",
+          date: "August 16 – September 5, 2026",
+        },
+        {
+          label: "Final and announcement of results",
+          title: "Results announcement",
+          date: "September 26, 2026",
+        },
+      ],
+    },
+    gallery: {
+      eyebrow: "Forum moments",
+      title: "Highlights from the IBPA community",
+      description:
+        "A visual look at the atmosphere, guests, professionals, and moments that make the IBPA Beauty Business Forum special.",
+      prevLabel: "Previous photo",
+      nextLabel: "Next photo",
+      goToLabel: "Go to photo",
+      photoAlt: "IBPA Forum photo",
+    },
+    requirements: {
+      label: "Who can become a judge",
+      title: "Candidate requirements",
+      description:
+        "The jury panel is formed from experienced professionals who can provide fair, objective, and expert evaluation of competition entries.",
+      items: [
+        {
+          label: "Experience",
+          text: "At least 5 years of experience in the beauty industry.",
         },
         {
           label: "Expertise",
-          value: "11 Categories",
-          text: "Judges are selected based on their expertise in relevant award areas.",
+          text: "Confirmed professional expertise in your category.",
         },
         {
           label: "Documents",
-          value: "Required",
-          text: "Professional certifications, bio, and profile materials must be submitted.",
+          text: "Certificates, diplomas, licenses, or other supporting documents.",
         },
         {
-          label: "Payment Rule",
-          value: "After Approval",
-          text: "The jury fee is never charged at the application stage.",
+          label: "Professional activity",
+          text: "Teaching, competition, or expert activity is welcomed.",
+        },
+        {
+          label: "Judging background",
+          text: "Previous judging experience is preferred, but not required.",
+        },
+        {
+          label: "Standards",
+          text: "Readiness to follow the regulations, confidentiality, and principles of objective evaluation.",
         },
       ],
+    },
+    responsibilities: {
+      eyebrow: "A judge's role in the award",
+      title: "What the responsibilities of a judge include",
+      items: [
+        "Evaluating competition entries in accordance with the award's approved criteria.",
+        "Reviewing work only within your own professional category.",
+        "Awarding objective and independent scores based on experience and expertise.",
+        "Maintaining the confidentiality of competition materials, participants, and results.",
+        "Working within the set deadlines through the online judging format.",
+        "Confirming final scores and contributing to fair award results.",
+      ],
+    },
+    feeCard: {
+      eyebrow: "Registration fee",
+      title: "Cost of joining the jury panel",
+      standardLabel: "Standard",
+      standardPrice: "$250",
+      membersLabel: "IBPA Members",
+      membersPrice: "$100",
+      note: "The registration fee is charged only after approval and is non-refundable.",
     },
     process: {
       label: "Process",
@@ -500,28 +1045,48 @@ const en = {
       ],
     },
     faq: {
-      label: "Questions",
-      title: "Frequently asked questions",
+      label: "Frequently asked questions",
+      title: "FAQ",
       items: [
         {
-          question: "Do I pay when I submit the application?",
+          question: "Is judging conducted online?",
           answer:
-            "No. Jury applications are submitted free of charge. The $250 fee is charged only after approval.",
+            "Yes, all competition entries are evaluated remotely through the judge’s personal dashboard.",
         },
         {
-          question: "How long does the review take?",
+          question: "When will I know the result of my jury application review?",
           answer:
-            "Applications are reviewed individually and may take up to 14 business days.",
+            "After the professional experience and documents are reviewed, the candidate receives a notification with the commission’s decision.",
         },
         {
-          question: "Will every applicant be accepted?",
+          question: "Do I need to attend the award ceremony?",
           answer:
-            "No. Approval depends on professional background, qualifications, and jury fit.",
+            "No, attendance at the award ceremony is not required.",
         },
         {
-          question: "What happens after approval?",
+          question: "Is there financial compensation?",
           answer:
-            "Approved candidates receive payment instructions. After payment confirmation, they officially join the jury panel.",
+            "No, participation in the jury panel is voluntary.",
+        },
+        {
+          question: "When will I receive access to the entries?",
+          answer:
+            "Access is provided after the application period closes and the final list of competition entries is approved.",
+        },
+        {
+          question: "Can I be a judge if I do not live in the United States?",
+          answer:
+            "Yes, the jury panel may include specialists from different countries.",
+        },
+        {
+          question: "Is previous judging experience required?",
+          answer:
+            "Judging experience is welcomed, but it is not required. If the candidate does not have judging experience, they should have significant professional achievements, teaching, competition, or expert experience confirming a high level of qualification and understanding of professional evaluation.",
+        },
+        {
+          question: "How much time does the evaluation process take?",
+          answer:
+            "The number of entries depends on the category. The process is organized so that judging can be completed comfortably within the established deadlines.",
         },
       ],
     },
@@ -543,7 +1108,7 @@ const en = {
       leadershipTitle: "Leadership, trust, and independent standards",
       credibility: "Credibility",
       credibilityText: "Every judge must demonstrate proven professional experience and category-level expertise.",
-      processLabel: "Jury Application",
+      processLabel: "Selection process",
       processTitle: "Three steps to judge status",
       processText: "Clear progression from submission to official panel activation.",
       apply: "Application Submission",
@@ -566,6 +1131,7 @@ const en = {
       statementEyebrow: "Credibility Statement",
       statementTitle: "Every score should reflect both artistry and professional integrity",
       statementText: "IBPA Beauty Award 2026 judges are selected for expertise, neutrality, and commitment to fair evaluation.",
+      statementText2: "Each member of the jury acts independently and evaluates works exclusively on the basis of approved award criteria.",
       statementQuote: "Judging is not only about outcomes. It is about trust in the process.",
       approvedEyebrow: "Approved Jury",
       approvedTitle: "Current IBPA Beauty Award 2026 Jury Members",
@@ -576,15 +1142,21 @@ const en = {
       ctaAside: "Approval is required before registration payment.",
     },
     benefits: {
-      eyebrow: "Benefits",
-      title: "What approved judges receive",
-      description: "After approval and payment, official judges receive formal recognition, supporting documents, and public listing as part of the award jury panel.",
+      eyebrow: "Official judge privileges",
+      title: "Privileges of an official IBPA Beauty Awards 2026 judge",
+      description:
+        "After participation is confirmed, judges receive an official package of documents, publications, and professional privileges confirming their status as part of the international jury panel of IBPA Beauty Awards 2026.",
       items: [
-        "Official invitation to serve on the IBPA jury panel.",
-        "Personalized jury certificate for the award year.",
-        "Official letter of appreciation from the IBPA President.",
-        "Professional contribution letter for industry recognition.",
-        "Public jury profile with photo and biography.",
+        "Official invitation to join the jury panel of IBPA Beauty Awards 2026.",
+        "Regulations and methodological materials for the judging process.",
+        "Access to the personal judge dashboard for evaluating competition entries.",
+        "Official judging score sheet for evaluating participants.",
+        "Personal certificate of an official IBPA Beauty Awards 2026 judge.",
+        "Letter of appreciation for participation in the international jury panel.",
+        "Personal judge banner for publication on social media and in a professional portfolio.",
+        "Public placement of the judge profile on the official award website.",
+        "Publication as part of the international jury panel of IBPA Beauty Awards 2026.",
+        "Mention in the final article and publications dedicated to the award and its results.",
       ],
     },
     juryCta: {
@@ -592,6 +1164,8 @@ const en = {
       title: "Join the international IBPA judging panel.",
       description: "Apply as a jury member to evaluate excellence in beauty, support professional standards, and contribute to a respected global award platform.",
       registrationFee: "Registration fee",
+      registrationNote:
+        "The registration fee is payable only after the candidate has been approved and is non-refundable.",
     },
   },
   grandPrixPage: {
@@ -662,16 +1236,22 @@ const en = {
       title: "Grand Prix FAQ",
       items: [
         {
-          question: "Can I apply for the Grand Prix separately?",
-          answer: "No. Qualification happens automatically through participation.",
+          question: "Do I need to apply for the Grand Prix separately?",
+          answer:
+            "No. Entry is activated automatically once you submit applications in 5 or more nominations.",
         },
         {
-          question: "Do I need to compete in different categories or nominations?",
-          answer: "No. Nominations can be within one category or across multiple categories.",
+          question: "Is there an additional fee for the Grand Prix?",
+          answer: "No. There is no separate registration fee.",
         },
         {
-          question: "How is the winner selected?",
-          answer: "Based on the total combined score across all nominations.",
+          question: "Can I take part in the Grand Prix with only one entry?",
+          answer:
+            "No. To take part you must submit applications in at least 5 nominations.",
+        },
+        {
+          question: "How many Grand Prix winners are chosen each year?",
+          answer: "One Grand Prix holder within the award.",
         },
       ],
     },
@@ -686,11 +1266,11 @@ const en = {
       timelineTitle: "Designed for clarity at each award stage",
       timelineDescription: "Visual emphasis across nomination, review, and award presentation.",
       appWindow: "Application window",
-      appWindowText: "Participants submit category entries within official campaign dates.",
+      appWindowText: "Submit your nominations from June 20 to August 15, 2026.",
       scorePeriod: "Panel scoring period",
-      scorePeriodText: "Judges evaluate entries and finalize category-level scores.",
+      scorePeriodText: "Judges evaluate entries from August 16 to September 5, 2026.",
       reveal: "Grand reveal",
-      revealText: "Finalists and the Grand Prix winner are announced at the ceremony.",
+      revealText: "Winners are announced at the IBPA Beauty Awards 2026 ceremony on September 26, 2026.",
       breakEyebrow: "Grand Prix Atmosphere",
       breakTitle: "A final stage built for standout multi-category performance",
       breakText: "A premium award environment where cumulative excellence is visibly recognized.",
@@ -704,14 +1284,144 @@ const en = {
       qualificationRule: "Submit entries in 5 or more categories, and you automatically become a nominee for the IBPA Grand Prix—no additional applications required.",
       decision: "Award Decision",
     },
+    about: {
+      whatEyebrow: "About the Grand Prix",
+      whatTitle: "What is the Grand Prix",
+      whatText:
+        "The Grand Prix is the main award of IBPA Beauty Awards 2026, granted to the participant with the highest combined score among the contenders.",
+      whoEyebrow: "Who qualifies",
+      whoTitle: "Who becomes a Grand Prix contender",
+      whoHighlight: "5+ nominations = automatic entry",
+      whoText:
+        "Participants who submit work in five or more nominations automatically become candidates for the Grand Prix.",
+      whoNote: "No additional registration is required.",
+    },
+    whySpecial: {
+      eyebrow: "Why it matters",
+      title: "Why the Grand Prix is considered a special award",
+      lead: "The Grand Prix evaluates not a single piece of work, but the overall professional level of a specialist.",
+      cards: [
+        { title: "Mastery", text: "Strong results across several categories at once." },
+        { title: "Consistency", text: "Confirmation of quality across different disciplines." },
+        { title: "Versatility", text: "Broad professional expertise." },
+        { title: "Recognition", text: "The highest level of award within the program." },
+      ],
+    },
+    decision: {
+      eyebrow: "Selection",
+      title: "How the winner is determined",
+      steps: [
+        {
+          number: "01",
+          title: "Automatic selection",
+          text: "Five or more nominations automatically add a participant to the list of Grand Prix contenders.",
+        },
+        {
+          number: "02",
+          title: "Independent evaluation",
+          text: "Each entry is evaluated by an international panel of judges against unified criteria.",
+        },
+        {
+          number: "03",
+          title: "Score tallying",
+          text: "Points are summed across all of the participant's nominations.",
+        },
+        {
+          number: "04",
+          title: "Determining the winner",
+          text: "The Grand Prix goes to the participant with the highest total result.",
+        },
+      ],
+    },
+    rewards: {
+      eyebrow: "Rewards",
+      title: "What the Grand Prix winner receives",
+      items: [
+        "The main Grand Prix trophy",
+        "A special winner's diploma",
+        "International recognition",
+        "Publication on IBPA resources",
+        "Coverage of the win on the award's social media",
+        "Grand Prix holder status at IBPA Beauty Awards 2026",
+      ],
+    },
     participationCta: {
       eyebrow: "Award participation",
-      title: "Participation cost with Grand Prix access built in.",
-      description: "Enter the main award with the nomination path that fits your profile. When you submit five or more nominations, Grand Prix consideration is included automatically.",
+      title: "Ready to declare your professional level?",
+      description: "Submit your work in the selected nominations and earn the chance to become a contender for the Grand Prix of IBPA Beauty Awards 2026.",
       nominationFees: "Nomination fees",
       members: "Members",
       perNomSubmission: "Per nomination submission",
       nominationsActivate: "Nominations activate eligibility",
+    },
+  },
+  associationPage: {
+    hero: {
+      eyebrow: "IBPA Association",
+      title: "International Beauty Professionals Association",
+      subtitle: "International association of beauty industry professionals",
+      description:
+        "The International Beauty Professionals Association (IBPA) unites specialists, educators, business owners, academies, studios, salons, and beauty brands from around the world.",
+      applyButton: "Apply for Membership",
+      websiteButton: "Visit IBPA Website",
+    },
+    whoCanJoin: {
+      eyebrow: "Who can join?",
+      title: "IBPA welcomes:",
+      items: [
+        "Beauty industry specialists",
+        "Educators and trainers",
+        "Owners of studios, salons, and academies",
+        "Beauty brands and companies",
+        "Emerging specialists and students in beauty-related fields",
+      ],
+    },
+    advantages: {
+      eyebrow: "Membership benefits",
+      title: "More trust, connections, and professional growth.",
+      description:
+        "IBPA membership helps strengthen your personal brand, expand professional opportunities, and become part of an international beauty community.",
+      items: [
+        "Educational webinars and professional resources",
+        "Discounts on association events, awards, and projects",
+        "Access to a private professional community",
+        "Opportunities for publications, speaking, and promotion",
+        "Participation in international forums, awards, and business events",
+        "Profile in the association directory",
+        "IBPA membership certificate",
+        "Partner programs, special offers, and many other privileges",
+      ],
+    },
+    process: {
+      eyebrow: "How does membership work?",
+      title: "A clear and simple membership process.",
+      stepLabel: "Step",
+      steps: [
+        {
+          title: "Choose a category",
+          text: "Select the membership category that best fits your professional path.",
+        },
+        {
+          title: "Submit an application",
+          text: "Complete and send your membership application through the online form.",
+        },
+        {
+          title: "Wait for review",
+          text: "The IBPA team will review your application and confirm the next steps.",
+        },
+        {
+          title: "Complete registration",
+          text: "After approval, complete the payment, finalize registration, and get access to the benefits of your selected category.",
+        },
+      ],
+    },
+    cta: {
+      eyebrow: "Learn more",
+      title: "Ready to join the international beauty community?",
+      description:
+        "Detailed information about membership categories, pricing, benefits, and conditions is available on the official IBPA website.",
+      applyButton: "Apply for Membership",
+      websiteButton: "Visit IBPA Website",
     },
   },
   applyPage: {
@@ -940,6 +1650,7 @@ const ru: typeof en = {
     categories: "Категории",
     grandPrix: "Гран-при",
     home: "Главная",
+    from: "от",
   },
   header: {
     navigation: {
@@ -954,9 +1665,299 @@ const ru: typeof en = {
   },
   home: {
     hero: {
+      eyebrow: "Отраслевая конференция лидеров",
       title: "IBPA Beauty Award 2026",
-      description: "Признание выдающихся достижений в сфере красоты, обучения в бьюти-индустрии, здоровья и инноваций вбрендинге",
+      subtitle: "Beauty Business Forum + IBPA Beauty Award 2026",
+      date: "25–26 сентября 2026",
+      location: "Лос-Анджелес, Калифорния",
+      buyTickets: "Купить билеты на форум",
+      description: "Признание выдающихся достижений в сфере красоты, обучения в бьюти-индустрии, здоровья и инноваций в брендинге",
       categoriesCta: "Изучить категории",
+      ticker: [
+        "IBPA Beauty Award 2026",
+        "Международное признание",
+        "Профессиональное мастерство",
+        "11 категорий",
+        "Международное жюри",
+        "Открыто для всего мира",
+      ],
+    },
+    awardsInfo: {
+      eyebrow: "О премии",
+      title: "IBPA Beauty Awards 2026",
+      text: "IBPA Beauty Awards 2026 — международная премия в сфере красоты, образования и бьюти-бизнеса, проводимая в рамках IBPA Beauty Business Forum. Наша миссия — признавать выдающихся специалистов, поддерживать профессиональное развитие и объединять лидеров индустрии для обмена опытом, инновациями и новыми возможностями роста.",
+    },
+    threeExperiences: {
+      eyebrow: "Одно событие",
+      title: "Три мощных направления",
+
+      forum: {
+        title: "Beauty Business Forum",
+        subtitle: "Знания. Связи. Рост.",
+        bullets: [
+          "Выступления успешных предпринимателей и экспертов индустрии красоты.",
+          "Практические стратегии развития и масштабирования бизнеса.",
+          "Нетворкинг с владельцами салонов, брендами и лидерами рынка.",
+          "Пространство для новых партнерств, идей и возможностей."
+        ],
+        footer:
+          "Для специалистов, преподавателей, владельцев бизнеса и брендов, которые стремятся к профессиональному развитию, сильному окружению и новым возможностям роста."
+      },
+
+      awards: {
+        title: "IBPA Beauty Awards 2026",
+        subtitle: "Признание. Статус. Возможности.",
+        bullets: [
+          "Международная премия для лучших специалистов индустрии красоты.",
+          "Независимая оценка работ международной коллегией экспертов.",
+          "Возможность укрепить профессиональную репутацию и личный бренд.",
+          "Награды, подтверждающие высокий уровень мастерства и профессионализма."
+        ],
+        footer:
+          "Для специалистов, преподавателей, владельцев бизнеса и брендов, которые стремятся получить признание своих достижений и укрепить позиции на рынке."
+      },
+
+      exhibition: {
+        title: "Выставка брендов",
+        subtitle: "Инновации. Партнерство. Развитие.",
+        bullets: [
+          "Новинки продукции и технологий индустрии красоты.",
+          "Общение с представителями ведущих брендов.",
+          "Тестирование продукции и профессиональные консультации.",
+          "Специальные предложения и новые деловые контакты."
+        ],
+        footer:
+          "Для специалистов и владельцев бизнеса, которые хотят быть в курсе трендов и находить новые возможности для роста."
+      }
+    },
+    registrationSection: {
+      eyebrow: "Участие",
+      title: "Всё необходимое для участия",
+
+      registration: {
+        title: "Период регистрации",
+        date: "20 июня – 15 августа 2026",
+        description:
+          "Приём заявок осуществляется с 20 июня по 15 августа 2026 года включительно."
+      },
+
+      tabs: {
+        tickets: "Форум",
+        awards: "Премия",
+        jury: "Жюри"
+      },
+
+      tickets: {
+        title: "Beauty Business Forum",
+        price: "$395",
+        suffix: "от / день",
+        description:
+          "Развитие бизнеса, нетворкинг, образование и новые возможности.",
+        cta: "Купить билет",
+
+        items: [
+          ["1 день форума", "$395"],
+          ["2 дня форума", "$695"],
+          ["Гала-ужин", "$150"]
+        ]
+      },
+
+      cta: "Подать заявку",
+
+      registrationInfo: {
+        eyebrow: "Период регистрации",
+        value: "20 июня – 15 августа 2026",
+        text: "Приём заявок на участие осуществляется с 20 июня по 15 августа 2026 года включительно.",
+      },
+
+      feeInfo: {
+        eyebrow: "Регистрационный взнос",
+        value: "$50",
+        text: "Стоимость участия оплачивается отдельно за каждую выбранную номинацию.",
+      },
+
+      juryInfo: {
+        eyebrow: "Регистрация судьи",
+        value: "$100+",
+        text: "Подать заявку в судейскую коллегию могут специалисты с опытом работы от 5 лет. Регистрационный взнос оплачивается только после одобрения кандидатуры.",
+      },
+
+      participationInfo: {
+        eyebrow: "Участие",
+        value: "Открыто для всех",
+        text: "Подать заявку на участие могут специалисты всех уровней без ограничений по стране и стажу.",
+      },
+
+      grandPrixInfo: {
+        eyebrow: "Гран-при",
+        value: "5+",
+        text: "Участники, подавшие заявки в 5 и более номинациях, автоматически участвуют в категории Гран-при.",
+      },
+
+      pricing: {
+        eyebrow: "Стоимость",
+        title: "Стоимость участия",
+        description:
+          "Билеты на форум, номинации премии и регистрация судей оплачиваются отдельно. Стоимость форума и премии отличается для участников IBPA и стандартных участников.",
+
+        option: "Опция",
+        members: "Участники",
+        standard: "Стандарт",
+        nonMembers: "Без участия",
+
+        forum: {
+          eyebrow: "Билеты",
+          title: "Билеты на форум",
+          oneDay: "1 день форума",
+          twoDays: "2 дня форума",
+          galaDinner: "Гала-ужин",
+        },
+
+        award: {
+          eyebrow: "Премия",
+          title: "Номинации премии",
+          oneNomination: "1 номинация",
+          threeNominations: "3 номинации",
+          fiveNominations: "5 номинаций",
+          note: "Участие в Гран-при активируется автоматически для участников с 5 и более номинациями.",
+        },
+
+        jury: {
+          eyebrow: "Жюри",
+          title: "Регистрация судьи",
+          member: "Участник IBPA",
+          standard: "Стандарт",
+        },
+
+        ctaEyebrow: "Готовы участвовать",
+        ctaTitle: "Начните заявку IBPA 2026",
+        ctaText:
+          "Выберите подходящий формат участия и подайте заявку онлайн.",
+      },
+
+      awards: {
+        title: "IBPA Beauty Awards",
+        price: "$50",
+        suffix: "за номинацию",
+        description:
+          "Признание, профессиональный статус и новые возможности.",
+        cta: "Подать заявку",
+
+        member: "Участник IBPA",
+        standard: "Не участник",
+
+        rows: [
+          ["1 номинация", "$50", "$70"],
+          ["3 номинации", "$130", "$190"],
+          ["5 номинаций", "$200", "$300"]
+        ],
+
+        grandPrixTitle: "Гран-при",
+        grandPrixDescription:
+          "Автоматическое участие при подаче 5 и более номинаций."
+      },
+
+      jury: {
+        title: "Регистрация судьи",
+        price: "$100+",
+        description:
+          "Для специалистов с опытом работы от 5 лет.",
+        cta: "Подать заявку",
+
+        points: [
+          "Минимум 5 лет профессионального опыта",
+          "Международное сообщество судей",
+          "Статус эксперта индустрии"
+        ],
+
+        note:
+          "Регистрационный взнос оплачивается только после одобрения кандидатуры."
+      },
+
+      openParticipation: {
+        title: "Открыто для всех",
+        description:
+          "Подать заявку могут специалисты любого уровня из любой страны."
+      }
+    },
+    previousForum: {
+      eyebrow: "Предыдущий ивент",
+      title: "Beauty Business Forum 2025",
+      award: "Премия Top Beauty Master",
+      date: "7–8 ноября 2025",
+      location: "Сан-Франциско, Калифорния",
+      videoLabel: "Видео форума",
+      quote:"Вспоминаем атмосферу, профессиональное сообщество и ключевые моменты индустрии, которые стали частью предыдущего форума.",
+      videoTitle: "Видео Beauty Business Forum 2025",
+      playLabel: "Воспроизвести",
+      pauseLabel: "Пауза",
+      muteLabel: "Выключить звук",
+      unmuteLabel: "Включить звук",
+    },
+    previousWinners: {
+      eyebrow: "Победители прошлого форума",
+      title: "Победители, ставшие частью Beauty Business Forum 2025",
+      prevLabel: "Предыдущие победители",
+      nextLabel: "Следующие победители",
+      goToLabel: "Перейти к победителю",
+    },
+    program: {
+      eyebrow: "Программа",
+      title: "Полная программа скоро появится",
+      description:
+        "Здесь будут опубликованы спикеры, мастер-классы, расписание и многое другое.",
+    },
+    speakers: {
+      eyebrow: "Спикеры",
+      title: "Спикеры будут объявлены",
+      description: "Состав форума будет раскрыт ближе к событию.",
+    },
+    partners: {
+      eyebrow: "Партнёры",
+      title: "Наши партнёры",
+      description:
+        "Бренды и организации, поддерживающие IBPA Beauty Awards 2026.",
+      cta: "Стать партнёром",
+      items: [
+        { name: "Партнёр", text: "Одно предложение о партнёре.", href: "#" },
+        { name: "Партнёр", text: "Одно предложение о партнёре.", href: "#" },
+        { name: "Партнёр", text: "Одно предложение о партнёре.", href: "#" },
+        { name: "Партнёр", text: "Одно предложение о партнёре.", href: "#" },
+      ],
+    },
+    contactUs: {
+      eyebrow: "Свяжитесь с нами",
+      title: "Давайте создадим что-то исключительное вместе",
+      description:
+        "Если у вас есть вопросы об участии, партнерстве, спонсорстве или участии в IBPA — наша команда всегда готова помочь.",
+
+      email: "forum-support@ibpassociations.org",
+      note: "Обычно мы отвечаем в течение одного рабочего дня.",
+
+      nameLabel: "Полное имя",
+      namePlaceholder: "Введите ваше полное имя",
+
+      emailLabel: "Email",
+      emailPlaceholder: "Введите ваш email",
+
+      subjectLabel: "Тема",
+      subjectPlaceholder: "О чем вы хотите поговорить?",
+
+      messageLabel: "Сообщение",
+      messagePlaceholder: "Расскажите подробнее о вашем запросе...",
+
+      submitLabel: "Отправить сообщение",
+      sendingLabel: "Отправляем…",
+
+      privacyNote:
+        "Отправляя форму, вы соглашаетесь с нашей политикой конфиденциальности.",
+
+      successMessage:
+        "Спасибо! Ваше сообщение отправлено — мы скоро свяжемся с вами.",
+      errorMessage:
+        "Что-то пошло не так. Попробуйте ещё раз или напишите нам напрямую.",
+      validationMessage:
+        "Пожалуйста, укажите имя, корректный email и короткое сообщение.",
     },
     copy: {
       whyEyebrow: "Почему IBPA Beauty Award 2026",
@@ -1059,7 +2060,7 @@ const ru: typeof en = {
         {
           number: "01",
           title: "Выберите свою категорию",
-          text: "Премия охватывает 11 профессиональных категорий - от артистизма до брендинга. Выберите ту, которая ближе всего к вашей сфере деятельности.",
+          text: "Премия охватывает 11 профессиональных категорий — от мастерства до брендинга. Выберите ту, которая ближе всего к вашей сфере деятельности.",
         },
         {
           number: "02",
@@ -1112,7 +2113,7 @@ const ru: typeof en = {
         },
         {
           q: "Кто может участвовать?",
-          a: "Подать заявку на участие в премии могут все действующие члены ассоциации IBPA.",
+          a: "Подать заявку на участие в премии могут все действующие участники ассоциации IBPA.",
         },
         {
           q: "Можно ли подать заявку в жюри?",
@@ -1137,6 +2138,7 @@ const ru: typeof en = {
     },
     participation: {
       eyebrow: "Выберите участие",
+      description: "Посетите форум, пообщайтесь с экспертами индустрии красоты и присоединитесь к основной бизнес-программе IBPA.",
       tickets: {
         label: "БИЛЕТЫ НА ФОРУМ",
         mostPopular: "Самое популярное",
@@ -1161,8 +2163,8 @@ const ru: typeof en = {
       awardParticipation: "Участие в конкурсе",
       judgeRegistration: "Регистрация судьи",
       standard: "Стандарт",
-      ibpaMembers: "Члены IBPA",
-      nonMembers: "Не члены",
+      ibpaMembers: "Участники",
+      nonMembers: "Не участники",
       oneDayPass: "1 день",
       twoDayPass: "2 дня",
       galaDinner: "Гала-ужин",
@@ -1186,7 +2188,7 @@ const ru: typeof en = {
       cta: "Подать заявку на участие",
       learnMore: "Подробнее",
       stats: [
-        { value: "5+", label: "Номинаций требуется" },
+        { value: "5+", label: "Номинаций" },
         { value: "Авто", label: "Квалификация" },
       ],
     },
@@ -1228,8 +2230,67 @@ const ru: typeof en = {
       feeLabel: "Регистрационный взнос",
       feeValue: "$50 за категорию",
       eligibilityLabel: "Участие",
-      eligibilityValue: "Для членов IBPA Beauty Award 2026",
+      eligibilityValue: "Для участников IBPA Beauty Award 2026",
       cta: "Подать заявку по категории",
+    },
+    participation: {
+      eyebrow: "Как принять участие",
+
+      title:
+        "Премия, созданная для профессионального лидерства в индустрии красоты.",
+
+      description:
+        "Структурированный отбор, прозрачная оценка и международное признание для специалистов, преподавателей, клиник, академий, салонов и представителей beauty-бизнеса.",
+
+      steps: [
+        {
+          number: "01",
+          title: "Заполните заявку",
+        },
+        {
+          number: "02",
+          title: "Выберите свою категорию",
+        },
+        {
+          number: "03",
+          title: "Определите номинацию",
+        },
+        {
+          number: "04",
+          title:
+            "Укажите личные данные, загрузите фото и видео, подробно опишите ваши достижения",
+        },
+        {
+          number: "05",
+          title: "Произведите оплату",
+        },
+        {
+          number: "06",
+          title: "Приём заявок до 15 августа 2026 года",
+        },
+      ],
+
+      doneTitle: "Готово!",
+
+      doneDescription:
+        "Ваша работа будет оценена международной коллегией судей.",
+    },
+    whyJoin: {
+      eyebrow: "Почему стоит присоединиться",
+      title: "Почему стоит принять участие в IBPA Beauty Awards",
+      benefits: [
+        "Международное признание ваших профессиональных достижений.",
+        "Оценка работ международной коллегией экспертов.",
+        "Повышение доверия клиентов и укрепление личного бренда.",
+        "Возможность получить статус победителя или призёра IBPA Beauty Awards 2026.",
+        "Публикация и продвижение лучших участников в профессиональном сообществе.",
+        "Нет необходимости присутствовать лично — участие проходит онлайн.",
+      ],
+      grandPrixEyebrow: "Правило Гран-при",
+      grandPrixTitle: "5+ номинаций — и вы в Гран-при",
+      grandPrixDescription:
+        "Подайте заявки в 5 и более номинаций — и вы автоматически становитесь номинантом на Гран-при IBPA. Без дополнительных заявок.",
+      grandPrixBadge: "Шанс выиграть трофей Гран-при",
     },
     cardText: "Профессиональные заявки рассматриваются в рамках официальной премии IBPA Beauty Award 2026.",
     directions: [
@@ -1280,7 +2341,7 @@ const ru: typeof en = {
       },
       {
         slug: "makeup-artistry",
-        title: "Исскуство Макияжа",
+        title: "Искусство макияжа",
         nominations: [
           "Премия за выдающиеся достижения в свадебном макияже",
           "Премия за выдающиеся достижения в креативном макияже",
@@ -1344,8 +2405,126 @@ const ru: typeof en = {
         associationQuote: "Ассоциация работает с мастерами, педагогами, салонами и брендами — всеми, кто стремится соответствовать высокой планке качества и профессиональной культуры.",
         associationButton: "Перейти в ассоциацию IBPA",
         ctaEyebrow: "Подача по категории",
-        ctaTitle: "Готовы? Подайте заявку в свою номинацию",
-        ctaText: "От артистизма до брендинга - выберите номинацию внутри своей категории и подайте заявку на премию IBPA 2026",
+        ctaTitle: "Готовы продемонстрировать своё профессиональное мастерство?",
+        ctaText: "Выберите свою номинацию и станьте частью IBPA Beauty Awards 2026 — международной премии, созданной для признания выдающихся достижений специалистов, преподавателей, владельцев бизнеса и брендов в индустрии красоты.",
+        ctaButton: "Регистрация",
+    },
+    awardResults: {
+      eyebrow: "Результаты премии",
+      title: "Результаты премии",
+      timeline: {
+        applicationsOpen: {
+          label: "Прием заявок открыт",
+          date: "20 июня",
+          sub: "2026",
+        },
+        registrationCloses: {
+          label: "Регистрация закрывается",
+          date: "15 августа",
+          sub: "2026",
+        },
+        awardCeremony: {
+          label: "Церемония награждения",
+          date: "26 сентября",
+          sub: "Beauty Business Forum",
+        },
+      },
+      jury: {
+        title: "Международное жюри",
+        note: "В состав жюри входят международные тренеры и ведущие эксперты отрасли.",
+        points: [
+          "Международные эксперты",
+          "Независимая оценка",
+          "Профессиональная система оценивания",
+        ],
+      },
+      pricing: {
+        eyebrow: "Стоимость участия",
+        headers: {
+          nominations: "Номинации",
+          members: "Участники",
+          nonMembers: "Стандарт",
+        },
+        oneNomination: {
+          label: "1 номинация",
+          member: "$50",
+          nonMember: "$70",
+        },
+        threeNominations: {
+          label: "3 номинации",
+          member: "$130",
+          nonMember: "$190",
+        },
+        fiveNominations: {
+          label: "5 номинаций",
+          member: "$200",
+          nonMember: "$300",
+        },
+        grandPrixEligibility: "Участие в Гран-при",
+        nonRefundable:
+          "Регистрационный взнос является невозвратным после подачи заявки.",
+      },
+    },
+    faq: {
+      eyebrow: "Вопросы",
+      title: "Часто задаваемые вопросы",
+      items: [
+        {
+          question: "Кто может принять участие в IBPA Beauty Awards 2026?",
+          answer:
+            "К участию приглашаются специалисты, преподаватели, владельцы бизнеса, академии, студии, салоны и бренды индустрии красоты.",
+        },
+        {
+          question: "Обязательно ли проживать в США для участия?",
+          answer:
+            "Нет. В премии могут принимать участие кандидаты из любой страны мира.",
+        },
+        {
+          question: "Как проходит участие в премии?",
+          answer:
+            "Участники подают заявку и конкурсные материалы через онлайн-форму. Оценка работ проводится международной коллегией судей.",
+        },
+        {
+          question: "Нужно ли присутствовать на церемонии награждения?",
+          answer:
+            "Нет. Участие в премии и оценка работ проходят независимо от присутствия на церемонии.",
+        },
+        {
+          question: "Сколько работ можно подать?",
+          answer:
+            "Участник может подать несколько работ и участвовать в нескольких категориях.",
+        },
+        {
+          question: "Можно ли подать одну работу в несколько категорий?",
+          answer:
+            "Да, если работа соответствует требованиям выбранных категорий.",
+        },
+        {
+          question: "Когда заканчивается приём заявок?",
+          answer:
+            "Приём заявок открыт с 20 июня по 15 августа 2026 года включительно.",
+        },
+        {
+          question: "Когда будут объявлены результаты?",
+          answer:
+            "Результаты будут объявлены во время IBPA Beauty Awards 2026 и опубликованы на официальных ресурсах премии.",
+        },
+        {
+          question: "Что получают победители и призёры?",
+          answer:
+            "Победители и призёры получают официальные награды, сертификаты и публикации в рамках премии.",
+        },
+        {
+          question: "Могу ли я подать заявку, если работаю менее 5 лет?",
+          answer:
+            "Да, если выбранная категория не предусматривает требований к минимальному стажу работы.",
+        },
+        {
+          question: "Возвращается ли регистрационный взнос?",
+          answer:
+            "Нет. Регистрационный взнос является невозвратным после подачи заявки.",
+        },
+      ],
     },
   },
   juryPage: {
@@ -1364,31 +2543,110 @@ const ru: typeof en = {
       feeValue: "$250",
       feeNote: "Оплачивается только после одобрения",
     },
-    requirements: {
-      label: "Требования",
-      title: "Кто может подать заявку в жюри",
+    about: {
+      eyebrow: "О премии",
+      title: "IBPA Beauty Awards 2026",
+      description:
+        "IBPA Beauty Awards 2026 — международная премия в сфере красоты, созданная для признания профессионализма, таланта и выдающихся достижений специалистов, преподавателей, владельцев бизнеса и брендов.",
+      recognition:
+        "Премия отмечает сильные профессиональные результаты, экспертность, креативность и вклад в развитие индустрии красоты.",
+      objectiveEvaluation:
+        "Судейская коллегия играет ключевую роль в обеспечении объективной, честной и профессиональной оценки конкурсных работ.",
+      trust:
+        "Благодаря экспертному судейству жюри формирует доверие к премии и усиливает её международный статус.",
+    },
+    timeline: {
+      eyebrow: "Период судейства",
+      title: "Важные даты",
+      formatLabel: "Формат судейства",
+      formatValue: "Онлайн",
+      yearLabel: "Год",
+      year: "2026",
       items: [
         {
-          label: "Минимальный опыт",
-          value: "5+ лет",
-          text: "Кандидат должен иметь не менее пяти лет профессионального опыта в индустрии.",
+          label: "Подача заявок в судейскую коллегию",
+          title: "Заявки в жюри",
+          date: "20 июня – 15 августа 2026",
+        },
+        {
+          label: "Рассмотрение заявок",
+          title: "Период рассмотрения",
+          date: "До 20 августа 2026",
+        },
+        {
+          label: "Период оценки конкурсных работ",
+          title: "Оценка работ",
+          date: "16 августа – 5 сентября 2026",
+        },
+        {
+          label: "Финал и оглашение результатов",
+          title: "Оглашение результатов",
+          date: "26 сентября 2026",
+        },
+      ],
+    },
+    gallery: {
+      eyebrow: "Моменты форума",
+      title: "Атмосфера сообщества IBPA",
+      description:
+        "Визуальный взгляд на атмосферу, гостей, профессионалов и моменты, которые делают IBPA Beauty Business Forum особенным.",
+      prevLabel: "Предыдущее фото",
+      nextLabel: "Следующее фото",
+      goToLabel: "Перейти к фото",
+      photoAlt: "Фото IBPA Forum",
+    },
+    requirements: {
+      label: "Кто может стать судьёй",
+      title: "Требования к кандидатам",
+      description:
+        "Судейская коллегия формируется из опытных профессионалов, способных обеспечить честную, объективную и экспертную оценку конкурсных работ.",
+      items: [
+        {
+          label: "Опыт",
+          text: "Опыт работы в индустрии красоты от 5 лет.",
         },
         {
           label: "Экспертиза",
-          value: "11 категорий",
-          text: "Судьи отбираются с учетом экспертизы в соответствующих категориях премии.",
+          text: "Подтверждённая профессиональная экспертиза в своей категории.",
         },
         {
           label: "Документы",
-          value: "Обязательны",
-          text: "Необходимо предоставить сертификаты, биографию и профильные материалы.",
+          text: "Наличие сертификатов, дипломов, лицензий или других подтверждающих документов.",
         },
         {
-          label: "Правило оплаты",
-          value: "После одобрения",
-          text: "Взнос жюри не взимается на этапе подачи заявки.",
+          label: "Профессиональная деятельность",
+          text: "Преподавательская, конкурсная или экспертная деятельность приветствуется.",
+        },
+        {
+          label: "Опыт судейства",
+          text: "Опыт судейства желателен, но не является обязательным.",
+        },
+        {
+          label: "Стандарты",
+          text: "Готовность соблюдать регламент, конфиденциальность и принципы объективной оценки.",
         },
       ],
+    },
+    responsibilities: {
+      eyebrow: "Роль судьи в премии",
+      title: "Что входит в обязанности судьи",
+      items: [
+        "Оценка конкурсных работ в соответствии с утверждёнными критериями премии.",
+        "Рассмотрение работ только в своей профессиональной категории.",
+        "Выставление объективных и независимых оценок на основе опыта и экспертизы.",
+        "Соблюдение конфиденциальности конкурсных материалов, участников и результатов.",
+        "Работа в установленные сроки через онлайн-формат судейства.",
+        "Подтверждение итоговых оценок и участие в формировании справедливых результатов премии.",
+      ],
+    },
+    feeCard: {
+      eyebrow: "Регистрационный взнос",
+      title: "Стоимость участия в составе жюри",
+      standardLabel: "Стандарт",
+      standardPrice: "$250",
+      membersLabel: "Участники",
+      membersPrice: "$100",
+      note: "Регистрационный взнос оплачивается только после одобрения кандидатуры и является невозвратным.",
     },
     process: {
       label: "Процесс",
@@ -1417,33 +2675,54 @@ const ru: typeof en = {
         {
           number: "05",
           title: "Войдите в состав жюри",
-          text: "После подтверждения оплаты вы становитесь официальным членом жюри.",
+          text: "После подтверждения оплаты вы становитесь официальным участником жюри.",
         },
       ],
     },
     faq: {
-      label: "Вопросы",
-      title: "Часто задаваемые вопросы",
+      label: "Часто задаваемые вопросы",
+      title: "FAQ",
       items: [
         {
-          question: "Нужно ли платить при подаче заявки?",
+          question: "Судейство проходит онлайн?",
           answer:
-            "Нет. Заявка в жюри подаётся бесплатно. Взнос $250 оплачивается только после одобрения.",
+            "Да, все конкурсные работы оцениваются дистанционно через личный кабинет судьи.",
         },
         {
-          question: "Сколько длится рассмотрение?",
+          question:
+            "Когда я узнаю результат рассмотрения моей заявки в судейскую коллегию?",
           answer:
-            "Заявки рассматриваются индивидуально, процесс может занимать до 14 рабочих дней.",
+            "После проверки профессионального опыта и документов кандидат получает уведомление о решении комиссии.",
         },
         {
-          question: "Все ли кандидаты будут приняты?",
+          question: "Нужно ли присутствовать на церемонии награждения?",
           answer:
-            "Нет. Одобрение зависит от профессионального опыта, квалификации и соответствия составу жюри.",
+            "Нет, присутствие на церемонии не является обязательным.",
         },
         {
-          question: "Что происходит после одобрения?",
+          question: "Есть ли финансовое вознаграждение?",
           answer:
-            "Одобренные кандидаты получают инструкции по оплате. После подтверждения оплаты они официально входят в состав жюри.",
+            "Нет, участие в судейской коллегии осуществляется на добровольной основе.",
+        },
+        {
+          question: "Когда я получу доступ к работам?",
+          answer:
+            "После завершения приёма заявок и утверждения списка конкурсных работ.",
+        },
+        {
+          question: "Могу ли я быть судьёй, если живу не в США?",
+          answer:
+            "Да, в состав жюри могут входить специалисты из разных стран.",
+        },
+        {
+          question: "Обязательно ли иметь опыт судейства?",
+          answer:
+            "Опыт судейства приветствуется, но не является обязательным требованием. При отсутствии опыта судейства кандидат должен иметь значительные профессиональные достижения, преподавательский, конкурсный или экспертный опыт, подтверждающий высокий уровень квалификации и понимание процесса профессиональной оценки работ.",
+        },
+        {
+          question: "Сколько времени занимает оценка работ?",
+          answer:
+            "Количество работ зависит от категории. Процесс организован так, чтобы судейство можно было пройти комфортно в установленные сроки.",
         },
       ],
     },
@@ -1465,7 +2744,7 @@ const ru: typeof en = {
       leadershipTitle: "Лидерство, доверие и независимые стандарты",
       credibility: "Доверие",
       credibilityText: "Каждый судья должен подтвердить профессиональный опыт и экспертизу по категориям",
-      processLabel: "Заявка на судейство",
+      processLabel: "Как проходит отбор",
       processTitle: "Три шага до статуса судьи",
       processText: "Понятный путь от подачи до официального включения в состав жюри.",
       apply: "Подача заявки",
@@ -1478,7 +2757,7 @@ const ru: typeof en = {
       benefitsTitle: "Почему эксперты входят в совет жюри IBPA Beauty Award 2026",
       benefitsText: "Серьезная профессиональная роль с заметным вкладом и международным признанием.",
       b1Title: "Официальное признание",
-      b1Text: "Публикуйтесь как подтвержденный член жюри IBPA Beauty Award 2026 и представляйте отраслевые стандарты.",
+      b1Text: "Публикуйтесь как подтвержденный участник жюри IBPA Beauty Award 2026 и представляйте отраслевые стандарты.",
       b2Title: "Надежная система",
       b2Text: "Оценивайте заявки через прозрачный и структурированный процесс судейства.",
       b3Title: "Профессиональное сообщество",
@@ -1488,6 +2767,7 @@ const ru: typeof en = {
       statementEyebrow: "Позиция доверия",
       statementTitle: "Каждый балл должен отражать мастерство и профессиональную честность",
       statementText: "Судьи IBPA Beauty Award 2026 отбираются по экспертизе, нейтральности и приверженности справедливой оценке.",
+      statementText2: "Каждый участник жюри действует независимо и оценивает работы исключительно на основании утверждённых критериев премии.",
       statementQuote: "Судейство - это не только результат. Это доверие к процессу.",
       approvedEyebrow: "Одобренное жюри",
       approvedTitle: "Текущий состав жюри IBPA Beauty Award 2026",
@@ -1498,22 +2778,30 @@ const ru: typeof en = {
       ctaAside: "Оплата регистрации доступна только после одобрения.",
     },
     benefits: {
-      eyebrow: "Преимущества",
-      title: "Что получают одобренные судьи",
-      description: "После одобрения и оплаты официальные судьи получают официальное признание, подтверждающие документы и публичный профиль в составе жюри премии.",
+      eyebrow: "Привилегии официального судьи",
+      title: "Привилегии официального судьи IBPA Beauty Awards 2026",
+      description:
+        "После подтверждения участия судьи получают официальный пакет документов, публикаций и профессиональных привилегий, подтверждающих их статус в составе международной судейской коллегии IBPA Beauty Awards 2026.",
       items: [
-        "Официальное приглашение в состав жюри IBPA.",
-        "Именной сертификат члена жюри за год проведения премии.",
-        "Официальное письмо благодарности от Президента IBPA.",
-        "Письмо о профессиональном вкладе для признания в отрасли.",
-        "Публичный профиль судьи с фото и биографией.",
+        "Официальное приглашение в состав жюри IBPA Beauty Awards 2026.",
+        "Регламент и методические материалы для проведения судейства.",
+        "Доступ к личному кабинету судьи для оценки конкурсных работ.",
+        "Официальную судейскую ведомость для проведения оценки участников.",
+        "Именной сертификат официального судьи IBPA Beauty Awards 2026.",
+        "Благодарственное письмо за участие в работе международной судейской коллегии.",
+        "Персональный баннер судьи для публикации в социальных сетях и профессиональном портфолио.",
+        "Публичное размещение профиля судьи на официальном сайте премии.",
+        "Публикацию в составе международной судейской коллегии IBPA Beauty Awards 2026.",
+        "Упоминание в итоговой статье и публикациях, посвящённых проведению премии и её результатам.",
       ],
     },
     juryCta: {
       eyebrow: "Регистрация судьи",
       title: "Присоединяйтесь к международному жюри IBPA.",
-      description: "Подайте заявку как член жюри для оценки профессионального мастерства в индустрии красоты и участия в уважаемой международной премии.",
+      description: "Подайте заявку как участник жюри для оценки профессионального мастерства в индустрии красоты и участия в уважаемой международной премии.",
       registrationFee: "Регистрационный взнос",
+      registrationNote:
+        "Регистрационный взнос оплачивается только после одобрения кандидатуры и является невозвратным.",
     },
   },
   grandPrixPage: {
@@ -1584,19 +2872,22 @@ const ru: typeof en = {
       title: "FAQ Гран-при",
       items: [
         {
-          question: "Можно ли подать заявку на Гран-при отдельно?",
+          question: "Нужно ли отдельно подаваться на Гран-при?",
           answer:
-            "Нет. Участие формируется автоматически при участии в 5 и более номинациях.",
+            "Нет. Участие активируется автоматически после подачи заявок в 5 и более номинациях.",
         },
         {
-          question: "Обязательно ли участвовать в разных категориях?",
-          answer:
-            "Нет. Номинации могут быть как в одной категории, так и в разных.",
+          question: "Есть ли дополнительный взнос за Гран-при?",
+          answer: "Нет. Отдельный регистрационный взнос не предусмотрен.",
         },
         {
-          question: "Как выбирается победитель?",
+          question: "Можно ли участвовать в Гран-при только с одной работой?",
           answer:
-            "По сумме всех баллов, полученных за каждую номинацию.",
+            "Нет. Для участия необходимо подать заявки минимум в 5 номинациях.",
+        },
+        {
+          question: "Сколько победителей Гран-при определяется ежегодно?",
+          answer: "Один обладатель Гран-при в рамках премии.",
         },
       ],
     },
@@ -1611,11 +2902,11 @@ const ru: typeof en = {
       timelineTitle: "Понятная логика на каждом этапе премии",
       timelineDescription: "Акцент на номинации, оценивании и финальной презентации премии.",
       appWindow: "Период подачи заявок",
-      appWindowText: "Участники подают заявки по категориям в официальные сроки кампании.",
+      appWindowText: "Подавайте номинации с 20 июня по 15 августа 2026 года.",
       scorePeriod: "Период оценивания",
-      scorePeriodText: "Жюри оценивает заявки и фиксирует баллы по каждой категории.",
+      scorePeriodText: "Жюри оценивает работы с 16 августа по 5 сентября 2026 года.",
       reveal: "Финальное объявление",
-      revealText: "Финалисты и победитель Гран-при объявляются на церемонии.",
+      revealText: "Победителей объявляют на церемонии IBPA Beauty Awards 2026 — 26 сентября 2026 года.",
       breakEyebrow: "Атмосфера Гран-при",
       breakTitle: "Финальная сцена для сильного результата в нескольких категориях",
       breakText: "Премиальная среда, где суммарное мастерство получает заметное признание.",
@@ -1629,14 +2920,144 @@ const ru: typeof en = {
       qualificationRule: "Подайте заявки в 5 и более номинаций - и вы автоматически становитесь номинантом на Гран-при IBPA. Без дополнительных заявок.",
       decision: "Решение премии",
     },
+    about: {
+      whatEyebrow: "О Гран-при",
+      whatTitle: "Что такое Гран-при",
+      whatText:
+        "Гран-при — это главная награда IBPA Beauty Awards 2026, которая присуждается участнику с самым высоким суммарным результатом среди претендентов.",
+      whoEyebrow: "Кто претендует",
+      whoTitle: "Кто становится претендентом на Гран-при",
+      whoHighlight: "5+ номинаций = автоматическое участие",
+      whoText:
+        "Участники, подавшие работы в пяти и более номинациях, автоматически становятся кандидатами на получение Гран-при.",
+      whoNote: "Дополнительная регистрация не требуется.",
+    },
+    whySpecial: {
+      eyebrow: "Почему это важно",
+      title: "Почему Гран-при считается особой наградой",
+      lead: "Гран-при оценивает не отдельную работу, а общий профессиональный уровень специалиста.",
+      cards: [
+        { title: "Мастерство", text: "Высокие результаты сразу в нескольких категориях." },
+        { title: "Стабильность", text: "Подтверждение качества работы в разных направлениях." },
+        { title: "Универсальность", text: "Широкая профессиональная экспертиза." },
+        { title: "Признание", text: "Высший уровень награды в рамках премии." },
+      ],
+    },
+    decision: {
+      eyebrow: "Отбор",
+      title: "Как определяется победитель",
+      steps: [
+        {
+          number: "01",
+          title: "Автоматический отбор",
+          text: "5 и более номинаций автоматически включают участника в список претендентов на Гран-при.",
+        },
+        {
+          number: "02",
+          title: "Независимая оценка",
+          text: "Каждая работа оценивается международной коллегией судей по единым критериям.",
+        },
+        {
+          number: "03",
+          title: "Подсчёт результатов",
+          text: "Баллы суммируются по всем номинациям участника.",
+        },
+        {
+          number: "04",
+          title: "Определение победителя",
+          text: "Гран-при получает участник с наивысшим итоговым результатом.",
+        },
+      ],
+    },
+    rewards: {
+      eyebrow: "Награды",
+      title: "Что получает обладатель Гран-при",
+      items: [
+        "Главный трофей Гран-при",
+        "Специальный диплом победителя",
+        "Международное признание",
+        "Публикация на ресурсах IBPA",
+        "Освещение победы в социальных сетях премии",
+        "Статус обладателя Гран-при IBPA Beauty Awards 2026",
+      ],
+    },
     participationCta: {
-      eyebrow: "Участие в конкурсе",
-      title: "Стоимость участия с доступом к Гран-при.",
-      description: "Войдите в основную премию с путём номинации, который соответствует вашему профилю. При подаче пяти и более номинаций участие в Гран-при включается автоматически.",
+      eyebrow: "Участие в премии",
+      title: "Готовы заявить о своём профессиональном уровне?",
+      description: "Подайте работы в выбранные номинации и получите возможность стать претендентом на Гран-при IBPA Beauty Awards 2026.",
       nominationFees: "Взносы за номинации",
       members: "Участники",
       perNomSubmission: "За одну номинацию",
       nominationsActivate: "Номинации активируют право участия",
+    },
+  },
+  associationPage: {
+    hero: {
+      eyebrow: "Ассоциация IBPA",
+      title: "International Beauty Professionals Association",
+      subtitle: "Международная ассоциация профессионалов индустрии красоты",
+      description:
+        "International Beauty Professionals Association (IBPA) объединяет специалистов, преподавателей, владельцев бизнеса, академии, студии, салоны и бренды индустрии красоты из разных стран мира.",
+      applyButton: "Подать заявку",
+      websiteButton: "Перейти на сайт IBPA",
+    },
+    whoCanJoin: {
+      eyebrow: "Кто может присоединиться?",
+      title: "IBPA открыта для:",
+      items: [
+        "Специалисты индустрии красоты",
+        "Преподаватели и тренеры",
+        "Владельцы студий, салонов и академий",
+        "Бьюти-бренды и компании",
+        "Начинающие специалисты и студенты профильных направлений",
+      ],
+    },
+    advantages: {
+      eyebrow: "Преимущества участия",
+      title: "Больше доверия, связей и профессионального роста.",
+      description:
+        "Участие в IBPA помогает усиливать личный бренд, расширять профессиональные возможности и быть частью международного beauty-сообщества.",
+      items: [
+        "Образовательные вебинары и профессиональные материалы",
+        "Скидки на мероприятия, премии и проекты ассоциации",
+        "Доступ к закрытому профессиональному сообществу",
+        "Возможности для публикаций, выступлений и продвижения",
+        "Участие в международных форумах, премиях и бизнес-мероприятиях",
+        "Профиль в каталоге ассоциации",
+        "Сертификат участника IBPA",
+        "Партнерские программы, специальные предложения и множество других привилегий",
+      ],
+    },
+    process: {
+      eyebrow: "Как проходит вступление?",
+      title: "Четкий и понятный процесс вступления.",
+      stepLabel: "Шаг",
+      steps: [
+        {
+          title: "Выберите категорию",
+          text: "Выберите подходящую категорию участия в ассоциации.",
+        },
+        {
+          title: "Заполните заявку",
+          text: "Заполните заявку на вступление через форму сайта.",
+        },
+        {
+          title: "Дождитесь рассмотрения",
+          text: "Команда IBPA рассмотрит заявку и подтвердит дальнейшие шаги.",
+        },
+        {
+          title: "Завершите регистрацию",
+          text: "После одобрения проведите оплату, завершите регистрацию и получите доступ к преимуществам выбранной категории.",
+        },
+      ],
+    },
+    cta: {
+      eyebrow: "Узнать больше",
+      title: "Готовы присоединиться к международному сообществу профессионалов?",
+      description:
+        "Подробная информация о категориях участия, стоимости, преимуществах и условиях вступления доступна на официальном сайте IBPA.",
+      applyButton: "Подать заявку на вступление",
+      websiteButton: "Перейти на сайт IBPA",
     },
   },
   applyPage: {
@@ -1865,6 +3286,7 @@ const ua: typeof en = {
     categories: "Категорії",
     grandPrix: "Гран-прі",
     home: "Головна",
+    from: "від",
   },
   header: {
     navigation: {
@@ -1879,9 +3301,298 @@ const ua: typeof en = {
   },
   home: {
     hero: {
+      eyebrow: "Галузева конференція лідерів",
       title: "IBPA Beauty Award 2026",
+      subtitle: "Beauty Business Forum + IBPA Beauty Award 2026",
+      date: "25–26 вересня 2026",
+      location: "Лос-Анджелес, Каліфорнія",
+      buyTickets: "Купити квитки на форум",
       description: "Визнання видатних досягнень у сфері краси, освіти у сфері краси, здоров'я та інновацій у брендингу",
       categoriesCta: "Переглянути категорії",
+      ticker: [
+        "IBPA Beauty Award 2026",
+        "Міжнародне визнання",
+        "Професійна майстерність",
+        "11 категорій",
+        "Міжнародне журі",
+        "Відкрито для всього світу",
+      ],
+    },
+    awardsInfo: {
+      eyebrow: "Про премію",
+      title: "IBPA Beauty Awards 2026",
+      text: "IBPA Beauty Awards 2026 — міжнародна премія у сфері краси, освіти та beauty-бізнесу, що проводиться в межах IBPA Beauty Business Forum. Наша місія — визнавати видатних спеціалістів, підтримувати професійний розвиток і об’єднувати лідерів індустрії для обміну досвідом, інноваціями та новими можливостями зростання.",
+    },
+    threeExperiences: {
+      eyebrow: "Одна подія",
+      title: "Три потужні напрями",
+
+      forum: {
+        title: "Beauty Business Forum",
+        subtitle: "Знання. Зв'язки. Зростання.",
+        bullets: [
+          "Виступи успішних підприємців та експертів індустрії краси.",
+          "Практичні стратегії розвитку та масштабування бізнесу.",
+          "Нетворкінг із власниками салонів, брендами та лідерами ринку.",
+          "Простір для нових партнерств, ідей та можливостей."
+        ],
+        footer:
+          "Для фахівців, викладачів, власників бізнесу та брендів, які прагнуть професійного розвитку, сильного оточення та нових можливостей."
+      },
+
+      awards: {
+        title: "IBPA Beauty Awards 2026",
+        subtitle: "Визнання. Статус. Можливості.",
+        bullets: [
+          "Міжнародна премія для найкращих спеціалістів індустрії краси.",
+          "Незалежне оцінювання робіт міжнародною колегією експертів.",
+          "Можливість зміцнити професійну репутацію та особистий бренд.",
+          "Нагороди, що підтверджують високий рівень майстерності та професіоналізму."
+        ],
+        footer:
+          "Для фахівців, викладачів, власників бізнесу та брендів, які прагнуть отримати визнання своїх досягнень та зміцнити свої позиції на ринку."
+      },
+
+      exhibition: {
+        title: "Виставка брендів",
+        subtitle: "Інновації. Партнерство. Розвиток.",
+        bullets: [
+          "Новинки продукції та технологій індустрії краси.",
+          "Спілкування з представниками провідних брендів.",
+          "Тестування продукції та професійні консультації.",
+          "Спеціальні пропозиції та нові ділові контакти."
+        ],
+        footer:
+          "Для фахівців та власників бізнесу, які хочуть бути в курсі трендів та знаходити нові можливості для розвитку."
+      }
+    },
+    registrationSection: {
+      eyebrow: "Участь",
+      title: "Усе необхідне для участі",
+
+      registration: {
+        title: "Період реєстрації",
+        date: "20 червня – 15 серпня 2026",
+        description:
+          "Прийом заявок триває з 20 червня до 15 серпня 2026 року включно."
+      },
+
+      tabs: {
+        tickets: "Форум",
+        awards: "Премія",
+        jury: "Журі"
+      },
+
+      tickets: {
+        title: "Beauty Business Forum",
+        price: "$395",
+        suffix: "від / день",
+        description:
+          "Розвиток бізнесу, нетворкінг, освіта та нові можливості.",
+        cta: "Купити квиток",
+
+        items: [
+          ["1 день форуму", "$395"],
+          ["2 дні форуму", "$695"],
+          ["Гала-вечеря", "$150"]
+        ]
+      },
+
+      cta: "Подати заявку",
+
+      registrationInfo: {
+        eyebrow: "Період реєстрації",
+        value: "20 червня – 15 серпня 2026",
+        text: "Прийом заявок на участь здійснюється з 20 червня до 15 серпня 2026 року включно.",
+      },
+
+      feeInfo: {
+        eyebrow: "Реєстраційний внесок",
+        value: "$50",
+        text: "Вартість участі сплачується окремо за кожну обрану номінацію.",
+      },
+
+      juryInfo: {
+        eyebrow: "Реєстрація судді",
+        value: "$100+",
+        text: "Подати заявку до суддівської колегії можуть спеціалісти з досвідом роботи від 5 років. Реєстраційний внесок сплачується лише після схвалення кандидатури.",
+      },
+
+      participationInfo: {
+        eyebrow: "Участь",
+        value: "Відкрита для всіх",
+        text: "Подати заявку на участь можуть спеціалісти всіх рівнів без обмежень за країною чи стажем.",
+      },
+
+      grandPrixInfo: {
+        eyebrow: "Гран-прі",
+        value: "5+",
+        text: "Учасники, які подали заявки у 5 або більше номінаціях, автоматично беруть участь у категорії Гран-прі.",
+      },
+
+      pricing: {
+        eyebrow: "Вартість",
+        title: "Вартість участі",
+        description:
+          "Квитки на форум, номінації премії та реєстрація суддів оплачуються окремо. Вартість форуму й премії відрізняється для учасників IBPA та стандартних учасників.",
+
+        option: "Опція",
+        members: "Учасники",
+        standard: "Стандарт",
+        nonMembers: "Без участі",
+
+        forum: {
+          eyebrow: "Квитки",
+          title: "Квитки на форум",
+          oneDay: "1 день форуму",
+          twoDays: "2 дні форуму",
+          galaDinner: "Гала-вечеря",
+        },
+
+        award: {
+          eyebrow: "Премія",
+          title: "Номінації премії",
+          oneNomination: "1 номінація",
+          threeNominations: "3 номінації",
+          fiveNominations: "5 номінацій",
+          note: "Участь у Гран-прі активується автоматично для учасників із 5 або більше номінаціями.",
+        },
+
+        jury: {
+          eyebrow: "Журі",
+          title: "Реєстрація судді",
+          member: "Учасник IBPA",
+          standard: "Стандарт",
+        },
+
+        ctaEyebrow: "Готові долучитися",
+        ctaTitle: "Почніть заявку IBPA 2026",
+        ctaText:
+          "Оберіть відповідний формат участі та подайте заявку онлайн.",
+      },
+      awards: {
+        title: "IBPA Beauty Awards",
+        price: "$50",
+        suffix: "за номінацію",
+        description:
+          "Визнання, професійний статус та нові можливості.",
+        cta: "Подати заявку",
+
+        member: "Учасник IBPA",
+        standard: "Не учасник",
+
+        rows: [
+          ["1 номінація", "$50", "$70"],
+          ["3 номінації", "$130", "$190"],
+          ["5 номінацій", "$200", "$300"]
+        ],
+
+        grandPrixTitle: "Гран-прі",
+        grandPrixDescription:
+          "Автоматична участь при подачі 5 і більше номінацій."
+      },
+
+      jury: {
+        title: "Реєстрація журі",
+        price: "$100+",
+        description:
+          "Для спеціалістів з досвідом роботи від 5 років.",
+        cta: "Подати заявку",
+
+        points: [
+          "Мінімум 5 років професійного досвіду",
+          "Міжнародна спільнота журі",
+          "Статус експерта індустрії"
+        ],
+
+        note:
+          "Реєстраційний внесок сплачується лише після схвалення заявки."
+      },
+
+      openParticipation: {
+        title: "Відкрито для всіх",
+        description:
+          "Подати заявку можуть спеціалісти будь-якого рівня з будь-якої країни."
+      }
+    },
+    previousForum: {
+      eyebrow: "Попередній івент",
+      title: "Beauty Business Forum 2025",
+      award: "Премія Top Beauty Master",
+      date: "7–8 листопада 2025",
+      location: "Сан-Франциско, Каліфорнія",
+      videoLabel: "Відео форуму",
+      quote:"Згадуємо атмосферу, професійну спільноту та ключові моменти індустрії, які стали частиною попереднього форуму.",
+      videoTitle: "Відео Beauty Business Forum 2025",
+      playLabel: "Відтворити",
+      pauseLabel: "Пауза",
+      muteLabel: "Вимкнути звук",
+      unmuteLabel: "Увімкнути звук",
+    },
+    previousWinners: {
+      eyebrow: "Переможці попереднього форуму",
+      title: "Переможці, які стали частиною Beauty Business Forum 2025",
+      prevLabel: "Попередні переможці",
+      nextLabel: "Наступні переможці",
+      goToLabel: "Перейти до переможця",
+    },
+    program: {
+      eyebrow: "Програма",
+      title: "Повна програма скоро з'явиться",
+      description:
+        "Тут будуть опубліковані спікери, майстер-класи, розклад та багато іншого.",
+    },
+    speakers: {
+      eyebrow: "Спікери",
+      title: "Спікерів буде оголошено",
+      description: "Склад форуму розкриють ближче до події.",
+    },
+    partners: {
+      eyebrow: "Партнери",
+      title: "Наші партнери",
+      description:
+        "Бренди та організації, що підтримують IBPA Beauty Awards 2026.",
+      cta: "Стати партнером",
+      items: [
+        { name: "Партнер", text: "Одне речення про партнера.", href: "#" },
+        { name: "Партнер", text: "Одне речення про партнера.", href: "#" },
+        { name: "Партнер", text: "Одне речення про партнера.", href: "#" },
+        { name: "Партнер", text: "Одне речення про партнера.", href: "#" },
+      ],
+    },
+    contactUs: {
+      eyebrow: "Зв'яжіться з нами",
+      title: "Створімо щось виняткове разом",
+      description:
+        "Якщо у вас є запитання щодо участі, партнерства, спонсорства або участі в IBPA — наша команда із задоволенням допоможе.",
+
+      email: "forum-support@ibpassociations.org",
+      note: "Зазвичай ми відповідаємо протягом одного робочого дня.",
+
+      nameLabel: "Повне ім'я",
+      namePlaceholder: "Введіть ваше повне ім'я",
+
+      emailLabel: "Email",
+      emailPlaceholder: "Введіть вашу електронну пошту",
+
+      subjectLabel: "Тема",
+      subjectPlaceholder: "Про що ви хочете поговорити?",
+
+      messageLabel: "Повідомлення",
+      messagePlaceholder: "Розкажіть детальніше про ваш запит...",
+
+      submitLabel: "Надіслати повідомлення",
+      sendingLabel: "Надсилаємо…",
+
+      privacyNote:
+        "Надсилаючи форму, ви погоджуєтесь з нашою політикою конфіденційності.",
+
+      successMessage:
+        "Дякуємо! Ваше повідомлення надіслано — ми скоро зв'яжемося з вами.",
+      errorMessage:
+        "Щось пішло не так. Спробуйте ще раз або напишіть нам напряму.",
+      validationMessage:
+        "Будь ласка, вкажіть ім'я, коректний email і коротке повідомлення.",
     },
     copy: {
       whyEyebrow: "Чому IBPA Beauty Award 2026",
@@ -1933,7 +3644,7 @@ const ua: typeof en = {
           grandPrixNote: "від 5 номінацій — автоматично",
         },
         nonMember: {
-          label: "УЧАСНИКИ БЕЗ ЧЛЕНСТВА IBPA",
+          label: "Стандарт",
           rows: [
             { label: "1 номінація", value: "$70" },
             { label: "3 номінації", value: "$190" },
@@ -1984,7 +3695,7 @@ const ua: typeof en = {
         {
           number: "01",
           title: "Виберіть свою категорію",
-          text: "Премія охоплює 11 професійних категорій – від артистизму до брендингу. Виберіть ту, яка найближча до вашої сфери діяльності.",
+          text: "Премія охоплює 11 професійних категорій — від майстерності до брендингу. Виберіть ту, яка найближча до вашої сфери діяльності.",
         },
         {
           number: "02",
@@ -2004,7 +3715,7 @@ const ua: typeof en = {
         {
           number: "05",
           title: "Надішліть заявку та сплатіть внесок",
-          text: "Для учасників IBPA — від $50 за номінацію, для учасників без членства в асоціації — від $70. Участь у 5+ номінаціях автоматично включає вас до Гран-прі.",
+          text: "Для учасників IBPA — від $50 за номінацію, для учасників без участі в асоціації — від $70. Участь у 5+ номінаціях автоматично включає вас до Гран-прі.",
         },
       ],
     },
@@ -2037,7 +3748,7 @@ const ua: typeof en = {
         },
         {
           q: "Хто може брати участь?",
-          a: "Подати заявку на участь у премії можуть усі активні члени асоціації IBPA.",
+          a: "Подати заявку на участь у премії можуть усі активні учасники асоціації IBPA.",
         },
         {
           q: "Чи можна подати заявку до журі?",
@@ -2062,6 +3773,7 @@ const ua: typeof en = {
     },
     participation: {
       eyebrow: "Оберіть участь",
+      description: "Відвідайте форум, поспілкуйтеся з експертами краси та приєднайтеся до основної бізнес-програми IBPA.",
       tickets: {
         label: "КВИТКИ НА ФОРУМ",
         mostPopular: "Найпопулярніше",
@@ -2086,8 +3798,8 @@ const ua: typeof en = {
       awardParticipation: "Участь у конкурсі",
       judgeRegistration: "Реєстрація судді",
       standard: "Стандарт",
-      ibpaMembers: "Члени IBPA",
-      nonMembers: "Не члени",
+      ibpaMembers: "Учасники",
+      nonMembers: "Не учасники",
       oneDayPass: "1 день",
       twoDayPass: "2 дні",
       galaDinner: "Гала-вечеря",
@@ -2111,7 +3823,7 @@ const ua: typeof en = {
       cta: "Подати заявку на участь",
       learnMore: "Докладніше",
       stats: [
-        { value: "5+", label: "Номінацій потрібно" },
+        { value: "5+", label: "Номінацій" },
         { value: "Авто", label: "Кваліфікація" },
       ],
     },
@@ -2153,8 +3865,67 @@ const ua: typeof en = {
       feeLabel: "Реєстраційний внесок",
       feeValue: "$50 за категорію",
       eligibilityLabel: "Участь",
-      eligibilityValue: "Для членів IBPA Beauty Award 2026",
+      eligibilityValue: "Для учасників IBPA Beauty Award 2026",
       cta: "Подати заявку за категорією",
+    },
+    participation: {
+      eyebrow: "Як взяти участь",
+
+      title:
+        "Міжнародна премія для професіоналів, які формують майбутнє індустрії краси.",
+
+      description:
+        "Прозоре оцінювання, структурований відбір та міжнародне визнання для спеціалістів, викладачів, клінік, академій, салонів і beauty-бізнесу.",
+
+      steps: [
+        {
+          number: "01",
+          title: "Заповніть заявку",
+        },
+        {
+          number: "02",
+          title: "Оберіть свою категорію",
+        },
+        {
+          number: "03",
+          title: "Визначте номінацію",
+        },
+        {
+          number: "04",
+          title:
+            "Вкажіть особисті дані, завантажте фото й відео та детально опишіть свої досягнення",
+        },
+        {
+          number: "05",
+          title: "Оплатіть участь",
+        },
+        {
+          number: "06",
+          title: "Подайте заявку до 15 серпня 2026 року",
+        },
+      ],
+
+      doneTitle: "Готово!",
+
+      doneDescription:
+        "Вашу роботу оцінюватиме міжнародна колегія суддів.",
+    },
+    whyJoin: {
+      eyebrow: "Чому варто долучитися",
+      title: "Чому варто взяти участь в IBPA Beauty Awards",
+      benefits: [
+        "Міжнародне визнання ваших професійних досягнень.",
+        "Оцінювання робіт міжнародною колегією експертів.",
+        "Підвищення довіри клієнтів і зміцнення особистого бренду.",
+        "Можливість отримати статус переможця або призера IBPA Beauty Awards 2026.",
+        "Публікація та просування найкращих учасників у професійній спільноті.",
+        "Немає потреби бути присутнім особисто — участь проходить онлайн.",
+      ],
+      grandPrixEyebrow: "Правило Гран-прі",
+      grandPrixTitle: "5+ номінацій — і ви в Гран-прі",
+      grandPrixDescription:
+        "Подайте заявки у 5 або більше номінацій — і ви автоматично стаєте номінантом на Гран-прі IBPA. Без додаткових заявок.",
+      grandPrixBadge: "Шанс виграти трофей Гран-прі",
     },
     cardText: "Професійні заявки розглядаються в межах офіційної премії IBPA Beauty Award 2026.",
     directions: [
@@ -2269,8 +4040,126 @@ const ua: typeof en = {
         associationQuote: "Асоціація співпрацює з майстрами, викладачами, салонами та брендами — усіма, хто прагне відповідати високим стандартам якості та професійної культури.",
         associationButton: "Перейти до асоціації IBPA",
         ctaEyebrow: "Подача за категорією",
-        ctaTitle: "Готові? Подайте заявку на свою номінацію",
-        ctaText: "Від артистизму до брендингу – виберіть номінацію всередині своєї категорії та подайте заявку на премію IBPA 2026",
+        ctaTitle: "Готові продемонструвати свою професійну майстерність?",
+        ctaText: "Виберіть свою номінацію та станьте частиною IBPA Beauty Awards 2026 — міжнародної премії, створеної для визнання видатних досягнень спеціалістів, викладачів, власників бізнесу та брендів індустрії краси.",
+        ctaButton: "Реєстрація",
+    },
+    awardResults: {
+      eyebrow: "Результати премії",
+      title: "Результати премії",
+      timeline: {
+        applicationsOpen: {
+          label: "Прийом заявок відкрито",
+          date: "20 червня",
+          sub: "2026",
+        },
+        registrationCloses: {
+          label: "Реєстрація завершується",
+          date: "15 серпня",
+          sub: "2026",
+        },
+        awardCeremony: {
+          label: "Церемонія нагородження",
+          date: "26 вересня",
+          sub: "Beauty Business Forum",
+        },
+      },
+      jury: {
+        title: "Міжнародне журі",
+        note: "До складу журі входять міжнародні тренери та провідні експерти галузі.",
+        points: [
+          "Міжнародні експерти",
+          "Незалежне оцінювання",
+          "Професійна система оцінювання",
+        ],
+      },
+      pricing: {
+        eyebrow: "Вартість участі",
+        headers: {
+          nominations: "Номінації",
+          members: "Учасники",
+          nonMembers: "Стандарт",
+        },
+        oneNomination: {
+          label: "1 номінація",
+          member: "$50",
+          nonMember: "$70",
+        },
+        threeNominations: {
+          label: "3 номінації",
+          member: "$130",
+          nonMember: "$190",
+        },
+        fiveNominations: {
+          label: "5 номінацій",
+          member: "$200",
+          nonMember: "$300",
+        },
+        grandPrixEligibility: "Участь у Гран-прі",
+        nonRefundable:
+          "Реєстраційний внесок не повертається після подання заявки.",
+      },
+    },
+    faq: {
+      eyebrow: "Питання",
+      title: "Часті запитання",
+      items: [
+        {
+          question: "Хто може взяти участь у IBPA Beauty Awards 2026?",
+          answer:
+            "До участі запрошуються спеціалісти, викладачі, власники бізнесу, академії, студії, салони та бренди індустрії краси.",
+        },
+        {
+          question: "Чи обов'язково проживати у США для участі?",
+          answer:
+            "Ні. У премії можуть брати участь кандидати з будь-якої країни світу.",
+        },
+        {
+          question: "Як проходить участь у премії?",
+          answer:
+            "Учасники подають заявку та конкурсні матеріали через онлайн-форму. Оцінювання робіт проводить міжнародна колегія суддів.",
+        },
+        {
+          question: "Чи потрібно бути присутнім на церемонії нагородження?",
+          answer:
+            "Ні. Участь у премії та оцінювання робіт відбуваються незалежно від присутності на церемонії.",
+        },
+        {
+          question: "Скільки робіт можна подати?",
+          answer:
+            "Учасник може подати кілька робіт і брати участь у кількох категоріях.",
+        },
+        {
+          question: "Чи можна подати одну роботу в кілька категорій?",
+          answer:
+            "Так, якщо робота відповідає вимогам обраних категорій.",
+        },
+        {
+          question: "Коли завершується прийом заявок?",
+          answer:
+            "Прийом заявок відкритий з 20 червня по 15 серпня 2026 року включно.",
+        },
+        {
+          question: "Коли будуть оголошені результати?",
+          answer:
+            "Результати будуть оголошені під час IBPA Beauty Awards 2026 та опубліковані на офіційних ресурсах премії.",
+        },
+        {
+          question: "Що отримують переможці та призери?",
+          answer:
+            "Переможці та призери отримують офіційні нагороди, сертифікати та публікації в рамках премії.",
+        },
+        {
+          question: "Чи можу я подати заявку, якщо працюю менше 5 років?",
+          answer:
+            "Так, якщо обрана категорія не передбачає вимог до мінімального стажу роботи.",
+        },
+        {
+          question: "Чи повертається реєстраційний внесок?",
+          answer:
+            "Ні. Реєстраційний внесок є неповоротним після подачі заявки.",
+        },
+      ],
     },
   },
   juryPage: {
@@ -2289,31 +4178,110 @@ const ua: typeof en = {
       feeValue: "$250",
       feeNote: "Сплачується тільки після схвалення",
     },
-    requirements: {
-      label: "Вимоги",
-      title: "Хто може подати заявку до журі",
+    about: {
+      eyebrow: "Про премію",
+      title: "IBPA Beauty Awards 2026",
+      description:
+        "IBPA Beauty Awards 2026 — міжнародна премія у сфері краси, створена для визнання професіоналізму, таланту та видатних досягнень спеціалістів, викладачів, власників бізнесу та брендів.",
+      recognition:
+        "Премія відзначає сильні професійні результати, експертність, креативність і внесок у розвиток індустрії краси.",
+      objectiveEvaluation:
+        "Суддівська колегія відіграє ключову роль у забезпеченні об’єктивної, чесної та професійної оцінки конкурсних робіт.",
+      trust:
+        "Завдяки експертному суддівству журі формує довіру до премії та посилює її міжнародний статус.",
+    },
+    timeline: {
+      eyebrow: "Період суддівства",
+      title: "Важливі дати",
+      formatLabel: "Формат суддівства",
+      formatValue: "Онлайн",
+      yearLabel: "Рік",
+      year: "2026",
       items: [
         {
-          label: "Мінімальний досвід",
-          value: "5+ років",
-          text: "Кандидат повинен мати щонайменше п'ять років професійного досвіду в індустрії.",
+          label: "Подача заявок до суддівської колегії",
+          title: "Заявки до журі",
+          date: "20 червня – 15 серпня 2026",
+        },
+        {
+          label: "Розгляд заявок",
+          title: "Період розгляду",
+          date: "До 20 серпня 2026",
+        },
+        {
+          label: "Період оцінювання конкурсних робіт",
+          title: "Оцінювання робіт",
+          date: "16 серпня – 5 вересня 2026",
+        },
+        {
+          label: "Фінал і оголошення результатів",
+          title: "Оголошення результатів",
+          date: "26 вересня 2026",
+        },
+      ],
+    },
+    gallery: {
+      eyebrow: "Моменти форуму",
+      title: "Атмосфера спільноти IBPA",
+      description:
+        "Візуальний погляд на атмосферу, гостей, професіоналів і моменти, які роблять IBPA Beauty Business Forum особливим.",
+      prevLabel: "Попереднє фото",
+      nextLabel: "Наступне фото",
+      goToLabel: "Перейти до фото",
+      photoAlt: "Фото IBPA Forum",
+    },
+    requirements: {
+      label: "Хто може стати суддею",
+      title: "Вимоги до кандидатів",
+      description:
+        "Суддівська колегія формується з досвідчених професіоналів, здатних забезпечити чесну, об’єктивну та експертну оцінку конкурсних робіт.",
+      items: [
+        {
+          label: "Досвід",
+          text: "Досвід роботи в індустрії краси від 5 років.",
         },
         {
           label: "Експертиза",
-          value: "11 Категорій",
-          text: "Суддів відбирають з урахуванням експертизи у відповідних категоріях премії.",
+          text: "Підтверджена професійна експертиза у своїй категорії.",
         },
         {
           label: "Документи",
-          value: "Обов'язкові",
-          text: "Потрібно надати сертифікати, біографію та профільні матеріали.",
+          text: "Наявність сертифікатів, дипломів, ліцензій або інших підтверджувальних документів.",
         },
         {
-          label: "Правило оплати",
-          value: "Після схвалення",
-          text: "Внесок журі не стягується на етапі подання заявки.",
+          label: "Професійна діяльність",
+          text: "Викладацька, конкурсна або експертна діяльність вітається.",
+        },
+        {
+          label: "Досвід суддівства",
+          text: "Досвід суддівства бажаний, але не є обов’язковим.",
+        },
+        {
+          label: "Стандарти",
+          text: "Готовність дотримуватися регламенту, конфіденційності та принципів об’єктивного оцінювання.",
         },
       ],
+    },
+    responsibilities: {
+      eyebrow: "Роль судді в премії",
+      title: "Що входить в обов'язки судді",
+      items: [
+        "Оцінювання конкурсних робіт відповідно до затверджених критеріїв премії.",
+        "Розгляд робіт лише у своїй професійній категорії.",
+        "Виставлення об'єктивних і незалежних оцінок на основі досвіду та експертизи.",
+        "Дотримання конфіденційності конкурсних матеріалів, учасників і результатів.",
+        "Робота у встановлені строки через онлайн-формат суддівства.",
+        "Підтвердження підсумкових оцінок та участь у формуванні справедливих результатів премії.",
+      ],
+    },
+    feeCard: {
+      eyebrow: "Реєстраційний внесок",
+      title: "Вартість участі у складі журі",
+      standardLabel: "Стандарт",
+      standardPrice: "$250",
+      membersLabel: "Учасники",
+      membersPrice: "$100",
+      note: "Реєстраційний внесок сплачується лише після схвалення кандидатури та є неповоротним.",
     },
     process: {
       label: "Процес",
@@ -2342,33 +4310,54 @@ const ua: typeof en = {
         {
           number: "05",
           title: "Увійдіть до складу журі",
-          text: "Після підтвердження оплати ви стаєте офіційним членом журі.",
+          text: "Після підтвердження оплати ви стаєте офіційним учасником журі.",
         },
       ],
     },
     faq: {
-      label: "Питання",
-      title: "Поширені запитання",
+      label: "Поширені запитання",
+      title: "FAQ",
       items: [
         {
-          question: "Чи потрібно платити під час подання заявки?",
+          question: "Суддівство проходить онлайн?",
           answer:
-            "Ні. Заявка до журі подається безкоштовно. Внесок $250 сплачується тільки після схвалення.",
+            "Так, усі конкурсні роботи оцінюються дистанційно через особистий кабінет судді.",
         },
         {
-          question: "Скільки триває розгляд?",
+          question:
+            "Коли я дізнаюся результат розгляду моєї заявки до суддівської колегії?",
           answer:
-            "Заявки розглядаються індивідуально, процес може тривати до 14 робочих днів.",
+            "Після перевірки професійного досвіду та документів кандидат отримує повідомлення з рішенням комісії.",
         },
         {
-          question: "Чи всіх кандидатів буде прийнято?",
+          question: "Чи потрібно бути присутнім на церемонії нагородження?",
           answer:
-            "Ні. Схвалення залежить від професійного досвіду, кваліфікації та відповідності складу журі.",
+            "Ні, присутність на церемонії не є обов’язковою.",
         },
         {
-          question: "Що відбувається після схвалення?",
+          question: "Чи передбачена фінансова винагорода?",
           answer:
-            "Схвалені кандидати отримують інструкції з оплати. Після підтвердження оплати вони офіційно входять до складу журі.",
+            "Ні, участь у суддівській колегії здійснюється на добровільній основі.",
+        },
+        {
+          question: "Коли я отримаю доступ до робіт?",
+          answer:
+            "Після завершення прийому заявок і затвердження списку конкурсних робіт.",
+        },
+        {
+          question: "Чи можу я бути суддею, якщо живу не в США?",
+          answer:
+            "Так, до складу журі можуть входити спеціалісти з різних країн.",
+        },
+        {
+          question: "Чи обов’язково мати досвід суддівства?",
+          answer:
+            "Досвід суддівства вітається, але не є обов’язковою вимогою. За відсутності досвіду суддівства кандидат повинен мати значні професійні досягнення, викладацький, конкурсний або експертний досвід, що підтверджує високий рівень кваліфікації та розуміння процесу професійного оцінювання робіт.",
+        },
+        {
+          question: "Скільки часу займає оцінювання робіт?",
+          answer:
+            "Кількість робіт залежить від категорії. Процес організований так, щоб суддівство можна було пройти комфортно у встановлені строки.",
         },
       ],
     },
@@ -2390,7 +4379,7 @@ const ua: typeof en = {
       leadershipTitle: "Лідерство, довіра та незалежні стандарти",
       credibility: "Довіра",
       credibilityText: "Кожен суддя має підтвердити професійний досвід і експертизу за категоріями.",
-      processLabel: "Заявка на суддівство",
+      processLabel: "Процес відбору",
       processTitle: "Три кроки до статусу судді",
       processText: "Зрозумілий шлях від подання до офіційного включення до складу журі.",
       apply: "Подання заявки",
@@ -2403,7 +4392,7 @@ const ua: typeof en = {
       benefitsTitle: "Чому експерти входять до ради журі IBPA Beauty Award 2026",
       benefitsText: "Серйозна професійна роль із помітним внеском і міжнародним визнанням.",
       b1Title: "Офіційне визнання",
-      b1Text: "Публікуйтесь як підтверджений член журі IBPA Beauty Award 2026 і представляйте галузеві стандарти.",
+      b1Text: "Публікуйтесь як підтверджений учасник журі IBPA Beauty Award 2026 і представляйте галузеві стандарти.",
       b2Title: "Надійна система",
       b2Text: "Оцінюйте заявки через прозорий і структурований процес суддівства.",
       b3Title: "Професійна спільнота",
@@ -2413,6 +4402,7 @@ const ua: typeof en = {
       statementEyebrow: "Позиція довіри",
       statementTitle: "Кожен бал має відображати майстерність і професійну доброчесність",
       statementText: "Суддів IBPA Beauty Award 2026 відбирають за експертизою, нейтральністю та відданістю справедливому оцінюванню.",
+      statementText2: "Кожен учасник журі діє незалежно та оцінює роботи виключно на основі затверджених критеріїв нагородження.",
       statementQuote: "Суддівство - це не лише результат. Це довіра до процесу.",
       approvedEyebrow: "Схвалене журі",
       approvedTitle: "Поточний склад журі IBPA Beauty Award 2026",
@@ -2422,23 +4412,32 @@ const ua: typeof en = {
       ctaText: "Подайте заявку до журі та долучайтеся до справедливих професійних рішень за номінаціями.",
       ctaAside: "Оплата реєстрації доступна лише після схвалення.",
     },
+
     benefits: {
-      eyebrow: "Переваги",
-      title: "Що отримують схвалені судді",
-      description: "Після схвалення та оплати офіційні судді отримують офіційне визнання, підтверджуючі документи та публічний профіль у складі журі премії.",
+      eyebrow: "Привілеї офіційного судді",
+      title: "Привілеї офіційного судді IBPA Beauty Awards 2026",
+      description:
+        "Після підтвердження участі судді отримують офіційний пакет документів, публікацій і професійних привілеїв, що підтверджують їхній статус у складі міжнародної суддівської колегії IBPA Beauty Awards 2026.",
       items: [
-        "Офіційне запрошення до складу журі IBPA.",
-        "Іменний сертифікат члена журі за рік проведення премії.",
-        "Офіційний лист подяки від Президента IBPA.",
-        "Лист про професійний внесок для визнання в галузі.",
-        "Публічний профіль судді з фото та біографією.",
+        "Офіційне запрошення до складу журі IBPA Beauty Awards 2026.",
+        "Регламент і методичні матеріали для проведення суддівства.",
+        "Доступ до особистого кабінету судді для оцінювання конкурсних робіт.",
+        "Офіційну суддівську відомість для оцінювання учасників.",
+        "Іменний сертифікат офіційного судді IBPA Beauty Awards 2026.",
+        "Подячний лист за участь у роботі міжнародної суддівської колегії.",
+        "Персональний банер судді для публікації в соціальних мережах і професійному портфоліо.",
+        "Публічне розміщення профілю судді на офіційному сайті премії.",
+        "Публікацію у складі міжнародної суддівської колегії IBPA Beauty Awards 2026.",
+        "Згадку у фінальній статті та публікаціях, присвячених проведенню премії та її результатам.",
       ],
     },
     juryCta: {
       eyebrow: "Реєстрація судді",
       title: "Приєднуйтесь до міжнародного журі IBPA.",
-      description: "Подайте заявку як член журі для оцінювання досконалості у сфері краси, підтримки професійних стандартів і участі у шанованій міжнародній премії.",
+      description: "Подайте заявку як учасник журі для оцінювання досконалості у сфері краси, підтримки професійних стандартів і участі у шанованій міжнародній премії.",
       registrationFee: "Реєстраційний внесок",
+      registrationNote:
+        "Реєстраційний внесок сплачується лише після схвалення кандидатури та не підлягає поверненню.",
     },
   },
   grandPrixPage: {
@@ -2509,19 +4508,22 @@ const ua: typeof en = {
       title: "FAQ Гран-прі",
       items: [
         {
-          question: "Чи можна подати заявку на Гран-прі окремо?",
+          question: "Чи потрібно окремо подаватися на Гран-прі?",
           answer:
-            "Ні. Участь формується автоматично за участі у 5 або більше номінаціях.",
+            "Ні. Участь активується автоматично після подання заявок у 5 і більше номінаціях.",
         },
         {
-          question: "Чи обов'язково брати участь у різних категоріях?",
-          answer:
-            "Ні. Номінації можуть бути як в одній категорії, так і в різних.",
+          question: "Чи є додатковий внесок за Гран-прі?",
+          answer: "Ні. Окремий реєстраційний внесок не передбачено.",
         },
         {
-          question: "Як обирається переможець?",
+          question: "Чи можна брати участь у Гран-прі лише з однією роботою?",
           answer:
-            "За сумою всіх балів, отриманих за кожну номінацію.",
+            "Ні. Для участі необхідно подати заявки щонайменше у 5 номінаціях.",
+        },
+        {
+          question: "Скільки переможців Гран-прі визначається щороку?",
+          answer: "Один володар Гран-прі в межах премії.",
         },
       ],
     },
@@ -2536,11 +4538,11 @@ const ua: typeof en = {
       timelineTitle: "Зрозуміла логіка на кожному етапі премії",
       timelineDescription: "Акцент на номінації, оцінюванні та фінальній презентації премії.",
       appWindow: "Період подання заявок",
-      appWindowText: "Учасники подають заявки за категоріями в офіційні строки кампанії.",
+      appWindowText: "Подавайте номінації з 20 червня по 15 серпня 2026 року.",
       scorePeriod: "Період оцінювання",
-      scorePeriodText: "Журі оцінює заявки та фіксує бали за кожною категорією.",
+      scorePeriodText: "Журі оцінює роботи з 16 серпня по 5 вересня 2026 року.",
       reveal: "Фінальне оголошення",
-      revealText: "Фіналісти та переможець Гран-прі оголошуються на церемонії.",
+      revealText: "Переможців оголошують на церемонії IBPA Beauty Awards 2026 — 26 вересня 2026 року.",
       breakEyebrow: "Атмосфера Гран-прі",
       breakTitle: "Фінальна сцена для сильного результату в кількох категоріях",
       breakText: "Преміальне середовище, де сумарна майстерність отримує помітне визнання.",
@@ -2554,14 +4556,144 @@ const ua: typeof en = {
       qualificationRule: "Подайте заявки в 5 і більше номінацій - і ви автоматично стаєте номінантом на Гран-прі IBPA. Без додаткових заявок.",
       decision: "Рішення премії",
     },
+    about: {
+      whatEyebrow: "Про Гран-прі",
+      whatTitle: "Що таке Гран-прі",
+      whatText:
+        "Гран-прі — це головна нагорода IBPA Beauty Awards 2026, яку присуджують учаснику з найвищим сумарним результатом серед претендентів.",
+      whoEyebrow: "Хто претендує",
+      whoTitle: "Хто стає претендентом на Гран-прі",
+      whoHighlight: "5+ номінацій = автоматична участь",
+      whoText:
+        "Учасники, які подали роботи у п'яти та більше номінаціях, автоматично стають кандидатами на отримання Гран-прі.",
+      whoNote: "Додаткова реєстрація не потрібна.",
+    },
+    whySpecial: {
+      eyebrow: "Чому це важливо",
+      title: "Чому Гран-прі вважається особливою нагородою",
+      lead: "Гран-прі оцінює не окрему роботу, а загальний професійний рівень спеціаліста.",
+      cards: [
+        { title: "Майстерність", text: "Високі результати одразу в кількох категоріях." },
+        { title: "Стабільність", text: "Підтвердження якості роботи в різних напрямах." },
+        { title: "Універсальність", text: "Широка професійна експертиза." },
+        { title: "Визнання", text: "Найвищий рівень нагороди в межах премії." },
+      ],
+    },
+    decision: {
+      eyebrow: "Відбір",
+      title: "Як визначається переможець",
+      steps: [
+        {
+          number: "01",
+          title: "Автоматичний відбір",
+          text: "5 і більше номінацій автоматично включають учасника до списку претендентів на Гран-прі.",
+        },
+        {
+          number: "02",
+          title: "Незалежне оцінювання",
+          text: "Кожна робота оцінюється міжнародною колегією суддів за єдиними критеріями.",
+        },
+        {
+          number: "03",
+          title: "Підрахунок результатів",
+          text: "Бали підсумовуються за всіма номінаціями учасника.",
+        },
+        {
+          number: "04",
+          title: "Визначення переможця",
+          text: "Гран-прі отримує учасник із найвищим підсумковим результатом.",
+        },
+      ],
+    },
+    rewards: {
+      eyebrow: "Нагороди",
+      title: "Що отримує володар Гран-прі",
+      items: [
+        "Головний трофей Гран-прі",
+        "Спеціальний диплом переможця",
+        "Міжнародне визнання",
+        "Публікація на ресурсах IBPA",
+        "Висвітлення перемоги в соціальних мережах премії",
+        "Статус володаря Гран-прі IBPA Beauty Awards 2026",
+      ],
+    },
     participationCta: {
-      eyebrow: "Участь у конкурсі",
-      title: "Вартість участі з доступом до Гран-прі.",
-      description: "Увійдіть до основної премії зі шляхом номінації, що відповідає вашому профілю. При поданні п'яти і більше номінацій участь у Гран-прі включається автоматично.",
+      eyebrow: "Участь у премії",
+      title: "Готові заявити про свій професійний рівень?",
+      description: "Подайте роботи в обрані номінації та отримайте можливість стати претендентом на Гран-прі IBPA Beauty Awards 2026.",
       nominationFees: "Внески за номінації",
       members: "Учасники",
       perNomSubmission: "За одну номінацію",
       nominationsActivate: "Номінації активують право участі",
+    },
+  },
+  associationPage: {
+    hero: {
+      eyebrow: "Асоціація IBPA",
+      title: "International Beauty Professionals Association",
+      subtitle: "Міжнародна асоціація професіоналів індустрії краси",
+      description:
+        "International Beauty Professionals Association (IBPA) об'єднує фахівців, викладачів, власників бізнесу, академії, студії, салони та бренди індустрії краси з різних країн світу.",
+      applyButton: "Подати заявку",
+      websiteButton: "Перейти на сайт IBPA",
+    },
+    whoCanJoin: {
+      eyebrow: "Хто може приєднатися?",
+      title: "IBPA відкрита для:",
+      items: [
+        "Фахівці індустрії краси",
+        "Викладачі та тренери",
+        "Власники студій, салонів та академій",
+        "Beauty-бренди та компанії",
+        "Початківці та студенти профільних напрямів",
+      ],
+    },
+    advantages: {
+      eyebrow: "Переваги участі",
+      title: "Більше довіри, зв'язків і професійного розвитку.",
+      description:
+        "Участь в IBPA допомагає посилити особистий бренд, розширити професійні можливості та стати частиною міжнародної beauty-спільноти.",
+      items: [
+        "Освітні вебінари та професійні матеріали",
+        "Знижки на заходи, премії та проєкти асоціації",
+        "Доступ до закритої професійної спільноти",
+        "Можливості для публікацій, виступів і просування",
+        "Участь у міжнародних форумах, преміях і бізнес-заходах",
+        "Профіль у каталозі асоціації",
+        "Сертифікат учасника IBPA",
+        "Партнерські програми, спеціальні пропозиції та багато інших привілеїв",
+      ],
+    },
+    process: {
+      eyebrow: "Як проходить вступ?",
+      title: "Чіткий і зрозумілий процес вступу.",
+      stepLabel: "Крок",
+      steps: [
+        {
+          title: "Оберіть категорію",
+          text: "Оберіть відповідну категорію участі в асоціації.",
+        },
+        {
+          title: "Заповніть заявку",
+          text: "Заповніть заявку на вступ через форму сайту.",
+        },
+        {
+          title: "Дочекайтеся розгляду",
+          text: "Команда IBPA розгляне заявку та підтвердить подальші кроки.",
+        },
+        {
+          title: "Завершіть реєстрацію",
+          text: "Після схвалення здійсніть оплату, завершіть реєстрацію та отримайте доступ до переваг обраної категорії.",
+        },
+      ],
+    },
+    cta: {
+      eyebrow: "Дізнатися більше",
+      title: "Готові приєднатися до міжнародної спільноти професіоналів?",
+      description:
+        "Детальна інформація про категорії участі, вартість, переваги та умови вступу доступна на офіційному сайті IBPA.",
+      applyButton: "Подати заявку на вступ",
+      websiteButton: "Перейти на сайт IBPA",
     },
   },
   applyPage: {

@@ -1,54 +1,44 @@
-const responsibilities = [
-  {
-    number: "01",
-    title: "Review direction entries",
-    text: "Evaluate submissions only within approved areas of expertise and according to award standards.",
-  },
-  {
-    number: "02",
-    title: "Maintain confidentiality",
-    text: "All judging deliberations, materials, and candidate information must remain confidential.",
-  },
-  {
-    number: "03",
-    title: "Declare conflicts",
-    text: "Any connection to nominees, schools, salons, or brands must be disclosed in advance.",
-  },
-  {
-    number: "04",
-    title: "Support fair evaluation",
-    text: "Judges are expected to apply neutral, professional, and ethical decision-making.",
-  },
-]
+"use client";
+
+import { Check } from "lucide-react";
+
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { GlassCard, Reveal } from "@/shared/components/public";
 
 export default function JuryResponsibilities() {
-  return (
-    <section className="bg-[var(--color-white)]">
-      <div className="mx-auto max-w-[var(--content-width)] px-[var(--page-gutter)] py-[var(--space-2xl)]">
-        <div className="mb-[var(--space-lg)] max-w-3xl">
-          <p className="page-eyebrow">
-            Responsibilities
-          </p>
-          <h2 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(1.8rem,3.5vw,3rem)] font-light leading-[1.15] text-[var(--color-ink)]">
-            What official judges are expected to do
-          </h2>
-        </div>
+  const { t } = useLanguage();
+  const c = t.juryPage.responsibilities;
 
-        <div className="grid gap-[var(--space-md)] lg:grid-cols-4">
-          {responsibilities.map((item) => (
-            <div
-              key={item.number}
-              className="premium-glass p-[var(--space-md)]"
-            >
-              <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-[0.18em] text-[var(--color-hover-accent)]">
-                {item.number}
-              </p>
-              <h3 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(1.1rem,2vw,1.6rem)] font-normal text-[var(--color-ink)]">{item.title}</h3>
-              <p className="mt-[var(--space-sm)] text-sm leading-[1.65] text-[var(--color-ink-soft)]">{item.text}</p>
-            </div>
-          ))}
-        </div>
+  return (
+    <section className="landing-section relative overflow-hidden py-20 md:py-28">
+      <div className="page-section relative">
+        <Reveal>
+          <div className="max-w-3xl">
+            <p className="page-eyebrow text-[#72a0c1]">{c.eyebrow}</p>
+
+            <h2 className="mt-5 font-(--font-display) text-[clamp(2.2rem,4.6vw,4rem)] leading-[1.0] tracking-[-0.045em] text-[#1e2430]">
+              {c.title}
+            </h2>
+          </div>
+        </Reveal>
+
+        <Reveal delay={0.12}>
+          <div className="mt-12 grid gap-4 md:grid-cols-2 md:gap-5">
+            {c.items.map((item) => (
+              <GlassCard
+                key={item}
+                className="flex items-start gap-4 rounded-[24px] border border-white/65 px-5 py-5 transition duration-200 hover:-translate-y-0.5 hover:border-[#72a0c1]/25"
+              >
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#72a0c1]/10 text-[#72a0c1] ring-1 ring-[#72a0c1]/12">
+                  <Check className="h-4 w-4" strokeWidth={2.2} />
+                </span>
+
+                <p className="text-[1rem] leading-7 text-[#1e2430]">{item}</p>
+              </GlassCard>
+            ))}
+          </div>
+        </Reveal>
       </div>
     </section>
-  )
+  );
 }

@@ -63,7 +63,7 @@ export default function HomeWhyAttend() {
   };
 
   return (
-    <section className="section-rhythm-loose overflow-hidden bg-white">
+    <section className="landing-section section-rhythm-loose overflow-hidden">
       <div className="page-section">
         <div className="mx-auto max-w-7xl">
           <div className="mb-[var(--space-lg)] flex items-end justify-between gap-6">
@@ -83,7 +83,7 @@ export default function HomeWhyAttend() {
                   aria-label="Previous"
                   onClick={prev}
                   disabled={!canPrev}
-                  className="flex h-12 w-12 items-center justify-center rounded-full border border-[#b9d9eb]/55 bg-white/55 text-[#24394b] shadow-[0_10px_30px_rgba(122,152,175,0.12)] backdrop-blur-2xl transition-all duration-500 hover:-translate-y-0.5 hover:border-[#8eb6d3]/70 disabled:pointer-events-none disabled:opacity-35"
+                  className="flex h-12 w-12 items-center justify-center rounded-full border border-[#b9d9eb]/55 bg-white/55 text-[#24394b] shadow-[0_10px_30px_rgba(122,152,175,0.1)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:border-[#8eb6d3]/70 disabled:pointer-events-none disabled:opacity-35"
                 >
                   <ChevronLeft size={18} strokeWidth={1.8} />
                 </button>
@@ -93,7 +93,7 @@ export default function HomeWhyAttend() {
                   aria-label="Next"
                   onClick={next}
                   disabled={!canNext}
-                  className="flex h-12 w-12 items-center justify-center rounded-full border border-[#b9d9eb]/55 bg-white/55 text-[#24394b] shadow-[0_10px_30px_rgba(122,152,175,0.12)] backdrop-blur-2xl transition-all duration-500 hover:-translate-y-0.5 hover:border-[#8eb6d3]/70 disabled:pointer-events-none disabled:opacity-35"
+                  className="flex h-12 w-12 items-center justify-center rounded-full border border-[#b9d9eb]/55 bg-white/55 text-[#24394b] shadow-[0_10px_30px_rgba(122,152,175,0.1)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:border-[#8eb6d3]/70 disabled:pointer-events-none disabled:opacity-35"
                 >
                   <ChevronRight size={18} strokeWidth={1.8} />
                 </button>
@@ -102,7 +102,7 @@ export default function HomeWhyAttend() {
           </div>
 
           <Reveal delay={0.12}>
-            <div className="relative overflow-hidden rounded-[2.75rem] border border-[#b9d9eb]/45 bg-white/[0.28] p-3 shadow-[0_32px_100px_rgba(20,49,71,0.1)] backdrop-blur-2xl">
+            <div className="relative overflow-hidden rounded-[2.75rem] border border-[#b9d9eb]/45 bg-white/[0.34] p-3 shadow-[0_24px_76px_rgba(20,49,71,0.09)] backdrop-blur-xl">
               <div className="absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
 
               <div className="grid items-start gap-5 xl:grid-cols-[1.45fr_0.85fr]">
@@ -113,30 +113,24 @@ export default function HomeWhyAttend() {
                   onDragEnd={handleDragEnd}
                   className="relative"
                 >
-                  <div className="relative h-[420px] overflow-hidden rounded-[2.25rem] border border-white/70 bg-white/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_24px_70px_rgba(20,49,71,0.10)] backdrop-blur-2xl md:h-[500px] xl:h-[560px]">
+                  <div className="relative h-[420px] overflow-hidden rounded-[2.25rem] border border-white/70 bg-white/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_18px_56px_rgba(20,49,71,0.09)] backdrop-blur-xl md:h-[500px] xl:h-[560px]">
                     <AnimatePresence mode="wait" custom={direction}>
                       <motion.div
                         key={active}
                         custom={direction}
                         initial={{
                           opacity: 0,
-                          x: direction > 0 ? 90 : -90,
-                          scale: 1.035,
-                          filter: "blur(14px)",
+                          x: direction > 0 ? 24 : -24,
                         }}
                         animate={{
                           opacity: 1,
                           x: 0,
-                          scale: 1,
-                          filter: "blur(0px)",
                         }}
                         exit={{
                           opacity: 0,
-                          x: direction > 0 ? -90 : 90,
-                          scale: 0.985,
-                          filter: "blur(14px)",
+                          x: direction > 0 ? -24 : 24,
                         }}
-                        transition={{ duration: 0.58, ease: [0.19, 1, 0.22, 1] }}
+                        transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
                         className="absolute inset-0"
                       >
                         <Image
@@ -162,10 +156,10 @@ export default function HomeWhyAttend() {
                         key={item.title}
                         type="button"
                         onClick={() => goTo(item.index)}
-                        className={`group relative h-full overflow-hidden rounded-[1.55rem] border p-3 text-left backdrop-blur-2xl transition-all duration-500 ${
+                        className={`group relative h-full overflow-hidden rounded-[1.55rem] border p-3 text-left backdrop-blur-xl transition duration-200 ${
                           isActive
                             ? "border-[#8eb6d3]/65 bg-white/68 shadow-[0_18px_48px_rgba(122,152,175,0.16)]"
-                            : "border-white/55 bg-white/34 shadow-[0_8px_28px_rgba(122,152,175,0.07)] hover:-translate-y-0.5 hover:border-[#b9d9eb]/70 hover:bg-white/54"
+                            : "border-white/55 bg-white/34 shadow-[0_8px_28px_rgba(122,152,175,0.07)] hover:border-[#b9d9eb]/70 hover:bg-white/54"
                         }`}
                       >
                         <div className="flex gap-4">
@@ -175,7 +169,7 @@ export default function HomeWhyAttend() {
                               alt={item.title}
                               fill
                               sizes="96px"
-                              className={`object-cover transition-all duration-700 ${
+                              className={`object-cover transition duration-300 ${
                                 isActive
                                   ? "scale-105"
                                   : "scale-100 opacity-75 group-hover:opacity-100"
@@ -212,23 +206,21 @@ export default function HomeWhyAttend() {
                 </div>
               </div>
 
-              <div className="relative mt-3 overflow-hidden rounded-[2rem] border border-white/70 bg-white/64 p-6 shadow-[0_24px_80px_rgba(20,49,71,0.13)] backdrop-blur-[30px] md:p-8 xl:mt-5">
+              <div className="relative mt-3 overflow-hidden rounded-[2rem] border border-white/70 bg-white/66 p-6 shadow-[0_18px_58px_rgba(20,49,71,0.11)] backdrop-blur-xl md:p-8 xl:mt-5">
                 <AnimatePresence mode="wait" custom={direction}>
                   <motion.div
                     key={activeItem.title}
                     custom={direction}
                     initial={{
                       opacity: 0,
-                      x: direction > 0 ? 42 : -42,
-                      filter: "blur(12px)",
+                      x: direction > 0 ? 18 : -18,
                     }}
-                    animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                    animate={{ opacity: 1, x: 0 }}
                     exit={{
                       opacity: 0,
-                      x: direction > 0 ? -42 : 42,
-                      filter: "blur(12px)",
+                      x: direction > 0 ? -18 : 18,
                     }}
-                    transition={{ duration: 0.42, ease: [0.19, 1, 0.22, 1] }}
+                    transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
                     className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr] lg:items-end"
                   >
                     <div>
@@ -257,7 +249,7 @@ export default function HomeWhyAttend() {
                             type="button"
                             aria-label={`Go to slide ${index + 1}`}
                             onClick={() => goTo(index)}
-                            className={`h-1.5 rounded-full transition-all duration-500 ${
+                            className={`h-1.5 rounded-full transition duration-200 ${
                               index === active
                                 ? "w-9 bg-[var(--color-blue)]"
                                 : "w-1.5 bg-[#b9d9eb]"
@@ -276,7 +268,7 @@ export default function HomeWhyAttend() {
                   aria-label="Previous"
                   onClick={prev}
                   disabled={!canPrev}
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-[#b9d9eb]/55 bg-white/55 text-[#24394b] backdrop-blur-2xl disabled:opacity-35"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-[#b9d9eb]/55 bg-white/55 text-[#24394b] backdrop-blur-xl disabled:opacity-35"
                 >
                   <ChevronLeft size={18} strokeWidth={1.8} />
                 </button>
@@ -286,7 +278,7 @@ export default function HomeWhyAttend() {
                   aria-label="Next"
                   onClick={next}
                   disabled={!canNext}
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-[#b9d9eb]/55 bg-white/55 text-[#24394b] backdrop-blur-2xl disabled:opacity-35"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-[#b9d9eb]/55 bg-white/55 text-[#24394b] backdrop-blur-xl disabled:opacity-35"
                 >
                   <ChevronRight size={18} strokeWidth={1.8} />
                 </button>

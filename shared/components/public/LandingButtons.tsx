@@ -37,7 +37,11 @@ type LandingPrimaryButtonProps = {
   children: ReactNode;
   className?: string;
   external?: boolean;
+  type?: "button" | "submit";
+  disabled?: boolean;
 };
+
+const DISABLED_BTN_CLASS = "cursor-not-allowed opacity-60 hover:translate-y-0 hover:scale-100";
 
 export function LandingPrimaryButton({
   href,
@@ -45,8 +49,10 @@ export function LandingPrimaryButton({
   children,
   className,
   external,
+  type = "button",
+  disabled,
 }: LandingPrimaryButtonProps) {
-  const cls = clsx(LANDING_PRIMARY_BTN_CLASS, className);
+  const cls = clsx(LANDING_PRIMARY_BTN_CLASS, disabled && DISABLED_BTN_CLASS, className);
 
   const inner = (
     <>
@@ -59,7 +65,7 @@ export function LandingPrimaryButton({
     </>
   );
 
-  if (href) {
+  if (href && !disabled) {
     if (external) {
       return (
         <a href={href} target="_blank" rel="noreferrer" className={cls}>
@@ -75,7 +81,7 @@ export function LandingPrimaryButton({
   }
 
   return (
-    <button type="button" onClick={onClick} className={cls}>
+    <button type={type} onClick={onClick} disabled={disabled} className={cls}>
       {inner}
     </button>
   );
@@ -91,6 +97,8 @@ type LandingSecondaryButtonProps = {
   children: ReactNode;
   className?: string;
   external?: boolean;
+  type?: "button" | "submit";
+  disabled?: boolean;
 };
 
 export const LANDING_SECONDARY_BTN_CLASS =
@@ -102,8 +110,10 @@ export function LandingSecondaryButton({
   children,
   className,
   external,
+  type = "button",
+  disabled,
 }: LandingSecondaryButtonProps) {
-  const cls = clsx(LANDING_SECONDARY_BTN_CLASS, className);
+  const cls = clsx(LANDING_SECONDARY_BTN_CLASS, disabled && DISABLED_BTN_CLASS, className);
 
   const inner = (
     <>
@@ -112,7 +122,7 @@ export function LandingSecondaryButton({
     </>
   );
 
-  if (href) {
+  if (href && !disabled) {
     if (external) {
       return (
         <a href={href} target="_blank" rel="noreferrer" className={cls}>
@@ -128,7 +138,7 @@ export function LandingSecondaryButton({
   }
 
   return (
-    <button type="button" onClick={onClick} className={cls}>
+    <button type={type} onClick={onClick} disabled={disabled} className={cls}>
       {inner}
     </button>
   );

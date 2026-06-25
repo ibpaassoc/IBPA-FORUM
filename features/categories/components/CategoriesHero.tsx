@@ -17,7 +17,7 @@ export default function CategoriesHero() {
   const descriptionId = "categories-hero-description";
 
   return (
-    <section className="relative flex min-h-[100svh] items-center justify-center overflow-hidden bg-[#0a0a0a]">
+    <section className="landing-hero-section relative flex min-h-[100svh] items-center justify-center overflow-hidden bg-[#0a0a0a]">
       <div className="absolute inset-0 z-[1]">
         <Image
           src="/images/editorial/Styling.jpg"
@@ -31,11 +31,7 @@ export default function CategoriesHero() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08)_0%,rgba(0,0,0,0)_38%)]" />
       </div>
 
-      <motion.div
-        layout
-        transition={{ layout: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } }}
-        className="relative z-10 flex w-full flex-col items-center px-[var(--page-gutter)] pb-20 pt-[calc(var(--site-header-height)+clamp(2rem,6vw,5rem))] text-center"
-      >
+      <div className="relative z-10 flex w-full flex-col items-center px-[var(--page-gutter)] pb-20 pt-[calc(var(--site-header-height)+clamp(2rem,6vw,5rem))] text-center">
         <p className="font-[var(--font-accent-family)] text-[clamp(0.9rem,1.4vw,1.15rem)] italic tracking-wide text-white/70">
           {t.categoriesPage.hero.eyebrow}
         </p>
@@ -44,8 +40,7 @@ export default function CategoriesHero() {
           {t.categoriesPage.hero.title}
         </h1>
 
-        <motion.button
-          layout
+        <button
           type="button"
           aria-expanded={isDescriptionOpen}
           aria-controls={descriptionId}
@@ -71,24 +66,20 @@ export default function CategoriesHero() {
           <span className="sr-only">
             {isDescriptionOpen ? "Hide description" : "Show description"}
           </span>
-        </motion.button>
+        </button>
 
         <AnimatePresence mode="popLayout" initial={false}>
           {isDescriptionOpen && (
             <motion.div
-              layout
               id={descriptionId}
-              initial={{ opacity: 0, y: -16, scale: 0.96, filter: "blur(8px)" }}
-              animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -12, scale: 0.97, filter: "blur(8px)" }}
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
               transition={{
-                opacity: { duration: 0.28 },
-                y: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
-                scale: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
-                filter: { duration: 0.28 },
-                layout: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+                duration: 0.22,
+                ease: [0.22, 1, 0.36, 1],
               }}
-              className="mt-5 w-full max-w-xl overflow-hidden rounded-[2rem] border border-white/20 bg-white/[0.12] px-6 py-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_24px_80px_rgba(0,0,0,0.38)] backdrop-blur-2xl sm:px-8"
+              className="mt-5 w-full max-w-xl overflow-hidden rounded-[2rem] border border-white/20 bg-white/[0.12] px-6 py-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_18px_58px_rgba(0,0,0,0.32)] backdrop-blur-xl sm:px-8"
             >
               <p className="font-[var(--font-accent-family)] text-[clamp(1rem,1.6vw,1.18rem)] italic leading-[1.65] text-white/82">
                 {t.categoriesPage.hero.description}
@@ -97,11 +88,7 @@ export default function CategoriesHero() {
           )}
         </AnimatePresence>
 
-        <motion.div
-          layout
-          transition={{ layout: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } }}
-          className="mt-9 flex flex-wrap items-center justify-center gap-4"
-        >
+        <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
           <HeroPrimaryButton href="/apply">
             {t.common.applyAsParticipant}
           </HeroPrimaryButton>
@@ -110,8 +97,8 @@ export default function CategoriesHero() {
             {(t.categoriesPage.hero as { secondary?: string }).secondary ??
               "Browse Categories"}
           </HeroSecondaryButton>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </section>
   );
 }

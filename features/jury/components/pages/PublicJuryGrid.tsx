@@ -180,7 +180,7 @@ export default function PublicJuryGrid({
               >
                 <article
                   data-jury-card
-                  className="group relative h-[520px] overflow-hidden rounded-[30px] border border-white/70 bg-white/50 backdrop-blur-xl transition duration-500 hover:border-[var(--color-blue-soft)]/80"
+                  className="group relative h-[520px] overflow-hidden rounded-[30px] border border-white/70 bg-white/50 backdrop-blur-xl transition duration-200 hover:border-[var(--color-blue-soft)]/80"
                 >
                   <SafeImage
                     src={photoSrc}
@@ -191,7 +191,7 @@ export default function PublicJuryGrid({
                     sizes="(max-width: 768px) 82vw, 392px"
                     objectPosition="center 17%"
                     mobileObjectPosition="center 15%"
-                    className="object-cover transition duration-700 ease-out group-hover:scale-[1.014]"
+                    className="object-cover transition duration-300 ease-out group-hover:scale-[1.01]"
                     unoptimized={Boolean(member.profilePhotoFileId)}
                   />
 

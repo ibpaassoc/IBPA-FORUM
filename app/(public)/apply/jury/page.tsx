@@ -2,16 +2,16 @@
 
 import JuryApplicationForm from "@/features/jury/components/jury-application/JuryApplicationForm";
 import JuryApplyHero from "@/features/jury/components/jury-application/JuryApplyHero";
-import { PageSection } from "@/shared/components/public";
+import { LandingPageShell, PageSection } from "@/shared/components/public";
 
 export default function JuryApplyPage() {
 
   return (
-    <main className="page-shell">
+    <LandingPageShell>
       <JuryApplyHero></JuryApplyHero>
-      <PageSection id="jury-form" className="py-8">
+      <PageSection id="jury-form" className="landing-section py-8">
         <JuryApplicationForm />
       </PageSection>
-    </main>
+    </LandingPageShell>
   );
 }

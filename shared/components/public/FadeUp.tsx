@@ -22,7 +22,7 @@ export default function FadeUp({
       className={className}
       delay={delay}
       duration={PUBLIC_MOTION_DURATION.base}
-      y={20}
+      y={12}
       once={once}
     >
       {children}

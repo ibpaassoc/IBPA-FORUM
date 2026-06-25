@@ -24,22 +24,21 @@ import { useLanguage } from "@/lib/i18n/LanguageProvider";
 type StepDef = { id: string; label: string; icon: typeof User };
 
 const heroPrimaryButtonClass =
-  "group relative inline-flex items-center justify-center gap-3 overflow-hidden rounded-full border border-white/10 bg-gradient-to-r from-[#050505] via-[#111111] to-[#050505] px-8 py-4 font-[var(--font-ui-family)] text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-white shadow-[0_12px_40px_rgba(0,0,0,0.35)] transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-[2px] hover:border-[#7a98af]/60 hover:shadow-[0_20px_60px_rgba(122,152,175,0.2)] disabled:pointer-events-none disabled:opacity-55";
+  "group relative inline-flex items-center justify-center gap-3 overflow-hidden rounded-full border border-white/10 bg-gradient-to-r from-[#050505] via-[#111111] to-[#050505] px-8 py-4 font-[var(--font-ui-family)] text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-white shadow-[0_10px_30px_rgba(0,0,0,0.24)] transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-px hover:border-[#7a98af]/55 hover:shadow-[0_14px_40px_rgba(122,152,175,0.16)] disabled:pointer-events-none disabled:opacity-55";
 
 const heroSecondaryButtonClass =
-  "group relative inline-flex items-center justify-center gap-3 overflow-hidden rounded-full border border-[var(--color-blue)]/16 bg-white/72 px-7 py-4 font-[var(--font-ui-family)] text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink)] shadow-[0_10px_35px_rgba(42,66,82,0.08)] backdrop-blur-xl transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-[2px] hover:border-[var(--color-blue)]/36 hover:bg-white hover:shadow-[0_18px_50px_rgba(122,152,175,0.14)] disabled:pointer-events-none disabled:opacity-35";
+  "group relative inline-flex items-center justify-center gap-3 overflow-hidden rounded-full border border-[var(--color-blue)]/16 bg-white/72 px-7 py-4 font-[var(--font-ui-family)] text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink)] shadow-[0_8px_28px_rgba(42,66,82,0.07)] backdrop-blur-xl transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-px hover:border-[var(--color-blue)]/34 hover:bg-white hover:shadow-[0_12px_36px_rgba(122,152,175,0.12)] disabled:pointer-events-none disabled:opacity-35";
 
 function HeroButtonInner({ children, arrow = true }: { children: ReactNode; arrow?: boolean }) {
   return (
     <>
-      <span className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-[#7a98af]/10 opacity-60 transition-opacity duration-700 group-hover:opacity-100" />
-      <span className="absolute inset-x-6 bottom-0 h-px bg-gradient-to-r from-transparent via-[#b9d9eb]/0 to-transparent transition-all duration-700 group-hover:inset-x-4 group-hover:via-[#b9d9eb]/70" />
-      <span className="absolute inset-0 before:absolute before:left-[-130%] before:top-0 before:h-full before:w-1/2 before:rotate-12 before:bg-gradient-to-r before:from-transparent before:via-[#b9d9eb]/25 before:to-transparent before:transition-all before:duration-700 group-hover:before:left-[130%]" />
+      <span className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-[#7a98af]/10 opacity-60 transition-opacity duration-200 group-hover:opacity-90" />
+      <span className="absolute inset-x-6 bottom-0 h-px bg-gradient-to-r from-transparent via-[#b9d9eb]/0 to-transparent transition-all duration-200 group-hover:inset-x-5 group-hover:via-[#b9d9eb]/55" />
       <span className="relative z-10">{children}</span>
       {arrow ? (
         <ArrowRight
           size={16}
-          className="relative z-10 text-[#b9d9eb] transition-all duration-500 group-hover:translate-x-1 group-hover:text-white"
+          className="relative z-10 text-[#b9d9eb] transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-white"
         />
       ) : null}
     </>
@@ -262,7 +261,7 @@ export default function JuryApplicationForm() {
   }[language];
   const stepContentVariants = {
     enter: (direction: 1 | -1) => ({
-      x: direction > 0 ? 48 : -48,
+      x: direction > 0 ? 16 : -16,
       opacity: 0,
     }),
     center: {
@@ -270,7 +269,7 @@ export default function JuryApplicationForm() {
       opacity: 1,
     },
     exit: (direction: 1 | -1) => ({
-      x: direction > 0 ? -48 : 48,
+      x: direction > 0 ? -16 : 16,
       opacity: 0,
     }),
   } as const;
@@ -475,14 +474,14 @@ export default function JuryApplicationForm() {
                     setStep(index);
                     scrollToForm();
                   }}
-                  className={`group flex min-w-[58px] flex-col items-center justify-start gap-2 rounded-[1.35rem] px-1 py-1.5 text-center transition duration-300 sm:min-w-[70px] ${
+                  className={`group flex min-w-[58px] flex-col items-center justify-start gap-2 rounded-[1.35rem] px-1 py-1.5 text-center transition duration-200 sm:min-w-[70px] ${
                     canNavigate ? "cursor-pointer" : "cursor-not-allowed opacity-55"
                   }`}
                 >
                   <span
-                    className={`relative flex h-10 w-10 items-center justify-center rounded-full border transition duration-300 sm:h-11 sm:w-11 ${
+                    className={`relative flex h-10 w-10 items-center justify-center rounded-full border transition duration-200 sm:h-11 sm:w-11 ${
                       isActive
-                        ? "border-[var(--color-blue)]/65 bg-white text-[var(--color-blue)] shadow-[0_10px_28px_rgba(114,160,193,0.18)]"
+                        ? "border-[var(--color-blue)]/65 bg-white text-[var(--color-blue)] shadow-[0_8px_22px_rgba(114,160,193,0.14)]"
                         : isComplete
                           ? "border-[var(--color-blue)]/24 bg-[var(--color-blue-wash)] text-[var(--color-blue)] group-hover:border-[var(--color-blue)]/38 group-hover:bg-white"
                           : canNavigate
@@ -526,7 +525,7 @@ export default function JuryApplicationForm() {
         </div>
       </nav>
 
-      <div className="mx-auto max-w-4xl rounded-2xl border border-slate-100 bg-[#F1F3F5] p-5 shadow-xl sm:rounded-[32px] sm:p-8 md:rounded-[40px] md:p-14">
+      <div className="mx-auto max-w-4xl rounded-2xl border border-white/70 bg-white/72 p-5 shadow-[0_20px_64px_rgba(42,66,82,0.1)] backdrop-blur-xl sm:rounded-[32px] sm:p-8 md:rounded-[40px] md:p-14">
         <div className="mb-10">
           <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-hover-accent)]">
             {STEPS[step].label} — {step + 1} / {STEPS.length}
@@ -549,7 +548,7 @@ export default function JuryApplicationForm() {
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
               className="relative z-10"
             >
           {step === 0 && (
@@ -638,9 +637,9 @@ export default function JuryApplicationForm() {
               <TextareaField label={copy.motivation} name="motivation" value={String(values.motivation ?? "")} required placeholder={copy.motivationPh} description={copy.motivationHint} rows={6} error={errors.motivation} onChange={handleChange} />
               <div>
                 <label
-                  className={`group flex cursor-pointer items-start gap-4 rounded-[1.5rem] border p-4 transition-all duration-300 ${
+                  className={`group flex cursor-pointer items-start gap-4 rounded-[1.5rem] border p-4 transition-all duration-200 ${
                     isFieldFilled(values.confidentialityAgreement)
-                      ? "border-[var(--color-blue)]/45 bg-[var(--color-blue-wash)] shadow-[0_18px_40px_rgba(114,160,193,0.14)]"
+                      ? "border-[var(--color-blue)]/45 bg-[var(--color-blue-wash)] shadow-[0_12px_30px_rgba(114,160,193,0.1)]"
                       : "border-[var(--border-default)] bg-white/70 hover:border-[var(--color-blue)]/35 hover:bg-[rgba(185,217,235,0.16)]"
                   }`}
                 >
@@ -651,7 +650,7 @@ export default function JuryApplicationForm() {
                     className="sr-only"
                   />
                   <span
-                    className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-all duration-300 ${
+                    className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-all duration-200 ${
                       isFieldFilled(values.confidentialityAgreement)
                         ? "border-[var(--color-blue)] bg-[var(--color-blue)] text-white"
                         : "border-[var(--border-default)] bg-white text-transparent group-hover:border-[var(--color-blue)]/60 group-hover:bg-[var(--color-blue-wash)]"
@@ -707,7 +706,7 @@ export default function JuryApplicationForm() {
             disabled={step === 0}
             className={heroSecondaryButtonClass}
           >
-            <ChevronLeft size={15} className="relative z-10 transition duration-500 group-hover:-translate-x-1" />
+            <ChevronLeft size={15} className="relative z-10 transition duration-200 group-hover:-translate-x-0.5" />
             <span className="relative z-10">{copy.back}</span>
           </button>
 

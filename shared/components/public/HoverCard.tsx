@@ -15,8 +15,8 @@ type HoverCardProps = {
 export default function HoverCard({
   children,
   className,
-  lift = -6,
-  scale = 1.01,
+  lift = -3,
+  scale = 1.005,
 }: HoverCardProps) {
   const reducedMotion = useReducedMotion();
 
