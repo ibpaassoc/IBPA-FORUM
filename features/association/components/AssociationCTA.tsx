@@ -1,45 +1,59 @@
-import Link from "next/link";
-import { ArrowRight, Globe2 } from "lucide-react";
+"use client";
+
+import Image from "next/image";
+import { Sparkles } from "lucide-react";
+
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import {
+  LandingPrimaryButton,
+  LandingSecondaryButton,
+} from "@/shared/components/public";
 
 export default function AssociationCTA() {
+  const { t } = useLanguage();
+  const c = t.associationPage.cta;
+
   return (
-    <section className="relative overflow-hidden bg-[#f7fbfd] py-20 md:py-28">
-      <div className="page-section">
-        <div className="relative overflow-hidden rounded-[44px] border border-white/70 bg-white/70 p-7 shadow-[0_30px_90px_rgba(114,160,193,0.18)] backdrop-blur-2xl md:p-12">
-          <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-[#b9d9eb]/45 blur-3xl" />
+    <section className="relative min-h-[680px] overflow-hidden bg-white md:min-h-[82vh]">
+      <div className="absolute inset-0">
+        <Image
+          src="/images/funny.jpg"
+          alt={c.title}
+          fill
+          className="object-cover object-[50%_42%]"
+          priority={false}
+        />
 
-          <div className="relative grid gap-10 lg:grid-cols-[1fr_0.85fr] lg:items-end">
-            <div>
-              <p className="page-eyebrow">Узнать больше</p>
+        <div className="absolute inset-0 bg-black/15" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.24)_0%,rgba(255,255,255,0.08)_44%,rgba(0,0,0,0.30)_100%)]" />
+      </div>
 
-              <h2 className="mt-4 font-(--font-display) text-[clamp(2.5rem,5vw,5.6rem)] leading-[0.95] tracking-[-0.055em] text-[#111827]">
-                Готовы присоединиться к международному сообществу?
-              </h2>
+      <div className="relative z-10 flex min-h-[680px] items-center justify-center px-[var(--page-gutter)] py-[clamp(5rem,8vw,8rem)] md:min-h-[82vh]">
+        <div className="max-w-4xl text-center">
+          <div className="mx-auto mb-5 inline-flex items-center gap-2 rounded-full border border-white/75 bg-white/62 px-4 py-2 text-[0.66rem] font-semibold uppercase tracking-[0.24em] text-[#172430] shadow-[0_14px_36px_rgba(20,49,71,0.16)] backdrop-blur-[18px]">
+            <Sparkles size={13} />
+            {c.eyebrow}
+          </div>
 
-              <p className="mt-6 max-w-2xl text-base leading-8 text-[#536776]">
-                Подробная информация о категориях участия, стоимости,
-                преимуществах и условиях вступления доступна на официальном
-                сайте IBPA.
-              </p>
-            </div>
+          <div className="rounded-[2.5rem] border border-white/60 bg-[linear-gradient(180deg,rgba(255,255,255,0.42),rgba(255,255,255,0.22))] px-6 py-9 shadow-[0_44px_130px_rgba(0,0,0,0.22)] backdrop-blur-[28px] sm:px-12 sm:py-11">
+            <h2 className="font-[var(--font-title-family)] text-[clamp(2.8rem,7vw,6rem)] font-light leading-[0.9] tracking-[-0.055em] text-[#060712] [text-shadow:0_1px_0_rgba(255,255,255,0.62),0_8px_22px_rgba(255,255,255,0.22)]">
+              {c.title}
+            </h2>
 
-            <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
-              <Link
-                href="/apply"
-                className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-[#1f5876] px-7 py-4 text-sm font-semibold uppercase tracking-[0.16em] text-white shadow-[0_22px_50px_rgba(31,88,118,0.25)] transition hover:-translate-y-0.5"
-              >
-                Подать заявку на вступление
-                <ArrowRight className="ml-2 transition group-hover:translate-x-1" size={16} />
-              </Link>
+            <p className="mx-auto mt-5 max-w-[34rem] text-[clamp(0.92rem,1.15vw,1.05rem)] leading-[1.75] text-[#172430]/70">
+              {c.description}
+            </p>
 
-              <Link
+            <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
+              <LandingPrimaryButton href="/apply">
+                {c.applyButton}
+              </LandingPrimaryButton>
+
+              <LandingSecondaryButton
                 href="https://ibpassociation.com"
-                target="_blank"
-                className="inline-flex items-center justify-center rounded-full border border-[#b9d9eb]/70 bg-white/65 px-7 py-4 text-sm font-semibold uppercase tracking-[0.16em] text-[#1f5876] transition hover:bg-white"
               >
-                <Globe2 className="mr-2" size={16} />
-                Перейти на сайт IBPA
-              </Link>
+                {c.websiteButton}
+              </LandingSecondaryButton>
             </div>
           </div>
         </div>
