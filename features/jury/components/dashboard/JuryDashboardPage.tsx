@@ -14,6 +14,7 @@ import {
   DashboardMetricTile,
   DashboardPageHeader,
   DashboardPanel,
+  DashboardStagger,
 } from "@/shared/components/admin/DashboardUI";
 
 function scoreStatusBadge(status: "NOT_STARTED" | "DRAFT" | "SUBMITTED") {
@@ -99,11 +100,11 @@ export default function JuryDashboardPage({
           </div>
         </DashboardAccentBlock>
 
-        <div className="grid grid-cols-3 gap-3">
+        <DashboardStagger className="grid grid-cols-3 gap-3">
           <DashboardMetricTile label="Assigned" value={totals.totalAssignedApplications} />
           <DashboardMetricTile label="Scored" value={totals.scoredApplications} accent="green" />
           <DashboardMetricTile label="Remaining" value={totals.remainingApplications} accent="amber" />
-        </div>
+        </DashboardStagger>
       </div>
 
       {expertiseAreas.length > 1 ? (
@@ -138,7 +139,7 @@ export default function JuryDashboardPage({
           />
         </DashboardCard>
       ) : (
-        <div className="flex flex-col gap-3">
+        <DashboardStagger className="flex flex-col gap-3" stagger={0.05}>
           {applications.map((app) => (
             <Link key={app.id} href={`/jury/dashboard/applications/${app.id}`} className="group block">
               <DashboardCard className="p-0 transition-all duration-200 hover:border-[rgba(114,160,193,0.4)] hover:shadow-[0_18px_48px_rgba(114,160,193,0.16)]">
@@ -197,7 +198,7 @@ export default function JuryDashboardPage({
               </DashboardCard>
             </Link>
           ))}
-        </div>
+        </DashboardStagger>
       )}
     </div>
   );

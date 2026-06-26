@@ -13,6 +13,7 @@ import {
   Search,
   X,
 } from "lucide-react";
+import { Children } from "react";
 import type {
   ButtonHTMLAttributes,
   CSSProperties,
@@ -1047,3 +1048,52 @@ export const accent = IBPA_BLUE;
 export const accentDeep = IBPA_BLUE_DEEP;
 export const accentSoft = IBPA_BLUE_SOFT;
 export const accentWash = IBPA_BLUE_WASH;
+
+// ─── DashboardStagger ────────────────────────────────────────────────────────
+// Stagger-in a row/grid of dashboard cards as they mount.
+
+const staggerContainer = {
+  hidden: {},
+  visible: (stagger = 0.06) => ({
+    transition: { staggerChildren: stagger, delayChildren: 0.05 },
+  }),
+};
+
+const staggerItem = {
+  hidden: { opacity: 0, y: 10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.32, ease },
+  },
+};
+
+export function DashboardStagger({
+  children,
+  className,
+  stagger,
+}: {
+  children: ReactNode;
+  className?: string;
+  stagger?: number;
+}) {
+  const shouldReduceMotion = useReducedMotion();
+
+  if (shouldReduceMotion) return <div className={className}>{children}</div>;
+
+  return (
+    <motion.div
+      className={cn(className)}
+      variants={staggerContainer}
+      custom={stagger}
+      initial="hidden"
+      animate="visible"
+    >
+      {Children.map(children, (child, index) => (
+        <motion.div key={index} variants={staggerItem}>
+          {child}
+        </motion.div>
+      ))}
+    </motion.div>
+  );
+}

@@ -16,8 +16,8 @@ import {
   DashboardMetricTile,
   DashboardPanel,
   DashboardSecondaryBtn,
+  DashboardStagger,
   ResponsiveList,
-  StatGrid,
   StatusBadge,
 } from "@/shared/components/admin/DashboardUI";
 
@@ -161,7 +161,7 @@ export default function AdminOverviewPage({
         }
       />
 
-      <StatGrid className="xl:grid-cols-[1.1fr_repeat(4,minmax(0,0.78fr))]">
+      <DashboardStagger className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-[1.1fr_repeat(4,minmax(0,0.78fr))]">
         <DashboardAccentBlock>
           <p className="text-[0.66rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-soft)]">
             Needs attention
@@ -181,7 +181,7 @@ export default function AdminOverviewPage({
           value={earlyBirdEnabled ? "On" : "Off"}
           accent={earlyBirdEnabled ? "green" : "neutral"}
         />
-      </StatGrid>
+      </DashboardStagger>
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="flex flex-col gap-4">
