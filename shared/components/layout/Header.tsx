@@ -9,7 +9,10 @@ import LanguageSwitcher from "@/shared/components/layout/LanguageSwitcher";
 import JuryMenu from "@/shared/components/layout/JuryMenu";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
-const HERO_PAGES: string[] = ["/", "/jury", "/grand-prix", "/categories"];
+// Dark photo heroes — transparent header with white text/logo
+const DARK_HERO_PAGES: string[] = ["/", "/jury", "/grand-prix", "/categories", "/association"];
+// Light photo heroes — transparent header with ink text/logo
+const LIGHT_HERO_PAGES: string[] = ["/apply"];
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -18,8 +21,12 @@ export default function Header() {
   const pathname = usePathname();
   const { language, t } = useLanguage();
 
-  const isHeroPage = HERO_PAGES.includes(pathname);
+  const isDarkHero = DARK_HERO_PAGES.includes(pathname);
+  const isLightHero = LIGHT_HERO_PAGES.includes(pathname);
+  const isHeroPage = isDarkHero || isLightHero;
   const useTransparent = isHeroPage && !scrolled;
+  // Backward-compat alias — true only for dark heroes (white text mode)
+  const useWhiteText = isDarkHero && !scrolled;
 
   const navigation = [
     { href: "/", label: t.header.navigation.home },
@@ -113,7 +120,7 @@ export default function Header() {
             className="group min-w-0 shrink"
           >
             <Image
-              src={useTransparent ? "/logo1.png" : "/logo2.png"}
+              src={useWhiteText ? "/logo1.png" : "/logo2.png"}
               alt="IBPA Logo"
               width={420}
               height={80}
@@ -131,7 +138,7 @@ export default function Header() {
                   target="_blank"
                   rel="noreferrer"
                   className={`relative font-[var(--font-ui-family)] text-[clamp(0.7rem,1vw,0.78rem)] font-semibold uppercase tracking-[0.13em] transition-all duration-500 after:absolute after:-bottom-1.5 after:left-0 after:h-px after:w-full after:origin-left after:bg-current after:transition-transform after:duration-500 ${
-                    useTransparent
+                    useWhiteText
                       ? "text-white/74 after:scale-x-0 hover:text-white hover:after:scale-x-100"
                       : "text-[var(--color-ink)]/68 after:scale-x-0 hover:text-[var(--color-ink)] hover:after:scale-x-100"
                   }`}
@@ -143,7 +150,7 @@ export default function Header() {
                   key={item.href}
                   href={item.href}
                   className={`relative font-[var(--font-ui-family)] text-[clamp(0.7rem,1vw,0.78rem)] font-semibold uppercase tracking-[0.13em] transition-all duration-500 after:absolute after:-bottom-1.5 after:left-0 after:h-px after:w-full after:origin-left after:bg-current after:transition-transform after:duration-500 ${
-                    useTransparent
+                    useWhiteText
                       ? isActive(item.href)
                         ? "text-white after:scale-x-100"
                         : "text-white/72 after:scale-x-0 hover:text-white hover:after:scale-x-100"
@@ -161,22 +168,22 @@ export default function Header() {
           <div className="hidden items-center gap-3 lg:flex">
             <div
               className={`rounded-full transition-all duration-700 ${
-                useTransparent
+                useWhiteText
                   ? "shadow-[0_12px_34px_rgba(0,0,0,0.10)]"
                   : "shadow-[0_12px_34px_rgba(122,152,175,0.12)]"
               }`}
             >
-              <LanguageSwitcher transparent={useTransparent} />
+              <LanguageSwitcher transparent={useWhiteText} />
             </div>
 
             <div
               className={`rounded-full transition-all duration-700 ${
-                useTransparent
+                useWhiteText
                   ? "shadow-[0_12px_34px_rgba(0,0,0,0.12)]"
                   : "shadow-[0_12px_34px_rgba(114,160,193,0.18)]"
               }`}
             >
-              <JuryMenu transparent={useTransparent} />
+              <JuryMenu transparent={useWhiteText} />
             </div>
           </div>
 
@@ -186,7 +193,7 @@ export default function Header() {
             aria-expanded={open}
             onClick={() => setOpen((current) => !current)}
             className={`relative ml-auto flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border transition-all duration-500 lg:hidden ${
-              useTransparent
+              useWhiteText
                 ? "border-white/40 bg-white/12 text-white shadow-[0_14px_34px_rgba(0,0,0,0.16)] backdrop-blur-xl hover:border-white/70 hover:bg-white/20"
                 : "border-[#b9d9eb]/60 bg-white/70 text-[#24394b] shadow-[0_12px_30px_rgba(122,152,175,0.14)] backdrop-blur-xl hover:border-[#8eb6d3]/70 hover:bg-white"
             }`}
