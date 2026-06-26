@@ -1,13 +1,19 @@
+import dynamic from "next/dynamic";
 import {
   CategoriesHero,
   CategoriesInfo,
-  CategoriesFeatures,
   CategoriesWhyJoin,
   CategoriesAwardResults,
   CategoriesCTA,
-  CategoriesFAQ,
 } from "@/features/categories/components";
 import { LandingPageShell } from "@/shared/components/public";
+
+const CategoriesFeatures = dynamic(
+  () => import("@/features/categories/components/CategoriesFeatures")
+);
+const CategoriesFAQ = dynamic(
+  () => import("@/features/categories/components/CategoriesFAQ")
+);
 
 export default function CategoriesPagePremium() {
   return (
