@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { LayoutGroup, motion } from "framer-motion";
+import { PUBLIC_MOTION_EASE, PUBLIC_MOTION_DURATION } from "./motion-tokens";
 
 type PageMotionShellProps = {
   children: ReactNode;
@@ -10,8 +11,8 @@ type PageMotionShellProps = {
 };
 
 export const pageMotionTransition = {
-  duration: 0.28,
-  ease: [0.22, 1, 0.36, 1],
+  duration: PUBLIC_MOTION_DURATION.base,
+  ease: PUBLIC_MOTION_EASE,
 } as const;
 
 export default function PageMotionShell({

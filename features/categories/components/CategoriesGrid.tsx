@@ -4,6 +4,7 @@ import { motion, type Variants } from "framer-motion";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { PageSection } from "@/shared/components/public";
+import { PUBLIC_MOTION_EASE } from "@/shared/components/public/motion-tokens";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -26,7 +27,7 @@ const cardVariants: Variants = {
     y: 0,
     transition: {
       duration: 0.28,
-      ease: [0.22, 1, 0.36, 1],
+      ease: PUBLIC_MOTION_EASE,
     },
   },
 };
@@ -51,7 +52,7 @@ export default function CategoriesGrid() {
             whileHover={{
               y: -3,
               scale: 1.003,
-              transition: { duration: 0.18, ease: [0.22, 1, 0.36, 1] },
+              transition: { duration: 0.18, ease: PUBLIC_MOTION_EASE },
             }}
             className="group relative min-h-[250px] overflow-hidden rounded-[2rem] border border-white/70 bg-white/[0.72] p-px shadow-[0_18px_54px_rgba(15,23,42,0.055)] backdrop-blur-xl transition duration-200 hover:border-[var(--color-blue)]/35 hover:shadow-[0_22px_62px_rgba(114,160,193,0.13)]"
           >

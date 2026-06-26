@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 
 import Reveal from "@/shared/components/public/Reveal";
+import { PUBLIC_MOTION_EASE, PUBLIC_MOTION_DURATION } from "@/shared/components/public/motion-tokens";
 
 export type FaqItem = {
   question: string;
@@ -92,7 +93,7 @@ export default function FaqAccordion({
                       id={panelId}
                       initial={{ opacity: 0, y: -4 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+                      transition={{ duration: PUBLIC_MOTION_DURATION.fast, ease: PUBLIC_MOTION_EASE }}
                       className="px-6 pb-6 pr-12 text-[0.98rem] leading-7 text-[#5d6877]"
                     >
                       {item.answer}

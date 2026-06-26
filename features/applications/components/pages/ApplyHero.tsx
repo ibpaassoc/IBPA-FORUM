@@ -1,8 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import { motion, useReducedMotion } from "framer-motion";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { HeroPrimaryButton, LandingSecondaryButton } from "@/shared/components/public";
+import { PUBLIC_MOTION_EASE, PUBLIC_MOTION_DURATION } from "@/shared/components/public/motion-tokens";
 
 export default function ApplyHero({
   heroStats,
@@ -10,6 +12,7 @@ export default function ApplyHero({
   heroStats: Array<{ label: string; value: string }>;
 }) {
   const { language } = useLanguage();
+  const reducedMotion = useReducedMotion();
 
   const copy = {
     en: {
@@ -38,6 +41,15 @@ export default function ApplyHero({
     },
   }[language];
 
+  function enter(delay: number) {
+    if (reducedMotion) return {};
+    return {
+      initial: { opacity: 0, y: 14 },
+      animate: { opacity: 1, y: 0 },
+      transition: { duration: PUBLIC_MOTION_DURATION.slow, ease: PUBLIC_MOTION_EASE, delay },
+    };
+  }
+
   return (
     <section className="landing-photo-section relative flex min-h-[clamp(640px,78vh,860px)] items-end overflow-hidden bg-white">
       <Image
@@ -54,13 +66,16 @@ export default function ApplyHero({
 
       <div className="relative z-10 mx-auto w-full max-w-[var(--content-width)] px-[var(--page-gutter)] pb-[clamp(56px,8vw,96px)] pt-[clamp(120px,16vh,160px)]">
         <div className="max-w-2xl">
-          <p className="page-eyebrow">{copy.eyebrow}</p>
+          <motion.p {...enter(0.1)} className="page-eyebrow">{copy.eyebrow}</motion.p>
 
-          <h1 className="mt-5 max-w-[11ch] font-[var(--font-title-family)] text-[clamp(3rem,7vw,6.65rem)] font-light leading-[0.9] tracking-[-0.075em] text-[var(--color-ink)]">
+          <motion.h1
+            {...enter(0.22)}
+            className="mt-5 max-w-[11ch] font-[var(--font-title-family)] text-[clamp(3rem,7vw,6.65rem)] font-light leading-[0.9] tracking-[-0.075em] text-[var(--color-ink)]"
+          >
             {copy.title}
-          </h1>
+          </motion.h1>
 
-          <div className="mt-8 flex flex-wrap gap-2.5">
+          <motion.div {...enter(0.34)} className="mt-8 flex flex-wrap gap-2.5">
             {heroStats.map((item) => (
               <div
                 key={item.label}
@@ -72,13 +87,12 @@ export default function ApplyHero({
                 </span>
               </div>
             ))}
-          </div>
+          </motion.div>
 
-          <div className="mt-9 flex flex-wrap items-center gap-4">
-            <HeroPrimaryButton href="#apply-form" >{ copy.cta }</HeroPrimaryButton>
-            
-            <LandingSecondaryButton href="/apply/jury">{ copy.juryLink }</LandingSecondaryButton>
-          </div>
+          <motion.div {...enter(0.46)} className="mt-9 flex flex-wrap items-center gap-4">
+            <HeroPrimaryButton href="#apply-form">{copy.cta}</HeroPrimaryButton>
+            <LandingSecondaryButton href="/apply/jury">{copy.juryLink}</LandingSecondaryButton>
+          </motion.div>
         </div>
       </div>
     </section>
