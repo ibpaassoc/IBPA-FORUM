@@ -571,6 +571,11 @@ textarea {
   }
 }
 
+@keyframes marquee-ticker {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-33.333%); }
+}
+
 @keyframes marquee-left {
   from {
     transform: translateX(0);

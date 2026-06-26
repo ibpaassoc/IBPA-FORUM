@@ -33,8 +33,9 @@ export default function Reveal({
       className={clsx(className)}
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once, amount: 0.18 }}
+      viewport={{ once, amount: 0.12 }}
       transition={{ duration, delay, ease: PUBLIC_MOTION_EASE }}
+      style={{ willChange: "opacity, transform" }}
     >
       {children}
     </motion.div>

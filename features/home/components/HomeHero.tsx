@@ -145,6 +145,7 @@ export default function HomeHero() {
             style={{
               animation: "marquee-ticker 32s linear infinite",
               width: "max-content",
+              willChange: "transform",
             }}
           >
             {loopTicker.map((item, index) => (
@@ -159,16 +160,6 @@ export default function HomeHero() {
           </div>
         </div>
 
-        <style jsx>{`
-          @keyframes marquee-ticker {
-            from {
-              transform: translateX(0);
-            }
-            to {
-              transform: translateX(-33.333%);
-            }
-          }
-        `}</style>
       </section>
 
       {isTicketModalOpen ? (
