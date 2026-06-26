@@ -33,3 +33,13 @@ export { default as StaggerContainer } from "./StaggerContainer";
 export { default as PageMotionShell } from "./PageMotionShell"
 export { default as SiteUnderDevelopmentPage } from "./SiteUnderDevelopmentPage";
 export { default as StatCard } from "./StatCard";
+export {
+  PUBLIC_MOTION_EASE,
+  PUBLIC_MOTION_DURATION,
+  fadeUpVariants,
+  fadeInVariants,
+  scaleInVariants,
+  staggerContainerVariants,
+  staggerItemVariants,
+  heroEntrance,
+} from "./motion-tokens";

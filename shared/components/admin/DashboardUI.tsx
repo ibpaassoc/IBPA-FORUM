@@ -21,6 +21,7 @@ import type {
   ReactNode,
 } from "react";
 import clsx from "clsx";
+import { PUBLIC_MOTION_EASE } from "@/shared/components/public/motion-tokens";
 
 const IBPA_BLUE = "#72a0c1";
 const IBPA_BLUE_DEEP = "#4d86ad";
@@ -38,7 +39,7 @@ type IconType = ComponentType<{
 
 type BadgeTone = "neutral" | "blue" | "green" | "amber" | "red" | "purple";
 
-const ease = [0.22, 1, 0.36, 1] as const;
+const ease = PUBLIC_MOTION_EASE;
 
 function cn(...values: Array<string | false | null | undefined>) {
   return clsx(values);
