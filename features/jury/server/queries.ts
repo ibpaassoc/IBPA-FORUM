@@ -1,6 +1,7 @@
+import { unstable_cache } from "next/cache";
 import { prisma } from "@/shared/lib/prisma";
 
-export async function getPublicJuryMembers() {
+async function readPublicJuryMembersFromDb() {
   try {
     const members = await prisma.juryApplication.findMany({
       where: {
@@ -44,4 +45,16 @@ export async function getPublicJuryMembers() {
     console.warn("Failed to load public jury members.", error);
     return [];
   }
+}
+
+const getCachedPublicJuryMembers = unstable_cache(
+  async () => readPublicJuryMembersFromDb(),
+  ["public-jury-members"],
+  {
+    revalidate: 60 * 10,
+  }
+);
+
+export async function getPublicJuryMembers() {
+  return getCachedPublicJuryMembers();
 }
