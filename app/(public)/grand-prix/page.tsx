@@ -1,5 +1,4 @@
-"use client";
-
+import dynamic from "next/dynamic";
 import {
   GrandPrixHero,
   GrandPrixAbout,
@@ -9,9 +8,12 @@ import {
   GrandPrixRewards,
   GrandPrixTimeline,
   GrandPrixCTA,
-  GrandPrixFaq,
 } from "@/features/grand-prix/components/";
 import { LandingPageShell } from "@/shared/components/public";
+
+const GrandPrixFaq = dynamic(
+  () => import("@/features/grand-prix/components/GrandPrixFaq")
+);
 
 export default function GrandPrixPagePremium() {
   return (

@@ -18,6 +18,7 @@ export default function JuryHero() {
           style={{ objectPosition: "50% 20%" }}
           className="object-cover opacity-70"
           priority
+          sizes="100vw"
         />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.30)_0%,rgba(0,0,0,0.20)_50%,rgba(0,0,0,0.65)_100%)]" />
       </div>

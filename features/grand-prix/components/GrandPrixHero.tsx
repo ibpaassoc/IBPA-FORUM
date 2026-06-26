@@ -18,6 +18,7 @@ export default function GrandPrixHero() {
           style={{ objectPosition: "center 30%" }}
           className="object-cover opacity-72"
           priority
+          sizes="100vw"
         />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.28)_0%,rgba(0,0,0,0.16)_45%,rgba(0,0,0,0.65)_100%)]" />
       </div>

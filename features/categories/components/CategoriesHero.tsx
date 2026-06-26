@@ -26,6 +26,7 @@ export default function CategoriesHero() {
           style={{ objectPosition: "center 34%" }}
           className="object-cover opacity-70"
           priority
+          sizes="100vw"
         />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.26)_0%,rgba(0,0,0,0.12)_48%,rgba(0,0,0,0.70)_100%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08)_0%,rgba(0,0,0,0)_38%)]" />

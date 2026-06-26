@@ -3,7 +3,6 @@
 import Image from "next/image";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { HeroPrimaryButton, HeroSecondaryButton } from "@/shared/components/public";
 
 export default function AssociationHero() {
   const { t } = useLanguage();
@@ -19,6 +18,7 @@ export default function AssociationHero() {
           style={{ objectPosition: "50% 24%" }}
           className="object-cover opacity-70"
           priority
+          sizes="100vw"
         />
 
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.34)_0%,rgba(0,0,0,0.20)_42%,rgba(0,0,0,0.72)_100%)]" />

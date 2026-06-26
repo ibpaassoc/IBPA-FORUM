@@ -1,3 +1,5 @@
+"use client";
+
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import Link from "next/link"
 import Image from "next/image";
@@ -13,6 +15,7 @@ export default function JuryApplyHero() {
         fill
         priority
         className="object-cover object-[50%_25%] opacity-15"
+        sizes="100vw"
       />
 
       <div className="relative mx-auto w-full max-w-[var(--content-width)] px-[var(--page-gutter)]">
