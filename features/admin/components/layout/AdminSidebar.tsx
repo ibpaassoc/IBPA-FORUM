@@ -2,10 +2,28 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FileText, LogOut, Star, Ticket, Users } from "lucide-react";
+import {
+  FileText,
+  LayoutDashboard,
+  LogOut,
+  MoreHorizontal,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Star,
+  Ticket,
+  Users,
+} from "lucide-react";
+import { useState } from "react";
 import { logoutAdminAction } from "@/features/admin/actions/auth.actions";
+import {
+  Drawer,
+  FloatingActionButton,
+  IconButton,
+  MobileBottomNavigation,
+} from "@/shared/components/admin/DashboardUI";
 
 const navItems = [
+  { href: "/admin", label: "Overview", shortLabel: "Home", icon: LayoutDashboard },
   { href: "/admin/applications", label: "Applications", shortLabel: "Apps", icon: FileText },
   { href: "/admin/jury-applications", label: "Jury", shortLabel: "Jury", icon: Users },
   { href: "/admin/scoring", label: "Scoring", shortLabel: "Scores", icon: Star },
@@ -13,106 +31,152 @@ const navItems = [
 ];
 
 function isActive(pathname: string, href: string) {
+  if (href === "/admin") return pathname === "/admin";
   return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+function SignOutButton({ compact = false }: { compact?: boolean }) {
+  return (
+    <form action={logoutAdminAction}>
+      <button
+        type="submit"
+        className="flex min-h-11 w-full items-center justify-center gap-3 rounded-[18px] border border-transparent px-3 text-[0.76rem] font-semibold uppercase tracking-[0.1em] text-[var(--color-ink-soft)] transition hover:border-red-200 hover:bg-red-50 hover:text-red-700"
+      >
+        <LogOut aria-hidden size={16} strokeWidth={1.8} />
+        {compact ? null : <span>Sign out</span>}
+      </button>
+    </form>
+  );
 }
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const mobileItems = navItems.map((item) => ({
+    href: item.href,
+    label: item.shortLabel,
+    icon: item.icon,
+    active: isActive(pathname, item.href),
+  }));
 
   return (
     <>
-      {/* Desktop sidebar */}
-      <aside className="hidden w-[232px] shrink-0 lg:block">
-        <div className="sticky top-5 flex flex-col gap-3">
+      <aside
+        className={`hidden shrink-0 transition-[width] duration-300 lg:block ${
+          collapsed ? "w-[96px]" : "w-[260px]"
+        }`}
+      >
+        <div className="sticky top-6 flex max-h-[calc(100vh-3rem)] flex-col gap-3">
+          <div className="rounded-[34px] border border-[rgba(114,160,193,0.2)] bg-white/76 p-3 shadow-[0_28px_90px_rgba(37,42,45,0.09)] backdrop-blur-2xl">
+            <div className="flex items-center justify-between gap-2 rounded-[26px] bg-[linear-gradient(135deg,rgba(185,217,235,0.34),rgba(255,255,255,0.78))] p-3">
+              <Link href="/admin" className="min-w-0">
+                <p className="font-[var(--font-title-family)] text-[1.85rem] font-light leading-none tracking-[-0.04em] text-[var(--color-ink)]">
+                  IBPA
+                </p>
+                {!collapsed ? (
+                  <p className="mt-1 text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-ink-soft)]">
+                    Admin atelier
+                  </p>
+                ) : null}
+              </Link>
+              <IconButton
+                label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                icon={collapsed ? PanelLeftOpen : PanelLeftClose}
+                onClick={() => setCollapsed((value) => !value)}
+                className="size-9 shrink-0"
+              />
+            </div>
 
-          {/* Identity card */}
-          <div
-            className="rounded-[18px] border border-[var(--color-blue-soft)] bg-[linear-gradient(135deg,rgba(185,217,235,0.4),rgba(255,255,255,0.82))] p-4 text-[var(--color-ink)] shadow-[0_18px_44px_rgba(114,160,193,0.16)] backdrop-blur-xl"
-          >
-            <p
-              className="text-[0.65rem] uppercase tracking-[0.18em] text-[var(--color-blue)]"
-              style={{ fontFamily: "var(--font-ui-family)" }}
-            >
-              IBPA Admin
-            </p>
-            <p
-              className="mt-1.5 text-[1.05rem] font-light leading-tight text-[var(--color-ink)]"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              Admin dashboard
-            </p>
-          </div>
-
-          {/* Nav card */}
-          <div className="rounded-[18px] border border-[var(--border-default)] bg-white/84 p-2 shadow-[0_18px_44px_rgba(3,2,19,0.06)] backdrop-blur-xl">
-            <nav className="flex flex-col gap-0.5">
+            <nav className="mt-3 flex flex-col gap-1" aria-label="Admin navigation">
               {navItems.map(({ href, label, icon: Icon }) => {
                 const active = isActive(pathname, href);
+
                 return (
                   <Link
                     key={href}
                     href={href}
-                    className={`flex min-h-[42px] items-center gap-3 rounded-[10px] px-3 text-[0.8rem] transition-all duration-150 ${
+                    aria-current={active ? "page" : undefined}
+                    title={collapsed ? label : undefined}
+                    className={`group flex min-h-12 items-center gap-3 rounded-[20px] px-3 text-[0.86rem] transition ${
                       active
-                        ? "bg-[var(--color-blue-wash)] text-[var(--color-ink)]"
-                        : "text-[var(--color-ink-soft)] hover:bg-[var(--surface-tint)] hover:text-[var(--color-ink)]"
-                    }`}
-                    style={{ fontFamily: "var(--font-ui-family)" }}
+                        ? "bg-[var(--color-blue)] text-white shadow-[0_14px_34px_rgba(114,160,193,0.28)]"
+                        : "text-[var(--color-ink-soft)] hover:bg-[var(--color-blue-wash)] hover:text-[var(--color-ink)]"
+                    } ${collapsed ? "justify-center" : ""}`}
                   >
-                    <Icon
-                      aria-hidden
-                      size={16}
-                      strokeWidth={1.8}
-                      className={active ? "text-[var(--color-blue)]" : "text-[var(--color-ink-muted)]"}
-                    />
-                    <span className="truncate">{label}</span>
+                    <Icon aria-hidden size={18} strokeWidth={active ? 2 : 1.75} />
+                    {!collapsed ? <span className="truncate">{label}</span> : null}
                   </Link>
                 );
               })}
             </nav>
 
-            <div className="mt-2 border-t border-[var(--border-soft)] pt-2">
-              <form action={logoutAdminAction}>
-                <button
-                  type="submit"
-                  className="flex min-h-[42px] w-full items-center gap-3 rounded-[10px] px-3 text-[0.8rem] text-[var(--color-ink-soft)] transition-all duration-150 hover:bg-red-50 hover:text-red-600"
-                  style={{ fontFamily: "var(--font-ui-family)" }}
-                >
-                  <LogOut aria-hidden size={16} strokeWidth={1.8} />
-                  Sign out
-                </button>
-              </form>
+            <div className="mt-3 border-t border-[rgba(37,42,45,0.08)] pt-3">
+              <div
+                className={`mb-2 flex items-center gap-3 rounded-[22px] bg-white/58 p-3 ${
+                  collapsed ? "justify-center" : ""
+                }`}
+              >
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-blue-wash)] font-[var(--font-title-family)] text-lg text-[var(--color-blue)]">
+                  A
+                </div>
+                {!collapsed ? (
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-[var(--color-ink)]">Admin desk</p>
+                    <p className="text-xs text-[var(--color-ink-soft)]">IBPA 2026</p>
+                  </div>
+                ) : null}
+              </div>
+              <SignOutButton compact={collapsed} />
             </div>
           </div>
         </div>
       </aside>
 
-      {/* Mobile bottom nav */}
-      <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-[var(--border-default)] bg-white/92 shadow-[0_-12px_32px_rgba(3,2,19,0.06)] backdrop-blur-xl lg:hidden">
-        <div className="mx-auto grid max-w-md grid-cols-4 gap-1 px-2 py-2">
-          {navItems.map(({ href, shortLabel, icon: Icon }) => {
-            const active = isActive(pathname, href);
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-[10px] px-1 text-center text-[0.62rem] transition-all duration-150 ${
-                  active ? "bg-[var(--color-blue-wash)] text-[var(--color-ink)]" : "text-[var(--color-ink-soft)]"
-                }`}
-                style={{ fontFamily: "var(--font-ui-family)" }}
-              >
-                <Icon
-                  aria-hidden
-                  size={18}
-                  strokeWidth={active ? 2 : 1.7}
-                  className={active ? "text-[var(--color-blue)]" : ""}
-                />
-                <span className="truncate">{shortLabel}</span>
-              </Link>
-            );
-          })}
+      <MobileBottomNavigation items={mobileItems} />
+      <FloatingActionButton
+        label="Open admin menu"
+        icon={MoreHorizontal}
+        onClick={() => setDrawerOpen(true)}
+        className="lg:hidden"
+      />
+
+      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} title="IBPA Admin">
+        <div className="space-y-4">
+          <div className="rounded-[24px] bg-[linear-gradient(135deg,rgba(185,217,235,0.32),rgba(255,255,255,0.86))] p-4">
+            <p className="font-[var(--font-accent-family)] text-lg italic text-[var(--color-blue)]">
+              Beauty Award 2026
+            </p>
+            <p className="mt-1 text-sm text-[var(--color-ink-soft)]">
+              Applications, judging, scoring, and check-in.
+            </p>
+          </div>
+          <nav className="grid gap-2" aria-label="Admin drawer navigation">
+            {navItems.map(({ href, label, icon: Icon }) => {
+              const active = isActive(pathname, href);
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={() => setDrawerOpen(false)}
+                  className={`flex min-h-12 items-center justify-between rounded-[18px] px-4 text-sm font-semibold transition ${
+                    active
+                      ? "bg-[var(--color-blue)] text-white"
+                      : "bg-white/72 text-[var(--color-ink)] hover:bg-[var(--color-blue-wash)]"
+                  }`}
+                >
+                  <span className="inline-flex items-center gap-3">
+                    <Icon aria-hidden size={17} />
+                    {label}
+                  </span>
+                </Link>
+              );
+            })}
+          </nav>
+          <SignOutButton />
         </div>
-      </nav>
+      </Drawer>
     </>
   );
 }

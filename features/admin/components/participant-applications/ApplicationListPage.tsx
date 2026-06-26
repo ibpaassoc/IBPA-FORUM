@@ -154,18 +154,18 @@ export default function ApplicationListPage({
                 href={`/admin/applications/${app.id}`}
                 className="group block"
               >
-                <DashboardCard className="p-0 transition hover:border-[#7DC8EE] hover:shadow-[0_22px_60px_rgba(10,10,10,0.1)]">
+                <DashboardCard className="p-0 transition hover:border-[rgba(114,160,193,0.34)] hover:shadow-[0_24px_64px_rgba(114,160,193,0.16)]">
                   <div className="grid gap-4 p-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(260px,0.8fr)_minmax(180px,0.45fr)] lg:items-stretch">
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
                         {applicationBadge(app.status)}
                         {paymentBadge(app.paymentStatus)}
                       </div>
-                      <h2 className="mt-3 text-xl font-semibold normal-case tracking-[-0.02em] text-[#0A0A0A]">
+                      <h2 className="mt-3 font-[var(--font-title-family)] text-[1.55rem] font-light tracking-[-0.025em] text-[var(--color-ink)]">
                         {app.fullName}
                       </h2>
-                      <p className="mt-1 truncate text-sm text-black/55">{app.email}</p>
-                      <p className="mt-3 inline-flex items-center gap-2 rounded-md border border-black/10 bg-[#FAFAFA] px-2.5 py-1 text-xs text-black/55">
+                      <p className="mt-1 truncate text-sm text-[var(--color-ink-soft)]">{app.email}</p>
+                      <p className="mt-3 inline-flex items-center gap-2 rounded-[18px] border border-[rgba(37,42,45,0.08)] bg-white/62 px-2.5 py-1 text-xs text-[var(--color-ink-soft)]">
                         <MapPin aria-hidden size={13} />
                         {app.city}, {app.country}
                       </p>
@@ -173,13 +173,13 @@ export default function ApplicationListPage({
 
                     <DashboardPanel className="flex flex-col justify-between gap-4">
                       <div>
-                        <div className="flex items-center gap-2 text-[#1673A5]">
+                        <div className="flex items-center gap-2 text-[var(--color-blue)]">
                           <Layers3 aria-hidden size={16} />
                           <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">
                             Nominations
                           </p>
                         </div>
-                        <p className="mt-2 text-sm font-semibold text-[#0A0A0A]">
+                        <p className="mt-2 text-sm font-medium text-[var(--color-ink)]">
                           {nominations.length} selected
                         </p>
                       </div>
@@ -187,41 +187,41 @@ export default function ApplicationListPage({
                         {previewNominations.map((nomination) => (
                           <span
                             key={nomination.id}
-                            className="rounded-md border border-black/10 bg-white px-2 py-1 text-xs font-medium text-black/60"
+                            className="rounded-[18px] border border-[rgba(37,42,45,0.08)] bg-white px-2 py-1 text-xs font-medium text-[var(--color-ink-soft)]"
                           >
                             {nomination.award.name}
                           </span>
                         ))}
                         {remainingNominationCount > 0 ? (
-                          <span className="rounded-md border border-[#7DC8EE] bg-[#EAF6FF] px-2 py-1 text-xs font-semibold text-[#0A0A0A]">
+                          <span className="rounded-[18px] border border-[rgba(114,160,193,0.34)] bg-[var(--color-blue-wash)] px-2 py-1 text-xs font-semibold text-[var(--color-ink)]">
                             +{remainingNominationCount}
                           </span>
                         ) : null}
                       </div>
                     </DashboardPanel>
 
-                    <div className="flex flex-col justify-between gap-3 rounded-lg border border-black/10 bg-white p-4">
+                    <div className="flex flex-col justify-between gap-3 rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white p-4">
                       <div>
-                        <div className="flex items-center gap-2 text-black/45">
+                        <div className="flex items-center gap-2 text-[var(--color-ink-muted)]">
                           <ReceiptText aria-hidden size={15} />
                           <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">
                             Primary path
                           </p>
                         </div>
-                        <p className="mt-2 text-sm font-semibold leading-6 text-[#0A0A0A]">
+                        <p className="mt-2 text-sm font-semibold leading-6 text-[var(--color-ink)]">
                           {app.award.name}
                         </p>
-                        <p className="text-sm text-black/55">{app.category.name}</p>
+                        <p className="text-sm text-[var(--color-ink-soft)]">{app.category.name}</p>
                       </div>
-                      <div className="flex items-center justify-between gap-3 border-t border-black/10 pt-3">
-                        <span className="inline-flex items-center gap-1.5 text-xs text-black/45">
+                      <div className="flex items-center justify-between gap-3 border-t border-[rgba(37,42,45,0.08)] pt-3">
+                        <span className="inline-flex items-center gap-1.5 text-xs text-[var(--color-ink-muted)]">
                           <Clock3 aria-hidden size={13} />
                           {formatAdminDate(app.createdAt)}
                         </span>
                         <ArrowRight
                           aria-hidden
                           size={17}
-                          className="text-black/50 transition group-hover:translate-x-0.5 group-hover:text-[#1673A5]"
+                          className="text-[var(--color-ink-soft)] transition group-hover:translate-x-0.5 group-hover:text-[var(--color-blue)]"
                         />
                       </div>
                     </div>

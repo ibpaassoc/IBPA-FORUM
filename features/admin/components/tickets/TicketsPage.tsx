@@ -44,8 +44,6 @@ function formatDate(date: Date | null | string) {
   return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }).format(new Date(date));
 }
 
-// ── Early Bird Toggle ─────────────────────────────────────────────────────────
-
 function EarlyBirdToggle({ initialEnabled }: { initialEnabled: boolean }) {
   const [enabled, setEnabled] = useState(initialEnabled);
   const [saving, setSaving] = useState(false);
@@ -71,16 +69,16 @@ function EarlyBirdToggle({ initialEnabled }: { initialEnabled: boolean }) {
     <DashboardCard>
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-start gap-3">
-          <div className={`flex size-10 shrink-0 items-center justify-center rounded-md ${enabled ? "bg-amber-50 text-amber-600" : "bg-[#FAFAFA] text-black/40"}`}>
+          <div className={`flex size-10 shrink-0 items-center justify-center rounded-[18px] ${enabled ? "bg-[rgba(114,160,193,0.1)] text-[var(--color-blue)]" : "bg-white/62 text-[var(--color-ink-muted)]"}`}>
             <Tag size={18} strokeWidth={1.5} />
           </div>
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#1673A5]">Early Bird Discount</p>
-            <p className="mt-0.5 text-sm font-semibold text-[#0A0A0A]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-blue)]">Early Bird Discount</p>
+            <p className="mt-0.5 text-sm font-medium text-[var(--color-ink)]">
               {enabled ? "Enabled - discounted prices shown to all visitors" : "Disabled - regular prices shown"}
             </p>
             {enabled && (
-              <p className="mt-0.5 text-[11px] text-amber-600">
+              <p className="mt-0.5 text-[11px] text-[var(--color-blue)]">
                 The Stripe coupon is applied automatically on ticket checkout. Gala dinner is not discounted.
               </p>
             )}
@@ -93,7 +91,7 @@ function EarlyBirdToggle({ initialEnabled }: { initialEnabled: boolean }) {
           disabled={saving}
           aria-label={enabled ? "Disable early bird discount" : "Enable early bird discount"}
           className="relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none disabled:opacity-50"
-          style={{ backgroundColor: enabled ? "#0A0A0A" : "#d4d4d4" }}
+          style={{ backgroundColor: enabled ? "var(--color-blue)" : "rgba(37,42,45,0.16)" }}
         >
           <span
             className="inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-200"
@@ -103,9 +101,9 @@ function EarlyBirdToggle({ initialEnabled }: { initialEnabled: boolean }) {
       </div>
 
       {enabled && (
-        <div className="mt-3 flex items-center gap-2 rounded-md border border-amber-200 bg-amber-50 px-4 py-2.5">
-          <AlertCircle size={14} className="shrink-0 text-amber-600" />
-          <p className="text-[0.78rem] text-amber-700">
+        <div className="mt-3 flex items-center gap-2 rounded-[18px] border border-[rgba(114,160,193,0.24)] bg-[rgba(114,160,193,0.1)] px-4 py-2.5">
+          <AlertCircle size={14} className="shrink-0 text-[var(--color-blue)]" />
+          <p className="text-[0.78rem] text-[var(--color-blue)]">
             Visitors see discounted ticket prices with the Early Bird label. Disable when the promotion ends.
           </p>
         </div>
@@ -113,8 +111,6 @@ function EarlyBirdToggle({ initialEnabled }: { initialEnabled: boolean }) {
     </DashboardCard>
   );
 }
-
-// ── QR Scanner component ──────────────────────────────────────────────────────
 
 type ScanState =
   | { phase: "idle" }
@@ -239,30 +235,28 @@ function QrScanner({ onClose }: { onClose: () => void }) {
   useEffect(() => () => stopCamera(), [stopCamera]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm sm:items-center">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[rgba(3,2,19,0.32)] backdrop-blur-sm sm:items-center">
       <div className="w-full max-w-md rounded-t-[28px] bg-white p-6 sm:rounded-[28px]">
-        {/* Header */}
         <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-[#10203B]">Scan Ticket QR</h2>
-          <button onClick={() => { stopCamera(); onClose(); }} className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 hover:bg-slate-50">
+          <h2 className="font-[var(--font-title-family)] text-2xl font-light text-[var(--color-ink)]">Scan Ticket QR</h2>
+          <button onClick={() => { stopCamera(); onClose(); }} className="flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(37,42,45,0.08)] text-[var(--color-ink-soft)] hover:bg-[var(--color-blue-wash)]">
             <X size={18} />
           </button>
         </div>
 
-        {/* States */}
         {state.phase === "idle" && (
           <div className="space-y-4">
-            <div className="rounded-[20px] border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
-              <Camera size={32} className="mx-auto text-[#4C7D9D]" />
-              <p className="mt-3 text-sm text-slate-500">Point camera at ticket QR code</p>
+            <div className="rounded-[20px] border border-dashed border-[rgba(37,42,45,0.08)] bg-white/62 p-8 text-center">
+              <Camera size={32} className="mx-auto text-[var(--color-blue)]" />
+              <p className="mt-3 text-sm text-[var(--color-ink-soft)]">Point camera at ticket QR code</p>
             </div>
             <div className="flex gap-2">
               <label className="flex-1">
-                <span className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.18em] text-[#4C7D9D]">Check-in type</span>
+                <span className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-blue)]">Check-in type</span>
                 <select
                   value={checkInType}
                   onChange={(e) => setCheckInType(e.target.value as "ONE_DAY" | "GALA_DINNER")}
-                  className="h-10 w-full rounded-2xl border border-slate-200 bg-white px-3 text-sm text-[#10203B] outline-none focus:border-[#4C7D9D]"
+                  className="h-10 w-full rounded-2xl border border-[rgba(37,42,45,0.08)] bg-white px-3 text-sm text-[var(--color-ink)] outline-none focus:border-[var(--color-blue)]"
                 >
                   <option value="ONE_DAY">Forum (1-day)</option>
                   <option value="GALA_DINNER">Gala dinner</option>
@@ -277,9 +271,8 @@ function QrScanner({ onClose }: { onClose: () => void }) {
 
         {state.phase === "scanning" && (
           <div className="space-y-4">
-            <div className="relative aspect-square w-full overflow-hidden rounded-[20px] bg-black">
+            <div className="relative aspect-square w-full overflow-hidden rounded-[20px] bg-[var(--color-ink)]">
               <video ref={videoRef} className="h-full w-full object-cover" playsInline muted />
-              {/* Corner guides */}
               <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
                 <div className="relative h-48 w-48">
                   <div className="absolute left-0 top-0 h-8 w-8 rounded-tl-lg border-l-2 border-t-2 border-white" />
@@ -289,33 +282,33 @@ function QrScanner({ onClose }: { onClose: () => void }) {
                 </div>
               </div>
             </div>
-            <p className="text-center text-sm text-slate-500">Scanning for QR code…</p>
+            <p className="text-center text-sm text-[var(--color-ink-soft)]">Scanning for QR code...</p>
             <DashboardSecondaryBtn onClick={reset} className="w-full justify-center">Cancel</DashboardSecondaryBtn>
           </div>
         )}
 
         {state.phase === "loading" && (
           <div className="flex flex-col items-center gap-4 py-8">
-            <RefreshCw size={32} className="animate-spin text-[#4C7D9D]" />
-            <p className="text-sm text-slate-500">Looking up ticket…</p>
+            <RefreshCw size={32} className="animate-spin text-[var(--color-blue)]" />
+            <p className="text-sm text-[var(--color-ink-soft)]">Looking up ticket...</p>
           </div>
         )}
 
         {state.phase === "confirm" && (
           <div className="space-y-4">
-            <div className="rounded-[20px] border border-slate-200 bg-slate-50/80 p-4">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#4C7D9D]">Ticket holder</p>
-              <p className="mt-2 text-base font-semibold text-[#10203B]">{state.ticket.fullName}</p>
-              <p className="mt-0.5 text-sm text-slate-500">{state.ticket.email}</p>
+            <div className="rounded-[20px] border border-[rgba(37,42,45,0.08)] bg-white/70 p-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--color-blue)]">Ticket holder</p>
+              <p className="mt-2 text-base font-semibold text-[var(--color-ink)]">{state.ticket.fullName}</p>
+              <p className="mt-0.5 text-sm text-[var(--color-ink-soft)]">{state.ticket.email}</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {ticketStatusBadge(state.ticket.status)}
                 {state.ticket.galaDinner && <DashboardBadge tone="purple">Gala dinner</DashboardBadge>}
               </div>
               {state.ticket.lastCheckIn && (
-                <p className="mt-2 text-xs text-amber-600">⚠ Previously checked in: {formatDate(state.ticket.lastCheckIn)}</p>
+                <p className="mt-2 text-xs text-[var(--color-blue)]">Previously checked in: {formatDate(state.ticket.lastCheckIn)}</p>
               )}
             </div>
-            <p className="text-sm text-slate-600">Check in as: <strong>{checkInType === "GALA_DINNER" ? "Gala dinner" : "Forum (1-day)"}</strong></p>
+            <p className="text-sm text-[var(--color-ink-soft)]">Check in as: <strong>{checkInType === "GALA_DINNER" ? "Gala dinner" : "Forum (1-day)"}</strong></p>
             <div className="flex gap-2">
               <DashboardSecondaryBtn onClick={reset} className="flex-1 justify-center">Cancel</DashboardSecondaryBtn>
               <DashboardPrimaryBtn onClick={() => confirmCheckIn(state.ticket)} className="flex-1 justify-center">
@@ -352,8 +345,6 @@ function QrScanner({ onClose }: { onClose: () => void }) {
   );
 }
 
-// ── Main page ─────────────────────────────────────────────────────────────────
-
 export default function TicketsPage({
   tickets,
   initialEarlyBirdEnabled,
@@ -388,10 +379,8 @@ export default function TicketsPage({
         }
       />
 
-      {/* Early bird toggle */}
       <EarlyBirdToggle initialEnabled={initialEarlyBirdEnabled} />
 
-      {/* Metrics */}
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-[1.1fr_repeat(3,minmax(0,0.75fr))]">
         <DashboardAccentBlock>
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-soft)]">
@@ -404,9 +393,8 @@ export default function TicketsPage({
         <DashboardMetricTile label="Pending payment" value={pending.length} accent="amber" />
       </div>
 
-      {/* Table */}
       <DashboardCard className="overflow-hidden p-0">
-        <div className="border-b border-black/10 p-4 md:p-5">
+        <div className="border-b border-[rgba(37,42,45,0.08)] p-4 md:p-5">
           <input
             type="text"
             placeholder="Search by name or email..."
@@ -425,8 +413,8 @@ export default function TicketsPage({
             />
           </div>
         ) : (
-          <div className="divide-y divide-black/10">
-            <div className="hidden grid-cols-[1.4fr_0.8fr_auto_auto_auto] gap-3 border-b border-black/10 bg-[#FAFAFA] px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-black/45 lg:grid">
+          <div className="divide-y divide-[rgba(37,42,45,0.08)]">
+            <div className="hidden grid-cols-[1.4fr_0.8fr_auto_auto_auto] gap-3 border-b border-[rgba(37,42,45,0.08)] bg-white/62 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)] lg:grid">
               <span>Attendee</span>
               <span>Type</span>
               <span>Gala</span>
@@ -436,19 +424,19 @@ export default function TicketsPage({
             {filtered.map((ticket) => (
               <div
                 key={ticket.id}
-                className="grid gap-2 px-4 py-4 lg:grid-cols-[1.4fr_0.8fr_auto_auto_auto] lg:items-center"
+                className="mx-3 my-3 grid gap-3 rounded-[24px] border border-[rgba(37,42,45,0.08)] bg-white/62 p-4 shadow-[0_10px_26px_rgba(37,42,45,0.035)] lg:m-0 lg:grid-cols-[1.4fr_0.8fr_auto_auto_auto] lg:items-center lg:rounded-none lg:border-0 lg:bg-transparent lg:px-4 lg:py-4 lg:shadow-none"
               >
                 <div>
-                  <p className="text-sm font-semibold text-[#0A0A0A]">{ticket.fullName}</p>
-                  <p className="mt-0.5 text-xs text-black/50">{ticket.email}</p>
+                  <p className="text-sm font-medium text-[var(--color-ink)]">{ticket.fullName}</p>
+                  <p className="mt-0.5 text-xs text-[var(--color-ink-soft)]">{ticket.email}</p>
                   {ticket.isIbpaMember && (
-                    <p className="text-[11px] font-semibold text-[#1673A5]">IBPA Member</p>
+                    <p className="text-[11px] font-semibold text-[var(--color-blue)]">IBPA Member</p>
                   )}
                 </div>
-                <p className="text-sm capitalize text-black/60">{ticket.type.replace("_", " ").toLowerCase()}</p>
-                <div>{ticket.galaDinner ? <DashboardBadge tone="purple">Yes</DashboardBadge> : <span className="text-xs text-black/40">No</span>}</div>
+                <p className="text-sm capitalize text-[var(--color-ink-soft)]">{ticket.type.replace("_", " ").toLowerCase()}</p>
+                <div>{ticket.galaDinner ? <DashboardBadge tone="purple">Yes</DashboardBadge> : <span className="text-xs text-[var(--color-ink-muted)]">No</span>}</div>
                 <div>{ticketStatusBadge(ticket.status)}</div>
-                <p className="text-xs text-black/40">{formatDate(ticket.lastCheckIn)}</p>
+                <p className="text-xs text-[var(--color-ink-muted)]">{formatDate(ticket.lastCheckIn)}</p>
               </div>
             ))}
           </div>

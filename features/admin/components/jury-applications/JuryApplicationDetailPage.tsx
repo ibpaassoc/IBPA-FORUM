@@ -53,21 +53,21 @@ function FileLink({ href, name, sizeBytes }: { href: string; name: string; sizeB
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="group flex items-center justify-between gap-3 rounded-lg border border-black/10 bg-white px-3 py-3 text-sm text-[#0A0A0A] transition hover:border-[#7DC8EE] hover:bg-[#EAF6FF]/45"
+      className="group flex items-center justify-between gap-3 rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white px-3 py-3 text-sm text-[var(--color-ink)] transition hover:border-[rgba(114,160,193,0.34)] hover:bg-[var(--color-blue-wash)]/60"
     >
       <div className="flex min-w-0 items-center gap-3">
-        <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-[#EAF6FF] text-[#1673A5]">
+        <div className="flex size-9 shrink-0 items-center justify-center rounded-[18px] bg-[var(--color-blue-wash)] text-[var(--color-blue)]">
           <Files aria-hidden size={15} />
         </div>
         <div className="min-w-0">
-          <p className="truncate font-semibold text-[#0A0A0A]">{name}</p>
-          <p className="text-xs text-black/45">{(sizeBytes / 1024 / 1024).toFixed(2)} MB</p>
+          <p className="truncate font-semibold text-[var(--color-ink)]">{name}</p>
+          <p className="text-xs text-[var(--color-ink-muted)]">{(sizeBytes / 1024 / 1024).toFixed(2)} MB</p>
         </div>
       </div>
       <ExternalLink
         aria-hidden
         size={15}
-        className="shrink-0 text-black/35 transition group-hover:text-[#1673A5]"
+        className="shrink-0 text-[var(--color-ink-muted)] transition group-hover:text-[var(--color-blue)]"
       />
     </a>
   );
@@ -77,9 +77,9 @@ function AlertMessage({ tone, children }: { tone: "error" | "notice"; children: 
   const className =
     tone === "error"
       ? "border-red-200 bg-red-50 text-red-700"
-      : "border-[#7DC8EE] bg-[#EAF6FF] text-[#0A0A0A]";
+      : "border-[rgba(114,160,193,0.34)] bg-[var(--color-blue-wash)] text-[var(--color-ink)]";
 
-  return <div className={`rounded-lg border px-4 py-3 text-sm ${className}`}>{children}</div>;
+  return <div className={`rounded-[22px] border px-4 py-3 text-sm ${className}`}>{children}</div>;
 }
 
 function SectionTitle({
@@ -92,12 +92,12 @@ function SectionTitle({
   title: string;
 }) {
   return (
-    <div className="border-b border-black/10 p-4 md:p-5">
-      <div className="flex items-center gap-2 text-[#1673A5]">
+    <div className="border-b border-[rgba(37,42,45,0.08)] p-4 md:p-5">
+      <div className="flex items-center gap-2 text-[var(--color-blue)]">
         <Icon aria-hidden size={16} />
         <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">{label}</p>
       </div>
-      <h2 className="mt-2 text-2xl font-semibold normal-case tracking-[-0.02em] text-[#0A0A0A]">
+      <h2 className="mt-2 font-[var(--font-title-family)] text-3xl font-light tracking-[-0.025em] text-[var(--color-ink)]">
         {title}
       </h2>
     </div>
@@ -185,7 +185,7 @@ export default function JuryApplicationDetailPage({
               />
               {application.expertiseAreas.length > 0 ? (
                 <DashboardPanel>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-black/45">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
                     Expertise areas
                   </p>
                   <div className="mt-3 flex flex-wrap gap-1.5">
@@ -215,8 +215,8 @@ export default function JuryApplicationDetailPage({
             <SectionTitle icon={Files} label="Files" title="Photo and certifications" />
             <div className="grid gap-4 p-4 md:p-5 lg:grid-cols-[minmax(220px,0.65fr)_minmax(0,1fr)]">
               <div>
-                <p className="text-sm font-semibold text-[#0A0A0A]">Profile photo</p>
-                <div className="mt-3 overflow-hidden rounded-lg border border-black/10 bg-[#FAFAFA]">
+                <p className="text-sm font-medium text-[var(--color-ink)]">Profile photo</p>
+                <div className="mt-3 overflow-hidden rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white/62">
                   {profilePhoto ? (
                     <Image
                       src={`/api/admin/jury-files/${profilePhoto.id}`}
@@ -227,7 +227,7 @@ export default function JuryApplicationDetailPage({
                       className="aspect-square w-full object-cover"
                     />
                   ) : (
-                    <div className="flex aspect-square items-center justify-center text-sm text-black/45">
+                    <div className="flex aspect-square items-center justify-center text-sm text-[var(--color-ink-muted)]">
                       No profile photo
                     </div>
                   )}
@@ -235,7 +235,7 @@ export default function JuryApplicationDetailPage({
               </div>
 
               <div>
-                <p className="text-sm font-semibold text-[#0A0A0A]">Certifications</p>
+                <p className="text-sm font-medium text-[var(--color-ink)]">Certifications</p>
                 <div className="mt-3 flex flex-col gap-2">
                   {certifications.map((file) => (
                     <FileLink
@@ -246,7 +246,7 @@ export default function JuryApplicationDetailPage({
                     />
                   ))}
                   {certifications.length === 0 ? (
-                    <div className="rounded-lg border border-dashed border-black/15 bg-[#FAFAFA] px-4 py-4 text-sm text-black/50">
+                    <div className="rounded-[22px] border border-dashed border-[rgba(37,42,45,0.14)] bg-white/62 px-4 py-4 text-sm text-[var(--color-ink-soft)]">
                       No certifications uploaded.
                     </div>
                   ) : null}
@@ -282,12 +282,12 @@ export default function JuryApplicationDetailPage({
           </DashboardAccentBlock>
 
           <DashboardCard>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#1673A5]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-blue)]">
               Decision
             </p>
             <form action={saveJuryApplicationNotesAction} className="mt-4 flex flex-col gap-3">
               <input type="hidden" name="id" value={application.id} />
-              <label htmlFor="adminNotes" className="text-sm font-semibold text-[#0A0A0A]">
+              <label htmlFor="adminNotes" className="text-sm font-medium text-[var(--color-ink)]">
                 Admin notes
               </label>
               <textarea
@@ -304,8 +304,8 @@ export default function JuryApplicationDetailPage({
             </form>
 
             {canDecide ? (
-              <div className="mt-4 border-t border-black/[0.06] pt-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-black/40">
+              <div className="mt-4 border-t border-[rgba(37,42,45,0.06)] pt-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-muted)]">
                   Approve with payment
                 </p>
                 <div className="mt-2 grid gap-2">
@@ -327,32 +327,32 @@ export default function JuryApplicationDetailPage({
                   </form>
                 </div>
 
-                <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-black/40">
+                <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-muted)]">
                   Approve without payment
                 </p>
                 <form action={approveJuryApplicationWithoutPaymentAction} className="mt-2">
                   <input type="hidden" name="id" value={application.id} />
                   <button
                     type="submit"
-                    className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-md border border-amber-200 bg-amber-50 px-3.5 py-2 text-sm font-semibold leading-none text-amber-800 transition hover:bg-amber-100"
+                    className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-[18px] border border-[rgba(114,160,193,0.28)] bg-[var(--color-blue-wash)] px-3.5 py-2 text-sm font-semibold leading-none text-[var(--color-blue)] transition hover:border-[rgba(114,160,193,0.42)] hover:bg-white"
                   >
                     <ShieldCheck aria-hidden size={15} />
                     Activate without payment
                   </button>
                 </form>
-                <p className="mt-1.5 text-xs leading-5 text-black/40">
-                  Marks the judge as active (PAID) immediately — no Stripe session or email is sent.
+                <p className="mt-1.5 text-xs leading-5 text-[var(--color-ink-muted)]">
+                  Marks the judge as active (PAID) immediately - no Stripe session or email is sent.
                 </p>
               </div>
             ) : null}
 
             {canReject ? (
-              <div className="mt-4 border-t border-black/[0.06] pt-4">
+              <div className="mt-4 border-t border-[rgba(37,42,45,0.06)] pt-4">
                 <form action={rejectJuryApplicationAction}>
                   <input type="hidden" name="id" value={application.id} />
                   <button
                     type="submit"
-                    className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-md border border-red-200 bg-white px-3.5 py-2 text-sm font-semibold leading-none text-red-700 transition hover:bg-red-50"
+                    className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-[18px] border border-red-200 bg-white px-3.5 py-2 text-sm font-semibold leading-none text-red-700 transition hover:bg-red-50"
                   >
                     <XCircle aria-hidden size={15} />
                     Reject application
@@ -371,10 +371,10 @@ export default function JuryApplicationDetailPage({
           </DashboardCard>
 
           <DashboardCard>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#1673A5]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-blue)]">
               Status override
             </p>
-            <p className="mt-1 text-xs leading-5 text-black/45">
+            <p className="mt-1 text-xs leading-5 text-[var(--color-ink-muted)]">
               Force a specific status without triggering emails or Stripe sessions.
             </p>
             <form action={overrideJuryApplicationStatusAction} className="mt-3 flex flex-col gap-2">
@@ -397,7 +397,7 @@ export default function JuryApplicationDetailPage({
           </DashboardCard>
 
           <DashboardCard>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#1673A5]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-blue)]">
               Timeline
             </p>
             <div className="mt-3 grid gap-3">

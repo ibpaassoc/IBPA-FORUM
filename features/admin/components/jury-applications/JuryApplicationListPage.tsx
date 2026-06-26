@@ -90,24 +90,24 @@ export default function JuryApplicationListPage({
               href={`/admin/jury-applications/${app.id}`}
               className="group block"
             >
-              <DashboardCard className="p-0 transition hover:border-[#7DC8EE] hover:shadow-[0_22px_60px_rgba(10,10,10,0.1)]">
+              <DashboardCard className="p-0 transition hover:border-[rgba(114,160,193,0.34)] hover:shadow-[0_24px_64px_rgba(114,160,193,0.16)]">
                 <div className="grid gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.8fr)_170px] lg:items-center">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       {juryStatusBadge(app.status)}
                     </div>
-                    <h2 className="mt-3 text-xl font-semibold normal-case tracking-[-0.02em] text-[#0A0A0A]">
+                    <h2 className="mt-3 font-[var(--font-title-family)] text-[1.55rem] font-light tracking-[-0.025em] text-[var(--color-ink)]">
                       {app.fullName}
                     </h2>
-                    <p className="mt-1 truncate text-sm text-black/55">{app.email}</p>
-                    <p className="mt-3 inline-flex items-center gap-2 rounded-md border border-black/10 bg-[#FAFAFA] px-2.5 py-1 text-xs text-black/55">
+                    <p className="mt-1 truncate text-sm text-[var(--color-ink-soft)]">{app.email}</p>
+                    <p className="mt-3 inline-flex items-center gap-2 rounded-[18px] border border-[rgba(37,42,45,0.08)] bg-white/62 px-2.5 py-1 text-xs text-[var(--color-ink-soft)]">
                       <MapPin aria-hidden size={13} />
                       {app.city}, {app.country}
                     </p>
                   </div>
 
                   <DashboardPanel>
-                    <p className="text-sm font-semibold text-[#0A0A0A]">{app.professionalTitle}</p>
+                    <p className="text-sm font-medium text-[var(--color-ink)]">{app.professionalTitle}</p>
                     <div className="mt-3 flex flex-wrap gap-1.5">
                       {app.expertiseAreas.slice(0, 4).map((area) => (
                         <DashboardChip key={area}>{area}</DashboardChip>
@@ -118,19 +118,19 @@ export default function JuryApplicationListPage({
                     </div>
                   </DashboardPanel>
 
-                  <div className="flex items-center justify-between gap-3 rounded-lg border border-black/10 bg-white p-4 lg:flex-col lg:items-start">
+                  <div className="flex items-center justify-between gap-3 rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white p-4 lg:flex-col lg:items-start">
                     <div>
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-black/45">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
                         Last activity
                       </p>
-                      <p className="mt-2 text-sm font-semibold text-[#0A0A0A]">
+                      <p className="mt-2 text-sm font-medium text-[var(--color-ink)]">
                         {formatAdminDate(app.paidAt ?? app.submittedAt)}
                       </p>
                     </div>
                     <ArrowRight
                       aria-hidden
                       size={17}
-                      className="text-black/45 transition group-hover:translate-x-0.5 group-hover:text-[#1673A5]"
+                      className="text-[var(--color-ink-muted)] transition group-hover:translate-x-0.5 group-hover:text-[var(--color-blue)]"
                     />
                   </div>
                 </div>
