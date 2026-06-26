@@ -146,7 +146,6 @@ export default function AdminOverviewPage({
       <DashboardHeader
         label="Overview"
         title="Command center"
-        description="A calm operating view for applications, jurors, scoring, and event check-in."
         actions={
           <>
             <DashboardSecondaryBtn href="/admin/tickets">
@@ -168,9 +167,6 @@ export default function AdminOverviewPage({
           </p>
           <p className="mt-4 font-[var(--font-title-family)] text-[clamp(2.4rem,5vw,4.1rem)] font-light leading-none tracking-[-0.04em]">
             {pendingWork}
-          </p>
-          <p className="mt-3 text-sm leading-6 text-[var(--color-ink-soft)]">
-            Live items across review, judging, payment, and scoring.
           </p>
         </DashboardAccentBlock>
         <DashboardMetricTile label="Applications" value={participantTotals.total} accent="blue" />

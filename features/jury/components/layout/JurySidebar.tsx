@@ -9,7 +9,6 @@ import {
   MoreHorizontal,
   PanelLeftClose,
   PanelLeftOpen,
-  Star,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
@@ -143,20 +142,6 @@ export default function JurySidebar({
                 );
               })}
             </nav>
-
-            {!collapsed ? (
-              <div className="mt-3 rounded-[24px] bg-white/58 p-4">
-                <div className="flex items-center gap-2 text-[var(--color-blue)]">
-                  <Star aria-hidden size={15} />
-                  <p className="text-[0.62rem] font-semibold uppercase tracking-[0.16em]">
-                    Nomination focus
-                  </p>
-                </div>
-                <p className="mt-2 text-sm leading-6 text-[var(--color-ink-soft)]">
-                  Score assigned entries and keep drafts calm until final submit.
-                </p>
-              </div>
-            ) : null}
 
             <div className="mt-3 border-t border-[rgba(37,42,45,0.08)] pt-3">
               <SignOutButton compact={collapsed} />

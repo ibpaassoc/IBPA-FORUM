@@ -67,11 +67,7 @@ export default function JuryDashboardPage({
 
   return (
     <div className="flex flex-col gap-5">
-      <DashboardPageHeader
-        label="Jury"
-        title="Review queue"
-        description="Assigned nomination tasks only. Open a card to review evidence and submit a score."
-      />
+      <DashboardPageHeader label="Jury" title="Review queue" />
 
       <div className="grid gap-3 xl:grid-cols-[1.15fr_1fr]">
         <DashboardAccentBlock>
