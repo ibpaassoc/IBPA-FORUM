@@ -2,19 +2,30 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import {
   HeroPrimaryButton,
   HeroSecondaryButton,
 } from "@/shared/components/public";
+import { PUBLIC_MOTION_EASE, PUBLIC_MOTION_DURATION } from "@/shared/components/public/motion-tokens";
 
 export default function CategoriesHero() {
   const { t } = useLanguage();
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
+  const reducedMotion = useReducedMotion();
 
   const descriptionId = "categories-hero-description";
+
+  function enter(delay: number) {
+    if (reducedMotion) return {};
+    return {
+      initial: { opacity: 0, y: 16 },
+      animate: { opacity: 1, y: 0 },
+      transition: { duration: PUBLIC_MOTION_DURATION.slow, ease: PUBLIC_MOTION_EASE, delay },
+    };
+  }
 
   return (
     <section className="landing-hero-section relative flex min-h-[100svh] items-center justify-center overflow-hidden bg-[#0a0a0a]">
@@ -33,15 +44,22 @@ export default function CategoriesHero() {
       </div>
 
       <div className="relative z-10 flex w-full flex-col items-center px-[var(--page-gutter)] pb-20 pt-[calc(var(--site-header-height)+clamp(2rem,6vw,5rem))] text-center">
-        <p className="font-[var(--font-accent-family)] text-[clamp(0.9rem,1.4vw,1.15rem)] italic tracking-wide text-white/70">
+        <motion.p
+          {...enter(0.1)}
+          className="font-[var(--font-accent-family)] text-[clamp(0.9rem,1.4vw,1.15rem)] italic tracking-wide text-white/70"
+        >
           {t.categoriesPage.hero.eyebrow}
-        </p>
+        </motion.p>
 
-        <h1 className="mt-4 max-w-[14ch] font-[var(--font-title-family)] text-[clamp(3.4rem,10vw,7.8rem)] font-light leading-[0.9] tracking-[-0.035em] text-white [text-shadow:0_8px_32px_rgba(0,0,0,0.45)]">
+        <motion.h1
+          {...enter(0.22)}
+          className="mt-4 max-w-[14ch] font-[var(--font-title-family)] text-[clamp(3.4rem,10vw,7.8rem)] font-light leading-[0.9] tracking-[-0.035em] text-white [text-shadow:0_8px_32px_rgba(0,0,0,0.45)]"
+        >
           {t.categoriesPage.hero.title}
-        </h1>
+        </motion.h1>
 
-        <button
+        <motion.button
+          {...enter(0.34)}
           type="button"
           aria-expanded={isDescriptionOpen}
           aria-controls={descriptionId}
@@ -67,7 +85,7 @@ export default function CategoriesHero() {
           <span className="sr-only">
             {isDescriptionOpen ? "Hide description" : "Show description"}
           </span>
-        </button>
+        </motion.button>
 
         <AnimatePresence mode="popLayout" initial={false}>
           {isDescriptionOpen && (
@@ -76,10 +94,7 @@ export default function CategoriesHero() {
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
-              transition={{
-                duration: 0.22,
-                ease: [0.22, 1, 0.36, 1],
-              }}
+              transition={{ duration: PUBLIC_MOTION_DURATION.fast, ease: PUBLIC_MOTION_EASE }}
               className="mt-5 w-full max-w-xl overflow-hidden rounded-[2rem] border border-white/20 bg-white/[0.12] px-6 py-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_18px_58px_rgba(0,0,0,0.32)] backdrop-blur-xl sm:px-8"
             >
               <p className="font-[var(--font-accent-family)] text-[clamp(1rem,1.6vw,1.18rem)] italic leading-[1.65] text-white/82">
@@ -89,7 +104,10 @@ export default function CategoriesHero() {
           )}
         </AnimatePresence>
 
-        <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
+        <motion.div
+          {...enter(0.44)}
+          className="mt-9 flex flex-wrap items-center justify-center gap-4"
+        >
           <HeroPrimaryButton href="/apply">
             {t.common.applyAsParticipant}
           </HeroPrimaryButton>
@@ -98,7 +116,7 @@ export default function CategoriesHero() {
             {(t.categoriesPage.hero as { secondary?: string }).secondary ??
               "Browse Categories"}
           </HeroSecondaryButton>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

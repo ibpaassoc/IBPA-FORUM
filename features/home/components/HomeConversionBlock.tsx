@@ -13,7 +13,7 @@ import {
 
 import { PRICING } from "@/data/pricing";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { LandingSecondaryButton } from "@/shared/components/public";
+import { LandingSecondaryButton, Reveal, StaggerContainer } from "@/shared/components/public";
 import TicketModal from "@/features/tickets/components/TicketModal";
 
 export default function HomeRegistrationSection() {
@@ -109,46 +109,50 @@ export default function HomeRegistrationSection() {
         <div className="pointer-events-none absolute left-[-10%] top-0 h-80 w-80 rounded-full bg-[#b9d9eb]/18 blur-2xl" />
 
         <div className="page-section relative">
-          <div className="mx-auto max-w-3xl text-center">
-            <p className="page-eyebrow text-[#72a0c1]">{c.eyebrow}</p>
+          <Reveal>
+            <div className="mx-auto max-w-3xl text-center">
+              <p className="page-eyebrow text-[#72a0c1]">{c.eyebrow}</p>
 
-            <h2 className="mt-4 font-(--font-display) text-[clamp(2.5rem,5.7vw,5.7rem)] leading-[0.9] tracking-[-0.065em] text-[#10182a]">
-              {c.title}
-            </h2>
-          </div>
+              <h2 className="mt-4 font-(--font-display) text-[clamp(2.5rem,5.7vw,5.7rem)] leading-[0.9] tracking-[-0.065em] text-[#10182a]">
+                {c.title}
+              </h2>
+            </div>
+          </Reveal>
 
           <div className="mx-auto mt-10 max-w-5xl">
-            <div className="grid gap-3 md:grid-cols-2">
+            <StaggerContainer className="grid gap-3 md:grid-cols-2" stagger={0.08}>
               {topInfoCards.map((card) => (
                 <InfoCard key={card.eyebrow} {...card} featured />
               ))}
-            </div>
+            </StaggerContainer>
 
-            <div className="mt-3 grid gap-3 md:grid-cols-3">
+            <StaggerContainer className="mt-3 grid gap-3 md:grid-cols-3" stagger={0.06} delay={0.05}>
               {bottomInfoCards.map((card) => (
                 <InfoCard key={card.eyebrow} {...card} />
               ))}
-            </div>
+            </StaggerContainer>
           </div>
 
           <div className="mx-auto mt-16 max-w-5xl">
-            <div className="mb-8 grid gap-4 md:grid-cols-[0.85fr_1fr] md:items-end">
-              <div>
-                <p className="page-eyebrow text-[#72a0c1]">
-                  {c.pricing.eyebrow}
+            <Reveal>
+              <div className="mb-8 grid gap-4 md:grid-cols-[0.85fr_1fr] md:items-end">
+                <div>
+                  <p className="page-eyebrow text-[#72a0c1]">
+                    {c.pricing.eyebrow}
+                  </p>
+
+                  <h3 className="mt-4 font-(--font-display) text-[clamp(2.25rem,4.6vw,4.7rem)] leading-[0.9] tracking-[-0.06em] text-[#10182a]">
+                    {c.pricing.title}
+                  </h3>
+                </div>
+
+                <p className="max-w-xl text-sm leading-6 text-[#10182a]/52 md:ml-auto">
+                  {c.pricing.description}
                 </p>
-
-                <h3 className="mt-4 font-(--font-display) text-[clamp(2.25rem,4.6vw,4.7rem)] leading-[0.9] tracking-[-0.06em] text-[#10182a]">
-                  {c.pricing.title}
-                </h3>
               </div>
+            </Reveal>
 
-              <p className="max-w-xl text-sm leading-6 text-[#10182a]/52 md:ml-auto">
-                {c.pricing.description}
-              </p>
-            </div>
-
-            <div className="grid gap-3 lg:grid-cols-3">
+            <StaggerContainer className="grid gap-3 lg:grid-cols-3" stagger={0.08}>
               <PricingCard
                 eyebrow={c.pricing.forum.eyebrow}
                 title={c.pricing.forum.title}
@@ -208,7 +212,7 @@ export default function HomeRegistrationSection() {
                   ))}
                 </div>
               </PricingCard>
-            </div>
+            </StaggerContainer>
           </div>
         </div>
       </section>
