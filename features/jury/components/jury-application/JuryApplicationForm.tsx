@@ -88,7 +88,7 @@ export default function JuryApplicationForm() {
       back: "Back",
       continue: "Continue",
       submit: "Submit Application",
-      submitting: "Submitting…",
+      submitting: "Submitting...",
       firstName: "First Name",
       lastName: "Last Name",
       email: "Email Address",
@@ -134,7 +134,7 @@ export default function JuryApplicationForm() {
       confirmNote: "Please review the details below. Once submitted, your jury application will be forwarded to the IBPA committee.",
       received: "Your jury application has been received for review.",
       submitError: "Something went wrong. Please try again.",
-      uploading: "Uploading files…",
+      uploading: "Uploading files...",
     },
     ru: {
       steps: [
@@ -528,7 +528,7 @@ export default function JuryApplicationForm() {
       <div className="mx-auto max-w-4xl rounded-2xl border border-white/70 bg-white/72 p-5 shadow-[0_20px_64px_rgba(42,66,82,0.1)] backdrop-blur-xl sm:rounded-[32px] sm:p-8 md:rounded-[40px] md:p-14">
         <div className="mb-10">
           <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[var(--color-hover-accent)]">
-            {STEPS[step].label} — {step + 1} / {STEPS.length}
+            {STEPS[step].label} - {step + 1} / {STEPS.length}
           </p>
           <h2 className="mt-2 font-[var(--font-title-family)] text-[clamp(1.8rem,3.5vw,2.6rem)] font-light leading-[1.05] tracking-[-0.02em] text-[var(--color-ink)]">
             {currentStepInfo.title}
@@ -682,7 +682,7 @@ export default function JuryApplicationForm() {
                   ].map((row) => (
                     <div key={row.label}>
                       <dt className="text-[0.62rem] font-bold uppercase tracking-[0.18em] text-[var(--color-ink)]/40">{row.label}</dt>
-                      <dd className="mt-1 text-[0.95rem] font-semibold text-[var(--color-ink)]">{row.value || "—"}</dd>
+                      <dd className="mt-1 text-[0.95rem] font-semibold text-[var(--color-ink)]">{row.value || "-"}</dd>
                     </div>
                   ))}
                 </dl>
@@ -698,7 +698,6 @@ export default function JuryApplicationForm() {
           </AnimatePresence>
         </div>
 
-        {/* Navigation */}
         <div className="mt-10 flex flex-col gap-4 border-t border-[var(--color-blue)]/10 pt-8 sm:flex-row sm:items-center sm:justify-between">
           <button
             type="button"

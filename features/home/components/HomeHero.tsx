@@ -3,19 +3,30 @@
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { HeroPrimaryButton, HeroSecondaryButton } from "@/shared/components/public";
+import { PUBLIC_MOTION_EASE, PUBLIC_MOTION_DURATION } from "@/shared/components/public/motion-tokens";
 
 const TicketModal = dynamic(() => import("@/features/tickets/components/TicketModal"), {
   ssr: false,
   loading: () => null,
 });
 
+function enter(delay: number) {
+  return {
+    initial: { opacity: 0, y: 16 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: PUBLIC_MOTION_DURATION.slow, ease: PUBLIC_MOTION_EASE, delay },
+  } as const;
+}
+
 export default function HomeHero() {
   const { t } = useLanguage();
   const h = t.home.hero;
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
+  const reducedMotion = useReducedMotion();
 
   const loopTicker = [...h.ticker, ...h.ticker, ...h.ticker];
 
@@ -37,43 +48,89 @@ export default function HomeHero() {
         </div>
 
         <div className="relative z-10 flex w-full flex-col items-center px-[var(--page-gutter)] pb-28 pt-[calc(var(--site-header-height)+clamp(2rem,6vw,5rem))] text-center">
-          <p className="font-[var(--font-accent-family)] text-[clamp(0.85rem,1.1vw,1rem)] italic tracking-[0.08em] text-white/72">
-            {h.eyebrow}
-          </p>
+          {reducedMotion ? (
+            <>
+              <p className="font-[var(--font-accent-family)] text-[clamp(0.85rem,1.1vw,1rem)] italic tracking-[0.08em] text-white/72">
+                {h.eyebrow}
+              </p>
 
-          <h1 className="mt-5 max-w-[12ch] font-[var(--font-title-family)] text-[clamp(3.1rem,9vw,7.6rem)] font-light leading-[0.86] tracking-[-0.045em] text-white [text-shadow:0_10px_38px_rgba(0,0,0,0.48)]">
-            {h.title}
-          </h1>
+              <h1 className="mt-5 max-w-[12ch] font-[var(--font-title-family)] text-[clamp(3.1rem,9vw,7.6rem)] font-light leading-[0.86] tracking-[-0.045em] text-white [text-shadow:0_10px_38px_rgba(0,0,0,0.48)]">
+                {h.title}
+              </h1>
 
-          <div className="mt-8 flex max-w-3xl flex-col items-center gap-5">
-            <p className="max-w-[20ch] font-[var(--font-accent-family)] text-[clamp(1.75rem,3.4vw,3.15rem)] italic leading-[1.08] tracking-[-0.02em] text-white/86 [text-shadow:0_8px_28px_rgba(0,0,0,0.35)]">
-              {h.subtitle}
-            </p>
+              <div className="mt-8 flex max-w-3xl flex-col items-center gap-5">
+                <p className="max-w-[20ch] font-[var(--font-accent-family)] text-[clamp(1.75rem,3.4vw,3.15rem)] italic leading-[1.08] tracking-[-0.02em] text-white/86 [text-shadow:0_8px_28px_rgba(0,0,0,0.35)]">
+                  {h.subtitle}
+                </p>
 
-            <div className="inline-flex flex-wrap items-center justify-center gap-x-4 gap-y-1 rounded-full border border-white/18 bg-black/22 px-5 py-2.5 font-[var(--font-accent-family)] text-[clamp(0.95rem,1.35vw,1.12rem)] italic text-white/78 backdrop-blur-xl">
-              <span>{h.date}</span>
-              <span className="hidden text-white/35 sm:inline">◆</span>
-              <span>{h.location}</span>
-            </div>
-          </div>
+                <div className="inline-flex flex-wrap items-center justify-center gap-x-4 gap-y-1 rounded-full border border-white/18 bg-black/22 px-5 py-2.5 font-[var(--font-accent-family)] text-[clamp(0.95rem,1.35vw,1.12rem)] italic text-white/78 backdrop-blur-xl">
+                  <span>{h.date}</span>
+                  <span className="hidden text-white/35 sm:inline">◆</span>
+                  <span>{h.location}</span>
+                </div>
+              </div>
 
-          <div className="mt-10 flex flex-col items-center gap-3">
-            {/* Primary CTA — opens the ticket modal */}
-            <HeroPrimaryButton onClick={() => setIsTicketModalOpen(true)}>
-              {h.buyTickets}
-            </HeroPrimaryButton>
+              <div className="mt-10 flex flex-col items-center gap-3">
+                <HeroPrimaryButton onClick={() => setIsTicketModalOpen(true)}>
+                  {h.buyTickets}
+                </HeroPrimaryButton>
 
-            {/* Secondary CTAs */}
-            <div className="flex flex-wrap items-center justify-center gap-3">
-              <HeroSecondaryButton href="/apply">
-                {t.common.applyAsParticipant}
-              </HeroSecondaryButton>
+                <div className="flex flex-wrap items-center justify-center gap-3">
+                  <HeroSecondaryButton href="/apply">
+                    {t.common.applyAsParticipant}
+                  </HeroSecondaryButton>
 
-              <HeroSecondaryButton href="/jury">
-                {t.common.applyAsJury}
-              </HeroSecondaryButton>
-            </div>
-          </div>
+                  <HeroSecondaryButton href="/jury">
+                    {t.common.applyAsJury}
+                  </HeroSecondaryButton>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <motion.p
+                {...enter(0.1)}
+                className="font-[var(--font-accent-family)] text-[clamp(0.85rem,1.1vw,1rem)] italic tracking-[0.08em] text-white/72"
+              >
+                {h.eyebrow}
+              </motion.p>
+
+              <motion.h1
+                {...enter(0.22)}
+                className="mt-5 max-w-[12ch] font-[var(--font-title-family)] text-[clamp(3.1rem,9vw,7.6rem)] font-light leading-[0.86] tracking-[-0.045em] text-white [text-shadow:0_10px_38px_rgba(0,0,0,0.48)]"
+              >
+                {h.title}
+              </motion.h1>
+
+              <motion.div {...enter(0.38)} className="mt-8 flex max-w-3xl flex-col items-center gap-5">
+                <p className="max-w-[20ch] font-[var(--font-accent-family)] text-[clamp(1.75rem,3.4vw,3.15rem)] italic leading-[1.08] tracking-[-0.02em] text-white/86 [text-shadow:0_8px_28px_rgba(0,0,0,0.35)]">
+                  {h.subtitle}
+                </p>
+
+                <div className="inline-flex flex-wrap items-center justify-center gap-x-4 gap-y-1 rounded-full border border-white/18 bg-black/22 px-5 py-2.5 font-[var(--font-accent-family)] text-[clamp(0.95rem,1.35vw,1.12rem)] italic text-white/78 backdrop-blur-xl">
+                  <span>{h.date}</span>
+                  <span className="hidden text-white/35 sm:inline">◆</span>
+                  <span>{h.location}</span>
+                </div>
+              </motion.div>
+
+              <motion.div {...enter(0.52)} className="mt-10 flex flex-col items-center gap-3">
+                <HeroPrimaryButton onClick={() => setIsTicketModalOpen(true)}>
+                  {h.buyTickets}
+                </HeroPrimaryButton>
+
+                <div className="flex flex-wrap items-center justify-center gap-3">
+                  <HeroSecondaryButton href="/apply">
+                    {t.common.applyAsParticipant}
+                  </HeroSecondaryButton>
+
+                  <HeroSecondaryButton href="/jury">
+                    {t.common.applyAsJury}
+                  </HeroSecondaryButton>
+                </div>
+              </motion.div>
+            </>
+          )}
         </div>
 
         <div
@@ -88,6 +145,7 @@ export default function HomeHero() {
             style={{
               animation: "marquee-ticker 32s linear infinite",
               width: "max-content",
+              willChange: "transform",
             }}
           >
             {loopTicker.map((item, index) => (
@@ -102,16 +160,6 @@ export default function HomeHero() {
           </div>
         </div>
 
-        <style jsx>{`
-          @keyframes marquee-ticker {
-            from {
-              transform: translateX(0);
-            }
-            to {
-              transform: translateX(-33.333%);
-            }
-          }
-        `}</style>
       </section>
 
       {isTicketModalOpen ? (

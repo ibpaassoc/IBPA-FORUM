@@ -108,7 +108,7 @@ export default function PublicJuryGrid({
     "border-[var(--color-blue-soft)]/90 bg-white/80 text-[var(--color-ink)] hover:-translate-y-0.5 hover:bg-white";
 
   const disabledArrowClass =
-    "cursor-not-allowed border-slate-200/70 bg-slate-50/55 text-slate-300 opacity-60";
+    "cursor-not-allowed border-[rgba(37,42,45,0.08)] bg-white/45 text-[var(--color-ink-muted)] opacity-55";
 
   return (
     <div className="relative">

@@ -7,6 +7,7 @@ import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { Reveal } from "@/shared/components/public";
+import { PUBLIC_MOTION_EASE, PUBLIC_MOTION_DURATION } from "@/shared/components/public/motion-tokens";
 
 const ITEM_IMAGES = [
   "/images/community/white_group.jpg",
@@ -130,7 +131,7 @@ export default function HomeWhyAttend() {
                           opacity: 0,
                           x: direction > 0 ? -24 : 24,
                         }}
-                        transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+                        transition={{ duration: 0.24, ease: PUBLIC_MOTION_EASE }}
                         className="absolute inset-0"
                       >
                         <Image
@@ -220,7 +221,7 @@ export default function HomeWhyAttend() {
                       opacity: 0,
                       x: direction > 0 ? -18 : 18,
                     }}
-                    transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{ duration: 0.22, ease: PUBLIC_MOTION_EASE }}
                     className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr] lg:items-end"
                   >
                     <div>

@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { motion, useReducedMotion } from "framer-motion";
 import Button from "@/shared/components/ui/Button";
 import Reveal from "./Reveal";
+import { PUBLIC_MOTION_EASE, PUBLIC_MOTION_DURATION } from "./motion-tokens";
 
 // ─── SectionShell ────────────────────────────────────────────────────────────
 
@@ -111,7 +112,7 @@ export function GlassCard({
       <motion.article
         className={baseClass}
         whileHover={{ y: -3, scale: 1.005 }}
-        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: PUBLIC_MOTION_DURATION.fast, ease: PUBLIC_MOTION_EASE }}
       >
         {children}
       </motion.article>

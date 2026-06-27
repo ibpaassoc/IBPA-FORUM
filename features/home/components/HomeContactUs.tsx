@@ -4,7 +4,7 @@ import { FormEvent, useState } from "react";
 import { Mail, User } from "lucide-react";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { LandingPrimaryButton } from "@/shared/components/public";
+import { LandingPrimaryButton, Reveal } from "@/shared/components/public";
 
 type Status = "idle" | "sending" | "sent" | "error" | "invalid";
 
@@ -81,6 +81,7 @@ export default function ContactUsFormSection() {
       <div className="absolute left-[-14%] top-0 h-80 w-80 rounded-full bg-[#b9d9eb]/16 blur-2xl" />
 
       <div className="page-section relative">
+        <Reveal>
         <form
           onSubmit={handleSubmit}
           className="relative mx-auto w-full overflow-hidden rounded-[2.8rem] border border-[#b9d9eb]/65 bg-white/64 p-5 shadow-[0_20px_64px_rgba(114,160,193,0.12)] backdrop-blur-xl md:p-8 lg:p-10"
@@ -188,6 +189,7 @@ export default function ContactUsFormSection() {
             </LandingPrimaryButton>
           </div>
         </form>
+        </Reveal>
       </div>
     </section>
   );

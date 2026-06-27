@@ -87,9 +87,9 @@ export default function AdminScoringOverviewPage({
 
       <DashboardCard>
         <details className="group lg:hidden">
-          <summary className="flex min-h-10 cursor-pointer list-none items-center justify-between rounded-md border border-black/10 bg-[#FAFAFA] px-3 text-sm font-semibold text-[#0A0A0A]">
+          <summary className="flex min-h-10 cursor-pointer list-none items-center justify-between rounded-[18px] border border-[rgba(37,42,45,0.08)] bg-white/62 px-3 text-sm font-medium text-[var(--color-ink)]">
             <span>Filters</span>
-            <span className="text-black/40 transition group-open:rotate-180">v</span>
+            <span className="text-[var(--color-ink-muted)] transition group-open:rotate-180">v</span>
           </summary>
           <form className="mt-3 grid gap-2">
             <input type="text" name="q" defaultValue={filters.q} placeholder="Search by name" className={dashboardInputClass} />
@@ -116,7 +116,7 @@ export default function AdminScoringOverviewPage({
 
         <form className="hidden items-center gap-3 lg:flex">
           <div className="relative flex-1">
-            <Search aria-hidden size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-black/35" />
+            <Search aria-hidden size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-ink-muted)]" />
             <input
               type="text"
               name="q"
@@ -158,40 +158,40 @@ export default function AdminScoringOverviewPage({
         <div className="flex flex-col gap-3">
           {applications.map((app) => (
             <Link key={app.id} href={`/admin/scoring/${app.id}`} className="group block">
-              <DashboardCard className="p-0 transition hover:border-[#7DC8EE] hover:shadow-[0_22px_60px_rgba(10,10,10,0.1)]">
+              <DashboardCard className="p-0 transition hover:border-[rgba(114,160,193,0.34)] hover:shadow-[0_24px_64px_rgba(114,160,193,0.16)]">
                 <div className="grid gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(260px,0.75fr)_180px] lg:items-center">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       {scoringBadge(app.status)}
                       {app.rank ? <DashboardBadge tone="blue">Rank #{app.rank}</DashboardBadge> : null}
                     </div>
-                    <h2 className="mt-3 text-xl font-semibold normal-case tracking-[-0.02em] text-[#0A0A0A]">
+                    <h2 className="mt-3 font-[var(--font-title-family)] text-[1.55rem] font-light tracking-[-0.025em] text-[var(--color-ink)]">
                       {app.fullName}
                     </h2>
-                    <p className="mt-1 truncate text-sm text-black/55">{app.email}</p>
+                    <p className="mt-1 truncate text-sm text-[var(--color-ink-soft)]">{app.email}</p>
                   </div>
 
                   <DashboardPanel>
-                    <p className="text-sm font-semibold text-[#0A0A0A]">{app.awardName}</p>
-                    <p className="mt-1 text-sm text-black/55">{app.categoryName}</p>
-                    <p className="mt-3 text-xs font-semibold uppercase tracking-[0.14em] text-black/45">
+                    <p className="text-sm font-medium text-[var(--color-ink)]">{app.awardName}</p>
+                    <p className="mt-1 text-sm text-[var(--color-ink-soft)]">{app.categoryName}</p>
+                    <p className="mt-3 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
                       {app.submittedJudgeCount}/{app.assignedJudgeCount} judges submitted
                     </p>
                   </DashboardPanel>
 
-                  <div className="flex items-center justify-between rounded-lg border border-black/10 bg-white p-4">
+                  <div className="flex items-center justify-between rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white p-4">
                     <div>
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-black/45">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
                         Average
                       </p>
-                      <p className="mt-2 text-2xl font-semibold tracking-[-0.02em] text-[#0A0A0A]">
+                      <p className="mt-2 text-2xl font-semibold tracking-[-0.02em] text-[var(--color-ink)]">
                         {app.averageScoreLabel}
                       </p>
                     </div>
                     <ArrowRight
                       aria-hidden
                       size={17}
-                      className="text-black/45 transition group-hover:translate-x-0.5 group-hover:text-[#1673A5]"
+                      className="text-[var(--color-ink-muted)] transition group-hover:translate-x-0.5 group-hover:text-[var(--color-blue)]"
                     />
                   </div>
                 </div>

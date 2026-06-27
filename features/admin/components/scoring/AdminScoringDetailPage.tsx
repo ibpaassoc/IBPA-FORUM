@@ -86,7 +86,7 @@ export default function AdminScoringDetailPage({
             </DashboardSecondaryBtn>
             <a
               href={`/api/admin/scoring/${application.id}/export`}
-              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-black/10 bg-white px-3.5 py-2 text-sm font-semibold leading-none text-[#0A0A0A] transition hover:border-[#7DC8EE] hover:bg-[#EAF6FF]"
+              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-[18px] border border-[rgba(37,42,45,0.08)] bg-white px-3.5 py-2 text-sm font-semibold leading-none text-[var(--color-ink)] transition hover:border-[rgba(114,160,193,0.34)] hover:bg-[var(--color-blue-wash)]"
             >
               <Download aria-hidden size={15} />
               Export CSV
@@ -115,33 +115,33 @@ export default function AdminScoringDetailPage({
       </div>
 
       <DashboardCard className="p-0">
-        <div className="border-b border-black/10 p-4 md:p-5">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#1673A5]">
+        <div className="border-b border-[rgba(37,42,45,0.08)] p-4 md:p-5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-blue)]">
             Judge breakdown
           </p>
-          <h2 className="mt-2 text-2xl font-semibold normal-case tracking-[-0.02em] text-[#0A0A0A]">
+          <h2 className="mt-2 font-[var(--font-title-family)] text-3xl font-light tracking-[-0.025em] text-[var(--color-ink)]">
             All judge scores
           </h2>
         </div>
 
         {judgeRows.length === 0 ? (
-          <div className="p-5 text-center text-sm text-black/45">
+          <div className="p-5 text-center text-sm text-[var(--color-ink-muted)]">
             No judges have been assigned yet.
           </div>
         ) : (
-          <div className="divide-y divide-black/10">
+          <div className="divide-y divide-[rgba(37,42,45,0.08)]">
             {judgeRows.map((row) => (
               <div key={row.judgeId} className="grid gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(360px,1fr)_150px] lg:items-start">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     {scoreRowBadge(row.scoreStatus)}
                   </div>
-                  <p className="mt-3 text-sm font-semibold text-[#0A0A0A]">{row.judgeName}</p>
-                  <p className="mt-1 truncate text-xs text-black/50">{row.judgeEmail}</p>
+                  <p className="mt-3 text-sm font-medium text-[var(--color-ink)]">{row.judgeName}</p>
+                  <p className="mt-1 truncate text-xs text-[var(--color-ink-soft)]">{row.judgeEmail}</p>
                   {row.comment ? (
                     <DashboardPanel className="mt-3">
-                      <div className="flex items-start gap-2 text-sm text-black/60">
-                        <MessageSquareText aria-hidden size={15} className="mt-1 shrink-0 text-[#1673A5]" />
+                      <div className="flex items-start gap-2 text-sm text-[var(--color-ink-soft)]">
+                        <MessageSquareText aria-hidden size={15} className="mt-1 shrink-0 text-[var(--color-blue)]" />
                         <p>{row.comment}</p>
                       </div>
                     </DashboardPanel>

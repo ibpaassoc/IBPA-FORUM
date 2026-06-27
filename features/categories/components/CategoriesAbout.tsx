@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { LandingSecondaryButton } from "@/shared/components/public";
-
+import { PUBLIC_MOTION_EASE } from "@/shared/components/public/motion-tokens";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 export default function CategoriesAbout() {
@@ -34,7 +34,7 @@ export default function CategoriesAbout() {
         <motion.div
           initial={{ opacity: 0, x: -16 }}
           whileInView={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.3, ease: PUBLIC_MOTION_EASE }}
           viewport={{ once: true, margin: "-12% 0px" }}
           className="order-1 max-w-[510px] text-center lg:text-left"
         >

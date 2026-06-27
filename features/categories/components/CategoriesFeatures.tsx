@@ -15,10 +15,14 @@ import {
   Trophy,
   Users,
 } from "lucide-react";
-import { motion, type Variants } from "framer-motion";
+import { motion, type Variants, useReducedMotion } from "framer-motion";
 
 import { categoryCatalog } from "@/features/applications/config/category-catalog";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import {
+  PUBLIC_MOTION_EASE,
+  PUBLIC_MOTION_DURATION,
+} from "@/shared/components/public/motion-tokens";
 
 const categoryIconBySlug: Record<string, LucideIcon> = {
   hair: SprayCan,
@@ -34,7 +38,7 @@ const categoryIconBySlug: Record<string, LucideIcon> = {
   brand: BookOpen,
 };
 
-const categoryOrder = categoryCatalog.map((category) => category.slug);
+const categoryOrder = categoryCatalog.map((c) => c.slug);
 
 type Direction = {
   slug: string;
@@ -42,68 +46,73 @@ type Direction = {
   nominations: string[];
 };
 
-const listVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.035,
-      delayChildren: 0.04,
-    },
-  },
-};
-
+// Custom variant — receives the individual card delay via the `custom` prop
 const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 10 },
-  visible: {
+  hidden: { opacity: 0, y: 20 },
+  visible: (delay: number = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.24, ease: "easeOut" },
-  },
+    transition: {
+      duration: PUBLIC_MOTION_DURATION.base,
+      ease: PUBLIC_MOTION_EASE,
+      delay,
+    },
+  }),
 };
 
-function splitDirections(directions: Direction[]) {
-  return {
-    leftDirections: directions.filter((_, index) => index % 2 === 0),
-    rightDirections: directions.filter((_, index) => index % 2 === 1),
-  };
-}
+// Each column div propagates the "hidden"→"visible" state to its motion.article children
+const colVariants: Variants = {
+  hidden: {},
+  visible: {},
+};
+
+const STAGGER = 0.06;
 
 export default function CategoriesFeatures() {
   const { t } = useLanguage();
-  const [openDirectionSlug, setOpenDirectionSlug] = useState<string | null>(
-    null
-  );
+  const [openSlug, setOpenSlug] = useState<string | null>(null);
+  const reducedMotion = useReducedMotion();
 
   const directions = useMemo(() => {
     return [...t.categoriesPage.directions].sort((a, b) => {
-      const aIndex = categoryOrder.indexOf(a.slug);
-      const bIndex = categoryOrder.indexOf(b.slug);
-
-      return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex);
+      const ai = categoryOrder.indexOf(a.slug);
+      const bi = categoryOrder.indexOf(b.slug);
+      return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
     });
   }, [t.categoriesPage.directions]);
 
-  const { leftDirections, rightDirections } = useMemo(
-    () => splitDirections(directions),
-    [directions]
-  );
+  // Split into left / right columns (original layout-isolated approach)
+  const leftDirections = directions.filter((_, i) => i % 2 === 0);
+  const rightDirections = directions.filter((_, i) => i % 2 === 1);
 
   const handleToggle = (slug: string) => {
-    setOpenDirectionSlug((current) => (current === slug ? null : slug));
+    setOpenSlug((cur) => (cur === slug ? null : slug));
   };
 
-  const renderDirectionCard = (direction: Direction) => {
-    const isOpen = openDirectionSlug === direction.slug;
+  // colIndex = position within the column; readingIndex = visual reading order
+  const renderCard = (direction: Direction, readingIndex: number) => {
+    const isOpen = openSlug === direction.slug;
     const Icon = categoryIconBySlug[direction.slug] ?? Award;
-    const contentId = `direction-content-${direction.slug}`;
+    const contentId = `dir-${direction.slug}`;
+    const delay = reducedMotion ? 0 : readingIndex * STAGGER;
 
     return (
       <motion.article
         key={direction.slug}
         variants={cardVariants}
-        whileHover={{ y: -2 }}
-        transition={{ duration: 0.18, ease: "easeOut" }}
+        custom={delay}
+        whileHover={
+          reducedMotion
+            ? undefined
+            : {
+                y: -3,
+                transition: {
+                  duration: PUBLIC_MOTION_DURATION.fast,
+                  ease: PUBLIC_MOTION_EASE,
+                },
+              }
+        }
+        style={{ willChange: "opacity, transform" }}
         className={[
           "group relative overflow-hidden rounded-[2rem] p-px",
           "shadow-[0_18px_56px_rgba(15,23,42,0.06)] backdrop-blur-xl",
@@ -143,7 +152,6 @@ export default function CategoriesFeatures() {
               <h3 className="max-w-[17rem] font-[var(--font-title-family)] text-[clamp(1.22rem,1.75vw,1.7rem)] leading-[1.04] tracking-[-0.035em] text-[var(--color-ink)]">
                 {direction.title}
               </h3>
-
               <p className="mt-2 font-[var(--font-ui-family)] text-[0.6rem] uppercase tracking-[0.28em] text-[var(--color-ink-muted)]">
                 {`${String(direction.nominations.length).padStart(2, "0")} ${
                   direction.nominations.length === 1
@@ -178,29 +186,29 @@ export default function CategoriesFeatures() {
           {isOpen && (
             <div id={contentId} className="overflow-hidden">
               <motion.ol
-                initial={{ opacity: 0, y: 6 }}
+                initial={reducedMotion ? false : { opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.18, ease: "easeOut" }}
+                transition={{
+                  duration: PUBLIC_MOTION_DURATION.fast,
+                  ease: PUBLIC_MOTION_EASE,
+                }}
                 className="mt-6 space-y-2.5 rounded-[1.35rem] border border-white/75 bg-white/50 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-xl"
               >
-                {direction.nominations.map(
-                  (nomination, nominationIndex) => (
-                    <li
-                      key={`${direction.slug}-${nominationIndex}`}
-                      className="rounded-[1.05rem] border border-white/70 bg-white/76 px-4 py-3 shadow-[0_10px_24px_rgba(15,23,42,0.04)] transition duration-200 hover:border-[var(--color-blue)]/30 hover:bg-white/90"
-                    >
-                      <div className="flex items-start gap-3">
-                        <span className="min-w-[2rem] font-[var(--font-ui-family)] text-[0.78rem] font-semibold tracking-[0.14em] text-[var(--color-hover-accent)]">
-                          {String(nominationIndex + 1).padStart(2, "0")}
-                        </span>
-
-                        <span className="text-sm leading-6 text-[var(--color-ink-soft)]">
-                          {nomination}
-                        </span>
-                      </div>
-                    </li>
-                  )
-                )}
+                {direction.nominations.map((nomination, ni) => (
+                  <li
+                    key={`${direction.slug}-${ni}`}
+                    className="rounded-[1.05rem] border border-white/70 bg-white/76 px-4 py-3 shadow-[0_10px_24px_rgba(15,23,42,0.04)] transition duration-200 hover:border-[var(--color-blue)]/30 hover:bg-white/90"
+                  >
+                    <div className="flex items-start gap-3">
+                      <span className="min-w-[2rem] font-[var(--font-ui-family)] text-[0.78rem] font-semibold tracking-[0.14em] text-[var(--color-hover-accent)]">
+                        {String(ni + 1).padStart(2, "0")}
+                      </span>
+                      <span className="text-sm leading-6 text-[var(--color-ink-soft)]">
+                        {nomination}
+                      </span>
+                    </div>
+                  </li>
+                ))}
               </motion.ol>
             </div>
           )}
@@ -210,25 +218,46 @@ export default function CategoriesFeatures() {
   };
 
   return (
-    <section className="relative mt-[clamp(3rem,7vw,7rem)] overflow-hidden px-[var(--page-gutter)] pb-10 pt-3 sm:pb-14 sm:pt-4">
+    <section
+      id="categories"
+      className="relative mt-[clamp(3rem,7vw,7rem)] overflow-hidden px-[var(--page-gutter)] pb-10 pt-3 sm:pb-14 sm:pt-4"
+    >
       <div className="pointer-events-none absolute left-1/2 top-16 h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-[var(--color-blue-light)]/18 blur-2xl" />
       <div className="pointer-events-none absolute right-[-12rem] top-72 h-[24rem] w-[24rem] rounded-full bg-[var(--color-blue)]/6 blur-2xl" />
 
-      <motion.div
-        variants={listVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-40px" }}
-        className="relative mx-auto grid max-w-[1040px] grid-cols-1 gap-4 md:grid-cols-2 md:gap-5"
-      >
-        <div className="flex flex-col gap-4 md:gap-5">
-          {leftDirections.map(renderDirectionCard)}
-        </div>
+      <div className="relative mx-auto grid max-w-[1040px] grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
+        {/*
+          Each column is an isolated flex-col so card expansion in one column
+          doesn't shift the other. Both columns share the same whileInView trigger
+          so they start animating together; individual card delays create the
+          reading-order (left-right, top-bottom) cascade.
+        */}
+        <motion.div
+          variants={colVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-60px", amount: 0.05 }}
+          className="flex flex-col gap-4 md:gap-5"
+        >
+          {leftDirections.map((dir, ci) =>
+            // reading order: 0, 2, 4, 6, …
+            renderCard(dir, ci * 2)
+          )}
+        </motion.div>
 
-        <div className="flex flex-col gap-4 md:gap-5">
-          {rightDirections.map(renderDirectionCard)}
-        </div>
-      </motion.div>
+        <motion.div
+          variants={colVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-60px", amount: 0.05 }}
+          className="flex flex-col gap-4 md:gap-5"
+        >
+          {rightDirections.map((dir, ci) =>
+            // reading order: 1, 3, 5, 7, …
+            renderCard(dir, ci * 2 + 1)
+          )}
+        </motion.div>
+      </div>
     </section>
   );
 }

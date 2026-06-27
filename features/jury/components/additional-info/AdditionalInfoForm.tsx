@@ -16,11 +16,11 @@ type FieldProps = {
 function Field({ label, hint, required, children, error }: FieldProps) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-semibold text-[#1a1a1a]">
+      <label className="text-sm font-semibold text-[var(--color-ink)]">
         {label}
-        {required ? <span className="ml-1 text-[#c4874a]">*</span> : null}
+        {required ? <span className="ml-1 text-[var(--color-blue)]">*</span> : null}
       </label>
-      {hint ? <p className="text-xs leading-5 text-black/50">{hint}</p> : null}
+      {hint ? <p className="text-xs leading-5 text-[var(--color-ink-soft)]">{hint}</p> : null}
       {children}
       {error ? <p className="text-xs font-medium text-red-600">{error}</p> : null}
     </div>
@@ -28,10 +28,10 @@ function Field({ label, hint, required, children, error }: FieldProps) {
 }
 
 const inputClass =
-  "w-full rounded-lg border border-black/12 bg-white px-4 py-3 text-sm text-[#1a1a1a] outline-none transition placeholder:text-black/35 focus:border-[#7DC8EE] focus:ring-4 focus:ring-[#EAF6FF] disabled:opacity-50";
+  "w-full rounded-[22px] border border-[rgba(37,42,45,0.1)] bg-white/76 px-4 py-3 text-sm text-[var(--color-ink)] outline-none transition placeholder:text-[rgba(70,82,90,0.46)] focus:border-[rgba(114,160,193,0.58)] focus:ring-4 focus:ring-[rgba(114,160,193,0.14)] disabled:opacity-50";
 
 const textareaClass =
-  "w-full rounded-lg border border-black/12 bg-white px-4 py-3 text-sm leading-7 text-[#1a1a1a] outline-none transition placeholder:text-black/35 focus:border-[#7DC8EE] focus:ring-4 focus:ring-[#EAF6FF] disabled:opacity-50 resize-none";
+  "w-full resize-none rounded-[22px] border border-[rgba(37,42,45,0.1)] bg-white/76 px-4 py-3 text-sm leading-7 text-[var(--color-ink)] outline-none transition placeholder:text-[rgba(70,82,90,0.46)] focus:border-[rgba(114,160,193,0.58)] focus:ring-4 focus:ring-[rgba(114,160,193,0.14)] disabled:opacity-50";
 
 function sanitizeBlobName(name: string) {
   return name.replace(/[^a-zA-Z0-9._-]/g, "_");
@@ -157,13 +157,13 @@ export default function AdditionalInfoForm({
 
   if (formState.type === "success") {
     return (
-      <div className="flex flex-col items-center gap-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-8 py-12 text-center">
+      <div className="flex flex-col items-center gap-5 rounded-[28px] border border-emerald-200 bg-white/82 px-8 py-12 text-center shadow-[0_24px_70px_rgba(42,66,82,0.08)] backdrop-blur-xl">
         <div className="flex size-16 items-center justify-center rounded-full bg-emerald-100">
           <CheckCircle2 className="text-emerald-600" size={32} />
         </div>
         <div>
-          <h2 className="text-xl font-semibold text-[#1a1a1a]">Application updated</h2>
-          <p className="mt-2 max-w-md text-sm leading-7 text-black/60">
+          <h2 className="font-[var(--font-title-family)] text-3xl font-light text-[var(--color-ink)]">Application updated</h2>
+          <p className="mt-2 max-w-md text-sm leading-7 text-[var(--color-ink-soft)]">
             Your updated application has been submitted to the IBPA review committee. You will be contacted when a decision has been reached.
           </p>
         </div>
@@ -176,7 +176,7 @@ export default function AdditionalInfoForm({
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-7">
       {formState.type === "error" ? (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-[20px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {formState.message}
         </div>
       ) : null}
@@ -191,7 +191,7 @@ export default function AdditionalInfoForm({
           value={bio}
           onChange={(e) => setBio(e.target.value)}
           rows={7}
-          placeholder="Describe your professional background, key achievements, and expertise…"
+          placeholder="Describe your professional background, key achievements, and expertise..."
           maxLength={2200}
           disabled={isLoading}
           className={textareaClass}
@@ -208,7 +208,7 @@ export default function AdditionalInfoForm({
           value={motivation}
           onChange={(e) => setMotivation(e.target.value)}
           rows={5}
-          placeholder="Your motivation for serving on the IBPA jury…"
+          placeholder="Your motivation for serving on the IBPA jury..."
           maxLength={1500}
           disabled={isLoading}
           className={textareaClass}
@@ -225,7 +225,7 @@ export default function AdditionalInfoForm({
           value={conflict}
           onChange={(e) => setConflict(e.target.value)}
           rows={4}
-          placeholder="Describe any potential conflicts of interest…"
+          placeholder="Describe any potential conflicts of interest..."
           disabled={isLoading}
           className={textareaClass}
         />
@@ -233,7 +233,7 @@ export default function AdditionalInfoForm({
 
       <Field
         label="Professional Website / LinkedIn"
-        hint="Optional — provide a link to your professional profile or portfolio."
+        hint="Optional - provide a link to your professional profile or portfolio."
       >
         <input
           type="url"
@@ -245,31 +245,31 @@ export default function AdditionalInfoForm({
         />
       </Field>
 
-      <div className="border-t border-black/8 pt-7">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#1673A5]">
+      <div className="border-t border-[rgba(37,42,45,0.08)] pt-7">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-blue)]">
           File updates (optional)
         </p>
-        <p className="mt-1 text-xs leading-5 text-black/50">
+        <p className="mt-1 text-xs leading-5 text-[var(--color-ink-soft)]">
           Upload a new profile photo or additional certifications if requested. Leave blank to keep your existing files.
         </p>
 
         <div className="mt-5 grid gap-5 sm:grid-cols-2">
           <Field label="Replace Profile Photo" hint="JPG or PNG, max 3 MB.">
-            <label className="group flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 border-dashed border-black/12 bg-[#FAFAFA] px-4 py-5 text-center transition hover:border-[#7DC8EE] hover:bg-[#EAF6FF]/40">
-              <Upload size={20} className="text-black/30 transition group-hover:text-[#1673A5]" />
+            <label className="group flex cursor-pointer flex-col items-center gap-2 rounded-[24px] border-2 border-dashed border-[rgba(37,42,45,0.12)] bg-white/72 px-4 py-5 text-center transition hover:border-[rgba(114,160,193,0.56)] hover:bg-[var(--color-blue-wash)]">
+              <Upload size={20} className="text-[var(--color-ink-muted)] transition group-hover:text-[var(--color-blue)]" />
               {profilePhotoFile ? (
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium text-[#1a1a1a]">{profilePhotoFile.name}</span>
+                  <span className="text-xs font-medium text-[var(--color-ink)]">{profilePhotoFile.name}</span>
                   <button
                     type="button"
                     onClick={(e) => { e.preventDefault(); setProfilePhotoFile(null); if (photoInputRef.current) photoInputRef.current.value = ""; }}
-                    className="text-black/35 hover:text-red-600"
+                    className="text-[var(--color-ink-muted)] hover:text-red-600"
                   >
                     <X size={13} />
                   </button>
                 </div>
               ) : (
-                <span className="text-xs text-black/45">Click to upload photo</span>
+                <span className="text-xs text-[var(--color-ink-soft)]">Click to upload photo</span>
               )}
               <input
                 ref={photoInputRef}
@@ -286,21 +286,21 @@ export default function AdditionalInfoForm({
           </Field>
 
           <Field label="Additional Certifications" hint="JPG, PNG, or PDF. Up to 5 files, max 3 MB each.">
-            <label className="group flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 border-dashed border-black/12 bg-[#FAFAFA] px-4 py-5 text-center transition hover:border-[#7DC8EE] hover:bg-[#EAF6FF]/40">
-              <FileUp size={20} className="text-black/30 transition group-hover:text-[#1673A5]" />
+            <label className="group flex cursor-pointer flex-col items-center gap-2 rounded-[24px] border-2 border-dashed border-[rgba(37,42,45,0.12)] bg-white/72 px-4 py-5 text-center transition hover:border-[rgba(114,160,193,0.56)] hover:bg-[var(--color-blue-wash)]">
+              <FileUp size={20} className="text-[var(--color-ink-muted)] transition group-hover:text-[var(--color-blue)]" />
               {certFiles.length > 0 ? (
                 <div className="flex flex-col items-center gap-1">
-                  <span className="text-xs font-medium text-[#1a1a1a]">{certFiles.length} file{certFiles.length > 1 ? "s" : ""} selected</span>
+                  <span className="text-xs font-medium text-[var(--color-ink)]">{certFiles.length} file{certFiles.length > 1 ? "s" : ""} selected</span>
                   <button
                     type="button"
                     onClick={(e) => { e.preventDefault(); setCertFiles([]); if (certInputRef.current) certInputRef.current.value = ""; }}
-                    className="text-xs text-black/35 hover:text-red-600"
+                    className="text-xs text-[var(--color-ink-muted)] hover:text-red-600"
                   >
                     Clear
                   </button>
                 </div>
               ) : (
-                <span className="text-xs text-black/45">Click to upload certifications</span>
+                <span className="text-xs text-[var(--color-ink-soft)]">Click to upload certifications</span>
               )}
               <input
                 ref={certInputRef}
@@ -319,16 +319,16 @@ export default function AdditionalInfoForm({
         </div>
       </div>
 
-      <div className="border-t border-black/8 pt-5">
+      <div className="border-t border-[rgba(37,42,45,0.08)] pt-5">
         <button
           type="submit"
           disabled={isLoading}
-          className="inline-flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-xl bg-[#252a2d] px-6 py-3 text-sm font-semibold tracking-wide text-[#f3d881] transition hover:bg-[#1a1e21] disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-full border border-[var(--color-blue)] bg-[var(--color-blue)] px-6 py-3 text-sm font-semibold tracking-wide text-white shadow-[0_18px_48px_rgba(114,160,193,0.22)] transition hover:-translate-y-0.5 hover:bg-[var(--color-hover-accent)] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isLoading ? (
             <>
               <Loader2 size={16} className="animate-spin" />
-              {formState.type === "uploading" ? "Uploading files…" : "Submitting…"}
+              {formState.type === "uploading" ? "Uploading files..." : "Submitting..."}
             </>
           ) : (
             "Submit Updated Application"

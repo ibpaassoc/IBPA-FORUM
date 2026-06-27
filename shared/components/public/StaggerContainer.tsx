@@ -56,10 +56,10 @@ export default function StaggerContainer({
       variants={containerVariants}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once, amount: 0.16 }}
+      viewport={{ once, amount: 0.1 }}
     >
       {Children.map(children, (child, index) => (
-        <motion.div key={index} className={itemClassName} variants={itemVariants}>
+        <motion.div key={index} className={itemClassName} variants={itemVariants} style={{ willChange: "opacity, transform" }}>
           {child}
         </motion.div>
       ))}
