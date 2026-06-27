@@ -165,14 +165,17 @@ export default function HomeRegistrationSection() {
                 eyebrow={c.pricing.forum.eyebrow}
                 title={c.pricing.forum.title}
                 icon={<Sparkles size={16} />}
-                badge={discount ? <EarlyBirdBadge discount={discount} /> : null}
                 footer={
-                  <LandingSecondaryButton
-                    type="button"
-                    onClick={() => setIsTicketModalOpen(true)}
-                  >
-                    {c.tickets.cta}
-                  </LandingSecondaryButton>
+                  <div className="flex w-full flex-wrap items-center gap-2.5">
+                    <LandingSecondaryButton
+                      type="button"
+                      onClick={() => setIsTicketModalOpen(true)}
+                    >
+                      {c.tickets.cta}
+                    </LandingSecondaryButton>
+
+                    {discount ? <EarlyBirdBadge discount={discount} /> : null}
+                  </div>
                 }
               >
                 <ComparisonTable
@@ -289,14 +292,12 @@ function PricingCard({
   eyebrow,
   title,
   icon,
-  badge,
   children,
   footer,
 }: {
   eyebrow: string;
   title: string;
   icon: ReactNode;
-  badge?: ReactNode;
   children: ReactNode;
   footer: ReactNode;
 }) {
@@ -315,8 +316,6 @@ function PricingCard({
               {title}
             </h4>
           </div>
-
-          {badge ? <div className="mt-2">{badge}</div> : null}
         </div>
 
         <div className="flex size-9 shrink-0 items-center justify-center rounded-2xl border border-[#b9d9eb]/55 bg-white/80 text-[#72a0c1]">
@@ -339,10 +338,19 @@ function EarlyBirdBadge({ discount }: { discount: EarlyBirdDiscount }) {
       ? `${discount.value}% off`
       : `$${(discount.value / 100).toFixed(0)} off`;
 
+  // Compact label so the note fits beside the CTA in the narrow 3-col card.
+  const shortLabel =
+    discount.type === "percent"
+      ? `${discount.value}%`
+      : `$${(discount.value / 100).toFixed(0)}`;
+
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-[#b9d9eb]/70 bg-white/80 px-3 py-1.5 text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-[#5f91b4] shadow-[0_10px_28px_rgba(114,160,193,0.14)] backdrop-blur-xl">
-      <Zap size={11} strokeWidth={2} />
-      Early Bird — {offLabel}
+    <span
+      title={`Early Bird — ${offLabel}`}
+      className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full border border-[#b9d9eb]/70 bg-white/80 px-2.5 py-1 text-[0.52rem] font-semibold uppercase tracking-[0.1em] text-[#5f91b4] shadow-[0_10px_28px_rgba(114,160,193,0.14)] backdrop-blur-xl"
+    >
+      <Zap size={10} strokeWidth={2} />
+      Early Bird · {shortLabel}
     </span>
   );
 }
