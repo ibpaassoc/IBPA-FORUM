@@ -7,7 +7,7 @@ import clsx from "clsx";
 import { Zap } from "lucide-react";
 import { PRICING } from "@/data/pricing";
 import { applyDiscountToPrice } from "@/features/tickets/types";
-import type { EarlyBirdStatus } from "@/features/tickets/types";
+import { useEarlyBird } from "@/features/tickets/useEarlyBird";
 
 type FormValues = {
   firstName: string;
@@ -89,17 +89,9 @@ export default function TicketForm() {
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [certStatus, setCertStatus] = useState<CertStatus>("idle");
-  const [earlyBird, setEarlyBird] = useState<EarlyBirdStatus>({ enabled: false, discount: null });
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    fetch("/api/early-bird")
-      .then((r) => r.json())
-      .then((data: EarlyBirdStatus) => setEarlyBird(data))
-      .catch(() => {});
-  }, []);
-
-  const discount = earlyBird.enabled ? earlyBird.discount : null;
+  const { discount } = useEarlyBird();
 
   const {
     register,

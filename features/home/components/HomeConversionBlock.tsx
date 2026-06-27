@@ -9,9 +9,13 @@ import {
   Sparkles,
   Trophy,
   Users,
+  Zap,
 } from "lucide-react";
 
 import { PRICING } from "@/data/pricing";
+import { applyDiscountToPrice } from "@/features/tickets/types";
+import type { EarlyBirdDiscount } from "@/features/tickets/types";
+import { useEarlyBird } from "@/features/tickets/useEarlyBird";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { LandingSecondaryButton, Reveal, StaggerContainer } from "@/shared/components/public";
 import TicketModal from "@/features/tickets/components/TicketModal";
@@ -20,6 +24,7 @@ export default function HomeRegistrationSection() {
   const { t } = useLanguage();
   const c = t.home.registrationSection;
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
+  const { discount } = useEarlyBird();
 
   const topInfoCards = [
     {
@@ -61,16 +66,19 @@ export default function HomeRegistrationSection() {
       label: c.pricing.forum.oneDay,
       member: PRICING.forumTickets.ibpaMembers.oneDay,
       standard: PRICING.forumTickets.standard.oneDay,
+      discountable: true,
     },
     {
       label: c.pricing.forum.twoDays,
       member: PRICING.forumTickets.ibpaMembers.twoDays,
       standard: PRICING.forumTickets.standard.twoDays,
+      discountable: true,
     },
     {
       label: c.pricing.forum.galaDinner,
       member: PRICING.forumTickets.ibpaMembers.galaDinner,
       standard: PRICING.forumTickets.standard.galaDinner,
+      discountable: false,
     },
   ];
 
@@ -157,6 +165,7 @@ export default function HomeRegistrationSection() {
                 eyebrow={c.pricing.forum.eyebrow}
                 title={c.pricing.forum.title}
                 icon={<Sparkles size={16} />}
+                badge={discount ? <EarlyBirdBadge discount={discount} /> : null}
                 footer={
                   <LandingSecondaryButton
                     type="button"
@@ -171,6 +180,7 @@ export default function HomeRegistrationSection() {
                   optionLabel={c.pricing.option}
                   memberLabel={c.pricing.members}
                   standardLabel={c.pricing.standard}
+                  discount={discount}
                 />
               </PricingCard>
 
@@ -279,12 +289,14 @@ function PricingCard({
   eyebrow,
   title,
   icon,
+  badge,
   children,
   footer,
 }: {
   eyebrow: string;
   title: string;
   icon: ReactNode;
+  badge?: ReactNode;
   children: ReactNode;
   footer: ReactNode;
 }) {
@@ -303,6 +315,8 @@ function PricingCard({
               {title}
             </h4>
           </div>
+
+          {badge ? <div className="mt-2">{badge}</div> : null}
         </div>
 
         <div className="flex size-9 shrink-0 items-center justify-center rounded-2xl border border-[#b9d9eb]/55 bg-white/80 text-[#72a0c1]">
@@ -317,16 +331,34 @@ function PricingCard({
   );
 }
 
+function EarlyBirdBadge({ discount }: { discount: EarlyBirdDiscount }) {
+  if (!discount) return null;
+
+  const offLabel =
+    discount.type === "percent"
+      ? `${discount.value}% off`
+      : `$${(discount.value / 100).toFixed(0)} off`;
+
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-[#b9d9eb]/70 bg-white/80 px-3 py-1.5 text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-[#5f91b4] shadow-[0_10px_28px_rgba(114,160,193,0.14)] backdrop-blur-xl">
+      <Zap size={11} strokeWidth={2} />
+      Early Bird — {offLabel}
+    </span>
+  );
+}
+
 function ComparisonTable({
   rows,
   optionLabel,
   memberLabel,
   standardLabel,
+  discount = null,
 }: {
-  rows: { label: string; member: string; standard: string }[];
+  rows: { label: string; member: string; standard: string; discountable?: boolean }[];
   optionLabel: string;
   memberLabel: string;
   standardLabel: string;
+  discount?: EarlyBirdDiscount;
 }) {
   return (
     <div className="overflow-hidden rounded-[1.25rem] border border-[#d8edf7] bg-white/62">
@@ -336,23 +368,52 @@ function ComparisonTable({
         <span className="text-right">{standardLabel}</span>
       </div>
 
-      {rows.map((row) => (
-        <div
-          key={row.label}
-          className="grid grid-cols-[1.2fr_0.8fr_0.8fr] items-center border-b border-[#d8edf7]/70 px-3 py-3 last:border-b-0"
-        >
-          <span className="text-xs font-medium text-[#10182a]/62">
-            {row.label}
-          </span>
-          <span className="text-right font-(--font-display) text-xl tracking-[-0.04em] text-[#10182a]">
-            {row.member}
-          </span>
-          <span className="text-right font-(--font-display) text-xl tracking-[-0.04em] text-[#10182a]">
-            {row.standard}
-          </span>
-        </div>
-      ))}
+      {rows.map((row) => {
+        const rowDiscount = row.discountable ? discount : null;
+
+        return (
+          <div
+            key={row.label}
+            className="grid grid-cols-[1.2fr_0.8fr_0.8fr] items-center border-b border-[#d8edf7]/70 px-3 py-3 last:border-b-0"
+          >
+            <span className="text-xs font-medium text-[#10182a]/62">
+              {row.label}
+            </span>
+            <PriceCell price={row.member} discount={rowDiscount} />
+            <PriceCell price={row.standard} discount={rowDiscount} />
+          </div>
+        );
+      })}
     </div>
+  );
+}
+
+function PriceCell({
+  price,
+  discount,
+}: {
+  price: string;
+  discount: EarlyBirdDiscount;
+}) {
+  const discounted = applyDiscountToPrice(price, discount);
+
+  if (!discounted) {
+    return (
+      <span className="text-right font-(--font-display) text-xl tracking-[-0.04em] text-[#10182a]">
+        {price}
+      </span>
+    );
+  }
+
+  return (
+    <span className="flex flex-col items-end leading-none">
+      <span className="text-[0.62rem] font-medium text-[#10182a]/38 line-through">
+        {price}
+      </span>
+      <span className="font-(--font-display) text-xl tracking-[-0.04em] text-[#5f91b4]">
+        {discounted}
+      </span>
+    </span>
   );
 }
 
