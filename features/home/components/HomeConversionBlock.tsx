@@ -17,7 +17,11 @@ import { applyDiscountToPrice } from "@/features/tickets/types";
 import type { EarlyBirdDiscount } from "@/features/tickets/types";
 import { useEarlyBird } from "@/features/tickets/useEarlyBird";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { LandingSecondaryButton, Reveal, StaggerContainer } from "@/shared/components/public";
+import {
+  LandingSecondaryButton,
+  Reveal,
+  StaggerContainer,
+} from "@/shared/components/public";
 import TicketModal from "@/features/tickets/components/TicketModal";
 
 export default function HomeRegistrationSection() {
@@ -128,13 +132,20 @@ export default function HomeRegistrationSection() {
           </Reveal>
 
           <div className="mx-auto mt-10 max-w-5xl">
-            <StaggerContainer className="grid gap-3 md:grid-cols-2" stagger={0.08}>
+            <StaggerContainer
+              className="grid gap-3 md:grid-cols-2"
+              stagger={0.08}
+            >
               {topInfoCards.map((card) => (
                 <InfoCard key={card.eyebrow} {...card} featured />
               ))}
             </StaggerContainer>
 
-            <StaggerContainer className="mt-3 grid gap-3 md:grid-cols-3" stagger={0.06} delay={0.05}>
+            <StaggerContainer
+              className="mt-3 grid gap-3 md:grid-cols-3"
+              stagger={0.06}
+              delay={0.05}
+            >
               {bottomInfoCards.map((card) => (
                 <InfoCard key={card.eyebrow} {...card} />
               ))}
@@ -160,22 +171,22 @@ export default function HomeRegistrationSection() {
               </div>
             </Reveal>
 
-            <StaggerContainer className="grid gap-3 lg:grid-cols-3" stagger={0.08}>
+            <StaggerContainer
+              className="grid items-stretch gap-3 lg:grid-cols-3"
+              stagger={0.08}
+            >
               <PricingCard
                 eyebrow={c.pricing.forum.eyebrow}
                 title={c.pricing.forum.title}
                 icon={<Sparkles size={16} />}
+                badge={discount ? <EarlyBirdBadge discount={discount} /> : null}
                 footer={
-                  <div className="flex w-full flex-wrap items-center gap-2.5">
-                    <LandingSecondaryButton
-                      type="button"
-                      onClick={() => setIsTicketModalOpen(true)}
-                    >
-                      {c.tickets.cta}
-                    </LandingSecondaryButton>
-
-                    {discount ? <EarlyBirdBadge discount={discount} /> : null}
-                  </div>
+                  <LandingSecondaryButton
+                    type="button"
+                    onClick={() => setIsTicketModalOpen(true)}
+                  >
+                    {c.tickets.cta}
+                  </LandingSecondaryButton>
                 }
               >
                 <ComparisonTable
@@ -215,7 +226,7 @@ export default function HomeRegistrationSection() {
                   </LandingSecondaryButton>
                 }
               >
-                <div className="flex min-h-[170px] flex-col justify-center gap-2">
+                <div className="flex flex-1 flex-col justify-center gap-3">
                   {juryRows.map((row) => (
                     <PriceRow
                       key={row.label}
@@ -294,27 +305,31 @@ function PricingCard({
   icon,
   children,
   footer,
+  badge = null,
 }: {
   eyebrow: string;
   title: string;
   icon: ReactNode;
   children: ReactNode;
   footer: ReactNode;
+  badge?: ReactNode;
 }) {
   return (
-    <article className="relative flex min-h-[420px] flex-col overflow-hidden rounded-[1.9rem] border border-[#d8edf7] bg-white/72 p-5 shadow-[0_16px_46px_rgba(114,160,193,0.08)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:bg-white">
+    <article className="relative flex h-full min-h-[450px] flex-col overflow-hidden rounded-[1.9rem] border border-[#d8edf7] bg-white/72 p-5 shadow-[0_16px_46px_rgba(114,160,193,0.08)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:bg-white">
       <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
 
-      <div className="mb-5 flex items-start justify-between gap-4">
-        <div>
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div className="min-w-0">
           <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[#72a0c1]">
             {eyebrow}
           </p>
 
-          <div className="min-h-[4.6rem]">
-            <h4 className="mt-2 font-(--font-display) text-[2rem] leading-none tracking-[-0.055em] text-[#10182a]">
+          <div className="mt-2 min-h-[5.35rem]">
+            <h4 className="font-(--font-display) text-[2rem] leading-none tracking-[-0.055em] text-[#10182a]">
               {title}
             </h4>
+
+            {badge ? <div className="mt-2">{badge}</div> : null}
           </div>
         </div>
 
@@ -323,9 +338,9 @@ function PricingCard({
         </div>
       </div>
 
-      <div className="flex-1">{children}</div>
+      <div className="flex flex-1 flex-col">{children}</div>
 
-      <div className="mt-5 flex min-h-11 items-end">{footer}</div>
+      <div className="mt-6 flex min-h-11 items-end">{footer}</div>
     </article>
   );
 }
@@ -338,7 +353,6 @@ function EarlyBirdBadge({ discount }: { discount: EarlyBirdDiscount }) {
       ? `${discount.value}% off`
       : `$${(discount.value / 100).toFixed(0)} off`;
 
-  // Compact label so the note fits beside the CTA in the narrow 3-col card.
   const shortLabel =
     discount.type === "percent"
       ? `${discount.value}%`
@@ -347,7 +361,7 @@ function EarlyBirdBadge({ discount }: { discount: EarlyBirdDiscount }) {
   return (
     <span
       title={`Early Bird — ${offLabel}`}
-      className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full border border-[#b9d9eb]/70 bg-white/80 px-2.5 py-1 text-[0.52rem] font-semibold uppercase tracking-[0.1em] text-[#5f91b4] shadow-[0_10px_28px_rgba(114,160,193,0.14)] backdrop-blur-xl"
+      className="inline-flex w-fit items-center gap-1 whitespace-nowrap rounded-full border border-[#b9d9eb]/70 bg-white/80 px-2.5 py-1 text-[0.52rem] font-semibold uppercase tracking-[0.1em] text-[#5f91b4] shadow-[0_10px_28px_rgba(114,160,193,0.14)] backdrop-blur-xl"
     >
       <Zap size={10} strokeWidth={2} />
       Early Bird · {shortLabel}
@@ -362,7 +376,12 @@ function ComparisonTable({
   standardLabel,
   discount = null,
 }: {
-  rows: { label: string; member: string; standard: string; discountable?: boolean }[];
+  rows: {
+    label: string;
+    member: string;
+    standard: string;
+    discountable?: boolean;
+  }[];
   optionLabel: string;
   memberLabel: string;
   standardLabel: string;
@@ -387,6 +406,7 @@ function ComparisonTable({
             <span className="text-xs font-medium text-[#10182a]/62">
               {row.label}
             </span>
+
             <PriceCell price={row.member} discount={rowDiscount} />
             <PriceCell price={row.standard} discount={rowDiscount} />
           </div>
@@ -418,6 +438,7 @@ function PriceCell({
       <span className="text-[0.62rem] font-medium text-[#10182a]/38 line-through">
         {price}
       </span>
+
       <span className="font-(--font-display) text-xl tracking-[-0.04em] text-[#5f91b4]">
         {discounted}
       </span>
@@ -429,6 +450,7 @@ function PriceRow({ label, price }: { label: string; price: string }) {
   return (
     <div className="flex items-center justify-between gap-4 rounded-full border border-[#d8edf7] bg-white/62 px-3.5 py-2.5">
       <span className="text-xs font-medium text-[#10182a]/62">{label}</span>
+
       <span className="font-(--font-display) text-xl tracking-[-0.04em] text-[#10182a]">
         {price}
       </span>
