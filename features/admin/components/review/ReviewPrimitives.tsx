@@ -1,15 +1,8 @@
-import type { ComponentType, ReactNode } from "react";
+import type { ReactNode } from "react";
 import Image from "next/image";
 import { UserRound } from "lucide-react";
 import clsx from "clsx";
 import { DashboardKpiBar, GlassCard } from "@/shared/components/admin/DashboardUI";
-
-export type ReviewIcon = ComponentType<{
-  size?: number | string;
-  strokeWidth?: number | string;
-  className?: string;
-  "aria-hidden"?: boolean | "true" | "false";
-}>;
 
 function cn(...values: Array<string | false | null | undefined>) {
   return clsx(values);
@@ -32,7 +25,7 @@ export function ReviewSummaryCard({
   subtitle?: ReactNode;
   avatarSrc?: string | null;
   badges?: ReactNode;
-  meta?: Array<{ icon?: ReviewIcon; label: ReactNode }>;
+  meta?: Array<{ icon?: ReactNode; label: ReactNode }>;
   progress?: { value: number; label: string };
   actions?: ReactNode;
 }) {
@@ -74,7 +67,9 @@ export function ReviewSummaryCard({
                     key={index}
                     className="inline-flex min-w-0 max-w-full items-center gap-1.5 rounded-[16px] border border-[rgba(37,42,45,0.08)] bg-white/62 px-2.5 py-1 text-xs text-[var(--color-ink-soft)]"
                   >
-                    {item.icon ? <item.icon aria-hidden size={13} className="shrink-0" /> : null}
+                    {item.icon ? (
+                      <span className="flex shrink-0 items-center">{item.icon}</span>
+                    ) : null}
                     <span className="truncate">{item.label}</span>
                   </span>
                 ))}
@@ -97,17 +92,17 @@ export function ReviewSummaryCard({
 
 /** Section heading used for the stacked (mobile) review sections. */
 export function ReviewSectionHeader({
-  icon: Icon,
+  icon,
   children,
 }: {
-  icon?: ReviewIcon;
+  icon?: ReactNode;
   children: ReactNode;
 }) {
   return (
     <div className="flex items-center gap-2.5">
-      {Icon ? (
+      {icon ? (
         <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--color-blue-wash)] text-[var(--color-blue)]">
-          <Icon aria-hidden size={15} />
+          {icon}
         </span>
       ) : null}
       <h2 className="font-[var(--font-title-family)] text-2xl font-light tracking-[-0.025em] text-[var(--color-ink)]">

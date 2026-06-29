@@ -485,11 +485,11 @@ export default function ApplicationDetailPage({
   );
 
   const tabs: ReviewTab[] = [
-    { key: "overview", label: "Overview", icon: UserRound, content: overview },
-    { key: "submission", label: "Submission", icon: ClipboardList, content: submission },
-    { key: "documents", label: "Documents", icon: FileText, content: documents },
-    { key: "scores", label: "Scores", icon: Star, content: scores },
-    { key: "history", label: "History", icon: CalendarClock, content: history },
+    { key: "overview", label: "Overview", icon: <UserRound aria-hidden size={15} />, content: overview },
+    { key: "submission", label: "Submission", icon: <ClipboardList aria-hidden size={15} />, content: submission },
+    { key: "documents", label: "Documents", icon: <FileText aria-hidden size={15} />, content: documents },
+    { key: "scores", label: "Scores", icon: <Star aria-hidden size={15} />, content: scores },
+    { key: "history", label: "History", icon: <CalendarClock aria-hidden size={15} />, content: history },
   ];
 
   // ── Sticky decision panel ────────────────────────────────────────────────
@@ -577,10 +577,10 @@ export default function ApplicationDetailPage({
         </>
       }
       meta={[
-        { icon: Mail, label: application.email },
-        { icon: Phone, label: application.phone },
-        { icon: MapPin, label: `${application.city}, ${application.country}` },
-        { icon: CalendarClock, label: formatAdminDate(application.createdAt) },
+        { icon: <Mail aria-hidden size={13} />, label: application.email },
+        { icon: <Phone aria-hidden size={13} />, label: application.phone },
+        { icon: <MapPin aria-hidden size={13} />, label: `${application.city}, ${application.country}` },
+        { icon: <CalendarClock aria-hidden size={13} />, label: formatAdminDate(application.createdAt) },
       ]}
       actions={
         <>

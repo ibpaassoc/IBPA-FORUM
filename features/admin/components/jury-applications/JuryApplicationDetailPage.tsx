@@ -259,10 +259,10 @@ export default function JuryApplicationDetailPage({
   );
 
   const tabs: ReviewTab[] = [
-    { key: "overview", label: "Overview", icon: UserRound, content: overview },
-    { key: "submission", label: "Submission", icon: BriefcaseBusiness, content: submission },
-    { key: "documents", label: "Documents", icon: FileText, content: documents },
-    { key: "notes", label: "Notes", icon: StickyNote, content: notes },
+    { key: "overview", label: "Overview", icon: <UserRound aria-hidden size={15} />, content: overview },
+    { key: "submission", label: "Submission", icon: <BriefcaseBusiness aria-hidden size={15} />, content: submission },
+    { key: "documents", label: "Documents", icon: <FileText aria-hidden size={15} />, content: documents },
+    { key: "notes", label: "Notes", icon: <StickyNote aria-hidden size={15} />, content: notes },
   ];
 
   // ── Sticky decision panel ────────────────────────────────────────────────
@@ -401,10 +401,10 @@ export default function JuryApplicationDetailPage({
         </>
       }
       meta={[
-        { icon: Mail, label: application.email },
-        { icon: Phone, label: application.phone },
-        { icon: MapPin, label: `${application.city}, ${application.country}` },
-        { icon: CalendarClock, label: formatAdminDate(application.submittedAt) },
+        { icon: <Mail aria-hidden size={13} />, label: application.email },
+        { icon: <Phone aria-hidden size={13} />, label: application.phone },
+        { icon: <MapPin aria-hidden size={13} />, label: `${application.city}, ${application.country}` },
+        { icon: <CalendarClock aria-hidden size={13} />, label: formatAdminDate(application.submittedAt) },
       ]}
       actions={
         <>

@@ -3,12 +3,12 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
 import clsx from "clsx";
-import { ReviewSectionHeader, type ReviewIcon } from "@/features/admin/components/review/ReviewPrimitives";
+import { ReviewSectionHeader } from "@/features/admin/components/review/ReviewPrimitives";
 
 export type ReviewTab = {
   key: string;
   label: string;
-  icon?: ReviewIcon;
+  icon?: ReactNode;
   content: ReactNode;
 };
 
@@ -65,7 +65,9 @@ export default function ReviewWorkspace({
                         : "text-[var(--color-ink-soft)] hover:bg-[var(--color-blue-wash)] hover:text-[var(--color-ink)]",
                     )}
                   >
-                    {tab.icon ? <tab.icon aria-hidden size={14} /> : null}
+                    {tab.icon ? (
+                      <span className="flex shrink-0 items-center">{tab.icon}</span>
+                    ) : null}
                     {tab.label}
                   </button>
                 );
