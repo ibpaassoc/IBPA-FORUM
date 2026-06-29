@@ -10,15 +10,9 @@ export default function JuryLoginContent() {
   return (
     <AuthShell
       eyebrow={t.auth.loginPage.eyebrow}
-      title={t.auth.loginPage.title}
-      description={t.auth.loginPage.description}
+      title={t.auth.loginPage.cardTitle}
+      description={t.auth.loginPage.cardText}
     >
-      <h2 className="font-[var(--font-display)] text-[clamp(1.1rem,2vw,1.5rem)] font-normal text-[var(--color-ink)]">
-        {t.auth.loginPage.cardTitle}
-      </h2>
-      <p className="mt-[var(--space-xs)] text-sm leading-[1.65] text-[var(--color-ink-soft)]">
-        {t.auth.loginPage.cardText}
-      </p>
       <LoginForm />
     </AuthShell>
   );

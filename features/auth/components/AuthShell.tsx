@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Shield } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 export default function AuthShell({
@@ -18,46 +18,34 @@ export default function AuthShell({
   const { t } = useLanguage();
 
   return (
-    <main className="page-shell px-[var(--page-gutter)] py-[var(--space-2xl)]">
-      <div className="mx-auto max-w-[var(--content-width)] pt-[clamp(60px,8vh,72px)]">
-        <div className="grid gap-[var(--space-lg)] lg:grid-cols-[1.08fr_0.92fr]">
+    <main className="relative flex min-h-[100svh] items-center justify-center overflow-hidden px-[var(--page-gutter)] py-[var(--space-2xl)]">
+      {/* ambient soft-blue backdrop */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute -left-24 top-[-6rem] size-[28rem] rounded-full bg-[rgba(185,217,235,0.4)] blur-[120px]" />
+        <div className="absolute -right-24 bottom-[-8rem] size-[26rem] rounded-full bg-[rgba(114,160,193,0.2)] blur-[130px]" />
+      </div>
 
-          {/* Left — editorial panel (shown below form on mobile) */}
-          <section className="order-2 flex flex-col overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-blue-light)] bg-[var(--color-blue-wash)] p-[var(--space-lg)] shadow-[var(--shadow-md)] lg:order-1">
-            <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-semibold uppercase tracking-[0.22em] text-[var(--color-blue)]">
-              {eyebrow}
-            </p>
+      <div className="w-full max-w-[440px]">
+        <header className="mb-[var(--space-lg)] text-center">
+          <p className="text-[clamp(0.62rem,1vw,0.72rem)] font-semibold uppercase tracking-[0.22em] text-[var(--color-blue)]">
+            {eyebrow}
+          </p>
+          <h1 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(1.7rem,4vw,2.6rem)] font-light leading-[1.1] text-[var(--color-ink)]">
+            {title}
+          </h1>
+          <p className="mx-auto mt-[var(--space-sm)] max-w-sm text-sm leading-[1.65] text-[var(--color-ink-soft)]">
+            {description}
+          </p>
+        </header>
 
-            <h1 className="mt-[var(--space-md)] max-w-3xl font-[var(--font-display)] text-[clamp(2rem,4.5vw,3.8rem)] font-light leading-[1.08] text-[var(--color-ink)]">
-              {title}
-            </h1>
+        <section className="rounded-[var(--radius-lg)] border border-[rgba(114,160,193,0.2)] bg-white/80 p-[clamp(1.25rem,4vw,2rem)] shadow-[0_28px_80px_rgba(37,42,45,0.1)] backdrop-blur-2xl">
+          {children}
+        </section>
 
-            <p className="mt-[var(--space-md)] max-w-2xl text-sm leading-[1.75] text-[var(--color-ink-soft)] sm:text-base">
-              {description}
-            </p>
-
-            <div className="mt-[var(--space-xl)] h-px w-12 bg-[var(--color-blue)]/40" />
-
-            <blockquote className="mt-[var(--space-lg)] max-w-xs font-[var(--font-accent-family)] text-[clamp(1rem,1.7vw,1.3rem)] italic leading-[1.65] text-[var(--color-ink-soft)]">
-              {t.auth.statement}
-            </blockquote>
-
-            <div className="mt-auto flex items-center gap-3 pt-[var(--space-xl)]">
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[var(--color-blue)]/20 bg-white/60">
-                <Shield size={13} className="text-[var(--color-blue)]" />
-              </div>
-              <p className="text-[clamp(0.6rem,0.85vw,0.68rem)] font-medium uppercase tracking-[0.22em] text-[var(--color-ink-soft)]">
-                {t.auth.trustBadge}
-              </p>
-            </div>
-          </section>
-
-          {/* Right — form card (shown first on mobile) */}
-          <section className="page-card order-1 rounded-[var(--radius-lg)] p-[var(--space-lg)] lg:order-2">
-            {children}
-          </section>
-
-        </div>
+        <p className="mt-[var(--space-md)] flex items-center justify-center gap-2 text-center text-[clamp(0.58rem,0.85vw,0.66rem)] font-medium uppercase tracking-[0.2em] text-[var(--color-ink-soft)]">
+          <ShieldCheck size={13} className="shrink-0 text-[var(--color-blue)]" />
+          {t.auth.trustBadge}
+        </p>
       </div>
     </main>
   );
