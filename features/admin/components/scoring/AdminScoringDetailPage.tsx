@@ -116,11 +116,8 @@ export default function AdminScoringDetailPage({
 
       <DashboardCard className="p-0">
         <div className="border-b border-[rgba(37,42,45,0.08)] p-4 md:p-5">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-blue)]">
-            Judge breakdown
-          </p>
-          <h2 className="mt-2 font-[var(--font-title-family)] text-3xl font-light tracking-[-0.025em] text-[var(--color-ink)]">
-            All judge scores
+          <h2 className="font-[var(--font-title-family)] text-2xl font-light tracking-[-0.025em] text-[var(--color-ink)]">
+            Judge scores
           </h2>
         </div>
 
