@@ -6,7 +6,6 @@ import {
   DashboardAccentBlock,
   DashboardBadge,
   DashboardCard,
-  DashboardDetailCard,
   DashboardMetricTile,
   DashboardPageHeader,
   DashboardPanel,
@@ -27,6 +26,37 @@ function scoringBadge(status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETE") {
     default:
       return <DashboardBadge tone="neutral">Not started</DashboardBadge>;
   }
+}
+
+function ScoreStat({
+  label,
+  value,
+  highlight = false,
+}: {
+  label: string;
+  value: number | null;
+  highlight?: boolean;
+}) {
+  return (
+    <div
+      className={`rounded-[16px] border px-2.5 py-2 text-center ${
+        highlight
+          ? "border-[rgba(114,160,193,0.34)] bg-[var(--color-blue-wash)]"
+          : "border-[rgba(37,42,45,0.08)] bg-white/66"
+      }`}
+    >
+      <p className="text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-muted)]">
+        {label}
+      </p>
+      <p
+        className={`mt-1 font-[var(--font-title-family)] text-xl font-light leading-none tracking-[-0.02em] ${
+          highlight ? "text-[var(--color-blue)]" : "text-[var(--color-ink)]"
+        }`}
+      >
+        {value ?? "-"}
+      </p>
+    </div>
+  );
 }
 
 function scoreRowBadge(status: string) {
@@ -145,13 +175,13 @@ export default function AdminScoringDetailPage({
                   ) : null}
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                  <DashboardDetailCard label="Tech" value={row.technical ?? "-"} />
-                  <DashboardDetailCard label="Aesthetic" value={row.aesthetic ?? "-"} />
-                  <DashboardDetailCard label="Creativity" value={row.creativity ?? "-"} />
-                  <DashboardDetailCard label="Impact" value={row.impact ?? "-"} />
-                  <DashboardDetailCard label="Presentation" value={row.presentation ?? "-"} />
-                  <DashboardDetailCard label="Total" value={row.totalScore ?? "-"} />
+                <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+                  <ScoreStat label="Tech" value={row.technical} />
+                  <ScoreStat label="Aesthetic" value={row.aesthetic} />
+                  <ScoreStat label="Creativity" value={row.creativity} />
+                  <ScoreStat label="Impact" value={row.impact} />
+                  <ScoreStat label="Present." value={row.presentation} />
+                  <ScoreStat label="Total" value={row.totalScore} highlight />
                 </div>
 
                 <div className="flex justify-start lg:justify-end">

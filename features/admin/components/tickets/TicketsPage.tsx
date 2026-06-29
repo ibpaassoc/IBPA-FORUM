@@ -399,7 +399,7 @@ export default function TicketsPage({
           </div>
         ) : (
           <div className="divide-y divide-[rgba(37,42,45,0.08)]">
-            <div className="hidden grid-cols-[1.4fr_0.8fr_auto_auto_auto] gap-3 border-b border-[rgba(37,42,45,0.08)] bg-white/62 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)] lg:grid">
+            <div className="hidden grid-cols-[minmax(0,1.7fr)_130px_92px_150px_150px] gap-3 border-b border-[rgba(37,42,45,0.08)] bg-white/62 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)] lg:grid">
               <span>Attendee</span>
               <span>Type</span>
               <span>Gala</span>
@@ -409,7 +409,7 @@ export default function TicketsPage({
             {filtered.map((ticket) => (
               <div
                 key={ticket.id}
-                className="mx-3 my-3 grid gap-3 rounded-[24px] border border-[rgba(37,42,45,0.08)] bg-white/62 p-4 shadow-[0_10px_26px_rgba(37,42,45,0.035)] lg:m-0 lg:grid-cols-[1.4fr_0.8fr_auto_auto_auto] lg:items-center lg:gap-3 lg:rounded-none lg:border-0 lg:bg-transparent lg:px-4 lg:py-4 lg:shadow-none"
+                className="mx-3 my-3 grid gap-3 rounded-[24px] border border-[rgba(37,42,45,0.08)] bg-white/62 p-4 shadow-[0_10px_26px_rgba(37,42,45,0.035)] lg:m-0 lg:min-h-[68px] lg:grid-cols-[minmax(0,1.7fr)_130px_92px_150px_150px] lg:items-center lg:gap-3 lg:rounded-none lg:border-0 lg:bg-transparent lg:px-4 lg:py-4 lg:shadow-none"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
