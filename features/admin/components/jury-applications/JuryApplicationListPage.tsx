@@ -3,33 +3,41 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, MapPin, Users } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { formatAdminDate } from "@/features/admin/server/view-models";
+import ApplicationStatusBadge from "@/features/admin/components/badges/ApplicationStatusBadge";
+import PaymentStatusBadge from "@/features/admin/components/badges/PaymentStatusBadge";
+import ApplicationFilters, {
+  type FilterSelect,
+} from "@/features/admin/components/review/ApplicationFilters";
 import {
   DashboardAccentBlock,
-  DashboardBadge,
   DashboardCard,
   DashboardChip,
   DashboardEmptyState,
   DashboardMetricTile,
   DashboardPageHeader,
   DashboardPanel,
-  SearchBar,
 } from "@/shared/components/admin/DashboardUI";
 
-function juryStatusBadge(status: string) {
-  switch (status) {
-    case "PAID":
-      return <DashboardBadge tone="green">Active judge</DashboardBadge>;
-    case "APPROVED":
-      return <DashboardBadge tone="blue">Approved</DashboardBadge>;
-    case "SUBMITTED":
-      return <DashboardBadge tone="amber">Pending review</DashboardBadge>;
-    case "REJECTED":
-      return <DashboardBadge tone="red">Rejected</DashboardBadge>;
-    default:
-      return <DashboardBadge tone="neutral">{status}</DashboardBadge>;
-  }
-}
+type JuryStatus = "SUBMITTED" | "ADDITIONAL_INFO_REQUIRED" | "APPROVED" | "REJECTED" | "PAID";
+type PaymentStatus = "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "REFUNDED";
+
+type JuryRow = {
+  id: string;
+  fullName: string;
+  email: string;
+  city: string;
+  country: string;
+  professionalTitle: string;
+  expertiseAreas: string[];
+  ibpaNumber: string | null;
+  status: JuryStatus;
+  paymentStatus: PaymentStatus;
+  createdAt: Date;
+  submittedAt: Date | null;
+  paidAt: Date | null;
+};
 
 export default function JuryApplicationListPage({
   applications,
@@ -38,35 +46,104 @@ export default function JuryApplicationListPage({
   approvedCount,
   activeJudgeCount,
 }: {
-  applications: Array<{
-    id: string;
-    fullName: string;
-    email: string;
-    city: string;
-    country: string;
-    professionalTitle: string;
-    expertiseAreas: string[];
-    status: "SUBMITTED" | "ADDITIONAL_INFO_REQUIRED" | "APPROVED" | "REJECTED" | "PAID";
-    paymentStatus: "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "REFUNDED";
-    submittedAt: Date | null;
-    paidAt: Date | null;
-  }>;
+  applications: JuryRow[];
   totalCount: number;
   pendingCount: number;
   approvedCount: number;
   activeJudgeCount: number;
 }) {
-  const [query, setQuery] = useState("");
+  const { t } = useLanguage();
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("");
+  const [area, setArea] = useState("");
+  const [payment, setPayment] = useState("");
+  const [sort, setSort] = useState("");
+
+  const areas = useMemo(
+    () => [...new Set(applications.flatMap((app) => app.expertiseAreas))].sort(),
+    [applications],
+  );
+  const statusesPresent = useMemo(
+    () => [...new Set(applications.map((app) => app.status))],
+    [applications],
+  );
+  const paymentsPresent = useMemo(
+    () => [...new Set(applications.map((app) => app.paymentStatus))],
+    [applications],
+  );
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return applications;
-    return applications.filter(
-      (app) =>
-        app.fullName.toLowerCase().includes(q) ||
-        app.email.toLowerCase().includes(q),
-    );
-  }, [applications, query]);
+    const q = search.trim().toLowerCase();
+    const list = applications.filter((app) => {
+      if (status && app.status !== status) return false;
+      if (area && !app.expertiseAreas.includes(area)) return false;
+      if (payment && app.paymentStatus !== payment) return false;
+      if (q) {
+        const haystack = `${app.fullName} ${app.email} ${app.ibpaNumber ?? ""}`.toLowerCase();
+        if (!haystack.includes(q)) return false;
+      }
+      return true;
+    });
+    const activity = (row: JuryRow) => (row.submittedAt ?? row.createdAt).getTime();
+    if (sort === "oldest") return [...list].sort((a, b) => activity(a) - activity(b));
+    if (sort === "name") return [...list].sort((a, b) => a.fullName.localeCompare(b.fullName));
+    return [...list].sort((a, b) => activity(b) - activity(a));
+  }, [applications, search, status, area, payment, sort]);
+
+  const selects: FilterSelect[] = [
+    {
+      key: "status",
+      label: t.filters.allStatuses,
+      value: status,
+      options: [
+        { value: "", label: t.filters.allStatuses },
+        ...statusesPresent.map((value) => ({ value, label: t.statuses[value] })),
+      ],
+    },
+    {
+      key: "area",
+      label: t.filters.allCategories,
+      value: area,
+      options: [
+        { value: "", label: t.filters.allCategories },
+        ...areas.map((value) => ({ value, label: value })),
+      ],
+    },
+    {
+      key: "payment",
+      label: t.filters.allPayments,
+      value: payment,
+      options: [
+        { value: "", label: t.filters.allPayments },
+        ...paymentsPresent.map((value) => ({ value, label: t.statuses[value] })),
+      ],
+    },
+    {
+      key: "sort",
+      label: t.filters.sortLabel,
+      value: sort,
+      options: [
+        { value: "", label: t.filters.sortNewest },
+        { value: "oldest", label: t.filters.sortOldest },
+        { value: "name", label: t.filters.sortName },
+      ],
+    },
+  ];
+
+  function handleSelect(key: string, value: string) {
+    if (key === "status") setStatus(value);
+    else if (key === "area") setArea(value);
+    else if (key === "payment") setPayment(value);
+    else if (key === "sort") setSort(value);
+  }
+
+  function clearAll() {
+    setSearch("");
+    setStatus("");
+    setArea("");
+    setPayment("");
+    setSort("");
+  }
 
   return (
     <div className="flex flex-col gap-5">
@@ -84,37 +161,32 @@ export default function JuryApplicationListPage({
         <DashboardMetricTile label="Active judges" value={activeJudgeCount} accent="green" />
       </div>
 
-      {applications.length > 0 ? (
-        <DashboardCard>
-          <SearchBar
-            value={query}
-            onChange={setQuery}
-            placeholder="Search by name or email"
-          />
-        </DashboardCard>
-      ) : null}
+      <ApplicationFilters
+        search={search}
+        onSearchChange={setSearch}
+        selects={selects}
+        onSelectChange={handleSelect}
+        onClearAll={clearAll}
+      />
 
       {filtered.length === 0 ? (
         <DashboardCard>
           <DashboardEmptyState
             icon={<Users size={22} />}
-            title={query ? "No candidates match your search" : "No jury applications yet"}
-            description={query ? "Try a different name or email." : "Submitted candidates will appear here."}
+            title="No candidates found"
+            description="Adjust the filters or search to see another queue."
           />
         </DashboardCard>
       ) : (
         <div className="flex flex-col gap-3">
           {filtered.map((app) => (
-            <Link
-              key={app.id}
-              href={`/admin/jury-applications/${app.id}`}
-              className="group block"
-            >
+            <Link key={app.id} href={`/admin/jury-applications/${app.id}`} className="group block">
               <DashboardCard className="p-0 transition hover:border-[rgba(114,160,193,0.34)] hover:shadow-[0_24px_64px_rgba(114,160,193,0.16)]">
                 <div className="grid gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.8fr)_170px] lg:items-center">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      {juryStatusBadge(app.status)}
+                      <ApplicationStatusBadge status={app.status} />
+                      <PaymentStatusBadge status={app.paymentStatus} />
                     </div>
                     <h2 className="mt-3 font-[var(--font-title-family)] text-[1.55rem] font-light tracking-[-0.025em] text-[var(--color-ink)]">
                       {app.fullName}
@@ -129,8 +201,8 @@ export default function JuryApplicationListPage({
                   <DashboardPanel>
                     <p className="text-sm font-medium text-[var(--color-ink)]">{app.professionalTitle}</p>
                     <div className="mt-3 flex flex-wrap gap-1.5">
-                      {app.expertiseAreas.slice(0, 4).map((area) => (
-                        <DashboardChip key={area}>{area}</DashboardChip>
+                      {app.expertiseAreas.slice(0, 4).map((expertiseArea) => (
+                        <DashboardChip key={expertiseArea}>{expertiseArea}</DashboardChip>
                       ))}
                       {app.expertiseAreas.length > 4 ? (
                         <DashboardChip>+{app.expertiseAreas.length - 4}</DashboardChip>

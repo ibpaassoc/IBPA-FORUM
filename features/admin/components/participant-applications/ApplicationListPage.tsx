@@ -2,93 +2,56 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import {
-  ArrowRight,
-  Clock3,
-  FileText,
-  Layers3,
-  MapPin,
-  ReceiptText,
-} from "lucide-react";
+import { ArrowRight, Clock3, FileText, Layers3, MapPin, ReceiptText } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { formatAdminDate } from "@/features/admin/server/view-models";
+import ApplicationStatusBadge from "@/features/admin/components/badges/ApplicationStatusBadge";
+import PaymentStatusBadge from "@/features/admin/components/badges/PaymentStatusBadge";
+import ApplicationFilters, {
+  type FilterSelect,
+} from "@/features/admin/components/review/ApplicationFilters";
 import {
   DashboardAccentBlock,
-  DashboardBadge,
   DashboardCard,
   DashboardEmptyState,
-  DashboardFilterChip,
   DashboardMetricTile,
   DashboardPageHeader,
   DashboardPanel,
-  SearchBar,
 } from "@/shared/components/admin/DashboardUI";
 
-function applicationBadge(status: string) {
-  switch (status) {
-    case "APPROVED":
-      return <DashboardBadge tone="green">Approved</DashboardBadge>;
-    case "SUBMITTED":
-      return <DashboardBadge tone="blue">Submitted</DashboardBadge>;
-    case "UNDER_REVIEW":
-      return <DashboardBadge tone="blue">Under review</DashboardBadge>;
-    case "PAYMENT_PENDING":
-      return <DashboardBadge tone="amber">Payment pending</DashboardBadge>;
-    case "REJECTED":
-      return <DashboardBadge tone="red">Rejected</DashboardBadge>;
-    default:
-      return <DashboardBadge tone="neutral">{status}</DashboardBadge>;
-  }
-}
+type ParticipantStatus =
+  | "DRAFT"
+  | "PAYMENT_PENDING"
+  | "SUBMITTED"
+  | "UNDER_REVIEW"
+  | "APPROVED"
+  | "REJECTED";
+type PaymentStatus = "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "REFUNDED";
 
-function paymentBadge(status: string) {
-  switch (status) {
-    case "PAID":
-      return <DashboardBadge tone="green">Paid</DashboardBadge>;
-    case "PENDING":
-      return <DashboardBadge tone="amber">Awaiting payment</DashboardBadge>;
-    case "FAILED":
-      return <DashboardBadge tone="red">Payment failed</DashboardBadge>;
-    case "EXPIRED":
-      return <DashboardBadge tone="neutral">Expired</DashboardBadge>;
-    case "REFUNDED":
-      return <DashboardBadge tone="blue">Refunded</DashboardBadge>;
-    default:
-      return <DashboardBadge tone="neutral">{status}</DashboardBadge>;
-  }
-}
-
-const statusFilters = [
-  { label: "All", href: "/admin/applications", status: undefined },
-  { label: "Payment pending", href: "/admin/applications?status=PAYMENT_PENDING", status: "PAYMENT_PENDING" },
-  { label: "Submitted", href: "/admin/applications?status=SUBMITTED", status: "SUBMITTED" },
-  { label: "Under review", href: "/admin/applications?status=UNDER_REVIEW", status: "UNDER_REVIEW" },
-  { label: "Approved", href: "/admin/applications?status=APPROVED", status: "APPROVED" },
-  { label: "Rejected", href: "/admin/applications?status=REJECTED", status: "REJECTED" },
-];
+type ApplicationRow = {
+  id: string;
+  fullName: string;
+  email: string;
+  city: string;
+  country: string;
+  membershipNumber: string | null;
+  status: ParticipantStatus;
+  paymentStatus: PaymentStatus;
+  createdAt: Date;
+  category: { name: string };
+  award: { name: string };
+  nominationApplications: Array<{
+    id: string;
+    category: { name: string };
+    award: { name: string };
+  }>;
+};
 
 export default function ApplicationListPage({
   applications,
-  activeStatus,
   totals,
 }: {
-  applications: Array<{
-    id: string;
-    fullName: string;
-    email: string;
-    city: string;
-    country: string;
-    status: "DRAFT" | "PAYMENT_PENDING" | "SUBMITTED" | "UNDER_REVIEW" | "APPROVED" | "REJECTED";
-    paymentStatus: "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "REFUNDED";
-    createdAt: Date;
-    category: { name: string };
-    award: { name: string };
-    nominationApplications: Array<{
-      id: string;
-      category: { name: string };
-      award: { name: string };
-    }>;
-  }>;
-  activeStatus?: string;
+  applications: ApplicationRow[];
   totals: {
     total: number;
     paymentPending: number;
@@ -97,17 +60,101 @@ export default function ApplicationListPage({
     approved: number;
   };
 }) {
-  const [query, setQuery] = useState("");
+  const { t } = useLanguage();
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("");
+  const [category, setCategory] = useState("");
+  const [payment, setPayment] = useState("");
+  const [sort, setSort] = useState("");
+
+  const categories = useMemo(
+    () => [...new Set(applications.map((app) => app.category.name))].sort(),
+    [applications],
+  );
+  const statusesPresent = useMemo(
+    () => [...new Set(applications.map((app) => app.status))],
+    [applications],
+  );
+  const paymentsPresent = useMemo(
+    () => [...new Set(applications.map((app) => app.paymentStatus))],
+    [applications],
+  );
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return applications;
-    return applications.filter(
-      (app) =>
-        app.fullName.toLowerCase().includes(q) ||
-        app.email.toLowerCase().includes(q),
-    );
-  }, [applications, query]);
+    const q = search.trim().toLowerCase();
+    const list = applications.filter((app) => {
+      if (status && app.status !== status) return false;
+      if (category && app.category.name !== category) return false;
+      if (payment && app.paymentStatus !== payment) return false;
+      if (q) {
+        const haystack = `${app.fullName} ${app.email} ${app.membershipNumber ?? ""}`.toLowerCase();
+        if (!haystack.includes(q)) return false;
+      }
+      return true;
+    });
+    if (sort === "oldest") {
+      return [...list].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+    }
+    if (sort === "name") {
+      return [...list].sort((a, b) => a.fullName.localeCompare(b.fullName));
+    }
+    return [...list].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  }, [applications, search, status, category, payment, sort]);
+
+  const selects: FilterSelect[] = [
+    {
+      key: "status",
+      label: t.filters.allStatuses,
+      value: status,
+      options: [
+        { value: "", label: t.filters.allStatuses },
+        ...statusesPresent.map((value) => ({ value, label: t.statuses[value] })),
+      ],
+    },
+    {
+      key: "category",
+      label: t.filters.allCategories,
+      value: category,
+      options: [
+        { value: "", label: t.filters.allCategories },
+        ...categories.map((value) => ({ value, label: value })),
+      ],
+    },
+    {
+      key: "payment",
+      label: t.filters.allPayments,
+      value: payment,
+      options: [
+        { value: "", label: t.filters.allPayments },
+        ...paymentsPresent.map((value) => ({ value, label: t.statuses[value] })),
+      ],
+    },
+    {
+      key: "sort",
+      label: t.filters.sortLabel,
+      value: sort,
+      options: [
+        { value: "", label: t.filters.sortNewest },
+        { value: "oldest", label: t.filters.sortOldest },
+        { value: "name", label: t.filters.sortName },
+      ],
+    },
+  ];
+
+  function handleSelect(key: string, value: string) {
+    if (key === "status") setStatus(value);
+    else if (key === "category") setCategory(value);
+    else if (key === "payment") setPayment(value);
+    else if (key === "sort") setSort(value);
+  }
+
+  function clearAll() {
+    setSearch("");
+    setStatus("");
+    setCategory("");
+    setPayment("");
+    setSort("");
+  }
 
   return (
     <div className="flex flex-col gap-5">
@@ -126,35 +173,20 @@ export default function ApplicationListPage({
         <DashboardMetricTile label="Approved" value={totals.approved} accent="green" />
       </div>
 
-      <DashboardCard className="flex flex-col gap-3">
-        <SearchBar
-          value={query}
-          onChange={setQuery}
-          placeholder="Search by name or email"
-        />
-        <div className="flex flex-wrap gap-2">
-          {statusFilters.map((filter) => (
-            <DashboardFilterChip
-              key={filter.label}
-              href={filter.href}
-              active={filter.status ? activeStatus === filter.status : !activeStatus}
-            >
-              {filter.label}
-            </DashboardFilterChip>
-          ))}
-        </div>
-      </DashboardCard>
+      <ApplicationFilters
+        search={search}
+        onSearchChange={setSearch}
+        selects={selects}
+        onSelectChange={handleSelect}
+        onClearAll={clearAll}
+      />
 
       {filtered.length === 0 ? (
         <DashboardCard>
           <DashboardEmptyState
             icon={<FileText size={22} />}
             title="No applications found"
-            description={
-              query
-                ? "No applicants match your search."
-                : "Adjust the status filter to see another queue."
-            }
+            description="Adjust the filters or search to see another queue."
           />
         </DashboardCard>
       ) : (
@@ -168,17 +200,13 @@ export default function ApplicationListPage({
             const remainingNominationCount = nominations.length - previewNominations.length;
 
             return (
-              <Link
-                key={app.id}
-                href={`/admin/applications/${app.id}`}
-                className="group block"
-              >
+              <Link key={app.id} href={`/admin/applications/${app.id}`} className="group block">
                 <DashboardCard className="p-0 transition hover:border-[rgba(114,160,193,0.34)] hover:shadow-[0_24px_64px_rgba(114,160,193,0.16)]">
                   <div className="grid gap-4 p-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(260px,0.8fr)_minmax(180px,0.45fr)] lg:items-stretch">
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        {applicationBadge(app.status)}
-                        {paymentBadge(app.paymentStatus)}
+                        <ApplicationStatusBadge status={app.status} />
+                        <PaymentStatusBadge status={app.paymentStatus} />
                       </div>
                       <h2 className="mt-3 font-[var(--font-title-family)] text-[1.55rem] font-light tracking-[-0.025em] text-[var(--color-ink)]">
                         {app.fullName}
@@ -194,9 +222,7 @@ export default function ApplicationListPage({
                       <div>
                         <div className="flex items-center gap-2 text-[var(--color-blue)]">
                           <Layers3 aria-hidden size={16} />
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">
-                            Nominations
-                          </p>
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">Nominations</p>
                         </div>
                         <p className="mt-2 text-sm font-medium text-[var(--color-ink)]">
                           {nominations.length} selected
@@ -223,9 +249,7 @@ export default function ApplicationListPage({
                       <div>
                         <div className="flex items-center gap-2 text-[var(--color-ink-muted)]">
                           <ReceiptText aria-hidden size={15} />
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">
-                            Primary path
-                          </p>
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">Primary path</p>
                         </div>
                         <p className="mt-2 text-sm font-semibold leading-6 text-[var(--color-ink)]">
                           {app.award.name}

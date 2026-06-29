@@ -1638,6 +1638,18 @@ const en = {
     IN_PROGRESS: "In Progress",
     COMPLETE: "Complete",
   },
+  filters: {
+    search: "Search by name, email or IBPA number",
+    allStatuses: "All statuses",
+    allCategories: "All categories",
+    allPayments: "All payments",
+    sortLabel: "Sort",
+    sortNewest: "Newest first",
+    sortOldest: "Oldest first",
+    sortName: "Name A–Z",
+    toggle: "Filters",
+    clearAll: "Clear all",
+  },
 };
 
 const ru: typeof en = {
@@ -3274,6 +3286,18 @@ const ru: typeof en = {
     IN_PROGRESS: "В процессе",
     COMPLETE: "Завершено",
   },
+  filters: {
+    search: "Поиск по имени, email или номеру IBPA",
+    allStatuses: "Все статусы",
+    allCategories: "Все категории",
+    allPayments: "Все оплаты",
+    sortLabel: "Сортировка",
+    sortNewest: "Сначала новые",
+    sortOldest: "Сначала старые",
+    sortName: "Имя А–Я",
+    toggle: "Фильтры",
+    clearAll: "Очистить",
+  },
 };
 
 const ua: typeof en = {
@@ -4909,6 +4933,18 @@ const ua: typeof en = {
     REOPENED: "Відкрито знову",
     IN_PROGRESS: "У процесі",
     COMPLETE: "Завершено",
+  },
+  filters: {
+    search: "Пошук за іменем, email або номером IBPA",
+    allStatuses: "Усі статуси",
+    allCategories: "Усі категорії",
+    allPayments: "Усі оплати",
+    sortLabel: "Сортування",
+    sortNewest: "Спочатку нові",
+    sortOldest: "Спочатку старі",
+    sortName: "Ім'я А–Я",
+    toggle: "Фільтри",
+    clearAll: "Очистити",
   },
 };
 
