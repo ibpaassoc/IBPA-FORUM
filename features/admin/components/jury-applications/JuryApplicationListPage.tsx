@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, MapPin, Users } from "lucide-react";
 import { formatAdminDate } from "@/features/admin/server/view-models";
@@ -12,6 +13,7 @@ import {
   DashboardMetricTile,
   DashboardPageHeader,
   DashboardPanel,
+  SearchBar,
 } from "@/shared/components/admin/DashboardUI";
 
 function juryStatusBadge(status: string) {
@@ -54,13 +56,21 @@ export default function JuryApplicationListPage({
   approvedCount: number;
   activeJudgeCount: number;
 }) {
+  const [query, setQuery] = useState("");
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return applications;
+    return applications.filter(
+      (app) =>
+        app.fullName.toLowerCase().includes(q) ||
+        app.email.toLowerCase().includes(q),
+    );
+  }, [applications, query]);
+
   return (
     <div className="flex flex-col gap-5">
-      <DashboardPageHeader
-        label="Jury"
-        title="Candidate review"
-        description="Approve judges, track payment activation, and keep expertise coverage clear."
-      />
+      <DashboardPageHeader label="Jury" title="Candidate review" />
 
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-[1.1fr_repeat(3,minmax(0,0.75fr))]">
         <DashboardAccentBlock>
@@ -74,17 +84,27 @@ export default function JuryApplicationListPage({
         <DashboardMetricTile label="Active judges" value={activeJudgeCount} accent="green" />
       </div>
 
-      {applications.length === 0 ? (
+      {applications.length > 0 ? (
+        <DashboardCard>
+          <SearchBar
+            value={query}
+            onChange={setQuery}
+            placeholder="Search by name or email"
+          />
+        </DashboardCard>
+      ) : null}
+
+      {filtered.length === 0 ? (
         <DashboardCard>
           <DashboardEmptyState
             icon={<Users size={22} />}
-            title="No jury applications yet"
-            description="Submitted candidates will appear here."
+            title={query ? "No candidates match your search" : "No jury applications yet"}
+            description={query ? "Try a different name or email." : "Submitted candidates will appear here."}
           />
         </DashboardCard>
       ) : (
         <div className="flex flex-col gap-3">
-          {applications.map((app) => (
+          {filtered.map((app) => (
             <Link
               key={app.id}
               href={`/admin/jury-applications/${app.id}`}

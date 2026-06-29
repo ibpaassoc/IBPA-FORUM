@@ -84,20 +84,17 @@ function AlertMessage({ tone, children }: { tone: "error" | "notice"; children: 
 
 function SectionTitle({
   icon: Icon,
-  label,
   title,
 }: {
   icon: typeof UserRound;
-  label: string;
   title: string;
 }) {
   return (
-    <div className="border-b border-[rgba(37,42,45,0.08)] p-4 md:p-5">
-      <div className="flex items-center gap-2 text-[var(--color-blue)]">
-        <Icon aria-hidden size={16} />
-        <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">{label}</p>
-      </div>
-      <h2 className="mt-2 font-[var(--font-title-family)] text-3xl font-light tracking-[-0.025em] text-[var(--color-ink)]">
+    <div className="flex items-center gap-2.5 border-b border-[rgba(37,42,45,0.08)] p-4 md:p-5">
+      <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--color-blue-wash)] text-[var(--color-blue)]">
+        <Icon aria-hidden size={15} />
+      </span>
+      <h2 className="font-[var(--font-title-family)] text-2xl font-light tracking-[-0.025em] text-[var(--color-ink)]">
         {title}
       </h2>
     </div>
@@ -145,7 +142,7 @@ export default function JuryApplicationDetailPage({
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="flex flex-col gap-5">
           <DashboardCard className="p-0">
-            <SectionTitle icon={UserRound} label="Applicant" title="Profile" />
+            <SectionTitle icon={UserRound} title="Profile" />
             <div className="grid gap-3 p-4 md:grid-cols-2 md:p-5">
               <DashboardDetailCard label="Full name" value={application.fullName} />
               <DashboardDetailCard label="Email" value={application.email} />
@@ -173,7 +170,7 @@ export default function JuryApplicationDetailPage({
           </DashboardCard>
 
           <DashboardCard className="p-0">
-            <SectionTitle icon={BriefcaseBusiness} label="Experience" title="Expertise and judging history" />
+            <SectionTitle icon={BriefcaseBusiness} title="Expertise and judging history" />
             <div className="flex flex-col gap-4 p-4 md:p-5">
               <DashboardDetailCard
                 label="Previous judging experience"
@@ -199,7 +196,7 @@ export default function JuryApplicationDetailPage({
           </DashboardCard>
 
           <DashboardCard className="p-0">
-            <SectionTitle icon={Globe} label="Statements" title="Bio and disclosures" />
+            <SectionTitle icon={Globe} title="Bio and disclosures" />
             <div className="grid gap-3 p-4 md:p-5">
               <DashboardDetailCard label="Professional bio" value={application.professionalBio} />
               <DashboardDetailCard label="Conflict disclosure" value={application.conflictDisclosure} />
@@ -212,7 +209,7 @@ export default function JuryApplicationDetailPage({
           </DashboardCard>
 
           <DashboardCard className="p-0">
-            <SectionTitle icon={Files} label="Files" title="Photo and certifications" />
+            <SectionTitle icon={Files} title="Photo and certifications" />
             <div className="grid gap-4 p-4 md:p-5 lg:grid-cols-[minmax(220px,0.65fr)_minmax(0,1fr)]">
               <div>
                 <p className="text-sm font-medium text-[var(--color-ink)]">Profile photo</p>
