@@ -11,32 +11,36 @@ import type {
 import type { ReactNode } from "react";
 import {
   ArrowLeft,
-  BriefcaseBusiness,
+  CalendarClock,
   CheckCircle2,
-  Clock3,
+  ClipboardList,
   ExternalLink,
+  FileText,
   Files,
-  Globe,
   Layers3,
   Mail,
   MapPin,
   Pencil,
   Phone,
   ReceiptText,
-  SearchCheck,
-  XCircle,
+  Star,
   UserRound,
+  XCircle,
 } from "lucide-react";
 import { updateParticipantApplicationStatus } from "@/features/admin/actions/participant.actions";
+import ApplicationStatusBadge from "@/features/admin/components/badges/ApplicationStatusBadge";
+import PaymentStatusBadge from "@/features/admin/components/badges/PaymentStatusBadge";
+import ReviewWorkspace, { type ReviewTab } from "@/features/admin/components/review/ReviewWorkspace";
+import {
+  MobileActionBar,
+  ReviewActionPanel,
+  ReviewSummaryCard,
+} from "@/features/admin/components/review/ReviewPrimitives";
 import { formatAdminDate } from "@/features/admin/server/view-models";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import {
-  DashboardAccentBlock,
-  DashboardBadge,
   DashboardCard,
   DashboardDetailCard,
-  DashboardPageHeader,
-  DashboardPanel,
   DashboardSecondaryBtn,
   dashboardSelectClass,
 } from "@/shared/components/admin/DashboardUI";
@@ -120,64 +124,7 @@ function formatAmount(amount: number, currency: string) {
   }).format(amount / 100);
 }
 
-function applicationStatusBadge(status: Application["status"]) {
-  switch (status) {
-    case "APPROVED":
-      return <DashboardBadge tone="green">Approved</DashboardBadge>;
-    case "SUBMITTED":
-      return <DashboardBadge tone="blue">Submitted</DashboardBadge>;
-    case "UNDER_REVIEW":
-      return <DashboardBadge tone="blue">Under review</DashboardBadge>;
-    case "PAYMENT_PENDING":
-      return <DashboardBadge tone="amber">Payment pending</DashboardBadge>;
-    case "REJECTED":
-      return <DashboardBadge tone="red">Rejected</DashboardBadge>;
-    default:
-      return <DashboardBadge tone="neutral">{status}</DashboardBadge>;
-  }
-}
-
-function paymentStatusBadge(status: Application["paymentStatus"]) {
-  switch (status) {
-    case "PAID":
-      return <DashboardBadge tone="green">Paid</DashboardBadge>;
-    case "PENDING":
-      return <DashboardBadge tone="amber">Awaiting payment</DashboardBadge>;
-    case "FAILED":
-      return <DashboardBadge tone="red">Payment failed</DashboardBadge>;
-    case "EXPIRED":
-      return <DashboardBadge tone="neutral">Expired</DashboardBadge>;
-    case "REFUNDED":
-      return <DashboardBadge tone="blue">Refunded</DashboardBadge>;
-    default:
-      return <DashboardBadge tone="neutral">{status}</DashboardBadge>;
-  }
-}
-
-function SectionLabel({
-  icon: Icon,
-  children,
-}: {
-  icon: typeof UserRound;
-  children: ReactNode;
-}) {
-  return (
-    <div className="flex items-center gap-2 text-[var(--color-blue)]">
-      <Icon aria-hidden size={16} />
-      <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">{children}</p>
-    </div>
-  );
-}
-
-function FileLink({
-  href,
-  name,
-  sizeBytes,
-}: {
-  href: string;
-  name: string;
-  sizeBytes: number;
-}) {
+function FileLink({ href, name, sizeBytes }: { href: string; name: string; sizeBytes: number }) {
   return (
     <a
       href={href}
@@ -203,10 +150,41 @@ function FileLink({
   );
 }
 
+function EmptyInline({ children }: { children: ReactNode }) {
+  return (
+    <div className="rounded-[22px] border border-dashed border-[rgba(37,42,45,0.14)] bg-white/62 px-4 py-4 text-sm text-[var(--color-ink-soft)]">
+      {children}
+    </div>
+  );
+}
+
+function FileGroup({
+  label,
+  files,
+  apiPath,
+}: {
+  label: string;
+  files: Array<{ id: string; fileName: string; fileSize: number }>;
+  apiPath: string;
+}) {
+  return (
+    <div>
+      <p className="text-sm font-medium text-[var(--color-ink)]">{label}</p>
+      <div className="mt-2 flex flex-col gap-2">
+        {files.map((file) => (
+          <FileLink key={file.id} href={`${apiPath}/${file.id}`} name={file.fileName} sizeBytes={file.fileSize} />
+        ))}
+        {files.length === 0 ? <EmptyInline>No files uploaded.</EmptyInline> : null}
+      </div>
+    </div>
+  );
+}
+
 const statusActionTone = {
-  primary: "border-[var(--color-blue)] bg-[var(--color-blue)] text-[var(--color-ink)] hover:bg-[var(--color-blue-soft)]",
-  blue: "border-[rgba(114,160,193,0.34)] bg-[var(--color-blue-wash)] text-[var(--color-ink)] hover:bg-[var(--color-blue-light)]",
-  neutral: "border-[rgba(37,42,45,0.08)] bg-white text-[var(--color-ink)] hover:border-[rgba(114,160,193,0.34)] hover:bg-[var(--color-blue-wash)]",
+  primary:
+    "border-[var(--color-blue)] bg-[var(--color-blue)] text-white hover:bg-[#4d86ad]",
+  neutral:
+    "border-[rgba(37,42,45,0.08)] bg-white text-[var(--color-ink)] hover:border-[rgba(114,160,193,0.34)] hover:bg-[var(--color-blue-wash)]",
   danger: "border-red-200 bg-white text-red-700 hover:bg-red-50",
 };
 
@@ -215,16 +193,18 @@ function StatusActionButton({
   status,
   active,
   tone = "neutral",
+  className,
   children,
 }: {
   applicationId: string;
   status: Application["status"];
-  active: boolean;
+  active?: boolean;
   tone?: keyof typeof statusActionTone;
+  className?: string;
   children: ReactNode;
 }) {
   return (
-    <form action={updateParticipantApplicationStatus}>
+    <form action={updateParticipantApplicationStatus} className={className}>
       <input type="hidden" name="id" value={applicationId} />
       <input type="hidden" name="status" value={status} />
       <button
@@ -235,112 +215,6 @@ function StatusActionButton({
         {children}
       </button>
     </form>
-  );
-}
-
-function EmptyInline({ children }: { children: ReactNode }) {
-  return (
-    <div className="rounded-[22px] border border-dashed border-[rgba(37,42,45,0.14)] bg-white/62 px-4 py-4 text-sm text-[var(--color-ink-soft)]">
-      {children}
-    </div>
-  );
-}
-
-function NominationBlockB({
-  nomination,
-  index,
-}: {
-  nomination: NominationDetail;
-  index: number;
-}) {
-  const fields = categoryFieldConfigs[nomination.category.slug] ?? [];
-  const answerMap = new Map(nomination.answers.map((answer) => [answer.fieldKey, answer]));
-  const fileMap = new Map<string, NominationFile[]>();
-
-  for (const file of nomination.files) {
-    const group = fileMap.get(file.fieldKey) ?? [];
-    group.push(file);
-    fileMap.set(file.fieldKey, group);
-  }
-
-  const textFields = fields.filter((field) => field.type !== "file");
-  const fileFields = fields.filter((field) => field.type === "file");
-  const hasTextAnswers = textFields.some((field) => answerMap.get(field.key));
-
-  return (
-    <section id={`nomination-${nomination.awardId}`} className="scroll-mt-24">
-      <DashboardCard className="p-0">
-        <div className="border-b border-[rgba(37,42,45,0.08)] p-4 md:p-5">
-          <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-blue)]">
-                Nomination {String(index + 1).padStart(2, "0")}
-              </p>
-              <h3 className="mt-2 font-[var(--font-title-family)] text-3xl font-light tracking-[-0.025em] text-[var(--color-ink)]">
-                {nomination.award.name}
-              </h3>
-              <p className="mt-1 text-sm text-[var(--color-ink-soft)]">{nomination.category.name}</p>
-            </div>
-            <DashboardBadge tone="blue">Evidence set</DashboardBadge>
-          </div>
-        </div>
-
-        <div className="grid gap-4 p-4 md:p-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)]">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
-              Answers
-            </p>
-            <div className="mt-3 grid gap-3 sm:grid-cols-2">
-              {textFields.map((field) => {
-                const answer = answerMap.get(field.key);
-                if (!answer) return null;
-                return (
-                  <DashboardDetailCard
-                    key={field.key}
-                    label={field.label}
-                    value={formatAnswerValue(answer)}
-                  />
-                );
-              })}
-            </div>
-            {!hasTextAnswers ? (
-              <div className="mt-3">
-                <EmptyInline>No text answers were saved for this nomination.</EmptyInline>
-              </div>
-            ) : null}
-          </div>
-
-          <DashboardPanel>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
-              Files
-            </p>
-            <div className="mt-3 flex flex-col gap-4">
-              {fileFields.map((field) => {
-                const files = fileMap.get(field.key) ?? [];
-
-                return (
-                  <div key={field.key}>
-                    <p className="text-sm font-medium text-[var(--color-ink)]">{field.label}</p>
-                    <div className="mt-2 flex flex-col gap-2">
-                      {files.map((file) => (
-                        <FileLink
-                          key={file.id}
-                          href={`/api/admin/nomination-files/${file.id}`}
-                          name={file.fileName}
-                          sizeBytes={file.fileSize}
-                        />
-                      ))}
-                      {files.length === 0 ? <EmptyInline>No files uploaded.</EmptyInline> : null}
-                    </div>
-                  </div>
-                );
-              })}
-              {fileFields.length === 0 ? <EmptyInline>No file fields configured.</EmptyInline> : null}
-            </div>
-          </DashboardPanel>
-        </div>
-      </DashboardCard>
-    </section>
   );
 }
 
@@ -374,21 +248,17 @@ export default function ApplicationDetailPage({
   const categoryFields = categoryFieldConfigs[application.category.slug] ?? [];
   const categoryFieldKeySet = new Set(categoryFields.map((field) => field.key));
   const categoryFileKeySet = new Set(
-    categoryFields.filter((field) => field.type === "file").map((field) => field.key)
+    categoryFields.filter((field) => field.type === "file").map((field) => field.key),
   );
 
   const hasNominationData = application.nominationApplications.some(
-    (nomination) => nomination.answers.length > 0 || nomination.files.length > 0
+    (nomination) => nomination.answers.length > 0 || nomination.files.length > 0,
   );
   const nominationOrder = new Map(selectedAwards.map((item, index) => [item.awardId, index]));
   const orderedNominations = [...application.nominationApplications].sort((left, right) => {
     const leftOrder = nominationOrder.get(left.awardId) ?? Number.MAX_SAFE_INTEGER;
     const rightOrder = nominationOrder.get(right.awardId) ?? Number.MAX_SAFE_INTEGER;
-
-    if (leftOrder !== rightOrder) {
-      return leftOrder - rightOrder;
-    }
-
+    if (leftOrder !== rightOrder) return leftOrder - rightOrder;
     return left.createdAt.getTime() - right.createdAt.getTime();
   });
   const nominationSummaries =
@@ -412,307 +282,335 @@ export default function ApplicationDetailPage({
           answer.fieldKey !== "heardAboutOther" &&
           answer.fieldKey !== "licenseCertification" &&
           answer.fieldKey !== "selectedAwards" &&
-          categoryFieldKeySet.has(answer.fieldKey)
+          categoryFieldKeySet.has(answer.fieldKey),
       )
     : [];
   const legacyFileEntries = !hasNominationData
-    ? [...fileMap.entries()].filter(
-        ([key]) => key !== "licenseCertification" && categoryFileKeySet.has(key)
-      )
+    ? [...fileMap.entries()].filter(([key]) => key !== "licenseCertification" && categoryFileKeySet.has(key))
     : [];
 
   const licenseFiles = fileMap.get("licenseCertification") ?? [];
 
-  return (
-    <div className="flex flex-col gap-5">
-      <DashboardPageHeader
-        label="Application review"
-        title={application.fullName}
-        description={nominationSummaryLabel}
-        actions={
-          <>
-            <DashboardSecondaryBtn href="/admin/applications">
-              <ArrowLeft aria-hidden size={15} />
-              Back
-            </DashboardSecondaryBtn>
-            <DashboardSecondaryBtn href={`/admin/applications/${application.id}/edit`}>
-              <Pencil aria-hidden size={15} />
-              Edit application
-            </DashboardSecondaryBtn>
-          </>
-        }
-      />
-
-      {error ? <AlertMessage tone="error">{error}</AlertMessage> : null}
-      {notice ? <AlertMessage tone="notice">{notice}</AlertMessage> : null}
-
-      <DashboardCard>
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex flex-wrap gap-2">
-            {applicationStatusBadge(application.status)}
-            {paymentStatusBadge(application.paymentStatus)}
-          </div>
-          <div className="flex flex-wrap gap-2 text-xs text-[var(--color-ink-soft)]">
-            <span className="inline-flex items-center gap-2 rounded-[18px] border border-[rgba(37,42,45,0.08)] bg-white/62 px-2.5 py-1">
-              <Mail aria-hidden size={13} />
-              {application.email}
-            </span>
-            <span className="inline-flex items-center gap-2 rounded-[18px] border border-[rgba(37,42,45,0.08)] bg-white/62 px-2.5 py-1">
-              <Phone aria-hidden size={13} />
-              {application.phone}
-            </span>
-            <span className="inline-flex items-center gap-2 rounded-[18px] border border-[rgba(37,42,45,0.08)] bg-white/62 px-2.5 py-1">
-              <MapPin aria-hidden size={13} />
-              {application.city}, {application.country}
-            </span>
-          </div>
+  // ── Tab content ─────────────────────────────────────────────────────────
+  const overview = (
+    <DashboardCard className="flex flex-col gap-6">
+      <div>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
+          Identity
+        </p>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <DashboardDetailCard label="Full legal name" value={application.fullName} />
+          <DashboardDetailCard label="Email address" value={application.email} />
+          <DashboardDetailCard label="Phone / WhatsApp" value={application.phone} />
+          <DashboardDetailCard label="Country / City" value={`${application.country}, ${application.city}`} />
+          <DashboardDetailCard label="State / Province" value={application.stateProvince || "Not required"} />
+          <DashboardDetailCard
+            label="Heard about us"
+            value={
+              answerMap.get("heardAboutOther")?.valueText
+                ? `${application.heardAbout || "Other"}: ${answerMap.get("heardAboutOther")?.valueText}`
+                : application.heardAbout || "Not provided"
+            }
+          />
         </div>
+      </div>
+      <div>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
+          Professional
+        </p>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <DashboardDetailCard label="Professional title" value={application.professionalTitle} />
+          <DashboardDetailCard label="Years of experience" value={String(application.yearsExperience)} />
+          <DashboardDetailCard label="Category scope" value={categorySummary || application.category.name} />
+          <DashboardDetailCard label="Nomination path" value={nominationSummaryLabel} />
+          <DashboardDetailCard label="IBPA membership no." value={application.membershipNumber || "Not provided"} />
+          <DashboardDetailCard label="Membership level" value={application.membershipLevel || "Not available"} />
+        </div>
+      </div>
+      <div>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
+          Online presence
+        </p>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <DashboardDetailCard label="Website" value={application.websiteUrl || "Not provided"} />
+          <DashboardDetailCard label="Instagram / Social" value={application.socialUrl || "Not provided"} />
+          <DashboardDetailCard label="Client reviews" value={application.reviewsUrl || "Not provided"} />
+          <DashboardDetailCard label="Payment total" value={formatAmount(application.amount, application.currency)} />
+        </div>
+      </div>
+    </DashboardCard>
+  );
+
+  const submission = (
+    <div className="flex flex-col gap-4">
+      {hasNominationData ? (
+        orderedNominations.map((nomination, index) => {
+          const fields = categoryFieldConfigs[nomination.category.slug] ?? [];
+          const nomAnswerMap = new Map(nomination.answers.map((answer) => [answer.fieldKey, answer]));
+          const textFields = fields.filter((field) => field.type !== "file");
+          const hasTextAnswers = textFields.some((field) => nomAnswerMap.get(field.key));
+          return (
+            <DashboardCard key={nomination.id} className="p-0">
+              <div className="flex items-center justify-between gap-3 border-b border-[rgba(37,42,45,0.08)] p-4 md:p-5">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-blue)]">
+                    Nomination {String(index + 1).padStart(2, "0")}
+                  </p>
+                  <h3 className="mt-1 font-[var(--font-title-family)] text-2xl font-light tracking-[-0.025em] text-[var(--color-ink)]">
+                    {nomination.award.name}
+                  </h3>
+                  <p className="mt-0.5 text-sm text-[var(--color-ink-soft)]">{nomination.category.name}</p>
+                </div>
+              </div>
+              <div className="p-4 md:p-5">
+                {hasTextAnswers ? (
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {textFields.map((field) => {
+                      const answer = nomAnswerMap.get(field.key);
+                      if (!answer) return null;
+                      return (
+                        <DashboardDetailCard key={field.key} label={field.label} value={formatAnswerValue(answer)} />
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <EmptyInline>No text answers were saved for this nomination.</EmptyInline>
+                )}
+              </div>
+            </DashboardCard>
+          );
+        })
+      ) : (
+        <DashboardCard>
+          {legacyAnswerEntries.length > 0 ? (
+            <div className="grid gap-3 sm:grid-cols-2">
+              {legacyAnswerEntries.map((answer) => (
+                <DashboardDetailCard
+                  key={answer.id}
+                  label={formatLegacyFieldLabel(answer.fieldKey)}
+                  value={formatAnswerValue(answer)}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyInline>No submission answers were recorded for this application.</EmptyInline>
+          )}
+        </DashboardCard>
+      )}
+    </div>
+  );
+
+  const documents = (
+    <div className="flex flex-col gap-4">
+      <DashboardCard>
+        <FileGroup
+          label="Professional license / Certification"
+          files={licenseFiles}
+          apiPath="/api/admin/application-files"
+        />
       </DashboardCard>
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
-        <div className="flex flex-col gap-5">
-          <section id="profile" className="scroll-mt-24">
-            <DashboardCard className="p-0">
-              <div className="border-b border-[rgba(37,42,45,0.08)] p-4 md:p-5">
-                <h2 className="font-[var(--font-title-family)] text-2xl font-light tracking-[-0.025em] text-[var(--color-ink)]">
-                  Applicant profile
-                </h2>
-              </div>
-
-              <div className="flex flex-col gap-6 p-4 md:p-5">
-                <div>
-                  <SectionLabel icon={UserRound}>Identity</SectionLabel>
-                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                    <DashboardDetailCard label="Full legal name" value={application.fullName} />
-                    <DashboardDetailCard label="Email address" value={application.email} />
-                    <DashboardDetailCard label="Phone / WhatsApp" value={application.phone} />
-                    <DashboardDetailCard label="Country / City" value={`${application.country}, ${application.city}`} />
-                    <DashboardDetailCard label="State / Province" value={application.stateProvince || "Not required"} />
-                    <DashboardDetailCard
-                      label="Heard about us"
-                      value={
-                        answerMap.get("heardAboutOther")?.valueText
-                          ? `${application.heardAbout || "Other"}: ${answerMap.get("heardAboutOther")?.valueText}`
-                          : application.heardAbout || "Not provided"
-                      }
-                    />
-                  </div>
+      {hasNominationData
+        ? orderedNominations.map((nomination) => {
+            const fields = categoryFieldConfigs[nomination.category.slug] ?? [];
+            const fileFields = fields.filter((field) => field.type === "file");
+            const nomFileMap = new Map<string, NominationFile[]>();
+            for (const file of nomination.files) {
+              const group = nomFileMap.get(file.fieldKey) ?? [];
+              group.push(file);
+              nomFileMap.set(file.fieldKey, group);
+            }
+            return (
+              <DashboardCard key={nomination.id} className="p-0">
+                <div className="border-b border-[rgba(37,42,45,0.08)] p-4 md:p-5">
+                  <h3 className="font-[var(--font-title-family)] text-xl font-light tracking-[-0.02em] text-[var(--color-ink)]">
+                    {nomination.award.name}
+                  </h3>
                 </div>
-
-                <div>
-                  <SectionLabel icon={BriefcaseBusiness}>Professional</SectionLabel>
-                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                    <DashboardDetailCard label="Professional title" value={application.professionalTitle} />
-                    <DashboardDetailCard label="Years of experience" value={String(application.yearsExperience)} />
-                    <DashboardDetailCard label="Category scope" value={categorySummary || application.category.name} />
-                    <DashboardDetailCard label="Nomination path" value={nominationSummaryLabel} />
-                    <DashboardDetailCard label="IBPA membership no." value={application.membershipNumber || "Not provided"} />
-                    <DashboardDetailCard label="Membership level" value={application.membershipLevel || "Not available"} />
-                  </div>
-                </div>
-
-                <div>
-                  <SectionLabel icon={Globe}>Online presence</SectionLabel>
-                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                    <DashboardDetailCard label="Website" value={application.websiteUrl || "Not provided"} />
-                    <DashboardDetailCard label="Instagram / Social" value={application.socialUrl || "Not provided"} />
-                    <DashboardDetailCard label="Client reviews" value={application.reviewsUrl || "Not provided"} />
-                    <DashboardDetailCard label="Payment total" value={formatAmount(application.amount, application.currency)} />
-                  </div>
-                </div>
-              </div>
-            </DashboardCard>
-          </section>
-
-          {hasNominationData ? (
-            orderedNominations.map((nomination, index) => (
-              <NominationBlockB key={nomination.id} nomination={nomination} index={index} />
-            ))
-          ) : (
-            <DashboardCard>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-blue)]">
-                Legacy nomination answers
-              </p>
-              <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                {legacyAnswerEntries.map((answer) => (
-                  <DashboardDetailCard
-                    key={answer.id}
-                    label={formatLegacyFieldLabel(answer.fieldKey)}
-                    value={formatAnswerValue(answer)}
-                  />
-                ))}
-              </div>
-              {legacyAnswerEntries.length === 0 ? (
-                <div className="mt-3">
-                  <EmptyInline>No Block B answers were recorded for this application.</EmptyInline>
-                </div>
-              ) : null}
-            </DashboardCard>
-          )}
-        </div>
-
-        <aside className="flex flex-col gap-4 xl:sticky xl:top-5 xl:self-start">
-          <DashboardAccentBlock>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-soft)]">
-              Overview
-            </p>
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              <div className="rounded-[18px] border border-[var(--color-blue-soft)] bg-white/72 p-3">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">
-                  Nominations
-                </p>
-                <p className="mt-2 text-2xl font-semibold">{nominationSummaries.length}</p>
-              </div>
-              <div className="rounded-[18px] border border-[var(--color-blue-soft)] bg-white/72 p-3">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">
-                  Fee
-                </p>
-                <p className="mt-2 text-2xl font-semibold">
-                  {formatAmount(application.amount, application.currency)}
-                </p>
-              </div>
-            </div>
-            <div className="mt-4 flex items-center gap-2 text-sm text-[var(--color-ink-soft)]">
-              <Clock3 aria-hidden size={15} />
-              Created {formatAdminDate(application.createdAt)}
-            </div>
-          </DashboardAccentBlock>
-
-          <DashboardCard>
-            <div className="flex items-center gap-2 text-[var(--color-blue)]">
-              <SearchCheck aria-hidden size={16} />
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">Decision</p>
-            </div>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {applicationStatusBadge(application.status)}
-              {paymentStatusBadge(application.paymentStatus)}
-            </div>
-
-            <div className="mt-4 border-t border-[rgba(37,42,45,0.06)] pt-4">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-muted)]">
-                Change status
-              </p>
-              <form action={updateParticipantApplicationStatus} className="mt-2 flex flex-col gap-2">
-                <input type="hidden" name="id" value={application.id} />
-                <select
-                  name="status"
-                  defaultValue={application.status}
-                  className={dashboardSelectClass}
-                >
-                  <option value="PAYMENT_PENDING">Payment pending</option>
-                  <option value="SUBMITTED">Submitted</option>
-                  <option value="UNDER_REVIEW">Under review</option>
-                  <option value="APPROVED">Approved</option>
-                  <option value="REJECTED">Rejected</option>
-                </select>
-                <DashboardSecondaryBtn type="submit" className="w-full">
-                  Apply status
-                </DashboardSecondaryBtn>
-              </form>
-            </div>
-
-            <div className="mt-4 grid gap-2 border-t border-[rgba(37,42,45,0.06)] pt-4">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-muted)]">
-                Quick actions
-              </p>
-              <StatusActionButton
-                applicationId={application.id}
-                status="APPROVED"
-                active={application.status === "APPROVED"}
-                tone="primary"
-              >
-                <CheckCircle2 aria-hidden size={15} />
-                Approve
-              </StatusActionButton>
-              <StatusActionButton
-                applicationId={application.id}
-                status="REJECTED"
-                active={application.status === "REJECTED"}
-                tone="danger"
-              >
-                <XCircle aria-hidden size={15} />
-                Reject
-              </StatusActionButton>
-            </div>
-          </DashboardCard>
-
-          <DashboardCard>
-            <div className="flex items-center gap-2 text-[var(--color-blue)]">
-              <Layers3 aria-hidden size={16} />
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">Review map</p>
-            </div>
-            <div className="mt-3 flex flex-col gap-2">
-              <a
-                href="#profile"
-                className="rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white/62 px-3 py-3 text-sm font-medium text-[var(--color-ink)] transition hover:border-[rgba(114,160,193,0.34)] hover:bg-[var(--color-blue-wash)]"
-              >
-                Applicant profile
-              </a>
-              {nominationSummaries.map((nomination, index) => (
-                <a
-                  key={nomination.awardId}
-                  href={`#nomination-${nomination.awardId}`}
-                  className="rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white px-3 py-3 text-sm transition hover:border-[rgba(114,160,193,0.34)] hover:bg-[var(--color-blue-wash)]/60"
-                >
-                  <span className="block text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
-                    Nomination {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <span className="mt-1 block font-semibold text-[var(--color-ink)]">
-                    {nomination.awardName}
-                  </span>
-                  <span className="mt-0.5 block text-xs text-[var(--color-ink-soft)]">
-                    {nomination.categoryName}
-                  </span>
-                </a>
-              ))}
-            </div>
-          </DashboardCard>
-
-          <DashboardCard>
-            <div className="flex items-center gap-2 text-[var(--color-blue)]">
-              <ReceiptText aria-hidden size={16} />
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">Shared files</p>
-            </div>
-
-            <div className="mt-4 flex flex-col gap-4">
-              <div>
-                <p className="text-sm font-medium text-[var(--color-ink)]">
-                  Professional license / Certification
-                </p>
-                <div className="mt-2 flex flex-col gap-2">
-                  {licenseFiles.map((file) => (
-                    <FileLink
-                      key={file.id}
-                      href={`/api/admin/application-files/${file.id}`}
-                      name={file.fileName}
-                      sizeBytes={file.fileSize}
-                    />
-                  ))}
-                  {licenseFiles.length === 0 ? <EmptyInline>No license file uploaded.</EmptyInline> : null}
-                </div>
-              </div>
-
-              {legacyFileEntries.map(([key, files]) => (
-                <div key={key}>
-                  <p className="text-sm font-medium text-[var(--color-ink)]">
-                    {formatLegacyFieldLabel(key)} (Legacy)
-                  </p>
-                  <div className="mt-2 flex flex-col gap-2">
-                    {files.map((file) => (
-                      <FileLink
-                        key={file.id}
-                        href={`/api/admin/application-files/${file.id}`}
-                        name={file.fileName}
-                        sizeBytes={file.fileSize}
+                <div className="flex flex-col gap-4 p-4 md:p-5">
+                  {fileFields.length > 0 ? (
+                    fileFields.map((field) => (
+                      <FileGroup
+                        key={field.key}
+                        label={field.label}
+                        files={nomFileMap.get(field.key) ?? []}
+                        apiPath="/api/admin/nomination-files"
                       />
-                    ))}
-                  </div>
+                    ))
+                  ) : (
+                    <EmptyInline>No file fields configured.</EmptyInline>
+                  )}
                 </div>
-              ))}
-            </div>
-          </DashboardCard>
-        </aside>
-      </div>
+              </DashboardCard>
+            );
+          })
+        : legacyFileEntries.map(([key, files]) => (
+            <DashboardCard key={key}>
+              <FileGroup
+                label={`${formatLegacyFieldLabel(key)} (Legacy)`}
+                files={files}
+                apiPath="/api/admin/application-files"
+              />
+            </DashboardCard>
+          ))}
     </div>
+  );
+
+  const scores = (
+    <DashboardCard className="flex flex-col items-start gap-4">
+      <div className="flex items-center gap-3">
+        <span className="flex size-10 items-center justify-center rounded-full bg-[var(--color-blue-wash)] text-[var(--color-blue)]">
+          <Star aria-hidden size={18} />
+        </span>
+        <div>
+          <p className="font-[var(--font-title-family)] text-xl font-light text-[var(--color-ink)]">Judge scoring</p>
+          <p className="text-sm text-[var(--color-ink-soft)]">Coverage, averages, and rank for this nomination.</p>
+        </div>
+      </div>
+      <DashboardSecondaryBtn href={`/admin/scoring/${application.id}`}>
+        Open score audit
+      </DashboardSecondaryBtn>
+    </DashboardCard>
+  );
+
+  const history = (
+    <DashboardCard>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <DashboardDetailCard label="Created" value={formatAdminDate(application.createdAt)} />
+        <DashboardDetailCard label="Last updated" value={formatAdminDate(application.updatedAt)} />
+        <DashboardDetailCard label="Application status" value={<ApplicationStatusBadge status={application.status} />} />
+        <DashboardDetailCard label="Payment status" value={<PaymentStatusBadge status={application.paymentStatus} />} />
+      </div>
+    </DashboardCard>
+  );
+
+  const tabs: ReviewTab[] = [
+    { key: "overview", label: "Overview", icon: UserRound, content: overview },
+    { key: "submission", label: "Submission", icon: ClipboardList, content: submission },
+    { key: "documents", label: "Documents", icon: FileText, content: documents },
+    { key: "scores", label: "Scores", icon: Star, content: scores },
+    { key: "history", label: "History", icon: CalendarClock, content: history },
+  ];
+
+  // ── Sticky decision panel ────────────────────────────────────────────────
+  const aside = (
+    <ReviewActionPanel title="Decision">
+      <div className="flex flex-wrap gap-2">
+        <ApplicationStatusBadge status={application.status} />
+        <PaymentStatusBadge status={application.paymentStatus} />
+      </div>
+
+      <div className="mt-4 grid gap-2">
+        <StatusActionButton applicationId={application.id} status="APPROVED" active={application.status === "APPROVED"} tone="primary">
+          <CheckCircle2 aria-hidden size={15} />
+          Approve
+        </StatusActionButton>
+        <StatusActionButton applicationId={application.id} status="UNDER_REVIEW" active={application.status === "UNDER_REVIEW"}>
+          <Layers3 aria-hidden size={15} />
+          Mark under review
+        </StatusActionButton>
+        <StatusActionButton applicationId={application.id} status="REJECTED" active={application.status === "REJECTED"} tone="danger">
+          <XCircle aria-hidden size={15} />
+          Reject
+        </StatusActionButton>
+      </div>
+
+      <div className="mt-4 border-t border-[rgba(37,42,45,0.06)] pt-4">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-muted)]">
+          Set status
+        </p>
+        <form action={updateParticipantApplicationStatus} className="mt-2 flex flex-col gap-2">
+          <input type="hidden" name="id" value={application.id} />
+          <select name="status" defaultValue={application.status} className={dashboardSelectClass}>
+            <option value="PAYMENT_PENDING">Payment pending</option>
+            <option value="SUBMITTED">Submitted</option>
+            <option value="UNDER_REVIEW">Under review</option>
+            <option value="APPROVED">Approved</option>
+            <option value="REJECTED">Rejected</option>
+          </select>
+          <DashboardSecondaryBtn type="submit" className="w-full">
+            Apply status
+          </DashboardSecondaryBtn>
+        </form>
+      </div>
+
+      <div className="mt-4 flex items-center gap-2 border-t border-[rgba(37,42,45,0.06)] pt-4 text-sm text-[var(--color-ink-soft)]">
+        <ReceiptText aria-hidden size={15} />
+        Fee {formatAmount(application.amount, application.currency)}
+      </div>
+    </ReviewActionPanel>
+  );
+
+  const mobileBar = (
+    <MobileActionBar>
+      <StatusActionButton
+        applicationId={application.id}
+        status="APPROVED"
+        active={application.status === "APPROVED"}
+        tone="primary"
+        className="flex-1"
+      >
+        <CheckCircle2 aria-hidden size={15} />
+        Approve
+      </StatusActionButton>
+      <StatusActionButton
+        applicationId={application.id}
+        status="REJECTED"
+        active={application.status === "REJECTED"}
+        tone="danger"
+        className="flex-1"
+      >
+        <XCircle aria-hidden size={15} />
+        Reject
+      </StatusActionButton>
+    </MobileActionBar>
+  );
+
+  const summary = (
+    <ReviewSummaryCard
+      name={application.fullName}
+      subtitle={nominationSummaryLabel}
+      badges={
+        <>
+          <ApplicationStatusBadge status={application.status} />
+          <PaymentStatusBadge status={application.paymentStatus} />
+        </>
+      }
+      meta={[
+        { icon: Mail, label: application.email },
+        { icon: Phone, label: application.phone },
+        { icon: MapPin, label: `${application.city}, ${application.country}` },
+        { icon: CalendarClock, label: formatAdminDate(application.createdAt) },
+      ]}
+      actions={
+        <>
+          <DashboardSecondaryBtn href="/admin/applications">
+            <ArrowLeft aria-hidden size={15} />
+            Back
+          </DashboardSecondaryBtn>
+          <DashboardSecondaryBtn href={`/admin/applications/${application.id}/edit`}>
+            <Pencil aria-hidden size={15} />
+            Edit
+          </DashboardSecondaryBtn>
+        </>
+      }
+    />
+  );
+
+  return (
+    <ReviewWorkspace
+      summary={summary}
+      alerts={
+        error || notice ? (
+          <div className="flex flex-col gap-2">
+            {error ? <AlertMessage tone="error">{error}</AlertMessage> : null}
+            {notice ? <AlertMessage tone="notice">{notice}</AlertMessage> : null}
+          </div>
+        ) : null
+      }
+      tabs={tabs}
+      aside={aside}
+      mobileBar={mobileBar}
+    />
   );
 }
