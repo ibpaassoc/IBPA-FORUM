@@ -474,11 +474,8 @@ export default function ApplicationDetailPage({
           <section id="profile" className="scroll-mt-24">
             <DashboardCard className="p-0">
               <div className="border-b border-[rgba(37,42,45,0.08)] p-4 md:p-5">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-blue)]">
-                  Applicant
-                </p>
-                <h2 className="mt-2 font-[var(--font-title-family)] text-3xl font-light tracking-[-0.025em] text-[var(--color-ink)]">
-                  Profile and eligibility
+                <h2 className="font-[var(--font-title-family)] text-2xl font-light tracking-[-0.025em] text-[var(--color-ink)]">
+                  Applicant profile
                 </h2>
               </div>
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -19,6 +20,7 @@ import {
   DashboardMetricTile,
   DashboardPageHeader,
   DashboardPanel,
+  SearchBar,
 } from "@/shared/components/admin/DashboardUI";
 
 function applicationBadge(status: string) {
@@ -95,18 +97,26 @@ export default function ApplicationListPage({
     approved: number;
   };
 }) {
+  const [query, setQuery] = useState("");
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return applications;
+    return applications.filter(
+      (app) =>
+        app.fullName.toLowerCase().includes(q) ||
+        app.email.toLowerCase().includes(q),
+    );
+  }, [applications, query]);
+
   return (
     <div className="flex flex-col gap-5">
-      <DashboardPageHeader
-        label="Applications"
-        title="Review queue"
-        description="Participant submissions grouped by applicant, payment state, and nomination set."
-      />
+      <DashboardPageHeader label="Applications" title="Review queue" />
 
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-[1.1fr_repeat(4,minmax(0,0.75fr))]">
         <DashboardAccentBlock>
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-soft)]">
-            In review system
+            Total
           </p>
           <p className="mt-2 text-3xl font-semibold tracking-[-0.03em]">{totals.total}</p>
         </DashboardAccentBlock>
@@ -116,7 +126,12 @@ export default function ApplicationListPage({
         <DashboardMetricTile label="Approved" value={totals.approved} accent="green" />
       </div>
 
-      <DashboardCard>
+      <DashboardCard className="flex flex-col gap-3">
+        <SearchBar
+          value={query}
+          onChange={setQuery}
+          placeholder="Search by name or email"
+        />
         <div className="flex flex-wrap gap-2">
           {statusFilters.map((filter) => (
             <DashboardFilterChip
@@ -130,17 +145,21 @@ export default function ApplicationListPage({
         </div>
       </DashboardCard>
 
-      {applications.length === 0 ? (
+      {filtered.length === 0 ? (
         <DashboardCard>
           <DashboardEmptyState
             icon={<FileText size={22} />}
             title="No applications found"
-            description="Adjust the status filter to see another queue."
+            description={
+              query
+                ? "No applicants match your search."
+                : "Adjust the status filter to see another queue."
+            }
           />
         </DashboardCard>
       ) : (
         <div className="flex flex-col gap-3">
-          {applications.map((app) => {
+          {filtered.map((app) => {
             const nominations =
               app.nominationApplications.length > 0
                 ? app.nominationApplications
