@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test:application-submission": "tsx scripts/test-application-submission.ts",
+    "seed:checkin-samples": "tsx scripts/seed-checkin-samples.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
