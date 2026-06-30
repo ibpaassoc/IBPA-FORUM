@@ -19,6 +19,11 @@ export type SheetProperties = {
   title: string;
 };
 
+/** Sheet identity plus the number of conditional-format rules it carries. */
+export type SheetMeta = SheetProperties & {
+  conditionalFormatCount: number;
+};
+
 export type BatchUpdateRequest = Record<string, unknown>;
 
 export type SheetsClient = {
@@ -37,6 +42,8 @@ export type SheetsClient = {
   clearValues(range: string): Promise<void>;
   /** List the spreadsheet's sheet/tab properties (id + title). */
   getSheetProperties(): Promise<SheetProperties[]>;
+  /** Like {@link getSheetProperties} but also reports conditional-rule counts. */
+  getSheetMeta(): Promise<SheetMeta[]>;
   /** Issue structural requests (add sheet, formatting, freeze, widths, …). */
   batchUpdate(requests: BatchUpdateRequest[]): Promise<void>;
 };
@@ -165,6 +172,31 @@ export function getSheetsClient(): SheetsClient {
       return (data?.sheets ?? [])
         .map((sheet) => sheet.properties)
         .filter((props): props is SheetProperties => Boolean(props));
+    },
+
+    async getSheetMeta() {
+      const data = (await authedFetch(
+        config,
+        `?fields=sheets(properties(sheetId,title),conditionalFormats)`
+      )) as
+        | {
+            sheets?: Array<{
+              properties?: SheetProperties;
+              conditionalFormats?: unknown[];
+            }>;
+          }
+        | null;
+
+      return (data?.sheets ?? [])
+        .map((sheet) =>
+          sheet.properties
+            ? {
+                ...sheet.properties,
+                conditionalFormatCount: sheet.conditionalFormats?.length ?? 0,
+              }
+            : null
+        )
+        .filter((meta): meta is SheetMeta => Boolean(meta));
     },
 
     async batchUpdate(requests) {
