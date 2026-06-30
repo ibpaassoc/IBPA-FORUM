@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
+import jsQR from "jsqr";
 import {
   AlertTriangle,
   Camera,
@@ -61,8 +62,10 @@ export default function UnifiedScanner({
   onAfterCheckIn?: () => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const rafRef = useRef<number>(0);
+  const scanLoopRef = useRef<() => void>(() => {});
   const [state, setState] = useState<ScanState>({ phase: "idle" });
   const [manualCode, setManualCode] = useState("");
   const [busyScope, setBusyScope] = useState<CheckInScope | null>(null);
@@ -92,16 +95,37 @@ export default function UnifiedScanner({
     }
   }, []);
 
+  // Decode the current video frame with jsQR (canvas pixels). Pure-JS fallback
+  // that works in every browser, including those without BarcodeDetector
+  // (Firefox, most desktop Chrome on Windows).
+  const decodeWithJsQR = useCallback((video: HTMLVideoElement): string | null => {
+    const canvas = canvasRef.current;
+    if (!canvas) return null;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    if (!ctx) return null;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const result = jsQR(image.data, image.width, image.height, {
+      inversionAttempts: "dontInvert",
+    });
+    return result?.data ?? null;
+  }, []);
+
   const scanLoop = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
 
     if (video.readyState < video.HAVE_ENOUGH_DATA) {
-      rafRef.current = requestAnimationFrame(scanLoop);
+      rafRef.current = requestAnimationFrame(scanLoopRef.current);
       return;
     }
 
-    if (typeof window !== "undefined" && "BarcodeDetector" in window) {
+    const hasBarcodeDetector =
+      typeof window !== "undefined" && "BarcodeDetector" in window;
+
+    if (hasBarcodeDetector) {
       // @ts-expect-error BarcodeDetector is experimental and not yet in TS DOM libs
       const detector = new window.BarcodeDetector({ formats: ["qr_code"] });
       detector
@@ -112,20 +136,28 @@ export default function UnifiedScanner({
             verifyCode(barcodes[0].rawValue);
             return;
           }
-          rafRef.current = requestAnimationFrame(scanLoop);
+          rafRef.current = requestAnimationFrame(scanLoopRef.current);
         })
         .catch(() => {
-          rafRef.current = requestAnimationFrame(scanLoop);
+          rafRef.current = requestAnimationFrame(scanLoopRef.current);
         });
-    } else {
-      stopCamera();
-      setState({
-        phase: "error",
-        message:
-          "Live QR scanning isn't supported in this browser. Use “Enter code manually” instead.",
-      });
+      return;
     }
-  }, [stopCamera, verifyCode]);
+
+    const decoded = decodeWithJsQR(video);
+    if (decoded) {
+      stopCamera();
+      verifyCode(decoded);
+      return;
+    }
+    rafRef.current = requestAnimationFrame(scanLoopRef.current);
+  }, [decodeWithJsQR, stopCamera, verifyCode]);
+
+  // Keep the ref pointing at the latest scanLoop so the rAF recursion always
+  // calls the current closure without scanLoop referencing itself.
+  useEffect(() => {
+    scanLoopRef.current = scanLoop;
+  }, [scanLoop]);
 
   const startCamera = useCallback(async () => {
     setState({ phase: "scanning" });
@@ -264,6 +296,7 @@ export default function UnifiedScanner({
         <div className="space-y-4">
           <div className="relative aspect-square w-full overflow-hidden rounded-[24px] bg-[var(--color-ink)]">
             <video ref={videoRef} className="h-full w-full object-cover" playsInline muted />
+            <canvas ref={canvasRef} className="hidden" />
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
               <div className="relative h-52 w-52">
                 <div className="absolute left-0 top-0 h-9 w-9 rounded-tl-xl border-l-2 border-t-2 border-white/90" />
