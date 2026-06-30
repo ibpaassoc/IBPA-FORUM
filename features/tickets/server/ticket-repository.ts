@@ -7,6 +7,7 @@ export type CreateTicketInput = {
   fullName: string;
   email: string;
   phone: string;
+  instagram?: string | null;
   type: TicketType;
   galaDinner: boolean;
   isIbpaMember: boolean;
@@ -22,6 +23,7 @@ export async function createTicket(input: CreateTicketInput) {
       fullName: input.fullName,
       email: input.email,
       phone: input.phone,
+      instagram: input.instagram ?? null,
       type: input.type,
       galaDinner: input.galaDinner,
       isIbpaMember: input.isIbpaMember,
@@ -86,12 +88,21 @@ export async function getAllTickets() {
       fullName: true,
       email: true,
       phone: true,
+      instagram: true,
       type: true,
       galaDinner: true,
       isIbpaMember: true,
       status: true,
       lastCheckIn: true,
+      forumCheckInAt: true,
+      galaCheckInAt: true,
       createdAt: true,
+      payments: {
+        where: { source: "TICKET" },
+        orderBy: { createdAt: "desc" },
+        take: 1,
+        select: { amount: true, currency: true, status: true },
+      },
     },
   });
 }

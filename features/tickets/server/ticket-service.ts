@@ -9,6 +9,7 @@ import { getStripe } from "@/features/payments/server/stripe-client";
 import { readEnv } from "@/lib/env";
 import { applyDiscountToCents } from "@/features/tickets/types";
 import type { EarlyBirdDiscount } from "@/features/tickets/types";
+import { normalizeInstagramHandle } from "@/features/tickets/lib/instagram";
 
 export class TicketConflictError extends Error {
   constructor(message: string) {
@@ -35,6 +36,7 @@ export type InitiateTicketPurchaseInput = {
   lastName: string;
   email: string;
   phone: string;
+  instagram?: string | null;
   type: TicketType;
   galaDinner: boolean;
   isIbpaMember: boolean;
@@ -97,6 +99,7 @@ export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput)
     fullName,
     email,
     phone: input.phone.trim(),
+    instagram: normalizeInstagramHandle(input.instagram),
     type: input.type,
     galaDinner: input.galaDinner,
     isIbpaMember: input.isIbpaMember,

@@ -12,6 +12,7 @@ type TicketConfirmationParams = {
   type: TicketType;
   galaDinner: boolean;
   paymentUrl: string;
+  instagram?: string | null;
 };
 
 export function ticketConfirmationTemplate({
@@ -19,8 +20,16 @@ export function ticketConfirmationTemplate({
   type,
   galaDinner,
   paymentUrl,
+  instagram,
 }: TicketConfirmationParams) {
   const ticketLabel = TICKET_LABELS[type];
+  const instagramRow = instagram
+    ? `
+              <tr>
+                <td style="font-size:13px;color:#6b7280;padding-top:8px;">Instagram</td>
+                <td style="font-size:13px;font-weight:600;color:#111827;padding-top:8px;">@${instagram}</td>
+              </tr>`
+    : "";
 
   const html = `
 <!DOCTYPE html>
@@ -78,7 +87,7 @@ export function ticketConfirmationTemplate({
               <tr>
                 <td style="font-size:13px;color:#6b7280;">Gala Dinner</td>
                 <td style="font-size:13px;font-weight:600;color:#111827;">${galaDinner ? "✓ Included" : "Not included"}</td>
-              </tr>
+              </tr>${instagramRow}
             </table>
 
             <!-- QR code -->
@@ -138,6 +147,7 @@ export function ticketConfirmationTemplate({
     `Your ticket for the IBPA BEAUTY AWARD 2026 is confirmed.`,
     `Ticket type: ${ticketLabel}`,
     `Gala Dinner: ${galaDinner ? "Included" : "Not included"}`,
+    ...(instagram ? [`Instagram: @${instagram}`] : []),
     `Please show the attached QR code at the check-in desk on arrival.`,
     `View your payment details: ${paymentUrl}`,
     `Questions? Contact us at forum@ibpa.global`,

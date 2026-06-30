@@ -8,12 +8,14 @@ import { Zap } from "lucide-react";
 import { PRICING } from "@/data/pricing";
 import { applyDiscountToPrice } from "@/features/tickets/types";
 import { useEarlyBird } from "@/features/tickets/useEarlyBird";
+import { validateInstagramInput } from "@/features/tickets/lib/instagram";
 
 type FormValues = {
   firstName: string;
   lastName: string;
   email: string;
   phone: string;
+  instagram: string;
   type: "ONE_DAY" | "TWO_DAYS" | "";
   galaDinner: boolean;
   isIbpaMember: boolean;
@@ -104,6 +106,7 @@ export default function TicketForm() {
       lastName: "",
       email: "",
       phone: "",
+      instagram: "",
       type: "",
       galaDinner: false,
       isIbpaMember: false,
@@ -300,6 +303,26 @@ export default function TicketForm() {
           {...register("phone", { required: "Phone number is required." })}
         />
         {errors.phone && <p className={errorText}>{errors.phone.message}</p>}
+      </div>
+
+      <div>
+        <label className={labelBase} htmlFor="tf-instagram">
+          Instagram <span className="font-normal text-[var(--color-ink-muted)]">(optional)</span>
+        </label>
+        <input
+          id="tf-instagram"
+          type="text"
+          inputMode="text"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
+          placeholder="@username or instagram.com/username"
+          className={clsx(inputBase, errors.instagram && inputError)}
+          {...register("instagram", {
+            validate: (value) => validateInstagramInput(value) ?? true,
+          })}
+        />
+        {errors.instagram && <p className={errorText}>{errors.instagram.message}</p>}
       </div>
 
       <div>

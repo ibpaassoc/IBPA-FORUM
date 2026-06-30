@@ -11,16 +11,18 @@ export async function sendTicketConfirmationEmail({
   type,
   galaDinner,
   secureToken,
+  instagram,
 }: {
   to: string;
   fullName: string;
   type: TicketType;
   galaDinner: boolean;
   secureToken: string;
+  instagram?: string | null;
 }) {
   const qrBuffer = await generateTicketQRBuffer(secureToken);
   const paymentUrl = `${getAppUrl()}/tickets/${secureToken}`;
-  const template = ticketConfirmationTemplate({ fullName, type, galaDinner, paymentUrl });
+  const template = ticketConfirmationTemplate({ fullName, type, galaDinner, paymentUrl, instagram });
 
   return sendEmail({
     type: "user",

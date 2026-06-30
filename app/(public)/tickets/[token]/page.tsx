@@ -63,6 +63,7 @@ export default async function TicketPaymentPage({
             label="Gala Dinner"
             value={ticket.galaDinner ? "Included" : "Not included"}
           />
+          {ticket.instagram && <Row label="Instagram" value={`@${ticket.instagram}`} />}
           <Row
             label="Status"
             value={ticket.status === "PAID" ? "Paid" : ticket.status}
