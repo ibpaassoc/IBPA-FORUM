@@ -15,6 +15,7 @@ import {
   dashboardInputClass,
 } from "@/shared/components/admin/DashboardUI";
 import { instagramProfileUrl } from "@/features/tickets/lib/instagram";
+import { ticketTypeLabel } from "@/features/tickets/lib/labels";
 import UnifiedScanner from "@/features/check-in/components/UnifiedScanner";
 
 type TicketPayment = {
@@ -55,15 +56,6 @@ function ticketStatusBadge(status: string) {
 function formatDate(date: Date | null | string) {
   if (!date) return "-";
   return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }).format(new Date(date));
-}
-
-const TICKET_TYPE_LABELS: Record<string, string> = {
-  ONE_DAY: "1-Day Forum Pass",
-  TWO_DAYS: "2-Day Forum Pass",
-};
-
-function ticketTypeLabel(type: string) {
-  return TICKET_TYPE_LABELS[type] ?? type.replace("_", " ").toLowerCase();
 }
 
 function formatMoney(amount: number, currency: string) {

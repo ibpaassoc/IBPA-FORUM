@@ -1,11 +1,7 @@
 import type { TicketType } from "@prisma/client";
+import { TICKET_TYPE_LABELS } from "@/features/tickets/lib/labels";
 
 export const QR_CID = "ticket-qr";
-
-const TICKET_LABELS: Record<TicketType, string> = {
-  ONE_DAY: "1-Day Forum Pass",
-  TWO_DAYS: "2-Day Forum Pass",
-};
 
 type TicketConfirmationParams = {
   fullName: string;
@@ -22,7 +18,7 @@ export function ticketConfirmationTemplate({
   paymentUrl,
   instagram,
 }: TicketConfirmationParams) {
-  const ticketLabel = TICKET_LABELS[type];
+  const ticketLabel = TICKET_TYPE_LABELS[type];
   const instagramRow = instagram
     ? `
               <tr>
