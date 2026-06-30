@@ -25,11 +25,13 @@ export class InvalidCertError extends Error {
   }
 }
 
-const TICKET_AMOUNTS_CENTS: Record<TicketType, { ibpa: number; standard: number }> = {
+// Source of truth for ticket pricing — also consumed by the Google Sheets sync
+// to derive the early-bird discount shown in the tickets tab.
+export const TICKET_AMOUNTS_CENTS: Record<TicketType, { ibpa: number; standard: number }> = {
   ONE_DAY:  { ibpa: 29500, standard: 39500 },
   TWO_DAYS: { ibpa: 59500, standard: 69500 },
 };
-const GALA_DINNER_CENTS = 15000;
+export const GALA_DINNER_CENTS = 15000;
 
 export type InitiateTicketPurchaseInput = {
   firstName: string;
