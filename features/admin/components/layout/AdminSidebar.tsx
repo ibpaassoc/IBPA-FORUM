@@ -9,6 +9,7 @@ import {
   MoreHorizontal,
   PanelLeftClose,
   PanelLeftOpen,
+  ScanLine,
   Star,
   Ticket,
   Users,
@@ -28,6 +29,7 @@ const navItems = [
   { href: "/admin/jury-applications", label: "Jury", shortLabel: "Jury", icon: Users },
   { href: "/admin/scoring", label: "Scoring", shortLabel: "Scores", icon: Star },
   { href: "/admin/tickets", label: "Tickets", shortLabel: "Tickets", icon: Ticket },
+  { href: "/admin/scanner", label: "Scanner", shortLabel: "Scan", icon: ScanLine },
 ];
 
 function isActive(pathname: string, href: string) {

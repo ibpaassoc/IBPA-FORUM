@@ -48,6 +48,7 @@ model Application {
   awardId           String
   status            ApplicationStatus   @default(DRAFT)
   paymentStatus     PaymentStatus       @default(PENDING)
+  checkedInAt       DateTime?
   amount            Int                 @default(5000)
   currency          String              @default("usd")
   stripeCheckoutSessionId String?       @unique
@@ -103,6 +104,7 @@ model JuryApplication {
   infoRequestDetails               String?
   infoRequestedAt                  DateTime?
   infoResubmittedAt                DateTime?
+  checkedInAt                      DateTime?
   files                            JuryApplicationFile[]
   judgeScores                      JudgeScore[]
   account                          JuryAccount?
@@ -317,6 +319,8 @@ model Ticket {
   status                TicketStatus @default(PENDING)
   paidAt                DateTime?
   lastCheckIn           DateTime?
+  forumCheckInAt        DateTime?
+  galaCheckInAt         DateTime?
   createdAt             DateTime     @default(now())
   updatedAt             DateTime     @updatedAt
   payments              Payment[]

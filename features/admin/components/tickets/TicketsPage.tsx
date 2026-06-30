@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
-import { Ticket, Camera, CheckCircle2, XCircle, RefreshCw, X, Tag } from "lucide-react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Ticket, Camera, X, Tag } from "lucide-react";
 import {
   DashboardAccentBlock,
   DashboardCard,
@@ -10,9 +11,9 @@ import {
   DashboardEmptyState,
   DashboardPageHeader,
   DashboardPrimaryBtn,
-  DashboardSecondaryBtn,
   dashboardInputClass,
 } from "@/shared/components/admin/DashboardUI";
+import UnifiedScanner from "@/features/check-in/components/UnifiedScanner";
 
 type TicketRecord = {
   id: string;
@@ -98,234 +99,21 @@ function EarlyBirdToggle({ initialEnabled }: { initialEnabled: boolean }) {
   );
 }
 
-type ScanState =
-  | { phase: "idle" }
-  | { phase: "scanning" }
-  | { phase: "found"; token: string }
-  | { phase: "loading"; token: string }
-  | { phase: "confirm"; ticket: TicketInfo }
-  | { phase: "success"; ticket: TicketInfo; checkInType: string }
-  | { phase: "error"; message: string };
-
-type TicketInfo = {
-  id: string;
-  fullName: string;
-  email: string;
-  type: string;
-  galaDinner: boolean;
-  status: string;
-  lastCheckIn: string | null;
-  token: string;
-};
-
-function QrScanner({ onClose }: { onClose: () => void }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const rafRef = useRef<number>(0);
-  const [state, setState] = useState<ScanState>({ phase: "idle" });
-  const [checkInType, setCheckInType] = useState<"ONE_DAY" | "GALA_DINNER">("ONE_DAY");
-
-  const stopCamera = useCallback(() => {
-    if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    streamRef.current?.getTracks().forEach((t) => t.stop());
-    streamRef.current = null;
-  }, []);
-
-  function scanLoop() {
-    if (!videoRef.current) return;
-    const video = videoRef.current;
-
-    if (video.readyState < video.HAVE_ENOUGH_DATA) {
-      rafRef.current = requestAnimationFrame(scanLoop);
-      return;
-    }
-
-    if (typeof window !== "undefined" && "BarcodeDetector" in window) {
-      // @ts-expect-error BarcodeDetector is experimental
-      const detector = new window.BarcodeDetector({ formats: ["qr_code"] });
-      detector.detect(video).then((barcodes: Array<{ rawValue: string }>) => {
-        if (barcodes.length > 0) {
-          const raw = barcodes[0].rawValue;
-          const prefix = "IBPA-TICKET:";
-          const token = raw.startsWith(prefix) ? raw.slice(prefix.length) : raw;
-          stopCamera();
-          lookupTicket(token);
-          return;
-        }
-        rafRef.current = requestAnimationFrame(scanLoop);
-      }).catch(() => {
-        rafRef.current = requestAnimationFrame(scanLoop);
-      });
-    } else {
-      rafRef.current = requestAnimationFrame(scanLoop);
-    }
-  }
-
-  async function lookupTicket(token: string) {
-    setState({ phase: "loading", token });
-    try {
-      const res = await fetch(`/api/admin/tickets/${token}`);
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        setState({ phase: "error", message: data.message ?? "Ticket not found." });
-        return;
-      }
-      const { ticket } = await res.json();
-      setState({ phase: "confirm", ticket: { ...ticket, token } });
-    } catch {
-      setState({ phase: "error", message: "Network error. Please try again." });
-    }
-  }
-
-  async function startCamera() {
-    setState({ phase: "scanning" });
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" },
-      });
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-        scanLoop();
-      }
-    } catch {
-      setState({ phase: "error", message: "Camera access denied. Please allow camera permissions and try again." });
-    }
-  }
-
-  async function confirmCheckIn(ticket: TicketInfo) {
-    setState({ phase: "loading", token: ticket.token });
-    try {
-      const res = await fetch("/api/admin/tickets/check-in", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: ticket.token, checkInType }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setState({ phase: "error", message: data.message ?? "Check-in failed." });
-        return;
-      }
-      setState({ phase: "success", ticket, checkInType });
-    } catch {
-      setState({ phase: "error", message: "Network error. Check-in failed." });
-    }
-  }
-
-  function reset() {
-    stopCamera();
-    setState({ phase: "idle" });
-  }
-
-  useEffect(() => () => stopCamera(), [stopCamera]);
-
+function ScannerDialog({ onClose, onCheckIn }: { onClose: () => void; onCheckIn: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-[rgba(3,2,19,0.32)] backdrop-blur-sm sm:items-center">
-      <div className="w-full max-w-md rounded-t-[28px] bg-white p-6 sm:rounded-[28px]">
+      <div className="max-h-[92vh] w-full max-w-md overflow-auto rounded-t-[28px] bg-white p-6 sm:rounded-[28px]">
         <div className="mb-5 flex items-center justify-between">
-          <h2 className="font-[var(--font-title-family)] text-2xl font-light text-[var(--color-ink)]">Scan Ticket QR</h2>
-          <button onClick={() => { stopCamera(); onClose(); }} className="flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(37,42,45,0.08)] text-[var(--color-ink-soft)] hover:bg-[var(--color-blue-wash)]">
+          <h2 className="font-[var(--font-title-family)] text-2xl font-light text-[var(--color-ink)]">Scan ticket</h2>
+          <button
+            onClick={onClose}
+            aria-label="Close scanner"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(37,42,45,0.08)] text-[var(--color-ink-soft)] hover:bg-[var(--color-blue-wash)]"
+          >
             <X size={18} />
           </button>
         </div>
-
-        {state.phase === "idle" && (
-          <div className="space-y-4">
-            <div className="rounded-[20px] border border-dashed border-[rgba(37,42,45,0.08)] bg-white/62 p-8 text-center">
-              <Camera size={32} className="mx-auto text-[var(--color-blue)]" />
-              <p className="mt-3 text-sm text-[var(--color-ink-soft)]">Point camera at ticket QR code</p>
-            </div>
-            <div className="flex gap-2">
-              <label className="flex-1">
-                <span className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-blue)]">Check-in type</span>
-                <select
-                  value={checkInType}
-                  onChange={(e) => setCheckInType(e.target.value as "ONE_DAY" | "GALA_DINNER")}
-                  className="h-10 w-full rounded-2xl border border-[rgba(37,42,45,0.08)] bg-white px-3 text-sm text-[var(--color-ink)] outline-none focus:border-[var(--color-blue)]"
-                >
-                  <option value="ONE_DAY">Forum (1-day)</option>
-                  <option value="GALA_DINNER">Gala dinner</option>
-                </select>
-              </label>
-            </div>
-            <DashboardPrimaryBtn onClick={startCamera} className="w-full justify-center">
-              <Camera size={16} /> Start camera
-            </DashboardPrimaryBtn>
-          </div>
-        )}
-
-        {state.phase === "scanning" && (
-          <div className="space-y-4">
-            <div className="relative aspect-square w-full overflow-hidden rounded-[20px] bg-[var(--color-ink)]">
-              <video ref={videoRef} className="h-full w-full object-cover" playsInline muted />
-              <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                <div className="relative h-48 w-48">
-                  <div className="absolute left-0 top-0 h-8 w-8 rounded-tl-lg border-l-2 border-t-2 border-white" />
-                  <div className="absolute right-0 top-0 h-8 w-8 rounded-tr-lg border-r-2 border-t-2 border-white" />
-                  <div className="absolute bottom-0 left-0 h-8 w-8 rounded-bl-lg border-b-2 border-l-2 border-white" />
-                  <div className="absolute bottom-0 right-0 h-8 w-8 rounded-br-lg border-b-2 border-r-2 border-white" />
-                </div>
-              </div>
-            </div>
-            <p className="text-center text-sm text-[var(--color-ink-soft)]">Scanning for QR code...</p>
-            <DashboardSecondaryBtn onClick={reset} className="w-full justify-center">Cancel</DashboardSecondaryBtn>
-          </div>
-        )}
-
-        {state.phase === "loading" && (
-          <div className="flex flex-col items-center gap-4 py-8">
-            <RefreshCw size={32} className="animate-spin text-[var(--color-blue)]" />
-            <p className="text-sm text-[var(--color-ink-soft)]">Looking up ticket...</p>
-          </div>
-        )}
-
-        {state.phase === "confirm" && (
-          <div className="space-y-4">
-            <div className="rounded-[20px] border border-[rgba(37,42,45,0.08)] bg-white/70 p-4">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--color-blue)]">Ticket holder</p>
-              <p className="mt-2 text-base font-semibold text-[var(--color-ink)]">{state.ticket.fullName}</p>
-              <p className="mt-0.5 text-sm text-[var(--color-ink-soft)]">{state.ticket.email}</p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {ticketStatusBadge(state.ticket.status)}
-                {state.ticket.galaDinner && <DashboardBadge tone="purple">Gala dinner</DashboardBadge>}
-              </div>
-              {state.ticket.lastCheckIn && (
-                <p className="mt-2 text-xs text-[var(--color-blue)]">Previously checked in: {formatDate(state.ticket.lastCheckIn)}</p>
-              )}
-            </div>
-            <p className="text-sm text-[var(--color-ink-soft)]">Check in as: <strong>{checkInType === "GALA_DINNER" ? "Gala dinner" : "Forum (1-day)"}</strong></p>
-            <div className="flex gap-2">
-              <DashboardSecondaryBtn onClick={reset} className="flex-1 justify-center">Cancel</DashboardSecondaryBtn>
-              <DashboardPrimaryBtn onClick={() => confirmCheckIn(state.ticket)} className="flex-1 justify-center">
-                <CheckCircle2 size={16} /> Confirm
-              </DashboardPrimaryBtn>
-            </div>
-          </div>
-        )}
-
-        {state.phase === "success" && (
-          <div className="space-y-4">
-            <div className="flex flex-col items-center gap-3 rounded-[20px] bg-emerald-50 p-6 text-center">
-              <CheckCircle2 size={36} className="text-emerald-600" />
-              <p className="text-base font-semibold text-emerald-800">Checked in!</p>
-              <p className="text-sm text-emerald-700">{state.ticket.fullName}</p>
-            </div>
-            <DashboardPrimaryBtn onClick={reset} className="w-full justify-center">
-              <Camera size={16} /> Scan next ticket
-            </DashboardPrimaryBtn>
-          </div>
-        )}
-
-        {state.phase === "error" && (
-          <div className="space-y-4">
-            <div className="flex flex-col items-center gap-3 rounded-[20px] bg-red-50 p-6 text-center">
-              <XCircle size={36} className="text-red-500" />
-              <p className="text-sm font-semibold text-red-800">{state.message}</p>
-            </div>
-            <DashboardPrimaryBtn onClick={reset} className="w-full justify-center">Try again</DashboardPrimaryBtn>
-          </div>
-        )}
+        <UnifiedScanner onAfterCheckIn={onCheckIn} />
       </div>
     </div>
   );
@@ -338,6 +126,7 @@ export default function TicketsPage({
   tickets: TicketRecord[];
   initialEarlyBirdEnabled: boolean;
 }) {
+  const router = useRouter();
   const [showScanner, setShowScanner] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -444,7 +233,12 @@ export default function TicketsPage({
         )}
       </DashboardCard>
 
-      {showScanner && <QrScanner onClose={() => setShowScanner(false)} />}
+      {showScanner && (
+        <ScannerDialog
+          onClose={() => setShowScanner(false)}
+          onCheckIn={() => router.refresh()}
+        />
+      )}
     </div>
   );
 }
