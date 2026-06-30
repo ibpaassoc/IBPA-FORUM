@@ -34,6 +34,7 @@ type TicketRecord = {
   galaDinner: boolean;
   isIbpaMember: boolean;
   status: string;
+  paidAt: Date | null;
   lastCheckIn: Date | null;
   forumCheckInAt: Date | null;
   galaCheckInAt: Date | null;
@@ -135,6 +136,7 @@ function TicketDetailPanel({ ticket }: { ticket: TicketRecord }) {
         value={payment ? formatMoney(payment.amount, payment.currency) : null}
       />
       <DetailItem label="Payment status" value={ticketStatusBadge(ticket.status)} />
+      <DetailItem label="Payment time" value={ticket.paidAt ? formatDate(ticket.paidAt) : null} />
       <DetailItem label="Created" value={formatDate(ticket.createdAt)} />
       <DetailItem label="Check-in" value={checkInValue} />
       <DetailItem label="Membership" value={ticket.isIbpaMember ? "IBPA Member" : "Standard"} />

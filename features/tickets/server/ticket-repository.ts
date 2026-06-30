@@ -93,6 +93,7 @@ export async function getAllTickets() {
       galaDinner: true,
       isIbpaMember: true,
       status: true,
+      paidAt: true,
       lastCheckIn: true,
       forumCheckInAt: true,
       galaCheckInAt: true,
