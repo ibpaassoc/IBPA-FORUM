@@ -36,14 +36,26 @@ type Outcome =
   | { kind: "error"; scope: SyncScope; message: string }
   | null;
 
+type LastSync = { at: string; ok: boolean; scope: string } | null;
+
 const SCOPE_LABELS: Record<SyncScope, string> = {
   all: "Sync All Data to Google Sheets",
   applications: "Sync Applications",
   jury: "Sync Jury",
   scores: "Sync Scores",
   tickets: "Sync Tickets",
-  stats: "Refresh Statistics",
+  stats: "Sync Stats",
 };
+
+function formatTimestamp(iso: string | null): string {
+  if (!iso) return "Never";
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "Never";
+  return date.toLocaleString(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+}
 
 function ResultLine({ label, value }: { label: string; value: number | null }) {
   if (value == null) return null;
@@ -57,9 +69,21 @@ function ResultLine({ label, value }: { label: string; value: number | null }) {
   );
 }
 
-export default function GoogleSheetsSyncPanel({ configured }: { configured: boolean }) {
+export default function GoogleSheetsSyncPanel({
+  configured,
+  lastSync,
+}: {
+  configured: boolean;
+  lastSync: LastSync;
+}) {
   const [pending, setPending] = useState<SyncScope | null>(null);
   const [outcome, setOutcome] = useState<Outcome>(null);
+  const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(
+    lastSync?.at ?? null
+  );
+  const [lastOk, setLastOk] = useState<boolean | null>(
+    lastSync ? lastSync.ok : null
+  );
 
   async function runSync(scope: SyncScope) {
     setPending(scope);
@@ -73,7 +97,7 @@ export default function GoogleSheetsSyncPanel({ configured }: { configured: bool
       });
 
       const payload = (await response.json().catch(() => null)) as
-        | { ok?: boolean; result?: SyncResult; message?: string }
+        | { ok?: boolean; result?: SyncResult; message?: string; syncedAt?: string }
         | null;
 
       if (!response.ok || !payload?.result) {
@@ -86,6 +110,8 @@ export default function GoogleSheetsSyncPanel({ configured }: { configured: bool
       }
 
       setOutcome({ kind: "success", scope, result: payload.result });
+      setLastSyncedAt(payload.syncedAt ?? new Date().toISOString());
+      setLastOk(payload.result.errors.length === 0);
     } catch {
       setOutcome({
         kind: "error",
@@ -107,25 +133,48 @@ export default function GoogleSheetsSyncPanel({ configured }: { configured: bool
     { scope: "stats", icon: RefreshCw },
   ];
 
+  const connectionTone = configured ? "green" : "amber";
+  const lastSyncTone = lastOk == null ? "neutral" : lastOk ? "green" : "red";
+
   return (
     <DashboardCard>
       <div className="flex items-start gap-3">
         <div className="flex size-11 shrink-0 items-center justify-center rounded-[16px] bg-[var(--color-blue-wash)] text-[var(--color-blue)]">
           <Database aria-hidden size={20} />
         </div>
-        <div className="min-w-0">
-          <h2 className="font-[var(--font-title-family)] text-2xl font-light tracking-[-0.02em]">
-            Google Sheets sync
-          </h2>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="font-[var(--font-title-family)] text-2xl font-light tracking-[-0.02em]">
+              Google Sheets sync
+            </h2>
+            <StatusBadge tone={connectionTone}>
+              {configured ? "Connected" : "Not configured"}
+            </StatusBadge>
+          </div>
           <p className="mt-1 text-sm text-[var(--color-ink-soft)]">
-            Export every record into the connected spreadsheet. Syncs upsert by ID, so
+            Mirror every record into the connected spreadsheet. Syncs upsert by ID, so
             running them repeatedly is safe and never creates duplicate rows.
           </p>
         </div>
       </div>
 
+      {/* Last sync status strip */}
+      <DashboardPanel className="mt-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-sm">
+            <span className="text-[var(--color-ink-soft)]">Last sync</span>
+            <span className="font-medium text-[var(--color-ink)]">
+              {formatTimestamp(lastSyncedAt)}
+            </span>
+          </div>
+          <StatusBadge tone={lastSyncTone}>
+            {lastOk == null ? "No sync yet" : lastOk ? "Success" : "Completed with errors"}
+          </StatusBadge>
+        </div>
+      </DashboardPanel>
+
       {!configured ? (
-        <DashboardPanel className="mt-5 border-amber-200 bg-amber-50/70">
+        <DashboardPanel className="mt-3 border-amber-200 bg-amber-50/70">
           <div className="flex items-start gap-3">
             <AlertTriangle aria-hidden size={18} className="mt-0.5 shrink-0 text-amber-600" />
             <p className="text-sm text-[var(--color-ink)]">
@@ -195,7 +244,9 @@ export default function GoogleSheetsSyncPanel({ configured }: { configured: bool
               {SCOPE_LABELS[outcome.scope]} complete
             </p>
             <StatusBadge tone={outcome.result.errors.length === 0 ? "green" : "amber"}>
-              {outcome.result.errors.length === 0 ? "No errors" : `${outcome.result.errors.length} error(s)`}
+              {outcome.result.errors.length === 0
+                ? "No errors"
+                : `${outcome.result.errors.length} error(s)`}
             </StatusBadge>
           </div>
 

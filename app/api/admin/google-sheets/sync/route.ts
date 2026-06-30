@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
+import { setSiteSetting } from "@/features/settings/server/site-settings";
 import {
+  GOOGLE_SHEETS_LAST_SYNC_KEY,
   isGoogleSheetsConfigured,
   syncAllApplications,
   syncAllJury,
@@ -121,5 +123,19 @@ export async function POST(request: Request) {
   }
 
   const result = await runScope(parsed.data.scope);
-  return NextResponse.json({ ok: result.errors.length === 0, result });
+  const ok = result.errors.length === 0;
+
+  // Persist last-sync metadata so the admin UI can show status + timestamp even
+  // after a reload. Best-effort: never let this break the sync response.
+  const syncedAt = new Date().toISOString();
+  try {
+    await setSiteSetting(
+      GOOGLE_SHEETS_LAST_SYNC_KEY,
+      JSON.stringify({ at: syncedAt, ok, scope: parsed.data.scope })
+    );
+  } catch (error) {
+    console.error("Failed to persist Google Sheets last-sync metadata", error);
+  }
+
+  return NextResponse.json({ ok, result, syncedAt });
 }

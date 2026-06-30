@@ -26,3 +26,9 @@ export {
   syncStatsToSheet,
   type SyncAllResult,
 } from "./server/sync";
+
+export {
+  GOOGLE_SHEETS_LAST_SYNC_KEY,
+  readLastSyncMeta,
+  type LastSyncMeta,
+} from "./server/last-sync";
