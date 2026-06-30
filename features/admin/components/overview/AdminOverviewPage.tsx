@@ -8,6 +8,7 @@ import {
   Users,
 } from "lucide-react";
 import { formatAdminDate } from "@/features/admin/server/view-models";
+import QuickSheetsSyncButton from "@/features/admin/components/google-sheets/QuickSheetsSyncButton";
 import {
   DashboardAccentBlock,
   DashboardCard,
@@ -75,6 +76,7 @@ export default function AdminOverviewPage({
   scoringStats,
   tickets,
   earlyBirdEnabled,
+  googleSheetsConfigured = false,
 }: {
   participantTotals: {
     total: number;
@@ -99,6 +101,7 @@ export default function AdminOverviewPage({
   };
   tickets: TicketOverview[];
   earlyBirdEnabled: boolean;
+  googleSheetsConfigured?: boolean;
 }) {
   const paidTickets = tickets.filter((ticket) => ticket.status !== "PENDING" && ticket.status !== "CANCELED");
   const checkedInTickets = tickets.filter((ticket) => ticket.status.startsWith("CHECKED"));
@@ -147,6 +150,7 @@ export default function AdminOverviewPage({
         title="Command center"
         actions={
           <>
+            {googleSheetsConfigured ? <QuickSheetsSyncButton /> : null}
             <DashboardSecondaryBtn href="/admin/tickets">
               <Camera aria-hidden size={16} />
               Check-in desk

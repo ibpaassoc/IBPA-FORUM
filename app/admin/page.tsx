@@ -5,6 +5,7 @@ import { getJuryApplications } from "@/features/admin/server/jury-queries";
 import { getParticipantApplications } from "@/features/admin/server/participant-queries";
 import { getSiteSettingBool } from "@/features/settings/server/site-settings";
 import { getAllTickets } from "@/features/tickets/server/ticket-repository";
+import { isGoogleSheetsConfigured } from "@/features/google-sheets";
 import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
 
 export default async function AdminPage() {
@@ -35,6 +36,7 @@ export default async function AdminPage() {
       scoringStats={scoringData.stats}
       tickets={tickets}
       earlyBirdEnabled={earlyBirdEnabled}
+      googleSheetsConfigured={isGoogleSheetsConfigured()}
     />
   );
 }

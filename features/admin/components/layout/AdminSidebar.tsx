@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  FileSpreadsheet,
   FileText,
   LayoutDashboard,
   LogOut,
@@ -30,6 +31,7 @@ const navItems = [
   { href: "/admin/scoring", label: "Scoring", shortLabel: "Scores", icon: Star },
   { href: "/admin/tickets", label: "Tickets", shortLabel: "Tickets", icon: Ticket },
   { href: "/admin/scanner", label: "Scanner", shortLabel: "Scan", icon: ScanLine },
+  { href: "/admin/google-sheets", label: "Google Sheets", shortLabel: "Sheets", icon: FileSpreadsheet },
 ];
 
 function isActive(pathname: string, href: string) {

@@ -8,6 +8,7 @@ import {
 import { getApplicationCategories } from "@/features/applications/server/queries";
 import { uploadApplicationFile, uploadNominationFile } from "@/features/applications/server/uploads";
 import { createCompetitorCheckoutSession } from "@/features/payments/server/checkout-sessions";
+import { syncApplicationOnChange } from "@/features/google-sheets";
 import { prisma } from "@/shared/lib/prisma";
 import { Prisma } from "@prisma/client";
 import type { ApplicationValues } from "@/features/applications/types/application.types";
@@ -340,6 +341,9 @@ export async function saveApplicationSubmission(formData: FormData) {
     throw error;
   }
 
+  // Mirror the new application into Google Sheets (non-blocking, never throws).
+  syncApplicationOnChange(application.id);
+
   try {
     await sendApplicationReceivedNotificationEmail({
       applicationType: "Competitor",
@@ -442,6 +446,8 @@ export async function retryCompetitorApplicationPayment(applicationId: string) {
       },
     }),
   ]);
+
+  syncApplicationOnChange(application.id);
 
   return {
     status: 200,

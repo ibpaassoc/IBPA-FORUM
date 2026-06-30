@@ -2,6 +2,7 @@ import { Prisma, type StripeWebhookEvent } from "@prisma/client";
 import type Stripe from "stripe";
 import { sendCompetitorApplicationConfirmedEmail } from "@/features/email/server/competitor-email.workflow";
 import { sendPaymentAdminNotificationEmail } from "@/features/email/server/payment-email.workflow";
+import { syncApplicationOnChange } from "@/features/google-sheets";
 import { prisma } from "@/shared/lib/prisma";
 
 type CompetitorPaymentEmailPayload = {
@@ -169,6 +170,9 @@ async function handleCompetitorCheckoutCompleted(event: Stripe.Event) {
     throw error;
   }
 
+  // Payment status / application status changed — mirror into Google Sheets.
+  syncApplicationOnChange(applicationId);
+
   if (!emailPayload) {
     return true;
   }
@@ -260,6 +264,8 @@ async function handleCompetitorCheckoutExpired(event: Stripe.Event) {
     throw error;
   }
 
+  syncApplicationOnChange(applicationId);
+
   return true;
 }
 
@@ -316,6 +322,8 @@ async function handleCompetitorPaymentFailed(event: Stripe.Event) {
 
     throw error;
   }
+
+  syncApplicationOnChange(applicationId);
 
   return true;
 }

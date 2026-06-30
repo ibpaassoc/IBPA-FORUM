@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/shared/lib/prisma";
 import { requireAdmin } from "@/shared/lib/admin-auth";
+import { syncApplicationOnChange } from "@/features/google-sheets";
 
 export async function updateParticipantApplicationStatus(formData: FormData) {
   await requireAdmin();
@@ -31,6 +32,8 @@ export async function updateParticipantApplicationStatus(formData: FormData) {
       status,
     },
   });
+
+  syncApplicationOnChange(id);
 
   revalidatePath("/admin/applications");
   revalidatePath(`/admin/applications/${id}`);
@@ -76,6 +79,8 @@ export async function editParticipantApplicationAction(formData: FormData) {
       heardAbout,
     },
   });
+
+  syncApplicationOnChange(id);
 
   revalidatePath("/admin/applications");
   revalidatePath(`/admin/applications/${id}`);

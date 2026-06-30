@@ -1,6 +1,7 @@
 import "server-only";
 import { prisma } from "@/shared/lib/prisma";
 import type { Application, JuryApplication, Ticket } from "@prisma/client";
+import { syncCheckInOnChange } from "@/features/google-sheets";
 import { parseScanCode, buildScanPayload } from "./scan-code";
 import type {
   CheckInScope,
@@ -295,6 +296,21 @@ async function checkInJuryRecord(recordId: string): Promise<CheckInResult> {
 }
 
 export async function performCheckIn(input: {
+  ticketKind: TicketKind;
+  sourceRecordId: string;
+  scope: CheckInScope;
+}): Promise<CheckInResult> {
+  const result = await runCheckIn(input);
+
+  // Mirror the freshly checked-in record into Google Sheets (non-blocking).
+  if (result.ok) {
+    syncCheckInOnChange({ kind: input.ticketKind, id: input.sourceRecordId });
+  }
+
+  return result;
+}
+
+function runCheckIn(input: {
   ticketKind: TicketKind;
   sourceRecordId: string;
   scope: CheckInScope;

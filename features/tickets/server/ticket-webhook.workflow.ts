@@ -4,6 +4,7 @@ import type Stripe from "stripe";
 import { prisma } from "@/shared/lib/prisma";
 import { findTicketByStripeSessionId } from "./ticket-repository";
 import { sendTicketConfirmationEmail } from "./ticket-email.workflow";
+import { syncTicketOnChange } from "@/features/google-sheets";
 
 function getPaymentIntentId(value: string | Stripe.PaymentIntent | null): string | null {
   if (!value) return null;
@@ -87,6 +88,8 @@ async function handleTicketCheckoutCompleted(event: Stripe.Event): Promise<boole
     }
     throw error;
   }
+
+  syncTicketOnChange(ticket.id);
 
   try {
     await sendTicketConfirmationEmail({
