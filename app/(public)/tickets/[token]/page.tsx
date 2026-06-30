@@ -1,14 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { findTicketWithPaymentByToken } from "@/features/tickets/server/ticket-repository";
+import { ticketTypeLabel } from "@/features/tickets/lib/labels";
 
 export const metadata = {
   title: "Payment Details — IBPA BEAUTY AWARD 2026",
-};
-
-const TICKET_LABELS: Record<string, string> = {
-  ONE_DAY: "1-Day Forum Pass",
-  TWO_DAYS: "2-Day Forum Pass",
 };
 
 export default async function TicketPaymentPage({
@@ -58,11 +54,12 @@ export default async function TicketPaymentPage({
           <p className="mb-3 text-[10px] font-bold tracking-[0.14em] uppercase text-[var(--color-ink-muted)]">
             Ticket
           </p>
-          <Row label="Type" value={TICKET_LABELS[ticket.type] ?? ticket.type} />
+          <Row label="Type" value={ticketTypeLabel(ticket.type)} />
           <Row
             label="Gala Dinner"
             value={ticket.galaDinner ? "Included" : "Not included"}
           />
+          {ticket.instagram && <Row label="Instagram" value={`@${ticket.instagram}`} />}
           <Row
             label="Status"
             value={ticket.status === "PAID" ? "Paid" : ticket.status}

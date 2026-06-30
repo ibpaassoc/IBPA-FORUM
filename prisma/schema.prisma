@@ -310,6 +310,7 @@ model Ticket {
   fullName              String
   email                 String
   phone                 String
+  instagram             String?
   type                  TicketType
   galaDinner            Boolean      @default(false)
   isIbpaMember          Boolean      @default(false)

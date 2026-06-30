@@ -95,6 +95,7 @@ async function handleTicketCheckoutCompleted(event: Stripe.Event): Promise<boole
       type: ticket.type,
       galaDinner: ticket.galaDinner,
       secureToken: ticket.secureToken,
+      instagram: ticket.instagram,
     });
   } catch (error) {
     console.error("Failed to send ticket confirmation email", {
