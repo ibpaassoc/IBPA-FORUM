@@ -47,7 +47,7 @@ export default function LoginForm() {
   }
 
   return (
-    <form action={handleSubmit} className="mt-[var(--space-lg)] space-y-[var(--space-md)]">
+    <form action={handleSubmit} className="space-y-[var(--space-md)]">
       <div>
         <label htmlFor="email" className={`mb-[var(--space-xs)] ${labelClass}`}>
           {t.auth.form.email}

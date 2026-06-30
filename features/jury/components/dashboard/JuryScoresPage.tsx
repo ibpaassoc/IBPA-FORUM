@@ -34,11 +34,7 @@ export default function JuryScoresPage({
 }) {
   return (
     <div className="flex flex-col gap-5">
-      <DashboardPageHeader
-        label="Scores"
-        title="Submitted archive"
-        description="Final nomination scores you have already submitted."
-      />
+      <DashboardPageHeader label="Scores" title="Submitted archive" />
 
       <DashboardAccentBlock>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

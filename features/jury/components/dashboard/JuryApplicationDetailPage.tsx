@@ -255,11 +255,8 @@ export default function JuryApplicationDetailPage({
         <div className="flex flex-col gap-5">
           <DashboardCard className="p-0">
             <div className="border-b border-[rgba(37,42,45,0.08)] p-4 md:p-5">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-blue)]">
-                Applicant
-              </p>
-              <h2 className="mt-2 font-[var(--font-title-family)] text-3xl font-light tracking-[-0.025em] text-[var(--color-ink)]">
-                Context
+              <h2 className="font-[var(--font-title-family)] text-2xl font-light tracking-[-0.025em] text-[var(--color-ink)]">
+                Applicant context
               </h2>
             </div>
 
@@ -302,7 +299,7 @@ export default function JuryApplicationDetailPage({
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-blue)]">
                 Evidence
               </p>
-              <h2 className="mt-2 font-[var(--font-title-family)] text-3xl font-light tracking-[-0.025em] text-[var(--color-ink)]">
+              <h2 className="mt-1 font-[var(--font-title-family)] text-2xl font-light tracking-[-0.025em] text-[var(--color-ink)]">
                 {nomination.award.name}
               </h2>
             </div>

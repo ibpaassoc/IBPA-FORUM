@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import { categoryCatalog } from "@/lib/apply/catalog";
+import { normalizeSslMode } from "@/shared/lib/db-url";
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -11,7 +12,7 @@ if (!connectionString) {
 }
 
 const pool = new Pool({
-  connectionString,
+  connectionString: normalizeSslMode(connectionString),
 });
 
 const adapter = new PrismaPg(pool);

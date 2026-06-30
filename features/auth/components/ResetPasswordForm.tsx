@@ -17,7 +17,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
 
   if (state?.success) {
     return (
-      <div className="mt-[var(--space-lg)] space-y-[var(--space-md)]">
+      <div className="space-y-[var(--space-md)]">
         <div className="rounded-[var(--radius)] border border-[var(--color-hover-accent)] bg-[rgba(185,217,235,0.18)] p-[var(--space-md)]">
           <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-semibold uppercase tracking-[0.2em] text-[var(--color-hover-accent)]">
             Password Updated
@@ -37,7 +37,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
   }
 
   return (
-    <form action={formAction} className="mt-[var(--space-lg)] space-y-[var(--space-md)]">
+    <form action={formAction} className="space-y-[var(--space-md)]">
       <input type="hidden" name="token" value={token} />
 
       <div>

@@ -54,7 +54,7 @@ export default function RegisterForm() {
   }, [router, state]);
 
   return (
-    <form action={action} className="mt-[var(--space-lg)] space-y-[var(--space-md)]">
+    <form action={action} className="space-y-[var(--space-md)]">
       <div>
         <label htmlFor="email" className="mb-[var(--space-xs)] block text-[clamp(0.68rem,1vw,0.78rem)] font-medium uppercase tracking-[0.08em] text-[var(--color-ink)]">
           {t.auth.form.email}

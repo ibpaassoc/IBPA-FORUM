@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Ticket, Camera, CheckCircle2, XCircle, AlertCircle, RefreshCw, X, Tag } from "lucide-react";
+import { Ticket, Camera, CheckCircle2, XCircle, RefreshCw, X, Tag } from "lucide-react";
 import {
   DashboardAccentBlock,
   DashboardCard,
@@ -68,20 +68,15 @@ function EarlyBirdToggle({ initialEnabled }: { initialEnabled: boolean }) {
   return (
     <DashboardCard>
       <div className="flex items-center justify-between gap-4">
-        <div className="flex items-start gap-3">
+        <div className="flex items-center gap-3">
           <div className={`flex size-10 shrink-0 items-center justify-center rounded-[18px] ${enabled ? "bg-[rgba(114,160,193,0.1)] text-[var(--color-blue)]" : "bg-white/62 text-[var(--color-ink-muted)]"}`}>
             <Tag size={18} strokeWidth={1.5} />
           </div>
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-blue)]">Early Bird Discount</p>
             <p className="mt-0.5 text-sm font-medium text-[var(--color-ink)]">
-              {enabled ? "Enabled - discounted prices shown to all visitors" : "Disabled - regular prices shown"}
+              {enabled ? "On — discounted prices shown" : "Off — regular prices"}
             </p>
-            {enabled && (
-              <p className="mt-0.5 text-[11px] text-[var(--color-blue)]">
-                The Stripe coupon is applied automatically on ticket checkout. Gala dinner is not discounted.
-              </p>
-            )}
           </div>
         </div>
 
@@ -99,15 +94,6 @@ function EarlyBirdToggle({ initialEnabled }: { initialEnabled: boolean }) {
           />
         </button>
       </div>
-
-      {enabled && (
-        <div className="mt-3 flex items-center gap-2 rounded-[18px] border border-[rgba(114,160,193,0.24)] bg-[rgba(114,160,193,0.1)] px-4 py-2.5">
-          <AlertCircle size={14} className="shrink-0 text-[var(--color-blue)]" />
-          <p className="text-[0.78rem] text-[var(--color-blue)]">
-            Visitors see discounted ticket prices with the Early Bird label. Disable when the promotion ends.
-          </p>
-        </div>
-      )}
     </DashboardCard>
   );
 }
@@ -370,7 +356,6 @@ export default function TicketsPage({
       <DashboardPageHeader
         label="Tickets"
         title="Check-in desk"
-        description="Search attendees, monitor ticket status, and scan QR codes."
         actions={
           <DashboardPrimaryBtn onClick={() => setShowScanner(true)}>
             <Camera size={16} />
@@ -414,7 +399,7 @@ export default function TicketsPage({
           </div>
         ) : (
           <div className="divide-y divide-[rgba(37,42,45,0.08)]">
-            <div className="hidden grid-cols-[1.4fr_0.8fr_auto_auto_auto] gap-3 border-b border-[rgba(37,42,45,0.08)] bg-white/62 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)] lg:grid">
+            <div className="hidden grid-cols-[minmax(0,1.7fr)_130px_92px_150px_150px] gap-3 border-b border-[rgba(37,42,45,0.08)] bg-white/62 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)] lg:grid">
               <span>Attendee</span>
               <span>Type</span>
               <span>Gala</span>
@@ -424,19 +409,35 @@ export default function TicketsPage({
             {filtered.map((ticket) => (
               <div
                 key={ticket.id}
-                className="mx-3 my-3 grid gap-3 rounded-[24px] border border-[rgba(37,42,45,0.08)] bg-white/62 p-4 shadow-[0_10px_26px_rgba(37,42,45,0.035)] lg:m-0 lg:grid-cols-[1.4fr_0.8fr_auto_auto_auto] lg:items-center lg:rounded-none lg:border-0 lg:bg-transparent lg:px-4 lg:py-4 lg:shadow-none"
+                className="mx-3 my-3 grid gap-3 rounded-[24px] border border-[rgba(37,42,45,0.08)] bg-white/62 p-4 shadow-[0_10px_26px_rgba(37,42,45,0.035)] lg:m-0 lg:min-h-[68px] lg:grid-cols-[minmax(0,1.7fr)_130px_92px_150px_150px] lg:items-center lg:gap-3 lg:rounded-none lg:border-0 lg:bg-transparent lg:px-4 lg:py-4 lg:shadow-none"
               >
-                <div>
-                  <p className="text-sm font-medium text-[var(--color-ink)]">{ticket.fullName}</p>
-                  <p className="mt-0.5 text-xs text-[var(--color-ink-soft)]">{ticket.email}</p>
-                  {ticket.isIbpaMember && (
-                    <p className="text-[11px] font-semibold text-[var(--color-blue)]">IBPA Member</p>
-                  )}
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-[var(--color-ink)]">{ticket.fullName}</p>
+                    <p className="mt-0.5 truncate text-xs text-[var(--color-ink-soft)]">{ticket.email}</p>
+                    {ticket.isIbpaMember && (
+                      <p className="text-[11px] font-semibold text-[var(--color-blue)]">IBPA Member</p>
+                    )}
+                  </div>
+                  <div className="lg:hidden">{ticketStatusBadge(ticket.status)}</div>
                 </div>
-                <p className="text-sm capitalize text-[var(--color-ink-soft)]">{ticket.type.replace("_", " ").toLowerCase()}</p>
-                <div>{ticket.galaDinner ? <DashboardBadge tone="purple">Yes</DashboardBadge> : <span className="text-xs text-[var(--color-ink-muted)]">No</span>}</div>
-                <div>{ticketStatusBadge(ticket.status)}</div>
-                <p className="text-xs text-[var(--color-ink-muted)]">{formatDate(ticket.lastCheckIn)}</p>
+
+                <p className="flex items-center justify-between gap-2 text-sm capitalize text-[var(--color-ink-soft)] lg:block">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)] lg:hidden">Type</span>
+                  {ticket.type.replace("_", " ").toLowerCase()}
+                </p>
+
+                <div className="flex items-center justify-between gap-2 lg:block">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)] lg:hidden">Gala</span>
+                  {ticket.galaDinner ? <DashboardBadge tone="purple">Yes</DashboardBadge> : <span className="text-xs text-[var(--color-ink-muted)]">No</span>}
+                </div>
+
+                <div className="hidden lg:block">{ticketStatusBadge(ticket.status)}</div>
+
+                <p className="flex items-center justify-between gap-2 text-xs text-[var(--color-ink-muted)] lg:block">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)] lg:hidden">Last check-in</span>
+                  {formatDate(ticket.lastCheckIn)}
+                </p>
               </div>
             ))}
           </div>

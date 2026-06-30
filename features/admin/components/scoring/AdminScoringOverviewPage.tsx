@@ -7,6 +7,7 @@ import {
   DashboardBadge,
   DashboardCard,
   DashboardEmptyState,
+  DashboardKpiBar,
   DashboardMetricTile,
   DashboardPageHeader,
   DashboardPanel,
@@ -61,11 +62,7 @@ export default function AdminScoringOverviewPage({
 }) {
   return (
     <div className="flex flex-col gap-5">
-      <DashboardPageHeader
-        label="Scoring"
-        title="Score audit"
-        description="Track scoring progress, judge coverage, averages, and category rank."
-      />
+      <DashboardPageHeader label="Scoring" title="Score audit" />
 
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-[1.1fr_repeat(3,minmax(0,0.75fr))]">
         <DashboardAccentBlock>
@@ -174,9 +171,18 @@ export default function AdminScoringOverviewPage({
                   <DashboardPanel>
                     <p className="text-sm font-medium text-[var(--color-ink)]">{app.awardName}</p>
                     <p className="mt-1 text-sm text-[var(--color-ink-soft)]">{app.categoryName}</p>
-                    <p className="mt-3 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
-                      {app.submittedJudgeCount}/{app.assignedJudgeCount} judges submitted
-                    </p>
+                    <div className="mt-3">
+                      <DashboardKpiBar
+                        value={
+                          app.assignedJudgeCount
+                            ? Math.round(
+                                (app.submittedJudgeCount / app.assignedJudgeCount) * 100,
+                              )
+                            : 0
+                        }
+                        label={`${app.submittedJudgeCount}/${app.assignedJudgeCount} judges`}
+                      />
+                    </div>
                   </DashboardPanel>
 
                   <div className="flex items-center justify-between rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white p-4">

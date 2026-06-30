@@ -19,21 +19,13 @@ export default function ResetPasswordContent({
   return (
     <AuthShell
       eyebrow={t.auth.resetPage.eyebrow}
-      title={t.auth.resetPage.title}
-      description={t.auth.resetPage.description}
+      title={t.auth.resetPage.cardTitle}
+      description={t.auth.resetPage.cardText}
     >
       {tokenState === "valid" ? (
-        <>
-          <h2 className="font-[var(--font-display)] text-[clamp(1.1rem,2vw,1.5rem)] font-normal text-[var(--color-ink)]">
-            {t.auth.resetPage.cardTitle}
-          </h2>
-          <p className="mt-[var(--space-xs)] text-sm leading-[1.65] text-[var(--color-ink-soft)]">
-            {t.auth.resetPage.cardText}
-          </p>
-          <ResetPasswordForm token={token} />
-        </>
+        <ResetPasswordForm token={token} />
       ) : (
-        <div className="mt-[var(--space-lg)] space-y-[var(--space-md)]">
+        <div className="space-y-[var(--space-md)]">
           <div className="rounded-[var(--radius)] border border-[var(--border-default)] bg-[var(--surface-tint)] p-[var(--space-md)]">
             <p className="text-sm leading-[1.7] text-[var(--color-ink)]">
               {tokenState === "expired"

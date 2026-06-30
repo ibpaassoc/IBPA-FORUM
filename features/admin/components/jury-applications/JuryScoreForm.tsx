@@ -121,13 +121,12 @@ export default function JuryScoreForm({ nominationApplicationId, initialScore }:
     <DashboardCard className="p-0">
       <div className="border-b border-[rgba(37,42,45,0.08)] p-5">
         <div className="flex items-start justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2 text-[var(--color-blue)]">
-              <PenSquare aria-hidden size={16} />
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">Scorecard</p>
-            </div>
-            <h2 className="mt-2 font-[var(--font-title-family)] text-3xl font-light tracking-[-0.025em] text-[var(--color-ink)]">
-              Judge score
+          <div className="flex items-center gap-2.5">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--color-blue-wash)] text-[var(--color-blue)]">
+              <PenSquare aria-hidden size={15} />
+            </span>
+            <h2 className="font-[var(--font-title-family)] text-2xl font-light tracking-[-0.025em] text-[var(--color-ink)]">
+              Scorecard
             </h2>
           </div>
           <div className="text-right">

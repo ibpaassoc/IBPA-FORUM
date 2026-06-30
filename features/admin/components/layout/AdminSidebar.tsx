@@ -49,10 +49,17 @@ function SignOutButton({ compact = false }: { compact?: boolean }) {
   );
 }
 
+// Review detail routes own the mobile bottom area with their own sticky action
+// bar, so the global bottom nav + FAB are hidden there to avoid overlap.
+function isReviewDetailRoute(pathname: string) {
+  return /^\/admin\/(applications|jury-applications)\/[^/]+$/.test(pathname);
+}
+
 export default function AdminSidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const hideMobileChrome = isReviewDetailRoute(pathname);
 
   const mobileItems = navItems.map((item) => ({
     href: item.href,
@@ -134,13 +141,17 @@ export default function AdminSidebar() {
         </div>
       </aside>
 
-      <MobileBottomNavigation items={mobileItems} />
-      <FloatingActionButton
-        label="Open admin menu"
-        icon={MoreHorizontal}
-        onClick={() => setDrawerOpen(true)}
-        className="lg:hidden"
-      />
+      {!hideMobileChrome ? (
+        <>
+          <MobileBottomNavigation items={mobileItems} />
+          <FloatingActionButton
+            label="Open admin menu"
+            icon={MoreHorizontal}
+            onClick={() => setDrawerOpen(true)}
+            className="lg:hidden"
+          />
+        </>
+      ) : null}
 
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} title="IBPA Admin">
         <div className="space-y-4">

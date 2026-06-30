@@ -2,7 +2,6 @@ import Link from "next/link";
 import {
   ArrowRight,
   Camera,
-  CheckCircle2,
   FileText,
   Star,
   Ticket,
@@ -182,16 +181,9 @@ export default function AdminOverviewPage({
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="flex flex-col gap-4">
           <DashboardCard>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <p className="font-[var(--font-accent-family)] text-lg italic text-[var(--color-blue)]">
-                  Operations
-                </p>
-                <h2 className="mt-1 font-[var(--font-title-family)] text-3xl font-light tracking-[-0.02em]">
-                  Live workspaces
-                </h2>
-              </div>
-            </div>
+            <h2 className="font-[var(--font-title-family)] text-2xl font-light tracking-[-0.02em]">
+              Workspaces
+            </h2>
             <div className="mt-5 grid gap-3 md:grid-cols-2">
               {operations.map(({ href, title, value, detail, icon: Icon }) => (
                 <Link key={href} href={href} className="group block">
@@ -221,14 +213,9 @@ export default function AdminOverviewPage({
 
           <DashboardCard>
             <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="font-[var(--font-accent-family)] text-lg italic text-[var(--color-blue)]">
-                  Applications
-                </p>
-                <h2 className="mt-1 font-[var(--font-title-family)] text-3xl font-light tracking-[-0.02em]">
-                  Latest participant submissions
-                </h2>
-              </div>
+              <h2 className="font-[var(--font-title-family)] text-2xl font-light tracking-[-0.02em]">
+                Latest applications
+              </h2>
               <DashboardSecondaryBtn href="/admin/applications">Open</DashboardSecondaryBtn>
             </div>
             <ResponsiveList className="mt-5">
@@ -281,14 +268,9 @@ export default function AdminOverviewPage({
 
           <DashboardCard>
             <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="font-[var(--font-accent-family)] text-lg italic text-[var(--color-blue)]">
-                  Jury
-                </p>
-                <h2 className="mt-1 font-[var(--font-title-family)] text-2xl font-light">
-                  Candidate pulse
-                </h2>
-              </div>
+              <h2 className="font-[var(--font-title-family)] text-2xl font-light tracking-[-0.02em]">
+                Jury candidates
+              </h2>
               <DashboardSecondaryBtn href="/admin/jury-applications">Open</DashboardSecondaryBtn>
             </div>
             <div className="mt-4 grid gap-3">

@@ -10,15 +10,9 @@ export default function JuryRegisterContent() {
   return (
     <AuthShell
       eyebrow={t.auth.registerPage.eyebrow}
-      title={t.auth.registerPage.title}
-      description={t.auth.registerPage.description}
+      title={t.auth.registerPage.cardTitle}
+      description={t.auth.registerPage.cardText}
     >
-      <h2 className="font-[var(--font-display)] text-[clamp(1.1rem,2vw,1.5rem)] font-normal text-[var(--color-ink)]">
-        {t.auth.registerPage.cardTitle}
-      </h2>
-      <p className="mt-[var(--space-xs)] text-sm leading-[1.65] text-[var(--color-ink-soft)]">
-        {t.auth.registerPage.cardText}
-      </p>
       <RegisterForm />
     </AuthShell>
   );
