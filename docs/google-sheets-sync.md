@@ -23,6 +23,20 @@ action) whenever an application, jury application, score, ticket, payment, or
 check-in is created or updated. A failure in Google Sheets is always caught and
 logged — it can never interrupt the underlying action.
 
+### Formatting & clean mirror
+
+Each tab is formatted for readability: a frozen, bold, premium IBPA header,
+subtle cell borders, content-based column widths (long text is clipped to a
+max width rather than stretching the layout), and **status-based row colours**
+applied via native conditional formatting (e.g. approved/paid → green,
+pending → amber, rejected/cancelled → red). The `stats` tab is laid out as a
+grouped dashboard (Sync Info, Applications, Jury, Scores, Tickets, Revenue).
+
+A **full sync** (per-domain or "Sync All") rebuilds each tab into a clean mirror
+of the current database: full rows are overwritten (so cleared fields are
+blanked) and rows for records that were deleted from the database are removed.
+The automatic per-record hooks upsert a single row by ID.
+
 ## 1. Create a Google Cloud service account
 
 1. Open the [Google Cloud Console](https://console.cloud.google.com/) and create

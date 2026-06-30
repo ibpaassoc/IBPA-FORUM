@@ -2,12 +2,21 @@ import "server-only";
 import { getSheetsClient, type SheetsClient } from "./client";
 import { SHEET_TABS } from "./config";
 import {
+  borderRequests,
+  columnWidthRequests,
+  freezeHeaderRequest,
+  statsResetRequest,
+  statsSectionStyleRequest,
+  statsTitleStyleRequest,
+  statsValueAlignRequest,
+} from "./formatting";
+import {
   APPLICATIONS_SHEET,
   JURY_SHEET,
   SCORES_SHEET,
   TICKETS_SHEET,
 } from "./schema";
-import { ensureSheetFormatting, upsertSheetRows } from "./sheet-ops";
+import { rebuildDataSheet, resolveSheetMeta, upsertSheetRows } from "./sheet-ops";
 import {
   fetchAllApplicationRows,
   fetchAllJuryRows,
@@ -18,13 +27,17 @@ import {
   fetchScoreRow,
   fetchTicketRow,
 } from "./rows";
-import { computeStatsRows } from "./stats";
+import { computeStatsLayout } from "./stats";
 
 /**
- * High-level sync operations. Each function performs an idempotent upsert into
- * the relevant tab, so running any of them once or many times yields the same
- * result with no duplicate rows. These are the entry points used both by the
- * automatic hooks and the admin backfill tools.
+ * High-level sync operations.
+ *
+ *   • Per-record syncs UPSERT a single row by ID (no duplicates, cleared fields
+ *     are blanked) — used by the automatic hooks.
+ *   • Full syncs REBUILD the tab into a clean mirror of the database, removing
+ *     rows for records that were deleted — used by the admin backfill tools.
+ *
+ * Both are idempotent: running them once or many times yields the same result.
  */
 
 // ── Per-record syncs ─────────────────────────────────────────────────────────
@@ -55,23 +68,51 @@ export async function syncTicketToSheet(id: string): Promise<void> {
 
 // ── Statistics ───────────────────────────────────────────────────────────────
 
-let statsEnsured = false;
+const STATS_COLUMNS = [
+  { header: "Metric", width: 320, wrap: "CLIP" as const },
+  { header: "Value", width: 200, wrap: "CLIP" as const },
+];
 
-async function ensureStatsSheet(client: SheetsClient): Promise<void> {
-  if (statsEnsured) return;
-  // ensureSheetFormatting also creates the tab when it is missing.
-  await ensureSheetFormatting(client, SHEET_TABS.stats, 2);
-  statsEnsured = true;
+let statsSheetId: number | null = null;
+
+/** Resolve (creating if needed) the stats tab and apply its static formatting. */
+async function ensureStatsSheet(client: SheetsClient): Promise<number> {
+  if (statsSheetId != null) return statsSheetId;
+
+  const { sheetId } = await resolveSheetMeta(client, SHEET_TABS.stats);
+  statsSheetId = sheetId;
+
+  await client.batchUpdate([
+    freezeHeaderRequest(sheetId),
+    ...columnWidthRequests(sheetId, STATS_COLUMNS),
+  ]);
+
+  return sheetId;
 }
 
 export async function syncStatsToSheet(): Promise<void> {
   const client = getSheetsClient();
-  const rows = await computeStatsRows();
+  const layout = await computeStatsLayout();
+  const sheetId = await ensureStatsSheet(client);
 
-  await ensureStatsSheet(client);
   // Clear first so removed metrics never leave stale trailing rows behind.
   await client.clearValues(`${SHEET_TABS.stats}!A:B`);
-  await client.updateValues(`${SHEET_TABS.stats}!A1`, rows);
+  await client.updateValues(`${SHEET_TABS.stats}!A1`, layout.rows);
+
+  const rowCount = layout.rows.length;
+  await client.batchUpdate([
+    // Reset a generous block so section colouring from a previous (longer)
+    // render can never linger, then re-style the current layout.
+    statsResetRequest(sheetId, rowCount + 100),
+    // borderRequests treats the arg as "data rows after a header"; passing
+    // rowCount - 1 borders exactly rows 1..rowCount.
+    ...borderRequests(sheetId, STATS_COLUMNS.length, Math.max(rowCount - 1, 0)),
+    statsValueAlignRequest(sheetId, rowCount),
+    statsTitleStyleRequest(sheetId, layout.titleRowIndex),
+    ...layout.sectionRowIndexes.map((index) =>
+      statsSectionStyleRequest(sheetId, index)
+    ),
+  ]);
 }
 
 // ── Bulk backfill ────────────────────────────────────────────────────────────
@@ -102,33 +143,29 @@ async function backfill(
 
 export async function syncAllApplications(): Promise<number> {
   const rows = await fetchAllApplicationRows();
-  await upsertSheetRows(getSheetsClient(), APPLICATIONS_SHEET, rows);
-  return rows.length;
+  return rebuildDataSheet(getSheetsClient(), APPLICATIONS_SHEET, rows);
 }
 
 export async function syncAllJury(): Promise<number> {
   const rows = await fetchAllJuryRows();
-  await upsertSheetRows(getSheetsClient(), JURY_SHEET, rows);
-  return rows.length;
+  return rebuildDataSheet(getSheetsClient(), JURY_SHEET, rows);
 }
 
 export async function syncAllScores(): Promise<number> {
   const rows = await fetchAllScoreRows();
-  await upsertSheetRows(getSheetsClient(), SCORES_SHEET, rows);
-  return rows.length;
+  return rebuildDataSheet(getSheetsClient(), SCORES_SHEET, rows);
 }
 
 export async function syncAllTickets(): Promise<number> {
   const rows = await fetchAllTicketRows();
-  await upsertSheetRows(getSheetsClient(), TICKETS_SHEET, rows);
-  return rows.length;
+  return rebuildDataSheet(getSheetsClient(), TICKETS_SHEET, rows);
 }
 
 /**
- * Export every existing record into the spreadsheet using upserts, then refresh
- * the statistics tab. Safe to run repeatedly. Each domain is isolated so a
- * failure in one does not prevent the others from syncing; failures are
- * collected and returned rather than thrown.
+ * Export every existing record into the spreadsheet, rebuilding each tab into a
+ * clean mirror of the database, then refresh the statistics tab. Safe to run
+ * repeatedly. Each domain is isolated so a failure in one does not prevent the
+ * others; failures are collected and returned rather than thrown.
  */
 export async function syncAllToSheets(): Promise<SyncAllResult> {
   const errors: string[] = [];
