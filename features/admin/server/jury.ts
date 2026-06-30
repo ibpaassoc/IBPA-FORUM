@@ -7,6 +7,7 @@ import { categoryFieldConfigs } from "@/features/applications/config/category-fi
 import { normalizeJuryEmail } from "@/features/jury/server/auth";
 import type { DraftScoreInput, SubmitScoreInput } from "@/features/admin/actions/scoring_schemas";
 import { prisma } from "@/shared/lib/prisma";
+import { syncScoreOnChange } from "@/features/google-sheets";
 import {
   calculateTotalScore,
   getJuryScoreListStatus,
@@ -302,6 +303,8 @@ export async function saveJudgeScoreDraft({
   revalidatePath("/admin/scoring");
   revalidatePath(`/admin/scoring/${nomination.applicationId}`);
 
+  syncScoreOnChange(score.id);
+
   return score;
 }
 
@@ -367,6 +370,8 @@ export async function submitJudgeScore({
   revalidatePath(`/jury/dashboard/applications/${nominationApplicationId}`);
   revalidatePath("/admin/scoring");
   revalidatePath(`/admin/scoring/${nomination.applicationId}`);
+
+  syncScoreOnChange(score.id, { refreshStats: true });
 
   return score;
 }

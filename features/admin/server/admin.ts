@@ -3,6 +3,7 @@ import "server-only";
 import { revalidatePath } from "next/cache";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/shared/lib/prisma";
+import { syncScoreOnChange } from "@/features/google-sheets";
 import {
   buildCategoryRanks,
   formatAverageScore,
@@ -410,6 +411,8 @@ export async function reopenJudgeScore(scoreId: string) {
   revalidatePath(`/jury/dashboard/applications/${score.applicationId}`);
   revalidatePath("/admin/scoring");
   revalidatePath(`/admin/scoring/${score.applicationId}`);
+
+  syncScoreOnChange(score.id, { refreshStats: true });
 
   return score;
 }

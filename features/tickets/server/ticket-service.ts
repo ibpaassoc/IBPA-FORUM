@@ -10,6 +10,7 @@ import { readEnv } from "@/lib/env";
 import { applyDiscountToCents } from "@/features/tickets/types";
 import type { EarlyBirdDiscount } from "@/features/tickets/types";
 import { normalizeInstagramHandle } from "@/features/tickets/lib/instagram";
+import { syncTicketOnChange } from "@/features/google-sheets";
 
 export class TicketConflictError extends Error {
   constructor(message: string) {
@@ -136,6 +137,8 @@ export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput)
       },
     }),
   ]);
+
+  syncTicketOnChange(ticket.id);
 
   return {
     ticketId: ticket.id,

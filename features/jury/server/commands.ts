@@ -18,6 +18,7 @@ import {
 } from "@/features/jury/server/uploads";
 import { readEnv } from "@/lib/env";
 import { prisma } from "@/shared/lib/prisma";
+import { syncApplicationOnChange, syncJuryOnChange } from "@/features/google-sheets";
 
 function getAppUrl() {
   return readEnv(["APP_URL", "FRONTEND_URL", "NEXT_PUBLIC_APP_URL"]).replace(/\/+$/, "");
@@ -169,6 +170,8 @@ export async function submitJuryApplication(formData: FormData) {
     console.error("Failed to send jury application admin notification email", error);
   }
 
+  syncJuryOnChange(juryApplication.id);
+
   return {
     status: 201,
     body: {
@@ -209,6 +212,8 @@ export async function saveJuryApplicationNotes({
       adminNotes: adminNotes || null,
     },
   });
+
+  syncJuryOnChange(id, { refreshStats: false });
 }
 
 export async function resetJuryApplicationToSubmitted({
@@ -245,6 +250,8 @@ export async function resetJuryApplicationToSubmitted({
       adminNotes: adminNotes?.trim() || undefined,
     },
   });
+
+  syncJuryOnChange(id);
 }
 
 export async function approveJuryApplication(id: string, isIbpaMemberOverride?: boolean) {
@@ -304,6 +311,8 @@ export async function approveJuryApplication(id: string, isIbpaMemberOverride?: 
       },
     }),
   ]);
+
+  syncJuryOnChange(application.id);
 
   let emailDelivered = false;
   let emailSkipReason:
@@ -369,6 +378,8 @@ export async function rejectJuryApplication({
       stripeCheckoutSessionId: null,
     },
   });
+
+  syncJuryOnChange(id);
 
   try {
     await sendJuryRejectedEmail({
@@ -444,6 +455,8 @@ export async function requestAdditionalInfoFromJuryApplication({
       infoResubmittedAt: null,
     },
   });
+
+  syncJuryOnChange(id);
 
   let emailDelivered = false;
   let emailSkipReason: string | undefined;
@@ -552,6 +565,8 @@ export async function processJuryAdditionalInfoResubmission({
     }
   }
 
+  syncJuryOnChange(application.id);
+
   const appUrl = getAppUrl();
   const adminReviewUrl = `${appUrl}/admin/jury-applications/${application.id}`;
 
@@ -625,6 +640,8 @@ export async function approveJuryApplicationWithoutPayment(id: string) {
       },
     }),
   ]);
+
+  syncJuryOnChange(id);
 }
 
 export async function setJuryApplicationStatusDirectly(
@@ -637,6 +654,8 @@ export async function setJuryApplicationStatusDirectly(
   });
   if (!application) throw new Error("Jury application not found.");
   await prisma.juryApplication.update({ where: { id }, data: { status } });
+
+  syncJuryOnChange(id);
 }
 
 export async function editJuryApplicationFields(
@@ -680,6 +699,8 @@ export async function editJuryApplicationFields(
     where: { id },
     data: { ...data, email: normalizedEmail },
   });
+
+  syncJuryOnChange(id);
 }
 
 export async function editParticipantApplicationFields(
@@ -711,4 +732,6 @@ export async function editParticipantApplicationFields(
     where: { id },
     data: { ...data, email: data.email.trim().toLowerCase() },
   });
+
+  syncApplicationOnChange(id);
 }

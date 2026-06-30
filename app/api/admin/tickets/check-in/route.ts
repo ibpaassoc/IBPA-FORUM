@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { findTicketByToken, checkInTicket } from "@/features/tickets/server/ticket-repository";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { syncCheckInOnChange } from "@/features/google-sheets";
 
 const checkInSchema = z.object({
   token: z.string().min(16, "Invalid token."),
@@ -56,6 +57,8 @@ export async function POST(request: NextRequest) {
     checkInType === "GALA_DINNER" ? "CHECKED_GALA_DINNER" : "CHECKED_ONE_DAY";
 
   const updated = await checkInTicket(ticket.id, nextStatus);
+
+  syncCheckInOnChange({ kind: "TICKET", id: updated.id });
 
   return NextResponse.json({
     ticket: {

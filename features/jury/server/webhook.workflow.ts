@@ -2,6 +2,7 @@ import { Prisma, type StripeWebhookEvent } from "@prisma/client";
 import type Stripe from "stripe";
 import { sendJuryPaymentConfirmedEmail } from "@/features/email/server/jury-email.workflow";
 import { sendPaymentAdminNotificationEmail } from "@/features/email/server/payment-email.workflow";
+import { syncJuryOnChange } from "@/features/google-sheets";
 import { prisma } from "@/shared/lib/prisma";
 
 type JuryPaymentEmailPayload = {
@@ -144,6 +145,8 @@ async function handleCheckoutCompleted(event: Stripe.Event): Promise<boolean> {
     throw error;
   }
 
+  syncJuryOnChange(applicationId);
+
   if (!emailPayload) {
     return true;
   }
@@ -208,6 +211,8 @@ async function handlePaymentFailed(event: Stripe.Event): Promise<boolean> {
 
     throw error;
   }
+
+  syncJuryOnChange(applicationId);
 
   return true;
 }
