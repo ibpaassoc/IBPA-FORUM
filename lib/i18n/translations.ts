@@ -167,11 +167,14 @@ const en = {
         title: "Participation Pricing",
         description:
           "Forum tickets, award nominations, and jury registration are priced separately. Forum and award pricing differs for IBPA members and standard participants.",
-
         option: "Option",
-        members: "Members",
+        members: "IBPA Members",
         standard: "Standard",
         nonMembers: "Non-members",
+        memberPricingNote: "IBPA Member pricing is available to current IBPA Association members.",
+        awardPricingNote: "Save more with multi-nomination packages.",
+        memberDiscountNote: "IBPA members receive a discounted jury registration rate.",
+        mostPopular: "Most popular",
 
         forum: {
           eyebrow: "Tickets",
@@ -1816,9 +1819,13 @@ const ru: typeof en = {
           "Билеты на форум, номинации премии и регистрация судей оплачиваются отдельно. Стоимость форума и премии отличается для участников IBPA и стандартных участников.",
 
         option: "Опция",
-        members: "Участники",
+        members: "IBPA Участники",
         standard: "Стандарт",
         nonMembers: "Без участия",
+        memberPricingNote: "Специальные цены для участников IBPA.",
+        awardPricingNote: "Сэкономьте больше с пакетами для подачи нескольких заявок.",
+        memberDiscountNote: "Участники IBPA могут зарегистрироваться по льготной цене.",
+        mostPopular: "Популярное",
 
         forum: {
           eyebrow: "Билеты",
@@ -3466,9 +3473,13 @@ const ua: typeof en = {
           "Квитки на форум, номінації премії та реєстрація суддів оплачуються окремо. Вартість форуму й премії відрізняється для учасників IBPA та стандартних учасників.",
 
         option: "Опція",
-        members: "Учасники",
+        members: "IBPA Учасники",
         standard: "Стандарт",
         nonMembers: "Без участі",
+        memberPricingNote: "Спеціальні ціни для учасників IBPA",
+        awardPricingNote: "Заощаджуйте більше з пакетами для подання кількох заявок.",
+        memberDiscountNote: "Учасники IBPA можуть зареєструватися за пільговою ціною.",
+        mostPopular: "Популярне",
 
         forum: {
           eyebrow: "Квитки",

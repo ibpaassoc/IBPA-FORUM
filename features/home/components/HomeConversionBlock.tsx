@@ -5,9 +5,13 @@ import { useState } from "react";
 import {
   Calendar,
   CreditCard,
+  Crown,
   Globe2,
+  Info,
   Sparkles,
+  Tag,
   Trophy,
+  UserRound,
   Users,
   Zap,
 } from "lucide-react";
@@ -31,93 +35,36 @@ export default function HomeRegistrationSection() {
   const { discount } = useEarlyBird();
 
   const topInfoCards = [
-    {
-      icon: Calendar,
-      eyebrow: c.registrationInfo.eyebrow,
-      value: c.registrationInfo.value,
-    },
-    {
-      icon: Trophy,
-      eyebrow: c.grandPrixInfo.eyebrow,
-      value: c.grandPrixInfo.value,
-      text: c.grandPrixInfo.text,
-    },
+    { icon: Calendar, eyebrow: c.registrationInfo.eyebrow, value: c.registrationInfo.value },
+    { icon: Trophy, eyebrow: c.grandPrixInfo.eyebrow, value: c.grandPrixInfo.value, text: c.grandPrixInfo.text },
   ];
 
   const bottomInfoCards = [
-    {
-      icon: CreditCard,
-      eyebrow: c.feeInfo.eyebrow,
-      value: c.feeInfo.value,
-      text: c.feeInfo.text,
-    },
-    {
-      icon: Users,
-      eyebrow: c.juryInfo.eyebrow,
-      value: c.juryInfo.value,
-      text: c.juryInfo.text,
-    },
-    {
-      icon: Globe2,
-      eyebrow: c.participationInfo.eyebrow,
-      value: c.participationInfo.value,
-      text: c.participationInfo.text,
-    },
+    { icon: CreditCard, eyebrow: c.feeInfo.eyebrow, value: c.feeInfo.value, text: c.feeInfo.text },
+    { icon: Users, eyebrow: c.juryInfo.eyebrow, value: c.juryInfo.value, text: c.juryInfo.text },
+    { icon: Globe2, eyebrow: c.participationInfo.eyebrow, value: c.participationInfo.value, text: c.participationInfo.text },
   ];
 
   const forumRows = [
-    {
-      label: c.pricing.forum.oneDay,
-      member: PRICING.forumTickets.ibpaMembers.oneDay,
-      standard: PRICING.forumTickets.standard.oneDay,
-      discountable: true,
-    },
-    {
-      label: c.pricing.forum.twoDays,
-      member: PRICING.forumTickets.ibpaMembers.twoDays,
-      standard: PRICING.forumTickets.standard.twoDays,
-      discountable: true,
-    },
-    {
-      label: c.pricing.forum.galaDinner,
-      member: PRICING.forumTickets.ibpaMembers.galaDinner,
-      standard: PRICING.forumTickets.standard.galaDinner,
-      discountable: false,
-    },
+    { label: c.pricing.forum.oneDay, member: PRICING.forumTickets.ibpaMembers.oneDay, standard: PRICING.forumTickets.standard.oneDay, discountable: true },
+    { label: c.pricing.forum.twoDays, member: PRICING.forumTickets.ibpaMembers.twoDays, standard: PRICING.forumTickets.standard.twoDays, discountable: true },
+    { label: c.pricing.forum.galaDinner, member: PRICING.forumTickets.ibpaMembers.galaDinner, standard: PRICING.forumTickets.standard.galaDinner, discountable: false },
   ];
 
   const awardRows = [
-    {
-      label: c.pricing.award.oneNomination,
-      member: PRICING.awardParticipation.ibpaMembers.oneNomination,
-      standard: PRICING.awardParticipation.nonMembers.oneNomination,
-    },
-    {
-      label: c.pricing.award.threeNominations,
-      member: PRICING.awardParticipation.ibpaMembers.threeNominations,
-      standard: PRICING.awardParticipation.nonMembers.threeNominations,
-    },
-    {
-      label: c.pricing.award.fiveNominations,
-      member: PRICING.awardParticipation.ibpaMembers.fiveNominations,
-      standard: PRICING.awardParticipation.nonMembers.fiveNominations,
-    },
+    { label: c.pricing.award.oneNomination, member: PRICING.awardParticipation.ibpaMembers.oneNomination, standard: PRICING.awardParticipation.nonMembers.oneNomination },
+    { label: c.pricing.award.threeNominations, member: PRICING.awardParticipation.ibpaMembers.threeNominations, standard: PRICING.awardParticipation.nonMembers.threeNominations },
+    { label: c.pricing.award.fiveNominations, member: PRICING.awardParticipation.ibpaMembers.fiveNominations, standard: PRICING.awardParticipation.nonMembers.fiveNominations, badge: c.pricing.mostPopular },
   ];
 
   const juryRows = [
-    {
-      label: c.pricing.jury.member,
-      price: PRICING.judgeRegistration.ibpaMembers,
-    },
-    {
-      label: c.pricing.jury.standard,
-      price: PRICING.judgeRegistration.standard,
-    },
+    { label: c.pricing.jury.member, price: PRICING.judgeRegistration.ibpaMembers, icon: Crown, featured: true },
+    { label: c.pricing.jury.standard, price: PRICING.judgeRegistration.standard, icon: UserRound, featured: false },
   ];
 
   return (
     <>
-      <section className="landing-section-strong relative overflow-hidden py-16 md:py-24">
+      <section className="landing-section-strong relative overflow-hidden py-12 md:py-16 lg:py-20">
         <div className="pointer-events-none absolute left-[-10%] top-0 h-80 w-80 rounded-full bg-[#b9d9eb]/18 blur-2xl" />
 
         <div className="page-section relative">
@@ -132,108 +79,78 @@ export default function HomeRegistrationSection() {
           </Reveal>
 
           <div className="mx-auto mt-10 max-w-5xl">
-            <StaggerContainer
-              className="grid gap-3 md:grid-cols-2"
-              stagger={0.08}
-            >
+            <StaggerContainer className="grid gap-3 md:grid-cols-2" stagger={0.08}>
               {topInfoCards.map((card) => (
                 <InfoCard key={card.eyebrow} {...card} featured />
               ))}
             </StaggerContainer>
 
-            <StaggerContainer
-              className="mt-3 grid gap-3 md:grid-cols-3"
-              stagger={0.06}
-              delay={0.05}
-            >
+            <StaggerContainer className="mt-3 grid gap-3 md:grid-cols-3" stagger={0.06} delay={0.05}>
               {bottomInfoCards.map((card) => (
                 <InfoCard key={card.eyebrow} {...card} />
               ))}
             </StaggerContainer>
           </div>
 
-          <div className="mx-auto mt-16 max-w-5xl">
+          <div className="mx-auto mt-12 max-w-7xl lg:mt-14">
             <Reveal>
-              <div className="mb-8 grid gap-4 md:grid-cols-[0.85fr_1fr] md:items-end">
+              <div className="mb-7 grid gap-6 md:grid-cols-[0.85fr_1fr] md:items-end">
                 <div>
-                  <p className="page-eyebrow text-[#72a0c1]">
-                    {c.pricing.eyebrow}
-                  </p>
+                  <p className="page-eyebrow text-[#72a0c1]">{c.pricing.eyebrow}</p>
 
                   <h3 className="mt-4 font-(--font-display) text-[clamp(2.25rem,4.6vw,4.7rem)] leading-[0.9] tracking-[-0.06em] text-[#10182a]">
                     {c.pricing.title}
                   </h3>
                 </div>
 
-                <p className="max-w-xl text-sm leading-6 text-[#10182a]/52 md:ml-auto">
+                <p className="max-w-2xl text-sm leading-6 text-[#10182a]/52 md:ml-auto">
                   {c.pricing.description}
                 </p>
               </div>
             </Reveal>
 
-            <StaggerContainer
-              className="grid items-stretch gap-3 lg:grid-cols-3"
-              stagger={0.08}
-            >
+            <StaggerContainer className="grid items-stretch gap-4 lg:grid-cols-3" stagger={0.08}>
               <PricingCard
                 eyebrow={c.pricing.forum.eyebrow}
                 title={c.pricing.forum.title}
                 icon={<Sparkles size={16} />}
                 badge={discount ? <EarlyBirdBadge discount={discount} /> : null}
                 footer={
-                  <LandingSecondaryButton
-                    type="button"
-                    onClick={() => setIsTicketModalOpen(true)}
-                  >
+                  <LandingSecondaryButton type="button" onClick={() => setIsTicketModalOpen(true)}>
                     {c.tickets.cta}
                   </LandingSecondaryButton>
                 }
               >
-                <ComparisonTable
-                  rows={forumRows}
-                  optionLabel={c.pricing.option}
-                  memberLabel={c.pricing.members}
-                  standardLabel={c.pricing.standard}
-                  discount={discount}
-                />
+                <ComparisonTable rows={forumRows} optionLabel={c.pricing.option} memberLabel={c.pricing.members} standardLabel={c.pricing.standard} discount={discount} />
+
+                <PricingNote icon={<Users size={16} />}>{c.pricing.memberPricingNote}</PricingNote>
               </PricingCard>
 
               <PricingCard
                 eyebrow={c.pricing.award.eyebrow}
                 title={c.pricing.award.title}
                 icon={<Trophy size={16} />}
-                footer={
-                  <LandingSecondaryButton href="/apply">
-                    {c.awards.cta}
-                  </LandingSecondaryButton>
-                }
+                footer={<LandingSecondaryButton href="/apply">{c.awards.cta}</LandingSecondaryButton>}
               >
-                <ComparisonTable
-                  rows={awardRows}
-                  optionLabel={c.pricing.option}
-                  memberLabel={c.pricing.members}
-                  standardLabel={c.pricing.standard}
-                />
+                <ComparisonTable rows={awardRows} optionLabel={c.pricing.option} memberLabel={c.pricing.members} standardLabel={c.pricing.standard} />
+
+                <PricingNote icon={<Tag size={16} />}>{c.pricing.awardPricingNote}</PricingNote>
               </PricingCard>
 
               <PricingCard
                 eyebrow={c.pricing.jury.eyebrow}
                 title={c.pricing.jury.title}
                 icon={<Users size={16} />}
-                footer={
-                  <LandingSecondaryButton href="/jury">
-                    {t.common.applyAsJury}
-                  </LandingSecondaryButton>
-                }
+                footer={<LandingSecondaryButton href="/jury">{t.common.applyAsJury}</LandingSecondaryButton>}
               >
-                <div className="flex flex-1 flex-col justify-center gap-3">
-                  {juryRows.map((row) => (
-                    <PriceRow
-                      key={row.label}
-                      label={row.label}
-                      price={row.price}
-                    />
-                  ))}
+                <div className="flex flex-1 flex-col">
+                  <div className="space-y-3">
+                    {juryRows.map((row) => (
+                      <JuryPriceRow key={row.label} {...row} />
+                    ))}
+                  </div>
+
+                  <PricingNote icon={<Info size={16} />}>{c.pricing.memberDiscountNote}</PricingNote>
                 </div>
               </PricingCard>
             </StaggerContainer>
@@ -241,10 +158,7 @@ export default function HomeRegistrationSection() {
         </div>
       </section>
 
-      <TicketModal
-        isOpen={isTicketModalOpen}
-        onClose={() => setIsTicketModalOpen(false)}
-      />
+      <TicketModal isOpen={isTicketModalOpen} onClose={() => setIsTicketModalOpen(false)} />
     </>
   );
 }
@@ -275,9 +189,7 @@ function InfoCard({
         <Icon size={15} />
       </div>
 
-      <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[#72a0c1]">
-        {eyebrow}
-      </p>
+      <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[#72a0c1]">{eyebrow}</p>
 
       <div className={featured ? "min-h-[6.4rem]" : "min-h-[6.6rem]"}>
         <h3
@@ -292,9 +204,7 @@ function InfoCard({
         </h3>
       </div>
 
-      <p className="max-w-md text-xs leading-5 text-[#10182a]/52 md:text-sm">
-        {text}
-      </p>
+      <p className="max-w-md text-xs leading-5 text-[#10182a]/52 md:text-sm">{text}</p>
     </article>
   );
 }
@@ -315,32 +225,28 @@ function PricingCard({
   badge?: ReactNode;
 }) {
   return (
-    <article className="relative flex h-full min-h-[450px] flex-col overflow-hidden rounded-[1.9rem] border border-[#d8edf7] bg-white/72 p-5 shadow-[0_16px_46px_rgba(114,160,193,0.08)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:bg-white">
+    <article className="relative flex h-full flex-col overflow-hidden rounded-[2rem] border border-[#cfe8f6] bg-white/72 p-5 shadow-[0_22px_60px_rgba(114,160,193,0.1)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:border-[#b9d9eb] hover:bg-white md:p-6 lg:min-h-[540px]">
       <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
 
-      <div className="mb-6 flex items-start justify-between gap-4">
+      <div className="mb-5 flex min-h-[118px] items-start justify-between gap-4 lg:mb-6 lg:min-h-[130px]">
         <div className="min-w-0">
-          <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[#72a0c1]">
-            {eyebrow}
-          </p>
+          <p className="text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-[#72a0c1]">{eyebrow}</p>
 
-          <div className="mt-2 min-h-[5.35rem]">
-            <h4 className="font-(--font-display) text-[2rem] leading-none tracking-[-0.055em] text-[#10182a]">
-              {title}
-            </h4>
+          <h4 className="mt-3 font-(--font-display) text-[clamp(2.05rem,3vw,2.4rem)] leading-[0.96] tracking-[-0.06em] text-[#10182a]">
+            {title}
+          </h4>
 
-            {badge ? <div className="mt-2">{badge}</div> : null}
-          </div>
+          {badge ? <div className="mt-3">{badge}</div> : null}
         </div>
 
-        <div className="flex size-9 shrink-0 items-center justify-center rounded-2xl border border-[#b9d9eb]/55 bg-white/80 text-[#72a0c1]">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-2xl border border-[#b9d9eb]/75 bg-white/80 text-[#72a0c1]">
           {icon}
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col">{children}</div>
+      <div className="flex flex-1 flex-col gap-4">{children}</div>
 
-      <div className="mt-6 flex min-h-11 items-end">{footer}</div>
+      <div className="mt-6 flex min-h-11 items-end justify-center">{footer}</div>
     </article>
   );
 }
@@ -348,22 +254,15 @@ function PricingCard({
 function EarlyBirdBadge({ discount }: { discount: EarlyBirdDiscount }) {
   if (!discount) return null;
 
-  const offLabel =
-    discount.type === "percent"
-      ? `${discount.value}% off`
-      : `$${(discount.value / 100).toFixed(0)} off`;
-
-  const shortLabel =
-    discount.type === "percent"
-      ? `${discount.value}%`
-      : `$${(discount.value / 100).toFixed(0)}`;
+  const offLabel = discount.type === "percent" ? `${discount.value}% off` : `$${(discount.value / 100).toFixed(0)} off`;
+  const shortLabel = discount.type === "percent" ? `${discount.value}%` : `$${(discount.value / 100).toFixed(0)}`;
 
   return (
     <span
       title={`Early Bird — ${offLabel}`}
-      className="inline-flex w-fit items-center gap-1 whitespace-nowrap rounded-full border border-[#b9d9eb]/70 bg-white/80 px-2.5 py-1 text-[0.52rem] font-semibold uppercase tracking-[0.1em] text-[#5f91b4] shadow-[0_10px_28px_rgba(114,160,193,0.14)] backdrop-blur-xl"
+      className="inline-flex w-fit items-center gap-1 whitespace-nowrap rounded-full border border-[#b9d9eb]/80 bg-white/85 px-3 py-1 text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[#72a0c1] shadow-[0_10px_28px_rgba(114,160,193,0.14)] backdrop-blur-xl"
     >
-      <Zap size={10} strokeWidth={2} />
+      <Zap size={11} strokeWidth={2} />
       Early Bird · {shortLabel}
     </span>
   );
@@ -381,18 +280,19 @@ function ComparisonTable({
     member: string;
     standard: string;
     discountable?: boolean;
+    badge?: string;
   }[];
   optionLabel: string;
   memberLabel: string;
   standardLabel: string;
-  discount?: EarlyBirdDiscount;
+  discount?: EarlyBirdDiscount | null;
 }) {
   return (
-    <div className="overflow-hidden rounded-[1.25rem] border border-[#d8edf7] bg-white/62">
-      <div className="grid grid-cols-[1.2fr_0.8fr_0.8fr] border-b border-[#d8edf7] px-3 py-2.5 text-[0.56rem] font-semibold uppercase tracking-[0.16em] text-[#10182a]/38">
+    <div className="overflow-hidden rounded-[1.35rem] border border-[#cfe8f6] bg-white/64">
+      <div className="grid grid-cols-[1.05fr_0.9fr_0.9fr] items-center gap-x-2 border-b border-[#cfe8f6] px-3 py-2.5 text-[0.48rem] font-semibold uppercase tracking-[0.1em] text-[#10182a]/38">
         <span>{optionLabel}</span>
-        <span className="text-right">{memberLabel}</span>
-        <span className="text-right">{standardLabel}</span>
+        <span className="text-center text-[#72a0c1]">{memberLabel}</span>
+        <span className="text-right text-[#10182a]/52">{standardLabel}</span>
       </div>
 
       {rows.map((row) => {
@@ -401,13 +301,19 @@ function ComparisonTable({
         return (
           <div
             key={row.label}
-            className="grid grid-cols-[1.2fr_0.8fr_0.8fr] items-center border-b border-[#d8edf7]/70 px-3 py-3 last:border-b-0"
+            className="grid min-h-[62px] grid-cols-[1.05fr_0.9fr_0.9fr] items-center gap-x-2 border-b border-[#cfe8f6]/80 px-3 py-2.5 last:border-b-0"
           >
-            <span className="text-xs font-medium text-[#10182a]/62">
-              {row.label}
+            <span className="flex min-w-0 flex-col gap-1 text-xs font-medium leading-snug text-[#10182a]/62">
+              <span className="break-words">{row.label}</span>
+
+              {row.badge ? (
+                <span className="w-fit rounded-full bg-[#72a0c1] px-2 py-1 text-[0.46rem] font-semibold uppercase leading-none tracking-[0.05em] text-white">
+                  {row.badge}
+                </span>
+              ) : null}
             </span>
 
-            <PriceCell price={row.member} discount={rowDiscount} />
+            <PriceCell price={row.member} discount={rowDiscount} featured={row.discountable !== false} />
             <PriceCell price={row.standard} discount={rowDiscount} />
           </div>
         );
@@ -419,41 +325,91 @@ function ComparisonTable({
 function PriceCell({
   price,
   discount,
+  featured = false,
 }: {
   price: string;
-  discount: EarlyBirdDiscount;
+  discount?: EarlyBirdDiscount | null;
+  featured?: boolean;
 }) {
-  const discounted = applyDiscountToPrice(price, discount);
+  const discounted = applyDiscountToPrice(price, discount ?? null);
 
   if (!discounted) {
     return (
-      <span className="text-right font-(--font-display) text-xl tracking-[-0.04em] text-[#10182a]">
+      <span 
+        className={[
+          "whitespace-nowrap text-right font-(--font-display) text-[clamp(1.22rem,1.75vw,1.5rem)] tracking-[-0.045em]",
+          featured ? "text-[#72a0c1]" : "text-[#10182a]/80",
+        ].join(" ")}
+      >
         {price}
       </span>
     );
   }
 
   return (
-    <span className="flex flex-col items-end leading-none">
-      <span className="text-[0.62rem] font-medium text-[#10182a]/38 line-through">
-        {price}
-      </span>
+    <span className="flex min-w-0 flex-col items-end leading-none">
+      <span className="text-[0.54rem] font-medium text-[#10182a]/38 line-through">{price}</span>
 
-      <span className="font-(--font-display) text-xl tracking-[-0.04em] text-[#5f91b4]">
+      <span
+        className={[
+          "whitespace-nowrap font-(--font-display) text-[clamp(1.22rem,1.75vw,1.5rem)] tracking-[-0.045em]",
+          featured ? "text-[#72a0c1]" : "text-[#10182a]/80",
+        ].join(" ")}
+      >
         {discounted}
       </span>
     </span>
   );
 }
 
-function PriceRow({ label, price }: { label: string; price: string }) {
+function JuryPriceRow({
+  label,
+  price,
+  icon: Icon,
+  featured,
+}: {
+  label: string;
+  price: string;
+  icon: typeof Crown;
+  featured: boolean;
+}) {
   return (
-    <div className="flex items-center justify-between gap-4 rounded-full border border-[#d8edf7] bg-white/62 px-3.5 py-2.5">
-      <span className="text-xs font-medium text-[#10182a]/62">{label}</span>
+    <div
+      className={[
+        "flex items-center justify-between gap-4 rounded-[1.35rem] border px-4 py-3.5",
+        featured
+          ? "border-[#b9d9eb] bg-[#edf7fc]/80 shadow-[0_14px_34px_rgba(114,160,193,0.1)]"
+          : "border-[#d8edf7] bg-white/62",
+      ].join(" ")}
+    >
+      <div className="flex min-w-0 items-center gap-3">
+        <div
+          className={[
+            "flex size-9 shrink-0 items-center justify-center rounded-full border",
+            featured ? "border-[#72a0c1] bg-[#72a0c1] text-white" : "border-[#b9d9eb] bg-white text-[#10182a]/70",
+          ].join(" ")}
+        >
+          <Icon size={16} />
+        </div>
 
-      <span className="font-(--font-display) text-xl tracking-[-0.04em] text-[#10182a]">
+        <p className={["truncate text-sm font-semibold", featured ? "text-[#72a0c1]" : "text-[#10182a]/70"].join(" ")}>
+          {label}
+        </p>
+      </div>
+
+      <span className={["shrink-0 font-(--font-display) text-[1.75rem] leading-none tracking-[-0.045em]", featured ? "text-[#72a0c1]" : "text-[#10182a]/80"].join(" ")}>
         {price}
       </span>
+    </div>
+  );
+}
+
+function PricingNote({ icon, children }: { icon: ReactNode; children: ReactNode }) {
+  return (
+    <div className="mt-auto flex min-h-[78px] items-center gap-3 rounded-[1.25rem] border border-[#d8edf7] bg-white/62 px-4 py-3 text-sm leading-5 text-[#10182a]/62">
+      <div className="flex size-8 shrink-0 items-center justify-center rounded-full text-[#72a0c1]">{icon}</div>
+
+      <p>{children}</p>
     </div>
   );
 }
