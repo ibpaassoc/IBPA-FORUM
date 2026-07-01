@@ -75,7 +75,7 @@ export default function GrandPrixHero() {
           <HeroPrimaryButton href="/apply">
             {t.grandPrixPage.hero.cta ?? "Apply Now"}
           </HeroPrimaryButton>
-          <HeroSecondaryButton href="#flow">
+          <HeroSecondaryButton href="#more-info">
             {t.grandPrixPage.hero.learnMore}
           </HeroSecondaryButton>
         </motion.div>
