@@ -5,11 +5,14 @@ import {
   HomeThreeExperiences,
   HomeProgram,
   HomeConversionBlock,
-  HomeSpeakers,
   HomePreviousForum,
   HomePartners,
 } from "@/features/home/components";
 import { LandingPageShell } from "@/shared/components/public";
+
+const HomeSpeakers = dynamic(
+  () => import("@/features/home/components/HomeSpeakers")
+);
 
 const HomePreviousWinners = dynamic(
   () => import("@/features/home/components/HomePreviousWinners")
@@ -29,11 +32,11 @@ export default function HomePagePremium() {
       <HomeThreeExperiences />
       {/*<HomeProgram />*/}
       <HomeConversionBlock />
-      {/*<HomeSpeakers />*/}
+      <HomeSpeakers />
       <HomePreviousForum />
       <HomePreviousWinners />
       {/*<HomePartners />*/}
-      <HomeWhyAttend />
+      {/*<HomeWhyAttend />*/}
       <HomeContactUs />
     </LandingPageShell>
   );

@@ -250,6 +250,45 @@ const en = {
           "Professionals of all levels and from all countries are welcome."
       }
     },
+    speakersSection: {
+      eyebrow: "Forum Speakers",
+      title: "Learn from Industry Leaders",
+      description:
+        "Successful beauty entrepreneurs and experts will share practical strategies, real-world experience, and proven systems that help professionals build stronger businesses.",
+
+      readMore: "Read more",
+      showLess: "Show less",
+      topicLabel: "Topic",
+      presentationLabel: "Presentation",
+
+      speakers: [
+        {
+          name: "Yaroslavna Atapina",
+          photo: "/images/speakers/yara-atapina.jpeg",
+          role:
+            "Owner of two nail salons in Silicon Valley, USA, and an active nail professional with more than 10 years of experience. Over the past three years, she has built a strong business ecosystem with structured operations, exceptional customer service, and an efficiently managed team of 30 professionals.",
+          city: "San Jose, California, USA",
+          topic: "Systems Instead of Chaos: The Foundations of Scaling a Beauty Business",
+          description:
+            "In this presentation, I will explain how to build a beauty business based on systems rather than chaos from the very beginning. This session is valuable both for independent professionals who want to grow into salon owners and for studio owners looking to strengthen operations, customer service, and team management. I will share practical tools and solutions that are successfully implemented in my own business.",
+          instagram: "https://www.instagram.com/yara.yaroslavna?igsh=NTc4MTIwNjQ2YQ==",
+          website: ""
+        },
+        {
+          name: "Natalie Vaulin",
+          photo: "/images/speakers/natalie-vaulin.jpg",
+          role:
+            "Founder and CEO of Vaulabs, a U.S.-based contract cosmetics manufacturer specializing in Clean Beauty products. With more than 15 years of experience in marketing, branding, and business development, Natalie helps entrepreneurs transform ideas into market-ready beauty brands.",
+          city: "Tampa, Florida, USA",
+          topic:
+            "How to Build Your Own Beauty Brand in the USA: From Idea to Store Shelf",
+          description:
+            "Launching a beauty brand in the U.S. can seem overwhelming. Natalie will share a step-by-step framework for creating and launching a successful beauty product—from validating the idea to selecting formulas, packaging, manufacturing, and preparing for market. Participants will learn how to avoid common mistakes, make informed decisions, and build products ready for long-term growth and scaling. The presentation is based on real U.S. product launches and practical industry experience.",
+          instagram: "https://www.instagram.com/natalievaulin",
+          website: "https://www.vaulabs.com"
+        }
+      ]
+    },
     previousForum: {
       eyebrow: "Previous Event",
       title: "Beauty Business Forum 2025",
@@ -1901,6 +1940,46 @@ const ru: typeof en = {
         description:
           "Подать заявку могут специалисты любого уровня из любой страны."
       }
+    },
+    speakersSection: {
+      eyebrow: "Спикеры форума",
+      title: "Учитесь у лидеров индустрии",
+      description:
+        "Успешные предприниматели и эксперты beauty-индустрии поделятся практическим опытом, рабочими инструментами и стратегиями развития бизнеса.",
+
+      readMore: "Подробнее",
+      showLess: "Свернуть",
+      topicLabel: "Тема",
+      presentationLabel: "Презентация",
+
+      speakers: [
+        {
+          name: "Ярославна Атапина",
+          photo: "/images/speakers/yara-atapina.jpeg",
+          role:
+            "Владелец двух салонов ногтевого сервиса в Кремниевой долине (США) и практикующий nail-специалист с опытом более 10 лет. За последние три года построила эффективную бизнес-систему с четкими процессами, высоким уровнем сервиса и командой из 30 сотрудников.",
+          city: "Сан-Хосе, Калифорния, США",
+          topic:
+            "Система вместо хаоса: основы масштабирования beauty-бизнеса",
+          description:
+            "На выступлении вы узнаете, как с первых шагов строить beauty-бизнес не в хаосе, а на системе, которая позволяет стабильно расти и масштабироваться. Тема будет полезна как мастерам, планирующим открыть салон и собрать команду, так и владельцам студий, которые хотят выстроить сильные процессы, высокий уровень сервиса и эффективное управление командой. Я поделюсь инструментами и решениями, которые ежедневно работают внутри моего бизнеса.",
+          instagram: "https://www.instagram.com/yara.yaroslavna?igsh=NTc4MTIwNjQ2YQ==",
+          website: ""
+        },
+        {
+          name: "Натали Ваулин",
+          photo: "/images/speakers/natalie-vaulin.jpg",
+          role:
+            "Основатель и CEO компании Vaulabs — американского контрактного производства косметики, специализирующегося на продуктах Clean Beauty. Более 15 лет работает в сфере маркетинга, брендинга и развития бизнеса, помогая предпринимателям создавать собственные beauty-бренды.",
+          city: "Тампа, Флорида, США",
+          topic:
+            "Как создать собственный beauty-бренд в США: от идеи до полки магазина",
+          description:
+            "На выступлении Натали представит пошаговую систему создания собственного beauty-продукта — от проверки идеи и разработки формулы до выбора упаковки, производства и подготовки к выходу на рынок. Участники узнают, как избежать распространённых ошибок, принимать правильные решения на каждом этапе и создавать продукты, готовые к масштабированию. Доклад основан на реальных кейсах запуска beauty-продуктов в США.",
+          instagram: "https://www.instagram.com/natalievaulin",
+          website: "https://www.vaulabs.com"
+        },
+      ]
     },
     previousForum: {
       eyebrow: "Предыдущий ивент",
@@ -3554,6 +3633,46 @@ const ua: typeof en = {
         description:
           "Подати заявку можуть спеціалісти будь-якого рівня з будь-якої країни."
       }
+    },
+    speakersSection: {
+      eyebrow: "Спікери форуму",
+      title: "Навчайтеся у лідерів індустрії",
+      description:
+        "Успішні підприємці та експерти beauty-індустрії поділяться практичним досвідом, перевіреними інструментами та стратегіями розвитку бізнесу.",
+
+      readMore: "Детальніше",
+      showLess: "Згорнути",
+      topicLabel: "Тема",
+      presentationLabel: "Презентація",
+
+      speakers: [
+        {
+          name: "Ярославна Атапіна",
+          photo: "/images/speakers/yara-atapina.jpeg",
+          role:
+            "Власниця двох nail-салонів у Кремнієвій долині (США) та практикуючий nail-майстер із понад 10-річним досвідом. За останні три роки побудувала ефективну бізнес-систему з чіткими процесами, високим рівнем сервісу та командою з 30 співробітників.",
+          city: "Сан-Хосе, Каліфорнія, США",
+          topic:
+            "Система замість хаосу: основи масштабування beauty-бізнесу",
+          description:
+            "Під час виступу ви дізнаєтесь, як із перших кроків будувати beauty-бізнес не в хаосі, а на системі, що дозволяє стабільно зростати та масштабуватися. Тема буде корисною як майстрам, які планують відкрити власний салон і сформувати команду, так і власникам студій, які прагнуть вибудувати сильні процеси, високий рівень сервісу та ефективне управління командою. Я поділюся інструментами та рішеннями, які щодня працюють у моєму бізнесі.",
+          instagram: "https://www.instagram.com/yara.yaroslavna?igsh=NTc4MTIwNjQ2YQ==",
+          website: ""
+        },
+        {
+          name: "Наталі Ваулін",
+          photo: "/images/speakers/natalie-vaulin.jpg",
+          role:
+            "Засновниця та CEO компанії Vaulabs — американського контрактного виробництва косметики, що спеціалізується на продуктах Clean Beauty. Понад 15 років працює у сфері маркетингу, брендингу та розвитку бізнесу, допомагаючи підприємцям створювати власні beauty-бренди.",
+          city: "Тампа, Флорида, США",
+          topic:
+            "Як створити власний beauty-бренд у США: від ідеї до полиці магазину",
+          description:
+            "На виступі Наталі представить покрокову систему створення власного beauty-продукту — від перевірки ідеї та розробки формули до вибору пакування, виробництва та підготовки до виходу на ринок. Учасники дізнаються, як уникнути найпоширеніших помилок, приймати правильні рішення на кожному етапі та створювати продукти, готові до масштабування. Виступ базується на реальних кейсах запуску beauty-продуктів у США.",
+          instagram: "https://www.instagram.com/natalievaulin",
+          website: "https://www.vaulabs.com"
+        }
+      ]
     },
     previousForum: {
       eyebrow: "Попередній івент",
