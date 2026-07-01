@@ -393,9 +393,9 @@ const formCopy = {
     submitException: "Что-то пошло не так. Попробуйте снова.",
     redirecting: "Переход к оплате...",
     nominationCount: "Выбранные номинации",
-    ibpaMembership: "Членство IBPA",
-    ibpaMemberLabel: "Я являюсь членом IBPA",
-    ibpaMemberSub: "Члены получают сниженные взносы",
+    ibpaMembership: "Участие в  IBPA",
+    ibpaMemberLabel: "Я являюсь участником IBPA",
+    ibpaMemberSub: "Участники получают сниженные взносы",
     ibpaCertNumber: "CERT-номер IBPA",
     entryFee: "Взнос",
     memberRate: "Тариф участника",
@@ -404,7 +404,7 @@ const formCopy = {
     selectForPricing: "Выберите номинации для расчёта цены",
     savings: "Скидка",
     certInvalidError:
-      "Ваш сертификат IBPA не прошёл проверку. Проверьте номер или снимите галочку «Член IBPA» для стандартного тарифа.",
+      "Ваш сертификат IBPA не прошёл проверку. Проверьте номер или снимите галочку «Участник IBPA» для стандартного тарифа.",
     certCheckingError: "Подождите, идёт проверка вашего сертификата IBPA.",
   },
   ua: {
@@ -494,9 +494,9 @@ const formCopy = {
     submitException: "Щось пішло не так. Спробуйте ще раз.",
     redirecting: "Перехід до оплати...",
     nominationCount: "Обрані номінації",
-    ibpaMembership: "Членство IBPA",
-    ibpaMemberLabel: "Я є членом IBPA",
-    ibpaMemberSub: "Члени отримують знижені внески",
+    ibpaMembership: "Учасники IBPA",
+    ibpaMemberLabel: "Я є учасником IBPA",
+    ibpaMemberSub: "Учаснки отримують знижені внески",
     ibpaCertNumber: "CERT-номер IBPA",
     entryFee: "Внесок",
     memberRate: "Тариф учасника",
@@ -505,7 +505,7 @@ const formCopy = {
     selectForPricing: "Оберіть номінації для розрахунку ціни",
     savings: "Знижка",
     certInvalidError:
-      "Ваш сертифікат IBPA не пройшов перевірку. Перевірте номер або зніміть позначку «Член IBPA» для стандартного тарифу.",
+      "Ваш сертифікат IBPA не пройшов перевірку. Перевірте номер або зніміть позначку «Учасник IBPA» для стандартного тарифу.",
     certCheckingError: "Зачекайте, йде перевірка вашого сертифіката IBPA.",
   },
 } as const;

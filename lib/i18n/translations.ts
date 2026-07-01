@@ -13,6 +13,7 @@ const en = {
     applyNow: "Apply",
     applyAsParticipant: "Apply as Participant",
     applyAsJury: "Apply as Judge",
+    browseCategories: "Browse Categories",
     juryAccount: "Jury Account",
     jury: "Jury",
     categories: "Categories",
@@ -1184,6 +1185,7 @@ const en = {
       decision: "Decision",
       decisionValue: "Full judging panel",
       cta: "Review Categories",
+      learnMore: "Learn More",
     },
     pillars: [
       {
@@ -1657,6 +1659,7 @@ const ru: typeof en = {
     applyNow: "Подать заявку",
     applyAsParticipant: "Подать заявку участника",
     applyAsJury: "Подать заявку судьи",
+    browseCategories: "Смотреть категории",
     juryAccount: "Кабинет судьи",
     jury: "Жюри",
     categories: "Категории",
@@ -2021,7 +2024,7 @@ const ru: typeof en = {
           grandPrixNote: "от 5 номинаций — автоматически",
         },
         nonMember: {
-          label: "УЧАСТНИКИ БЕЗ ЧЛЕНСТВА IBPA",
+          label: "УЧАСТНИКИ БЕЗ АССОЦИАЦИИ IBPA",
           rows: [
             { label: "1 номинация", value: "$70" },
             { label: "3 номинации", value: "$190" },
@@ -2832,6 +2835,7 @@ const ru: typeof en = {
       decision: "Решение",
       decisionValue: "Полный состав жюри",
       cta: "Смотреть категории",
+      learnMore: "Подробнее",
     },
     pillars: [
       {
@@ -3305,6 +3309,7 @@ const ua: typeof en = {
     applyNow: "Подати заявку",
     applyAsParticipant: "Подати заявку учасника",
     applyAsJury: "Подати заявку судді",
+    browseCategories: "Дивитись Категорії",
     juryAccount: "Кабінет судді",
     jury: "Журі",
     categories: "Категорії",
@@ -4480,6 +4485,7 @@ const ua: typeof en = {
       decision: "Рішення",
       decisionValue: "Повний склад журі",
       cta: "Переглянути категорії",
+      learnMore: "Дізнатися більше",
     },
     pillars: [
       {

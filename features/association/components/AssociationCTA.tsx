@@ -50,7 +50,7 @@ export default function AssociationCTA() {
               </LandingPrimaryButton>
 
               <LandingSecondaryButton
-                href="https://ibpassociation.com"
+                href="https://ibpassociations.org"
               >
                 {c.websiteButton}
               </LandingSecondaryButton>
