@@ -13,7 +13,7 @@ export default function GrandPrixWhySpecial() {
   const c = t.grandPrixPage.whySpecial;
 
   return (
-    <section className="landing-section-strong relative overflow-hidden py-20 md:py-28">
+    <section id="more-info" className="landing-section-strong relative overflow-hidden py-20 md:py-28">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute right-[-16%] top-10 h-[360px] w-[360px] rounded-full bg-[#b9d9eb]/16 blur-2xl" />
       </div>

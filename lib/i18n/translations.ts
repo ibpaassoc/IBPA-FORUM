@@ -13,6 +13,7 @@ const en = {
     applyNow: "Apply",
     applyAsParticipant: "Apply as Participant",
     applyAsJury: "Apply as Judge",
+    browseCategories: "Browse Categories",
     juryAccount: "Jury Account",
     jury: "Jury",
     categories: "Categories",
@@ -166,11 +167,14 @@ const en = {
         title: "Participation Pricing",
         description:
           "Forum tickets, award nominations, and jury registration are priced separately. Forum and award pricing differs for IBPA members and standard participants.",
-
         option: "Option",
-        members: "Members",
+        members: "IBPA Members",
         standard: "Standard",
         nonMembers: "Non-members",
+        memberPricingNote: "IBPA Member pricing is available to current IBPA Association members.",
+        awardPricingNote: "Save more with multi-nomination packages.",
+        memberDiscountNote: "IBPA members receive a discounted jury registration rate.",
+        mostPopular: "Most popular",
 
         forum: {
           eyebrow: "Tickets",
@@ -245,6 +249,45 @@ const en = {
         description:
           "Professionals of all levels and from all countries are welcome."
       }
+    },
+    speakersSection: {
+      eyebrow: "Forum Speakers",
+      title: "Learn from Industry Leaders",
+      description:
+        "Successful beauty entrepreneurs and experts will share practical strategies, real-world experience, and proven systems that help professionals build stronger businesses.",
+
+      readMore: "Read more",
+      showLess: "Show less",
+      topicLabel: "Topic",
+      presentationLabel: "Presentation",
+
+      speakers: [
+        {
+          name: "Yaroslavna Atapina",
+          photo: "/images/speakers/yara-atapina.jpeg",
+          role:
+            "Owner of two nail salons in Silicon Valley, USA, and an active nail professional with more than 10 years of experience. Over the past three years, she has built a strong business ecosystem with structured operations, exceptional customer service, and an efficiently managed team of 30 professionals.",
+          city: "San Jose, California, USA",
+          topic: "Systems Instead of Chaos: The Foundations of Scaling a Beauty Business",
+          description:
+            "In this presentation, I will explain how to build a beauty business based on systems rather than chaos from the very beginning. This session is valuable both for independent professionals who want to grow into salon owners and for studio owners looking to strengthen operations, customer service, and team management. I will share practical tools and solutions that are successfully implemented in my own business.",
+          instagram: "https://www.instagram.com/yara.yaroslavna?igsh=NTc4MTIwNjQ2YQ==",
+          website: ""
+        },
+        {
+          name: "Natalie Vaulin",
+          photo: "/images/speakers/natalie-vaulin.jpg",
+          role:
+            "Founder and CEO of Vaulabs, a U.S.-based contract cosmetics manufacturer specializing in Clean Beauty products. With more than 15 years of experience in marketing, branding, and business development, Natalie helps entrepreneurs transform ideas into market-ready beauty brands.",
+          city: "Tampa, Florida, USA",
+          topic:
+            "How to Build Your Own Beauty Brand in the USA: From Idea to Store Shelf",
+          description:
+            "Launching a beauty brand in the U.S. can seem overwhelming. Natalie will share a step-by-step framework for creating and launching a successful beauty product—from validating the idea to selecting formulas, packaging, manufacturing, and preparing for market. Participants will learn how to avoid common mistakes, make informed decisions, and build products ready for long-term growth and scaling. The presentation is based on real U.S. product launches and practical industry experience.",
+          instagram: "https://www.instagram.com/natalievaulin",
+          website: "https://www.vaulabs.com"
+        }
+      ]
     },
     previousForum: {
       eyebrow: "Previous Event",
@@ -1184,6 +1227,7 @@ const en = {
       decision: "Decision",
       decisionValue: "Full judging panel",
       cta: "Review Categories",
+      learnMore: "Learn More",
     },
     pillars: [
       {
@@ -1657,6 +1701,7 @@ const ru: typeof en = {
     applyNow: "Подать заявку",
     applyAsParticipant: "Подать заявку участника",
     applyAsJury: "Подать заявку судьи",
+    browseCategories: "Смотреть категории",
     juryAccount: "Кабинет судьи",
     jury: "Жюри",
     categories: "Категории",
@@ -1813,9 +1858,13 @@ const ru: typeof en = {
           "Билеты на форум, номинации премии и регистрация судей оплачиваются отдельно. Стоимость форума и премии отличается для участников IBPA и стандартных участников.",
 
         option: "Опция",
-        members: "Участники",
+        members: "IBPA Участники",
         standard: "Стандарт",
         nonMembers: "Без участия",
+        memberPricingNote: "Специальные цены для участников IBPA.",
+        awardPricingNote: "Сэкономьте больше с пакетами для подачи нескольких заявок.",
+        memberDiscountNote: "Участники IBPA могут зарегистрироваться по льготной цене.",
+        mostPopular: "Популярное",
 
         forum: {
           eyebrow: "Билеты",
@@ -1891,6 +1940,46 @@ const ru: typeof en = {
         description:
           "Подать заявку могут специалисты любого уровня из любой страны."
       }
+    },
+    speakersSection: {
+      eyebrow: "Спикеры форума",
+      title: "Учитесь у лидеров индустрии",
+      description:
+        "Успешные предприниматели и эксперты beauty-индустрии поделятся практическим опытом, рабочими инструментами и стратегиями развития бизнеса.",
+
+      readMore: "Подробнее",
+      showLess: "Свернуть",
+      topicLabel: "Тема",
+      presentationLabel: "Презентация",
+
+      speakers: [
+        {
+          name: "Ярославна Атапина",
+          photo: "/images/speakers/yara-atapina.jpeg",
+          role:
+            "Владелец двух салонов ногтевого сервиса в Кремниевой долине (США) и практикующий nail-специалист с опытом более 10 лет. За последние три года построила эффективную бизнес-систему с четкими процессами, высоким уровнем сервиса и командой из 30 сотрудников.",
+          city: "Сан-Хосе, Калифорния, США",
+          topic:
+            "Система вместо хаоса: основы масштабирования beauty-бизнеса",
+          description:
+            "На выступлении вы узнаете, как с первых шагов строить beauty-бизнес не в хаосе, а на системе, которая позволяет стабильно расти и масштабироваться. Тема будет полезна как мастерам, планирующим открыть салон и собрать команду, так и владельцам студий, которые хотят выстроить сильные процессы, высокий уровень сервиса и эффективное управление командой. Я поделюсь инструментами и решениями, которые ежедневно работают внутри моего бизнеса.",
+          instagram: "https://www.instagram.com/yara.yaroslavna?igsh=NTc4MTIwNjQ2YQ==",
+          website: ""
+        },
+        {
+          name: "Натали Ваулин",
+          photo: "/images/speakers/natalie-vaulin.jpg",
+          role:
+            "Основатель и CEO компании Vaulabs — американского контрактного производства косметики, специализирующегося на продуктах Clean Beauty. Более 15 лет работает в сфере маркетинга, брендинга и развития бизнеса, помогая предпринимателям создавать собственные beauty-бренды.",
+          city: "Тампа, Флорида, США",
+          topic:
+            "Как создать собственный beauty-бренд в США: от идеи до полки магазина",
+          description:
+            "На выступлении Натали представит пошаговую систему создания собственного beauty-продукта — от проверки идеи и разработки формулы до выбора упаковки, производства и подготовки к выходу на рынок. Участники узнают, как избежать распространённых ошибок, принимать правильные решения на каждом этапе и создавать продукты, готовые к масштабированию. Доклад основан на реальных кейсах запуска beauty-продуктов в США.",
+          instagram: "https://www.instagram.com/natalievaulin",
+          website: "https://www.vaulabs.com"
+        },
+      ]
     },
     previousForum: {
       eyebrow: "Предыдущий ивент",
@@ -2021,7 +2110,7 @@ const ru: typeof en = {
           grandPrixNote: "от 5 номинаций — автоматически",
         },
         nonMember: {
-          label: "УЧАСТНИКИ БЕЗ ЧЛЕНСТВА IBPA",
+          label: "УЧАСТНИКИ БЕЗ АССОЦИАЦИИ IBPA",
           rows: [
             { label: "1 номинация", value: "$70" },
             { label: "3 номинации", value: "$190" },
@@ -2832,6 +2921,7 @@ const ru: typeof en = {
       decision: "Решение",
       decisionValue: "Полный состав жюри",
       cta: "Смотреть категории",
+      learnMore: "Подробнее",
     },
     pillars: [
       {
@@ -3305,6 +3395,7 @@ const ua: typeof en = {
     applyNow: "Подати заявку",
     applyAsParticipant: "Подати заявку учасника",
     applyAsJury: "Подати заявку судді",
+    browseCategories: "Дивитись Категорії",
     juryAccount: "Кабінет судді",
     jury: "Журі",
     categories: "Категорії",
@@ -3461,9 +3552,13 @@ const ua: typeof en = {
           "Квитки на форум, номінації премії та реєстрація суддів оплачуються окремо. Вартість форуму й премії відрізняється для учасників IBPA та стандартних учасників.",
 
         option: "Опція",
-        members: "Учасники",
+        members: "IBPA Учасники",
         standard: "Стандарт",
         nonMembers: "Без участі",
+        memberPricingNote: "Спеціальні ціни для учасників IBPA",
+        awardPricingNote: "Заощаджуйте більше з пакетами для подання кількох заявок.",
+        memberDiscountNote: "Учасники IBPA можуть зареєструватися за пільговою ціною.",
+        mostPopular: "Популярне",
 
         forum: {
           eyebrow: "Квитки",
@@ -3538,6 +3633,46 @@ const ua: typeof en = {
         description:
           "Подати заявку можуть спеціалісти будь-якого рівня з будь-якої країни."
       }
+    },
+    speakersSection: {
+      eyebrow: "Спікери форуму",
+      title: "Навчайтеся у лідерів індустрії",
+      description:
+        "Успішні підприємці та експерти beauty-індустрії поділяться практичним досвідом, перевіреними інструментами та стратегіями розвитку бізнесу.",
+
+      readMore: "Детальніше",
+      showLess: "Згорнути",
+      topicLabel: "Тема",
+      presentationLabel: "Презентація",
+
+      speakers: [
+        {
+          name: "Ярославна Атапіна",
+          photo: "/images/speakers/yara-atapina.jpeg",
+          role:
+            "Власниця двох nail-салонів у Кремнієвій долині (США) та практикуючий nail-майстер із понад 10-річним досвідом. За останні три роки побудувала ефективну бізнес-систему з чіткими процесами, високим рівнем сервісу та командою з 30 співробітників.",
+          city: "Сан-Хосе, Каліфорнія, США",
+          topic:
+            "Система замість хаосу: основи масштабування beauty-бізнесу",
+          description:
+            "Під час виступу ви дізнаєтесь, як із перших кроків будувати beauty-бізнес не в хаосі, а на системі, що дозволяє стабільно зростати та масштабуватися. Тема буде корисною як майстрам, які планують відкрити власний салон і сформувати команду, так і власникам студій, які прагнуть вибудувати сильні процеси, високий рівень сервісу та ефективне управління командою. Я поділюся інструментами та рішеннями, які щодня працюють у моєму бізнесі.",
+          instagram: "https://www.instagram.com/yara.yaroslavna?igsh=NTc4MTIwNjQ2YQ==",
+          website: ""
+        },
+        {
+          name: "Наталі Ваулін",
+          photo: "/images/speakers/natalie-vaulin.jpg",
+          role:
+            "Засновниця та CEO компанії Vaulabs — американського контрактного виробництва косметики, що спеціалізується на продуктах Clean Beauty. Понад 15 років працює у сфері маркетингу, брендингу та розвитку бізнесу, допомагаючи підприємцям створювати власні beauty-бренди.",
+          city: "Тампа, Флорида, США",
+          topic:
+            "Як створити власний beauty-бренд у США: від ідеї до полиці магазину",
+          description:
+            "На виступі Наталі представить покрокову систему створення власного beauty-продукту — від перевірки ідеї та розробки формули до вибору пакування, виробництва та підготовки до виходу на ринок. Учасники дізнаються, як уникнути найпоширеніших помилок, приймати правильні рішення на кожному етапі та створювати продукти, готові до масштабування. Виступ базується на реальних кейсах запуску beauty-продуктів у США.",
+          instagram: "https://www.instagram.com/natalievaulin",
+          website: "https://www.vaulabs.com"
+        }
+      ]
     },
     previousForum: {
       eyebrow: "Попередній івент",
@@ -4480,6 +4615,7 @@ const ua: typeof en = {
       decision: "Рішення",
       decisionValue: "Повний склад журі",
       cta: "Переглянути категорії",
+      learnMore: "Дізнатися більше",
     },
     pillars: [
       {

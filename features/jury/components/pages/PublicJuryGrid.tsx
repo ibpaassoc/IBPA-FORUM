@@ -46,17 +46,17 @@ export default function PublicJuryGrid({
     ru: {
       approvedMember: "Одобрен",
       council: "Совет жюри IBPA",
-      portraitSuffix: "портрет члена жюри",
-      previous: "Предыдущий член жюри",
-      next: "Следующий член жюри",
+      portraitSuffix: "портрет жюри",
+      previous: "Предыдущий жюри",
+      next: "Следующий жюри",
       scrollHint: "Листайте, чтобы увидеть жюри",
     },
     ua: {
       approvedMember: "Схвалено",
       council: "Рада журі IBPA",
-      portraitSuffix: "портрет члена журі",
-      previous: "Попередній член журі",
-      next: "Наступний член журі",
+      portraitSuffix: "портрет журі",
+      previous: "Попередній журі",
+      next: "Наступний журі",
       scrollHint: "Гортайте, щоб побачити журі",
     },
   }[language];

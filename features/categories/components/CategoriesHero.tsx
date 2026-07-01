@@ -113,8 +113,7 @@ export default function CategoriesHero() {
           </HeroPrimaryButton>
 
           <HeroSecondaryButton href="#categories">
-            {(t.categoriesPage.hero as { secondary?: string }).secondary ??
-              "Browse Categories"}
+            {t.common.browseCategories}
           </HeroSecondaryButton>
         </motion.div>
       </div>
