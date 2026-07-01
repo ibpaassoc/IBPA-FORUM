@@ -31,7 +31,7 @@ function RequestForm({
       <div className="flex gap-2">
         <button
           type="submit"
-          className="inline-flex min-h-9 items-center gap-1.5 rounded-[18px] border border-[var(--color-blue)] bg-[var(--color-blue)] px-3 py-2 text-xs font-semibold text-white transition hover:bg-[var(--color-hover-accent)]"
+          className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-[rgba(255,255,255,0.35)] bg-[var(--color-blue)]/92 px-3.5 py-2 text-xs font-semibold text-white shadow-[0_10px_22px_rgba(114,160,193,0.26)] backdrop-blur-xl transition hover:bg-[var(--color-hover-accent)] active:scale-[0.98]"
         >
           <Send size={13} />
           {adminT.infoRequest.send}
@@ -39,7 +39,7 @@ function RequestForm({
         <button
           type="button"
           onClick={onClose}
-          className="inline-flex min-h-9 items-center gap-1.5 rounded-[18px] border border-[var(--border-soft)] bg-white px-3 py-2 text-xs font-semibold text-[var(--color-ink)] transition hover:bg-[var(--surface-tint)]"
+          className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-[rgba(114,160,193,0.22)] bg-white/78 px-3.5 py-2 text-xs font-semibold text-[var(--color-ink)] backdrop-blur-xl transition hover:bg-[var(--color-blue-wash)] active:scale-[0.98]"
         >
           <X size={13} />
           {adminT.common.cancel}
@@ -152,7 +152,7 @@ export default function RequestAdditionalInfoPanel({
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-[18px] border border-[rgba(114,160,193,0.34)] bg-white px-3.5 py-2 text-sm font-semibold leading-none text-[var(--color-blue)] transition hover:bg-[var(--color-blue-wash)]"
+          className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-full border border-[rgba(114,160,193,0.34)] bg-white/78 px-3.5 py-2 text-sm font-semibold leading-none text-[var(--color-blue)] shadow-[0_10px_24px_rgba(37,42,45,0.05)] backdrop-blur-xl transition hover:-translate-y-0.5 hover:bg-[var(--color-blue-wash)] active:translate-y-0 active:scale-[0.98]"
         >
           <MessageSquarePlus aria-hidden size={15} />
           {adminT.infoRequest.button}

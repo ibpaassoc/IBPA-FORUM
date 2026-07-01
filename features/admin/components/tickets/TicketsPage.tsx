@@ -12,7 +12,8 @@ import {
   DashboardEmptyState,
   DashboardPageHeader,
   DashboardPrimaryBtn,
-  dashboardInputClass,
+  IconButton,
+  SearchBar,
 } from "@/shared/components/admin/DashboardUI";
 import { instagramProfileUrl } from "@/features/tickets/lib/instagram";
 import { adminT } from "@/lib/i18n/admin";
@@ -295,17 +296,11 @@ function EarlyBirdToggle({ initialEnabled }: { initialEnabled: boolean }) {
 
 function ScannerDialog({ onClose, onCheckIn }: { onClose: () => void; onCheckIn: () => void }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[rgba(3,2,19,0.32)] backdrop-blur-sm sm:items-center">
-      <div className="max-h-[92vh] w-full max-w-md overflow-auto rounded-t-[28px] bg-white p-6 sm:rounded-[28px]">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[rgba(3,2,19,0.28)] p-0 backdrop-blur-sm sm:items-center sm:p-4">
+      <div className="max-h-[92vh] w-full max-w-md overflow-auto rounded-t-[32px] border border-[rgba(114,160,193,0.22)] bg-white/94 p-6 shadow-[0_28px_90px_rgba(3,2,19,0.2)] backdrop-blur-2xl sm:rounded-[32px]">
         <div className="mb-5 flex items-center justify-between">
           <h2 className="font-[var(--font-title-family)] text-2xl font-light text-[var(--color-ink)]">{adminT.tickets.scanTitle}</h2>
-          <button
-            onClick={onClose}
-            aria-label={adminT.tickets.closeScanner}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(37,42,45,0.08)] text-[var(--color-ink-soft)] hover:bg-[var(--color-blue-wash)]"
-          >
-            <X size={18} />
-          </button>
+          <IconButton label={adminT.tickets.closeScanner} icon={X} onClick={onClose} className="size-9" />
         </div>
         <UnifiedScanner onAfterCheckIn={onCheckIn} />
       </div>
@@ -367,12 +362,10 @@ export default function TicketsPage({
 
       <DashboardCard className="overflow-hidden p-0">
         <div className="border-b border-[rgba(37,42,45,0.08)] p-4 md:p-5">
-          <input
-            type="text"
-            placeholder={adminT.tickets.searchPlaceholder}
+          <SearchBar
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className={dashboardInputClass}
+            onChange={setSearch}
+            placeholder={adminT.tickets.searchPlaceholder}
           />
         </div>
 

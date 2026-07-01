@@ -178,10 +178,11 @@ function FileGroup({
 
 const statusActionTone = {
   primary:
-    "border-[var(--color-blue)] bg-[var(--color-blue)] text-white hover:bg-[#4d86ad]",
+    "border-[rgba(255,255,255,0.35)] bg-[var(--color-blue)]/92 text-white shadow-[0_12px_28px_rgba(114,160,193,0.3)] backdrop-blur-xl hover:bg-[#4d86ad]",
   neutral:
-    "border-[rgba(37,42,45,0.08)] bg-white text-[var(--color-ink)] hover:border-[rgba(114,160,193,0.34)] hover:bg-[var(--color-blue-wash)]",
-  danger: "border-red-200 bg-white text-red-700 hover:bg-red-50",
+    "border-[rgba(114,160,193,0.2)] bg-white/78 text-[var(--color-ink)] shadow-[0_10px_24px_rgba(37,42,45,0.05)] backdrop-blur-xl hover:border-[rgba(114,160,193,0.34)] hover:bg-[var(--color-blue-wash)]",
+  danger:
+    "border-red-200 bg-white/82 text-red-700 shadow-[0_10px_24px_rgba(153,27,27,0.06)] backdrop-blur-xl hover:bg-red-50",
 };
 
 function StatusActionButton({
@@ -206,7 +207,7 @@ function StatusActionButton({
       <button
         type="submit"
         disabled={active}
-        className={`inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-[18px] border px-3 py-2 text-sm font-semibold transition disabled:cursor-default disabled:opacity-45 ${statusActionTone[tone]}`}
+        className={`inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-full border px-3 py-2 text-sm font-semibold transition hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.22)] disabled:cursor-default disabled:opacity-45 disabled:hover:translate-y-0 ${statusActionTone[tone]}`}
       >
         {children}
       </button>

@@ -117,7 +117,7 @@ export default function AdminScoringDetailPage({
             </DashboardSecondaryBtn>
             <a
               href={`/api/admin/scoring/${application.id}/export`}
-              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-[18px] border border-[rgba(37,42,45,0.08)] bg-white px-3.5 py-2 text-sm font-semibold leading-none text-[var(--color-ink)] transition hover:border-[rgba(114,160,193,0.34)] hover:bg-[var(--color-blue-wash)]"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[rgba(114,160,193,0.22)] bg-white/78 px-5 py-2.5 text-[0.72rem] font-semibold uppercase leading-none tracking-[0.12em] text-[var(--color-ink)] shadow-[0_12px_28px_rgba(37,42,45,0.055)] backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-wash)]"
             >
               <Download aria-hidden size={15} />
               {adminT.scoring.exportCsv}

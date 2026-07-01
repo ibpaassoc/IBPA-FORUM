@@ -305,7 +305,7 @@ export default function JuryApplicationDetailPage({
               <input type="hidden" name="id" value={application.id} />
               <button
                 type="submit"
-                className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-[18px] border border-[rgba(114,160,193,0.28)] bg-[var(--color-blue-wash)] px-3.5 py-2 text-sm font-semibold leading-none text-[var(--color-blue)] transition hover:border-[rgba(114,160,193,0.42)] hover:bg-white"
+                className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-full border border-[rgba(114,160,193,0.28)] bg-[var(--color-blue-wash)]/80 px-3.5 py-2 text-sm font-semibold leading-none text-[var(--color-blue)] shadow-[0_10px_24px_rgba(114,160,193,0.14)] backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-[rgba(114,160,193,0.42)] hover:bg-white active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.22)]"
               >
                 <ShieldCheck aria-hidden size={15} />
                 {adminT.detail.activateWithoutPayment}
@@ -323,7 +323,7 @@ export default function JuryApplicationDetailPage({
               <input type="hidden" name="id" value={application.id} />
               <button
                 type="submit"
-                className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-[18px] border border-red-200 bg-white px-3.5 py-2 text-sm font-semibold leading-none text-red-700 transition hover:bg-red-50"
+                className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-full border border-red-200 bg-white/82 px-3.5 py-2 text-sm font-semibold leading-none text-red-700 shadow-[0_10px_24px_rgba(153,27,27,0.06)] backdrop-blur-xl transition hover:-translate-y-0.5 hover:bg-red-50 active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-red-100"
               >
                 <XCircle aria-hidden size={15} />
                 {adminT.detail.rejectApplication}
@@ -369,7 +369,7 @@ export default function JuryApplicationDetailPage({
     <MobileActionBar>
       <a
         href="#decision"
-        className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-[18px] border border-[var(--color-blue)] bg-[var(--color-blue)] px-3 py-2 text-sm font-semibold text-white transition hover:bg-[#4d86ad]"
+        className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-full border border-[rgba(255,255,255,0.35)] bg-[var(--color-blue)]/92 px-3 py-2 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(114,160,193,0.3)] backdrop-blur-xl transition hover:bg-[#4d86ad] active:scale-[0.98]"
       >
         <CheckCircle2 aria-hidden size={15} />
         {adminT.detail.decision}
@@ -379,7 +379,7 @@ export default function JuryApplicationDetailPage({
           <input type="hidden" name="id" value={application.id} />
           <button
             type="submit"
-            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-[18px] border border-red-200 bg-white px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50"
+            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-red-200 bg-white/85 px-3 py-2 text-sm font-semibold text-red-700 backdrop-blur-xl transition hover:bg-red-50 active:scale-[0.98]"
           >
             <XCircle aria-hidden size={15} />
             {adminT.detail.reject}

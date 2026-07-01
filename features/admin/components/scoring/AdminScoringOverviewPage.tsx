@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Search, Star } from "lucide-react";
+import { ArrowRight, ChevronDown, Search, Star } from "lucide-react";
 import { adminT } from "@/lib/i18n/admin";
 import {
   DashboardAccentBlock,
@@ -85,9 +85,13 @@ export default function AdminScoringOverviewPage({
 
       <DashboardCard>
         <details className="group lg:hidden">
-          <summary className="flex min-h-10 cursor-pointer list-none items-center justify-between rounded-[18px] border border-[rgba(37,42,45,0.08)] bg-white/62 px-3 text-sm font-medium text-[var(--color-ink)]">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between rounded-full border border-[rgba(114,160,193,0.22)] bg-white/74 px-4 text-sm font-medium text-[var(--color-ink)] shadow-[0_10px_26px_rgba(37,42,45,0.045)] backdrop-blur-xl transition hover:border-[var(--color-blue)]">
             <span>{adminT.filters.toggle}</span>
-            <span className="text-[var(--color-ink-muted)] transition group-open:rotate-180">v</span>
+            <ChevronDown
+              aria-hidden
+              size={15}
+              className="text-[var(--color-ink-muted)] transition group-open:rotate-180"
+            />
           </summary>
           <form className="mt-3 grid gap-2">
             <input type="text" name="q" defaultValue={filters.q} placeholder={adminT.scoring.searchPlaceholder} className={dashboardInputClass} />
