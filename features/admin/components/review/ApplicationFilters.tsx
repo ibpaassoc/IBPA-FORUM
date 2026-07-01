@@ -1,7 +1,7 @@
 "use client";
 
 import { SlidersHorizontal, X } from "lucide-react";
-import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { adminT } from "@/lib/i18n/admin";
 import {
   DashboardCard,
   SearchBar,
@@ -35,8 +35,6 @@ export default function ApplicationFilters({
   onSelectChange: (key: string, value: string) => void;
   onClearAll: () => void;
 }) {
-  const { t } = useLanguage();
-
   const chips = [
     ...(search.trim()
       ? [{ key: "__search", label: `“${search.trim()}”`, clear: () => onSearchChange("") }]
@@ -58,7 +56,7 @@ export default function ApplicationFilters({
         <SearchBar
           value={search}
           onChange={onSearchChange}
-          placeholder={t.filters.search}
+          placeholder={adminT.filters.search}
           className="flex-1"
         />
 
@@ -87,7 +85,7 @@ export default function ApplicationFilters({
           <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-2 rounded-[18px] border border-[rgba(114,160,193,0.22)] bg-white/74 px-4 text-sm font-medium text-[var(--color-ink)]">
             <span className="inline-flex items-center gap-2">
               <SlidersHorizontal aria-hidden size={15} className="text-[var(--color-blue)]" />
-              {t.filters.toggle}
+              {adminT.filters.toggle}
               {activeFilterCount > 0 ? (
                 <span className="inline-flex size-5 items-center justify-center rounded-full bg-[var(--color-blue)] text-[0.62rem] font-semibold text-white">
                   {activeFilterCount}
@@ -135,7 +133,7 @@ export default function ApplicationFilters({
             onClick={onClearAll}
             className="text-xs font-semibold uppercase tracking-[0.1em] text-[var(--color-blue)] transition hover:text-[var(--color-ink)]"
           >
-            {t.filters.clearAll}
+            {adminT.filters.clearAll}
           </button>
         </div>
       ) : null}

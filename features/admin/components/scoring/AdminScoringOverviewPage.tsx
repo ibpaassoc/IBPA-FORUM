@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight, Search, Star } from "lucide-react";
+import { adminT } from "@/lib/i18n/admin";
 import {
   DashboardAccentBlock,
   DashboardBadge,
@@ -19,11 +20,11 @@ import {
 function scoringBadge(status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETE") {
   switch (status) {
     case "COMPLETE":
-      return <DashboardBadge tone="green">Complete</DashboardBadge>;
+      return <DashboardBadge tone="green">{adminT.statuses.COMPLETE}</DashboardBadge>;
     case "IN_PROGRESS":
-      return <DashboardBadge tone="amber">In progress</DashboardBadge>;
+      return <DashboardBadge tone="amber">{adminT.statuses.IN_PROGRESS}</DashboardBadge>;
     default:
-      return <DashboardBadge tone="neutral">Not started</DashboardBadge>;
+      return <DashboardBadge tone="neutral">{adminT.statuses.NOT_STARTED}</DashboardBadge>;
   }
 }
 
@@ -62,21 +63,21 @@ export default function AdminScoringOverviewPage({
 }) {
   return (
     <div className="flex flex-col gap-5">
-      <DashboardPageHeader label="Scoring" title="Score audit" />
+      <DashboardPageHeader label={adminT.scoring.label} title={adminT.scoring.title} />
 
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-[1.1fr_repeat(3,minmax(0,0.75fr))]">
         <DashboardAccentBlock>
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-soft)]">
-            Scoreable
+            {adminT.scoring.scoreable}
           </p>
           <p className="mt-2 text-3xl font-semibold tracking-[-0.03em]">
             {stats.totalScoreableApplications}
           </p>
         </DashboardAccentBlock>
-        <DashboardMetricTile label="Scored" value={stats.totalScoredApplications} accent="green" />
-        <DashboardMetricTile label="Not scored" value={stats.totalNotScoredApplications} accent="amber" />
+        <DashboardMetricTile label={adminT.scoring.scored} value={stats.totalScoredApplications} accent="green" />
+        <DashboardMetricTile label={adminT.scoring.notScored} value={stats.totalNotScoredApplications} accent="amber" />
         <DashboardMetricTile
-          label="Avg completion"
+          label={adminT.scoring.avgCompletion}
           value={`${stats.averageCompletionPercentage.toFixed(0)}%`}
           accent="blue"
         />
@@ -85,29 +86,29 @@ export default function AdminScoringOverviewPage({
       <DashboardCard>
         <details className="group lg:hidden">
           <summary className="flex min-h-10 cursor-pointer list-none items-center justify-between rounded-[18px] border border-[rgba(37,42,45,0.08)] bg-white/62 px-3 text-sm font-medium text-[var(--color-ink)]">
-            <span>Filters</span>
+            <span>{adminT.filters.toggle}</span>
             <span className="text-[var(--color-ink-muted)] transition group-open:rotate-180">v</span>
           </summary>
           <form className="mt-3 grid gap-2">
-            <input type="text" name="q" defaultValue={filters.q} placeholder="Search by name" className={dashboardInputClass} />
+            <input type="text" name="q" defaultValue={filters.q} placeholder={adminT.scoring.searchPlaceholder} className={dashboardInputClass} />
             <select name="category" defaultValue={filters.category ?? ""} className={dashboardSelectClass}>
-              <option value="">All categories</option>
+              <option value="">{adminT.filters.allCategories}</option>
               {categories.map((category) => (
                 <option key={category} value={category}>{category}</option>
               ))}
             </select>
             <select name="status" defaultValue={filters.status ?? ""} className={dashboardSelectClass}>
-              <option value="">All statuses</option>
-              <option value="NOT_STARTED">Not started</option>
-              <option value="IN_PROGRESS">In progress</option>
-              <option value="COMPLETE">Complete</option>
+              <option value="">{adminT.filters.allStatuses}</option>
+              <option value="NOT_STARTED">{adminT.statuses.NOT_STARTED}</option>
+              <option value="IN_PROGRESS">{adminT.statuses.IN_PROGRESS}</option>
+              <option value="COMPLETE">{adminT.statuses.COMPLETE}</option>
             </select>
             <select name="sort" defaultValue={filters.sort} className={dashboardSelectClass}>
-              <option value="averageScore">Average score</option>
-              <option value="category">Category</option>
-              <option value="status">Status</option>
+              <option value="averageScore">{adminT.scoring.sortAverage}</option>
+              <option value="category">{adminT.scoring.sortCategory}</option>
+              <option value="status">{adminT.scoring.sortStatus}</option>
             </select>
-            <DashboardPrimaryBtn type="submit">Apply filters</DashboardPrimaryBtn>
+            <DashboardPrimaryBtn type="submit">{adminT.filters.apply}</DashboardPrimaryBtn>
           </form>
         </details>
 
@@ -118,28 +119,28 @@ export default function AdminScoringOverviewPage({
               type="text"
               name="q"
               defaultValue={filters.q}
-              placeholder="Search by name"
+              placeholder={adminT.scoring.searchPlaceholder}
               className={`${dashboardInputClass} pl-9`}
             />
           </div>
           <select name="category" defaultValue={filters.category ?? ""} className={`${dashboardSelectClass} w-48`}>
-            <option value="">All categories</option>
+            <option value="">{adminT.filters.allCategories}</option>
             {categories.map((category) => (
               <option key={category} value={category}>{category}</option>
             ))}
           </select>
           <select name="status" defaultValue={filters.status ?? ""} className={`${dashboardSelectClass} w-40`}>
-            <option value="">All statuses</option>
-            <option value="NOT_STARTED">Not started</option>
-            <option value="IN_PROGRESS">In progress</option>
-            <option value="COMPLETE">Complete</option>
+            <option value="">{adminT.filters.allStatuses}</option>
+            <option value="NOT_STARTED">{adminT.statuses.NOT_STARTED}</option>
+            <option value="IN_PROGRESS">{adminT.statuses.IN_PROGRESS}</option>
+            <option value="COMPLETE">{adminT.statuses.COMPLETE}</option>
           </select>
           <select name="sort" defaultValue={filters.sort} className={`${dashboardSelectClass} w-44`}>
-            <option value="averageScore">Average score</option>
-            <option value="category">Category</option>
-            <option value="status">Status</option>
+            <option value="averageScore">{adminT.scoring.sortAverage}</option>
+            <option value="category">{adminT.scoring.sortCategory}</option>
+            <option value="status">{adminT.scoring.sortStatus}</option>
           </select>
-          <DashboardPrimaryBtn type="submit">Apply</DashboardPrimaryBtn>
+          <DashboardPrimaryBtn type="submit">{adminT.filters.apply}</DashboardPrimaryBtn>
         </form>
       </DashboardCard>
 
@@ -147,8 +148,8 @@ export default function AdminScoringOverviewPage({
         <DashboardCard>
           <DashboardEmptyState
             icon={<Star size={22} />}
-            title="No applications match the filter"
-            description="Change filters to see scoring results."
+            title={adminT.scoring.emptyTitle}
+            description={adminT.scoring.emptyText}
           />
         </DashboardCard>
       ) : (
@@ -160,7 +161,7 @@ export default function AdminScoringOverviewPage({
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       {scoringBadge(app.status)}
-                      {app.rank ? <DashboardBadge tone="blue">Rank #{app.rank}</DashboardBadge> : null}
+                      {app.rank ? <DashboardBadge tone="blue">{adminT.scoring.rank} #{app.rank}</DashboardBadge> : null}
                     </div>
                     <h2 className="mt-3 font-[var(--font-title-family)] text-[1.55rem] font-light tracking-[-0.025em] text-[var(--color-ink)]">
                       {app.fullName}
@@ -180,7 +181,7 @@ export default function AdminScoringOverviewPage({
                               )
                             : 0
                         }
-                        label={`${app.submittedJudgeCount}/${app.assignedJudgeCount} judges`}
+                        label={`${adminT.scoring.judgesLabel} ${app.submittedJudgeCount}/${app.assignedJudgeCount}`}
                       />
                     </div>
                   </DashboardPanel>
@@ -188,7 +189,7 @@ export default function AdminScoringOverviewPage({
                   <div className="flex items-center justify-between rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white p-4">
                     <div>
                       <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
-                        Average
+                        {adminT.scoring.average}
                       </p>
                       <p className="mt-2 text-2xl font-semibold tracking-[-0.02em] text-[var(--color-ink)]">
                         {app.averageScoreLabel}

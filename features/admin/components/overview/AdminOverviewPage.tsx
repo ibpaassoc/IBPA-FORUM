@@ -7,7 +7,7 @@ import {
   Ticket,
   Users,
 } from "lucide-react";
-import { formatAdminDate } from "@/features/admin/server/view-models";
+import { adminT, formatAdminDate } from "@/lib/i18n/admin";
 import QuickSheetsSyncButton from "@/features/admin/components/google-sheets/QuickSheetsSyncButton";
 import {
   DashboardAccentBlock,
@@ -62,10 +62,7 @@ function juryTone(status: JuryOverview["status"]) {
 }
 
 function formatStatus(status: string) {
-  return status
-    .toLowerCase()
-    .replaceAll("_", " ")
-    .replace(/^./, (value) => value.toUpperCase());
+  return adminT.statuses[status] ?? status;
 }
 
 export default function AdminOverviewPage({
@@ -115,30 +112,30 @@ export default function AdminOverviewPage({
   const operations = [
     {
       href: "/admin/applications",
-      title: "Applications",
+      title: adminT.overview.applications,
       value: participantTotals.total,
-      detail: `${participantTotals.underReview} under review`,
+      detail: `${adminT.overview.underReviewCount} ${participantTotals.underReview}`,
       icon: FileText,
     },
     {
       href: "/admin/jury-applications",
-      title: "Jury",
+      title: adminT.overview.juryTitle,
       value: juryStats.totalCount,
-      detail: `${juryStats.activeJudgeCount} active judges`,
+      detail: `${adminT.overview.activeJudgesCount} ${juryStats.activeJudgeCount}`,
       icon: Users,
     },
     {
       href: "/admin/scoring",
-      title: "Scoring",
+      title: adminT.overview.scoringTitle,
       value: `${scoringStats.averageCompletionPercentage.toFixed(0)}%`,
-      detail: `${scoringStats.totalScoredApplications} scored`,
+      detail: `${adminT.overview.scoredCount} ${scoringStats.totalScoredApplications}`,
       icon: Star,
     },
     {
       href: "/admin/tickets",
-      title: "Tickets",
+      title: adminT.overview.ticketsTitle,
       value: tickets.length,
-      detail: `${checkedInTickets.length} checked in`,
+      detail: `${adminT.overview.checkedInCount} ${checkedInTickets.length}`,
       icon: Ticket,
     },
   ];
@@ -146,18 +143,18 @@ export default function AdminOverviewPage({
   return (
     <div className="flex flex-col gap-6">
       <DashboardHeader
-        label="Overview"
-        title="Command center"
+        label={adminT.overview.label}
+        title={adminT.overview.title}
         actions={
           <>
             {googleSheetsConfigured ? <QuickSheetsSyncButton /> : null}
             <DashboardSecondaryBtn href="/admin/tickets">
               <Camera aria-hidden size={16} />
-              Check-in desk
+              {adminT.overview.checkInDesk}
             </DashboardSecondaryBtn>
             <DashboardSecondaryBtn href="/admin/scoring">
               <Star aria-hidden size={16} />
-              Score audit
+              {adminT.overview.scoreAudit}
             </DashboardSecondaryBtn>
           </>
         }
@@ -166,18 +163,18 @@ export default function AdminOverviewPage({
       <DashboardStagger className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-[1.1fr_repeat(4,minmax(0,0.78fr))]">
         <DashboardAccentBlock>
           <p className="text-[0.66rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-soft)]">
-            Needs attention
+            {adminT.overview.needsAttention}
           </p>
           <p className="mt-4 font-[var(--font-title-family)] text-[clamp(2.4rem,5vw,4.1rem)] font-light leading-none tracking-[-0.04em]">
             {pendingWork}
           </p>
         </DashboardAccentBlock>
-        <DashboardMetricTile label="Applications" value={participantTotals.total} accent="blue" />
-        <DashboardMetricTile label="Active judges" value={juryStats.activeJudgeCount} accent="green" />
-        <DashboardMetricTile label="Paid tickets" value={paidTickets.length} accent="blue" />
+        <DashboardMetricTile label={adminT.overview.applications} value={participantTotals.total} accent="blue" />
+        <DashboardMetricTile label={adminT.overview.activeJudges} value={juryStats.activeJudgeCount} accent="green" />
+        <DashboardMetricTile label={adminT.overview.paidTickets} value={paidTickets.length} accent="blue" />
         <DashboardMetricTile
-          label="Early bird"
-          value={earlyBirdEnabled ? "On" : "Off"}
+          label={adminT.overview.earlyBird}
+          value={earlyBirdEnabled ? adminT.overview.on : adminT.overview.off}
           accent={earlyBirdEnabled ? "green" : "neutral"}
         />
       </DashboardStagger>
@@ -186,7 +183,7 @@ export default function AdminOverviewPage({
         <div className="flex flex-col gap-4">
           <DashboardCard>
             <h2 className="font-[var(--font-title-family)] text-2xl font-light tracking-[-0.02em]">
-              Workspaces
+              {adminT.overview.workspaces}
             </h2>
             <div className="mt-5 grid gap-3 md:grid-cols-2">
               {operations.map(({ href, title, value, detail, icon: Icon }) => (
@@ -218,9 +215,9 @@ export default function AdminOverviewPage({
           <DashboardCard>
             <div className="flex items-center justify-between gap-4">
               <h2 className="font-[var(--font-title-family)] text-2xl font-light tracking-[-0.02em]">
-                Latest applications
+                {adminT.overview.latestApplications}
               </h2>
-              <DashboardSecondaryBtn href="/admin/applications">Open</DashboardSecondaryBtn>
+              <DashboardSecondaryBtn href="/admin/applications">{adminT.common.open}</DashboardSecondaryBtn>
             </div>
             <ResponsiveList className="mt-5">
               {latestParticipants.map((application) => (
@@ -260,22 +257,22 @@ export default function AdminOverviewPage({
         <aside className="flex flex-col gap-4 xl:sticky xl:top-6 xl:self-start">
           <DashboardAccentBlock>
             <p className="text-[0.66rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-soft)]">
-              Score completion
+              {adminT.overview.scoreCompletion}
             </p>
             <p className="mt-4 font-[var(--font-title-family)] text-5xl font-light leading-none tracking-[-0.04em]">
               {scoringStats.averageCompletionPercentage.toFixed(0)}%
             </p>
             <p className="mt-3 text-sm leading-6 text-[var(--color-ink-soft)]">
-              {scoringStats.totalNotScoredApplications} nominations still need judge coverage.
+              {adminT.overview.awaitingScores} {scoringStats.totalNotScoredApplications}
             </p>
           </DashboardAccentBlock>
 
           <DashboardCard>
             <div className="flex items-center justify-between gap-3">
               <h2 className="font-[var(--font-title-family)] text-2xl font-light tracking-[-0.02em]">
-                Jury candidates
+                {adminT.overview.juryCandidates}
               </h2>
-              <DashboardSecondaryBtn href="/admin/jury-applications">Open</DashboardSecondaryBtn>
+              <DashboardSecondaryBtn href="/admin/jury-applications">{adminT.common.open}</DashboardSecondaryBtn>
             </div>
             <div className="mt-4 grid gap-3">
               {latestJury.map((application) => (

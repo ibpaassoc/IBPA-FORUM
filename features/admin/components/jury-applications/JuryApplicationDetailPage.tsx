@@ -35,7 +35,7 @@ import {
   ReviewActionPanel,
   ReviewSummaryCard,
 } from "@/features/admin/components/review/ReviewPrimitives";
-import { formatAdminDate } from "@/features/admin/server/view-models";
+import { adminT, formatAdminDate } from "@/lib/i18n/admin";
 import {
   DashboardCard,
   DashboardChip,
@@ -115,27 +115,27 @@ export default function JuryApplicationDetailPage({
   const overview = (
     <DashboardCard>
       <div className="grid gap-3 sm:grid-cols-2">
-        <DashboardDetailCard label="Full name" value={application.fullName} />
-        <DashboardDetailCard label="Email" value={application.email} />
-        <DashboardDetailCard label="Phone" value={application.phone} />
-        <DashboardDetailCard label="Location" value={`${application.city}, ${application.country}`} />
-        <DashboardDetailCard label="Professional title" value={application.professionalTitle} />
-        <DashboardDetailCard label="Employer / Affiliation" value={application.employerAffiliation} />
-        <DashboardDetailCard label="Years of experience" value={String(application.yearsExperience)} />
+        <DashboardDetailCard label={adminT.detail.fullName} value={application.fullName} />
+        <DashboardDetailCard label={adminT.detail.email} value={application.email} />
+        <DashboardDetailCard label={adminT.detail.phone} value={application.phone} />
+        <DashboardDetailCard label={adminT.detail.location} value={`${application.city}, ${application.country}`} />
+        <DashboardDetailCard label={adminT.detail.professionalTitle} value={application.professionalTitle} />
+        <DashboardDetailCard label={adminT.detail.employer} value={application.employerAffiliation} />
+        <DashboardDetailCard label={adminT.detail.yearsExperience} value={String(application.yearsExperience)} />
         <DashboardDetailCard
-          label="Membership"
+          label={adminT.detail.membership}
           value={
             application.membershipLevel
-              ? `${application.membershipStatus ?? "Not provided"} (${application.membershipLevel})`
-              : application.membershipStatus || "Not provided"
+              ? `${application.membershipStatus ?? adminT.common.notProvided} (${application.membershipLevel})`
+              : application.membershipStatus || adminT.common.notProvided
           }
         />
         <DashboardDetailCard
-          label="IBPA Association Member"
-          value={application.ibpaAssociationMember ? "Yes" : "No"}
+          label={adminT.detail.ibpaMember}
+          value={application.ibpaAssociationMember ? adminT.common.yes : adminT.common.no}
         />
         {application.ibpaAssociationMember ? (
-          <DashboardDetailCard label="IBPA Number" value={application.ibpaNumber || "Not provided"} />
+          <DashboardDetailCard label={adminT.detail.ibpaNumber} value={application.ibpaNumber || adminT.common.notProvided} />
         ) : null}
       </div>
     </DashboardCard>
@@ -145,17 +145,17 @@ export default function JuryApplicationDetailPage({
     <div className="flex flex-col gap-4">
       <DashboardCard className="flex flex-col gap-4">
         <DashboardDetailCard
-          label="Previous judging experience"
+          label={adminT.detail.previousJudging}
           value={
             application.previousJudgingExperience
-              ? application.previousJudgingDetails || "Yes"
-              : "No"
+              ? application.previousJudgingDetails || adminT.common.yes
+              : adminT.common.no
           }
         />
         {application.expertiseAreas.length > 0 ? (
           <DashboardPanel>
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
-              Expertise areas
+              {adminT.detail.expertiseAreas}
             </p>
             <div className="mt-3 flex flex-wrap gap-1.5">
               {application.expertiseAreas.map((area: string) => (
@@ -167,12 +167,12 @@ export default function JuryApplicationDetailPage({
       </DashboardCard>
 
       <DashboardCard className="grid gap-3">
-        <DashboardDetailCard label="Professional bio" value={application.professionalBio} />
-        <DashboardDetailCard label="Conflict disclosure" value={application.conflictDisclosure} />
-        <DashboardDetailCard label="Why they want to judge" value={application.motivation} />
+        <DashboardDetailCard label={adminT.detail.professionalBio} value={application.professionalBio} />
+        <DashboardDetailCard label={adminT.detail.conflictDisclosure} value={application.conflictDisclosure} />
+        <DashboardDetailCard label={adminT.detail.motivation} value={application.motivation} />
         <DashboardDetailCard
-          label="Website / LinkedIn"
-          value={application.professionalWebsite || "Not provided"}
+          label={adminT.detail.websiteLinkedin}
+          value={application.professionalWebsite || adminT.common.notProvided}
         />
       </DashboardCard>
     </div>
@@ -181,7 +181,7 @@ export default function JuryApplicationDetailPage({
   const documents = (
     <div className="grid gap-4 lg:grid-cols-[minmax(220px,0.6fr)_minmax(0,1fr)]">
       <DashboardCard>
-        <p className="text-sm font-medium text-[var(--color-ink)]">Profile photo</p>
+        <p className="text-sm font-medium text-[var(--color-ink)]">{adminT.detail.profilePhoto}</p>
         <div className="mt-3 overflow-hidden rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white/62">
           {profilePhoto ? (
             <Image
@@ -194,14 +194,14 @@ export default function JuryApplicationDetailPage({
             />
           ) : (
             <div className="flex aspect-square items-center justify-center text-sm text-[var(--color-ink-muted)]">
-              No profile photo
+              {adminT.detail.noProfilePhoto}
             </div>
           )}
         </div>
       </DashboardCard>
 
       <DashboardCard>
-        <p className="text-sm font-medium text-[var(--color-ink)]">Certifications</p>
+        <p className="text-sm font-medium text-[var(--color-ink)]">{adminT.detail.certifications}</p>
         <div className="mt-3 flex flex-col gap-2">
           {certifications.map((file) => (
             <FileLink
@@ -211,7 +211,7 @@ export default function JuryApplicationDetailPage({
               sizeBytes={file.fileSize}
             />
           ))}
-          {certifications.length === 0 ? <EmptyInline>No certifications uploaded.</EmptyInline> : null}
+          {certifications.length === 0 ? <EmptyInline>{adminT.detail.noCertifications}</EmptyInline> : null}
         </div>
       </DashboardCard>
     </div>
@@ -223,52 +223,52 @@ export default function JuryApplicationDetailPage({
         <form action={saveJuryApplicationNotesAction} className="flex flex-col gap-3">
           <input type="hidden" name="id" value={application.id} />
           <label htmlFor="adminNotes" className="text-sm font-medium text-[var(--color-ink)]">
-            Admin notes
+            {adminT.detail.adminNotes}
           </label>
           <textarea
             id="adminNotes"
             name="adminNotes"
             defaultValue={application.adminNotes || ""}
             rows={5}
-            placeholder="Internal review notes"
+            placeholder={adminT.detail.adminNotesPlaceholder}
             className={dashboardTextareaClass}
           />
           <DashboardSecondaryBtn type="submit" className="w-full sm:w-auto">
-            Save notes
+            {adminT.detail.saveNotes}
           </DashboardSecondaryBtn>
         </form>
       </DashboardCard>
 
       <DashboardCard>
         <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
-          Timeline
+          {adminT.detail.timeline}
         </p>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          <DashboardDetailCard label="Submitted" value={formatAdminDate(application.submittedAt)} />
+          <DashboardDetailCard label={adminT.detail.submittedAt} value={formatAdminDate(application.submittedAt)} />
           {application.infoRequestedAt ? (
-            <DashboardDetailCard label="Info requested" value={formatAdminDate(application.infoRequestedAt)} />
+            <DashboardDetailCard label={adminT.detail.infoRequestedAt} value={formatAdminDate(application.infoRequestedAt)} />
           ) : null}
           {application.infoResubmittedAt ? (
-            <DashboardDetailCard label="Applicant resubmitted" value={formatAdminDate(application.infoResubmittedAt)} />
+            <DashboardDetailCard label={adminT.detail.resubmittedAt} value={formatAdminDate(application.infoResubmittedAt)} />
           ) : null}
-          <DashboardDetailCard label="Approved at" value={formatAdminDate(application.approvedAt)} />
-          <DashboardDetailCard label="Paid at" value={formatAdminDate(application.paidAt)} />
+          <DashboardDetailCard label={adminT.detail.approvedAt} value={formatAdminDate(application.approvedAt)} />
+          <DashboardDetailCard label={adminT.detail.paidAt} value={formatAdminDate(application.paidAt)} />
         </div>
       </DashboardCard>
     </div>
   );
 
   const tabs: ReviewTab[] = [
-    { key: "overview", label: "Overview", icon: <UserRound aria-hidden size={15} />, content: overview },
-    { key: "submission", label: "Submission", icon: <BriefcaseBusiness aria-hidden size={15} />, content: submission },
-    { key: "documents", label: "Documents", icon: <FileText aria-hidden size={15} />, content: documents },
-    { key: "notes", label: "Notes", icon: <StickyNote aria-hidden size={15} />, content: notes },
+    { key: "overview", label: adminT.detail.tabs.overview, icon: <UserRound aria-hidden size={15} />, content: overview },
+    { key: "submission", label: adminT.detail.tabs.submission, icon: <BriefcaseBusiness aria-hidden size={15} />, content: submission },
+    { key: "documents", label: adminT.detail.tabs.documents, icon: <FileText aria-hidden size={15} />, content: documents },
+    { key: "notes", label: adminT.detail.tabs.notes, icon: <StickyNote aria-hidden size={15} />, content: notes },
   ];
 
   // ── Sticky decision panel ────────────────────────────────────────────────
   const aside = (
     <div id="decision">
-      <ReviewActionPanel title="Decision">
+      <ReviewActionPanel title={adminT.detail.decision}>
         <div className="flex flex-wrap gap-2">
           <ApplicationStatusBadge status={application.status} />
           <PaymentStatusBadge status={application.paymentStatus} />
@@ -277,7 +277,7 @@ export default function JuryApplicationDetailPage({
         {canDecide ? (
           <div className="mt-4 border-t border-[rgba(37,42,45,0.06)] pt-4">
             <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-muted)]">
-              Approve with payment
+              {adminT.detail.approveWithPayment}
             </p>
             <div className="mt-2 grid gap-2">
               <form action={approveJuryApplicationAction}>
@@ -285,7 +285,7 @@ export default function JuryApplicationDetailPage({
                 <input type="hidden" name="isIbpaMember" value="true" />
                 <DashboardPrimaryBtn type="submit" className="w-full">
                   <CheckCircle2 aria-hidden size={15} />
-                  Approve IBPA member
+                  {adminT.detail.approveIbpaMember}
                 </DashboardPrimaryBtn>
               </form>
               <form action={approveJuryApplicationAction}>
@@ -293,13 +293,13 @@ export default function JuryApplicationDetailPage({
                 <input type="hidden" name="isIbpaMember" value="false" />
                 <DashboardPrimaryBtn type="submit" className="w-full">
                   <CheckCircle2 aria-hidden size={15} />
-                  Approve non-member
+                  {adminT.detail.approveNonMember}
                 </DashboardPrimaryBtn>
               </form>
             </div>
 
             <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-muted)]">
-              Approve without payment
+              {adminT.detail.approveWithoutPayment}
             </p>
             <form action={approveJuryApplicationWithoutPaymentAction} className="mt-2">
               <input type="hidden" name="id" value={application.id} />
@@ -308,11 +308,11 @@ export default function JuryApplicationDetailPage({
                 className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-[18px] border border-[rgba(114,160,193,0.28)] bg-[var(--color-blue-wash)] px-3.5 py-2 text-sm font-semibold leading-none text-[var(--color-blue)] transition hover:border-[rgba(114,160,193,0.42)] hover:bg-white"
               >
                 <ShieldCheck aria-hidden size={15} />
-                Activate without payment
+                {adminT.detail.activateWithoutPayment}
               </button>
             </form>
             <p className="mt-1.5 text-xs leading-5 text-[var(--color-ink-muted)]">
-              Marks the judge as active (PAID) immediately - no Stripe session or email is sent.
+              {adminT.detail.activateWithoutPaymentNote}
             </p>
           </div>
         ) : null}
@@ -326,7 +326,7 @@ export default function JuryApplicationDetailPage({
                 className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-[18px] border border-red-200 bg-white px-3.5 py-2 text-sm font-semibold leading-none text-red-700 transition hover:bg-red-50"
               >
                 <XCircle aria-hidden size={15} />
-                Reject application
+                {adminT.detail.rejectApplication}
               </button>
             </form>
           </div>
@@ -342,22 +342,22 @@ export default function JuryApplicationDetailPage({
 
         <div className="mt-4 border-t border-[rgba(37,42,45,0.06)] pt-4">
           <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-muted)]">
-            Status override
+            {adminT.detail.statusOverride}
           </p>
           <p className="mt-1 text-xs leading-5 text-[var(--color-ink-muted)]">
-            Force a status without triggering emails or Stripe sessions.
+            {adminT.detail.statusOverrideNote}
           </p>
           <form action={overrideJuryApplicationStatusAction} className="mt-2 flex flex-col gap-2">
             <input type="hidden" name="id" value={application.id} />
             <select name="status" defaultValue={application.status} className={dashboardSelectClass}>
-              <option value="SUBMITTED">Submitted</option>
-              <option value="ADDITIONAL_INFO_REQUIRED">Additional info required</option>
-              <option value="APPROVED">Approved</option>
-              <option value="REJECTED">Rejected</option>
-              <option value="PAID">Paid / Active</option>
+              <option value="SUBMITTED">{adminT.statuses.SUBMITTED}</option>
+              <option value="ADDITIONAL_INFO_REQUIRED">{adminT.statuses.ADDITIONAL_INFO_REQUIRED}</option>
+              <option value="APPROVED">{adminT.statuses.APPROVED}</option>
+              <option value="REJECTED">{adminT.statuses.REJECTED}</option>
+              <option value="PAID">{adminT.statuses.PAID}</option>
             </select>
             <DashboardSecondaryBtn type="submit" className="w-full">
-              Set status
+              {adminT.detail.setStatus}
             </DashboardSecondaryBtn>
           </form>
         </div>
@@ -372,7 +372,7 @@ export default function JuryApplicationDetailPage({
         className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-[18px] border border-[var(--color-blue)] bg-[var(--color-blue)] px-3 py-2 text-sm font-semibold text-white transition hover:bg-[#4d86ad]"
       >
         <CheckCircle2 aria-hidden size={15} />
-        Decision
+        {adminT.detail.decision}
       </a>
       {canReject ? (
         <form action={rejectJuryApplicationAction} className="flex-1">
@@ -382,7 +382,7 @@ export default function JuryApplicationDetailPage({
             className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-[18px] border border-red-200 bg-white px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50"
           >
             <XCircle aria-hidden size={15} />
-            Reject
+            {adminT.detail.reject}
           </button>
         </form>
       ) : null}
@@ -410,11 +410,11 @@ export default function JuryApplicationDetailPage({
         <>
           <DashboardSecondaryBtn href="/admin/jury-applications">
             <ArrowLeft aria-hidden size={15} />
-            Back
+            {adminT.common.back}
           </DashboardSecondaryBtn>
           <DashboardSecondaryBtn href={`/admin/jury-applications/${application.id}/edit`}>
             <Pencil aria-hidden size={15} />
-            Edit
+            {adminT.common.edit}
           </DashboardSecondaryBtn>
           <DeleteJuryApplicationButton id={application.id} fullName={application.fullName} />
         </>

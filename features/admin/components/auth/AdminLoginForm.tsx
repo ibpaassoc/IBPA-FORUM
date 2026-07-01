@@ -5,20 +5,19 @@ import {
   loginAdminAction,
   type AdminLoginState,
 } from "@/features/admin/actions/auth.actions";
-import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { adminT } from "@/lib/i18n/admin";
 import { dashboardInputClass } from "@/shared/components/admin/DashboardUI";
 
 const initialState: AdminLoginState = {};
 
 export default function AdminLoginForm() {
   const [state, action, pending] = useActionState(loginAdminAction, initialState);
-  const { t } = useLanguage();
 
   return (
     <form action={action} className="space-y-5">
       <div>
         <label htmlFor="password" className="mb-2 block text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">
-          {t.admin.login.password}
+          {adminT.login.password}
         </label>
         <input
           id="password"
@@ -26,7 +25,7 @@ export default function AdminLoginForm() {
           type="password"
           required
           className={dashboardInputClass}
-          placeholder={t.admin.login.placeholder}
+          placeholder={adminT.login.placeholder}
         />
       </div>
 
@@ -41,7 +40,7 @@ export default function AdminLoginForm() {
         disabled={pending}
         className="inline-flex min-h-12 w-full items-center justify-center rounded-full border border-[var(--color-blue)] bg-[var(--color-blue)] px-6 py-3 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-white shadow-[0_16px_38px_rgba(114,160,193,0.3)] transition hover:-translate-y-0.5 hover:bg-[var(--color-hover-accent)] disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {pending ? t.admin.login.opening : t.admin.login.open}
+        {pending ? adminT.login.opening : adminT.login.open}
       </button>
     </form>
   );

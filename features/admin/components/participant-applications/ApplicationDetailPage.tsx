@@ -36,7 +36,7 @@ import {
   ReviewActionPanel,
   ReviewSummaryCard,
 } from "@/features/admin/components/review/ReviewPrimitives";
-import { formatAdminDate } from "@/features/admin/server/view-models";
+import { adminT, formatAdminDate, formatAdminMoney } from "@/lib/i18n/admin";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import {
   DashboardCard,
@@ -75,12 +75,12 @@ function formatAnswerValue(answer: {
 }) {
   if (answer.valueText) return answer.valueText;
   if (answer.valueNumber !== null) return String(answer.valueNumber);
-  if (answer.valueBoolean !== null) return answer.valueBoolean ? "Yes" : "No";
+  if (answer.valueBoolean !== null) return answer.valueBoolean ? adminT.common.yes : adminT.common.no;
   if (Array.isArray(answer.valueJson)) return answer.valueJson.join(", ");
   if (answer.valueJson && typeof answer.valueJson === "object") {
     return JSON.stringify(answer.valueJson, null, 2);
   }
-  return "Not provided";
+  return adminT.common.notProvided;
 }
 
 function formatLegacyFieldLabel(fieldKey: string) {
@@ -117,11 +117,7 @@ function parseSelectedAwards(valueJson: unknown): SelectedAwardSummary[] {
 }
 
 function formatAmount(amount: number, currency: string) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency.toUpperCase(),
-    maximumFractionDigits: 0,
-  }).format(amount / 100);
+  return formatAdminMoney(amount, currency, 0);
 }
 
 function FileLink({ href, name, sizeBytes }: { href: string; name: string; sizeBytes: number }) {
@@ -174,7 +170,7 @@ function FileGroup({
         {files.map((file) => (
           <FileLink key={file.id} href={`${apiPath}/${file.id}`} name={file.fileName} sizeBytes={file.fileSize} />
         ))}
-        {files.length === 0 ? <EmptyInline>No files uploaded.</EmptyInline> : null}
+        {files.length === 0 ? <EmptyInline>{adminT.detail.noFiles}</EmptyInline> : null}
       </div>
     </div>
   );
@@ -274,7 +270,7 @@ export default function ApplicationDetailPage({
   const nominationSummaryLabel =
     nominationSummaries.length <= 1
       ? nominationSummaries[0]?.awardName ?? application.award.name
-      : `${nominationSummaries.length} nominations selected`;
+      : `${adminT.detail.nominationsSelected} ${nominationSummaries.length}`;
 
   const legacyAnswerEntries = !hasNominationData
     ? application.answers.filter(
@@ -296,46 +292,46 @@ export default function ApplicationDetailPage({
     <DashboardCard className="flex flex-col gap-6">
       <div>
         <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
-          Identity
+          {adminT.detail.identity}
         </p>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          <DashboardDetailCard label="Full legal name" value={application.fullName} />
-          <DashboardDetailCard label="Email address" value={application.email} />
-          <DashboardDetailCard label="Phone / WhatsApp" value={application.phone} />
-          <DashboardDetailCard label="Country / City" value={`${application.country}, ${application.city}`} />
-          <DashboardDetailCard label="State / Province" value={application.stateProvince || "Not required"} />
+          <DashboardDetailCard label={adminT.detail.fullLegalName} value={application.fullName} />
+          <DashboardDetailCard label={adminT.detail.email} value={application.email} />
+          <DashboardDetailCard label={adminT.detail.phoneWhatsapp} value={application.phone} />
+          <DashboardDetailCard label={adminT.detail.countryCity} value={`${application.country}, ${application.city}`} />
+          <DashboardDetailCard label={adminT.detail.stateProvince} value={application.stateProvince || adminT.common.notRequired} />
           <DashboardDetailCard
-            label="Heard about us"
+            label={adminT.detail.heardAbout}
             value={
               answerMap.get("heardAboutOther")?.valueText
-                ? `${application.heardAbout || "Other"}: ${answerMap.get("heardAboutOther")?.valueText}`
-                : application.heardAbout || "Not provided"
+                ? `${application.heardAbout || adminT.detail.heardAboutOther}: ${answerMap.get("heardAboutOther")?.valueText}`
+                : application.heardAbout || adminT.common.notProvided
             }
           />
         </div>
       </div>
       <div>
         <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
-          Professional
+          {adminT.detail.professional}
         </p>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          <DashboardDetailCard label="Professional title" value={application.professionalTitle} />
-          <DashboardDetailCard label="Years of experience" value={String(application.yearsExperience)} />
-          <DashboardDetailCard label="Category scope" value={categorySummary || application.category.name} />
-          <DashboardDetailCard label="Nomination path" value={nominationSummaryLabel} />
-          <DashboardDetailCard label="IBPA membership no." value={application.membershipNumber || "Not provided"} />
-          <DashboardDetailCard label="Membership level" value={application.membershipLevel || "Not available"} />
+          <DashboardDetailCard label={adminT.detail.professionalTitle} value={application.professionalTitle} />
+          <DashboardDetailCard label={adminT.detail.yearsExperience} value={String(application.yearsExperience)} />
+          <DashboardDetailCard label={adminT.detail.categoryScope} value={categorySummary || application.category.name} />
+          <DashboardDetailCard label={adminT.detail.nominationPath} value={nominationSummaryLabel} />
+          <DashboardDetailCard label={adminT.detail.membershipNumber} value={application.membershipNumber || adminT.common.notProvided} />
+          <DashboardDetailCard label={adminT.detail.membershipLevel} value={application.membershipLevel || adminT.common.notProvided} />
         </div>
       </div>
       <div>
         <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
-          Online presence
+          {adminT.detail.onlinePresence}
         </p>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          <DashboardDetailCard label="Website" value={application.websiteUrl || "Not provided"} />
-          <DashboardDetailCard label="Instagram / Social" value={application.socialUrl || "Not provided"} />
-          <DashboardDetailCard label="Client reviews" value={application.reviewsUrl || "Not provided"} />
-          <DashboardDetailCard label="Payment total" value={formatAmount(application.amount, application.currency)} />
+          <DashboardDetailCard label={adminT.detail.website} value={application.websiteUrl || adminT.common.notProvided} />
+          <DashboardDetailCard label={adminT.detail.social} value={application.socialUrl || adminT.common.notProvided} />
+          <DashboardDetailCard label={adminT.detail.clientReviews} value={application.reviewsUrl || adminT.common.notProvided} />
+          <DashboardDetailCard label={adminT.detail.paymentTotal} value={formatAmount(application.amount, application.currency)} />
         </div>
       </div>
     </DashboardCard>
@@ -354,7 +350,7 @@ export default function ApplicationDetailPage({
               <div className="flex items-center justify-between gap-3 border-b border-[rgba(37,42,45,0.08)] p-4 md:p-5">
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-blue)]">
-                    Nomination {String(index + 1).padStart(2, "0")}
+                    {adminT.detail.nomination} {String(index + 1).padStart(2, "0")}
                   </p>
                   <h3 className="mt-1 font-[var(--font-title-family)] text-2xl font-light tracking-[-0.025em] text-[var(--color-ink)]">
                     {nomination.award.name}
@@ -374,7 +370,7 @@ export default function ApplicationDetailPage({
                     })}
                   </div>
                 ) : (
-                  <EmptyInline>No text answers were saved for this nomination.</EmptyInline>
+                  <EmptyInline>{adminT.detail.noTextAnswers}</EmptyInline>
                 )}
               </div>
             </DashboardCard>
@@ -393,7 +389,7 @@ export default function ApplicationDetailPage({
               ))}
             </div>
           ) : (
-            <EmptyInline>No submission answers were recorded for this application.</EmptyInline>
+            <EmptyInline>{adminT.detail.noAnswers}</EmptyInline>
           )}
         </DashboardCard>
       )}
@@ -404,7 +400,7 @@ export default function ApplicationDetailPage({
     <div className="flex flex-col gap-4">
       <DashboardCard>
         <FileGroup
-          label="Professional license / Certification"
+          label={adminT.detail.licenseCertification}
           files={licenseFiles}
           apiPath="/api/admin/application-files"
         />
@@ -438,7 +434,7 @@ export default function ApplicationDetailPage({
                       />
                     ))
                   ) : (
-                    <EmptyInline>No file fields configured.</EmptyInline>
+                    <EmptyInline>{adminT.detail.noFileFields}</EmptyInline>
                   )}
                 </div>
               </DashboardCard>
@@ -447,7 +443,7 @@ export default function ApplicationDetailPage({
         : legacyFileEntries.map(([key, files]) => (
             <DashboardCard key={key}>
               <FileGroup
-                label={`${formatLegacyFieldLabel(key)} (Legacy)`}
+                label={`${formatLegacyFieldLabel(key)} (${adminT.detail.legacy})`}
                 files={files}
                 apiPath="/api/admin/application-files"
               />
@@ -463,12 +459,12 @@ export default function ApplicationDetailPage({
           <Star aria-hidden size={18} />
         </span>
         <div>
-          <p className="font-[var(--font-title-family)] text-xl font-light text-[var(--color-ink)]">Judge scoring</p>
-          <p className="text-sm text-[var(--color-ink-soft)]">Coverage, averages, and rank for this nomination.</p>
+          <p className="font-[var(--font-title-family)] text-xl font-light text-[var(--color-ink)]">{adminT.detail.judgeScoring}</p>
+          <p className="text-sm text-[var(--color-ink-soft)]">{adminT.detail.judgeScoringText}</p>
         </div>
       </div>
       <DashboardSecondaryBtn href={`/admin/scoring/${application.id}`}>
-        Open score audit
+        {adminT.detail.openScoreAudit}
       </DashboardSecondaryBtn>
     </DashboardCard>
   );
@@ -476,25 +472,25 @@ export default function ApplicationDetailPage({
   const history = (
     <DashboardCard>
       <div className="grid gap-3 sm:grid-cols-2">
-        <DashboardDetailCard label="Created" value={formatAdminDate(application.createdAt)} />
-        <DashboardDetailCard label="Last updated" value={formatAdminDate(application.updatedAt)} />
-        <DashboardDetailCard label="Application status" value={<ApplicationStatusBadge status={application.status} />} />
-        <DashboardDetailCard label="Payment status" value={<PaymentStatusBadge status={application.paymentStatus} />} />
+        <DashboardDetailCard label={adminT.detail.created} value={formatAdminDate(application.createdAt)} />
+        <DashboardDetailCard label={adminT.detail.lastUpdated} value={formatAdminDate(application.updatedAt)} />
+        <DashboardDetailCard label={adminT.detail.applicationStatus} value={<ApplicationStatusBadge status={application.status} />} />
+        <DashboardDetailCard label={adminT.detail.paymentStatus} value={<PaymentStatusBadge status={application.paymentStatus} />} />
       </div>
     </DashboardCard>
   );
 
   const tabs: ReviewTab[] = [
-    { key: "overview", label: "Overview", icon: <UserRound aria-hidden size={15} />, content: overview },
-    { key: "submission", label: "Submission", icon: <ClipboardList aria-hidden size={15} />, content: submission },
-    { key: "documents", label: "Documents", icon: <FileText aria-hidden size={15} />, content: documents },
-    { key: "scores", label: "Scores", icon: <Star aria-hidden size={15} />, content: scores },
-    { key: "history", label: "History", icon: <CalendarClock aria-hidden size={15} />, content: history },
+    { key: "overview", label: adminT.detail.tabs.overview, icon: <UserRound aria-hidden size={15} />, content: overview },
+    { key: "submission", label: adminT.detail.tabs.submission, icon: <ClipboardList aria-hidden size={15} />, content: submission },
+    { key: "documents", label: adminT.detail.tabs.documents, icon: <FileText aria-hidden size={15} />, content: documents },
+    { key: "scores", label: adminT.detail.tabs.scores, icon: <Star aria-hidden size={15} />, content: scores },
+    { key: "history", label: adminT.detail.tabs.history, icon: <CalendarClock aria-hidden size={15} />, content: history },
   ];
 
   // ── Sticky decision panel ────────────────────────────────────────────────
   const aside = (
-    <ReviewActionPanel title="Decision">
+    <ReviewActionPanel title={adminT.detail.decision}>
       <div className="flex flex-wrap gap-2">
         <ApplicationStatusBadge status={application.status} />
         <PaymentStatusBadge status={application.paymentStatus} />
@@ -503,40 +499,40 @@ export default function ApplicationDetailPage({
       <div className="mt-4 grid gap-2">
         <StatusActionButton applicationId={application.id} status="APPROVED" active={application.status === "APPROVED"} tone="primary">
           <CheckCircle2 aria-hidden size={15} />
-          Approve
+          {adminT.detail.approve}
         </StatusActionButton>
         <StatusActionButton applicationId={application.id} status="UNDER_REVIEW" active={application.status === "UNDER_REVIEW"}>
           <Layers3 aria-hidden size={15} />
-          Mark under review
+          {adminT.detail.markUnderReview}
         </StatusActionButton>
         <StatusActionButton applicationId={application.id} status="REJECTED" active={application.status === "REJECTED"} tone="danger">
           <XCircle aria-hidden size={15} />
-          Reject
+          {adminT.detail.reject}
         </StatusActionButton>
       </div>
 
       <div className="mt-4 border-t border-[rgba(37,42,45,0.06)] pt-4">
         <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-muted)]">
-          Set status
+          {adminT.detail.setStatus}
         </p>
         <form action={updateParticipantApplicationStatus} className="mt-2 flex flex-col gap-2">
           <input type="hidden" name="id" value={application.id} />
           <select name="status" defaultValue={application.status} className={dashboardSelectClass}>
-            <option value="PAYMENT_PENDING">Payment pending</option>
-            <option value="SUBMITTED">Submitted</option>
-            <option value="UNDER_REVIEW">Under review</option>
-            <option value="APPROVED">Approved</option>
-            <option value="REJECTED">Rejected</option>
+            <option value="PAYMENT_PENDING">{adminT.statuses.PAYMENT_PENDING}</option>
+            <option value="SUBMITTED">{adminT.statuses.SUBMITTED}</option>
+            <option value="UNDER_REVIEW">{adminT.statuses.UNDER_REVIEW}</option>
+            <option value="APPROVED">{adminT.statuses.APPROVED}</option>
+            <option value="REJECTED">{adminT.statuses.REJECTED}</option>
           </select>
           <DashboardSecondaryBtn type="submit" className="w-full">
-            Apply status
+            {adminT.detail.applyStatus}
           </DashboardSecondaryBtn>
         </form>
       </div>
 
       <div className="mt-4 flex items-center gap-2 border-t border-[rgba(37,42,45,0.06)] pt-4 text-sm text-[var(--color-ink-soft)]">
         <ReceiptText aria-hidden size={15} />
-        Fee {formatAmount(application.amount, application.currency)}
+        {adminT.detail.fee} {formatAmount(application.amount, application.currency)}
       </div>
     </ReviewActionPanel>
   );
@@ -551,7 +547,7 @@ export default function ApplicationDetailPage({
         className="flex-1"
       >
         <CheckCircle2 aria-hidden size={15} />
-        Approve
+        {adminT.detail.approve}
       </StatusActionButton>
       <StatusActionButton
         applicationId={application.id}
@@ -561,7 +557,7 @@ export default function ApplicationDetailPage({
         className="flex-1"
       >
         <XCircle aria-hidden size={15} />
-        Reject
+        {adminT.detail.reject}
       </StatusActionButton>
     </MobileActionBar>
   );
@@ -586,11 +582,11 @@ export default function ApplicationDetailPage({
         <>
           <DashboardSecondaryBtn href="/admin/applications">
             <ArrowLeft aria-hidden size={15} />
-            Back
+            {adminT.common.back}
           </DashboardSecondaryBtn>
           <DashboardSecondaryBtn href={`/admin/applications/${application.id}/edit`}>
             <Pencil aria-hidden size={15} />
-            Edit
+            {adminT.common.edit}
           </DashboardSecondaryBtn>
         </>
       }

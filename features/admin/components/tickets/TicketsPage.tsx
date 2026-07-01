@@ -15,7 +15,7 @@ import {
   dashboardInputClass,
 } from "@/shared/components/admin/DashboardUI";
 import { instagramProfileUrl } from "@/features/tickets/lib/instagram";
-import { ticketTypeLabel } from "@/features/tickets/lib/labels";
+import { adminT } from "@/lib/i18n/admin";
 import UnifiedScanner from "@/features/check-in/components/UnifiedScanner";
 
 type TicketPayment = {
@@ -44,23 +44,27 @@ type TicketRecord = {
 
 function ticketStatusBadge(status: string) {
   switch (status) {
-    case "PAID": return <DashboardBadge tone="blue">Paid</DashboardBadge>;
-    case "CHECKED_ONE_DAY": return <DashboardBadge tone="green">Checked in</DashboardBadge>;
-    case "CHECKED_TWO_DAY": return <DashboardBadge tone="green">Checked in</DashboardBadge>;
-    case "CHECKED_GALA_DINNER": return <DashboardBadge tone="purple">Gala checked in</DashboardBadge>;
-    case "PENDING": return <DashboardBadge tone="amber">Pending payment</DashboardBadge>;
-    case "CANCELED": return <DashboardBadge tone="red">Canceled</DashboardBadge>;
+    case "PAID": return <DashboardBadge tone="blue">{adminT.tickets.badgePaid}</DashboardBadge>;
+    case "CHECKED_ONE_DAY": return <DashboardBadge tone="green">{adminT.tickets.badgeCheckedIn}</DashboardBadge>;
+    case "CHECKED_TWO_DAY": return <DashboardBadge tone="green">{adminT.tickets.badgeCheckedIn}</DashboardBadge>;
+    case "CHECKED_GALA_DINNER": return <DashboardBadge tone="purple">{adminT.tickets.badgeGalaCheckedIn}</DashboardBadge>;
+    case "PENDING": return <DashboardBadge tone="amber">{adminT.tickets.badgePending}</DashboardBadge>;
+    case "CANCELED": return <DashboardBadge tone="red">{adminT.tickets.badgeCanceled}</DashboardBadge>;
     default: return <DashboardBadge tone="neutral">{status}</DashboardBadge>;
   }
 }
 
+function ticketTypeLabelRu(type: string) {
+  return adminT.tickets.typeLabels[type] ?? type.replace("_", " ").toLowerCase();
+}
+
 function formatDate(date: Date | null | string) {
   if (!date) return "-";
-  return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }).format(new Date(date));
+  return new Intl.DateTimeFormat("ru-RU", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }).format(new Date(date));
 }
 
 function formatMoney(amount: number, currency: string) {
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("ru-RU", {
     style: "currency",
     currency: currency.toUpperCase(),
   }).format(amount / 100);
@@ -84,20 +88,20 @@ function TicketDetailPanel({ ticket }: { ticket: TicketRecord }) {
   const checkInValue =
     ticket.forumCheckInAt || ticket.galaCheckInAt
       ? [
-          ticket.forumCheckInAt ? `Forum · ${formatDate(ticket.forumCheckInAt)}` : null,
-          ticket.galaCheckInAt ? `Gala · ${formatDate(ticket.galaCheckInAt)}` : null,
+          ticket.forumCheckInAt ? `${adminT.tickets.forum} · ${formatDate(ticket.forumCheckInAt)}` : null,
+          ticket.galaCheckInAt ? `${adminT.tickets.gala} · ${formatDate(ticket.galaCheckInAt)}` : null,
         ]
           .filter(Boolean)
           .join("  ·  ")
       : ticket.status.startsWith("CHECKED")
         ? formatDate(ticket.lastCheckIn)
-        : "Not checked in";
+        : adminT.tickets.notCheckedIn;
 
   return (
     <div className="grid gap-2.5 px-4 pb-4 pt-1 sm:grid-cols-2 lg:px-5">
-      <DetailItem label="Buyer" value={ticket.fullName} />
+      <DetailItem label={adminT.tickets.buyer} value={ticket.fullName} />
       <DetailItem
-        label="Email"
+        label={adminT.detail.email}
         value={
           <a href={`mailto:${ticket.email}`} className="text-[var(--color-blue)] hover:underline">
             {ticket.email}
@@ -105,7 +109,7 @@ function TicketDetailPanel({ ticket }: { ticket: TicketRecord }) {
         }
       />
       <DetailItem
-        label="Phone"
+        label={adminT.detail.phone}
         value={
           ticket.phone ? (
             <a href={`tel:${ticket.phone}`} className="text-[var(--color-blue)] hover:underline">
@@ -129,17 +133,17 @@ function TicketDetailPanel({ ticket }: { ticket: TicketRecord }) {
           ) : null
         }
       />
-      <DetailItem label="Ticket type" value={ticketTypeLabel(ticket.type)} />
-      <DetailItem label="Gala dinner" value={ticket.galaDinner ? "Included" : "Not included"} />
+      <DetailItem label={adminT.tickets.ticketType} value={ticketTypeLabelRu(ticket.type)} />
+      <DetailItem label={adminT.tickets.galaDinner} value={ticket.galaDinner ? adminT.tickets.included : adminT.tickets.notIncluded} />
       <DetailItem
-        label="Price"
+        label={adminT.tickets.price}
         value={payment ? formatMoney(payment.amount, payment.currency) : null}
       />
-      <DetailItem label="Payment status" value={ticketStatusBadge(ticket.status)} />
-      <DetailItem label="Payment time" value={ticket.paidAt ? formatDate(ticket.paidAt) : null} />
-      <DetailItem label="Created" value={formatDate(ticket.createdAt)} />
-      <DetailItem label="Check-in" value={checkInValue} />
-      <DetailItem label="Membership" value={ticket.isIbpaMember ? "IBPA Member" : "Standard"} />
+      <DetailItem label={adminT.tickets.paymentStatus} value={ticketStatusBadge(ticket.status)} />
+      <DetailItem label={adminT.tickets.paymentTime} value={ticket.paidAt ? formatDate(ticket.paidAt) : null} />
+      <DetailItem label={adminT.tickets.created} value={formatDate(ticket.createdAt)} />
+      <DetailItem label={adminT.tickets.checkIn} value={checkInValue} />
+      <DetailItem label={adminT.tickets.membership} value={ticket.isIbpaMember ? adminT.tickets.ibpaMember : adminT.tickets.standard} />
     </div>
   );
 }
@@ -180,7 +184,7 @@ function TicketRow({
             <p className="text-sm font-medium text-[var(--color-ink)]">{ticket.fullName}</p>
             <p className="mt-0.5 truncate text-xs text-[var(--color-ink-soft)]">{ticket.email}</p>
             {ticket.isIbpaMember && (
-              <p className="text-[11px] font-semibold text-[var(--color-blue)]">IBPA Member</p>
+              <p className="text-[11px] font-semibold text-[var(--color-blue)]">{adminT.tickets.ibpaMember}</p>
             )}
           </div>
           <div className="flex items-center gap-2 lg:hidden">
@@ -192,20 +196,20 @@ function TicketRow({
           </div>
         </div>
 
-        <p className="flex items-center justify-between gap-2 text-sm capitalize text-[var(--color-ink-soft)] lg:block">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)] lg:hidden">Type</span>
-          {ticket.type.replace("_", " ").toLowerCase()}
+        <p className="flex items-center justify-between gap-2 text-sm text-[var(--color-ink-soft)] lg:block">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)] lg:hidden">{adminT.tickets.type}</span>
+          {ticketTypeLabelRu(ticket.type)}
         </p>
 
         <div className="flex items-center justify-between gap-2 lg:block">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)] lg:hidden">Gala</span>
-          {ticket.galaDinner ? <DashboardBadge tone="purple">Yes</DashboardBadge> : <span className="text-xs text-[var(--color-ink-muted)]">No</span>}
+          <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)] lg:hidden">{adminT.tickets.gala}</span>
+          {ticket.galaDinner ? <DashboardBadge tone="purple">{adminT.common.yes}</DashboardBadge> : <span className="text-xs text-[var(--color-ink-muted)]">{adminT.common.no}</span>}
         </div>
 
         <div className="hidden lg:block">{ticketStatusBadge(ticket.status)}</div>
 
         <p className="flex items-center justify-between gap-2 text-xs text-[var(--color-ink-muted)] lg:block">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)] lg:hidden">Last check-in</span>
+          <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)] lg:hidden">{adminT.tickets.lastCheckIn}</span>
           {formatDate(ticket.lastCheckIn)}
         </p>
 
@@ -264,9 +268,9 @@ function EarlyBirdToggle({ initialEnabled }: { initialEnabled: boolean }) {
             <Tag size={18} strokeWidth={1.5} />
           </div>
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-blue)]">Early Bird Discount</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-blue)]">{adminT.tickets.earlyBird}</p>
             <p className="mt-0.5 text-sm font-medium text-[var(--color-ink)]">
-              {enabled ? "On — discounted prices shown" : "Off — regular prices"}
+              {enabled ? adminT.tickets.earlyBirdOn : adminT.tickets.earlyBirdOff}
             </p>
           </div>
         </div>
@@ -275,7 +279,7 @@ function EarlyBirdToggle({ initialEnabled }: { initialEnabled: boolean }) {
           type="button"
           onClick={toggle}
           disabled={saving}
-          aria-label={enabled ? "Disable early bird discount" : "Enable early bird discount"}
+          aria-label={enabled ? adminT.tickets.earlyBirdDisable : adminT.tickets.earlyBirdEnable}
           className="relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none disabled:opacity-50"
           style={{ backgroundColor: enabled ? "var(--color-blue)" : "rgba(37,42,45,0.16)" }}
         >
@@ -294,10 +298,10 @@ function ScannerDialog({ onClose, onCheckIn }: { onClose: () => void; onCheckIn:
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-[rgba(3,2,19,0.32)] backdrop-blur-sm sm:items-center">
       <div className="max-h-[92vh] w-full max-w-md overflow-auto rounded-t-[28px] bg-white p-6 sm:rounded-[28px]">
         <div className="mb-5 flex items-center justify-between">
-          <h2 className="font-[var(--font-title-family)] text-2xl font-light text-[var(--color-ink)]">Scan ticket</h2>
+          <h2 className="font-[var(--font-title-family)] text-2xl font-light text-[var(--color-ink)]">{adminT.tickets.scanTitle}</h2>
           <button
             onClick={onClose}
-            aria-label="Close scanner"
+            aria-label={adminT.tickets.closeScanner}
             className="flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(37,42,45,0.08)] text-[var(--color-ink-soft)] hover:bg-[var(--color-blue-wash)]"
           >
             <X size={18} />
@@ -337,12 +341,12 @@ export default function TicketsPage({
   return (
     <div className="flex flex-col gap-5">
       <DashboardPageHeader
-        label="Tickets"
-        title="Check-in desk"
+        label={adminT.tickets.label}
+        title={adminT.tickets.title}
         actions={
           <DashboardPrimaryBtn onClick={() => setShowScanner(true)}>
             <Camera size={16} />
-            Scan QR
+            {adminT.tickets.scanQr}
           </DashboardPrimaryBtn>
         }
       />
@@ -352,20 +356,20 @@ export default function TicketsPage({
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-[1.1fr_repeat(3,minmax(0,0.75fr))]">
         <DashboardAccentBlock>
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-soft)]">
-            Total tickets
+            {adminT.tickets.totalTickets}
           </p>
           <p className="mt-2 text-3xl font-semibold tracking-[-0.03em]">{tickets.length}</p>
         </DashboardAccentBlock>
-        <DashboardMetricTile label="Paid" value={paid.length} accent="blue" />
-        <DashboardMetricTile label="Checked in" value={checkedIn.length} accent="green" />
-        <DashboardMetricTile label="Pending payment" value={pending.length} accent="amber" />
+        <DashboardMetricTile label={adminT.tickets.paid} value={paid.length} accent="blue" />
+        <DashboardMetricTile label={adminT.tickets.checkedIn} value={checkedIn.length} accent="green" />
+        <DashboardMetricTile label={adminT.tickets.pendingPayment} value={pending.length} accent="amber" />
       </div>
 
       <DashboardCard className="overflow-hidden p-0">
         <div className="border-b border-[rgba(37,42,45,0.08)] p-4 md:p-5">
           <input
             type="text"
-            placeholder="Search by name or email..."
+            placeholder={adminT.tickets.searchPlaceholder}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className={dashboardInputClass}
@@ -376,19 +380,19 @@ export default function TicketsPage({
           <div className="p-6">
             <DashboardEmptyState
               icon={<Ticket size={22} />}
-              title={search ? "No tickets match your search" : "No tickets yet"}
-              description={search ? "Try a different name or email." : "Tickets will appear here after purchase."}
+              title={search ? adminT.tickets.emptySearchTitle : adminT.tickets.emptyTitle}
+              description={search ? adminT.tickets.emptySearchText : adminT.tickets.emptyText}
             />
           </div>
         ) : (
           <div className="lg:divide-y lg:divide-[rgba(37,42,45,0.08)]">
             <div className="hidden grid-cols-[minmax(0,1.7fr)_130px_92px_150px_150px_28px] gap-3 border-b border-[rgba(37,42,45,0.08)] bg-white/62 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)] lg:grid">
-              <span>Attendee</span>
-              <span>Type</span>
-              <span>Gala</span>
-              <span>Status</span>
-              <span>Last check-in</span>
-              <span className="sr-only">Expand</span>
+              <span>{adminT.tickets.attendee}</span>
+              <span>{adminT.tickets.type}</span>
+              <span>{adminT.tickets.gala}</span>
+              <span>{adminT.tickets.status}</span>
+              <span>{adminT.tickets.lastCheckIn}</span>
+              <span className="sr-only">{adminT.common.open}</span>
             </div>
             {filtered.map((ticket) => (
               <TicketRow

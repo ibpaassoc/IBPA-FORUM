@@ -12,6 +12,7 @@ import {
   Ticket,
   Users,
 } from "lucide-react";
+import { adminT } from "@/lib/i18n/admin";
 import {
   DashboardCard,
   DashboardPanel,
@@ -38,20 +39,13 @@ type Outcome =
 
 type LastSync = { at: string; ok: boolean; scope: string } | null;
 
-const SCOPE_LABELS: Record<SyncScope, string> = {
-  all: "Sync All Data to Google Sheets",
-  applications: "Sync Applications",
-  jury: "Sync Jury",
-  scores: "Sync Scores",
-  tickets: "Sync Tickets",
-  stats: "Sync Stats",
-};
+const SCOPE_LABELS: Record<SyncScope, string> = adminT.sheets.scopeLabels;
 
 function formatTimestamp(iso: string | null): string {
-  if (!iso) return "Never";
+  if (!iso) return adminT.sheets.never;
   const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return "Never";
-  return date.toLocaleString(undefined, {
+  if (Number.isNaN(date.getTime())) return adminT.sheets.never;
+  return date.toLocaleString("ru-RU", {
     dateStyle: "medium",
     timeStyle: "short",
   });
@@ -104,7 +98,7 @@ export default function GoogleSheetsSyncPanel({
         setOutcome({
           kind: "error",
           scope,
-          message: payload?.message ?? "The sync request failed. Check the server logs.",
+          message: payload?.message ?? adminT.sheets.requestFailed,
         });
         return;
       }
@@ -116,7 +110,7 @@ export default function GoogleSheetsSyncPanel({
       setOutcome({
         kind: "error",
         scope,
-        message: "Could not reach the server. Please try again.",
+        message: adminT.sheets.serverUnreachable,
       });
     } finally {
       setPending(null);
@@ -145,15 +139,14 @@ export default function GoogleSheetsSyncPanel({
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h2 className="font-[var(--font-title-family)] text-2xl font-light tracking-[-0.02em]">
-              Google Sheets sync
+              {adminT.sheets.panelTitle}
             </h2>
             <StatusBadge tone={connectionTone}>
-              {configured ? "Connected" : "Not configured"}
+              {configured ? adminT.sheets.connected : adminT.sheets.notConfigured}
             </StatusBadge>
           </div>
           <p className="mt-1 text-sm text-[var(--color-ink-soft)]">
-            Mirror every record into the connected spreadsheet. Syncs upsert by ID, so
-            running them repeatedly is safe and never creates duplicate rows.
+            {adminT.sheets.description}
           </p>
         </div>
       </div>
@@ -162,13 +155,13 @@ export default function GoogleSheetsSyncPanel({
       <DashboardPanel className="mt-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-sm">
-            <span className="text-[var(--color-ink-soft)]">Last sync</span>
+            <span className="text-[var(--color-ink-soft)]">{adminT.sheets.lastSync}</span>
             <span className="font-medium text-[var(--color-ink)]">
               {formatTimestamp(lastSyncedAt)}
             </span>
           </div>
           <StatusBadge tone={lastSyncTone}>
-            {lastOk == null ? "No sync yet" : lastOk ? "Success" : "Completed with errors"}
+            {lastOk == null ? adminT.sheets.noSyncYet : lastOk ? adminT.sheets.success : adminT.sheets.completedWithErrors}
           </StatusBadge>
         </div>
       </DashboardPanel>
@@ -178,10 +171,10 @@ export default function GoogleSheetsSyncPanel({
           <div className="flex items-start gap-3">
             <AlertTriangle aria-hidden size={18} className="mt-0.5 shrink-0 text-amber-600" />
             <p className="text-sm text-[var(--color-ink)]">
-              Google Sheets is not configured. Set <code>GOOGLE_SHEETS_CLIENT_EMAIL</code>,{" "}
-              <code>GOOGLE_SHEETS_PRIVATE_KEY</code> and{" "}
-              <code>GOOGLE_SHEETS_SPREADSHEET_ID</code>, then reload this page. See{" "}
-              <code>docs/google-sheets-sync.md</code> for setup steps.
+              {adminT.sheets.notConfiguredWarning} <code>docs/google-sheets-sync.md</code>.
+              <br />
+              <code>GOOGLE_SHEETS_CLIENT_EMAIL</code>, <code>GOOGLE_SHEETS_PRIVATE_KEY</code>,{" "}
+              <code>GOOGLE_SHEETS_SPREADSHEET_ID</code>
             </p>
           </div>
         </DashboardPanel>
@@ -228,7 +221,7 @@ export default function GoogleSheetsSyncPanel({
             <AlertTriangle aria-hidden size={18} className="mt-0.5 shrink-0 text-red-600" />
             <div>
               <p className="text-sm font-semibold text-red-700">
-                {SCOPE_LABELS[outcome.scope]} failed
+                {SCOPE_LABELS[outcome.scope]} {adminT.sheets.failedSuffix}
               </p>
               <p className="mt-1 text-sm text-[var(--color-ink)]">{outcome.message}</p>
             </div>
@@ -241,24 +234,24 @@ export default function GoogleSheetsSyncPanel({
           <div className="flex items-center justify-between gap-3">
             <p className="flex items-center gap-2 text-sm font-semibold text-[var(--color-ink)]">
               <CheckCircle2 aria-hidden size={18} className="text-green-600" />
-              {SCOPE_LABELS[outcome.scope]} complete
+              {SCOPE_LABELS[outcome.scope]} {adminT.sheets.completeSuffix}
             </p>
             <StatusBadge tone={outcome.result.errors.length === 0 ? "green" : "amber"}>
               {outcome.result.errors.length === 0
-                ? "No errors"
-                : `${outcome.result.errors.length} error(s)`}
+                ? adminT.sheets.noErrors
+                : `${adminT.sheets.errorsCount} ${outcome.result.errors.length}`}
             </StatusBadge>
           </div>
 
           <div className="mt-4 grid gap-1.5">
-            <ResultLine label="Applications synced" value={outcome.result.applications} />
-            <ResultLine label="Jury synced" value={outcome.result.jury} />
-            <ResultLine label="Scores synced" value={outcome.result.scores} />
-            <ResultLine label="Tickets synced" value={outcome.result.tickets} />
+            <ResultLine label={adminT.sheets.syncedApplications} value={outcome.result.applications} />
+            <ResultLine label={adminT.sheets.syncedJury} value={outcome.result.jury} />
+            <ResultLine label={adminT.sheets.syncedScores} value={outcome.result.scores} />
+            <ResultLine label={adminT.sheets.syncedTickets} value={outcome.result.tickets} />
             <div className="flex items-center justify-between gap-4 text-sm">
-              <span className="text-[var(--color-ink-soft)]">Statistics updated</span>
+              <span className="text-[var(--color-ink-soft)]">{adminT.sheets.statsUpdated}</span>
               <span className="font-medium">
-                {outcome.result.statsUpdated ? "Yes" : "No"}
+                {outcome.result.statsUpdated ? adminT.common.yes : adminT.common.no}
               </span>
             </div>
           </div>
