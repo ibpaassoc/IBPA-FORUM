@@ -5,7 +5,6 @@ import Link from "next/link";
 import { ArrowRight, Clock3, FileText, Layers3, MapPin, ReceiptText } from "lucide-react";
 import { adminT, formatAdminDate } from "@/lib/i18n/admin";
 import ApplicationStatusBadge from "@/features/admin/components/badges/ApplicationStatusBadge";
-import PaymentStatusBadge from "@/features/admin/components/badges/PaymentStatusBadge";
 import ApplicationFilters, {
   type FilterSelect,
 } from "@/features/admin/components/review/ApplicationFilters";
@@ -104,8 +103,9 @@ export default function ApplicationListPage({
       key: "status",
       label: adminT.filters.allStatuses,
       value: status,
+      variant: "segmented",
       options: [
-        { value: "", label: adminT.filters.allStatuses },
+        { value: "", label: adminT.filters.all },
         ...statusesPresent.map((value) => ({ value, label: adminT.statuses[value] })),
       ],
     },
@@ -204,7 +204,6 @@ export default function ApplicationListPage({
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
                         <ApplicationStatusBadge status={app.status} />
-                        <PaymentStatusBadge status={app.paymentStatus} />
                       </div>
                       <h2 className="mt-3 font-[var(--font-title-family)] text-[1.55rem] font-light tracking-[-0.025em] text-[var(--color-ink)]">
                         {app.fullName}

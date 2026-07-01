@@ -37,6 +37,7 @@ export const adminT = {
   } as Record<string, string>,
   filters: {
     search: "Поиск по имени, email или номеру IBPA",
+    all: "Все",
     allStatuses: "Все статусы",
     allCategories: "Все категории",
     allAreas: "Все направления",

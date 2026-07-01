@@ -232,9 +232,6 @@ export default function AdminOverviewPage({
                         <StatusBadge tone={participantTone(application.status)}>
                           {formatStatus(application.status)}
                         </StatusBadge>
-                        <StatusBadge tone={application.paymentStatus === "PAID" ? "green" : "neutral"}>
-                          {formatStatus(application.paymentStatus)}
-                        </StatusBadge>
                       </div>
                       <p className="mt-3 font-[var(--font-title-family)] text-xl font-light leading-tight text-[var(--color-ink)]">
                         {application.fullName}
