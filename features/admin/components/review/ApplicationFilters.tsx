@@ -1,8 +1,9 @@
 "use client";
 
-import { ChevronDown, SlidersHorizontal, X } from "lucide-react";
+import { X } from "lucide-react";
 import { adminT } from "@/lib/i18n/admin";
 import { DashboardCard, SearchBar } from "@/shared/components/admin/DashboardUI";
+import IbpaDropdown from "@/shared/components/admin/IbpaDropdown";
 
 export type FilterSelect = {
   key: string;
@@ -16,41 +17,6 @@ export type FilterSelect = {
    */
   variant?: "segmented" | "select";
 };
-
-const glassSelectClass =
-  "h-11 w-full cursor-pointer appearance-none rounded-full border border-[rgba(114,160,193,0.22)] bg-white/74 pl-4 pr-10 text-[0.86rem] leading-none text-[var(--color-ink)] shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_10px_26px_rgba(37,42,45,0.045)] outline-none backdrop-blur-xl transition hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-wash)]/60 focus:border-[var(--color-blue)] focus:ring-4 focus:ring-[rgba(114,160,193,0.16)]";
-
-function GlassSelect({
-  select,
-  onSelectChange,
-  className,
-}: {
-  select: FilterSelect;
-  onSelectChange: (key: string, value: string) => void;
-  className?: string;
-}) {
-  return (
-    <label className={`relative block ${className ?? ""}`}>
-      <span className="sr-only">{select.label}</span>
-      <select
-        value={select.value}
-        onChange={(event) => onSelectChange(select.key, event.target.value)}
-        className={glassSelectClass}
-      >
-        {select.options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-      <ChevronDown
-        aria-hidden
-        size={15}
-        className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--color-ink-muted)]"
-      />
-    </label>
-  );
-}
 
 function SegmentedControl({
   select,
@@ -89,10 +55,10 @@ function SegmentedControl({
 
 /**
  * Glassmorphic filter bar for application lists.
- * Search + segmented status chips + styled dropdowns; on mobile the dropdowns
- * collapse into a "Filters" panel. Renders active-filter chips with individual
- * remove + a "clear all" action. Fully controlled — the parent owns state and
- * does the actual filtering.
+ * One filter block: search + reusable IBPA dropdowns wrap into a single
+ * responsive row, followed by segmented status chips and active-filter chips
+ * with individual remove + a "clear all" action. Fully controlled — the parent
+ * owns state and does the actual filtering.
  */
 export default function ApplicationFilters({
   search,
@@ -125,54 +91,28 @@ export default function ApplicationFilters({
 
   const hasActiveFilters =
     chips.length > 0 || segmented.some((select) => select.value);
-  const activeDropdownCount = dropdowns.filter((select) => select.value).length;
 
   return (
     <DashboardCard className="flex flex-col gap-3">
-      <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
+      {/* One responsive filter row: search + dropdowns wrap cleanly, no duplicated DOM. */}
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
         <SearchBar
           value={search}
           onChange={onSearchChange}
           placeholder={adminT.filters.search}
-          className="flex-1"
+          className="w-full sm:min-w-[220px] sm:flex-1"
         />
 
-        {/* Desktop dropdowns */}
-        <div className="hidden flex-wrap gap-2 lg:flex">
-          {dropdowns.map((select) => (
-            <GlassSelect
-              key={select.key}
-              select={select}
-              onSelectChange={onSelectChange}
-              className="w-auto min-w-44"
-            />
-          ))}
-        </div>
-
-        {/* Mobile collapsible filter panel */}
-        <details className="group lg:hidden">
-          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-2 rounded-full border border-[rgba(114,160,193,0.22)] bg-white/74 px-4 text-sm font-medium text-[var(--color-ink)] shadow-[0_10px_26px_rgba(37,42,45,0.045)] backdrop-blur-xl transition hover:border-[var(--color-blue)]">
-            <span className="inline-flex items-center gap-2">
-              <SlidersHorizontal aria-hidden size={15} className="text-[var(--color-blue)]" />
-              {adminT.filters.toggle}
-              {activeDropdownCount > 0 ? (
-                <span className="inline-flex size-5 items-center justify-center rounded-full bg-[var(--color-blue)] text-[0.62rem] font-semibold text-white">
-                  {activeDropdownCount}
-                </span>
-              ) : null}
-            </span>
-            <ChevronDown
-              aria-hidden
-              size={15}
-              className="text-[var(--color-ink-muted)] transition group-open:rotate-180"
-            />
-          </summary>
-          <div className="mt-2 grid gap-2">
-            {dropdowns.map((select) => (
-              <GlassSelect key={select.key} select={select} onSelectChange={onSelectChange} />
-            ))}
-          </div>
-        </details>
+        {dropdowns.map((select) => (
+          <IbpaDropdown
+            key={select.key}
+            ariaLabel={select.label}
+            options={select.options}
+            value={select.value}
+            onChange={(value) => onSelectChange(select.key, value)}
+            className="w-full sm:w-auto sm:min-w-[11rem]"
+          />
+        ))}
       </div>
 
       {segmented.map((select) => (

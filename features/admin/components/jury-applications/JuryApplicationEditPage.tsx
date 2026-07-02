@@ -19,9 +19,9 @@ import {
   DashboardPrimaryBtn,
   DashboardSecondaryBtn,
   dashboardInputClass,
-  dashboardSelectClass,
   dashboardTextareaClass,
 } from "@/shared/components/admin/DashboardUI";
+import IbpaDropdown from "@/shared/components/admin/IbpaDropdown";
 
 function SectionHeader({
   icon: Icon,
@@ -156,14 +156,15 @@ export default function JuryApplicationEditPage({
             <SectionHeader icon={Award} label={adminT.edit.membership} />
             <div className="grid gap-4 p-4 sm:grid-cols-2 md:p-5">
               <FormField label={adminT.detail.ibpaMember}>
-                <select
+                <IbpaDropdown
                   name="ibpaAssociationMember"
                   defaultValue={application.ibpaAssociationMember ? "true" : "false"}
-                  className={dashboardSelectClass}
-                >
-                  <option value="false">{adminT.common.no}</option>
-                  <option value="true">{adminT.common.yes}</option>
-                </select>
+                  ariaLabel={adminT.detail.ibpaMember}
+                  options={[
+                    { value: "false", label: adminT.common.no },
+                    { value: "true", label: adminT.common.yes },
+                  ]}
+                />
               </FormField>
               <FormField label={adminT.detail.ibpaNumber}>
                 <input
@@ -207,14 +208,15 @@ export default function JuryApplicationEditPage({
               </FormField>
               <div className="grid gap-4 sm:grid-cols-2">
                 <FormField label={adminT.detail.previousJudging}>
-                  <select
+                  <IbpaDropdown
                     name="previousJudgingExperience"
                     defaultValue={application.previousJudgingExperience ? "true" : "false"}
-                    className={dashboardSelectClass}
-                  >
-                    <option value="false">{adminT.common.no}</option>
-                    <option value="true">{adminT.common.yes}</option>
-                  </select>
+                    ariaLabel={adminT.detail.previousJudging}
+                    options={[
+                      { value: "false", label: adminT.common.no },
+                      { value: "true", label: adminT.common.yes },
+                    ]}
+                  />
                 </FormField>
               </div>
               <FormField label={adminT.edit.previousJudgingDetails}>

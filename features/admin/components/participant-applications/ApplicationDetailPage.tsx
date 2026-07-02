@@ -42,8 +42,8 @@ import {
   DashboardCard,
   DashboardDetailCard,
   DashboardSecondaryBtn,
-  dashboardSelectClass,
 } from "@/shared/components/admin/DashboardUI";
+import IbpaDropdown from "@/shared/components/admin/IbpaDropdown";
 
 type NominationDetail = NominationApplication & {
   award: Award;
@@ -518,13 +518,18 @@ export default function ApplicationDetailPage({
         </p>
         <form action={updateParticipantApplicationStatus} className="mt-2 flex flex-col gap-2">
           <input type="hidden" name="id" value={application.id} />
-          <select name="status" defaultValue={application.status} className={dashboardSelectClass}>
-            <option value="PAYMENT_PENDING">{adminT.statuses.PAYMENT_PENDING}</option>
-            <option value="SUBMITTED">{adminT.statuses.SUBMITTED}</option>
-            <option value="UNDER_REVIEW">{adminT.statuses.UNDER_REVIEW}</option>
-            <option value="APPROVED">{adminT.statuses.APPROVED}</option>
-            <option value="REJECTED">{adminT.statuses.REJECTED}</option>
-          </select>
+          <IbpaDropdown
+            name="status"
+            defaultValue={application.status}
+            ariaLabel={adminT.detail.setStatus}
+            options={[
+              { value: "PAYMENT_PENDING", label: adminT.statuses.PAYMENT_PENDING },
+              { value: "SUBMITTED", label: adminT.statuses.SUBMITTED },
+              { value: "UNDER_REVIEW", label: adminT.statuses.UNDER_REVIEW },
+              { value: "APPROVED", label: adminT.statuses.APPROVED },
+              { value: "REJECTED", label: adminT.statuses.REJECTED },
+            ]}
+          />
           <DashboardSecondaryBtn type="submit" className="w-full">
             {adminT.detail.applyStatus}
           </DashboardSecondaryBtn>

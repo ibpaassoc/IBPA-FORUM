@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, ChevronDown, Search, Star } from "lucide-react";
+import { ArrowRight, Search, Star } from "lucide-react";
 import { adminT } from "@/lib/i18n/admin";
 import {
   DashboardAccentBlock,
@@ -14,8 +14,8 @@ import {
   DashboardPanel,
   DashboardPrimaryBtn,
   dashboardInputClass,
-  dashboardSelectClass,
 } from "@/shared/components/admin/DashboardUI";
+import IbpaDropdown from "@/shared/components/admin/IbpaDropdown";
 
 function scoringBadge(status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETE") {
   switch (status) {
@@ -84,40 +84,9 @@ export default function AdminScoringOverviewPage({
       </div>
 
       <DashboardCard>
-        <details className="group lg:hidden">
-          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between rounded-full border border-[rgba(114,160,193,0.22)] bg-white/74 px-4 text-sm font-medium text-[var(--color-ink)] shadow-[0_10px_26px_rgba(37,42,45,0.045)] backdrop-blur-xl transition hover:border-[var(--color-blue)]">
-            <span>{adminT.filters.toggle}</span>
-            <ChevronDown
-              aria-hidden
-              size={15}
-              className="text-[var(--color-ink-muted)] transition group-open:rotate-180"
-            />
-          </summary>
-          <form className="mt-3 grid gap-2">
-            <input type="text" name="q" defaultValue={filters.q} placeholder={adminT.scoring.searchPlaceholder} className={dashboardInputClass} />
-            <select name="category" defaultValue={filters.category ?? ""} className={dashboardSelectClass}>
-              <option value="">{adminT.filters.allCategories}</option>
-              {categories.map((category) => (
-                <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
-            <select name="status" defaultValue={filters.status ?? ""} className={dashboardSelectClass}>
-              <option value="">{adminT.filters.allStatuses}</option>
-              <option value="NOT_STARTED">{adminT.statuses.NOT_STARTED}</option>
-              <option value="IN_PROGRESS">{adminT.statuses.IN_PROGRESS}</option>
-              <option value="COMPLETE">{adminT.statuses.COMPLETE}</option>
-            </select>
-            <select name="sort" defaultValue={filters.sort} className={dashboardSelectClass}>
-              <option value="averageScore">{adminT.scoring.sortAverage}</option>
-              <option value="category">{adminT.scoring.sortCategory}</option>
-              <option value="status">{adminT.scoring.sortStatus}</option>
-            </select>
-            <DashboardPrimaryBtn type="submit">{adminT.filters.apply}</DashboardPrimaryBtn>
-          </form>
-        </details>
-
-        <form className="hidden items-center gap-3 lg:flex">
-          <div className="relative flex-1">
+        {/* One responsive filter row: search + dropdowns wrap cleanly, no duplicated DOM. */}
+        <form className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+          <div className="relative w-full sm:min-w-[220px] sm:flex-1">
             <Search aria-hidden size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-ink-muted)]" />
             <input
               type="text"
@@ -127,24 +96,42 @@ export default function AdminScoringOverviewPage({
               className={`${dashboardInputClass} pl-9`}
             />
           </div>
-          <select name="category" defaultValue={filters.category ?? ""} className={`${dashboardSelectClass} w-48`}>
-            <option value="">{adminT.filters.allCategories}</option>
-            {categories.map((category) => (
-              <option key={category} value={category}>{category}</option>
-            ))}
-          </select>
-          <select name="status" defaultValue={filters.status ?? ""} className={`${dashboardSelectClass} w-40`}>
-            <option value="">{adminT.filters.allStatuses}</option>
-            <option value="NOT_STARTED">{adminT.statuses.NOT_STARTED}</option>
-            <option value="IN_PROGRESS">{adminT.statuses.IN_PROGRESS}</option>
-            <option value="COMPLETE">{adminT.statuses.COMPLETE}</option>
-          </select>
-          <select name="sort" defaultValue={filters.sort} className={`${dashboardSelectClass} w-44`}>
-            <option value="averageScore">{adminT.scoring.sortAverage}</option>
-            <option value="category">{adminT.scoring.sortCategory}</option>
-            <option value="status">{adminT.scoring.sortStatus}</option>
-          </select>
-          <DashboardPrimaryBtn type="submit">{adminT.filters.apply}</DashboardPrimaryBtn>
+          <IbpaDropdown
+            name="category"
+            defaultValue={filters.category ?? ""}
+            ariaLabel={adminT.filters.allCategories}
+            className="w-full sm:w-48"
+            options={[
+              { value: "", label: adminT.filters.allCategories },
+              ...categories.map((category) => ({ value: category, label: category })),
+            ]}
+          />
+          <IbpaDropdown
+            name="status"
+            defaultValue={filters.status ?? ""}
+            ariaLabel={adminT.filters.allStatuses}
+            className="w-full sm:w-40"
+            options={[
+              { value: "", label: adminT.filters.allStatuses },
+              { value: "NOT_STARTED", label: adminT.statuses.NOT_STARTED },
+              { value: "IN_PROGRESS", label: adminT.statuses.IN_PROGRESS },
+              { value: "COMPLETE", label: adminT.statuses.COMPLETE },
+            ]}
+          />
+          <IbpaDropdown
+            name="sort"
+            defaultValue={filters.sort}
+            ariaLabel={adminT.filters.sortLabel}
+            className="w-full sm:w-44"
+            options={[
+              { value: "averageScore", label: adminT.scoring.sortAverage },
+              { value: "category", label: adminT.scoring.sortCategory },
+              { value: "status", label: adminT.scoring.sortStatus },
+            ]}
+          />
+          <DashboardPrimaryBtn type="submit" className="w-full sm:w-auto">
+            {adminT.filters.apply}
+          </DashboardPrimaryBtn>
         </form>
       </DashboardCard>
 
