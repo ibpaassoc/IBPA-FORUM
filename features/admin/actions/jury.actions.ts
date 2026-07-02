@@ -14,6 +14,7 @@ import {
   setJuryApplicationStatusDirectly,
   updateJuryApplicationStatus,
 } from "@/features/jury/server/commands";
+import { adminT } from "@/lib/i18n/admin";
 import { requireAdmin } from "@/shared/lib/admin-auth";
 
 function getJuryApplicationDetailPath(id: string, params?: Record<string, string>) {
@@ -27,7 +28,7 @@ function getActionErrorMessage(error: unknown) {
     return error.message;
   }
 
-  return "Something went wrong while saving the jury application action.";
+  return adminT.actions.genericError;
 }
 
 export async function saveJuryApplicationNotesAction(formData: FormData) {
@@ -57,7 +58,7 @@ export async function saveJuryApplicationNotesAction(formData: FormData) {
   revalidatePath(`/admin/jury-applications/${id}`);
   redirect(
     getJuryApplicationDetailPath(id, {
-      notice: "Notes saved successfully.",
+      notice: adminT.actions.notesSaved,
     })
   );
 }
@@ -74,41 +75,16 @@ export async function approveJuryApplicationAction(formData: FormData) {
     throw new Error("Missing jury application id.");
   }
 
-  let notice = "Application approved and payment link sent.";
+  let notice: string = adminT.actions.approvedWithLink;
 
   try {
     const result = await approveJuryApplication(id, isIbpaMemberOverride);
 
-    if (!result.emailDelivered && result.emailSkipReason === "email_test_missing") {
-      notice =
-        "Application approved, but the payment email was skipped because EMAIL_TEST is not configured while email redirection is enabled.";
-    } else if (!result.emailDelivered && result.emailSkipReason === "resend_missing") {
-      notice =
-        "Application approved, but the payment email was skipped because RESEND_API_KEY is not configured.";
-    } else if (
-      !result.emailDelivered &&
-      result.emailSkipReason === "resend_invalid_key"
-    ) {
-      notice =
-        "Application approved, but the payment email was skipped because RESEND_API_KEY contains invalid characters.";
-    } else if (
-      !result.emailDelivered &&
-      result.emailSkipReason === "email_sender_missing"
-    ) {
-      notice =
-        "Application approved, but the payment email was skipped because the sender email is not configured.";
-    } else if (
-      !result.emailDelivered &&
-      result.emailSkipReason === "email_recipient_missing"
-    ) {
-      notice =
-        "Application approved, but the payment email was skipped because the recipient email is not configured.";
-    } else if (!result.emailDelivered && result.emailSkipReason === "resend_error") {
-      notice =
-        "Application approved, but Resend rejected the payment email. Check the production logs for the Resend error.";
-    } else if (!result.emailDelivered) {
-      notice =
-        "Application approved, but the payment email was not delivered. Check the production logs for details.";
+    if (!result.emailDelivered) {
+      // Точная причина остаётся в result.emailSkipReason и в серверных логах.
+      notice = `${adminT.actions.approvedEmailSkipped}${
+        result.emailSkipReason ? ` (${result.emailSkipReason})` : ""
+      }`;
     }
   } catch (error) {
     redirect(
@@ -154,7 +130,7 @@ export async function rejectJuryApplicationAction(formData: FormData) {
   revalidatePath(`/admin/jury-applications/${id}`);
   redirect(
     getJuryApplicationDetailPath(id, {
-      notice: "Application rejected successfully.",
+      notice: adminT.actions.rejected,
     })
   );
 }
@@ -214,19 +190,18 @@ export async function requestAdditionalInfoAction(formData: FormData) {
   if (!infoRequestDetails) {
     redirect(
       getJuryApplicationDetailPath(id, {
-        error: "Please describe what additional information is needed.",
+        error: adminT.actions.infoRequestEmpty,
       })
     );
   }
 
-  let notice = "Additional information request sent to the applicant.";
+  let notice: string = adminT.actions.infoRequestSent;
 
   try {
     const result = await requestAdditionalInfoFromJuryApplication({ id, infoRequestDetails });
 
     if (!result.emailDelivered) {
-      notice =
-        "Status updated, but the notification email could not be delivered. Check email configuration.";
+      notice = adminT.actions.infoRequestEmailFailed;
     }
   } catch (error) {
     redirect(
@@ -278,7 +253,7 @@ export async function approveJuryApplicationWithoutPaymentAction(formData: FormD
 
   revalidatePath("/admin/jury-applications");
   revalidatePath(`/admin/jury-applications/${id}`);
-  redirect(getJuryApplicationDetailPath(id, { notice: "Judge approved and activated without payment." }));
+  redirect(getJuryApplicationDetailPath(id, { notice: adminT.actions.activatedWithoutPayment }));
 }
 
 export async function overrideJuryApplicationStatusAction(formData: FormData) {
@@ -297,7 +272,7 @@ export async function overrideJuryApplicationStatusAction(formData: FormData) {
     "PAID",
   ];
   if (!validStatuses.includes(status)) {
-    redirect(getJuryApplicationDetailPath(id, { error: "Invalid status value." }));
+    redirect(getJuryApplicationDetailPath(id, { error: adminT.actions.invalidStatus }));
   }
 
   try {
@@ -310,7 +285,7 @@ export async function overrideJuryApplicationStatusAction(formData: FormData) {
   revalidatePath(`/admin/jury-applications/${id}`);
   redirect(
     getJuryApplicationDetailPath(id, {
-      notice: `Status overridden to ${status.replace(/_/g, " ").toLowerCase()}.`,
+      notice: adminT.actions.statusOverridden(adminT.statuses[status] ?? status),
     }),
   );
 }
@@ -351,7 +326,7 @@ export async function editJuryApplicationAction(formData: FormData) {
   if (!fullName || !email || !phone || !country || !city || !professionalTitle) {
     redirect(
       getJuryApplicationDetailPath(id, {
-        error: "Please fill in all required fields (name, email, phone, location, title).",
+        error: adminT.actions.requiredFields,
       }),
     );
   }
@@ -384,5 +359,5 @@ export async function editJuryApplicationAction(formData: FormData) {
 
   revalidatePath("/admin/jury-applications");
   revalidatePath(`/admin/jury-applications/${id}`);
-  redirect(getJuryApplicationDetailPath(id, { notice: "Application updated successfully." }));
+  redirect(getJuryApplicationDetailPath(id, { notice: adminT.actions.applicationUpdated }));
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { deleteJuryApplicationAction } from "@/features/admin/actions/jury.actions";
+import { adminT } from "@/lib/i18n/admin";
 import { DashboardDangerBtn } from "@/shared/components/admin/DashboardUI";
 
 export default function DeleteJuryApplicationButton({
@@ -11,7 +12,7 @@ export default function DeleteJuryApplicationButton({
   fullName: string;
 }) {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    if (!confirm(`Permanently delete ${fullName}'s application? This cannot be undone.`)) {
+    if (!confirm(adminT.detail.deleteConfirm(fullName))) {
       e.preventDefault();
     }
   }
@@ -20,7 +21,7 @@ export default function DeleteJuryApplicationButton({
     <form action={deleteJuryApplicationAction} onSubmit={handleSubmit}>
       <input type="hidden" name="id" value={id} />
       <DashboardDangerBtn type="submit">
-        Delete Application
+        {adminT.detail.deleteApplication}
       </DashboardDangerBtn>
     </form>
   );

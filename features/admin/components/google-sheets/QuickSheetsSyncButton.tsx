@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { AlertTriangle, CheckCircle2, FileSpreadsheet, Loader2 } from "lucide-react";
+import { adminT } from "@/lib/i18n/admin";
 import { DashboardSecondaryBtn } from "@/shared/components/admin/DashboardUI";
 
 /**
@@ -32,7 +33,7 @@ export default function QuickSheetsSyncButton() {
 
       if (!response.ok || !payload?.result) {
         setState("error");
-        setMessage(payload?.message ?? "Sync failed. Check the Integrations page.");
+        setMessage(payload?.message ?? adminT.sheets.quickSyncFailed);
         return;
       }
 
@@ -40,12 +41,12 @@ export default function QuickSheetsSyncButton() {
       setState(errorCount === 0 ? "ok" : "error");
       setMessage(
         errorCount === 0
-          ? "Synced to Google Sheets"
-          : `${errorCount} error(s) — see Integrations`
+          ? adminT.sheets.quickSyncOk
+          : adminT.sheets.quickSyncErrors(errorCount)
       );
     } catch {
       setState("error");
-      setMessage("Could not reach the server.");
+      setMessage(adminT.sheets.serverUnreachable);
     }
   }
 
@@ -61,7 +62,7 @@ export default function QuickSheetsSyncButton() {
         ) : (
           <FileSpreadsheet aria-hidden size={16} />
         )}
-        Sync Google Sheets
+        {adminT.sheets.quickSync}
       </DashboardSecondaryBtn>
 
       {state === "ok" && message ? (

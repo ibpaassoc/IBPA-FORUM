@@ -1,6 +1,4 @@
-"use client";
-
-import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { adminT } from "@/lib/i18n/admin";
 import { DashboardBadge } from "@/shared/components/admin/DashboardUI";
 
 const statusTones = {
@@ -19,11 +17,9 @@ export default function ApplicationStatusBadge({
 }: {
   status: keyof typeof statusTones;
 }) {
-  const { t } = useLanguage();
-
   return (
     <DashboardBadge tone={statusTones[status]}>
-      {t.statuses[status]}
+      {adminT.statuses[status]}
     </DashboardBadge>
   );
 }

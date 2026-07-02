@@ -11,9 +11,10 @@ import type {
   TicketKind,
 } from "../types";
 
+// Ярлыки для админ-сканера — единственного потребителя этих данных.
 const TICKET_TYPE_LABELS: Record<string, string> = {
-  ONE_DAY: "Forum — 1-Day Pass",
-  TWO_DAYS: "Forum — 2-Day Pass",
+  ONE_DAY: "Форум — 1 день",
+  TWO_DAYS: "Форум — 2 дня",
 };
 
 export type CheckInError =
@@ -41,14 +42,14 @@ function normalizeTicket(ticket: Ticket): NormalizedTicket {
   const scopes: CheckInScopeState[] = [
     {
       scope: "FORUM",
-      label: TICKET_TYPE_LABELS[ticket.type] ?? "Forum",
+      label: TICKET_TYPE_LABELS[ticket.type] ?? "Форум",
       checkedInAt: ticket.forumCheckInAt?.toISOString() ?? null,
     },
   ];
   if (ticket.galaDinner) {
     scopes.push({
       scope: "GALA",
-      label: "Gala Dinner",
+      label: "Гала-ужин",
       checkedInAt: ticket.galaCheckInAt?.toISOString() ?? null,
     });
   }
@@ -75,7 +76,7 @@ function normalizeApplication(app: Application): NormalizedTicket {
   const paid = app.paymentStatus === "PAID";
   return {
     ticketKind: "PARTICIPANT",
-    ticketType: "Participant Entry",
+    ticketType: "Участник премии",
     ownerName: app.fullName,
     email: app.email,
     phone: app.phone,
@@ -85,7 +86,7 @@ function normalizeApplication(app: Application): NormalizedTicket {
     scopes: [
       {
         scope: "ATTENDANCE",
-        label: "Event Attendance",
+        label: "Посещение мероприятия",
         checkedInAt: app.checkedInAt?.toISOString() ?? null,
       },
     ],
@@ -99,7 +100,7 @@ function normalizeJury(jury: JuryApplication): NormalizedTicket {
   const paid = jury.paymentStatus === "PAID" || jury.status === "PAID";
   return {
     ticketKind: "JURY",
-    ticketType: "Jury Member",
+    ticketType: "Член жюри",
     ownerName: jury.fullName,
     email: jury.email,
     phone: jury.phone,
@@ -109,7 +110,7 @@ function normalizeJury(jury: JuryApplication): NormalizedTicket {
     scopes: [
       {
         scope: "ATTENDANCE",
-        label: "Event Attendance",
+        label: "Посещение мероприятия",
         checkedInAt: jury.checkedInAt?.toISOString() ?? null,
       },
     ],
@@ -153,7 +154,7 @@ export async function resolveScan(rawCode: unknown): Promise<ResolveResult> {
       ok: false,
       code: "INVALID_CODE",
       status: 400,
-      message: "This QR code is not a valid IBPA ticket.",
+      message: "Этот QR-код не является билетом IBPA.",
     };
   }
 
@@ -171,7 +172,7 @@ export async function resolveScan(rawCode: unknown): Promise<ResolveResult> {
     ok: false,
     code: "NOT_FOUND",
     status: 404,
-    message: "No ticket matches this code.",
+    message: "Билет с таким кодом не найден.",
   };
 }
 
@@ -183,25 +184,25 @@ async function checkInTicketRecord(
 ): Promise<CheckInResult> {
   const ticket = await prisma.ticket.findUnique({ where: { id: recordId } });
   if (!ticket) {
-    return { ok: false, code: "NOT_FOUND", status: 404, message: "Ticket not found." };
+    return { ok: false, code: "NOT_FOUND", status: 404, message: "Билет не найден." };
   }
   if (!ticketEligible(ticket.status)) {
     return {
       ok: false,
       code: "NOT_PAID",
       status: 422,
-      message: "This ticket has not been paid and cannot be checked in.",
+      message: "Билет не оплачен — чек-ин невозможен.",
     };
   }
   if (scope !== "FORUM" && scope !== "GALA") {
-    return { ok: false, code: "BAD_SCOPE", status: 400, message: "Invalid check-in scope for this ticket." };
+    return { ok: false, code: "BAD_SCOPE", status: 400, message: "Недопустимый тип чек-ина для этого билета." };
   }
   if (scope === "GALA" && !ticket.galaDinner) {
     return {
       ok: false,
       code: "BAD_SCOPE",
       status: 400,
-      message: "This ticket does not include the gala dinner.",
+      message: "Этот билет не включает гала-ужин.",
     };
   }
 
@@ -211,7 +212,7 @@ async function checkInTicketRecord(
       ok: false,
       code: "ALREADY_CHECKED_IN",
       status: 409,
-      message: `Already checked in for ${scope === "GALA" ? "the gala dinner" : "the forum"}.`,
+      message: `Гость уже отмечен ${scope === "GALA" ? "на гала-ужине" : "на форуме"}.`,
       checkedInAt: existing.toISOString(),
     };
   }
@@ -240,14 +241,14 @@ async function checkInTicketRecord(
 async function checkInApplicationRecord(recordId: string): Promise<CheckInResult> {
   const app = await prisma.application.findUnique({ where: { id: recordId } });
   if (!app) {
-    return { ok: false, code: "NOT_FOUND", status: 404, message: "Application not found." };
+    return { ok: false, code: "NOT_FOUND", status: 404, message: "Заявка не найдена." };
   }
   if (app.paymentStatus !== "PAID") {
     return {
       ok: false,
       code: "NOT_PAID",
       status: 422,
-      message: "This participant has not paid and cannot be checked in.",
+      message: "Участник не оплатил участие — чек-ин невозможен.",
     };
   }
   if (app.checkedInAt) {
@@ -255,7 +256,7 @@ async function checkInApplicationRecord(recordId: string): Promise<CheckInResult
       ok: false,
       code: "ALREADY_CHECKED_IN",
       status: 409,
-      message: "This participant is already checked in.",
+      message: "Этот участник уже отмечен.",
       checkedInAt: app.checkedInAt.toISOString(),
     };
   }
@@ -269,14 +270,14 @@ async function checkInApplicationRecord(recordId: string): Promise<CheckInResult
 async function checkInJuryRecord(recordId: string): Promise<CheckInResult> {
   const jury = await prisma.juryApplication.findUnique({ where: { id: recordId } });
   if (!jury) {
-    return { ok: false, code: "NOT_FOUND", status: 404, message: "Jury member not found." };
+    return { ok: false, code: "NOT_FOUND", status: 404, message: "Член жюри не найден." };
   }
   if (jury.paymentStatus !== "PAID" && jury.status !== "PAID") {
     return {
       ok: false,
       code: "NOT_PAID",
       status: 422,
-      message: "This jury member has not completed payment and cannot be checked in.",
+      message: "Член жюри не завершил оплату — чек-ин невозможен.",
     };
   }
   if (jury.checkedInAt) {
@@ -284,7 +285,7 @@ async function checkInJuryRecord(recordId: string): Promise<CheckInResult> {
       ok: false,
       code: "ALREADY_CHECKED_IN",
       status: 409,
-      message: "This jury member is already checked in.",
+      message: "Этот член жюри уже отмечен.",
       checkedInAt: jury.checkedInAt.toISOString(),
     };
   }

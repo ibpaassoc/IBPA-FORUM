@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/shared/lib/prisma";
+import { adminT } from "@/lib/i18n/admin";
 import { requireAdmin } from "@/shared/lib/admin-auth";
 import { syncApplicationOnChange } from "@/features/google-sheets";
 
@@ -84,5 +85,7 @@ export async function editParticipantApplicationAction(formData: FormData) {
 
   revalidatePath("/admin/applications");
   revalidatePath(`/admin/applications/${id}`);
-  redirect(`/admin/applications/${id}?notice=Application+updated+successfully.`);
+  redirect(
+    `/admin/applications/${id}?notice=${encodeURIComponent(adminT.actions.applicationUpdated)}`,
+  );
 }
