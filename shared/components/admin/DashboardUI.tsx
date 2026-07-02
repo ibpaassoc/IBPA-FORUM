@@ -469,12 +469,13 @@ export function SearchBar({
   className?: string;
 }) {
   return (
-    <label className={cn("relative block", className)}>
+    <label className={cn("relative block shrink-0", className)}>
       <span className="sr-only">{placeholder}</span>
       <Search
         aria-hidden
         size={16}
-        className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-ink-muted)]"
+        strokeWidth={2.4}
+        className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-ink-muted)]"
       />
       <input
         type="search"
@@ -900,7 +901,7 @@ export function DashboardAccentBlock({
 }
 
 export const dashboardInputClass =
-  "h-11 w-full rounded-[18px] border border-[rgba(114,160,193,0.22)] bg-white/74 px-4 text-[0.92rem] leading-none text-[var(--color-ink)] shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_10px_26px_rgba(37,42,45,0.045)] outline-none backdrop-blur-xl transition placeholder:text-[var(--color-ink-muted)] focus:border-[var(--color-blue)] focus:ring-4 focus:ring-[rgba(114,160,193,0.16)] disabled:cursor-not-allowed disabled:opacity-65";
+  "h-11 w-full rounded-[18px] border border-[rgba(114,160,193,0.22)] bg-white/74 px-4 text-[0.92rem] leading-none text-[var(--color-ink)] shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_10px_26px_rgba(37,42,45,0.045)] outline-none transition placeholder:text-[var(--color-ink-muted)] focus:border-[var(--color-blue)] focus:ring-4 focus:ring-[rgba(114,160,193,0.16)] disabled:cursor-not-allowed disabled:opacity-65";
 
 // Chevron drawn inline so native selects match the glass inputs without a wrapper element.
 const selectChevron =

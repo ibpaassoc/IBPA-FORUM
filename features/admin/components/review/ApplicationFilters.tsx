@@ -73,7 +73,6 @@ export default function ApplicationFilters({
   onSelectChange: (key: string, value: string) => void;
   onClearAll: () => void;
 }) {
-  const segmented = selects.filter((select) => select.variant === "segmented");
   const dropdowns = selects.filter((select) => select.variant !== "segmented");
 
   const chips = [
@@ -89,9 +88,6 @@ export default function ApplicationFilters({
       })),
   ];
 
-  const hasActiveFilters =
-    chips.length > 0 || segmented.some((select) => select.value);
-
   return (
     <DashboardCard className="flex flex-col gap-3">
       {/* One responsive filter row: search + dropdowns wrap cleanly, no duplicated DOM. */}
@@ -100,7 +96,7 @@ export default function ApplicationFilters({
           value={search}
           onChange={onSearchChange}
           placeholder={adminT.filters.search}
-          className="w-full sm:min-w-[220px] sm:flex-1"
+          className="w-full sm:min-w-[60px] sm:flex-1"
         />
 
         {dropdowns.map((select) => (
@@ -114,33 +110,6 @@ export default function ApplicationFilters({
           />
         ))}
       </div>
-
-      {segmented.map((select) => (
-        <SegmentedControl key={select.key} select={select} onSelectChange={onSelectChange} />
-      ))}
-
-      {hasActiveFilters ? (
-        <div className="flex flex-wrap items-center gap-2 border-t border-[rgba(37,42,45,0.07)] pt-3">
-          {chips.map((chip) => (
-            <button
-              key={chip.key}
-              type="button"
-              onClick={chip.clear}
-              className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(114,160,193,0.28)] bg-[var(--color-blue-wash)] px-3 py-1 text-xs font-medium text-[var(--color-ink)] backdrop-blur-xl transition hover:border-[var(--color-blue)] hover:bg-white"
-            >
-              <span className="max-w-[14rem] truncate">{chip.label}</span>
-              <X aria-hidden size={12} className="shrink-0 text-[var(--color-ink-soft)]" />
-            </button>
-          ))}
-          <button
-            type="button"
-            onClick={onClearAll}
-            className="rounded-full px-2 py-1 text-xs font-semibold uppercase tracking-[0.1em] text-[var(--color-blue)] transition hover:text-[var(--color-ink)]"
-          >
-            {adminT.filters.clearAll}
-          </button>
-        </div>
-      ) : null}
     </DashboardCard>
   );
 }
