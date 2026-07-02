@@ -1,6 +1,6 @@
 import "server-only";
 import { getSheetsClient, type SheetsClient } from "./client";
-import { SHEET_TABS } from "./config";
+import { a1, SHEET_TABS } from "./config";
 import {
   borderRequests,
   columnWidthRequests,
@@ -69,8 +69,8 @@ export async function syncTicketToSheet(id: string): Promise<void> {
 // ── Statistics ───────────────────────────────────────────────────────────────
 
 const STATS_COLUMNS = [
-  { header: "Metric", width: 320, wrap: "CLIP" as const },
-  { header: "Value", width: 200, wrap: "CLIP" as const },
+  { header: "Показатель", width: 320, wrap: "CLIP" as const },
+  { header: "Значение", width: 200, wrap: "CLIP" as const },
 ];
 
 let statsSheetId: number | null = null;
@@ -96,8 +96,8 @@ export async function syncStatsToSheet(): Promise<void> {
   const sheetId = await ensureStatsSheet(client);
 
   // Clear first so removed metrics never leave stale trailing rows behind.
-  await client.clearValues(`${SHEET_TABS.stats}!A:B`);
-  await client.updateValues(`${SHEET_TABS.stats}!A1`, layout.rows);
+  await client.clearValues(a1(SHEET_TABS.stats, "A:B"));
+  await client.updateValues(a1(SHEET_TABS.stats, "A1"), layout.rows);
 
   const rowCount = layout.rows.length;
   await client.batchUpdate([

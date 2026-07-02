@@ -1,13 +1,15 @@
 import "server-only";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/shared/lib/prisma";
-import { ticketTypeLabel } from "@/features/tickets/lib/labels";
-import {
-  GALA_DINNER_CENTS,
-  TICKET_AMOUNTS_CENTS,
-} from "@/features/tickets/server/ticket-service";
 import type { SheetValues } from "./client";
-import { formatDateTime, formatUsd, humanizeEnum, joinList, yesNo } from "./format";
+import { formatDateTime, formatUsd, joinList, yesNo } from "./format";
+import {
+  applicationStatusLabel,
+  juryStatusLabel,
+  scoreStatusLabel,
+  ticketPaymentLabel,
+  ticketTypeLabelRu,
+} from "./labels";
 
 /**
  * Database → spreadsheet row mappers. Each builder fetches exactly the columns
@@ -57,7 +59,7 @@ function applicationScoreSummary(app: ApplicationRecord): string {
     .filter((value): value is number => value != null);
   if (totals.length === 0) return "";
   const average = totals.reduce((sum, value) => sum + value, 0) / totals.length;
-  return `${totals.length} submitted · avg ${average.toFixed(1)}`;
+  return `оценок: ${totals.length} · средн. ${average.toFixed(1)}`;
 }
 
 function applicationAmountPaidCents(app: ApplicationRecord): number {
@@ -85,7 +87,7 @@ export function mapApplicationRow(app: ApplicationRecord): SheetValues[number] {
     yesNo(member),
     app.membershipNumber ?? "",
     formatUsd(applicationAmountPaidCents(app)),
-    humanizeEnum(app.status),
+    applicationStatusLabel(app.status),
     formatDateTime(app.submittedAt),
     formatDateTime(app.updatedAt),
     // Application has no dedicated reviewed-at timestamp.
@@ -161,7 +163,7 @@ export function mapJuryRow(jury: JuryRecord): SheetValues[number] {
     yesNo(jury.ibpaAssociationMember),
     jury.ibpaNumber ?? "",
     formatUsd(juryPriceCents(jury)),
-    humanizeEnum(jury.status),
+    juryStatusLabel(jury.status),
     formatDateTime(jury.submittedAt),
     formatDateTime(jury.updatedAt),
     formatDateTime(jury.approvedAt ?? jury.rejectedAt),
@@ -231,7 +233,7 @@ export function mapScoreRow(score: ScoreRecord): SheetValues[number] {
     criteria(score.presentation),
     score.totalScore ?? "",
     averageScore(score.totalScore),
-    humanizeEnum(score.status),
+    scoreStatusLabel(score.status),
     score.comment ?? "",
     formatDateTime(score.submittedAt),
     formatDateTime(score.updatedAt),
@@ -260,8 +262,6 @@ const ticketSelect = {
   phone: true,
   instagram: true,
   type: true,
-  galaDinner: true,
-  isIbpaMember: true,
   secureToken: true,
   status: true,
   forumCheckInAt: true,
@@ -278,24 +278,9 @@ const ticketSelect = {
 
 type TicketRecord = Prisma.TicketGetPayload<{ select: typeof ticketSelect }>;
 
-function ticketPaymentLabel(status: TicketRecord["status"]): string {
-  if (status === "CANCELED") return "Canceled";
-  if (status === "PENDING") return "Pending";
-  return "Paid";
-}
-
 export function mapTicketRow(ticket: TicketRecord): SheetValues[number] {
   const payment = ticket.payments[0] ?? null;
   const totalPaidCents = payment?.amount ?? 0;
-  const galaCents = ticket.galaDinner ? GALA_DINNER_CENTS : 0;
-  const ticketPortionCents = Math.max(0, totalPaidCents - galaCents);
-
-  const basePriceCents =
-    TICKET_AMOUNTS_CENTS[ticket.type][ticket.isIbpaMember ? "ibpa" : "standard"];
-  const discountCents = basePriceCents - ticketPortionCents;
-  const discountLabel =
-    payment && discountCents > 0 ? formatUsd(discountCents) : "";
-
   const checkInAt = ticket.forumCheckInAt ?? ticket.galaCheckInAt;
 
   return [
@@ -304,11 +289,10 @@ export function mapTicketRow(ticket: TicketRecord): SheetValues[number] {
     ticket.email,
     ticket.phone,
     ticket.instagram ?? "",
-    ticketTypeLabel(ticket.type),
-    1,
-    formatUsd(ticketPortionCents),
+    ticketTypeLabelRu(ticket.type),
+    // Single price column: the full amount actually paid (Стоимость). The former
+    // Quantity, per-ticket portion and Discount columns were removed.
     formatUsd(totalPaidCents),
-    discountLabel,
     ticketPaymentLabel(ticket.status),
     ticket.secureToken,
     yesNo(Boolean(checkInAt)),

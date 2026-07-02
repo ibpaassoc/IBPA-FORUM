@@ -1,5 +1,6 @@
 import "server-only";
 import type { SheetsClient, SheetValues } from "./client";
+import { a1 } from "./config";
 import { sheetHeaders, type SheetDefinition } from "./schema";
 import {
   borderRequests,
@@ -93,13 +94,13 @@ export async function ensureSheetHeaders(
   definition: SheetDefinition
 ): Promise<void> {
   const headers = sheetHeaders(definition);
-  const existing = await client.getValues(`${definition.tab}!1:1`);
+  const existing = await client.getValues(a1(definition.tab, "1:1"));
   if (headersMatch(existing, headers)) return;
 
   // Clear the whole header row first so a previous, wider layout cannot leave
   // stale header labels in the trailing columns.
-  await client.clearValues(`${definition.tab}!A1:${WIDE_CLEAR_LAST_COLUMN}1`);
-  await client.updateValues(`${definition.tab}!A1`, [headers]);
+  await client.clearValues(a1(definition.tab, `A1:${WIDE_CLEAR_LAST_COLUMN}1`));
+  await client.updateValues(a1(definition.tab, "A1"), [headers]);
 }
 
 /**
@@ -185,7 +186,7 @@ export async function upsertSheetRows(
   // Map existing IDs to their 1-based sheet row number (header is row 1, so the
   // first data row is row 2).
   const existing = await client.getValues(
-    `${definition.tab}!${idColumn}2:${idColumn}`
+    a1(definition.tab, `${idColumn}2:${idColumn}`)
   );
   const rowById = new Map<string, number>();
   existing.forEach((cells, index) => {
@@ -206,7 +207,7 @@ export async function upsertSheetRows(
     const sheetRow = rowById.get(id);
     if (sheetRow) {
       updates.push({
-        range: `${definition.tab}!A${sheetRow}:${lastColumn}${sheetRow}`,
+        range: a1(definition.tab, `A${sheetRow}:${lastColumn}${sheetRow}`),
         values: [row],
       });
     } else {
@@ -219,7 +220,7 @@ export async function upsertSheetRows(
   }
 
   if (appends.length > 0) {
-    await client.appendValues(`${definition.tab}!A1`, appends);
+    await client.appendValues(a1(definition.tab, "A1"), appends);
   }
 
   const dataRowCount = priorDataRows + appends.length;
@@ -257,16 +258,14 @@ export async function rebuildDataSheet(
   const sheetId = await ensureDataSheet(client, definition);
   const columnCount = definition.columns.length;
 
-  const priorIds = await client.getValues(`${definition.tab}!A2:A`);
+  const priorIds = await client.getValues(a1(definition.tab, "A2:A"));
   const priorDataRows = countIds(priorIds);
 
   // Wipe all existing data values across a generous column range.
-  await client.clearValues(
-    `${definition.tab}!A2:${WIDE_CLEAR_LAST_COLUMN}`
-  );
+  await client.clearValues(a1(definition.tab, `A2:${WIDE_CLEAR_LAST_COLUMN}`));
 
   if (rows.length > 0) {
-    await client.updateValues(`${definition.tab}!A2`, rows);
+    await client.updateValues(a1(definition.tab, "A2"), rows);
   }
 
   const requests = [
