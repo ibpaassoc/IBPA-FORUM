@@ -1,7 +1,9 @@
 import "server-only";
+import type { ApplicationStatus, TicketType } from "@prisma/client";
 import { prisma } from "@/shared/lib/prisma";
 import type { SheetValues } from "./client";
-import { formatDateTime, formatUsd, humanizeEnum } from "./format";
+import { formatDateTime, formatUsd } from "./format";
+import { applicationStatusLabel, ticketTypeLabelRu } from "./labels";
 
 /**
  * Compute platform statistics directly from the database (rather than relying on
@@ -91,12 +93,12 @@ export async function computeStatsLayout(): Promise<StatsLayout> {
   const now = formatDateTime(new Date());
   const builder = new StatsBuilder();
 
-  builder.title("IBPA Platform Statistics");
+  builder.title("Статистика платформы IBPA");
 
   // ── Sync info ────────────────────────────────────────────────────────────
-  builder.section("SYNC INFO");
-  builder.metric("Last Sync Time", now);
-  builder.metric("Last Successful Sync", now);
+  builder.section("СИНХРОНИЗАЦИЯ");
+  builder.metric("Время последней синхронизации", now);
+  builder.metric("Последняя успешная синхронизация", now);
 
   // ── Applications ─────────────────────────────────────────────────────────
   const appMember = (app: (typeof applications)[number]) =>
@@ -105,21 +107,21 @@ export async function computeStatsLayout(): Promise<StatsLayout> {
   const appRevenue = revenueBySource("COMPETITOR");
   const appPriceTotal = applications.reduce((sum, a) => sum + a.amount, 0);
 
-  builder.section("APPLICATIONS");
-  builder.metric("Total Applications", applications.length);
+  builder.section("ЗАЯВКИ");
+  builder.metric("Всего заявок", applications.length);
   for (const [status, count] of countBy(applications, (a) => a.status)) {
-    builder.metric(`By Status — ${humanizeEnum(status)}`, count);
+    builder.metric(`По статусу — ${applicationStatusLabel(status as ApplicationStatus)}`, count);
   }
   for (const [category, count] of countBy(applications, (a) => a.category.name)) {
-    builder.metric(`By Category — ${category}`, count);
+    builder.metric(`По категории — ${category}`, count);
   }
-  builder.metric("IBPA Members", applications.filter(appMember).length);
-  builder.metric("Non-members", applications.filter((a) => !appMember(a)).length);
-  builder.metric("Paid", appPaidCount);
-  builder.metric("Unpaid", applications.length - appPaidCount);
-  builder.metric("Total Application Revenue", formatUsd(appRevenue));
+  builder.metric("Участники IBPA", applications.filter(appMember).length);
+  builder.metric("Не участники", applications.filter((a) => !appMember(a)).length);
+  builder.metric("Оплачено", appPaidCount);
+  builder.metric("Не оплачено", applications.length - appPaidCount);
+  builder.metric("Доход от заявок", formatUsd(appRevenue));
   builder.metric(
-    "Average Application Price",
+    "Средняя стоимость заявки",
     formatUsd(applications.length ? Math.round(appPriceTotal / applications.length) : 0)
   );
 
@@ -128,14 +130,14 @@ export async function computeStatsLayout(): Promise<StatsLayout> {
     (j) => j.status === "SUBMITTED" || j.status === "ADDITIONAL_INFO_REQUIRED"
   ).length;
 
-  builder.section("JURY");
-  builder.metric("Total Jury Applications", juryApplications.length);
-  builder.metric("Approved", juryApplications.filter((j) => j.status === "APPROVED").length);
-  builder.metric("Paid", juryApplications.filter((j) => j.status === "PAID").length);
-  builder.metric("Pending", juryPending);
-  builder.metric("Rejected", juryApplications.filter((j) => j.status === "REJECTED").length);
-  builder.metric("IBPA Members", juryApplications.filter((j) => j.ibpaAssociationMember).length);
-  builder.metric("Non-members", juryApplications.filter((j) => !j.ibpaAssociationMember).length);
+  builder.section("ЖЮРИ");
+  builder.metric("Всего заявок в жюри", juryApplications.length);
+  builder.metric("Одобрено", juryApplications.filter((j) => j.status === "APPROVED").length);
+  builder.metric("Оплачено", juryApplications.filter((j) => j.status === "PAID").length);
+  builder.metric("В ожидании", juryPending);
+  builder.metric("Отклонено", juryApplications.filter((j) => j.status === "REJECTED").length);
+  builder.metric("Участники IBPA", juryApplications.filter((j) => j.ibpaAssociationMember).length);
+  builder.metric("Не участники", juryApplications.filter((j) => !j.ibpaAssociationMember).length);
 
   // ── Scores ───────────────────────────────────────────────────────────────
   const scoreTotals = submittedScores
@@ -146,26 +148,26 @@ export async function computeStatsLayout(): Promise<StatsLayout> {
       ? scoreTotals.reduce((sum, v) => sum + v, 0) / scoreTotals.length
       : null;
 
-  builder.section("SCORES");
-  builder.metric("Total Scores Submitted", submittedScores.length);
+  builder.section("ОЦЕНКИ");
+  builder.metric("Всего оценок отправлено", submittedScores.length);
   builder.metric(
-    "Average Overall Score",
+    "Средний общий балл",
     averageOverall == null ? "—" : Math.round(averageOverall * 10) / 10
   );
-  builder.metric("Highest Score", scoreTotals.length ? Math.max(...scoreTotals) : "—");
-  builder.metric("Lowest Score", scoreTotals.length ? Math.min(...scoreTotals) : "—");
+  builder.metric("Максимальный балл", scoreTotals.length ? Math.max(...scoreTotals) : "—");
+  builder.metric("Минимальный балл", scoreTotals.length ? Math.min(...scoreTotals) : "—");
 
   const scoresByCategory = new Map<string, number[]>();
   for (const score of submittedScores) {
     if (score.totalScore == null) continue;
-    const category = score.nominationApplication?.category.name ?? "Uncategorized";
+    const category = score.nominationApplication?.category.name ?? "Без категории";
     const list = scoresByCategory.get(category) ?? [];
     list.push(score.totalScore);
     scoresByCategory.set(category, list);
   }
   for (const [category, totals] of scoresByCategory) {
     const avg = totals.reduce((sum, v) => sum + v, 0) / totals.length;
-    builder.metric(`Average Score — ${category}`, Math.round(avg * 10) / 10);
+    builder.metric(`Средний балл — ${category}`, Math.round(avg * 10) / 10);
   }
 
   // ── Tickets ──────────────────────────────────────────────────────────────
@@ -177,26 +179,26 @@ export async function computeStatsLayout(): Promise<StatsLayout> {
   ).length;
   const ticketRevenue = revenueBySource("TICKET");
 
-  builder.section("TICKETS");
-  builder.metric("Total Tickets Sold", soldTickets.length);
+  builder.section("БИЛЕТЫ");
+  builder.metric("Всего продано билетов", soldTickets.length);
   for (const [type, count] of countBy(soldTickets, (t) => t.type)) {
-    builder.metric(`By Type — ${humanizeEnum(type)}`, count);
+    builder.metric(`По типу — ${ticketTypeLabelRu(type as TicketType)}`, count);
   }
-  builder.metric("Average Ticket Price", formatUsd(
+  builder.metric("Средняя стоимость билета", formatUsd(
     soldTickets.length ? Math.round(ticketRevenue / soldTickets.length) : 0
   ));
-  builder.metric("Checked In", checkedInCount);
-  builder.metric("Not Checked In", soldTickets.length - checkedInCount);
+  builder.metric("Отмечено", checkedInCount);
+  builder.metric("Не отмечено", soldTickets.length - checkedInCount);
 
   // ── Revenue ──────────────────────────────────────────────────────────────
   const juryRevenue = revenueBySource("JURY");
   const totalRevenue = appRevenue + juryRevenue + ticketRevenue;
 
-  builder.section("REVENUE");
-  builder.metric("Application Revenue", formatUsd(appRevenue));
-  builder.metric("Jury Revenue", formatUsd(juryRevenue));
-  builder.metric("Ticket Revenue", formatUsd(ticketRevenue));
-  builder.metric("Total Revenue", formatUsd(totalRevenue));
+  builder.section("ДОХОД");
+  builder.metric("Доход от заявок", formatUsd(appRevenue));
+  builder.metric("Доход от жюри", formatUsd(juryRevenue));
+  builder.metric("Доход от билетов", formatUsd(ticketRevenue));
+  builder.metric("Общий доход", formatUsd(totalRevenue));
 
   return {
     rows: builder.rows,

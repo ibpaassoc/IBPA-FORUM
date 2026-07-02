@@ -2,7 +2,7 @@ import "server-only";
 
 /**
  * Presentation helpers shared by every row mapper so values land in the
- * spreadsheet consistently: USD currency, readable dates, Yes/No booleans, and
+ * spreadsheet consistently: USD currency, readable dates, Да/Нет booleans, and
  * comma-separated arrays (never raw JSON blobs).
  */
 
@@ -40,9 +40,9 @@ export function formatDateTime(date: Date | null | undefined): string {
   );
 }
 
-/** Render a boolean as a human-friendly "Yes"/"No". */
+/** Render a boolean as a human-friendly "Да"/"Нет". */
 export function yesNo(value: boolean | null | undefined): string {
-  return value ? "Yes" : "No";
+  return value ? "Да" : "Нет";
 }
 
 /** Join an array into a readable comma-separated string (no JSON blobs). */
@@ -52,13 +52,4 @@ export function joinList(values: Array<string | null | undefined> | null | undef
     .map((value) => (value ?? "").toString().trim())
     .filter(Boolean)
     .join(", ");
-}
-
-/** Title-case a single token, e.g. "PAYMENT_PENDING" → "Payment Pending". */
-export function humanizeEnum(value: string | null | undefined): string {
-  if (!value) return "";
-  return value
-    .toLowerCase()
-    .replaceAll("_", " ")
-    .replace(/\b\w/g, (char) => char.toUpperCase());
 }
