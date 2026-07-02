@@ -148,14 +148,6 @@ export default function AdminOverviewPage({
         actions={
           <>
             {googleSheetsConfigured ? <QuickSheetsSyncButton /> : null}
-            <DashboardSecondaryBtn href="/admin/tickets">
-              <Camera aria-hidden size={16} />
-              {adminT.overview.checkInDesk}
-            </DashboardSecondaryBtn>
-            <DashboardSecondaryBtn href="/admin/scoring">
-              <Star aria-hidden size={16} />
-              {adminT.overview.scoreAudit}
-            </DashboardSecondaryBtn>
           </>
         }
       />

@@ -141,13 +141,12 @@ export default function GoogleSheetsSyncPanel({
             <h2 className="font-[var(--font-title-family)] text-2xl font-light tracking-[-0.02em]">
               {adminT.sheets.panelTitle}
             </h2>
-            <StatusBadge tone={connectionTone}>
-              {configured ? adminT.sheets.connected : adminT.sheets.notConfigured}
-            </StatusBadge>
+            <div className="ml-5">
+              <StatusBadge tone={connectionTone}>
+                {configured ? adminT.sheets.connected : adminT.sheets.notConfigured}
+              </StatusBadge>
+            </div>
           </div>
-          <p className="mt-1 text-sm text-[var(--color-ink-soft)]">
-            {adminT.sheets.description}
-          </p>
         </div>
       </div>
 
@@ -181,21 +180,20 @@ export default function GoogleSheetsSyncPanel({
       ) : null}
 
       <div className="mt-5 flex flex-col gap-3">
-        <DashboardPrimaryBtn
-          type="button"
-          disabled={!configured || busy}
-          onClick={() => void runSync("all")}
-          className="w-full justify-center"
-        >
-          {pending === "all" ? (
-            <Loader2 aria-hidden size={16} className="animate-spin" />
-          ) : (
-            <Database aria-hidden size={16} />
-          )}
-          {SCOPE_LABELS.all}
-        </DashboardPrimaryBtn>
-
-        <div className="grid gap-2 sm:grid-cols-2">
+        <div className="grid gap-2 sm:grid-cols-3">
+          <DashboardPrimaryBtn
+            type="button"
+            disabled={!configured || busy}
+            onClick={() => void runSync("all")}
+            className="w-full justify-center"
+          >
+            {pending === "all" ? (
+              <Loader2 aria-hidden size={16} className="animate-spin" />
+            ) : (
+              <Database aria-hidden size={16} />
+            )}
+            {SCOPE_LABELS.all}
+          </DashboardPrimaryBtn>
           {secondaryActions.map(({ scope, icon: Icon }) => (
             <DashboardSecondaryBtn
               key={scope}

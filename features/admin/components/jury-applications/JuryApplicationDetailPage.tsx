@@ -19,7 +19,6 @@ import {
   XCircle,
 } from "lucide-react";
 import ApplicationStatusBadge from "@/features/admin/components/badges/ApplicationStatusBadge";
-import PaymentStatusBadge from "@/features/admin/components/badges/PaymentStatusBadge";
 import {
   approveJuryApplicationAction,
   approveJuryApplicationWithoutPaymentAction,
@@ -271,7 +270,6 @@ export default function JuryApplicationDetailPage({
       <ReviewActionPanel title={adminT.detail.decision}>
         <div className="flex flex-wrap gap-2">
           <ApplicationStatusBadge status={application.status} />
-          <PaymentStatusBadge status={application.paymentStatus} />
         </div>
 
         {canDecide ? (
@@ -311,9 +309,6 @@ export default function JuryApplicationDetailPage({
                 {adminT.detail.activateWithoutPayment}
               </button>
             </form>
-            <p className="mt-1.5 text-xs leading-5 text-[var(--color-ink-muted)]">
-              {adminT.detail.activateWithoutPaymentNote}
-            </p>
           </div>
         ) : null}
 
@@ -343,9 +338,6 @@ export default function JuryApplicationDetailPage({
         <div className="mt-4 border-t border-[rgba(37,42,45,0.06)] pt-4">
           <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-muted)]">
             {adminT.detail.statusOverride}
-          </p>
-          <p className="mt-1 text-xs leading-5 text-[var(--color-ink-muted)]">
-            {adminT.detail.statusOverrideNote}
           </p>
           <form action={overrideJuryApplicationStatusAction} className="mt-2 flex flex-col gap-2">
             <input type="hidden" name="id" value={application.id} />
@@ -402,7 +394,6 @@ export default function JuryApplicationDetailPage({
       badges={
         <>
           <ApplicationStatusBadge status={application.status} />
-          <PaymentStatusBadge status={application.paymentStatus} />
         </>
       }
       meta={[

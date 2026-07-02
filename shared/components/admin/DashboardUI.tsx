@@ -794,7 +794,7 @@ export function FloatingActionButton({
   className?: string;
 }) {
   const classes = cn(
-    "fixed bottom-[5.75rem] right-5 z-40 flex size-14 items-center justify-center rounded-full bg-[var(--color-blue)] text-white shadow-[0_18px_40px_rgba(114,160,193,0.36)] transition hover:-translate-y-1 hover:bg-[#4d86ad] lg:bottom-7",
+    "fixed bottom-[1.75rem] right-5 z-40 flex size-14 items-center justify-center rounded-full bg-[var(--color-blue)] text-white shadow-[0_18px_40px_rgba(114,160,193,0.36)] transition hover:-translate-y-1 hover:bg-[#4d86ad] lg:bottom-7",
     focusRing,
     className,
   );

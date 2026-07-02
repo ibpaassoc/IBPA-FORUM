@@ -138,9 +138,6 @@ export default function RequestAdditionalInfoPanel({
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-blue)]">
             {adminT.infoRequest.requestTitle}
           </p>
-          <p className="mt-1 text-xs leading-5 text-[var(--color-ink-soft)]">
-            {adminT.infoRequest.requestText}
-          </p>
           <RequestForm
             applicationId={applicationId}
             placeholder={adminT.infoRequest.placeholderLong}

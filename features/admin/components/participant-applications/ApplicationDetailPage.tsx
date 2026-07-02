@@ -28,7 +28,6 @@ import {
   XCircle,
 } from "lucide-react";
 import { updateParticipantApplicationStatus } from "@/features/admin/actions/participant.actions";
-import ApplicationStatusBadge from "@/features/admin/components/badges/ApplicationStatusBadge";
 import PaymentStatusBadge from "@/features/admin/components/badges/PaymentStatusBadge";
 import ReviewWorkspace, { type ReviewTab } from "@/features/admin/components/review/ReviewWorkspace";
 import {
@@ -475,7 +474,6 @@ export default function ApplicationDetailPage({
       <div className="grid gap-3 sm:grid-cols-2">
         <DashboardDetailCard label={adminT.detail.created} value={formatAdminDate(application.createdAt)} />
         <DashboardDetailCard label={adminT.detail.lastUpdated} value={formatAdminDate(application.updatedAt)} />
-        <DashboardDetailCard label={adminT.detail.applicationStatus} value={<ApplicationStatusBadge status={application.status} />} />
         <DashboardDetailCard label={adminT.detail.paymentStatus} value={<PaymentStatusBadge status={application.paymentStatus} />} />
       </div>
     </DashboardCard>
@@ -493,7 +491,6 @@ export default function ApplicationDetailPage({
   const aside = (
     <ReviewActionPanel title={adminT.detail.decision}>
       <div className="flex flex-wrap gap-2">
-        <ApplicationStatusBadge status={application.status} />
         <PaymentStatusBadge status={application.paymentStatus} />
       </div>
 
@@ -574,7 +571,6 @@ export default function ApplicationDetailPage({
       subtitle={nominationSummaryLabel}
       badges={
         <>
-          <ApplicationStatusBadge status={application.status} />
           <PaymentStatusBadge status={application.paymentStatus} />
         </>
       }

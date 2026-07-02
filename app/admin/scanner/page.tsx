@@ -11,7 +11,6 @@ export default async function AdminScannerPage() {
       <DashboardPageHeader
         label={adminT.scanner.label}
         title={adminT.scanner.title}
-        description={adminT.scanner.description}
       />
       <DashboardCard className="p-5 md:p-7">
         <UnifiedScanner />

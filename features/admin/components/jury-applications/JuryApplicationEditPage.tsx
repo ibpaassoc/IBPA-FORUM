@@ -11,7 +11,6 @@ import {
 import { editJuryApplicationAction } from "@/features/admin/actions/jury.actions";
 import { adminT } from "@/lib/i18n/admin";
 import ApplicationStatusBadge from "@/features/admin/components/badges/ApplicationStatusBadge";
-import PaymentStatusBadge from "@/features/admin/components/badges/PaymentStatusBadge";
 import {
   DashboardAccentBlock,
   DashboardCard,
@@ -63,7 +62,6 @@ export default function JuryApplicationEditPage({
       <DashboardPageHeader
         label={adminT.edit.juryLabel}
         title={application.fullName}
-        description={adminT.edit.description}
         actions={
           <DashboardSecondaryBtn href={`/admin/jury-applications/${application.id}`}>
             <ArrowLeft aria-hidden size={15} />
@@ -276,12 +274,11 @@ export default function JuryApplicationEditPage({
 
         <aside className="flex flex-col gap-4 xl:sticky xl:top-5 xl:self-start">
           <DashboardAccentBlock>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/90">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-blue)]">
               {adminT.edit.currentStatus}
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
               <ApplicationStatusBadge status={application.status} />
-              <PaymentStatusBadge status={application.paymentStatus} />
             </div>
           </DashboardAccentBlock>
 

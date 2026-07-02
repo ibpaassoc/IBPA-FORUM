@@ -125,21 +125,6 @@ export default function AdminSidebar() {
             </nav>
 
             <div className="mt-3 border-t border-[rgba(37,42,45,0.08)] pt-3">
-              <div
-                className={`mb-2 flex items-center gap-3 rounded-[22px] bg-white/58 p-3 ${
-                  collapsed ? "justify-center" : ""
-                }`}
-              >
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-blue-wash)] font-[var(--font-title-family)] text-lg text-[var(--color-blue)]">
-                  A
-                </div>
-                {!collapsed ? (
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-[var(--color-ink)]">{adminT.nav.adminDesk}</p>
-                    <p className="text-xs text-[var(--color-ink-soft)]">IBPA 2026</p>
-                  </div>
-                ) : null}
-              </div>
               <SignOutButton compact={collapsed} />
             </div>
           </div>
@@ -148,7 +133,6 @@ export default function AdminSidebar() {
 
       {!hideMobileChrome ? (
         <>
-          <MobileBottomNavigation items={mobileItems} />
           <FloatingActionButton
             label={adminT.nav.openMenu}
             icon={MoreHorizontal}
@@ -160,14 +144,6 @@ export default function AdminSidebar() {
 
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} title={adminT.nav.drawerTitle}>
         <div className="space-y-4">
-          <div className="rounded-[24px] bg-[linear-gradient(135deg,rgba(185,217,235,0.32),rgba(255,255,255,0.86))] p-4">
-            <p className="font-[var(--font-accent-family)] text-lg italic text-[var(--color-blue)]">
-              {adminT.nav.drawerBrand}
-            </p>
-            <p className="mt-1 text-sm text-[var(--color-ink-soft)]">
-              {adminT.nav.drawerText}
-            </p>
-          </div>
           <nav className="grid gap-2" aria-label="Admin drawer navigation">
             {navItems.map(({ href, label, icon: Icon }) => {
               const active = isActive(pathname, href);

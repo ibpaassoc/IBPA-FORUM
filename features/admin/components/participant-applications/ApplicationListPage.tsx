@@ -242,28 +242,20 @@ export default function ApplicationListPage({
                       </div>
                     </DashboardPanel>
 
-                    <div className="flex flex-col justify-between gap-3 rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white p-4">
+                    <div className="flex items-center justify-between gap-3 rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white p-4 lg:flex-col lg:items-start">
                       <div>
-                        <div className="flex items-center gap-2 text-[var(--color-ink-muted)]">
-                          <ReceiptText aria-hidden size={15} />
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">{adminT.applications.primaryPath}</p>
-                        </div>
-                        <p className="mt-2 text-sm font-semibold leading-6 text-[var(--color-ink)]">
-                          {app.award.name}
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
+                          {adminT.applications.createdDate}
                         </p>
-                        <p className="text-sm text-[var(--color-ink-soft)]">{app.category.name}</p>
-                      </div>
-                      <div className="flex items-center justify-between gap-3 border-t border-[rgba(37,42,45,0.08)] pt-3">
-                        <span className="inline-flex items-center gap-1.5 text-xs text-[var(--color-ink-muted)]">
-                          <Clock3 aria-hidden size={13} />
+                        <p className="mt-2 text-sm font-medium text-[var(--color-ink)]">
                           {formatAdminDate(app.createdAt)}
-                        </span>
-                        <ArrowRight
-                          aria-hidden
-                          size={17}
-                          className="text-[var(--color-ink-soft)] transition group-hover:translate-x-0.5 group-hover:text-[var(--color-blue)]"
-                        />
+                        </p>
                       </div>
+                      <ArrowRight
+                        aria-hidden
+                        size={17}
+                        className="text-[var(--color-ink-muted)] transition group-hover:translate-x-0.5 group-hover:text-[var(--color-blue)]"
+                      />
                     </div>
                   </div>
                 </DashboardCard>
