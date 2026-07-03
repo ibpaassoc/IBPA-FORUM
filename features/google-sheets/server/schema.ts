@@ -1,22 +1,51 @@
 import "server-only";
-import { SHEET_TABS, type SheetTab } from "./config";
+import { SHEET_TABS } from "./config";
 import { COLORS, type ColumnSpec, type ConditionalRule } from "./formatting";
 
 /**
  * Declarative definition of each data tab: its columns (header + width + wrap),
- * which column holds the unique ID used for idempotent upserts, and the
- * status-based colour rules. The ID column is always the first column (index 0),
- * so re-running any sync updates existing rows in place instead of duplicating.
+ * which column holds the unique ID used for idempotent upserts, the conditional
+ * colour rules (status colours on Scores / Tickets; green ticked-checkbox
+ * highlight on Jury), plus — for the Applications and Jury tabs — the category
+ * cell to colour-code and the editable checkbox tracking columns.
+ *
+ * The ID column is always the first column (index 0), so re-running any sync
+ * updates existing rows in place instead of duplicating.
  *
  * Reviewer / internal admin identity is intentionally never represented here.
  */
+
+/** The multi-value, colour-coded category cell for a tab. */
+export type CategoryConfig = {
+  /** Column holding the comma-joined, per-category coloured category text. */
+  displayColumnIndex: number;
+};
+
 export type SheetDefinition = {
-  tab: SheetTab;
+  /** Tab name (Russian). */
+  tab: string;
   /** Zero-based index of the unique-ID column (always the first column). */
   idColumnIndex: 0;
   columns: ColumnSpec[];
-  /** Conditional row-colour rules, evaluated in order (first match wins). */
+  /** Conditional colour rules, evaluated in order (first match wins). */
   conditionalRules: ConditionalRule[];
+  /** Columns hidden from the normal admin view (technical helpers). */
+  hiddenColumnIndexes?: number[];
+  /** The colour-coded category cell, when applicable. */
+  category?: CategoryConfig;
+  /**
+   * Trailing, admin-editable checkbox columns. Their values live only in the
+   * sheet (not the database) and are preserved by ID across every sync, so the
+   * row mappers never produce values for them.
+   */
+  checkboxColumnIndexes?: number[];
+  /**
+   * When true, a native basic filter is applied over the whole table so admins
+   * get a filter dropdown (funnel) on every column header directly on the sheet
+   * — including multi-category matching (Category → "Filter by condition → Text
+   * contains") and the Jury tracking-checkbox TRUE/FALSE filters.
+   */
+  basicFilter?: boolean;
 };
 
 /** Column headers in order — derived from the column specs. */
@@ -25,73 +54,98 @@ export function sheetHeaders(definition: SheetDefinition): string[] {
 }
 
 // ── Заявки (Applications) ────────────────────────────────────────────────────
-// Removed per request: Applicant Type, Payment Status, Application Price.
+// Paid applications only. The status column was removed per request; the
+// category cell is multi-value ("Hair, Education, Salon") and colour-coded.
+// Filtering happens directly on the sheet via a native basic filter (funnel on
+// every column) — including multi-category matching on the Категория column and
+// value matching on Номинация. No category tabs, no per-category slicers.
+
+const APPLICATIONS_COLUMNS: ColumnSpec[] = [
+  { header: "ID заявки", width: 130, wrap: "CLIP" },
+  { header: "Участник", width: 170, wrap: "WRAP" },
+  { header: "Email", width: 210, wrap: "CLIP" },
+  { header: "Телефон", width: 140, wrap: "CLIP" },
+  { header: "Instagram", width: 150, wrap: "CLIP" },
+  { header: "Категория", width: 220, wrap: "WRAP" },
+  { header: "Номинация", width: 240, wrap: "WRAP" },
+  { header: "Участник IBPA", width: 110, wrap: "CLIP" },
+  { header: "Номер IBPA", width: 120, wrap: "CLIP" },
+  { header: "Оплачено", width: 120, wrap: "CLIP" },
+  { header: "Дата подачи", width: 150, wrap: "CLIP" },
+  { header: "Дата обновления", width: 150, wrap: "CLIP" },
+  { header: "Итог оценок", width: 170, wrap: "CLIP" },
+];
+
+const APPLICATIONS_CATEGORY_DISPLAY_INDEX = 5;
 
 export const APPLICATIONS_SHEET: SheetDefinition = {
   tab: SHEET_TABS.applications,
   idColumnIndex: 0,
-  columns: [
-    { header: "ID заявки", width: 130, wrap: "CLIP" },
-    { header: "Участник", width: 170, wrap: "WRAP" },
-    { header: "Email", width: 210, wrap: "CLIP" },
-    { header: "Телефон", width: 140, wrap: "CLIP" },
-    { header: "Instagram", width: 150, wrap: "CLIP" },
-    { header: "Категория", width: 160, wrap: "WRAP" },
-    { header: "Номинация", width: 210, wrap: "WRAP" },
-    { header: "Участник IBPA", width: 110, wrap: "CLIP" },
-    { header: "Номер IBPA", width: 120, wrap: "CLIP" },
-    { header: "Оплачено", width: 120, wrap: "CLIP" },
-    { header: "Статус заявки", width: 160, wrap: "CLIP" },
-    { header: "Дата подачи", width: 150, wrap: "CLIP" },
-    { header: "Дата обновления", width: 150, wrap: "CLIP" },
-    { header: "Дата рассмотрения", width: 150, wrap: "CLIP" },
-    { header: "Итог оценок", width: 170, wrap: "CLIP" },
-  ],
-  // Статус заявки is column index 10.
-  conditionalRules: [
-    { columnIndex: 10, equals: "Одобрена", color: COLORS.green },
-    { columnIndex: 10, equals: "Отклонена", color: COLORS.red },
-    { columnIndex: 10, equals: "Ожидает оплаты", color: COLORS.yellow },
-    { columnIndex: 10, equals: "Подана", color: COLORS.blue },
-    { columnIndex: 10, equals: "На рассмотрении", color: COLORS.blue },
-    { columnIndex: 10, equals: "Черновик", color: COLORS.gray },
-  ],
+  columns: APPLICATIONS_COLUMNS,
+  conditionalRules: [],
+  category: { displayColumnIndex: APPLICATIONS_CATEGORY_DISPLAY_INDEX },
+  basicFilter: true,
 };
 
 // ── Жюри (Jury) ──────────────────────────────────────────────────────────────
-// Removed per request: Checked In, Payment Status.
+// Paid jury applications only. The status column was removed; "Специализация"
+// (areas of expertise) is the multi-value, colour-coded category cell, and the
+// three trailing checkbox columns are admin-editable (green when ticked) and
+// preserved across syncs. Filtering happens directly on the sheet via a native
+// basic filter — the Специализация funnel filters by category and each checkbox
+// funnel filters Отправлено / Не отправлено. No category tabs.
+
+const JURY_VISIBLE: ColumnSpec[] = [
+  { header: "ID заявки жюри", width: 130, wrap: "CLIP" },
+  { header: "ФИО", width: 170, wrap: "WRAP" },
+  { header: "Email", width: 210, wrap: "CLIP" },
+  { header: "Телефон", width: 140, wrap: "CLIP" },
+  { header: "Страна", width: 130, wrap: "WRAP" },
+  { header: "Город", width: 130, wrap: "WRAP" },
+  { header: "Должность", width: 200, wrap: "CLIP" },
+  { header: "Опыт (лет)", width: 100, wrap: "CLIP" },
+  { header: "Специализация", width: 260, wrap: "WRAP" },
+  { header: "Участник IBPA", width: 110, wrap: "CLIP" },
+  { header: "Номер IBPA", width: 120, wrap: "CLIP" },
+  { header: "Стоимость", width: 110, wrap: "CLIP" },
+  { header: "Дата подачи", width: 150, wrap: "CLIP" },
+  { header: "Дата обновления", width: 150, wrap: "CLIP" },
+  { header: "Дата рассмотрения", width: 150, wrap: "CLIP" },
+  { header: "Примечания", width: 240, wrap: "WRAP" },
+];
+
+const JURY_CHECKBOX_HEADERS = [
+  "Приглашение",
+  "Благодарственное письмо",
+  "Сертификат судьи",
+] as const;
+
+const JURY_CATEGORY_DISPLAY_INDEX = 8;
+const JURY_CHECKBOX_START = JURY_VISIBLE.length; // 16
 
 export const JURY_SHEET: SheetDefinition = {
   tab: SHEET_TABS.jury,
   idColumnIndex: 0,
   columns: [
-    { header: "ID заявки жюри", width: 130, wrap: "CLIP" },
-    { header: "ФИО", width: 170, wrap: "WRAP" },
-    { header: "Email", width: 210, wrap: "CLIP" },
-    { header: "Телефон", width: 140, wrap: "CLIP" },
-    { header: "Instagram", width: 150, wrap: "CLIP" },
-    { header: "Страна", width: 130, wrap: "WRAP" },
-    { header: "Город", width: 130, wrap: "WRAP" },
-    { header: "Должность", width: 200, wrap: "CLIP" },
-    { header: "Опыт (лет)", width: 110, wrap: "CLIP" },
-    { header: "Специализация", width: 220, wrap: "CLIP" },
-    { header: "Участник IBPA", width: 110, wrap: "CLIP" },
-    { header: "Номер IBPA", width: 120, wrap: "CLIP" },
-    { header: "Стоимость", width: 110, wrap: "CLIP" },
-    { header: "Статус заявки", width: 160, wrap: "CLIP" },
-    { header: "Дата подачи", width: 150, wrap: "CLIP" },
-    { header: "Дата обновления", width: 150, wrap: "CLIP" },
-    { header: "Дата рассмотрения", width: 150, wrap: "CLIP" },
-    { header: "Примечания", width: 240, wrap: "CLIP" },
+    ...JURY_VISIBLE,
+    ...JURY_CHECKBOX_HEADERS.map((header) => ({
+      header,
+      width: 160,
+      wrap: "CLIP" as const,
+    })),
   ],
-  // Статус заявки is column index 13.
-  conditionalRules: [
-    { columnIndex: 13, equals: "Оплачена", color: COLORS.green },
-    { columnIndex: 13, equals: "Одобрена", color: COLORS.green },
-    { columnIndex: 13, equals: "Отклонена", color: COLORS.red },
-    { columnIndex: 13, equals: "Подана", color: COLORS.yellow },
-    { columnIndex: 13, equals: "Требуется доп. информация", color: COLORS.yellow },
-  ],
+  // Ticked tracking checkboxes turn green (background + green checkmark) so
+  // admins can scan progress at a glance.
+  conditionalRules: JURY_CHECKBOX_HEADERS.map((_, i) => ({
+    columnIndex: JURY_CHECKBOX_START + i,
+    matchTrue: true,
+    color: COLORS.checkboxTrueBg,
+    textColor: COLORS.checkboxTrueText,
+    columnOnly: true,
+  })),
+  category: { displayColumnIndex: JURY_CATEGORY_DISPLAY_INDEX },
+  checkboxColumnIndexes: JURY_CHECKBOX_HEADERS.map((_, i) => JURY_CHECKBOX_START + i),
+  basicFilter: true,
 };
 
 // ── Оценки (Scores) ──────────────────────────────────────────────────────────
@@ -128,9 +182,6 @@ export const SCORES_SHEET: SheetDefinition = {
 };
 
 // ── Билеты (Tickets) ─────────────────────────────────────────────────────────
-// Trimmed to the requested payment-focused columns (no Gala/Stripe columns).
-// Removed per request: Quantity, the duplicate per-ticket price and Discount —
-// a single "Стоимость" column now holds the amount actually paid.
 
 export const TICKETS_SHEET: SheetDefinition = {
   tab: SHEET_TABS.tickets,

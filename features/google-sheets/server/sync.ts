@@ -3,8 +3,10 @@ import { getSheetsClient, type SheetsClient } from "./client";
 import { a1, SHEET_TABS } from "./config";
 import {
   borderRequests,
+  categoryColorRequests,
   columnWidthRequests,
   freezeHeaderRequest,
+  statsChartRequests,
   statsResetRequest,
   statsSectionStyleRequest,
   statsTitleStyleRequest,
@@ -27,7 +29,7 @@ import {
   fetchScoreRow,
   fetchTicketRow,
 } from "./rows";
-import { computeStatsLayout } from "./stats";
+import { computeStatsLayout, type StatsLayout } from "./stats";
 
 /**
  * High-level sync operations.
@@ -43,15 +45,15 @@ import { computeStatsLayout } from "./stats";
 // ── Per-record syncs ─────────────────────────────────────────────────────────
 
 export async function syncApplicationToSheet(id: string): Promise<void> {
-  const row = await fetchApplicationRow(id);
-  if (!row) return;
-  await upsertSheetRows(getSheetsClient(), APPLICATIONS_SHEET, [row]);
+  const record = await fetchApplicationRow(id);
+  if (!record) return;
+  await upsertSheetRows(getSheetsClient(), APPLICATIONS_SHEET, [record.values]);
 }
 
 export async function syncJuryToSheet(id: string): Promise<void> {
-  const row = await fetchJuryRow(id);
-  if (!row) return;
-  await upsertSheetRows(getSheetsClient(), JURY_SHEET, [row]);
+  const record = await fetchJuryRow(id);
+  if (!record) return;
+  await upsertSheetRows(getSheetsClient(), JURY_SHEET, [record.values]);
 }
 
 export async function syncScoreToSheet(id: string): Promise<void> {
@@ -99,6 +101,15 @@ export async function syncStatsToSheet(): Promise<void> {
   await client.clearValues(a1(SHEET_TABS.stats, "A:B"));
   await client.updateValues(a1(SHEET_TABS.stats, "A1"), layout.rows);
 
+  // Colour the category-name labels in the category breakdown sections with the
+  // shared palette (same colours as the Applications / Jury category badges).
+  const categoryLabelRequests = layout.chartSections.flatMap((section) => {
+    const labels = layout.rows
+      .slice(section.firstDataRowIndex, section.firstDataRowIndex + section.rowCount)
+      .map((row) => String(row[0] ?? ""));
+    return categoryColorRequests(sheetId, 0, labels, section.firstDataRowIndex);
+  });
+
   const rowCount = layout.rows.length;
   await client.batchUpdate([
     // Reset a generous block so section colouring from a previous (longer)
@@ -112,7 +123,30 @@ export async function syncStatsToSheet(): Promise<void> {
     ...layout.sectionRowIndexes.map((index) =>
       statsSectionStyleRequest(sheetId, index)
     ),
+    // Category-name colouring must come last so the reset above can't clear it.
+    ...categoryLabelRequests,
   ]);
+
+  // Refresh the breakdown charts in an isolated, best-effort pass so a chart
+  // hiccup can never break the numeric dashboard itself.
+  await refreshStatsCharts(client, sheetId, layout.chartSections);
+}
+
+/** (Re)build the stats breakdown charts idempotently; failures are swallowed. */
+async function refreshStatsCharts(
+  client: SheetsClient,
+  sheetId: number,
+  chartSections: StatsLayout["chartSections"]
+): Promise<void> {
+  try {
+    const meta = await client.getSheetMeta();
+    const existingChartIds =
+      meta.find((sheet) => sheet.sheetId === sheetId)?.chartIds ?? [];
+    const requests = statsChartRequests(sheetId, chartSections, existingChartIds);
+    if (requests.length > 0) await client.batchUpdate(requests);
+  } catch (error) {
+    console.error("Google Sheets stats chart refresh failed", error);
+  }
 }
 
 // ── Bulk backfill ────────────────────────────────────────────────────────────
@@ -142,13 +176,36 @@ async function backfill(
 }
 
 export async function syncAllApplications(): Promise<number> {
-  const rows = await fetchAllApplicationRows();
-  return rebuildDataSheet(getSheetsClient(), APPLICATIONS_SHEET, rows);
+  const client = getSheetsClient();
+  await removeCategoryTabs(client, SHEET_TABS.applications);
+  const records = await fetchAllApplicationRows();
+  return rebuildDataSheet(client, APPLICATIONS_SHEET, records.map((r) => r.values));
 }
 
 export async function syncAllJury(): Promise<number> {
-  const rows = await fetchAllJuryRows();
-  return rebuildDataSheet(getSheetsClient(), JURY_SHEET, rows);
+  const client = getSheetsClient();
+  await removeCategoryTabs(client, SHEET_TABS.jury);
+  const records = await fetchAllJuryRows();
+  return rebuildDataSheet(client, JURY_SHEET, records.map((r) => r.values));
+}
+
+/**
+ * Delete the per-category tabs an earlier layout generated (e.g. "Заявки — Hair",
+ * "Жюри — Hair"), leaving only the five base tabs. Best-effort: a cleanup hiccup
+ * must never break the data sync. Idempotent — a no-op once the tabs are gone.
+ */
+async function removeCategoryTabs(client: SheetsClient, baseTab: string): Promise<void> {
+  try {
+    const meta = await client.getSheetMeta();
+    const prefix = `${baseTab} — `;
+    const staleIds = meta
+      .filter((sheet) => sheet.title.startsWith(prefix))
+      .map((sheet) => sheet.sheetId);
+    if (staleIds.length === 0) return;
+    await client.batchUpdate(staleIds.map((sheetId) => ({ deleteSheet: { sheetId } })));
+  } catch (error) {
+    console.error(`Google Sheets category-tab cleanup failed for "${baseTab}"`, error);
+  }
 }
 
 export async function syncAllScores(): Promise<number> {

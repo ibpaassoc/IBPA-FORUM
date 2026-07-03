@@ -1,11 +1,10 @@
 import "server-only";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/shared/lib/prisma";
+import { CATEGORY_SEPARATOR, orderCategories } from "./categories";
 import type { SheetValues } from "./client";
 import { formatDateTime, formatUsd, joinList, yesNo } from "./format";
 import {
-  applicationStatusLabel,
-  juryStatusLabel,
   scoreStatusLabel,
   ticketPaymentLabel,
   ticketTypeLabelRu,
@@ -15,7 +14,22 @@ import {
  * Database → spreadsheet row mappers. Each builder fetches exactly the columns
  * it needs and returns a row array aligned with the matching sheet definition.
  * Reviewer / internal admin identities are intentionally never included.
+ *
+ * The Applications and Jury tabs only ever expose *paid* records: the single-row
+ * fetchers return `null` for anything unpaid (so the per-record hooks never add
+ * it) and the bulk fetchers filter the same way (so backfills mirror only paid
+ * rows). Their category cell is multi-value and colour-coded.
+ *
+ * The `*WithCategories` variants also return each row's category set so the sync
+ * layer can copy the row into the matching per-category tabs (a multi-category
+ * record lands in each of its categories' tabs).
  */
+
+/** A spreadsheet row paired with the categories the record belongs to. */
+export type CategorizedRow = {
+  values: SheetValues[number];
+  categories: string[];
+};
 
 const NUMBER_OF_SCORE_CRITERIA = 5;
 
@@ -37,7 +51,10 @@ const applicationSelect = {
   category: { select: { name: true } },
   award: { select: { name: true } },
   nominationApplications: {
-    select: { award: { select: { name: true } } },
+    select: {
+      award: { select: { name: true } },
+      category: { select: { name: true } },
+    },
     orderBy: { createdAt: "asc" },
   },
   payments: { select: { amount: true, status: true } },
@@ -49,8 +66,21 @@ const applicationSelect = {
 
 type ApplicationRecord = Prisma.ApplicationGetPayload<{ select: typeof applicationSelect }>;
 
+/** Only paid applications ever reach the sheet — no drafts, pending, failed… */
+function isApplicationPaid(app: Pick<ApplicationRecord, "paymentStatus">): boolean {
+  return app.paymentStatus === "PAID";
+}
+
 function isApplicationMember(app: ApplicationRecord): boolean {
   return Boolean(app.membershipLevel) || Boolean(app.membershipNumber);
+}
+
+/** Every category an application belongs to: its primary plus each nomination's. */
+function applicationCategories(app: ApplicationRecord): string[] {
+  return orderCategories([
+    app.category.name,
+    ...app.nominationApplications.map((nom) => nom.category.name),
+  ]);
 }
 
 function applicationScoreSummary(app: ApplicationRecord): string {
@@ -70,43 +100,46 @@ function applicationAmountPaidCents(app: ApplicationRecord): number {
   return app.paymentStatus === "PAID" ? app.amount : 0;
 }
 
-export function mapApplicationRow(app: ApplicationRecord): SheetValues[number] {
+function mapApplicationCategorized(app: ApplicationRecord): CategorizedRow {
   const nominations = app.nominationApplications.map((nom) => nom.award.name);
   const nominationLabel =
     nominations.length > 0 ? joinList(nominations) : app.award.name;
   const member = isApplicationMember(app);
+  const categories = applicationCategories(app);
 
-  return [
-    app.id,
-    app.fullName,
-    app.email,
-    app.phone,
-    app.socialUrl ?? "",
-    app.category.name,
-    nominationLabel,
-    yesNo(member),
-    app.membershipNumber ?? "",
-    formatUsd(applicationAmountPaidCents(app)),
-    applicationStatusLabel(app.status),
-    formatDateTime(app.submittedAt),
-    formatDateTime(app.updatedAt),
-    // Application has no dedicated reviewed-at timestamp.
-    "",
-    applicationScoreSummary(app),
-  ];
+  return {
+    categories,
+    values: [
+      app.id,
+      app.fullName,
+      app.email,
+      app.phone,
+      app.socialUrl ?? "",
+      categories.join(CATEGORY_SEPARATOR),
+      nominationLabel,
+      yesNo(member),
+      app.membershipNumber ?? "",
+      formatUsd(applicationAmountPaidCents(app)),
+      formatDateTime(app.submittedAt),
+      formatDateTime(app.updatedAt),
+      applicationScoreSummary(app),
+    ],
+  };
 }
 
-export async function fetchApplicationRow(id: string): Promise<SheetValues[number] | null> {
+export async function fetchApplicationRow(id: string): Promise<CategorizedRow | null> {
   const app = await prisma.application.findUnique({ where: { id }, select: applicationSelect });
-  return app ? mapApplicationRow(app) : null;
+  if (!app || !isApplicationPaid(app)) return null;
+  return mapApplicationCategorized(app);
 }
 
-export async function fetchAllApplicationRows(): Promise<SheetValues> {
+export async function fetchAllApplicationRows(): Promise<CategorizedRow[]> {
   const apps = await prisma.application.findMany({
+    where: { paymentStatus: "PAID" },
     select: applicationSelect,
     orderBy: { createdAt: "asc" },
   });
-  return apps.map(mapApplicationRow);
+  return apps.map(mapApplicationCategorized);
 }
 
 // ── Jury ─────────────────────────────────────────────────────────────────────
@@ -138,6 +171,11 @@ const jurySelect = {
 
 type JuryRecord = Prisma.JuryApplicationGetPayload<{ select: typeof jurySelect }>;
 
+/** Only paid jury applications ever reach the sheet. */
+function isJuryPaid(jury: Pick<JuryRecord, "status">): boolean {
+  return jury.status === "PAID";
+}
+
 function juryPriceCents(jury: JuryRecord): number {
   const paid = jury.payments.find((payment) => payment.status === "PAID");
   if (paid) return paid.amount;
@@ -147,41 +185,50 @@ function juryPriceCents(jury: JuryRecord): number {
   return jury.ibpaAssociationMember ? 10000 : 25000;
 }
 
-export function mapJuryRow(jury: JuryRecord): SheetValues[number] {
-  return [
-    jury.id,
-    jury.fullName,
-    jury.email,
-    jury.phone,
-    // JuryApplication has no Instagram field.
-    "",
-    jury.country,
-    jury.city,
-    jury.professionalTitle,
-    jury.yearsExperience,
-    joinList(jury.expertiseAreas),
-    yesNo(jury.ibpaAssociationMember),
-    jury.ibpaNumber ?? "",
-    formatUsd(juryPriceCents(jury)),
-    juryStatusLabel(jury.status),
-    formatDateTime(jury.submittedAt),
-    formatDateTime(jury.updatedAt),
-    formatDateTime(jury.approvedAt ?? jury.rejectedAt),
-    jury.adminNotes ?? "",
-  ];
+function mapJuryCategorized(jury: JuryRecord): CategorizedRow {
+  // Areas of expertise are the jury member's categories (shared vocabulary with
+  // the Applications tab), so they colour-code and route into tabs identically.
+  const categories = orderCategories(jury.expertiseAreas);
+
+  return {
+    categories,
+    values: [
+      jury.id,
+      jury.fullName,
+      jury.email,
+      jury.phone,
+      jury.country,
+      jury.city,
+      jury.professionalTitle,
+      jury.yearsExperience,
+      categories.join(CATEGORY_SEPARATOR),
+      yesNo(jury.ibpaAssociationMember),
+      jury.ibpaNumber ?? "",
+      formatUsd(juryPriceCents(jury)),
+      formatDateTime(jury.submittedAt),
+      formatDateTime(jury.updatedAt),
+      formatDateTime(jury.approvedAt ?? jury.rejectedAt),
+      jury.adminNotes ?? "",
+      // The trailing checkbox columns (Приглашение / Благодарственное письмо /
+      // Сертификат судьи) are admin-editable and preserved by the sheet layer,
+      // so they are intentionally not produced here.
+    ],
+  };
 }
 
-export async function fetchJuryRow(id: string): Promise<SheetValues[number] | null> {
+export async function fetchJuryRow(id: string): Promise<CategorizedRow | null> {
   const jury = await prisma.juryApplication.findUnique({ where: { id }, select: jurySelect });
-  return jury ? mapJuryRow(jury) : null;
+  if (!jury || !isJuryPaid(jury)) return null;
+  return mapJuryCategorized(jury);
 }
 
-export async function fetchAllJuryRows(): Promise<SheetValues> {
+export async function fetchAllJuryRows(): Promise<CategorizedRow[]> {
   const records = await prisma.juryApplication.findMany({
+    where: { status: "PAID" },
     select: jurySelect,
     orderBy: { createdAt: "asc" },
   });
-  return records.map(mapJuryRow);
+  return records.map(mapJuryCategorized);
 }
 
 // ── Scores ───────────────────────────────────────────────────────────────────
