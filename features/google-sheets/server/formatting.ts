@@ -420,79 +420,40 @@ export function categoryColorRequests(
   ];
 }
 
-// ── Slicers ──────────────────────────────────────────────────────────────────
-
-const SLICER_WIDTH = 200;
-const SLICER_HEIGHT = 140;
-const SLICER_GAP = 12;
-
-/** One slicer filtering `columnIndex`, titled `title`. */
-export type SlicerRequestSpec = { columnIndex: number; title: string };
+// ── On-sheet filtering (native basic filter) ─────────────────────────────────
 
 /**
- * Rebuild a tab's slicers idempotently: delete the existing ones, widen the grid
- * so there is empty space to the right of the data, then re-create each slicer
- * stacked vertically in that empty band. The data range is left open-ended (no
- * end row) so slicers automatically cover rows appended by later per-record
- * syncs. Kept in its own batch by the caller so a slicer hiccup can never break
- * the data sync itself.
+ * Apply a native basic filter over the whole table so every column header gets a
+ * filter dropdown (funnel) directly on the sheet. The range is open-ended (no end
+ * row) so it always covers newly appended rows. Re-applying replaces the existing
+ * basic filter, so this is idempotent.
  */
-export function slicerRequests(
+export function basicFilterRequest(
   sheetId: number,
-  slicers: SlicerRequestSpec[],
-  tableColumnCount: number,
-  existingSlicerIds: number[]
-): BatchUpdateRequest[] {
-  const requests: BatchUpdateRequest[] = [];
-
-  for (const id of existingSlicerIds) {
-    requests.push({ deleteEmbeddedObject: { objectId: id } });
-  }
-
-  if (slicers.length === 0) return requests;
-
-  // Ensure there are columns to the right of the table to anchor slicers in.
-  const anchorColumn = tableColumnCount + 1;
-  requests.push({
-    updateSheetProperties: {
-      properties: { sheetId, gridProperties: { columnCount: anchorColumn + 3 } },
-      fields: "gridProperties.columnCount",
-    },
-  });
-
-  slicers.forEach((slicer, index) => {
-    requests.push({
-      addSlicer: {
-        slicer: {
-          spec: {
-            // Open-ended range (no endRowIndex) → spans the whole table.
-            dataRange: {
-              sheetId,
-              startRowIndex: 0,
-              startColumnIndex: 0,
-              endColumnIndex: tableColumnCount,
-            },
-            columnIndex: slicer.columnIndex,
-            title: slicer.title,
-            applyToPivotTables: false,
-            horizontalAlignment: "LEFT",
-            textFormat: { fontSize: 10 },
-          },
-          position: {
-            overlayPosition: {
-              anchorCell: { sheetId, rowIndex: 0, columnIndex: anchorColumn },
-              offsetXPixels: 8,
-              offsetYPixels: index * (SLICER_HEIGHT + SLICER_GAP),
-              widthPixels: SLICER_WIDTH,
-              heightPixels: SLICER_HEIGHT,
-            },
-          },
+  columnCount: number
+): BatchUpdateRequest {
+  return {
+    setBasicFilter: {
+      filter: {
+        range: {
+          sheetId,
+          startRowIndex: 0,
+          startColumnIndex: 0,
+          endColumnIndex: columnCount,
         },
       },
-    });
-  });
+    },
+  };
+}
 
-  return requests;
+/**
+ * Delete embedded objects (slicers) by id — used to clean up the per-category
+ * slicers created by an earlier layout so only the basic filter remains.
+ */
+export function deleteEmbeddedObjectRequests(
+  objectIds: number[]
+): BatchUpdateRequest[] {
+  return objectIds.map((objectId) => ({ deleteEmbeddedObject: { objectId } }));
 }
 
 // ── Stats dashboard ──────────────────────────────────────────────────────────

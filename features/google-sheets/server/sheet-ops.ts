@@ -1,8 +1,9 @@
 import "server-only";
-import type { BatchUpdateRequest, SheetsClient, SheetValues } from "./client";
+import type { SheetsClient, SheetValues } from "./client";
 import { a1 } from "./config";
 import { sheetHeaders, type SheetDefinition } from "./schema";
 import {
+  basicFilterRequest,
   borderRequests,
   categoryColorRequests,
   checkboxValidationRequests,
@@ -10,11 +11,11 @@ import {
   columnLetter,
   columnWidthRequests,
   conditionalFormatRequests,
+  deleteEmbeddedObjectRequests,
   freezeHeaderRequest,
   headerStyleRequest,
   hideColumnsRequests,
   showColumnsRequest,
-  slicerRequests,
   wrapRequests,
 } from "./formatting";
 
@@ -61,7 +62,12 @@ function isAlreadyExistsError(error: unknown): boolean {
 export async function resolveSheetMeta(
   client: SheetsClient,
   title: string
-): Promise<{ sheetId: number; conditionalFormatCount: number; slicerIds: number[] }> {
+): Promise<{
+  sheetId: number;
+  conditionalFormatCount: number;
+  slicerIds: number[];
+  hasBasicFilter: boolean;
+}> {
   const meta = await client.getSheetMeta();
   let match = meta.find((sheet) => sheet.title === title);
 
@@ -85,6 +91,7 @@ export async function resolveSheetMeta(
     sheetId: match.sheetId,
     conditionalFormatCount: match.conditionalFormatCount,
     slicerIds: match.slicerIds,
+    hasBasicFilter: match.hasBasicFilter,
   };
 }
 
@@ -119,9 +126,15 @@ async function applyStaticFormatting(
   client: SheetsClient,
   definition: SheetDefinition,
   sheetId: number,
-  existingConditionalCount: number
+  existingConditionalCount: number,
+  existingSlicerIds: number[],
+  hasBasicFilter: boolean
 ): Promise<void> {
   const columnCount = definition.columns.length;
+
+  // Only create the basic filter when one is not already present, so a sync
+  // never wipes out an admin's active filter selection.
+  const needsBasicFilter = Boolean(definition.basicFilter) && !hasBasicFilter;
 
   await client.batchUpdate([
     freezeHeaderRequest(sheetId),
@@ -135,34 +148,11 @@ async function applyStaticFormatting(
       definition.conditionalRules,
       existingConditionalCount
     ),
+    // Clean up any per-category slicers left by an earlier layout, then apply the
+    // on-sheet basic filter that provides the column filter dropdowns.
+    ...deleteEmbeddedObjectRequests(existingSlicerIds),
+    ...(needsBasicFilter ? [basicFilterRequest(sheetId, columnCount)] : []),
   ]);
-}
-
-/**
- * (Re)build the tab's slicers in their own round trip so a slicer hiccup can
- * never break the data sync. Best-effort: failures are logged and swallowed.
- * The slicer data ranges are open-ended (no end row), so they automatically
- * cover rows appended by later per-record syncs without a rebuild.
- */
-async function applySlicers(
-  client: SheetsClient,
-  definition: SheetDefinition,
-  sheetId: number,
-  existingSlicerIds: number[]
-): Promise<void> {
-  if (!definition.slicers?.length) return;
-  try {
-    await client.batchUpdate(
-      slicerRequests(
-        sheetId,
-        definition.slicers,
-        definition.columns.length,
-        existingSlicerIds
-      )
-    );
-  } catch (error) {
-    console.error(`Google Sheets slicer setup failed for "${definition.tab}"`, error);
-  }
 }
 
 /**
@@ -178,15 +168,19 @@ export async function ensureDataSheet(
   const cached = sheetIdByTab.get(key);
   if (ensuredTabs.has(key) && cached != null) return cached;
 
-  const { sheetId, conditionalFormatCount, slicerIds } = await resolveSheetMeta(
-    client,
-    definition.tab
-  );
+  const { sheetId, conditionalFormatCount, slicerIds, hasBasicFilter } =
+    await resolveSheetMeta(client, definition.tab);
   sheetIdByTab.set(key, sheetId);
 
   await ensureSheetHeaders(client, definition);
-  await applyStaticFormatting(client, definition, sheetId, conditionalFormatCount);
-  await applySlicers(client, definition, sheetId, slicerIds);
+  await applyStaticFormatting(
+    client,
+    definition,
+    sheetId,
+    conditionalFormatCount,
+    slicerIds,
+    hasBasicFilter
+  );
 
   ensuredTabs.add(key);
   return sheetId;
@@ -416,129 +410,4 @@ export async function rebuildDataSheet(
   await client.batchUpdate(requests);
 
   return writeRows.length;
-}
-
-/**
- * Rebuild MANY data tabs at once, batching every Sheets call so a fan-out of
- * derived tabs (the per-category tabs) stays fast and well under the API rate
- * limits — one round trip each for: ensure-exists, headers, static formatting,
- * read-for-preservation, clear, write, dynamic formatting. It reuses the exact
- * same request builders as {@link rebuildDataSheet}, so the two never drift.
- *
- * Not memoized (unlike {@link ensureDataSheet}) because it is only used by the
- * full sync, where re-applying headers/formatting once per run is intended.
- * Definitions with slicers are not supported here (category tabs carry none).
- */
-export async function rebuildDataSheets(
-  client: SheetsClient,
-  jobs: Array<{ definition: SheetDefinition; rows: SheetValues }>
-): Promise<void> {
-  if (jobs.length === 0) return;
-
-  // 1. Ensure every tab exists (create the missing ones in a single batch).
-  const meta = await client.getSheetMeta();
-  const byTitle = new Map(meta.map((sheet) => [sheet.title, sheet]));
-
-  const missing = jobs.filter((job) => !byTitle.has(job.definition.tab));
-  if (missing.length > 0) {
-    await client.batchUpdate(
-      missing.map((job) => ({ addSheet: { properties: { title: job.definition.tab } } }))
-    );
-    const refreshed = await client.getSheetMeta();
-    refreshed.forEach((sheet) => byTitle.set(sheet.title, sheet));
-  }
-
-  const resolved = jobs.map((job) => {
-    const sheet = byTitle.get(job.definition.tab);
-    if (!sheet) {
-      throw new Error(`Unable to create or locate sheet tab "${job.definition.tab}".`);
-    }
-    // Reset the per-process ensure memo so a later per-record upsert re-applies
-    // headers/formatting to this tab rather than trusting a stale cache.
-    sheetIdByTab.set(memoKey(client, job.definition.tab), sheet.sheetId);
-    ensuredTabs.add(memoKey(client, job.definition.tab));
-    return {
-      ...job,
-      sheetId: sheet.sheetId,
-      conditionalFormatCount: sheet.conditionalFormatCount,
-    };
-  });
-
-  // 2. Headers for every tab in one values write.
-  await client.batchUpdateValues(
-    resolved.map((job) => ({
-      range: a1(job.definition.tab, "A1"),
-      values: [sheetHeaders(job.definition)],
-    }))
-  );
-
-  // 3. Static formatting for every tab in one structural batch.
-  await client.batchUpdate(
-    resolved.flatMap((job) => {
-      const columnCount = job.definition.columns.length;
-      return [
-        freezeHeaderRequest(job.sheetId),
-        headerStyleRequest(job.sheetId, columnCount),
-        ...columnWidthRequests(job.sheetId, job.definition.columns),
-        showColumnsRequest(job.sheetId, columnCount),
-        ...hideColumnsRequests(job.sheetId, job.definition.hiddenColumnIndexes),
-        ...conditionalFormatRequests(
-          job.sheetId,
-          columnCount,
-          job.definition.conditionalRules,
-          job.conditionalFormatCount
-        ),
-      ];
-    })
-  );
-
-  // 4. Read prior rows (ID + any checkbox columns) for all tabs in one call.
-  const readRanges = resolved.map((job) => {
-    const hasCheckboxes = Boolean(job.definition.checkboxColumnIndexes?.length);
-    const lastColumn = columnLetter(job.definition.columns.length - 1);
-    return a1(job.definition.tab, hasCheckboxes ? `A2:${lastColumn}` : "A2:A");
-  });
-  const priorValues = await client.batchGetValues(readRanges);
-
-  // 5. Clear every tab's data range in one call.
-  await client.batchClearValues(
-    resolved.map((job) => a1(job.definition.tab, `A2:${WIDE_CLEAR_LAST_COLUMN}`))
-  );
-
-  // 6. Write every subset (one values write) and collect dynamic formatting.
-  const valueWrites: Array<{ range: string; values: SheetValues }> = [];
-  const dynamicRequests: BatchUpdateRequest[] = [];
-
-  resolved.forEach((job, index) => {
-    const prior = priorValues[index] ?? [];
-    const preserved = extractCheckboxState(job.definition, prior);
-    const priorDataRows = countIds(prior);
-    const writeRows = job.rows.map((row) =>
-      withCheckboxValues(job.definition, row, preserved)
-    );
-
-    if (writeRows.length > 0) {
-      valueWrites.push({ range: a1(job.definition.tab, "A2"), values: writeRows });
-    }
-
-    const columnCount = job.definition.columns.length;
-    dynamicRequests.push(
-      ...borderRequests(job.sheetId, columnCount, writeRows.length),
-      ...wrapRequests(job.sheetId, job.definition.columns, writeRows.length),
-      ...checkboxValidationRequests(
-        job.sheetId,
-        job.definition.checkboxColumnIndexes,
-        writeRows.length
-      ),
-      ...categoryFormattingRequests(job.definition, job.sheetId, writeRows, 1)
-    );
-    if (priorDataRows > writeRows.length) {
-      dynamicRequests.push(
-        clearBordersRequest(job.sheetId, columnCount, writeRows.length, priorDataRows)
-      );
-    }
-  });
-
-  if (valueWrites.length > 0) await client.batchUpdateValues(valueWrites);
-  if (dynamicRequests.length > 0) await client.batchUpdate(dynamicRequests);
 }

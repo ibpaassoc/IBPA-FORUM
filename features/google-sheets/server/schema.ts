@@ -7,8 +7,7 @@ import { COLORS, type ColumnSpec, type ConditionalRule } from "./formatting";
  * which column holds the unique ID used for idempotent upserts, the conditional
  * colour rules (status colours on Scores / Tickets; green ticked-checkbox
  * highlight on Jury), plus — for the Applications and Jury tabs — the category
- * cell to colour-code, the editable checkbox tracking columns, and the slicers
- * admins filter with.
+ * cell to colour-code and the editable checkbox tracking columns.
  *
  * The ID column is always the first column (index 0), so re-running any sync
  * updates existing rows in place instead of duplicating.
@@ -22,16 +21,8 @@ export type CategoryConfig = {
   displayColumnIndex: number;
 };
 
-/** A slicer to (re)create on a tab, filtering the table on one column. */
-export type SlicerConfig = {
-  /** Zero-based column index (within the full table) the slicer filters. */
-  columnIndex: number;
-  /** Slicer title shown to admins (Russian for the sheet's own labels). */
-  title: string;
-};
-
 export type SheetDefinition = {
-  /** Tab name (base tabs are Russian; generated category tabs append a label). */
+  /** Tab name (Russian). */
   tab: string;
   /** Zero-based index of the unique-ID column (always the first column). */
   idColumnIndex: 0;
@@ -48,8 +39,13 @@ export type SheetDefinition = {
    * row mappers never produce values for them.
    */
   checkboxColumnIndexes?: number[];
-  /** Slicers to (re)create for this tab. */
-  slicers?: SlicerConfig[];
+  /**
+   * When true, a native basic filter is applied over the whole table so admins
+   * get a filter dropdown (funnel) on every column header directly on the sheet
+   * — including multi-category matching (Category → "Filter by condition → Text
+   * contains") and the Jury tracking-checkbox TRUE/FALSE filters.
+   */
+  basicFilter?: boolean;
 };
 
 /** Column headers in order — derived from the column specs. */
@@ -60,8 +56,9 @@ export function sheetHeaders(definition: SheetDefinition): string[] {
 // ── Заявки (Applications) ────────────────────────────────────────────────────
 // Paid applications only. The status column was removed per request; the
 // category cell is multi-value ("Hair, Education, Salon") and colour-coded.
-// Category filtering is provided by the auto-generated "Заявки — <категория>"
-// tabs (see category-tabs.ts), not by per-category slicers.
+// Filtering happens directly on the sheet via a native basic filter (funnel on
+// every column) — including multi-category matching on the Категория column and
+// value matching on Номинация. No category tabs, no per-category slicers.
 
 const APPLICATIONS_COLUMNS: ColumnSpec[] = [
   { header: "ID заявки", width: 130, wrap: "CLIP" },
@@ -80,7 +77,6 @@ const APPLICATIONS_COLUMNS: ColumnSpec[] = [
 ];
 
 const APPLICATIONS_CATEGORY_DISPLAY_INDEX = 5;
-const APPLICATIONS_NOMINATION_INDEX = 6;
 
 export const APPLICATIONS_SHEET: SheetDefinition = {
   tab: SHEET_TABS.applications,
@@ -88,17 +84,16 @@ export const APPLICATIONS_SHEET: SheetDefinition = {
   columns: APPLICATIONS_COLUMNS,
   conditionalRules: [],
   category: { displayColumnIndex: APPLICATIONS_CATEGORY_DISPLAY_INDEX },
-  // Only the useful Nomination filter is kept (category filtering lives in the
-  // per-category tabs).
-  slicers: [{ columnIndex: APPLICATIONS_NOMINATION_INDEX, title: "Номинация" }],
+  basicFilter: true,
 };
 
 // ── Жюри (Jury) ──────────────────────────────────────────────────────────────
 // Paid jury applications only. The status column was removed; "Специализация"
 // (areas of expertise) is the multi-value, colour-coded category cell, and the
 // three trailing checkbox columns are admin-editable (green when ticked) and
-// preserved across syncs. Category filtering lives in the "Жюри — <категория>"
-// tabs; the only slicers are the three tracking checkboxes.
+// preserved across syncs. Filtering happens directly on the sheet via a native
+// basic filter — the Специализация funnel filters by category and each checkbox
+// funnel filters Отправлено / Не отправлено. No category tabs.
 
 const JURY_VISIBLE: ColumnSpec[] = [
   { header: "ID заявки жюри", width: 130, wrap: "CLIP" },
@@ -150,11 +145,7 @@ export const JURY_SHEET: SheetDefinition = {
   })),
   category: { displayColumnIndex: JURY_CATEGORY_DISPLAY_INDEX },
   checkboxColumnIndexes: JURY_CHECKBOX_HEADERS.map((_, i) => JURY_CHECKBOX_START + i),
-  // Only the three tracking-checkbox filters are kept.
-  slicers: JURY_CHECKBOX_HEADERS.map((title, i) => ({
-    columnIndex: JURY_CHECKBOX_START + i,
-    title,
-  })),
+  basicFilter: true,
 };
 
 // ── Оценки (Scores) ──────────────────────────────────────────────────────────

@@ -26,6 +26,8 @@ export type SheetMeta = SheetProperties & {
   slicerIds: number[];
   /** Chart ids embedded on this tab (for idempotent dashboard charts). */
   chartIds: number[];
+  /** Whether the tab already has a native basic filter (so we don't reset it). */
+  hasBasicFilter: boolean;
 };
 
 export type BatchUpdateRequest = Record<string, unknown>;
@@ -34,8 +36,6 @@ export type SheetsClient = {
   readonly spreadsheetId: string;
   /** Read a value range, e.g. `applications!A:A`. Returns `[]` when empty. */
   getValues(range: string): Promise<SheetValues>;
-  /** Read several value ranges in one round trip (results align with input). */
-  batchGetValues(ranges: string[]): Promise<SheetValues[]>;
   /** Overwrite a value range (RAW input, so cells are stored verbatim). */
   updateValues(range: string, values: SheetValues): Promise<void>;
   /** Append rows after the last populated row of a table. */
@@ -46,8 +46,6 @@ export type SheetsClient = {
   ): Promise<void>;
   /** Clear all values in a range without touching formatting. */
   clearValues(range: string): Promise<void>;
-  /** Clear several value ranges in one round trip. */
-  batchClearValues(ranges: string[]): Promise<void>;
   /** List the spreadsheet's sheet/tab properties (id + title). */
   getSheetProperties(): Promise<SheetProperties[]>;
   /** Like {@link getSheetProperties} but also reports conditional-rule counts. */
@@ -128,19 +126,6 @@ export function getSheetsClient(): SheetsClient {
       return data?.values ?? [];
     },
 
-    async batchGetValues(ranges) {
-      if (ranges.length === 0) return [];
-      const query = ranges
-        .map((range) => `ranges=${encodeRange(range)}`)
-        .join("&");
-      const data = (await authedFetch(
-        config,
-        `/values:batchGet?${query}&majorDimension=ROWS`
-      )) as { valueRanges?: Array<{ values?: SheetValues }> } | null;
-      // valueRanges come back in request order; default any missing to empty.
-      return ranges.map((_, index) => data?.valueRanges?.[index]?.values ?? []);
-    },
-
     async updateValues(range, values) {
       await authedFetch(
         config,
@@ -184,14 +169,6 @@ export function getSheetsClient(): SheetsClient {
       });
     },
 
-    async batchClearValues(ranges) {
-      if (ranges.length === 0) return;
-      await authedFetch(config, `/values:batchClear`, {
-        method: "POST",
-        body: JSON.stringify({ ranges }),
-      });
-    },
-
     async getSheetProperties() {
       const data = (await authedFetch(
         config,
@@ -206,7 +183,7 @@ export function getSheetsClient(): SheetsClient {
     async getSheetMeta() {
       const data = (await authedFetch(
         config,
-        `?fields=sheets(properties(sheetId,title),conditionalFormats,slicers(slicerId),charts(chartId))`
+        `?fields=sheets(properties(sheetId,title),conditionalFormats,slicers(slicerId),charts(chartId),basicFilter(range))`
       )) as
         | {
             sheets?: Array<{
@@ -214,6 +191,7 @@ export function getSheetsClient(): SheetsClient {
               conditionalFormats?: unknown[];
               slicers?: Array<{ slicerId?: number }>;
               charts?: Array<{ chartId?: number }>;
+              basicFilter?: unknown;
             }>;
           }
         | null;
@@ -234,6 +212,7 @@ export function getSheetsClient(): SheetsClient {
                 conditionalFormatCount: sheet.conditionalFormats?.length ?? 0,
                 slicerIds: numericIds(sheet.slicers, "slicerId"),
                 chartIds: numericIds(sheet.charts, "chartId"),
+                hasBasicFilter: Boolean(sheet.basicFilter),
               }
             : null
         )

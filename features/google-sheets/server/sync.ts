@@ -18,10 +18,6 @@ import {
   SCORES_SHEET,
   TICKETS_SHEET,
 } from "./schema";
-import {
-  rebuildDomainWithCategoryTabs,
-  upsertRecordWithCategoryTabs,
-} from "./category-tabs";
 import { rebuildDataSheet, resolveSheetMeta, upsertSheetRows } from "./sheet-ops";
 import {
   fetchAllApplicationRows,
@@ -51,13 +47,13 @@ import { computeStatsLayout, type StatsLayout } from "./stats";
 export async function syncApplicationToSheet(id: string): Promise<void> {
   const record = await fetchApplicationRow(id);
   if (!record) return;
-  await upsertRecordWithCategoryTabs(getSheetsClient(), APPLICATIONS_SHEET, record);
+  await upsertSheetRows(getSheetsClient(), APPLICATIONS_SHEET, [record.values]);
 }
 
 export async function syncJuryToSheet(id: string): Promise<void> {
   const record = await fetchJuryRow(id);
   if (!record) return;
-  await upsertRecordWithCategoryTabs(getSheetsClient(), JURY_SHEET, record);
+  await upsertSheetRows(getSheetsClient(), JURY_SHEET, [record.values]);
 }
 
 export async function syncScoreToSheet(id: string): Promise<void> {
@@ -180,13 +176,36 @@ async function backfill(
 }
 
 export async function syncAllApplications(): Promise<number> {
+  const client = getSheetsClient();
+  await removeCategoryTabs(client, SHEET_TABS.applications);
   const records = await fetchAllApplicationRows();
-  return rebuildDomainWithCategoryTabs(getSheetsClient(), APPLICATIONS_SHEET, records);
+  return rebuildDataSheet(client, APPLICATIONS_SHEET, records.map((r) => r.values));
 }
 
 export async function syncAllJury(): Promise<number> {
+  const client = getSheetsClient();
+  await removeCategoryTabs(client, SHEET_TABS.jury);
   const records = await fetchAllJuryRows();
-  return rebuildDomainWithCategoryTabs(getSheetsClient(), JURY_SHEET, records);
+  return rebuildDataSheet(client, JURY_SHEET, records.map((r) => r.values));
+}
+
+/**
+ * Delete the per-category tabs an earlier layout generated (e.g. "Заявки — Hair",
+ * "Жюри — Hair"), leaving only the five base tabs. Best-effort: a cleanup hiccup
+ * must never break the data sync. Idempotent — a no-op once the tabs are gone.
+ */
+async function removeCategoryTabs(client: SheetsClient, baseTab: string): Promise<void> {
+  try {
+    const meta = await client.getSheetMeta();
+    const prefix = `${baseTab} — `;
+    const staleIds = meta
+      .filter((sheet) => sheet.title.startsWith(prefix))
+      .map((sheet) => sheet.sheetId);
+    if (staleIds.length === 0) return;
+    await client.batchUpdate(staleIds.map((sheetId) => ({ deleteSheet: { sheetId } })));
+  } catch (error) {
+    console.error(`Google Sheets category-tab cleanup failed for "${baseTab}"`, error);
+  }
 }
 
 export async function syncAllScores(): Promise<number> {
