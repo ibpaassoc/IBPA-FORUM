@@ -1,11 +1,14 @@
 import "server-only";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/shared/lib/prisma";
+import {
+  categoryFlags,
+  CATEGORY_SEPARATOR,
+  orderCategories,
+} from "./categories";
 import type { SheetValues } from "./client";
 import { formatDateTime, formatUsd, joinList, yesNo } from "./format";
 import {
-  applicationStatusLabel,
-  juryStatusLabel,
   scoreStatusLabel,
   ticketPaymentLabel,
   ticketTypeLabelRu,
@@ -15,6 +18,12 @@ import {
  * Database → spreadsheet row mappers. Each builder fetches exactly the columns
  * it needs and returns a row array aligned with the matching sheet definition.
  * Reviewer / internal admin identities are intentionally never included.
+ *
+ * The Applications and Jury tabs only ever expose *paid* records: the single-row
+ * fetchers return `null` for anything unpaid (so the per-record hooks never add
+ * it) and the bulk fetchers filter the same way (so backfills mirror only paid
+ * rows). Their category cell is multi-value and colour-coded, and each mapper
+ * appends the hidden TRUE/FALSE category helper flags used by the slicers.
  */
 
 const NUMBER_OF_SCORE_CRITERIA = 5;
@@ -37,7 +46,10 @@ const applicationSelect = {
   category: { select: { name: true } },
   award: { select: { name: true } },
   nominationApplications: {
-    select: { award: { select: { name: true } } },
+    select: {
+      award: { select: { name: true } },
+      category: { select: { name: true } },
+    },
     orderBy: { createdAt: "asc" },
   },
   payments: { select: { amount: true, status: true } },
@@ -49,8 +61,21 @@ const applicationSelect = {
 
 type ApplicationRecord = Prisma.ApplicationGetPayload<{ select: typeof applicationSelect }>;
 
+/** Only paid applications ever reach the sheet — no drafts, pending, failed… */
+function isApplicationPaid(app: Pick<ApplicationRecord, "paymentStatus">): boolean {
+  return app.paymentStatus === "PAID";
+}
+
 function isApplicationMember(app: ApplicationRecord): boolean {
   return Boolean(app.membershipLevel) || Boolean(app.membershipNumber);
+}
+
+/** Every category an application belongs to: its primary plus each nomination's. */
+function applicationCategories(app: ApplicationRecord): string[] {
+  return orderCategories([
+    app.category.name,
+    ...app.nominationApplications.map((nom) => nom.category.name),
+  ]);
 }
 
 function applicationScoreSummary(app: ApplicationRecord): string {
@@ -75,6 +100,7 @@ export function mapApplicationRow(app: ApplicationRecord): SheetValues[number] {
   const nominationLabel =
     nominations.length > 0 ? joinList(nominations) : app.award.name;
   const member = isApplicationMember(app);
+  const categories = applicationCategories(app);
 
   return [
     app.id,
@@ -82,27 +108,28 @@ export function mapApplicationRow(app: ApplicationRecord): SheetValues[number] {
     app.email,
     app.phone,
     app.socialUrl ?? "",
-    app.category.name,
+    categories.join(CATEGORY_SEPARATOR),
     nominationLabel,
     yesNo(member),
     app.membershipNumber ?? "",
     formatUsd(applicationAmountPaidCents(app)),
-    applicationStatusLabel(app.status),
     formatDateTime(app.submittedAt),
     formatDateTime(app.updatedAt),
-    // Application has no dedicated reviewed-at timestamp.
-    "",
     applicationScoreSummary(app),
+    // Hidden TRUE/FALSE helper flags, one per canonical category.
+    ...categoryFlags(categories),
   ];
 }
 
 export async function fetchApplicationRow(id: string): Promise<SheetValues[number] | null> {
   const app = await prisma.application.findUnique({ where: { id }, select: applicationSelect });
-  return app ? mapApplicationRow(app) : null;
+  if (!app || !isApplicationPaid(app)) return null;
+  return mapApplicationRow(app);
 }
 
 export async function fetchAllApplicationRows(): Promise<SheetValues> {
   const apps = await prisma.application.findMany({
+    where: { paymentStatus: "PAID" },
     select: applicationSelect,
     orderBy: { createdAt: "asc" },
   });
@@ -138,6 +165,11 @@ const jurySelect = {
 
 type JuryRecord = Prisma.JuryApplicationGetPayload<{ select: typeof jurySelect }>;
 
+/** Only paid jury applications ever reach the sheet. */
+function isJuryPaid(jury: Pick<JuryRecord, "status">): boolean {
+  return jury.status === "PAID";
+}
+
 function juryPriceCents(jury: JuryRecord): number {
   const paid = jury.payments.find((payment) => payment.status === "PAID");
   if (paid) return paid.amount;
@@ -148,36 +180,44 @@ function juryPriceCents(jury: JuryRecord): number {
 }
 
 export function mapJuryRow(jury: JuryRecord): SheetValues[number] {
+  // Areas of expertise are the jury member's categories (shared vocabulary with
+  // the Applications tab), so they colour-code and filter identically.
+  const categories = orderCategories(jury.expertiseAreas);
+
   return [
     jury.id,
     jury.fullName,
     jury.email,
     jury.phone,
-    // JuryApplication has no Instagram field.
-    "",
     jury.country,
     jury.city,
     jury.professionalTitle,
     jury.yearsExperience,
-    joinList(jury.expertiseAreas),
+    categories.join(CATEGORY_SEPARATOR),
     yesNo(jury.ibpaAssociationMember),
     jury.ibpaNumber ?? "",
     formatUsd(juryPriceCents(jury)),
-    juryStatusLabel(jury.status),
     formatDateTime(jury.submittedAt),
     formatDateTime(jury.updatedAt),
     formatDateTime(jury.approvedAt ?? jury.rejectedAt),
     jury.adminNotes ?? "",
+    // Hidden TRUE/FALSE helper flags, one per canonical category.
+    ...categoryFlags(categories),
+    // The trailing checkbox columns (Приглашение / Благодарственное письмо /
+    // Сертификат судьи) are admin-editable and preserved by the sheet layer, so
+    // they are intentionally not produced here.
   ];
 }
 
 export async function fetchJuryRow(id: string): Promise<SheetValues[number] | null> {
   const jury = await prisma.juryApplication.findUnique({ where: { id }, select: jurySelect });
-  return jury ? mapJuryRow(jury) : null;
+  if (!jury || !isJuryPaid(jury)) return null;
+  return mapJuryRow(jury);
 }
 
 export async function fetchAllJuryRows(): Promise<SheetValues> {
   const records = await prisma.juryApplication.findMany({
+    where: { status: "PAID" },
     select: jurySelect,
     orderBy: { createdAt: "asc" },
   });

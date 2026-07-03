@@ -1,10 +1,5 @@
 import "server-only";
-import type {
-  ApplicationStatus,
-  JuryApplicationStatus,
-  ScoreStatus,
-  TicketType,
-} from "@prisma/client";
+import type { ScoreStatus, TicketType } from "@prisma/client";
 
 /**
  * Russian labels for the system-generated enum values that surface in the
@@ -13,24 +8,10 @@ import type {
  *
  * The conditional-format status colours in `schema.ts` key off these exact
  * strings, so any label edited here must be mirrored in the matching rule.
+ *
+ * The Applications and Jury tabs no longer carry a status column (they only ever
+ * show paid records), so their status labels were removed.
  */
-
-const APPLICATION_STATUS_RU: Record<ApplicationStatus, string> = {
-  DRAFT: "Черновик",
-  PAYMENT_PENDING: "Ожидает оплаты",
-  SUBMITTED: "Подана",
-  UNDER_REVIEW: "На рассмотрении",
-  APPROVED: "Одобрена",
-  REJECTED: "Отклонена",
-};
-
-const JURY_STATUS_RU: Record<JuryApplicationStatus, string> = {
-  SUBMITTED: "Подана",
-  ADDITIONAL_INFO_REQUIRED: "Требуется доп. информация",
-  APPROVED: "Одобрена",
-  REJECTED: "Отклонена",
-  PAID: "Оплачена",
-};
 
 const SCORE_STATUS_RU: Record<ScoreStatus, string> = {
   DRAFT: "Черновик",
@@ -45,14 +26,6 @@ const TICKET_TYPE_RU: Record<TicketType, string> = {
   ONE_DAY: "Форум — 1 день",
   TWO_DAYS: "Форум — 2 дня",
 };
-
-export function applicationStatusLabel(status: ApplicationStatus): string {
-  return APPLICATION_STATUS_RU[status] ?? String(status);
-}
-
-export function juryStatusLabel(status: JuryApplicationStatus): string {
-  return JURY_STATUS_RU[status] ?? String(status);
-}
 
 export function scoreStatusLabel(status: ScoreStatus): string {
   return SCORE_STATUS_RU[status] ?? String(status);

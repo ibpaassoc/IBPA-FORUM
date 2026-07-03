@@ -5,6 +5,7 @@ import {
   borderRequests,
   columnWidthRequests,
   freezeHeaderRequest,
+  statsChartRequests,
   statsResetRequest,
   statsSectionStyleRequest,
   statsTitleStyleRequest,
@@ -27,7 +28,7 @@ import {
   fetchScoreRow,
   fetchTicketRow,
 } from "./rows";
-import { computeStatsLayout } from "./stats";
+import { computeStatsLayout, type StatsLayout } from "./stats";
 
 /**
  * High-level sync operations.
@@ -113,6 +114,27 @@ export async function syncStatsToSheet(): Promise<void> {
       statsSectionStyleRequest(sheetId, index)
     ),
   ]);
+
+  // Refresh the breakdown charts in an isolated, best-effort pass so a chart
+  // hiccup can never break the numeric dashboard itself.
+  await refreshStatsCharts(client, sheetId, layout.chartSections);
+}
+
+/** (Re)build the stats breakdown charts idempotently; failures are swallowed. */
+async function refreshStatsCharts(
+  client: SheetsClient,
+  sheetId: number,
+  chartSections: StatsLayout["chartSections"]
+): Promise<void> {
+  try {
+    const meta = await client.getSheetMeta();
+    const existingChartIds =
+      meta.find((sheet) => sheet.sheetId === sheetId)?.chartIds ?? [];
+    const requests = statsChartRequests(sheetId, chartSections, existingChartIds);
+    if (requests.length > 0) await client.batchUpdate(requests);
+  } catch (error) {
+    console.error("Google Sheets stats chart refresh failed", error);
+  }
 }
 
 // ── Bulk backfill ────────────────────────────────────────────────────────────

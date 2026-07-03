@@ -1,4 +1,5 @@
 import "server-only";
+import { categoryColor, CATEGORY_ORDER } from "./categories";
 import type { BatchUpdateRequest } from "./client";
 
 /**
@@ -248,6 +249,209 @@ export function clearBordersRequest(
   };
 }
 
+// ── Hidden helper columns ────────────────────────────────────────────────────
+
+/** Hide technical helper columns (category flags) from the admin view. */
+export function hideColumnsRequests(
+  sheetId: number,
+  columnIndexes: number[] | undefined
+): BatchUpdateRequest[] {
+  return (columnIndexes ?? []).map((index) => ({
+    updateDimensionProperties: {
+      range: { sheetId, dimension: "COLUMNS", startIndex: index, endIndex: index + 1 },
+      properties: { hiddenByUser: true },
+      fields: "hiddenByUser",
+    },
+  }));
+}
+
+// ── Editable checkbox columns ────────────────────────────────────────────────
+
+/** Neutral ink used between coloured category badges inside a single cell. */
+const CATEGORY_SEPARATOR_COLOR: RgbColor = { red: 0.4, green: 0.4, blue: 0.4 };
+
+/**
+ * Turn the admin-editable tracking columns into real checkboxes (boolean data
+ * validation) across the populated rows. Re-applying is a harmless no-op, so
+ * this runs on every sync to cover newly appended rows.
+ */
+export function checkboxValidationRequests(
+  sheetId: number,
+  checkboxColumnIndexes: number[] | undefined,
+  dataRowCount: number
+): BatchUpdateRequest[] {
+  if (!checkboxColumnIndexes?.length || dataRowCount <= 0) return [];
+  return checkboxColumnIndexes.map((index) => ({
+    setDataValidation: {
+      range: {
+        sheetId,
+        startRowIndex: 1,
+        endRowIndex: dataRowCount + 1,
+        startColumnIndex: index,
+        endColumnIndex: index + 1,
+      },
+      rule: {
+        condition: { type: "BOOLEAN" },
+        strict: true,
+        showCustomUi: true,
+      },
+    },
+  }));
+}
+
+// ── Category badges (coloured text runs) ─────────────────────────────────────
+
+/**
+ * Build the text-format runs that colour each category name inside one cell like
+ * a soft badge: every category gets its consistent colour + bold weight, and the
+ * separators between them reset to neutral. Runs are located by matching the
+ * canonical category names inside the *actual* cell text, so the value itself is
+ * never rewritten — any non-canonical text a row might carry is left untouched.
+ */
+function categoryTextRuns(text: string): Array<Record<string, unknown>> {
+  if (!text) return [];
+
+  const marks = CATEGORY_ORDER.map((category) => ({
+    category,
+    start: text.indexOf(category),
+  }))
+    .filter((mark) => mark.start >= 0)
+    .sort((a, b) => a.start - b.start);
+
+  const runs: Array<Record<string, unknown>> = [];
+  let cursor = -1;
+  for (const mark of marks) {
+    // Skip anything overlapping an earlier match (none of the category names
+    // are substrings of one another, so this only guards against duplicates).
+    if (mark.start <= cursor) continue;
+    runs.push({
+      startIndex: mark.start,
+      format: { bold: true, foregroundColor: categoryColor(mark.category) },
+    });
+    const end = mark.start + mark.category.length;
+    // Reset the following separator to neutral, unless the badge ends the cell
+    // (a run at the string's end is invalid).
+    if (end < text.length) {
+      runs.push({
+        startIndex: end,
+        format: { bold: false, foregroundColor: CATEGORY_SEPARATOR_COLOR },
+      });
+    }
+    cursor = end;
+  }
+  return runs;
+}
+
+/**
+ * Colour the category cell of a contiguous block of data rows without touching
+ * the stored value: each entry in `displayValues` is one row's category-cell
+ * text, and only its per-category colour runs are (re)applied. `firstRowIndex`
+ * is the zero-based sheet row of the first entry.
+ */
+export function categoryColorRequests(
+  sheetId: number,
+  categoryColumnIndex: number,
+  displayValues: string[],
+  firstRowIndex: number
+): BatchUpdateRequest[] {
+  if (displayValues.length === 0) return [];
+
+  const rows = displayValues.map((text) => ({
+    values: [{ textFormatRuns: categoryTextRuns(text) }],
+  }));
+
+  return [
+    {
+      updateCells: {
+        rows,
+        fields: "textFormatRuns",
+        range: {
+          sheetId,
+          startRowIndex: firstRowIndex,
+          endRowIndex: firstRowIndex + displayValues.length,
+          startColumnIndex: categoryColumnIndex,
+          endColumnIndex: categoryColumnIndex + 1,
+        },
+      },
+    },
+  ];
+}
+
+// ── Slicers ──────────────────────────────────────────────────────────────────
+
+const SLICER_WIDTH = 200;
+const SLICER_HEIGHT = 140;
+const SLICER_GAP = 12;
+
+/** One slicer filtering `columnIndex`, titled `title`. */
+export type SlicerRequestSpec = { columnIndex: number; title: string };
+
+/**
+ * Rebuild a tab's slicers idempotently: delete the existing ones, widen the grid
+ * so there is empty space to the right of the data, then re-create each slicer
+ * stacked vertically in that empty band. The data range is left open-ended (no
+ * end row) so slicers automatically cover rows appended by later per-record
+ * syncs. Kept in its own batch by the caller so a slicer hiccup can never break
+ * the data sync itself.
+ */
+export function slicerRequests(
+  sheetId: number,
+  slicers: SlicerRequestSpec[],
+  tableColumnCount: number,
+  existingSlicerIds: number[]
+): BatchUpdateRequest[] {
+  const requests: BatchUpdateRequest[] = [];
+
+  for (const id of existingSlicerIds) {
+    requests.push({ deleteEmbeddedObject: { objectId: id } });
+  }
+
+  if (slicers.length === 0) return requests;
+
+  // Ensure there are columns to the right of the table to anchor slicers in.
+  const anchorColumn = tableColumnCount + 1;
+  requests.push({
+    updateSheetProperties: {
+      properties: { sheetId, gridProperties: { columnCount: anchorColumn + 3 } },
+      fields: "gridProperties.columnCount",
+    },
+  });
+
+  slicers.forEach((slicer, index) => {
+    requests.push({
+      addSlicer: {
+        slicer: {
+          spec: {
+            // Open-ended range (no endRowIndex) → spans the whole table.
+            dataRange: {
+              sheetId,
+              startRowIndex: 0,
+              startColumnIndex: 0,
+              endColumnIndex: tableColumnCount,
+            },
+            columnIndex: slicer.columnIndex,
+            title: slicer.title,
+            applyToPivotTables: false,
+            horizontalAlignment: "LEFT",
+            textFormat: { fontSize: 10 },
+          },
+          position: {
+            overlayPosition: {
+              anchorCell: { sheetId, rowIndex: 0, columnIndex: anchorColumn },
+              offsetXPixels: 8,
+              offsetYPixels: index * (SLICER_HEIGHT + SLICER_GAP),
+              widthPixels: SLICER_WIDTH,
+              heightPixels: SLICER_HEIGHT,
+            },
+          },
+        },
+      },
+    });
+  });
+
+  return requests;
+}
+
 // ── Stats dashboard ──────────────────────────────────────────────────────────
 
 const STATS_COLUMN_COUNT = 2;
@@ -329,6 +533,92 @@ export function statsTitleStyleRequest(
       fields: "userEnteredFormat(backgroundColor,verticalAlignment,textFormat)",
     },
   };
+}
+
+/** A numeric breakdown range on the stats tab that can back a column chart. */
+export type StatsChartSpec = {
+  title: string;
+  firstDataRowIndex: number;
+  rowCount: number;
+};
+
+const STATS_CHART_ANCHOR_COLUMN = 3; // column D, to the right of the A/B table
+const STATS_CHART_WIDTH = 480;
+const STATS_CHART_HEIGHT = 280;
+const STATS_CHART_ROW_STRIDE = 16; // rows between stacked chart anchors
+
+/**
+ * Rebuild the stats dashboard's column charts idempotently: delete the existing
+ * charts, then add one column chart per numeric breakdown (categories, jury,
+ * nominations…), stacked down the empty area to the right of the metric table.
+ * Kept in its own best-effort batch by the caller.
+ */
+export function statsChartRequests(
+  sheetId: number,
+  specs: StatsChartSpec[],
+  existingChartIds: number[]
+): BatchUpdateRequest[] {
+  const requests: BatchUpdateRequest[] = [];
+
+  for (const id of existingChartIds) {
+    requests.push({ deleteEmbeddedObject: { objectId: id } });
+  }
+
+  specs.forEach((spec, index) => {
+    const startRowIndex = spec.firstDataRowIndex;
+    const endRowIndex = spec.firstDataRowIndex + spec.rowCount;
+    const labelSource = {
+      sheetId,
+      startRowIndex,
+      endRowIndex,
+      startColumnIndex: 0,
+      endColumnIndex: 1,
+    };
+    const valueSource = {
+      sheetId,
+      startRowIndex,
+      endRowIndex,
+      startColumnIndex: 1,
+      endColumnIndex: 2,
+    };
+
+    requests.push({
+      addChart: {
+        chart: {
+          spec: {
+            title: spec.title,
+            basicChart: {
+              chartType: "COLUMN",
+              legendPosition: "NO_LEGEND",
+              headerCount: 0,
+              domains: [{ domain: { sourceRange: { sources: [labelSource] } } }],
+              series: [
+                {
+                  series: { sourceRange: { sources: [valueSource] } },
+                  targetAxis: "LEFT_AXIS",
+                },
+              ],
+            },
+          },
+          position: {
+            overlayPosition: {
+              anchorCell: {
+                sheetId,
+                rowIndex: 1 + index * STATS_CHART_ROW_STRIDE,
+                columnIndex: STATS_CHART_ANCHOR_COLUMN,
+              },
+              offsetXPixels: 16,
+              offsetYPixels: 0,
+              widthPixels: STATS_CHART_WIDTH,
+              heightPixels: STATS_CHART_HEIGHT,
+            },
+          },
+        },
+      },
+    });
+  });
+
+  return requests;
 }
 
 /** Style a stats section header row (medium IBPA blue band, bold white). */
