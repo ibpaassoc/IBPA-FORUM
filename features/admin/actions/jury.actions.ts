@@ -16,6 +16,15 @@ import {
 } from "@/features/jury/server/commands";
 import { requireAdmin } from "@/shared/lib/admin-auth";
 
+function isValidUrl(value: string) {
+  try {
+    new URL(value);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function getJuryApplicationDetailPath(id: string, params?: Record<string, string>) {
   const searchParams = new URLSearchParams(params);
   const query = searchParams.toString();
@@ -352,6 +361,22 @@ export async function editJuryApplicationAction(formData: FormData) {
     redirect(
       getJuryApplicationDetailPath(id, {
         error: "Please fill in all required fields (name, email, phone, location, title).",
+      }),
+    );
+  }
+
+  if (!professionalWebsite) {
+    redirect(
+      getJuryApplicationDetailPath(id, {
+        error: "Instagram is required.",
+      }),
+    );
+  }
+
+  if (!isValidUrl(professionalWebsite)) {
+    redirect(
+      getJuryApplicationDetailPath(id, {
+        error: "Please enter a valid Instagram URL.",
       }),
     );
   }

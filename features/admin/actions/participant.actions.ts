@@ -6,6 +6,15 @@ import { prisma } from "@/shared/lib/prisma";
 import { requireAdmin } from "@/shared/lib/admin-auth";
 import { syncApplicationOnChange } from "@/features/google-sheets";
 
+function isValidUrl(value: string) {
+  try {
+    new URL(value);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function updateParticipantApplicationStatus(formData: FormData) {
   await requireAdmin();
 
@@ -59,6 +68,14 @@ export async function editParticipantApplicationAction(formData: FormData) {
   const socialUrl = String(formData.get("socialUrl") ?? "").trim() || null;
   const reviewsUrl = String(formData.get("reviewsUrl") ?? "").trim() || null;
   const heardAbout = String(formData.get("heardAbout") ?? "").trim() || null;
+
+  if (!websiteUrl) {
+    redirect(`/admin/applications/${id}?error=Instagram+is+required.`);
+  }
+
+  if (!isValidUrl(websiteUrl)) {
+    redirect(`/admin/applications/${id}?error=Please+enter+a+valid+Instagram+URL.`);
+  }
 
   await prisma.application.update({
     where: { id },

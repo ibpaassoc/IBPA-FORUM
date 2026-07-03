@@ -332,8 +332,8 @@ export default function ApplicationDetailPage({
           Online presence
         </p>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          <DashboardDetailCard label="Website" value={application.websiteUrl || "Not provided"} />
-          <DashboardDetailCard label="Instagram / Social" value={application.socialUrl || "Not provided"} />
+          <DashboardDetailCard label="Instagram" value={application.websiteUrl || "Not provided"} />
+          <DashboardDetailCard label="Social media" value={application.socialUrl || "Not provided"} />
           <DashboardDetailCard label="Client reviews" value={application.reviewsUrl || "Not provided"} />
           <DashboardDetailCard label="Payment total" value={formatAmount(application.amount, application.currency)} />
         </div>

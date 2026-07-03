@@ -171,7 +171,7 @@ export default function JuryApplicationDetailPage({
         <DashboardDetailCard label="Conflict disclosure" value={application.conflictDisclosure} />
         <DashboardDetailCard label="Why they want to judge" value={application.motivation} />
         <DashboardDetailCard
-          label="Website / LinkedIn"
+          label="Instagram"
           value={application.professionalWebsite || "Not provided"}
         />
       </DashboardCard>

@@ -54,8 +54,8 @@ export default function BlockAFields({
       nomination: "Nomination (within category)",
       selectNomination: "Select nomination",
       selectCategoryFirst: "Select category first",
-      website: "Professional Website",
-      social: "Instagram / Social Media",
+      website: "Instagram",
+      social: "Social Media",
       reviews: "Client Reviews - Google / Yelp Link",
       heardAbout: "How did you hear about us?",
       selectOption: "Select an option",
@@ -89,8 +89,8 @@ export default function BlockAFields({
       nomination: "Номинация (внутри категории)",
       selectNomination: "Выберите номинацию",
       selectCategoryFirst: "Сначала выберите категорию",
-      website: "Профессиональный сайт",
-      social: "Instagram / соцсети",
+      website: "Instagram",
+      social: "Соцсети",
       reviews: "Отзывы клиентов - ссылка Google / Yelp",
       heardAbout: "Откуда вы узнали о нас?",
       selectOption: "Выберите вариант",
@@ -124,8 +124,8 @@ export default function BlockAFields({
       nomination: "Номінація (всередині категорії)",
       selectNomination: "Оберіть номінацію",
       selectCategoryFirst: "Спочатку оберіть категорію",
-      website: "Професійний сайт",
-      social: "Instagram / соцмережі",
+      website: "Instagram",
+      social: "Соцмережі",
       reviews: "Відгуки клієнтів - посилання Google / Yelp",
       heardAbout: "Звідки ви дізналися про нас?",
       selectOption: "Оберіть варіант",
@@ -313,8 +313,9 @@ export default function BlockAFields({
         label={copy.website}
         name="websiteUrl"
         type="url"
+        required
         value={String(values.websiteUrl ?? "")}
-        placeholder="https://"
+        placeholder="https://instagram.com/yourprofile"
         error={errors.websiteUrl}
         onChange={onChange}
       />
@@ -324,7 +325,7 @@ export default function BlockAFields({
         name="socialUrl"
         type="url"
         value={String(values.socialUrl ?? "")}
-        placeholder="https://instagram.com/yourprofile"
+        placeholder="https://"
         error={errors.socialUrl}
         onChange={onChange}
       />

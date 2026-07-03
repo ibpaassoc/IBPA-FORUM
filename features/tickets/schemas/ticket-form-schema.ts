@@ -10,13 +10,12 @@ export const ticketApiSchema = z
     lastName: z.string().trim().min(1, "Last name is required."),
     email: z.email("Please enter a valid email address."),
     phone: z.string().trim().min(1, "Phone number is required."),
-    // Optional. Accepts "@username", "username", or a full instagram.com link;
-    // normalised to a bare handle (or null when blank) before it reaches the DB.
     instagram: z
       .string()
-      .optional()
+      .trim()
+      .min(1, "Instagram is required.")
       .transform((value) => normalizeInstagramHandle(value))
-      .refine((handle) => handle === null || isValidInstagramHandle(handle), {
+      .refine((handle) => handle !== null && isValidInstagramHandle(handle), {
         message: "Enter a valid Instagram username or profile link.",
       }),
     type: z.enum(["ONE_DAY", "TWO_DAYS"] as const),
