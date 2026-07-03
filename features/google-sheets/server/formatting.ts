@@ -27,11 +27,24 @@ export type ColumnSpec = {
   wrap: WrapStrategy;
 };
 
-/** Colour a row when the value in `columnIndex` equals `equals` (first wins). */
+/**
+ * A conditional-format rule. By default it colours the whole row when the value
+ * in `columnIndex` matches, but it can also match a checkbox being ticked
+ * (`matchTrue`), scope the fill to just that column (`columnOnly`), and set a
+ * foreground colour (`textColor`) — used to turn ticked checkboxes green.
+ */
 export type ConditionalRule = {
   columnIndex: number;
-  equals: string;
+  /** Match when the cell text equals this value. */
+  equals?: string;
+  /** Match when the (checkbox) cell is TRUE. */
+  matchTrue?: boolean;
+  /** Background colour applied on match. */
   color: RgbColor;
+  /** Optional foreground colour applied on match (e.g. green checkmark). */
+  textColor?: RgbColor;
+  /** Colour only `columnIndex` instead of the whole row. */
+  columnOnly?: boolean;
 };
 
 /** Soft, readable palette — light backgrounds keep body text legible. */
@@ -45,6 +58,10 @@ export const COLORS = {
   blue: { red: 0.86, green: 0.93, blue: 0.98 },
   red: { red: 0.98, green: 0.87, blue: 0.87 },
   gray: { red: 0.95, green: 0.95, blue: 0.95 },
+  // Ticked-checkbox highlight: clearly green background + a strong green
+  // checkmark (the tick follows the cell's foreground colour).
+  checkboxTrueBg: { red: 0.71, green: 0.88, blue: 0.72 },
+  checkboxTrueText: { red: 0.06, green: 0.42, blue: 0.15 },
   // Stats dashboard
   sectionBg: { red: 0.45, green: 0.63, blue: 0.76 }, // medium IBPA blue
   sectionText: { red: 1, green: 1, blue: 1 },
@@ -166,6 +183,14 @@ export function conditionalFormatRequests(
 
   rules.forEach((rule, index) => {
     const letter = columnLetter(rule.columnIndex);
+    const formula = rule.matchTrue
+      ? `=$${letter}2=TRUE`
+      : `=$${letter}2="${rule.equals ?? ""}"`;
+    const format: Record<string, unknown> = { backgroundColor: rule.color };
+    if (rule.textColor) {
+      format.textFormat = { bold: true, foregroundColor: rule.textColor };
+    }
+
     requests.push({
       addConditionalFormatRule: {
         index,
@@ -174,16 +199,16 @@ export function conditionalFormatRequests(
             {
               sheetId,
               startRowIndex: 1,
-              startColumnIndex: 0,
-              endColumnIndex: columnCount,
+              startColumnIndex: rule.columnOnly ? rule.columnIndex : 0,
+              endColumnIndex: rule.columnOnly ? rule.columnIndex + 1 : columnCount,
             },
           ],
           booleanRule: {
             condition: {
               type: "CUSTOM_FORMULA",
-              values: [{ userEnteredValue: `=$${letter}2="${rule.equals}"` }],
+              values: [{ userEnteredValue: formula }],
             },
-            format: { backgroundColor: rule.color },
+            format,
           },
         },
       },
@@ -250,6 +275,24 @@ export function clearBordersRequest(
 }
 
 // ── Hidden helper columns ────────────────────────────────────────────────────
+
+/**
+ * Un-hide the tab's current columns. This also migrates tabs from an older
+ * layout that hid technical columns exactly where visible columns (e.g. the Jury
+ * tracking checkboxes) now live, so nothing stays wrongly hidden after a resync.
+ */
+export function showColumnsRequest(
+  sheetId: number,
+  columnCount: number
+): BatchUpdateRequest {
+  return {
+    updateDimensionProperties: {
+      range: { sheetId, dimension: "COLUMNS", startIndex: 0, endIndex: columnCount },
+      properties: { hiddenByUser: false },
+      fields: "hiddenByUser",
+    },
+  };
+}
 
 /** Hide technical helper columns (category flags) from the admin view. */
 export function hideColumnsRequests(

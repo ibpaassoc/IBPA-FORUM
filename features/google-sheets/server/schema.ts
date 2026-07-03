@@ -1,14 +1,14 @@
 import "server-only";
-import { CATEGORY_ORDER } from "./categories";
-import { SHEET_TABS, type SheetTab } from "./config";
+import { SHEET_TABS } from "./config";
 import { COLORS, type ColumnSpec, type ConditionalRule } from "./formatting";
 
 /**
  * Declarative definition of each data tab: its columns (header + width + wrap),
- * which column holds the unique ID used for idempotent upserts, the status-based
- * colour rules (Scores / Tickets only), plus — for the Applications and Jury
- * tabs — the multi-category helper configuration, hidden technical columns,
- * editable checkbox tracking columns, and the slicers admins filter with.
+ * which column holds the unique ID used for idempotent upserts, the conditional
+ * colour rules (status colours on Scores / Tickets; green ticked-checkbox
+ * highlight on Jury), plus — for the Applications and Jury tabs — the category
+ * cell to colour-code, the editable checkbox tracking columns, and the slicers
+ * admins filter with.
  *
  * The ID column is always the first column (index 0), so re-running any sync
  * updates existing rows in place instead of duplicating.
@@ -16,12 +16,10 @@ import { COLORS, type ColumnSpec, type ConditionalRule } from "./formatting";
  * Reviewer / internal admin identity is intentionally never represented here.
  */
 
-/** Multi-category display + hidden TRUE/FALSE helper columns for one tab. */
+/** The multi-value, colour-coded category cell for a tab. */
 export type CategoryConfig = {
   /** Column holding the comma-joined, per-category coloured category text. */
   displayColumnIndex: number;
-  /** Hidden helper column indexes, one per category in `CATEGORY_ORDER`. */
-  helperColumnIndexes: number[];
 };
 
 /** A slicer to (re)create on a tab, filtering the table on one column. */
@@ -33,15 +31,16 @@ export type SlicerConfig = {
 };
 
 export type SheetDefinition = {
-  tab: SheetTab;
+  /** Tab name (base tabs are Russian; generated category tabs append a label). */
+  tab: string;
   /** Zero-based index of the unique-ID column (always the first column). */
   idColumnIndex: 0;
   columns: ColumnSpec[];
-  /** Conditional row-colour rules, evaluated in order (first match wins). */
+  /** Conditional colour rules, evaluated in order (first match wins). */
   conditionalRules: ConditionalRule[];
   /** Columns hidden from the normal admin view (technical helpers). */
   hiddenColumnIndexes?: number[];
-  /** Multi-category display + helper-flag configuration, when applicable. */
+  /** The colour-coded category cell, when applicable. */
   category?: CategoryConfig;
   /**
    * Trailing, admin-editable checkbox columns. Their values live only in the
@@ -58,22 +57,13 @@ export function sheetHeaders(definition: SheetDefinition): string[] {
   return definition.columns.map((column) => column.header);
 }
 
-/** Hidden TRUE/FALSE helper column specs, one per canonical category. */
-function categoryHelperColumns(): ColumnSpec[] {
-  return CATEGORY_ORDER.map((name) => ({
-    header: `Категория: ${name}`,
-    width: 90,
-    wrap: "CLIP" as const,
-  }));
-}
-
 // ── Заявки (Applications) ────────────────────────────────────────────────────
 // Paid applications only. The status column was removed per request; the
-// category cell is multi-value ("Hair, Education, Salon") and colour-coded, and
-// the trailing hidden helper columns make single-category slicers match rows
-// that carry several categories.
+// category cell is multi-value ("Hair, Education, Salon") and colour-coded.
+// Category filtering is provided by the auto-generated "Заявки — <категория>"
+// tabs (see category-tabs.ts), not by per-category slicers.
 
-const APPLICATIONS_VISIBLE: ColumnSpec[] = [
+const APPLICATIONS_COLUMNS: ColumnSpec[] = [
   { header: "ID заявки", width: 130, wrap: "CLIP" },
   { header: "Участник", width: 170, wrap: "WRAP" },
   { header: "Email", width: 210, wrap: "CLIP" },
@@ -91,33 +81,24 @@ const APPLICATIONS_VISIBLE: ColumnSpec[] = [
 
 const APPLICATIONS_CATEGORY_DISPLAY_INDEX = 5;
 const APPLICATIONS_NOMINATION_INDEX = 6;
-const APPLICATIONS_HELPER_START = APPLICATIONS_VISIBLE.length; // 13
 
 export const APPLICATIONS_SHEET: SheetDefinition = {
   tab: SHEET_TABS.applications,
   idColumnIndex: 0,
-  columns: [...APPLICATIONS_VISIBLE, ...categoryHelperColumns()],
+  columns: APPLICATIONS_COLUMNS,
   conditionalRules: [],
-  hiddenColumnIndexes: CATEGORY_ORDER.map((_, i) => APPLICATIONS_HELPER_START + i),
-  category: {
-    displayColumnIndex: APPLICATIONS_CATEGORY_DISPLAY_INDEX,
-    helperColumnIndexes: CATEGORY_ORDER.map((_, i) => APPLICATIONS_HELPER_START + i),
-  },
-  // One slicer per category (bound to the hidden helper flags, so filtering by a
-  // single category still matches multi-category rows), plus a Nomination slicer.
-  slicers: [
-    ...CATEGORY_ORDER.map((name, i) => ({
-      columnIndex: APPLICATIONS_HELPER_START + i,
-      title: name,
-    })),
-    { columnIndex: APPLICATIONS_NOMINATION_INDEX, title: "Номинация" },
-  ],
+  category: { displayColumnIndex: APPLICATIONS_CATEGORY_DISPLAY_INDEX },
+  // Only the useful Nomination filter is kept (category filtering lives in the
+  // per-category tabs).
+  slicers: [{ columnIndex: APPLICATIONS_NOMINATION_INDEX, title: "Номинация" }],
 };
 
 // ── Жюри (Jury) ──────────────────────────────────────────────────────────────
 // Paid jury applications only. The status column was removed; "Специализация"
 // (areas of expertise) is the multi-value, colour-coded category cell, and the
-// three trailing checkbox columns are admin-editable and preserved across syncs.
+// three trailing checkbox columns are admin-editable (green when ticked) and
+// preserved across syncs. Category filtering lives in the "Жюри — <категория>"
+// tabs; the only slicers are the three tracking checkboxes.
 
 const JURY_VISIBLE: ColumnSpec[] = [
   { header: "ID заявки жюри", width: 130, wrap: "CLIP" },
@@ -145,41 +126,35 @@ const JURY_CHECKBOX_HEADERS = [
 ] as const;
 
 const JURY_CATEGORY_DISPLAY_INDEX = 8;
-const JURY_HELPER_START = JURY_VISIBLE.length; // 16
-const JURY_CHECKBOX_START = JURY_HELPER_START + CATEGORY_ORDER.length; // 27
+const JURY_CHECKBOX_START = JURY_VISIBLE.length; // 16
 
 export const JURY_SHEET: SheetDefinition = {
   tab: SHEET_TABS.jury,
   idColumnIndex: 0,
   columns: [
     ...JURY_VISIBLE,
-    ...categoryHelperColumns(),
     ...JURY_CHECKBOX_HEADERS.map((header) => ({
       header,
       width: 160,
       wrap: "CLIP" as const,
     })),
   ],
-  conditionalRules: [],
-  hiddenColumnIndexes: CATEGORY_ORDER.map((_, i) => JURY_HELPER_START + i),
-  category: {
-    displayColumnIndex: JURY_CATEGORY_DISPLAY_INDEX,
-    helperColumnIndexes: CATEGORY_ORDER.map((_, i) => JURY_HELPER_START + i),
-  },
+  // Ticked tracking checkboxes turn green (background + green checkmark) so
+  // admins can scan progress at a glance.
+  conditionalRules: JURY_CHECKBOX_HEADERS.map((_, i) => ({
+    columnIndex: JURY_CHECKBOX_START + i,
+    matchTrue: true,
+    color: COLORS.checkboxTrueBg,
+    textColor: COLORS.checkboxTrueText,
+    columnOnly: true,
+  })),
+  category: { displayColumnIndex: JURY_CATEGORY_DISPLAY_INDEX },
   checkboxColumnIndexes: JURY_CHECKBOX_HEADERS.map((_, i) => JURY_CHECKBOX_START + i),
-  // One slicer per category (bound to the hidden helper flags → multi-expertise
-  // rows match a single-category filter), plus a slicer per tracking checkbox so
-  // admins can instantly see who still needs an invitation, letter or diploma.
-  slicers: [
-    ...CATEGORY_ORDER.map((name, i) => ({
-      columnIndex: JURY_HELPER_START + i,
-      title: name,
-    })),
-    ...JURY_CHECKBOX_HEADERS.map((title, i) => ({
-      columnIndex: JURY_CHECKBOX_START + i,
-      title,
-    })),
-  ],
+  // Only the three tracking-checkbox filters are kept.
+  slicers: JURY_CHECKBOX_HEADERS.map((title, i) => ({
+    columnIndex: JURY_CHECKBOX_START + i,
+    title,
+  })),
 };
 
 // ── Оценки (Scores) ──────────────────────────────────────────────────────────

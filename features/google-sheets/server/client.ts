@@ -34,6 +34,8 @@ export type SheetsClient = {
   readonly spreadsheetId: string;
   /** Read a value range, e.g. `applications!A:A`. Returns `[]` when empty. */
   getValues(range: string): Promise<SheetValues>;
+  /** Read several value ranges in one round trip (results align with input). */
+  batchGetValues(ranges: string[]): Promise<SheetValues[]>;
   /** Overwrite a value range (RAW input, so cells are stored verbatim). */
   updateValues(range: string, values: SheetValues): Promise<void>;
   /** Append rows after the last populated row of a table. */
@@ -44,6 +46,8 @@ export type SheetsClient = {
   ): Promise<void>;
   /** Clear all values in a range without touching formatting. */
   clearValues(range: string): Promise<void>;
+  /** Clear several value ranges in one round trip. */
+  batchClearValues(ranges: string[]): Promise<void>;
   /** List the spreadsheet's sheet/tab properties (id + title). */
   getSheetProperties(): Promise<SheetProperties[]>;
   /** Like {@link getSheetProperties} but also reports conditional-rule counts. */
@@ -124,6 +128,19 @@ export function getSheetsClient(): SheetsClient {
       return data?.values ?? [];
     },
 
+    async batchGetValues(ranges) {
+      if (ranges.length === 0) return [];
+      const query = ranges
+        .map((range) => `ranges=${encodeRange(range)}`)
+        .join("&");
+      const data = (await authedFetch(
+        config,
+        `/values:batchGet?${query}&majorDimension=ROWS`
+      )) as { valueRanges?: Array<{ values?: SheetValues }> } | null;
+      // valueRanges come back in request order; default any missing to empty.
+      return ranges.map((_, index) => data?.valueRanges?.[index]?.values ?? []);
+    },
+
     async updateValues(range, values) {
       await authedFetch(
         config,
@@ -164,6 +181,14 @@ export function getSheetsClient(): SheetsClient {
       await authedFetch(config, `/values/${encodeRange(range)}:clear`, {
         method: "POST",
         body: JSON.stringify({}),
+      });
+    },
+
+    async batchClearValues(ranges) {
+      if (ranges.length === 0) return;
+      await authedFetch(config, `/values:batchClear`, {
+        method: "POST",
+        body: JSON.stringify({ ranges }),
       });
     },
 

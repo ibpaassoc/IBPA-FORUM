@@ -3,6 +3,7 @@ import { getSheetsClient, type SheetsClient } from "./client";
 import { a1, SHEET_TABS } from "./config";
 import {
   borderRequests,
+  categoryColorRequests,
   columnWidthRequests,
   freezeHeaderRequest,
   statsChartRequests,
@@ -17,6 +18,10 @@ import {
   SCORES_SHEET,
   TICKETS_SHEET,
 } from "./schema";
+import {
+  rebuildDomainWithCategoryTabs,
+  upsertRecordWithCategoryTabs,
+} from "./category-tabs";
 import { rebuildDataSheet, resolveSheetMeta, upsertSheetRows } from "./sheet-ops";
 import {
   fetchAllApplicationRows,
@@ -44,15 +49,15 @@ import { computeStatsLayout, type StatsLayout } from "./stats";
 // ── Per-record syncs ─────────────────────────────────────────────────────────
 
 export async function syncApplicationToSheet(id: string): Promise<void> {
-  const row = await fetchApplicationRow(id);
-  if (!row) return;
-  await upsertSheetRows(getSheetsClient(), APPLICATIONS_SHEET, [row]);
+  const record = await fetchApplicationRow(id);
+  if (!record) return;
+  await upsertRecordWithCategoryTabs(getSheetsClient(), APPLICATIONS_SHEET, record);
 }
 
 export async function syncJuryToSheet(id: string): Promise<void> {
-  const row = await fetchJuryRow(id);
-  if (!row) return;
-  await upsertSheetRows(getSheetsClient(), JURY_SHEET, [row]);
+  const record = await fetchJuryRow(id);
+  if (!record) return;
+  await upsertRecordWithCategoryTabs(getSheetsClient(), JURY_SHEET, record);
 }
 
 export async function syncScoreToSheet(id: string): Promise<void> {
@@ -100,6 +105,15 @@ export async function syncStatsToSheet(): Promise<void> {
   await client.clearValues(a1(SHEET_TABS.stats, "A:B"));
   await client.updateValues(a1(SHEET_TABS.stats, "A1"), layout.rows);
 
+  // Colour the category-name labels in the category breakdown sections with the
+  // shared palette (same colours as the Applications / Jury category badges).
+  const categoryLabelRequests = layout.chartSections.flatMap((section) => {
+    const labels = layout.rows
+      .slice(section.firstDataRowIndex, section.firstDataRowIndex + section.rowCount)
+      .map((row) => String(row[0] ?? ""));
+    return categoryColorRequests(sheetId, 0, labels, section.firstDataRowIndex);
+  });
+
   const rowCount = layout.rows.length;
   await client.batchUpdate([
     // Reset a generous block so section colouring from a previous (longer)
@@ -113,6 +127,8 @@ export async function syncStatsToSheet(): Promise<void> {
     ...layout.sectionRowIndexes.map((index) =>
       statsSectionStyleRequest(sheetId, index)
     ),
+    // Category-name colouring must come last so the reset above can't clear it.
+    ...categoryLabelRequests,
   ]);
 
   // Refresh the breakdown charts in an isolated, best-effort pass so a chart
@@ -164,13 +180,13 @@ async function backfill(
 }
 
 export async function syncAllApplications(): Promise<number> {
-  const rows = await fetchAllApplicationRows();
-  return rebuildDataSheet(getSheetsClient(), APPLICATIONS_SHEET, rows);
+  const records = await fetchAllApplicationRows();
+  return rebuildDomainWithCategoryTabs(getSheetsClient(), APPLICATIONS_SHEET, records);
 }
 
 export async function syncAllJury(): Promise<number> {
-  const rows = await fetchAllJuryRows();
-  return rebuildDataSheet(getSheetsClient(), JURY_SHEET, rows);
+  const records = await fetchAllJuryRows();
+  return rebuildDomainWithCategoryTabs(getSheetsClient(), JURY_SHEET, records);
 }
 
 export async function syncAllScores(): Promise<number> {

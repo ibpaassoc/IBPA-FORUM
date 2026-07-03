@@ -2,73 +2,65 @@ import "server-only";
 import type { RgbColor } from "./formatting";
 
 /**
- * Canonical competition categories, shared by the Applications and Jury tabs so
- * the same soft colour represents the same category everywhere.
+ * Canonical competition categories, shared by every place category data is shown
+ * (Applications, Jury, the generated per-category tabs, and the stats dashboard)
+ * so one category always looks the same everywhere.
  *
  * An application can belong to several categories (its primary category plus the
  * category of every nomination it enters) and a jury member can be qualified in
- * several (their areas of expertise). Both surface here as a set of these
- * canonical names, which drives:
+ * several (their areas of expertise). Both surface as a set of these canonical
+ * names, which drives:
  *   • the coloured category text (a "badge" per category inside one cell),
- *   • the hidden TRUE/FALSE helper columns that make multi-category filtering
- *     work through slicers (filtering by "Hair" must match "Hair, Education,
- *     Salon"), and
+ *   • which per-category tab a record is copied into (multi-category records
+ *     appear in each of their categories' tabs), and
  *   • the paid-only category breakdowns on the statistics dashboard.
  *
- * The names match the values stored in the database verbatim (English, as the
- * product uses them) — user-entered data is never translated.
+ * `name` matches the value stored in the database verbatim (English, as the
+ * product uses it) — user-entered data is never translated. `label` is the short
+ * form used to name the generated category tabs. `color` is a strong, distinct,
+ * readable text colour, unique per category.
  */
+export type CategoryDef = {
+  /** Full canonical name, exactly as stored in the database. */
+  name: string;
+  /** Short label used when naming the generated per-category tabs. */
+  label: string;
+  /** Unique badge/text colour (readable on white). */
+  color: RgbColor;
+};
 
-/**
- * Fixed helper-column order (also the display order inside a category cell).
- * Keep in sync with the hidden helper columns declared in `schema.ts`.
- */
-export const CATEGORY_ORDER = [
-  "Hair",
-  "Nail",
-  "Lash",
-  "Brow",
-  "Education",
-  "Salon",
-  "Brand",
-  "Makeup Artistry",
-  "Skin Care, Cosmetology & Facial",
-  "Permanent Makeup",
-  "Body, Wellness & Nutrition",
-] as const;
+export const CATEGORIES: CategoryDef[] = [
+  { name: "Hair", label: "Hair", color: { red: 0.1, green: 0.4, blue: 0.85 } }, // Blue
+  { name: "Nail", label: "Nail", color: { red: 0.86, green: 0.18, blue: 0.53 } }, // Pink
+  { name: "Lash", label: "Lash", color: { red: 0.56, green: 0.22, blue: 0.83 } }, // Purple
+  { name: "Brow", label: "Brow", color: { red: 0.45, green: 0.28, blue: 0.1 } }, // Brown
+  { name: "Education", label: "Education", color: { red: 0.29, green: 0.2, blue: 0.72 } }, // Indigo
+  { name: "Salon", label: "Salon", color: { red: 0.83, green: 0.42, blue: 0.04 } }, // Orange
+  { name: "Brand", label: "Brand", color: { red: 0.0, green: 0.52, blue: 0.53 } }, // Teal
+  { name: "Makeup Artistry", label: "Makeup Artistry", color: { red: 0.82, green: 0.11, blue: 0.12 } }, // Red
+  { name: "Skin Care, Cosmetology & Facial", label: "Skin Care", color: { red: 0.16, green: 0.56, blue: 0.22 } }, // Green
+  { name: "Permanent Makeup", label: "Permanent Makeup", color: { red: 0.38, green: 0.09, blue: 0.6 } }, // Deep Violet
+  { name: "Body, Wellness & Nutrition", label: "Body Wellness", color: { red: 0.0, green: 0.57, blue: 0.36 } }, // Emerald
+];
 
-export type CanonicalCategory = (typeof CATEGORY_ORDER)[number];
+/** Canonical category names in display order (also the badge order in a cell). */
+export const CATEGORY_ORDER: string[] = CATEGORIES.map((category) => category.name);
 
 /** Rank used to sort a row's categories into the canonical order above. */
 const CATEGORY_RANK = new Map<string, number>(
-  CATEGORY_ORDER.map((name, index) => [name, index])
+  CATEGORIES.map((category, index) => [category.name, index])
 );
 
-/**
- * Soft, readable text colours — medium-dark tones that stay legible on the white
- * cell background and never turn into aggressive neon. One colour per category,
- * used identically on both the Applications and Jury tabs.
- */
-export const CATEGORY_COLORS: Record<CanonicalCategory, RgbColor> = {
-  Hair: { red: 0.55, green: 0.34, blue: 0.12 }, // amber-brown
-  Nail: { red: 0.8, green: 0.24, blue: 0.44 }, // rose
-  Lash: { red: 0.45, green: 0.3, blue: 0.7 }, // purple
-  Brow: { red: 0.13, green: 0.47, blue: 0.51 }, // teal
-  Education: { red: 0.16, green: 0.4, blue: 0.72 }, // blue
-  Salon: { red: 0.2, green: 0.52, blue: 0.3 }, // green
-  Brand: { red: 0.3, green: 0.3, blue: 0.66 }, // indigo
-  "Makeup Artistry": { red: 0.72, green: 0.2, blue: 0.34 }, // crimson
-  "Skin Care, Cosmetology & Facial": { red: 0.72, green: 0.42, blue: 0.13 }, // orange
-  "Permanent Makeup": { red: 0.55, green: 0.24, blue: 0.55 }, // violet
-  "Body, Wellness & Nutrition": { red: 0.36, green: 0.47, blue: 0.2 }, // olive
-} as const;
+const CATEGORY_COLORS = new Map<string, RgbColor>(
+  CATEGORIES.map((category) => [category.name, category.color])
+);
 
 /** Neutral ink for any category value outside the canonical set. */
 const NEUTRAL_COLOR: RgbColor = { red: 0.25, green: 0.25, blue: 0.25 };
 
 /** The colour for a category name (neutral for anything unrecognised). */
 export function categoryColor(name: string): RgbColor {
-  return CATEGORY_COLORS[name as CanonicalCategory] ?? NEUTRAL_COLOR;
+  return CATEGORY_COLORS.get(name) ?? NEUTRAL_COLOR;
 }
 
 /** How category names are joined inside a single cell. */
@@ -96,15 +88,4 @@ export function orderCategories(names: Iterable<string>): string[] {
     if (rb != null) return 1;
     return a.localeCompare(b);
   });
-}
-
-/**
- * TRUE/FALSE flags for the hidden helper columns, one per canonical category in
- * {@link CATEGORY_ORDER}. Multi-category rows light up several flags, which is
- * exactly what lets a single-category slicer include them.
- */
-export function categoryFlags(names: Iterable<string>): boolean[] {
-  const present = new Set<string>();
-  for (const raw of names) present.add(raw.trim());
-  return CATEGORY_ORDER.map((category) => present.has(category));
 }

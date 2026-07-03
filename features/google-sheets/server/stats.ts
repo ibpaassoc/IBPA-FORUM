@@ -183,7 +183,7 @@ export async function computeStatsLayout(): Promise<StatsLayout> {
   // ── Overview (paid only) ──────────────────────────────────────────────────
   builder.section("ОБЗОР");
   builder.metric("Оплаченные заявки", paidApplications.length);
-  builder.metric("Оплаченные заявки судей", paidJury.length);
+  builder.metric("Оплаченные судьи", paidJury.length);
   builder.metric("Проданные билеты", soldTickets.length);
   builder.metric("Общий доход", formatUsd(totalRevenue));
 
