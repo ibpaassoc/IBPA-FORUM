@@ -400,17 +400,18 @@ export async function updateJuryApplicationStatus({
   status: JuryApplicationStatus;
   adminNotes?: string;
 }) {
+  // Уведомления показываются в админ-панели, поэтому текст на русском.
   if (status === "SUBMITTED") {
     await resetJuryApplicationToSubmitted({
       id,
       adminNotes,
     });
-    return "Application moved back to submitted.";
+    return "Заявка возвращена в статус «Отправлено».";
   }
 
   if (status === "APPROVED") {
     await approveJuryApplication(id);
-    return "Application approved and payment link sent.";
+    return "Заявка одобрена, ссылка на оплату отправлена.";
   }
 
   if (status === "REJECTED") {
@@ -418,7 +419,7 @@ export async function updateJuryApplicationStatus({
       id,
       adminNotes,
     });
-    return "Application rejected successfully.";
+    return "Заявка отклонена.";
   }
 
   throw new Error("Paid status can only be set by Stripe webhook confirmation.");

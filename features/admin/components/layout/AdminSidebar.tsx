@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { logoutAdminAction } from "@/features/admin/actions/auth.actions";
+import { adminT } from "@/lib/i18n/admin";
 import {
   Drawer,
   FloatingActionButton,
@@ -25,13 +26,13 @@ import {
 } from "@/shared/components/admin/DashboardUI";
 
 const navItems = [
-  { href: "/admin", label: "Overview", shortLabel: "Home", icon: LayoutDashboard },
-  { href: "/admin/applications", label: "Applications", shortLabel: "Apps", icon: FileText },
-  { href: "/admin/jury-applications", label: "Jury", shortLabel: "Jury", icon: Users },
-  { href: "/admin/scoring", label: "Scoring", shortLabel: "Scores", icon: Star },
-  { href: "/admin/tickets", label: "Tickets", shortLabel: "Tickets", icon: Ticket },
-  { href: "/admin/scanner", label: "Scanner", shortLabel: "Scan", icon: ScanLine },
-  { href: "/admin/google-sheets", label: "Google Sheets", shortLabel: "Sheets", icon: FileSpreadsheet },
+  { href: "/admin", ...adminT.nav.overview, icon: LayoutDashboard },
+  { href: "/admin/applications", ...adminT.nav.applications, icon: FileText },
+  { href: "/admin/jury-applications", ...adminT.nav.jury, icon: Users },
+  { href: "/admin/scoring", ...adminT.nav.scoring, icon: Star },
+  { href: "/admin/tickets", ...adminT.nav.tickets, icon: Ticket },
+  { href: "/admin/scanner", ...adminT.nav.scanner, icon: ScanLine },
+  { href: "/admin/google-sheets", ...adminT.nav.sheets, icon: FileSpreadsheet },
 ];
 
 function isActive(pathname: string, href: string) {
@@ -47,7 +48,7 @@ function SignOutButton({ compact = false }: { compact?: boolean }) {
         className="flex min-h-11 w-full items-center justify-center gap-3 rounded-[18px] border border-transparent px-3 text-[0.76rem] font-semibold uppercase tracking-[0.1em] text-[var(--color-ink-soft)] transition hover:border-red-200 hover:bg-red-50 hover:text-red-700"
       >
         <LogOut aria-hidden size={16} strokeWidth={1.8} />
-        {compact ? null : <span>Sign out</span>}
+        {compact ? null : <span>{adminT.nav.signOut}</span>}
       </button>
     </form>
   );
@@ -67,7 +68,7 @@ export default function AdminSidebar() {
 
   const mobileItems = navItems.map((item) => ({
     href: item.href,
-    label: item.shortLabel,
+    label: item.short,
     icon: item.icon,
     active: isActive(pathname, item.href),
   }));
@@ -88,12 +89,12 @@ export default function AdminSidebar() {
                     IBPA
                   </p>
                   <p className="mt-1 text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-ink-soft)]">
-                    Admin atelier
+                    {adminT.nav.brandSub}
                   </p>
                 </Link>
               )}
               <IconButton
-                label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                label={collapsed ? adminT.nav.expand : adminT.nav.collapse}
                 icon={collapsed ? PanelLeftOpen : PanelLeftClose}
                 onClick={() => setCollapsed((value) => !value)}
                 className="size-9 shrink-0"
@@ -124,21 +125,6 @@ export default function AdminSidebar() {
             </nav>
 
             <div className="mt-3 border-t border-[rgba(37,42,45,0.08)] pt-3">
-              <div
-                className={`mb-2 flex items-center gap-3 rounded-[22px] bg-white/58 p-3 ${
-                  collapsed ? "justify-center" : ""
-                }`}
-              >
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-blue-wash)] font-[var(--font-title-family)] text-lg text-[var(--color-blue)]">
-                  A
-                </div>
-                {!collapsed ? (
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-[var(--color-ink)]">Admin desk</p>
-                    <p className="text-xs text-[var(--color-ink-soft)]">IBPA 2026</p>
-                  </div>
-                ) : null}
-              </div>
               <SignOutButton compact={collapsed} />
             </div>
           </div>
@@ -147,9 +133,8 @@ export default function AdminSidebar() {
 
       {!hideMobileChrome ? (
         <>
-          <MobileBottomNavigation items={mobileItems} />
           <FloatingActionButton
-            label="Open admin menu"
+            label={adminT.nav.openMenu}
             icon={MoreHorizontal}
             onClick={() => setDrawerOpen(true)}
             className="lg:hidden"
@@ -157,16 +142,8 @@ export default function AdminSidebar() {
         </>
       ) : null}
 
-      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} title="IBPA Admin">
+      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} title={adminT.nav.drawerTitle}>
         <div className="space-y-4">
-          <div className="rounded-[24px] bg-[linear-gradient(135deg,rgba(185,217,235,0.32),rgba(255,255,255,0.86))] p-4">
-            <p className="font-[var(--font-accent-family)] text-lg italic text-[var(--color-blue)]">
-              Beauty Award 2026
-            </p>
-            <p className="mt-1 text-sm text-[var(--color-ink-soft)]">
-              Applications, judging, scoring, and check-in.
-            </p>
-          </div>
           <nav className="grid gap-2" aria-label="Admin drawer navigation">
             {navItems.map(({ href, label, icon: Icon }) => {
               const active = isActive(pathname, href);

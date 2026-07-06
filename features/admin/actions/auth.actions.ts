@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { adminT } from "@/lib/i18n/admin";
 import { loginAdmin, logoutAdmin } from "@/shared/lib/admin-auth";
 
 export type AdminLoginState = {
@@ -16,7 +17,7 @@ export async function loginAdminAction(
 
   if (!isAuthenticated) {
     return {
-      error: "Incorrect password. Please try again.",
+      error: adminT.login.wrongPassword,
     };
   }
 

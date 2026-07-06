@@ -3,10 +3,8 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Clock3, FileText, Layers3, MapPin, ReceiptText } from "lucide-react";
-import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { formatAdminDate } from "@/features/admin/server/view-models";
+import { adminT, formatAdminDate } from "@/lib/i18n/admin";
 import ApplicationStatusBadge from "@/features/admin/components/badges/ApplicationStatusBadge";
-import PaymentStatusBadge from "@/features/admin/components/badges/PaymentStatusBadge";
 import ApplicationFilters, {
   type FilterSelect,
 } from "@/features/admin/components/review/ApplicationFilters";
@@ -60,7 +58,6 @@ export default function ApplicationListPage({
     approved: number;
   };
 }) {
-  const { t } = useLanguage();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const [category, setCategory] = useState("");
@@ -104,39 +101,40 @@ export default function ApplicationListPage({
   const selects: FilterSelect[] = [
     {
       key: "status",
-      label: t.filters.allStatuses,
+      label: adminT.filters.allStatuses,
       value: status,
+      variant: "segmented",
       options: [
-        { value: "", label: t.filters.allStatuses },
-        ...statusesPresent.map((value) => ({ value, label: t.statuses[value] })),
+        { value: "", label: adminT.filters.all },
+        ...statusesPresent.map((value) => ({ value, label: adminT.statuses[value] })),
       ],
     },
     {
       key: "category",
-      label: t.filters.allCategories,
+      label: adminT.filters.allCategories,
       value: category,
       options: [
-        { value: "", label: t.filters.allCategories },
+        { value: "", label: adminT.filters.allCategories },
         ...categories.map((value) => ({ value, label: value })),
       ],
     },
     {
       key: "payment",
-      label: t.filters.allPayments,
+      label: adminT.filters.allPayments,
       value: payment,
       options: [
-        { value: "", label: t.filters.allPayments },
-        ...paymentsPresent.map((value) => ({ value, label: t.statuses[value] })),
+        { value: "", label: adminT.filters.allPayments },
+        ...paymentsPresent.map((value) => ({ value, label: adminT.statuses[value] })),
       ],
     },
     {
       key: "sort",
-      label: t.filters.sortLabel,
+      label: adminT.filters.sortLabel,
       value: sort,
       options: [
-        { value: "", label: t.filters.sortNewest },
-        { value: "oldest", label: t.filters.sortOldest },
-        { value: "name", label: t.filters.sortName },
+        { value: "", label: adminT.filters.sortNewest },
+        { value: "oldest", label: adminT.filters.sortOldest },
+        { value: "name", label: adminT.filters.sortName },
       ],
     },
   ];
@@ -158,19 +156,19 @@ export default function ApplicationListPage({
 
   return (
     <div className="flex flex-col gap-5">
-      <DashboardPageHeader label="Applications" title="Review queue" />
+      <DashboardPageHeader label={adminT.applications.label} title={adminT.applications.title} />
 
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-[1.1fr_repeat(4,minmax(0,0.75fr))]">
         <DashboardAccentBlock>
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-soft)]">
-            Total
+            {adminT.common.total}
           </p>
           <p className="mt-2 text-3xl font-semibold tracking-[-0.03em]">{totals.total}</p>
         </DashboardAccentBlock>
-        <DashboardMetricTile label="Payment pending" value={totals.paymentPending} accent="amber" />
-        <DashboardMetricTile label="Submitted" value={totals.submitted} accent="blue" />
-        <DashboardMetricTile label="Under review" value={totals.underReview} accent="blue" />
-        <DashboardMetricTile label="Approved" value={totals.approved} accent="green" />
+        <DashboardMetricTile label={adminT.applications.paymentPending} value={totals.paymentPending} accent="amber" />
+        <DashboardMetricTile label={adminT.applications.submitted} value={totals.submitted} accent="blue" />
+        <DashboardMetricTile label={adminT.applications.underReview} value={totals.underReview} accent="blue" />
+        <DashboardMetricTile label={adminT.applications.approved} value={totals.approved} accent="green" />
       </div>
 
       <ApplicationFilters
@@ -185,8 +183,8 @@ export default function ApplicationListPage({
         <DashboardCard>
           <DashboardEmptyState
             icon={<FileText size={22} />}
-            title="No applications found"
-            description="Adjust the filters or search to see another queue."
+            title={adminT.applications.emptyTitle}
+            description={adminT.applications.emptyText}
           />
         </DashboardCard>
       ) : (
@@ -206,7 +204,6 @@ export default function ApplicationListPage({
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
                         <ApplicationStatusBadge status={app.status} />
-                        <PaymentStatusBadge status={app.paymentStatus} />
                       </div>
                       <h2 className="mt-3 font-[var(--font-title-family)] text-[1.55rem] font-light tracking-[-0.025em] text-[var(--color-ink)]">
                         {app.fullName}
@@ -222,10 +219,10 @@ export default function ApplicationListPage({
                       <div>
                         <div className="flex items-center gap-2 text-[var(--color-blue)]">
                           <Layers3 aria-hidden size={16} />
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">Nominations</p>
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">{adminT.applications.nominations}</p>
                         </div>
                         <p className="mt-2 text-sm font-medium text-[var(--color-ink)]">
-                          {nominations.length} selected
+                          {adminT.applications.selectedCount} {nominations.length}
                         </p>
                       </div>
                       <div className="flex flex-wrap gap-1.5">
@@ -245,28 +242,20 @@ export default function ApplicationListPage({
                       </div>
                     </DashboardPanel>
 
-                    <div className="flex flex-col justify-between gap-3 rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white p-4">
+                    <div className="flex items-center justify-between gap-3 rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white p-4 lg:flex-col lg:items-start">
                       <div>
-                        <div className="flex items-center gap-2 text-[var(--color-ink-muted)]">
-                          <ReceiptText aria-hidden size={15} />
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">Primary path</p>
-                        </div>
-                        <p className="mt-2 text-sm font-semibold leading-6 text-[var(--color-ink)]">
-                          {app.award.name}
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
+                          {adminT.applications.createdDate}
                         </p>
-                        <p className="text-sm text-[var(--color-ink-soft)]">{app.category.name}</p>
-                      </div>
-                      <div className="flex items-center justify-between gap-3 border-t border-[rgba(37,42,45,0.08)] pt-3">
-                        <span className="inline-flex items-center gap-1.5 text-xs text-[var(--color-ink-muted)]">
-                          <Clock3 aria-hidden size={13} />
+                        <p className="mt-2 text-sm font-medium text-[var(--color-ink)]">
                           {formatAdminDate(app.createdAt)}
-                        </span>
-                        <ArrowRight
-                          aria-hidden
-                          size={17}
-                          className="text-[var(--color-ink-soft)] transition group-hover:translate-x-0.5 group-hover:text-[var(--color-blue)]"
-                        />
+                        </p>
                       </div>
+                      <ArrowRight
+                        aria-hidden
+                        size={17}
+                        className="text-[var(--color-ink-muted)] transition group-hover:translate-x-0.5 group-hover:text-[var(--color-blue)]"
+                      />
                     </div>
                   </div>
                 </DashboardCard>

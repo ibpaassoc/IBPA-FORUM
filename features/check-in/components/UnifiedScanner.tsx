@@ -15,6 +15,7 @@ import {
   Users,
   XCircle,
 } from "lucide-react";
+import { adminT } from "@/lib/i18n/admin";
 import {
   DashboardBadge,
   DashboardPrimaryBtn,
@@ -37,14 +38,14 @@ type ScanState =
   | { phase: "error"; message: string };
 
 const KIND_META: Record<TicketKind, { label: string; icon: typeof Ticket }> = {
-  TICKET: { label: "Forum / Gala", icon: Ticket },
-  PARTICIPANT: { label: "Participant", icon: UserCheck },
-  JURY: { label: "Jury", icon: Users },
+  TICKET: { label: adminT.scanner.kindForumGala, icon: Ticket },
+  PARTICIPANT: { label: adminT.scanner.kindParticipant, icon: UserCheck },
+  JURY: { label: adminT.scanner.kindJury, icon: Users },
 };
 
 function formatDateTime(value: string | null) {
   if (!value) return "—";
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat("ru-RU", {
     month: "short",
     day: "numeric",
     hour: "2-digit",
@@ -86,12 +87,12 @@ export default function UnifiedScanner({
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setState({ phase: "error", message: data.message ?? "Ticket could not be verified." });
+        setState({ phase: "error", message: data.message ?? adminT.scanner.verifyFailed });
         return;
       }
       setState({ phase: "result", ticket: data.ticket as NormalizedTicket });
     } catch {
-      setState({ phase: "error", message: "Network error. Please try again." });
+      setState({ phase: "error", message: adminT.scanner.networkError });
     }
   }, []);
 
@@ -174,7 +175,7 @@ export default function UnifiedScanner({
     } catch {
       setState({
         phase: "error",
-        message: "Camera access denied. Allow camera permissions, or enter the code manually.",
+        message: adminT.scanner.cameraError,
       });
     }
   }, [scanLoop]);
@@ -204,7 +205,7 @@ export default function UnifiedScanner({
         setState({
           phase: "result",
           ticket: data.ticket as NormalizedTicket,
-          notice: "Checked in successfully.",
+          notice: adminT.scanner.checkedInNotice,
         });
         onAfterCheckIn?.();
         return;
@@ -218,14 +219,14 @@ export default function UnifiedScanner({
         setState({
           phase: "result",
           ticket: { ...ticket, scopes: patchedScopes, checkInStatus: "CHECKED_IN" },
-          notice: data.message ?? "Already checked in.",
+          notice: data.message ?? adminT.scanner.alreadyCheckedIn,
         });
         return;
       }
 
-      setState({ phase: "error", message: data.message ?? "Check-in failed." });
+      setState({ phase: "error", message: data.message ?? adminT.scanner.checkInFailed });
     } catch {
-      setState({ phase: "error", message: "Network error. Check-in failed." });
+      setState({ phase: "error", message: adminT.scanner.networkError });
     } finally {
       setBusyScope(null);
     }
@@ -244,20 +245,20 @@ export default function UnifiedScanner({
               <ScanLine size={26} strokeWidth={1.6} />
             </div>
             <p className="mt-4 font-[var(--font-title-family)] text-xl font-light text-[var(--color-ink)]">
-              Scan any IBPA ticket
+              {adminT.scanner.idleTitle}
             </p>
             <p className="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
-              Forum, gala dinner, participant, and jury tickets are detected automatically.
+              {adminT.scanner.idleText}
             </p>
           </div>
           <DashboardPrimaryBtn onClick={startCamera} className="w-full justify-center">
-            <Camera size={16} /> Start camera
+            <Camera size={16} /> {adminT.scanner.startCamera}
           </DashboardPrimaryBtn>
           <DashboardSecondaryBtn
             onClick={() => setState({ phase: "manual" })}
             className="w-full justify-center"
           >
-            <Keyboard size={16} /> Enter code manually
+            <Keyboard size={16} /> {adminT.scanner.enterManually}
           </DashboardSecondaryBtn>
         </div>
       )}
@@ -273,21 +274,21 @@ export default function UnifiedScanner({
         >
           <label className="block">
             <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-blue)]">
-              Ticket code
+              {adminT.scanner.ticketCode}
             </span>
             <input
               autoFocus
               value={manualCode}
               onChange={(event) => setManualCode(event.target.value)}
-              placeholder="IBPA:TICKET:… or paste the code"
+              placeholder={adminT.scanner.codePlaceholder}
               className={dashboardInputClass}
             />
           </label>
           <DashboardPrimaryBtn type="submit" className="w-full justify-center">
-            <ScanLine size={16} /> Verify ticket
+            <ScanLine size={16} /> {adminT.scanner.verifyTicket}
           </DashboardPrimaryBtn>
           <DashboardSecondaryBtn onClick={reset} className="w-full justify-center">
-            Cancel
+            {adminT.common.cancel}
           </DashboardSecondaryBtn>
         </form>
       )}
@@ -307,10 +308,10 @@ export default function UnifiedScanner({
             </div>
           </div>
           <p className="text-center text-sm text-[var(--color-ink-soft)]">
-            Point the camera at the ticket QR code…
+            {adminT.scanner.pointCamera}
           </p>
           <DashboardSecondaryBtn onClick={reset} className="w-full justify-center">
-            Cancel
+            {adminT.common.cancel}
           </DashboardSecondaryBtn>
         </div>
       )}
@@ -318,7 +319,7 @@ export default function UnifiedScanner({
       {state.phase === "loading" && (
         <div className="flex flex-col items-center gap-4 py-12">
           <RefreshCw size={30} className="animate-spin text-[var(--color-blue)]" />
-          <p className="text-sm text-[var(--color-ink-soft)]">Verifying ticket…</p>
+          <p className="text-sm text-[var(--color-ink-soft)]">{adminT.scanner.verifying}</p>
         </div>
       )}
 
@@ -339,7 +340,7 @@ export default function UnifiedScanner({
             <p className="text-sm font-semibold text-red-800">{state.message}</p>
           </div>
           <DashboardPrimaryBtn onClick={reset} className="w-full justify-center">
-            Try again
+            {adminT.common.tryAgain}
           </DashboardPrimaryBtn>
         </div>
       )}
@@ -361,7 +362,7 @@ function ResultView({
   onReset: () => void;
 }) {
   const KindIcon = KIND_META[ticket.ticketKind].icon;
-  const justChecked = notice === "Checked in successfully.";
+  const justChecked = notice === adminT.scanner.checkedInNotice;
 
   return (
     <div className="space-y-4">
@@ -393,10 +394,14 @@ function ResultView({
         </div>
 
         <div className="mt-4 grid grid-cols-2 gap-3 border-t border-[rgba(37,42,45,0.08)] pt-4">
-          <Field label="Ticket type" value={ticket.ticketType} />
+          <Field label={adminT.scanner.ticketType} value={ticket.ticketType} />
           <Field
-            label="Payment"
-            value={<DashboardBadge tone={paymentTone(ticket.paymentStatus)}>{ticket.paymentStatus}</DashboardBadge>}
+            label={adminT.scanner.payment}
+            value={
+              <DashboardBadge tone={paymentTone(ticket.paymentStatus)}>
+                {adminT.statuses[ticket.paymentStatus] ?? ticket.paymentStatus}
+              </DashboardBadge>
+            }
           />
         </div>
       </div>
@@ -404,7 +409,7 @@ function ResultView({
       {!ticket.eligibleForCheckIn ? (
         <div className="flex items-center gap-2.5 rounded-[18px] bg-amber-50 p-3.5 text-sm font-medium text-amber-800">
           <AlertTriangle size={18} />
-          Payment is not complete — this ticket can&apos;t be checked in yet.
+          {adminT.scanner.notEligible}
         </div>
       ) : (
         <div className="space-y-2.5">
@@ -421,7 +426,7 @@ function ResultView({
       )}
 
       <DashboardPrimaryBtn onClick={onReset} className="w-full justify-center">
-        <ScanLine size={16} /> Scan next ticket
+        <ScanLine size={16} /> {adminT.scanner.scanNext}
       </DashboardPrimaryBtn>
     </div>
   );
@@ -443,7 +448,7 @@ function ScopeRow({
       <div className="flex items-center justify-between gap-3 rounded-[18px] border border-emerald-200 bg-emerald-50 px-4 py-3">
         <div className="min-w-0">
           <p className="text-sm font-semibold text-emerald-800">{scope.label}</p>
-          <p className="text-xs text-emerald-700">Checked in · {formatDateTime(scope.checkedInAt)}</p>
+          <p className="text-xs text-emerald-700">{adminT.scanner.checkedInAt} {formatDateTime(scope.checkedInAt)}</p>
         </div>
         <CheckCircle2 size={20} className="shrink-0 text-emerald-600" />
       </div>
@@ -455,7 +460,7 @@ function ScopeRow({
       <p className="text-sm font-medium text-[var(--color-ink)]">{scope.label}</p>
       <DashboardPrimaryBtn onClick={onCheckIn} disabled={disabled} className="shrink-0">
         {busy ? <RefreshCw size={15} className="animate-spin" /> : <CheckCircle2 size={15} />}
-        Check in
+        {adminT.scanner.checkInButton}
       </DashboardPrimaryBtn>
     </div>
   );

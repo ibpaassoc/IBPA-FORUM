@@ -22,6 +22,12 @@ export type SheetProperties = {
 /** Sheet identity plus the number of conditional-format rules it carries. */
 export type SheetMeta = SheetProperties & {
   conditionalFormatCount: number;
+  /** Object ids of the embedded slicers on this tab (for idempotent rebuild). */
+  slicerIds: number[];
+  /** Chart ids embedded on this tab (for idempotent dashboard charts). */
+  chartIds: number[];
+  /** Whether the tab already has a native basic filter (so we don't reset it). */
+  hasBasicFilter: boolean;
 };
 
 export type BatchUpdateRequest = Record<string, unknown>;
@@ -177,15 +183,26 @@ export function getSheetsClient(): SheetsClient {
     async getSheetMeta() {
       const data = (await authedFetch(
         config,
-        `?fields=sheets(properties(sheetId,title),conditionalFormats)`
+        `?fields=sheets(properties(sheetId,title),conditionalFormats,slicers(slicerId),charts(chartId),basicFilter(range))`
       )) as
         | {
             sheets?: Array<{
               properties?: SheetProperties;
               conditionalFormats?: unknown[];
+              slicers?: Array<{ slicerId?: number }>;
+              charts?: Array<{ chartId?: number }>;
+              basicFilter?: unknown;
             }>;
           }
         | null;
+
+      const numericIds = (
+        items: Array<{ slicerId?: number; chartId?: number }> | undefined,
+        key: "slicerId" | "chartId"
+      ): number[] =>
+        (items ?? [])
+          .map((item) => item[key])
+          .filter((id): id is number => typeof id === "number");
 
       return (data?.sheets ?? [])
         .map((sheet) =>
@@ -193,6 +210,9 @@ export function getSheetsClient(): SheetsClient {
             ? {
                 ...sheet.properties,
                 conditionalFormatCount: sheet.conditionalFormats?.length ?? 0,
+                slicerIds: numericIds(sheet.slicers, "slicerId"),
+                chartIds: numericIds(sheet.charts, "chartId"),
+                hasBasicFilter: Boolean(sheet.basicFilter),
               }
             : null
         )

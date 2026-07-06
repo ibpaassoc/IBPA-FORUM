@@ -1,19 +1,35 @@
 import "server-only";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/shared/lib/prisma";
-import { ticketTypeLabel } from "@/features/tickets/lib/labels";
-import {
-  GALA_DINNER_CENTS,
-  TICKET_AMOUNTS_CENTS,
-} from "@/features/tickets/server/ticket-service";
+import { CATEGORY_SEPARATOR, orderCategories } from "./categories";
 import type { SheetValues } from "./client";
-import { formatDateTime, formatUsd, humanizeEnum, joinList, yesNo } from "./format";
+import { formatDateTime, formatUsd, joinList, yesNo } from "./format";
+import {
+  scoreStatusLabel,
+  ticketPaymentLabel,
+  ticketTypeLabelRu,
+} from "./labels";
 
 /**
  * Database → spreadsheet row mappers. Each builder fetches exactly the columns
  * it needs and returns a row array aligned with the matching sheet definition.
  * Reviewer / internal admin identities are intentionally never included.
+ *
+ * The Applications and Jury tabs only ever expose *paid* records: the single-row
+ * fetchers return `null` for anything unpaid (so the per-record hooks never add
+ * it) and the bulk fetchers filter the same way (so backfills mirror only paid
+ * rows). Their category cell is multi-value and colour-coded.
+ *
+ * The `*WithCategories` variants also return each row's category set so the sync
+ * layer can copy the row into the matching per-category tabs (a multi-category
+ * record lands in each of its categories' tabs).
  */
+
+/** A spreadsheet row paired with the categories the record belongs to. */
+export type CategorizedRow = {
+  values: SheetValues[number];
+  categories: string[];
+};
 
 const NUMBER_OF_SCORE_CRITERIA = 5;
 
@@ -36,7 +52,10 @@ const applicationSelect = {
   category: { select: { name: true } },
   award: { select: { name: true } },
   nominationApplications: {
-    select: { award: { select: { name: true } } },
+    select: {
+      award: { select: { name: true } },
+      category: { select: { name: true } },
+    },
     orderBy: { createdAt: "asc" },
   },
   payments: { select: { amount: true, status: true } },
@@ -48,8 +67,21 @@ const applicationSelect = {
 
 type ApplicationRecord = Prisma.ApplicationGetPayload<{ select: typeof applicationSelect }>;
 
+/** Only paid applications ever reach the sheet — no drafts, pending, failed… */
+function isApplicationPaid(app: Pick<ApplicationRecord, "paymentStatus">): boolean {
+  return app.paymentStatus === "PAID";
+}
+
 function isApplicationMember(app: ApplicationRecord): boolean {
   return Boolean(app.membershipLevel) || Boolean(app.membershipNumber);
+}
+
+/** Every category an application belongs to: its primary plus each nomination's. */
+function applicationCategories(app: ApplicationRecord): string[] {
+  return orderCategories([
+    app.category.name,
+    ...app.nominationApplications.map((nom) => nom.category.name),
+  ]);
 }
 
 function applicationScoreSummary(app: ApplicationRecord): string {
@@ -58,7 +90,7 @@ function applicationScoreSummary(app: ApplicationRecord): string {
     .filter((value): value is number => value != null);
   if (totals.length === 0) return "";
   const average = totals.reduce((sum, value) => sum + value, 0) / totals.length;
-  return `${totals.length} submitted · avg ${average.toFixed(1)}`;
+  return `оценок: ${totals.length} · средн. ${average.toFixed(1)}`;
 }
 
 function applicationAmountPaidCents(app: ApplicationRecord): number {
@@ -69,7 +101,7 @@ function applicationAmountPaidCents(app: ApplicationRecord): number {
   return app.paymentStatus === "PAID" ? app.amount : 0;
 }
 
-export function mapApplicationRow(app: ApplicationRecord): SheetValues[number] {
+function mapApplicationCategorized(app: ApplicationRecord): CategorizedRow {
   const nominations = app.nominationApplications.map((nom) => nom.award.name);
   const nominationLabel =
     nominations.length > 0 ? joinList(nominations) : app.award.name;
@@ -95,17 +127,19 @@ export function mapApplicationRow(app: ApplicationRecord): SheetValues[number] {
   ];
 }
 
-export async function fetchApplicationRow(id: string): Promise<SheetValues[number] | null> {
+export async function fetchApplicationRow(id: string): Promise<CategorizedRow | null> {
   const app = await prisma.application.findUnique({ where: { id }, select: applicationSelect });
-  return app ? mapApplicationRow(app) : null;
+  if (!app || !isApplicationPaid(app)) return null;
+  return mapApplicationCategorized(app);
 }
 
-export async function fetchAllApplicationRows(): Promise<SheetValues> {
+export async function fetchAllApplicationRows(): Promise<CategorizedRow[]> {
   const apps = await prisma.application.findMany({
+    where: { paymentStatus: "PAID" },
     select: applicationSelect,
     orderBy: { createdAt: "asc" },
   });
-  return apps.map(mapApplicationRow);
+  return apps.map(mapApplicationCategorized);
 }
 
 // ── Jury ─────────────────────────────────────────────────────────────────────
@@ -137,6 +171,11 @@ const jurySelect = {
 } satisfies Prisma.JuryApplicationSelect;
 
 type JuryRecord = Prisma.JuryApplicationGetPayload<{ select: typeof jurySelect }>;
+
+/** Only paid jury applications ever reach the sheet. */
+function isJuryPaid(jury: Pick<JuryRecord, "status">): boolean {
+  return jury.status === "PAID";
+}
 
 function juryPriceCents(jury: JuryRecord): number {
   const paid = jury.payments.find((payment) => payment.status === "PAID");
@@ -170,17 +209,19 @@ export function mapJuryRow(jury: JuryRecord): SheetValues[number] {
   ];
 }
 
-export async function fetchJuryRow(id: string): Promise<SheetValues[number] | null> {
+export async function fetchJuryRow(id: string): Promise<CategorizedRow | null> {
   const jury = await prisma.juryApplication.findUnique({ where: { id }, select: jurySelect });
-  return jury ? mapJuryRow(jury) : null;
+  if (!jury || !isJuryPaid(jury)) return null;
+  return mapJuryCategorized(jury);
 }
 
-export async function fetchAllJuryRows(): Promise<SheetValues> {
+export async function fetchAllJuryRows(): Promise<CategorizedRow[]> {
   const records = await prisma.juryApplication.findMany({
+    where: { status: "PAID" },
     select: jurySelect,
     orderBy: { createdAt: "asc" },
   });
-  return records.map(mapJuryRow);
+  return records.map(mapJuryCategorized);
 }
 
 // ── Scores ───────────────────────────────────────────────────────────────────
@@ -232,7 +273,7 @@ export function mapScoreRow(score: ScoreRecord): SheetValues[number] {
     criteria(score.presentation),
     score.totalScore ?? "",
     averageScore(score.totalScore),
-    humanizeEnum(score.status),
+    scoreStatusLabel(score.status),
     score.comment ?? "",
     formatDateTime(score.submittedAt),
     formatDateTime(score.updatedAt),
@@ -261,8 +302,6 @@ const ticketSelect = {
   phone: true,
   instagram: true,
   type: true,
-  galaDinner: true,
-  isIbpaMember: true,
   secureToken: true,
   status: true,
   forumCheckInAt: true,
@@ -279,24 +318,9 @@ const ticketSelect = {
 
 type TicketRecord = Prisma.TicketGetPayload<{ select: typeof ticketSelect }>;
 
-function ticketPaymentLabel(status: TicketRecord["status"]): string {
-  if (status === "CANCELED") return "Canceled";
-  if (status === "PENDING") return "Pending";
-  return "Paid";
-}
-
 export function mapTicketRow(ticket: TicketRecord): SheetValues[number] {
   const payment = ticket.payments[0] ?? null;
   const totalPaidCents = payment?.amount ?? 0;
-  const galaCents = ticket.galaDinner ? GALA_DINNER_CENTS : 0;
-  const ticketPortionCents = Math.max(0, totalPaidCents - galaCents);
-
-  const basePriceCents =
-    TICKET_AMOUNTS_CENTS[ticket.type][ticket.isIbpaMember ? "ibpa" : "standard"];
-  const discountCents = basePriceCents - ticketPortionCents;
-  const discountLabel =
-    payment && discountCents > 0 ? formatUsd(discountCents) : "";
-
   const checkInAt = ticket.forumCheckInAt ?? ticket.galaCheckInAt;
 
   return [
@@ -305,11 +329,10 @@ export function mapTicketRow(ticket: TicketRecord): SheetValues[number] {
     ticket.email,
     ticket.phone,
     ticket.instagram ?? "",
-    ticketTypeLabel(ticket.type),
-    1,
-    formatUsd(ticketPortionCents),
+    ticketTypeLabelRu(ticket.type),
+    // Single price column: the full amount actually paid (Стоимость). The former
+    // Quantity, per-ticket portion and Discount columns were removed.
     formatUsd(totalPaidCents),
-    discountLabel,
     ticketPaymentLabel(ticket.status),
     ticket.secureToken,
     yesNo(Boolean(checkInAt)),

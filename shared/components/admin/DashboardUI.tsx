@@ -174,15 +174,15 @@ type ButtonProps = {
 
 function buttonClass(variant: "primary" | "secondary" | "danger" | "ghost", extra?: string) {
   const base =
-    "inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 py-2.5 text-[0.72rem] font-semibold uppercase leading-none tracking-[0.12em] transition duration-300 disabled:cursor-not-allowed disabled:opacity-50";
+    "inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 py-2.5 text-[0.72rem] font-semibold uppercase leading-none tracking-[0.12em] transition duration-300 active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50";
 
   const variants = {
     primary:
-      "border border-[var(--color-blue)] bg-[var(--color-blue)] text-white shadow-[0_14px_34px_rgba(114,160,193,0.32)] hover:-translate-y-0.5 hover:bg-[#4d86ad] hover:shadow-[0_18px_44px_rgba(114,160,193,0.38)]",
+      "border border-[rgba(255,255,255,0.35)] bg-[var(--color-blue)]/92 text-white shadow-[0_14px_34px_rgba(114,160,193,0.32)] backdrop-blur-xl hover:-translate-y-0.5 hover:bg-[#4d86ad] hover:shadow-[0_18px_44px_rgba(114,160,193,0.38)]",
     secondary:
       "border border-[rgba(114,160,193,0.22)] bg-white/78 text-[var(--color-ink)] shadow-[0_12px_28px_rgba(37,42,45,0.055)] backdrop-blur-xl hover:-translate-y-0.5 hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-wash)]",
     danger:
-      "border border-red-200 bg-white text-red-700 shadow-[0_10px_26px_rgba(153,27,27,0.07)] hover:-translate-y-0.5 hover:bg-red-50",
+      "border border-red-200 bg-white/82 text-red-700 shadow-[0_10px_26px_rgba(153,27,27,0.07)] backdrop-blur-xl hover:-translate-y-0.5 hover:bg-red-50",
     ghost:
       "border border-transparent bg-transparent text-[var(--color-ink-soft)] hover:bg-[var(--color-blue-wash)] hover:text-[var(--color-ink)]",
   };
@@ -469,12 +469,13 @@ export function SearchBar({
   className?: string;
 }) {
   return (
-    <label className={cn("relative block", className)}>
+    <label className={cn("relative block shrink-0", className)}>
       <span className="sr-only">{placeholder}</span>
       <Search
         aria-hidden
         size={16}
-        className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-ink-muted)]"
+        strokeWidth={2.4}
+        className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-ink-muted)]"
       />
       <input
         type="search"
@@ -793,7 +794,7 @@ export function FloatingActionButton({
   className?: string;
 }) {
   const classes = cn(
-    "fixed bottom-[5.75rem] right-5 z-40 flex size-14 items-center justify-center rounded-full bg-[var(--color-blue)] text-white shadow-[0_18px_40px_rgba(114,160,193,0.36)] transition hover:-translate-y-1 hover:bg-[#4d86ad] lg:bottom-7",
+    "fixed bottom-[1.75rem] right-5 z-40 flex size-14 items-center justify-center rounded-full bg-[var(--color-blue)] text-white shadow-[0_18px_40px_rgba(114,160,193,0.36)] transition hover:-translate-y-1 hover:bg-[#4d86ad] lg:bottom-7",
     focusRing,
     className,
   );
@@ -900,9 +901,13 @@ export function DashboardAccentBlock({
 }
 
 export const dashboardInputClass =
-  "h-11 w-full rounded-[18px] border border-[rgba(114,160,193,0.22)] bg-white/74 px-4 text-[0.92rem] leading-none text-[var(--color-ink)] shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_10px_26px_rgba(37,42,45,0.045)] outline-none backdrop-blur-xl transition placeholder:text-[var(--color-ink-muted)] focus:border-[var(--color-blue)] focus:ring-4 focus:ring-[rgba(114,160,193,0.16)] disabled:cursor-not-allowed disabled:opacity-65";
+  "h-11 w-full rounded-[18px] border border-[rgba(114,160,193,0.22)] bg-white/74 px-4 text-[0.92rem] leading-none text-[var(--color-ink)] shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_10px_26px_rgba(37,42,45,0.045)] outline-none transition placeholder:text-[var(--color-ink-muted)] focus:border-[var(--color-blue)] focus:ring-4 focus:ring-[rgba(114,160,193,0.16)] disabled:cursor-not-allowed disabled:opacity-65";
 
-export const dashboardSelectClass = `${dashboardInputClass} cursor-pointer`;
+// Chevron drawn inline so native selects match the glass inputs without a wrapper element.
+const selectChevron =
+  "bg-[url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2346525a%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:15px_15px] bg-[position:right_0.9rem_center] bg-no-repeat";
+
+export const dashboardSelectClass = `${dashboardInputClass} cursor-pointer appearance-none pr-10 ${selectChevron} hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-wash)]/55`;
 
 export const dashboardTextareaClass =
   "min-h-[132px] w-full rounded-[20px] border border-[rgba(114,160,193,0.22)] bg-white/74 px-4 py-3 text-[0.92rem] leading-6 text-[var(--color-ink)] shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_10px_26px_rgba(37,42,45,0.045)] outline-none backdrop-blur-xl transition placeholder:text-[var(--color-ink-muted)] focus:border-[var(--color-blue)] focus:ring-4 focus:ring-[rgba(114,160,193,0.16)] disabled:cursor-not-allowed disabled:opacity-65";

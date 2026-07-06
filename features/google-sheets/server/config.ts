@@ -14,16 +14,28 @@ export const GOOGLE_SHEETS_SCOPE = "https://www.googleapis.com/auth/spreadsheets
 export const GOOGLE_TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token";
 export const SHEETS_API_BASE = "https://sheets.googleapis.com/v4/spreadsheets";
 
-/** Canonical tab names — these must match the tabs in the spreadsheet. */
+/**
+ * Canonical tab names — these must match the tabs in the spreadsheet. Displayed
+ * to admins in Russian; the object keys remain the stable internal identifiers.
+ */
 export const SHEET_TABS = {
-  applications: "applications",
-  jury: "jury",
-  scores: "scores",
-  tickets: "tickets",
-  stats: "stats",
+  applications: "Заявки",
+  jury: "Жюри",
+  scores: "Оценки",
+  tickets: "Билеты",
+  stats: "Статистика",
 } as const;
 
 export type SheetTab = (typeof SHEET_TABS)[keyof typeof SHEET_TABS];
+
+/**
+ * Build an A1 range with the sheet name single-quoted, e.g. `'Заявки'!A1`.
+ * Quoting is required because the tab titles are non-ASCII (Cyrillic); the
+ * quotes are always valid even when technically optional.
+ */
+export function a1(tab: string, cells: string): string {
+  return `'${tab.replace(/'/g, "''")}'!${cells}`;
+}
 
 export type GoogleSheetsConfig = {
   clientEmail: string;

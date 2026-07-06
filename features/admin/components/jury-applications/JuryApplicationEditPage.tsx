@@ -9,8 +9,8 @@ import {
   UserRound,
 } from "lucide-react";
 import { editJuryApplicationAction } from "@/features/admin/actions/jury.actions";
+import { adminT } from "@/lib/i18n/admin";
 import ApplicationStatusBadge from "@/features/admin/components/badges/ApplicationStatusBadge";
-import PaymentStatusBadge from "@/features/admin/components/badges/PaymentStatusBadge";
 import {
   DashboardAccentBlock,
   DashboardCard,
@@ -18,9 +18,9 @@ import {
   DashboardPrimaryBtn,
   DashboardSecondaryBtn,
   dashboardInputClass,
-  dashboardSelectClass,
   dashboardTextareaClass,
 } from "@/shared/components/admin/DashboardUI";
+import IbpaDropdown from "@/shared/components/admin/IbpaDropdown";
 
 function SectionHeader({
   icon: Icon,
@@ -60,13 +60,12 @@ export default function JuryApplicationEditPage({
       <input type="hidden" name="id" value={application.id} />
 
       <DashboardPageHeader
-        label="Edit jury application"
+        label={adminT.edit.juryLabel}
         title={application.fullName}
-        description="Changes take effect immediately and do not trigger any emails or status changes."
         actions={
           <DashboardSecondaryBtn href={`/admin/jury-applications/${application.id}`}>
             <ArrowLeft aria-hidden size={15} />
-            Cancel
+            {adminT.common.cancel}
           </DashboardSecondaryBtn>
         }
       />
@@ -74,9 +73,9 @@ export default function JuryApplicationEditPage({
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="flex flex-col gap-5">
           <DashboardCard className="p-0">
-            <SectionHeader icon={UserRound} label="Personal information" />
+            <SectionHeader icon={UserRound} label={adminT.edit.personalInfo} />
             <div className="grid gap-4 p-4 sm:grid-cols-2 md:p-5">
-              <FormField label="Full name *">
+              <FormField label={`${adminT.detail.fullName} *`}>
                 <input
                   type="text"
                   name="fullName"
@@ -85,7 +84,7 @@ export default function JuryApplicationEditPage({
                   className={dashboardInputClass}
                 />
               </FormField>
-              <FormField label="Email address *">
+              <FormField label={`${adminT.detail.email} *`}>
                 <input
                   type="email"
                   name="email"
@@ -94,7 +93,7 @@ export default function JuryApplicationEditPage({
                   className={dashboardInputClass}
                 />
               </FormField>
-              <FormField label="Phone number *">
+              <FormField label={`${adminT.detail.phone} *`}>
                 <input
                   type="text"
                   name="phone"
@@ -103,7 +102,7 @@ export default function JuryApplicationEditPage({
                   className={dashboardInputClass}
                 />
               </FormField>
-              <FormField label="Country *">
+              <FormField label={`${adminT.edit.country} *`}>
                 <input
                   type="text"
                   name="country"
@@ -112,7 +111,7 @@ export default function JuryApplicationEditPage({
                   className={dashboardInputClass}
                 />
               </FormField>
-              <FormField label="City *">
+              <FormField label={`${adminT.edit.city} *`}>
                 <input
                   type="text"
                   name="city"
@@ -121,7 +120,7 @@ export default function JuryApplicationEditPage({
                   className={dashboardInputClass}
                 />
               </FormField>
-              <FormField label="Professional title *">
+              <FormField label={`${adminT.detail.professionalTitle} *`}>
                 <input
                   type="text"
                   name="professionalTitle"
@@ -130,7 +129,7 @@ export default function JuryApplicationEditPage({
                   className={dashboardInputClass}
                 />
               </FormField>
-              <FormField label="Employer / Affiliation">
+              <FormField label={adminT.detail.employer}>
                 <input
                   type="text"
                   name="employerAffiliation"
@@ -138,7 +137,7 @@ export default function JuryApplicationEditPage({
                   className={dashboardInputClass}
                 />
               </FormField>
-              <FormField label="Years of experience">
+              <FormField label={adminT.detail.yearsExperience}>
                 <input
                   type="number"
                   name="yearsExperience"
@@ -152,28 +151,29 @@ export default function JuryApplicationEditPage({
           </DashboardCard>
 
           <DashboardCard className="p-0">
-            <SectionHeader icon={Award} label="Membership" />
+            <SectionHeader icon={Award} label={adminT.edit.membership} />
             <div className="grid gap-4 p-4 sm:grid-cols-2 md:p-5">
-              <FormField label="IBPA association member">
-                <select
+              <FormField label={adminT.detail.ibpaMember}>
+                <IbpaDropdown
                   name="ibpaAssociationMember"
                   defaultValue={application.ibpaAssociationMember ? "true" : "false"}
-                  className={dashboardSelectClass}
-                >
-                  <option value="false">No</option>
-                  <option value="true">Yes</option>
-                </select>
+                  ariaLabel={adminT.detail.ibpaMember}
+                  options={[
+                    { value: "false", label: adminT.common.no },
+                    { value: "true", label: adminT.common.yes },
+                  ]}
+                />
               </FormField>
-              <FormField label="IBPA number">
+              <FormField label={adminT.detail.ibpaNumber}>
                 <input
                   type="text"
                   name="ibpaNumber"
                   defaultValue={application.ibpaNumber ?? ""}
-                  placeholder="If applicable"
+                  placeholder={adminT.edit.ifApplicable}
                   className={dashboardInputClass}
                 />
               </FormField>
-              <FormField label="Membership status">
+              <FormField label={adminT.detail.membershipStatus}>
                 <input
                   type="text"
                   name="membershipStatus"
@@ -181,7 +181,7 @@ export default function JuryApplicationEditPage({
                   className={dashboardInputClass}
                 />
               </FormField>
-              <FormField label="Membership level">
+              <FormField label={adminT.detail.membershipLevel}>
                 <input
                   type="text"
                   name="membershipLevel"
@@ -193,35 +193,36 @@ export default function JuryApplicationEditPage({
           </DashboardCard>
 
           <DashboardCard className="p-0">
-            <SectionHeader icon={BriefcaseBusiness} label="Expertise and judging history" />
+            <SectionHeader icon={BriefcaseBusiness} label={adminT.edit.expertise} />
             <div className="flex flex-col gap-4 p-4 md:p-5">
-              <FormField label="Expertise areas (comma-separated)">
+              <FormField label={adminT.edit.expertiseAreasComma}>
                 <input
                   type="text"
                   name="expertiseAreas"
                   defaultValue={expertiseAreasValue}
-                  placeholder="e.g. Wedding, Portrait, Commercial"
+                  placeholder={adminT.edit.expertisePlaceholder}
                   className={dashboardInputClass}
                 />
               </FormField>
               <div className="grid gap-4 sm:grid-cols-2">
-                <FormField label="Previous judging experience">
-                  <select
+                <FormField label={adminT.detail.previousJudging}>
+                  <IbpaDropdown
                     name="previousJudgingExperience"
                     defaultValue={application.previousJudgingExperience ? "true" : "false"}
-                    className={dashboardSelectClass}
-                  >
-                    <option value="false">No</option>
-                    <option value="true">Yes</option>
-                  </select>
+                    ariaLabel={adminT.detail.previousJudging}
+                    options={[
+                      { value: "false", label: adminT.common.no },
+                      { value: "true", label: adminT.common.yes },
+                    ]}
+                  />
                 </FormField>
               </div>
-              <FormField label="Previous judging details">
+              <FormField label={adminT.edit.previousJudgingDetails}>
                 <textarea
                   name="previousJudgingDetails"
                   defaultValue={application.previousJudgingDetails ?? ""}
                   rows={3}
-                  placeholder="Describe previous experience if applicable"
+                  placeholder={adminT.edit.previousJudgingPlaceholder}
                   className={dashboardTextareaClass}
                 />
               </FormField>
@@ -229,9 +230,9 @@ export default function JuryApplicationEditPage({
           </DashboardCard>
 
           <DashboardCard className="p-0">
-            <SectionHeader icon={Globe} label="Bio and statements" />
+            <SectionHeader icon={Globe} label={adminT.edit.bio} />
             <div className="flex flex-col gap-4 p-4 md:p-5">
-              <FormField label="Professional bio *">
+              <FormField label={`${adminT.detail.professionalBio} *`}>
                 <textarea
                   name="professionalBio"
                   defaultValue={application.professionalBio}
@@ -250,7 +251,7 @@ export default function JuryApplicationEditPage({
                   className={dashboardInputClass}
                 />
               </FormField>
-              <FormField label="Conflict disclosure *">
+              <FormField label={`${adminT.detail.conflictDisclosure} *`}>
                 <textarea
                   name="conflictDisclosure"
                   defaultValue={application.conflictDisclosure}
@@ -259,7 +260,7 @@ export default function JuryApplicationEditPage({
                   className={dashboardTextareaClass}
                 />
               </FormField>
-              <FormField label="Motivation - why they want to judge *">
+              <FormField label={`${adminT.detail.motivation} *`}>
                 <textarea
                   name="motivation"
                   defaultValue={application.motivation}
@@ -274,35 +275,28 @@ export default function JuryApplicationEditPage({
 
         <aside className="flex flex-col gap-4 xl:sticky xl:top-5 xl:self-start">
           <DashboardAccentBlock>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/90">
-              Current status
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-blue)]">
+              {adminT.edit.currentStatus}
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
               <ApplicationStatusBadge status={application.status} />
-              <PaymentStatusBadge status={application.paymentStatus} />
             </div>
-            <p className="mt-3 text-sm leading-6 text-white/70">
-              Editing will not change the status or send any notifications.
-            </p>
           </DashboardAccentBlock>
 
           <DashboardCard>
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-blue)]">
-              Save changes
-            </p>
-            <p className="mt-2 text-sm leading-6 text-[var(--color-ink-soft)]">
-              All updated fields are saved immediately to the database.
+              {adminT.edit.saveChanges}
             </p>
             <div className="mt-4 flex flex-col gap-2">
               <DashboardPrimaryBtn type="submit" className="w-full">
                 <Save aria-hidden size={15} />
-                Save changes
+                {adminT.edit.saveChanges}
               </DashboardPrimaryBtn>
               <DashboardSecondaryBtn
                 href={`/admin/jury-applications/${application.id}`}
                 className="w-full"
               >
-                Cancel
+                {adminT.common.cancel}
               </DashboardSecondaryBtn>
             </div>
           </DashboardCard>

@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { adminT } from "@/lib/i18n/admin";
 import { DashboardSecondaryBtn } from "@/shared/components/admin/DashboardUI";
 
 export default function AdminReopenScoreButton({ scoreId }: { scoreId: string }) {
@@ -21,7 +22,7 @@ export default function AdminReopenScoreButton({ scoreId }: { scoreId: string })
     const payload = (await response.json().catch(() => null)) as { message?: string } | null;
 
     if (!response.ok) {
-      setError(payload?.message ?? "We could not reopen this score.");
+      setError(payload?.message ?? adminT.scoring.reopenError);
       return;
     }
 
@@ -37,7 +38,7 @@ export default function AdminReopenScoreButton({ scoreId }: { scoreId: string })
         disabled={isPending}
         onClick={() => { void handleReopen(); }}
       >
-        Reopen score
+        {adminT.scoring.reopenScore}
       </DashboardSecondaryBtn>
       {error && <p className="text-xs text-red-600">{error}</p>}
     </div>

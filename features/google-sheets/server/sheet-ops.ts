@@ -1,14 +1,21 @@
 import "server-only";
 import type { SheetsClient, SheetValues } from "./client";
+import { a1 } from "./config";
 import { sheetHeaders, type SheetDefinition } from "./schema";
 import {
+  basicFilterRequest,
   borderRequests,
+  categoryColorRequests,
+  checkboxValidationRequests,
   clearBordersRequest,
   columnLetter,
   columnWidthRequests,
   conditionalFormatRequests,
+  deleteEmbeddedObjectRequests,
   freezeHeaderRequest,
   headerStyleRequest,
+  hideColumnsRequests,
+  showColumnsRequest,
   wrapRequests,
 } from "./formatting";
 
@@ -55,7 +62,12 @@ function isAlreadyExistsError(error: unknown): boolean {
 export async function resolveSheetMeta(
   client: SheetsClient,
   title: string
-): Promise<{ sheetId: number; conditionalFormatCount: number }> {
+): Promise<{
+  sheetId: number;
+  conditionalFormatCount: number;
+  slicerIds: number[];
+  hasBasicFilter: boolean;
+}> {
   const meta = await client.getSheetMeta();
   let match = meta.find((sheet) => sheet.title === title);
 
@@ -78,6 +90,8 @@ export async function resolveSheetMeta(
   return {
     sheetId: match.sheetId,
     conditionalFormatCount: match.conditionalFormatCount,
+    slicerIds: match.slicerIds,
+    hasBasicFilter: match.hasBasicFilter,
   };
 }
 
@@ -93,13 +107,13 @@ export async function ensureSheetHeaders(
   definition: SheetDefinition
 ): Promise<void> {
   const headers = sheetHeaders(definition);
-  const existing = await client.getValues(`${definition.tab}!1:1`);
+  const existing = await client.getValues(a1(definition.tab, "1:1"));
   if (headersMatch(existing, headers)) return;
 
   // Clear the whole header row first so a previous, wider layout cannot leave
   // stale header labels in the trailing columns.
-  await client.clearValues(`${definition.tab}!A1:${WIDE_CLEAR_LAST_COLUMN}1`);
-  await client.updateValues(`${definition.tab}!A1`, [headers]);
+  await client.clearValues(a1(definition.tab, `A1:${WIDE_CLEAR_LAST_COLUMN}1`));
+  await client.updateValues(a1(definition.tab, "A1"), [headers]);
 }
 
 /**
@@ -112,20 +126,32 @@ async function applyStaticFormatting(
   client: SheetsClient,
   definition: SheetDefinition,
   sheetId: number,
-  existingConditionalCount: number
+  existingConditionalCount: number,
+  existingSlicerIds: number[],
+  hasBasicFilter: boolean
 ): Promise<void> {
   const columnCount = definition.columns.length;
+
+  // Only create the basic filter when one is not already present, so a sync
+  // never wipes out an admin's active filter selection.
+  const needsBasicFilter = Boolean(definition.basicFilter) && !hasBasicFilter;
 
   await client.batchUpdate([
     freezeHeaderRequest(sheetId),
     headerStyleRequest(sheetId, columnCount),
     ...columnWidthRequests(sheetId, definition.columns),
+    showColumnsRequest(sheetId, columnCount),
+    ...hideColumnsRequests(sheetId, definition.hiddenColumnIndexes),
     ...conditionalFormatRequests(
       sheetId,
       columnCount,
       definition.conditionalRules,
       existingConditionalCount
     ),
+    // Clean up any per-category slicers left by an earlier layout, then apply the
+    // on-sheet basic filter that provides the column filter dropdowns.
+    ...deleteEmbeddedObjectRequests(existingSlicerIds),
+    ...(needsBasicFilter ? [basicFilterRequest(sheetId, columnCount)] : []),
   ]);
 }
 
@@ -142,17 +168,82 @@ export async function ensureDataSheet(
   const cached = sheetIdByTab.get(key);
   if (ensuredTabs.has(key) && cached != null) return cached;
 
-  const { sheetId, conditionalFormatCount } = await resolveSheetMeta(
-    client,
-    definition.tab
-  );
+  const { sheetId, conditionalFormatCount, slicerIds, hasBasicFilter } =
+    await resolveSheetMeta(client, definition.tab);
   sheetIdByTab.set(key, sheetId);
 
   await ensureSheetHeaders(client, definition);
-  await applyStaticFormatting(client, definition, sheetId, conditionalFormatCount);
+  await applyStaticFormatting(
+    client,
+    definition,
+    sheetId,
+    conditionalFormatCount,
+    slicerIds,
+    hasBasicFilter
+  );
 
   ensuredTabs.add(key);
   return sheetId;
+}
+
+// ── Row helpers (category badges + editable checkbox preservation) ───────────
+
+/** Per-row category-badge colouring requests for a contiguous block of rows. */
+function categoryFormattingRequests(
+  definition: SheetDefinition,
+  sheetId: number,
+  rows: SheetValues,
+  firstRowIndex: number
+) {
+  const config = definition.category;
+  if (!config || rows.length === 0) return [];
+  return categoryColorRequests(
+    sheetId,
+    config.displayColumnIndex,
+    rows.map((row) => String(row[config.displayColumnIndex] ?? "")),
+    firstRowIndex
+  );
+}
+
+function isTruthyCell(value: unknown): boolean {
+  return value === true || value === "TRUE" || value === "true";
+}
+
+/** Read the current checkbox values keyed by record ID (for preservation). */
+function extractCheckboxState(
+  definition: SheetDefinition,
+  existing: SheetValues
+): Map<string, boolean[]> {
+  const state = new Map<string, boolean[]>();
+  const checkboxes = definition.checkboxColumnIndexes;
+  if (!checkboxes?.length) return state;
+
+  for (const cells of existing) {
+    const id = cells[definition.idColumnIndex];
+    if (id == null || id === "") continue;
+    state.set(
+      String(id),
+      checkboxes.map((index) => isTruthyCell(cells[index]))
+    );
+  }
+  return state;
+}
+
+/**
+ * Extend a mapper row (data + hidden helper flags) with its trailing checkbox
+ * values, preserved from the sheet by record ID so admin ticks survive a sync.
+ * Rows on tabs without checkbox columns are returned unchanged.
+ */
+function withCheckboxValues(
+  definition: SheetDefinition,
+  row: SheetValues[number],
+  preserved: Map<string, boolean[]>
+): SheetValues[number] {
+  const checkboxes = definition.checkboxColumnIndexes;
+  if (!checkboxes?.length) return row;
+  const id = String(row[definition.idColumnIndex] ?? "");
+  const values = preserved.get(id) ?? checkboxes.map(() => false);
+  return [...row, ...values];
 }
 
 function countIds(idCells: SheetValues): number {
@@ -181,36 +272,44 @@ export async function upsertSheetRows(
 
   const idColumn = columnLetter(definition.idColumnIndex);
   const lastColumn = columnLetter(definition.columns.length - 1);
+  const hasCheckboxes = Boolean(definition.checkboxColumnIndexes?.length);
+
+  // When a tab has admin-editable checkbox columns we must read the full rows to
+  // preserve those ticks by ID; otherwise the ID column alone is enough.
+  const existing = await client.getValues(
+    a1(definition.tab, hasCheckboxes ? `A2:${lastColumn}` : `${idColumn}2:${idColumn}`)
+  );
 
   // Map existing IDs to their 1-based sheet row number (header is row 1, so the
   // first data row is row 2).
-  const existing = await client.getValues(
-    `${definition.tab}!${idColumn}2:${idColumn}`
-  );
   const rowById = new Map<string, number>();
   existing.forEach((cells, index) => {
-    const id = cells[0];
+    const id = cells[definition.idColumnIndex];
     if (id != null && id !== "") {
       rowById.set(String(id), index + 2);
     }
   });
+  const preserved = extractCheckboxState(definition, existing);
 
   const priorDataRows = rowById.size;
   const updates: Array<{ range: string; values: SheetValues }> = [];
+  const updatedRows: Array<{ sheetRow: number; row: SheetValues[number] }> = [];
   const appends: SheetValues = [];
 
   for (const row of rows) {
     const id = String(row[definition.idColumnIndex] ?? "");
     if (!id) continue;
 
+    const fullRow = withCheckboxValues(definition, row, preserved);
     const sheetRow = rowById.get(id);
     if (sheetRow) {
       updates.push({
-        range: `${definition.tab}!A${sheetRow}:${lastColumn}${sheetRow}`,
-        values: [row],
+        range: a1(definition.tab, `A${sheetRow}:${lastColumn}${sheetRow}`),
+        values: [fullRow],
       });
+      updatedRows.push({ sheetRow, row: fullRow });
     } else {
-      appends.push(row);
+      appends.push(fullRow);
     }
   }
 
@@ -219,13 +318,28 @@ export async function upsertSheetRows(
   }
 
   if (appends.length > 0) {
-    await client.appendValues(`${definition.tab}!A1`, appends);
+    await client.appendValues(a1(definition.tab, "A1"), appends);
   }
 
   const dataRowCount = priorDataRows + appends.length;
+  const categoryRequests = [
+    // Updated rows sit at arbitrary positions, so colour each individually…
+    ...updatedRows.flatMap(({ sheetRow, row }) =>
+      categoryFormattingRequests(definition, sheetId, [row], sheetRow - 1)
+    ),
+    // …and the appended rows form one contiguous block at the end.
+    ...categoryFormattingRequests(definition, sheetId, appends, priorDataRows + 1),
+  ];
+
   await client.batchUpdate([
     ...borderRequests(sheetId, definition.columns.length, dataRowCount),
     ...wrapRequests(sheetId, definition.columns, dataRowCount),
+    ...checkboxValidationRequests(
+      sheetId,
+      definition.checkboxColumnIndexes,
+      dataRowCount
+    ),
+    ...categoryRequests,
   ]);
 
   return { updated: updates.length, appended: appends.length };
@@ -256,29 +370,44 @@ export async function rebuildDataSheet(
 ): Promise<number> {
   const sheetId = await ensureDataSheet(client, definition);
   const columnCount = definition.columns.length;
+  const lastColumn = columnLetter(columnCount - 1);
+  const hasCheckboxes = Boolean(definition.checkboxColumnIndexes?.length);
 
-  const priorIds = await client.getValues(`${definition.tab}!A2:A`);
-  const priorDataRows = countIds(priorIds);
+  // Read prior rows: the full width when we must preserve editable checkbox
+  // ticks by ID (rebuild can reorder rows), otherwise just the ID column.
+  const prior = await client.getValues(
+    a1(definition.tab, hasCheckboxes ? `A2:${lastColumn}` : "A2:A")
+  );
+  const priorDataRows = countIds(prior);
+  const preserved = extractCheckboxState(definition, prior);
+
+  // Extend each mapper row with its preserved checkbox values so a reorder never
+  // detaches an admin tick from its jury member.
+  const writeRows = rows.map((row) => withCheckboxValues(definition, row, preserved));
 
   // Wipe all existing data values across a generous column range.
-  await client.clearValues(
-    `${definition.tab}!A2:${WIDE_CLEAR_LAST_COLUMN}`
-  );
+  await client.clearValues(a1(definition.tab, `A2:${WIDE_CLEAR_LAST_COLUMN}`));
 
-  if (rows.length > 0) {
-    await client.updateValues(`${definition.tab}!A2`, rows);
+  if (writeRows.length > 0) {
+    await client.updateValues(a1(definition.tab, "A2"), writeRows);
   }
 
   const requests = [
-    ...borderRequests(sheetId, columnCount, rows.length),
-    ...wrapRequests(sheetId, definition.columns, rows.length),
+    ...borderRequests(sheetId, columnCount, writeRows.length),
+    ...wrapRequests(sheetId, definition.columns, writeRows.length),
+    ...checkboxValidationRequests(
+      sheetId,
+      definition.checkboxColumnIndexes,
+      writeRows.length
+    ),
+    ...categoryFormattingRequests(definition, sheetId, writeRows, 1),
   ];
-  if (priorDataRows > rows.length) {
+  if (priorDataRows > writeRows.length) {
     requests.push(
-      clearBordersRequest(sheetId, columnCount, rows.length, priorDataRows)
+      clearBordersRequest(sheetId, columnCount, writeRows.length, priorDataRows)
     );
   }
   await client.batchUpdate(requests);
 
-  return rows.length;
+  return writeRows.length;
 }

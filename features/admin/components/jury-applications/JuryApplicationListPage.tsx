@@ -3,10 +3,8 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, MapPin, Users } from "lucide-react";
-import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { formatAdminDate } from "@/features/admin/server/view-models";
+import { adminT, formatAdminDate } from "@/lib/i18n/admin";
 import ApplicationStatusBadge from "@/features/admin/components/badges/ApplicationStatusBadge";
-import PaymentStatusBadge from "@/features/admin/components/badges/PaymentStatusBadge";
 import ApplicationFilters, {
   type FilterSelect,
 } from "@/features/admin/components/review/ApplicationFilters";
@@ -52,7 +50,6 @@ export default function JuryApplicationListPage({
   approvedCount: number;
   activeJudgeCount: number;
 }) {
-  const { t } = useLanguage();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const [area, setArea] = useState("");
@@ -93,39 +90,40 @@ export default function JuryApplicationListPage({
   const selects: FilterSelect[] = [
     {
       key: "status",
-      label: t.filters.allStatuses,
+      label: adminT.filters.allStatuses,
       value: status,
+      variant: "segmented",
       options: [
-        { value: "", label: t.filters.allStatuses },
-        ...statusesPresent.map((value) => ({ value, label: t.statuses[value] })),
+        { value: "", label: adminT.filters.all },
+        ...statusesPresent.map((value) => ({ value, label: adminT.statuses[value] })),
       ],
     },
     {
       key: "area",
-      label: t.filters.allCategories,
+      label: adminT.filters.allAreas,
       value: area,
       options: [
-        { value: "", label: t.filters.allCategories },
+        { value: "", label: adminT.filters.allAreas },
         ...areas.map((value) => ({ value, label: value })),
       ],
     },
     {
       key: "payment",
-      label: t.filters.allPayments,
+      label: adminT.filters.allPayments,
       value: payment,
       options: [
-        { value: "", label: t.filters.allPayments },
-        ...paymentsPresent.map((value) => ({ value, label: t.statuses[value] })),
+        { value: "", label: adminT.filters.allPayments },
+        ...paymentsPresent.map((value) => ({ value, label: adminT.statuses[value] })),
       ],
     },
     {
       key: "sort",
-      label: t.filters.sortLabel,
+      label: adminT.filters.sortLabel,
       value: sort,
       options: [
-        { value: "", label: t.filters.sortNewest },
-        { value: "oldest", label: t.filters.sortOldest },
-        { value: "name", label: t.filters.sortName },
+        { value: "", label: adminT.filters.sortNewest },
+        { value: "oldest", label: adminT.filters.sortOldest },
+        { value: "name", label: adminT.filters.sortName },
       ],
     },
   ];
@@ -147,18 +145,18 @@ export default function JuryApplicationListPage({
 
   return (
     <div className="flex flex-col gap-5">
-      <DashboardPageHeader label="Jury" title="Candidate review" />
+      <DashboardPageHeader label={adminT.jury.label} title={adminT.jury.title} />
 
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-[1.1fr_repeat(3,minmax(0,0.75fr))]">
         <DashboardAccentBlock>
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-soft)]">
-            Total candidates
+            {adminT.jury.totalCandidates}
           </p>
           <p className="mt-2 text-3xl font-semibold tracking-[-0.03em]">{totalCount}</p>
         </DashboardAccentBlock>
-        <DashboardMetricTile label="Pending review" value={pendingCount} accent="amber" />
-        <DashboardMetricTile label="Approved" value={approvedCount} accent="blue" />
-        <DashboardMetricTile label="Active judges" value={activeJudgeCount} accent="green" />
+        <DashboardMetricTile label={adminT.jury.pendingReview} value={pendingCount} accent="amber" />
+        <DashboardMetricTile label={adminT.jury.approved} value={approvedCount} accent="blue" />
+        <DashboardMetricTile label={adminT.jury.activeJudges} value={activeJudgeCount} accent="green" />
       </div>
 
       <ApplicationFilters
@@ -173,8 +171,8 @@ export default function JuryApplicationListPage({
         <DashboardCard>
           <DashboardEmptyState
             icon={<Users size={22} />}
-            title="No candidates found"
-            description="Adjust the filters or search to see another queue."
+            title={adminT.jury.emptyTitle}
+            description={adminT.jury.emptyText}
           />
         </DashboardCard>
       ) : (
@@ -186,7 +184,6 @@ export default function JuryApplicationListPage({
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <ApplicationStatusBadge status={app.status} />
-                      <PaymentStatusBadge status={app.paymentStatus} />
                     </div>
                     <h2 className="mt-3 font-[var(--font-title-family)] text-[1.55rem] font-light tracking-[-0.025em] text-[var(--color-ink)]">
                       {app.fullName}
@@ -213,7 +210,7 @@ export default function JuryApplicationListPage({
                   <div className="flex items-center justify-between gap-3 rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white p-4 lg:flex-col lg:items-start">
                     <div>
                       <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
-                        Last activity
+                        {adminT.jury.lastActivity}
                       </p>
                       <p className="mt-2 text-sm font-medium text-[var(--color-ink)]">
                         {formatAdminDate(app.paidAt ?? app.submittedAt)}

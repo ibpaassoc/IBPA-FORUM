@@ -1,12 +1,9 @@
 "use client";
 
-import { SlidersHorizontal, X } from "lucide-react";
-import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import {
-  DashboardCard,
-  SearchBar,
-  dashboardSelectClass,
-} from "@/shared/components/admin/DashboardUI";
+import { X } from "lucide-react";
+import { adminT } from "@/lib/i18n/admin";
+import { DashboardCard, SearchBar } from "@/shared/components/admin/DashboardUI";
+import IbpaDropdown from "@/shared/components/admin/IbpaDropdown";
 
 export type FilterSelect = {
   key: string;
@@ -14,13 +11,54 @@ export type FilterSelect = {
   label: string;
   value: string;
   options: Array<{ value: string; label: string }>;
+  /**
+   * "segmented" renders the options as a glassmorphic chip row (great for
+   * short status lists); "select" (default) renders a styled dropdown.
+   */
+  variant?: "segmented" | "select";
 };
 
+function SegmentedControl({
+  select,
+  onSelectChange,
+}: {
+  select: FilterSelect;
+  onSelectChange: (key: string, value: string) => void;
+}) {
+  return (
+    <div
+      role="group"
+      aria-label={select.label}
+      className="flex gap-1 overflow-x-auto rounded-[20px] border border-[rgba(114,160,193,0.16)] bg-white/62 p-1 shadow-[0_10px_28px_rgba(37,42,45,0.04)] backdrop-blur-xl no-scrollbar"
+    >
+      {select.options.map((option) => {
+        const active = select.value === option.value;
+        return (
+          <button
+            key={option.value}
+            type="button"
+            aria-pressed={active}
+            onClick={() => onSelectChange(select.key, option.value)}
+            className={`inline-flex min-h-9 shrink-0 items-center justify-center rounded-[16px] px-3.5 text-[0.68rem] font-semibold uppercase leading-none tracking-[0.09em] transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.22)] ${
+              active
+                ? "bg-[var(--color-blue)] text-white shadow-[0_10px_22px_rgba(114,160,193,0.28)]"
+                : "text-[var(--color-ink-soft)] hover:bg-[var(--color-blue-wash)] hover:text-[var(--color-ink)]"
+            }`}
+          >
+            {option.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 /**
- * Compact, reusable filter bar for application lists.
- * Desktop: search + inline dropdowns. Mobile: search + a collapsible filter panel.
- * Renders active-filter chips with individual remove + a "clear all" action.
- * Fully controlled — the parent owns state and does the actual filtering.
+ * Glassmorphic filter bar for application lists.
+ * One filter block: search + reusable IBPA dropdowns wrap into a single
+ * responsive row, followed by segmented status chips and active-filter chips
+ * with individual remove + a "clear all" action. Fully controlled — the parent
+ * owns state and does the actual filtering.
  */
 export default function ApplicationFilters({
   search,
@@ -35,13 +73,13 @@ export default function ApplicationFilters({
   onSelectChange: (key: string, value: string) => void;
   onClearAll: () => void;
 }) {
-  const { t } = useLanguage();
+  const dropdowns = selects.filter((select) => select.variant !== "segmented");
 
   const chips = [
     ...(search.trim()
       ? [{ key: "__search", label: `“${search.trim()}”`, clear: () => onSearchChange("") }]
       : []),
-    ...selects
+    ...dropdowns
       .filter((select) => select.value)
       .map((select) => ({
         key: select.key,
@@ -50,95 +88,28 @@ export default function ApplicationFilters({
       })),
   ];
 
-  const activeFilterCount = selects.filter((select) => select.value).length;
-
   return (
     <DashboardCard className="flex flex-col gap-3">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+      {/* One responsive filter row: search + dropdowns wrap cleanly, no duplicated DOM. */}
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
         <SearchBar
           value={search}
           onChange={onSearchChange}
-          placeholder={t.filters.search}
-          className="flex-1"
+          placeholder={adminT.filters.search}
+          className="w-full sm:min-w-[60px] sm:flex-1"
         />
 
-        {/* Desktop dropdowns */}
-        <div className="hidden flex-wrap gap-2 sm:flex">
-          {selects.map((select) => (
-            <label key={select.key} className="block">
-              <span className="sr-only">{select.label}</span>
-              <select
-                value={select.value}
-                onChange={(event) => onSelectChange(select.key, event.target.value)}
-                className={`${dashboardSelectClass} w-auto min-w-40`}
-              >
-                {select.options.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ))}
-        </div>
-
-        {/* Mobile collapsible filter panel */}
-        <details className="group sm:hidden">
-          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-2 rounded-[18px] border border-[rgba(114,160,193,0.22)] bg-white/74 px-4 text-sm font-medium text-[var(--color-ink)]">
-            <span className="inline-flex items-center gap-2">
-              <SlidersHorizontal aria-hidden size={15} className="text-[var(--color-blue)]" />
-              {t.filters.toggle}
-              {activeFilterCount > 0 ? (
-                <span className="inline-flex size-5 items-center justify-center rounded-full bg-[var(--color-blue)] text-[0.62rem] font-semibold text-white">
-                  {activeFilterCount}
-                </span>
-              ) : null}
-            </span>
-            <span className="text-[var(--color-ink-muted)] transition group-open:rotate-180">⌄</span>
-          </summary>
-          <div className="mt-2 grid gap-2">
-            {selects.map((select) => (
-              <label key={select.key} className="block">
-                <span className="sr-only">{select.label}</span>
-                <select
-                  value={select.value}
-                  onChange={(event) => onSelectChange(select.key, event.target.value)}
-                  className={dashboardSelectClass}
-                >
-                  {select.options.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            ))}
-          </div>
-        </details>
+        {dropdowns.map((select) => (
+          <IbpaDropdown
+            key={select.key}
+            ariaLabel={select.label}
+            options={select.options}
+            value={select.value}
+            onChange={(value) => onSelectChange(select.key, value)}
+            className="w-full sm:w-auto sm:min-w-[11rem]"
+          />
+        ))}
       </div>
-
-      {chips.length > 0 ? (
-        <div className="flex flex-wrap items-center gap-2 border-t border-[rgba(37,42,45,0.07)] pt-3">
-          {chips.map((chip) => (
-            <button
-              key={chip.key}
-              type="button"
-              onClick={chip.clear}
-              className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(114,160,193,0.28)] bg-[var(--color-blue-wash)] px-3 py-1 text-xs font-medium text-[var(--color-ink)] transition hover:bg-white"
-            >
-              <span className="max-w-[14rem] truncate">{chip.label}</span>
-              <X aria-hidden size={12} className="shrink-0 text-[var(--color-ink-soft)]" />
-            </button>
-          ))}
-          <button
-            type="button"
-            onClick={onClearAll}
-            className="text-xs font-semibold uppercase tracking-[0.1em] text-[var(--color-blue)] transition hover:text-[var(--color-ink)]"
-          >
-            {t.filters.clearAll}
-          </button>
-        </div>
-      ) : null}
     </DashboardCard>
   );
 }

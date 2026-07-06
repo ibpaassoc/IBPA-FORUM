@@ -1,26 +1,44 @@
 import "server-only";
 import { prisma } from "@/shared/lib/prisma";
+import { CATEGORY_ORDER, orderCategories } from "./categories";
 import type { SheetValues } from "./client";
-import { formatDateTime, formatUsd, humanizeEnum } from "./format";
+import { formatDateTime, formatUsd } from "./format";
+import { ticketTypeLabelRu } from "./labels";
 
 /**
  * Compute platform statistics directly from the database (rather than relying on
  * fragile in-sheet formulas) and render them as a grouped Metric/Value dashboard
- * for the stats tab. Currency is always USD; counts are plain numbers.
+ * for the stats tab.
  *
- * Returns the rows together with the indexes of the title and section-header
- * rows so the sync layer can style them into a readable dashboard.
+ * Only *paid* records are counted: paid applications, paid jury applications and
+ * sold tickets. Category breakdowns count a multi-category record in every one of
+ * its categories — an application entered in "Hair, Education, Salon" adds +1 to
+ * each of those three — and jury members are counted in each of their areas of
+ * expertise the same way.
+ *
+ * Returns the rows together with the indexes of the title/section rows (for
+ * styling) and the numeric breakdown sections that can back a simple chart.
  */
+
+export type ChartSection = {
+  title: string;
+  /** Zero-based sheet row of the first metric row in this section. */
+  firstDataRowIndex: number;
+  /** Number of metric rows in this section. */
+  rowCount: number;
+};
 
 export type StatsLayout = {
   rows: SheetValues;
   titleRowIndex: number;
   sectionRowIndexes: number[];
+  chartSections: ChartSection[];
 };
 
 class StatsBuilder {
   readonly rows: SheetValues = [];
   readonly sectionRowIndexes: number[] = [];
+  readonly chartSections: ChartSection[] = [];
   titleRowIndex = 0;
 
   title(text: string): void {
@@ -36,171 +54,176 @@ class StatsBuilder {
   metric(label: string, value: string | number): void {
     this.rows.push([label, value]);
   }
+
+  /**
+   * Render a numeric breakdown (label → count). Entries are emitted in the
+   * supplied order; empty breakdowns still render a section header so the
+   * dashboard stays predictable. Pass `chart: true` to also register the section
+   * as a chartable range (used for the category breakdowns, which read best as a
+   * simple column chart).
+   */
+  breakdown(
+    section: string,
+    entries: Array<[string, number]>,
+    options: { chart?: boolean } = {}
+  ): void {
+    this.section(section);
+    const firstDataRowIndex = this.rows.length;
+    for (const [label, count] of entries) this.metric(label, count);
+    if (options.chart && entries.length > 0) {
+      this.chartSections.push({
+        title: section,
+        firstDataRowIndex,
+        rowCount: entries.length,
+      });
+    }
+  }
 }
 
-function countBy<T>(items: T[], key: (item: T) => string): Map<string, number> {
-  const map = new Map<string, number>();
-  for (const item of items) {
-    const k = key(item);
-    map.set(k, (map.get(k) ?? 0) + 1);
+/** Order category counts by the canonical order, dropping empty categories. */
+function orderedCategoryCounts(counts: Map<string, number>): Array<[string, number]> {
+  const entries: Array<[string, number]> = [];
+  for (const name of CATEGORY_ORDER) {
+    const count = counts.get(name) ?? 0;
+    if (count > 0) entries.push([name, count]);
   }
-  return map;
+  // Any non-canonical category names, appended after the known ones.
+  for (const [name, count] of counts) {
+    if (!CATEGORY_ORDER.includes(name as (typeof CATEGORY_ORDER)[number]) && count > 0) {
+      entries.push([name, count]);
+    }
+  }
+  return entries;
+}
+
+function increment(map: Map<string, number>, key: string): void {
+  map.set(key, (map.get(key) ?? 0) + 1);
 }
 
 export async function computeStatsLayout(): Promise<StatsLayout> {
-  const [applications, juryApplications, submittedScores, tickets, paidRevenue] =
-    await Promise.all([
-      prisma.application.findMany({
-        select: {
-          status: true,
-          paymentStatus: true,
-          amount: true,
-          membershipLevel: true,
-          membershipNumber: true,
-          category: { select: { name: true } },
+  const [paidApplications, paidJury, tickets, paidRevenue] = await Promise.all([
+    prisma.application.findMany({
+      where: { paymentStatus: "PAID" },
+      select: {
+        category: { select: { name: true } },
+        award: { select: { name: true } },
+        nominationApplications: {
+          select: {
+            category: { select: { name: true } },
+            award: { select: { name: true } },
+          },
         },
-      }),
-      prisma.juryApplication.findMany({
-        select: { status: true, ibpaAssociationMember: true },
-      }),
-      prisma.judgeScore.findMany({
-        where: { status: "SUBMITTED" },
-        select: {
-          totalScore: true,
-          nominationApplication: { select: { category: { select: { name: true } } } },
-        },
-      }),
-      prisma.ticket.findMany({
-        select: {
-          type: true,
-          status: true,
-          forumCheckInAt: true,
-          galaCheckInAt: true,
-        },
-      }),
-      prisma.payment.groupBy({
-        by: ["source"],
-        where: { status: "PAID" },
-        _sum: { amount: true },
-      }),
-    ]);
+      },
+    }),
+    prisma.juryApplication.findMany({
+      where: { status: "PAID" },
+      select: { expertiseAreas: true },
+    }),
+    prisma.ticket.findMany({
+      select: { type: true, status: true },
+    }),
+    prisma.payment.groupBy({
+      by: ["source"],
+      where: { status: "PAID" },
+      _sum: { amount: true },
+    }),
+  ]);
 
   const revenueBySource = (source: "COMPETITOR" | "JURY" | "TICKET"): number =>
     paidRevenue.find((row) => row.source === source)?._sum.amount ?? 0;
 
-  const now = formatDateTime(new Date());
-  const builder = new StatsBuilder();
-
-  builder.title("IBPA Platform Statistics");
-
-  // ── Sync info ────────────────────────────────────────────────────────────
-  builder.section("SYNC INFO");
-  builder.metric("Last Sync Time", now);
-  builder.metric("Last Successful Sync", now);
-
-  // ── Applications ─────────────────────────────────────────────────────────
-  const appMember = (app: (typeof applications)[number]) =>
-    Boolean(app.membershipLevel) || Boolean(app.membershipNumber);
-  const appPaidCount = applications.filter((a) => a.paymentStatus === "PAID").length;
   const appRevenue = revenueBySource("COMPETITOR");
-  const appPriceTotal = applications.reduce((sum, a) => sum + a.amount, 0);
+  const juryRevenue = revenueBySource("JURY");
+  const ticketRevenue = revenueBySource("TICKET");
+  const totalRevenue = appRevenue + juryRevenue + ticketRevenue;
 
-  builder.section("APPLICATIONS");
-  builder.metric("Total Applications", applications.length);
-  for (const [status, count] of countBy(applications, (a) => a.status)) {
-    builder.metric(`By Status — ${humanizeEnum(status)}`, count);
-  }
-  for (const [category, count] of countBy(applications, (a) => a.category.name)) {
-    builder.metric(`By Category — ${category}`, count);
-  }
-  builder.metric("IBPA Members", applications.filter(appMember).length);
-  builder.metric("Non-members", applications.filter((a) => !appMember(a)).length);
-  builder.metric("Paid", appPaidCount);
-  builder.metric("Unpaid", applications.length - appPaidCount);
-  builder.metric("Total Application Revenue", formatUsd(appRevenue));
-  builder.metric(
-    "Average Application Price",
-    formatUsd(applications.length ? Math.round(appPriceTotal / applications.length) : 0)
-  );
-
-  // ── Jury ─────────────────────────────────────────────────────────────────
-  const juryPending = juryApplications.filter(
-    (j) => j.status === "SUBMITTED" || j.status === "ADDITIONAL_INFO_REQUIRED"
-  ).length;
-
-  builder.section("JURY");
-  builder.metric("Total Jury Applications", juryApplications.length);
-  builder.metric("Approved", juryApplications.filter((j) => j.status === "APPROVED").length);
-  builder.metric("Paid", juryApplications.filter((j) => j.status === "PAID").length);
-  builder.metric("Pending", juryPending);
-  builder.metric("Rejected", juryApplications.filter((j) => j.status === "REJECTED").length);
-  builder.metric("IBPA Members", juryApplications.filter((j) => j.ibpaAssociationMember).length);
-  builder.metric("Non-members", juryApplications.filter((j) => !j.ibpaAssociationMember).length);
-
-  // ── Scores ───────────────────────────────────────────────────────────────
-  const scoreTotals = submittedScores
-    .map((s) => s.totalScore)
-    .filter((value): value is number => value != null);
-  const averageOverall =
-    scoreTotals.length > 0
-      ? scoreTotals.reduce((sum, v) => sum + v, 0) / scoreTotals.length
-      : null;
-
-  builder.section("SCORES");
-  builder.metric("Total Scores Submitted", submittedScores.length);
-  builder.metric(
-    "Average Overall Score",
-    averageOverall == null ? "—" : Math.round(averageOverall * 10) / 10
-  );
-  builder.metric("Highest Score", scoreTotals.length ? Math.max(...scoreTotals) : "—");
-  builder.metric("Lowest Score", scoreTotals.length ? Math.min(...scoreTotals) : "—");
-
-  const scoresByCategory = new Map<string, number[]>();
-  for (const score of submittedScores) {
-    if (score.totalScore == null) continue;
-    const category = score.nominationApplication?.category.name ?? "Uncategorized";
-    const list = scoresByCategory.get(category) ?? [];
-    list.push(score.totalScore);
-    scoresByCategory.set(category, list);
-  }
-  for (const [category, totals] of scoresByCategory) {
-    const avg = totals.reduce((sum, v) => sum + v, 0) / totals.length;
-    builder.metric(`Average Score — ${category}`, Math.round(avg * 10) / 10);
-  }
-
-  // ── Tickets ──────────────────────────────────────────────────────────────
+  // Sold tickets exclude only the not-yet-paid / cancelled states.
   const soldTickets = tickets.filter(
     (t) => t.status !== "PENDING" && t.status !== "CANCELED"
   );
-  const checkedInCount = soldTickets.filter(
-    (t) => t.forumCheckInAt != null || t.galaCheckInAt != null
-  ).length;
-  const ticketRevenue = revenueBySource("TICKET");
 
-  builder.section("TICKETS");
-  builder.metric("Total Tickets Sold", soldTickets.length);
-  for (const [type, count] of countBy(soldTickets, (t) => t.type)) {
-    builder.metric(`By Type — ${humanizeEnum(type)}`, count);
+  // ── Multi-category / nomination breakdowns (each membership counts) ───────
+  const appCategoryCounts = new Map<string, number>();
+  const nominationCounts = new Map<string, number>();
+  for (const app of paidApplications) {
+    const categories = orderCategories([
+      app.category.name,
+      ...app.nominationApplications.map((nom) => nom.category.name),
+    ]);
+    for (const category of categories) increment(appCategoryCounts, category);
+
+    const nominations =
+      app.nominationApplications.length > 0
+        ? app.nominationApplications.map((nom) => nom.award.name)
+        : [app.award.name];
+    for (const nomination of nominations) increment(nominationCounts, nomination);
   }
-  builder.metric("Average Ticket Price", formatUsd(
-    soldTickets.length ? Math.round(ticketRevenue / soldTickets.length) : 0
-  ));
-  builder.metric("Checked In", checkedInCount);
-  builder.metric("Not Checked In", soldTickets.length - checkedInCount);
 
-  // ── Revenue ──────────────────────────────────────────────────────────────
-  const juryRevenue = revenueBySource("JURY");
-  const totalRevenue = appRevenue + juryRevenue + ticketRevenue;
+  const juryCategoryCounts = new Map<string, number>();
+  for (const jury of paidJury) {
+    for (const area of orderCategories(jury.expertiseAreas)) {
+      increment(juryCategoryCounts, area);
+    }
+  }
 
-  builder.section("REVENUE");
-  builder.metric("Application Revenue", formatUsd(appRevenue));
-  builder.metric("Jury Revenue", formatUsd(juryRevenue));
-  builder.metric("Ticket Revenue", formatUsd(ticketRevenue));
-  builder.metric("Total Revenue", formatUsd(totalRevenue));
+  const ticketTypeCounts = new Map<string, number>();
+  for (const ticket of soldTickets) {
+    increment(ticketTypeCounts, ticketTypeLabelRu(ticket.type));
+  }
+
+  const now = formatDateTime(new Date());
+  const builder = new StatsBuilder();
+
+  builder.title("Статистика платформы IBPA");
+
+  // ── Sync info ────────────────────────────────────────────────────────────
+  builder.section("СИНХРОНИЗАЦИЯ");
+  builder.metric("Время последней синхронизации", now);
+
+  // ── Overview (paid only) ──────────────────────────────────────────────────
+  builder.section("ОБЗОР");
+  builder.metric("Оплаченные заявки", paidApplications.length);
+  builder.metric("Оплаченные судьи", paidJury.length);
+  builder.metric("Проданные билеты", soldTickets.length);
+  builder.metric("Общий доход", formatUsd(totalRevenue));
+
+  // ── Applications by category (multi-category counted in each) ─────────────
+  builder.breakdown(
+    "ЗАЯВКИ ПО КАТЕГОРИЯМ",
+    orderedCategoryCounts(appCategoryCounts),
+    { chart: true }
+  );
+
+  // ── Applications by nomination ────────────────────────────────────────────
+  const nominationEntries = [...nominationCounts.entries()].sort(
+    (a, b) => b[1] - a[1] || a[0].localeCompare(b[0])
+  );
+  builder.breakdown("ЗАЯВКИ ПО НОМИНАЦИЯМ", nominationEntries);
+
+  // ── Jury by category (areas of expertise, counted in each) ────────────────
+  builder.breakdown(
+    "СУДЬИ ПО КАТЕГОРИЯМ",
+    orderedCategoryCounts(juryCategoryCounts),
+    { chart: true }
+  );
+
+  // ── Tickets by type ───────────────────────────────────────────────────────
+  const ticketTypeEntries = [...ticketTypeCounts.entries()].sort(
+    (a, b) => b[1] - a[1] || a[0].localeCompare(b[0])
+  );
+  builder.breakdown("БИЛЕТЫ ПО ТИПАМ", ticketTypeEntries);
+
+  // ── Revenue by type ───────────────────────────────────────────────────────
+  builder.section("ДОХОД ПО ТИПАМ");
+  builder.metric("Заявки", formatUsd(appRevenue));
+  builder.metric("Жюри", formatUsd(juryRevenue));
+  builder.metric("Билеты", formatUsd(ticketRevenue));
+  builder.metric("Общий доход", formatUsd(totalRevenue));
 
   return {
     rows: builder.rows,
     titleRowIndex: builder.titleRowIndex,
     sectionRowIndexes: builder.sectionRowIndexes,
+    chartSections: builder.chartSections,
   };
 }
