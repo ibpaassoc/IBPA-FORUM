@@ -328,10 +328,10 @@ export default function ApplicationDetailPage({
           {adminT.detail.onlinePresence}
         </p>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          <DashboardDetailCard label={adminT.detail.website} value={application.websiteUrl || adminT.common.notProvided} />
-          <DashboardDetailCard label={adminT.detail.social} value={application.socialUrl || adminT.common.notProvided} />
-          <DashboardDetailCard label={adminT.detail.clientReviews} value={application.reviewsUrl || adminT.common.notProvided} />
-          <DashboardDetailCard label={adminT.detail.paymentTotal} value={formatAmount(application.amount, application.currency)} />
+          <DashboardDetailCard label="Instagram" value={application.websiteUrl || "Not provided"} />
+          <DashboardDetailCard label="Social media" value={application.socialUrl || "Not provided"} />
+          <DashboardDetailCard label="Client reviews" value={application.reviewsUrl || "Not provided"} />
+          <DashboardDetailCard label="Payment total" value={formatAmount(application.amount, application.currency)} />
         </div>
       </div>
     </DashboardCard>

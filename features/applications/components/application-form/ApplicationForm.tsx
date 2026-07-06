@@ -189,6 +189,15 @@ function isFieldComplete(value: ApplicationValues[string]) {
   return false;
 }
 
+function isValidUrl(value: string) {
+  try {
+    new URL(value);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function getSelectedAwardIds(values: ApplicationValues) {
   return Array.isArray(values.selectedAwardIds)
     ? values.selectedAwardIds.filter(
@@ -258,8 +267,8 @@ const formCopy = {
     licenseCertification: "Professional License / Certification",
     licenseCertificationHint:
       "Upload PDF, JPG, or PNG. Max 5 MB. Large images are auto-compressed.",
-    website: "Professional Website",
-    social: "Instagram / Social Media",
+    website: "Instagram",
+    social: "Social Media",
     reviews: "Client Reviews Link",
     heardAbout: "How did you hear about us?",
     selectOption: "Select an option",
@@ -359,8 +368,8 @@ const formCopy = {
     licenseCertification: "Лицензия / Сертификат",
     licenseCertificationHint:
       "Загрузите PDF, JPG или PNG. Макс. 5 МБ. Большие изображения сжимаются автоматически.",
-    website: "Профессиональный сайт",
-    social: "Instagram / Соцсети",
+    website: "Instagram",
+    social: "Соцсети",
     reviews: "Ссылка на отзывы клиентов",
     heardAbout: "Откуда вы узнали о нас?",
     selectOption: "Выберите вариант",
@@ -460,8 +469,8 @@ const formCopy = {
     licenseCertification: "Ліцензія / Сертифікат",
     licenseCertificationHint:
       "Завантажте PDF, JPG або PNG. Макс. 5 МБ. Великі зображення стискаються автоматично.",
-    website: "Професійний сайт",
-    social: "Instagram / Соцмережі",
+    website: "Instagram",
+    social: "Соцмережі",
     reviews: "Посилання на відгуки клієнтів",
     heardAbout: "Звідки ви дізналися про нас?",
     selectOption: "Оберіть варіант",
@@ -545,6 +554,7 @@ export default function ApplyForm({
   // Cert verification — same pattern as TicketForm
   useEffect(() => {
     if (!isIbpaMember) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCertStatus("idle");
       return;
     }
@@ -658,6 +668,7 @@ export default function ApplyForm({
   const CONFIRM_STEP = MOTIVATION_STEP + 1;
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setStep((current) => Math.min(current, CONFIRM_STEP));
     setMaxUnlockedStep((current) => Math.min(current, CONFIRM_STEP));
   }, [CONFIRM_STEP]);
@@ -853,6 +864,18 @@ export default function ApplyForm({
             "Please complete all required fields for this nomination.";
         }
       }
+    }
+
+    if (currentStep === MOTIVATION_STEP && !isFieldComplete(values.websiteUrl)) {
+      nextErrors.websiteUrl = "Instagram is required.";
+    }
+
+    if (
+      currentStep === MOTIVATION_STEP &&
+      isFieldComplete(values.websiteUrl) &&
+      !isValidUrl(String(values.websiteUrl ?? ""))
+    ) {
+      nextErrors.websiteUrl = "Please enter a valid Instagram URL.";
     }
 
     return nextErrors;
@@ -1604,8 +1627,9 @@ export default function ApplyForm({
                     label={copy.website}
                     name="websiteUrl"
                     type="url"
+                    required
                     value={String(values.websiteUrl ?? "")}
-                    placeholder="https://"
+                    placeholder="https://instagram.com/yourprofile"
                     error={errors.websiteUrl}
                     onChange={handleChange}
                   />
@@ -1614,7 +1638,7 @@ export default function ApplyForm({
                     name="socialUrl"
                     type="url"
                     value={String(values.socialUrl ?? "")}
-                    placeholder="https://instagram.com/yourprofile"
+                    placeholder="https://"
                     error={errors.socialUrl}
                     onChange={handleChange}
                   />

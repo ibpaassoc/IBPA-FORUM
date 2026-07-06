@@ -191,18 +191,19 @@ export default function ApplicationEditPage({
           <DashboardCard className="p-0">
             <SectionHeader icon={Globe} label={adminT.edit.onlinePresence} />
             <div className="flex flex-col gap-4 p-4 md:p-5">
-              <FormField label={adminT.detail.website}>
+              <FormField label="Instagram *">
                 <input
-                  type="text"
+                  type="url"
                   name="websiteUrl"
                   defaultValue={application.websiteUrl ?? ""}
-                  placeholder="https://"
+                  placeholder="https://instagram.com/yourprofile"
+                  required
                   className={dashboardInputClass}
                 />
               </FormField>
-              <FormField label={adminT.detail.social}>
+              <FormField label="Social media profile">
                 <input
-                  type="text"
+                  type="url"
                   name="socialUrl"
                   defaultValue={application.socialUrl ?? ""}
                   placeholder="https://"

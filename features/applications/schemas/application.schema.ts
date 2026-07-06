@@ -10,6 +10,15 @@ export const optionalUrlSchema = z
     "Please enter a valid URL."
   );
 
+export const requiredInstagramUrlSchema = z
+  .string()
+  .trim()
+  .min(1, "Instagram is required.")
+  .refine(
+    (value) => z.url().safeParse(value).success,
+    "Please enter a valid Instagram URL."
+  );
+
 export const baseApplicationSchema = z.object({
   firstName: z.string().trim().min(1, "First Name is required."),
   lastName: z.string().trim().min(1, "Last Name is required."),
@@ -29,7 +38,7 @@ export const baseApplicationSchema = z.object({
     .min(2, "A minimum of 2 years of professional experience is required."),
   categoryId: z.string().trim().min(1, "Category is required."),
   awardId: z.string().trim().min(1, "Nomination is required."),
-  websiteUrl: optionalUrlSchema,
+  websiteUrl: requiredInstagramUrlSchema,
   socialUrl: optionalUrlSchema,
   reviewsUrl: optionalUrlSchema,
   heardAbout: z.string().optional(),

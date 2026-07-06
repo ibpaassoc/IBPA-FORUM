@@ -307,7 +307,7 @@ export default function TicketForm() {
 
       <div>
         <label className={labelBase} htmlFor="tf-instagram">
-          Instagram <span className="font-normal text-[var(--color-ink-muted)]">(optional)</span>
+          Instagram <span className="text-red-500">*</span>
         </label>
         <input
           id="tf-instagram"
@@ -319,6 +319,7 @@ export default function TicketForm() {
           placeholder="@username or instagram.com/username"
           className={clsx(inputBase, errors.instagram && inputError)}
           {...register("instagram", {
+            required: "Instagram is required.",
             validate: (value) => validateInstagramInput(value) ?? true,
           })}
         />

@@ -2,6 +2,15 @@ import { NextResponse } from "next/server";
 import { processJuryAdditionalInfoResubmission } from "@/features/jury/server/commands";
 import type { BlobFileInfo } from "@/features/jury/server/uploads";
 
+function isValidUrl(value: string) {
+  try {
+    new URL(value);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ token: string }> }
@@ -39,6 +48,14 @@ export async function POST(
 
   if (!conflictDisclosure?.trim()) {
     return NextResponse.json({ error: "Conflict disclosure is required." }, { status: 400 });
+  }
+
+  if (!professionalWebsite?.trim()) {
+    return NextResponse.json({ error: "Instagram is required." }, { status: 400 });
+  }
+
+  if (!isValidUrl(professionalWebsite.trim())) {
+    return NextResponse.json({ error: "Please enter a valid Instagram URL." }, { status: 400 });
   }
 
   try {

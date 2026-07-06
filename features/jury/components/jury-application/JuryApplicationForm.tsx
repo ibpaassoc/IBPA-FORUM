@@ -63,6 +63,15 @@ function isFieldFilled(value: FormValues[string] | undefined) {
   return String(value).trim().length > 0;
 }
 
+function isValidUrl(value: string) {
+  try {
+    new URL(value);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export default function JuryApplicationForm() {
   const { language } = useLanguage();
   const formRef = useRef<HTMLFormElement>(null);
@@ -81,7 +90,7 @@ export default function JuryApplicationForm() {
         { title: "Professional Profile", desc: "Share your professional title, experience, and current affiliation." },
         { title: "Judging Experience", desc: "Describe your previous judging experience and areas of expertise." },
         { title: "Credentials", desc: "Upload your professional certifications and a profile photo." },
-        { title: "Bio & Disclosure", desc: "Share your professional bio, website, and any conflict of interest." },
+        { title: "Bio & Disclosure", desc: "Share your professional bio, Instagram, and any conflict of interest." },
         { title: "Motivation & Agreement", desc: "Tell us why you want to serve as a judge and agree to confidentiality." },
         { title: "Review & Submit", desc: "Review your application before final submission." },
       ],
@@ -123,7 +132,7 @@ export default function JuryApplicationForm() {
       bio: "Professional Bio",
       bioPh: "Share your background, achievements, and role in the industry. This bio can be published on the jury page if approved.",
       bioHint: "Target length: up to 300 words.",
-      website: "Professional Website / LinkedIn",
+      website: "Instagram",
       conflict: "Conflict of Interest Disclosure",
       conflictPh: "Disclose any relationships with nominees, schools, salons, brands, or other participants.",
       motivation: "Why do you want to serve as a judge?",
@@ -142,7 +151,7 @@ export default function JuryApplicationForm() {
         { title: "Профессиональный профиль", desc: "Укажите профессиональный статус, стаж и текущую аффилиацию." },
         { title: "Опыт судейства", desc: "Опишите предыдущий опыт судейства и области экспертизы." },
         { title: "Документы", desc: "Загрузите профессиональные сертификаты и фото профиля." },
-        { title: "Биография и раскрытие", desc: "Поделитесь биографией, сайтом и данными о конфликтах интересов." },
+        { title: "Биография и раскрытие", desc: "Поделитесь биографией, Instagram и данными о конфликтах интересов." },
         { title: "Мотивация и соглашение", desc: "Расскажите, почему вы хотите быть судьей, и подтвердите конфиденциальность." },
         { title: "Проверка и отправка", desc: "Проверьте заявку перед финальной отправкой." },
       ],
@@ -184,7 +193,7 @@ export default function JuryApplicationForm() {
       bio: "Профессиональная биография",
       bioPh: "Опишите ваш опыт, достижения и роль в индустрии. Биография может быть опубликована после одобрения.",
       bioHint: "Рекомендуемый объем: до 300 слов.",
-      website: "Профессиональный сайт / LinkedIn",
+      website: "Instagram",
       conflict: "Раскрытие конфликта интересов",
       conflictPh: "Укажите любые связи с номинантами, школами, салонами, брендами или участниками.",
       motivation: "Почему вы хотите быть судьей?",
@@ -203,7 +212,7 @@ export default function JuryApplicationForm() {
         { title: "Професійний профіль", desc: "Вкажіть статус, стаж та поточну афіліацію." },
         { title: "Досвід суддівства", desc: "Опишіть попередній досвід суддівства та сфери експертизи." },
         { title: "Документи", desc: "Завантажте сертифікати та фото профілю." },
-        { title: "Біографія та розкриття", desc: "Поділіться біографією, сайтом і даними про конфлікти інтересів." },
+        { title: "Біографія та розкриття", desc: "Поділіться біографією, Instagram і даними про конфлікти інтересів." },
         { title: "Мотивація та угода", desc: "Розкажіть, чому хочете бути суддею, та підтвердьте конфіденційність." },
         { title: "Перевірка та надсилання", desc: "Перевірте заявку перед фінальним надсиланням." },
       ],
@@ -245,7 +254,7 @@ export default function JuryApplicationForm() {
       bio: "Професійна біографія",
       bioPh: "Опишіть ваш досвід, досягнення та роль в індустрії. Може бути опублікована після схвалення.",
       bioHint: "Рекомендований обсяг: до 300 слів.",
-      website: "Професійний сайт / LinkedIn",
+      website: "Instagram",
       conflict: "Розкриття конфлікту інтересів",
       conflictPh: "Вкажіть будь-які зв'язки з номінантами, школами, салонами, брендами або учасниками.",
       motivation: "Чому ви хочете бути суддею?",
@@ -317,6 +326,10 @@ export default function JuryApplicationForm() {
     }
     if (s === 4) {
       req("professionalBio");
+      if (!isFieldFilled(values.professionalWebsite)) e.professionalWebsite = "Instagram is required.";
+      if (isFieldFilled(values.professionalWebsite) && !isValidUrl(String(values.professionalWebsite ?? ""))) {
+        e.professionalWebsite = "Please enter a valid Instagram URL.";
+      }
       req("conflictDisclosure");
     }
     if (s === 5) {
@@ -627,7 +640,7 @@ export default function JuryApplicationForm() {
           {step === 4 && (
             <div className="space-y-6">
               <TextareaField label={copy.bio} name="professionalBio" value={String(values.professionalBio ?? "")} required placeholder={copy.bioPh} description={copy.bioHint} rows={6} error={errors.professionalBio} onChange={handleChange} />
-              <TextField label={copy.website} name="professionalWebsite" type="url" value={String(values.professionalWebsite ?? "")} placeholder="https://" error={errors.professionalWebsite} onChange={handleChange} />
+              <TextField label={copy.website} name="professionalWebsite" type="url" required value={String(values.professionalWebsite ?? "")} placeholder="https://instagram.com/yourprofile" error={errors.professionalWebsite} onChange={handleChange} />
               <TextareaField label={copy.conflict} name="conflictDisclosure" value={String(values.conflictDisclosure ?? "")} required placeholder={copy.conflictPh} rows={4} error={errors.conflictDisclosure} onChange={handleChange} />
             </div>
           )}

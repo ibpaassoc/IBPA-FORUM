@@ -241,12 +241,13 @@ export default function JuryApplicationEditPage({
                   className={dashboardTextareaClass}
                 />
               </FormField>
-              <FormField label={adminT.detail.websiteLinkedin}>
+              <FormField label="Instagram *">
                 <input
-                  type="text"
+                  type="url"
                   name="professionalWebsite"
                   defaultValue={application.professionalWebsite ?? ""}
-                  placeholder="https://"
+                  placeholder="https://instagram.com/yourprofile"
+                  required
                   className={dashboardInputClass}
                 />
               </FormField>

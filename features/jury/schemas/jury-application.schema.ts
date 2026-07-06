@@ -4,6 +4,15 @@ function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+function isValidUrl(value: string) {
+  try {
+    new URL(value);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function buildJuryFieldErrors(formData: FormData) {
   const firstName = getText(formData, "firstName");
   const lastName = getText(formData, "lastName");
@@ -17,6 +26,7 @@ export function buildJuryFieldErrors(formData: FormData) {
   const previousJudgingExperience = getText(formData, "previousJudgingExperience");
   const previousJudgingDetails = getText(formData, "previousJudgingDetails");
   const professionalBio = getText(formData, "professionalBio");
+  const professionalWebsite = getText(formData, "professionalWebsite");
   const conflictDisclosure = getText(formData, "conflictDisclosure");
   const motivation = getText(formData, "motivation");
   const confidentialityAgreement = getText(formData, "confidentialityAgreement");
@@ -73,6 +83,11 @@ export function buildJuryFieldErrors(formData: FormData) {
   }
   if (!professionalBio) {
     fieldErrors.professionalBio = "Professional bio is required.";
+  }
+  if (!professionalWebsite) {
+    fieldErrors.professionalWebsite = "Instagram is required.";
+  } else if (!isValidUrl(professionalWebsite)) {
+    fieldErrors.professionalWebsite = "Please enter a valid Instagram URL.";
   }
   if (!profilePhotoBlob) {
     fieldErrors.profilePhoto = "Profile photo is required.";

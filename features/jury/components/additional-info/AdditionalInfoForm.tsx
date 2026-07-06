@@ -37,6 +37,15 @@ function sanitizeBlobName(name: string) {
   return name.replace(/[^a-zA-Z0-9._-]/g, "_");
 }
 
+function isValidUrl(value: string) {
+  try {
+    new URL(value);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 type FormState =
   | { type: "idle" }
   | { type: "uploading" }
@@ -77,6 +86,8 @@ export default function AdditionalInfoForm({
     if (!bio.trim()) e.bio = "Professional bio is required.";
     if (!motivation.trim()) e.motivation = "This field is required.";
     if (!conflict.trim()) e.conflict = "Conflict disclosure is required.";
+    if (!website.trim()) e.website = "Instagram is required.";
+    else if (!isValidUrl(website.trim())) e.website = "Please enter a valid Instagram URL.";
     return e;
   }
 
@@ -135,7 +146,7 @@ export default function AdditionalInfoForm({
           professionalBio: bio.trim(),
           motivation: motivation.trim(),
           conflictDisclosure: conflict.trim(),
-          professionalWebsite: website.trim() || undefined,
+          professionalWebsite: website.trim(),
           profilePhotoBlob,
           certificationBlobs: certBlobs,
         }),
@@ -232,14 +243,16 @@ export default function AdditionalInfoForm({
       </Field>
 
       <Field
-        label="Professional Website / LinkedIn"
-        hint="Optional - provide a link to your professional profile or portfolio."
+        label="Instagram"
+        hint="Required - provide your Instagram profile link."
+        required
+        error={errors.website}
       >
         <input
           type="url"
           value={website}
           onChange={(e) => setWebsite(e.target.value)}
-          placeholder="https://"
+          placeholder="https://instagram.com/yourprofile"
           disabled={isLoading}
           className={inputClass}
         />

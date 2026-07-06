@@ -38,7 +38,7 @@ const en = {
       title: "IBPA Beauty Award 2026",
       subtitle: "Beauty Business Forum + IBPA Beauty Award 2026",
       date: "September 25–26, 2026",
-      location: "Los Angeles, California",
+      location: "950 South Broadway, Los Angeles, CA 90015",
       buyTickets: "Buy Forum Tickets",
       description: "",
       categoriesCta: "Explore Categories",
@@ -286,6 +286,32 @@ const en = {
             "Launching a beauty brand in the U.S. can seem overwhelming. Natalie will share a step-by-step framework for creating and launching a successful beauty product—from validating the idea to selecting formulas, packaging, manufacturing, and preparing for market. Participants will learn how to avoid common mistakes, make informed decisions, and build products ready for long-term growth and scaling. The presentation is based on real U.S. product launches and practical industry experience.",
           instagram: "https://www.instagram.com/natalievaulin",
           website: "https://www.vaulabs.com"
+        },
+        {
+          name: "Gulnara Chekoeva",
+          photo: "/images/speakers/gulnara-chekoeva.jpg",
+          role:
+            "International-class hairstylist, hair designer, international judge and championship trainer. Asia Champion 2025, One Shot Hair Awards (USA) winner, and founder of one of the world's largest online hair education academies.",
+          city: "United States",
+          topic:
+            "Building a World-Class Beauty Career Through Education, Championships, and Leadership",
+          description:
+            "Gulnara will share her journey of building an international career in the beauty industry, creating a strong personal brand, and educating professionals worldwide. She will explain how to develop successful educational programs, train beauty educators, and organize international championships based on her experience of teaching more than 100,000 professionals and delivering educational programs in over 20 countries.",
+          instagram: "",
+          website: ""
+        },
+        {
+          name: "Eleonora Bediukh",
+          photo: "/images/speakers/eleonora-bediukh.jpg",
+          role:
+            "Brow artist and brow lamination specialist, educator, author of the book Brows Top Start, international judge, organizer of TB Champions, co-founder of TE’ORA Beauty Corp, and beauty influencer.",
+          city: "Sacramento, California, USA",
+          topic:
+            "Content That Sells: A Social Media Growth System for Beauty Professionals Without Burnout",
+          description:
+            "This session is designed for brow artists, lash artists, nail technicians, makeup artists, cosmetologists, salon owners, educators, and beginners. Eleonora will demonstrate how to build a sustainable content strategy, attract clients through social media, create content that converts into sales, and grow a strong personal brand. The presentation is based on her real experience of growing an audience from 1,700 to 30,000 followers in just six months.",
+          instagram: "",
+          website: ""
         }
       ]
     },
@@ -1726,7 +1752,7 @@ const ru: typeof en = {
       title: "IBPA Beauty Award 2026",
       subtitle: "Beauty Business Forum + IBPA Beauty Award 2026",
       date: "25–26 сентября 2026",
-      location: "Лос-Анджелес, Калифорния",
+      location: "950 South Broadway, Los Angeles, CA 90015",
       buyTickets: "Купить билеты на форум",
       description: "Признание выдающихся достижений в сфере красоты, обучения в бьюти-индустрии, здоровья и инноваций в брендинге",
       categoriesCta: "Изучить категории",
@@ -1979,6 +2005,32 @@ const ru: typeof en = {
           instagram: "https://www.instagram.com/natalievaulin",
           website: "https://www.vaulabs.com"
         },
+        {
+          name: "Гульнара Чекоева",
+          photo: "/images/speakers/gulnara-chekoeva.jpg",
+          role:
+            "Мастер международного класса, художник-модельер по прическам, международный судья и тренер чемпионатов. Чемпионка Азии 2025 года, победитель премии One Shot Hair Awards (USA), основатель международной онлайн-академии парикмахерского искусства.",
+          city: "США",
+          topic:
+            "Путь мастера мирового уровня: образование, чемпионаты и построение международной карьеры",
+          description:
+            "Гульнара поделится своим опытом развития международной карьеры в индустрии красоты, расскажет, как создать сильный личный бренд, выйти на мировой уровень и обучать профессионалов по всему миру. Она раскроет принципы создания успешных образовательных программ, подготовки преподавателей нового поколения и организации международных чемпионатов, основанные на опыте обучения более 100 000 мастеров и проведения авторских программ более чем в 20 странах.",
+          instagram: "",
+          website: ""
+        },
+        {
+          name: "Eleonora Bediukh",
+          photo: "/images/speakers/eleonora-bediukh.jpg",
+          role:
+            "Мастер-бровист и лами-мейкер, преподаватель по коррекции, окрашиванию и ламинированию бровей. Автор книги Brows Top Start, международный судья, организатор чемпионата TB Champions, соучредитель TE’ORA Beauty Corp и beauty-инфлюэнсер.",
+          city: "Сакраменто, Калифорния, США",
+          topic:
+            "Контент, который продаёт: система продвижения бьюти-мастера в соцсетях без хаоса и выгорания",
+          description:
+            "Выступление предназначено для бровистов, лешмейкеров, нейл-мастеров, визажистов, косметологов, владельцев салонов, тренеров и начинающих специалистов. Элеонора расскажет, как выстроить понятную контент-стратегию, привлекать клиентов через социальные сети без постоянного выгорания, создавать контент, который действительно продаёт, и развивать личный бренд. Основано на личном опыте роста аудитории с 1 700 до 30 000 подписчиков всего за 6 месяцев.",
+          instagram: "",
+          website: ""
+        }
       ]
     },
     previousForum: {
@@ -3420,7 +3472,7 @@ const ua: typeof en = {
       title: "IBPA Beauty Award 2026",
       subtitle: "Beauty Business Forum + IBPA Beauty Award 2026",
       date: "25–26 вересня 2026",
-      location: "Лос-Анджелес, Каліфорнія",
+      location: "950 South Broadway, Los Angeles, CA 90015",
       buyTickets: "Купити квитки на форум",
       description: "Визнання видатних досягнень у сфері краси, освіти у сфері краси, здоров'я та інновацій у брендингу",
       categoriesCta: "Переглянути категорії",
@@ -3671,6 +3723,32 @@ const ua: typeof en = {
             "На виступі Наталі представить покрокову систему створення власного beauty-продукту — від перевірки ідеї та розробки формули до вибору пакування, виробництва та підготовки до виходу на ринок. Учасники дізнаються, як уникнути найпоширеніших помилок, приймати правильні рішення на кожному етапі та створювати продукти, готові до масштабування. Виступ базується на реальних кейсах запуску beauty-продуктів у США.",
           instagram: "https://www.instagram.com/natalievaulin",
           website: "https://www.vaulabs.com"
+        },
+        {
+          name: "Гульнара Чекоєва",
+          photo: "/images/speakers/gulnara-chekoeva.jpg",
+          role:
+            "Майстер міжнародного класу, художник-модельєр зачісок, міжнародний суддя та тренер чемпіонатів. Чемпіонка Азії 2025 року, переможниця One Shot Hair Awards (USA), засновниця однієї з найбільших міжнародних онлайн-академій перукарського мистецтва.",
+          city: "США",
+          topic:
+            "Шлях майстра світового рівня: освіта, чемпіонати та побудова міжнародної кар'єри",
+          description:
+            "Гульнара поділиться досвідом розвитку міжнародної кар'єри у beauty-індустрії, розповість, як створити сильний особистий бренд, вийти на світовий рівень та навчати професіоналів по всьому світу. Вона розкриє принципи створення успішних освітніх програм, підготовки викладачів нового покоління та організації міжнародних чемпіонатів, спираючись на досвід навчання понад 100 000 майстрів і проведення авторських програм у більш ніж 20 країнах.",
+          instagram: "",
+          website: ""
+        },
+        {
+          name: "Eleonora Bediukh",
+          photo: "/images/speakers/eleonora-bediukh.jpg",
+          role:
+            "Бровист і ламі-мейкер, викладач з корекції, фарбування та ламінування брів. Автор книги Brows Top Start, міжнародний суддя, організатор чемпіонату TB Champions, співзасновниця TE’ORA Beauty Corp та beauty-інфлюенсер.",
+          city: "Сакраменто, Каліфорнія, США",
+          topic:
+            "Контент, який продає: система просування beauty-майстра в соціальних мережах без хаосу та вигорання",
+          description:
+            "Виступ буде корисний бровистам, лешмейкерам, нейл-майстрам, візажистам, косметологам, власникам салонів, викладачам та початківцям. Елеонора покаже, як побудувати зрозумілу контент-стратегію, залучати клієнтів через соціальні мережі без постійного вигорання, створювати контент, який продає, та розвивати особистий бренд. В основі виступу — власний досвід зростання аудиторії з 1 700 до 30 000 підписників лише за шість місяців.",
+          instagram: "",
+          website: ""
         }
       ]
     },
