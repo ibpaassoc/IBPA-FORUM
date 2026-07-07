@@ -584,6 +584,59 @@ export async function processJuryAdditionalInfoResubmission({
   return { applicationId: application.id };
 }
 
+export async function replaceJuryProfilePhoto(
+  id: string,
+  profilePhotoBlob: BlobFileInfo,
+) {
+  const application = await prisma.juryApplication.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      files: { select: { id: true, fieldKey: true, storageKey: true } },
+    },
+  });
+
+  if (!application) {
+    throw new Error("Jury application not found.");
+  }
+
+  const oldProfilePhotos = application.files.filter(
+    (file) => file.fieldKey === "profilePhoto",
+  );
+
+  // Persist the new photo first; only remove the old blobs once the swap is
+  // committed so a failure never leaves the application without a photo.
+  await prisma.$transaction(async (tx) => {
+    if (oldProfilePhotos.length > 0) {
+      await tx.juryApplicationFile.deleteMany({
+        where: { juryApplicationId: id, fieldKey: "profilePhoto" },
+      });
+    }
+
+    await tx.juryApplicationFile.create({
+      data: {
+        juryApplicationId: id,
+        fieldKey: "profilePhoto",
+        ...profilePhotoBlob,
+      },
+    });
+  });
+
+  const keysToDelete = oldProfilePhotos
+    .map((file) => file.storageKey)
+    .filter((key): key is string => Boolean(key));
+
+  if (keysToDelete.length > 0) {
+    try {
+      await del(keysToDelete);
+    } catch (error) {
+      console.error("Failed to delete old profile photo blobs", error);
+    }
+  }
+
+  syncJuryOnChange(id, { refreshStats: false });
+}
+
 export async function deleteJuryApplication(id: string) {
   const application = await prisma.juryApplication.findUnique({
     where: { id },
