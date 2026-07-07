@@ -2,11 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
 import { performCheckIn } from "@/features/check-in/server/check-in-service";
+import { SCAN_MODES } from "@/features/check-in/types";
 
 const checkInSchema = z.object({
   ticketKind: z.enum(["TICKET", "PARTICIPANT", "JURY"]),
   sourceRecordId: z.string().min(1).max(128),
   scope: z.enum(["FORUM", "GALA", "ATTENDANCE"]),
+  mode: z.enum(SCAN_MODES).optional(),
 });
 
 /**
