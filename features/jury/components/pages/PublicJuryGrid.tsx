@@ -14,7 +14,7 @@ type PublicJuryMember = {
   country?: string | null;
   bio?: string | null;
   expertise?: string[] | null;
-  profilePhotoFileId?: string | null;
+  profilePhotoSrc?: string | null;
 };
 
 const juryFallbackPhotos = [
@@ -157,9 +157,7 @@ export default function PublicJuryGrid({
             const secondaryFallback =
               juryFallbackPhotos[(index + 1) % juryFallbackPhotos.length];
 
-            const photoSrc = member.profilePhotoFileId
-              ? `/api/jury/profile-photo/${member.profilePhotoFileId}`
-              : primaryFallback;
+            const photoSrc = member.profilePhotoSrc ?? primaryFallback;
 
             const memberLocation = [member.city, member.country]
               .filter(Boolean)
@@ -192,7 +190,7 @@ export default function PublicJuryGrid({
                     objectPosition="center 17%"
                     mobileObjectPosition="center 15%"
                     className="object-cover transition duration-300 ease-out group-hover:scale-[1.01]"
-                    unoptimized={Boolean(member.profilePhotoFileId)}
+                    unoptimized={Boolean(member.profilePhotoSrc)}
                   />
 
                   <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0)_38%,rgba(255,255,255,0.08)_58%,rgba(255,255,255,0.68)_84%,rgba(255,255,255,0.92)_100%)]" />

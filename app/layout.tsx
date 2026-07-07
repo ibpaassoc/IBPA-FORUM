@@ -55,6 +55,7 @@ export default async function RootLayout({
   return (
     <html
       lang={htmlLanguage}
+      data-scroll-behavior="smooth"
       className={`${cormorant.variable} ${lora.variable} ${bodoniModa.variable}`}
     >
       <body>

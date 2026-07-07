@@ -1,6 +1,7 @@
 import { get } from "@vercel/blob";
 import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
 import { prisma } from "@/shared/lib/prisma";
+import { isPublicBlobUrl } from "@/features/jury/lib/profile-photo";
 
 export async function GET(
   request: Request,
@@ -27,10 +28,25 @@ export async function GET(
     return new Response("Not found", { status: 404 });
   }
 
-  const result = await get(fileRecord.storageKey, {
-    access: "private",
-    ifNoneMatch: request.headers.get("if-none-match") ?? undefined,
-  });
+  // Profile photos are stored as public blobs (storageKey is a URL) — redirect.
+  if (isPublicBlobUrl(fileRecord.storageKey)) {
+    return Response.redirect(fileRecord.storageKey, 308);
+  }
+
+  let result;
+  try {
+    result = await get(fileRecord.storageKey, {
+      access: "private",
+      ifNoneMatch: request.headers.get("if-none-match") ?? undefined,
+    });
+  } catch (error) {
+    console.error("[admin/jury-files] Failed to read private jury file blob.", {
+      fileId,
+      pathname: fileRecord.storageKey,
+      message: error instanceof Error ? error.message : String(error),
+    });
+    return new Response("Not found", { status: 404 });
+  }
 
   if (!result) {
     return new Response("Not found", { status: 404 });

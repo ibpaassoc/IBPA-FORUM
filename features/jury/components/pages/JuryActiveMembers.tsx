@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, BadgeCheck, MapPin } from "lucide-react";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { SectionHeading } from "@/shared/components/public";
+import { juryInitials } from "@/features/jury/lib/profile-photo";
 
 type JuryMember = {
   id: string;
@@ -15,8 +16,18 @@ type JuryMember = {
   country?: string | null;
   bio?: string | null;
   expertise?: string[] | null;
-  profilePhotoFileId?: string | null;
+  profilePhotoSrc?: string | null;
 };
+
+function JuryInitialsAvatar({ fullName }: { fullName: string }) {
+  return (
+    <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_top,#ffffff_0%,#eef5f9_48%,#dfeef6_100%)]">
+      <span className="font-(--font-display) text-7xl tracking-[-0.06em] text-[#72a0c1]/55">
+        {juryInitials(fullName)}
+      </span>
+    </div>
+  );
+}
 
 export default function JuryActiveMembers({
   juryMembers,
@@ -26,6 +37,7 @@ export default function JuryActiveMembers({
   const { t } = useLanguage();
   const sliderRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [failedPhotos, setFailedPhotos] = useState<Record<string, boolean>>({});
 
   if (juryMembers.length === 0) return null;
 
@@ -96,9 +108,10 @@ export default function JuryActiveMembers({
       >
         {juryMembers.map((member) => {
           const location = [member.city, member.country].filter(Boolean).join(", ");
-          const photoSrc = member.profilePhotoFileId
-            ? `/api/jury/profile-photo/${member.profilePhotoFileId}`
-            : null;
+          const photoSrc =
+            member.profilePhotoSrc && !failedPhotos[member.id]
+              ? member.profilePhotoSrc
+              : null;
 
           return (
             <article
@@ -112,15 +125,15 @@ export default function JuryActiveMembers({
                     src={photoSrc}
                     alt={member.fullName}
                     fill
+                    unoptimized
                     className="object-cover transition duration-300 group-hover:scale-[1.02]"
                     sizes="(max-width: 640px) 78vw, 390px"
+                    onError={() =>
+                      setFailedPhotos((current) => ({ ...current, [member.id]: true }))
+                    }
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_top,#ffffff_0%,#eef5f9_48%,#dfeef6_100%)]">
-                    <span className="font-(--font-display) text-7xl tracking-[-0.06em] text-[#72a0c1]/55">
-                      {member.fullName.charAt(0)}
-                    </span>
-                  </div>
+                  <JuryInitialsAvatar fullName={member.fullName} />
                 )}
 
                 <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(16,24,42,0.02)_0%,rgba(16,24,42,0.04)_42%,rgba(16,24,42,0.72)_100%)]" />
