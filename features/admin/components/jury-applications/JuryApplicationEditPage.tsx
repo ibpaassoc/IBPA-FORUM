@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { JuryApplication } from "@prisma/client";
+import type { JuryApplication, JuryApplicationFile } from "@prisma/client";
 import {
   ArrowLeft,
   Award,
@@ -11,6 +11,7 @@ import {
 import { editJuryApplicationAction } from "@/features/admin/actions/jury.actions";
 import { adminT } from "@/lib/i18n/admin";
 import ApplicationStatusBadge from "@/features/admin/components/badges/ApplicationStatusBadge";
+import JuryProfilePhotoEditor from "@/features/admin/components/jury-applications/JuryProfilePhotoEditor";
 import {
   DashboardAccentBlock,
   DashboardCard,
@@ -51,9 +52,12 @@ function FormField({ label, children }: { label: string; children: ReactNode }) 
 export default function JuryApplicationEditPage({
   application,
 }: {
-  application: JuryApplication;
+  application: JuryApplication & { files: JuryApplicationFile[] };
 }) {
   const expertiseAreasValue = application.expertiseAreas.join(", ");
+  const profilePhoto = application.files.find(
+    (file) => file.fieldKey === "profilePhoto",
+  );
 
   return (
     <form action={editJuryApplicationAction} className="flex flex-col gap-5">
@@ -72,6 +76,12 @@ export default function JuryApplicationEditPage({
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="flex flex-col gap-5">
+          <JuryProfilePhotoEditor
+            applicationId={application.id}
+            currentPhotoFileId={profilePhoto?.id ?? null}
+            fullName={application.fullName}
+          />
+
           <DashboardCard className="p-0">
             <SectionHeader icon={UserRound} label={adminT.edit.personalInfo} />
             <div className="grid gap-4 p-4 sm:grid-cols-2 md:p-5">
