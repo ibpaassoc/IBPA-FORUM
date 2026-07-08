@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { getApplicationCategories } from "@/features/applications/server/queries";
 
+// Nominations are read live from the DB; never serve a cached snapshot so
+// newly added Award rows appear immediately.
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const categories = await getApplicationCategories();

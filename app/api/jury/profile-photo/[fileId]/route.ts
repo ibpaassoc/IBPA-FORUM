@@ -32,10 +32,26 @@ export async function GET(
     return new Response("Not found", { status: 404 });
   }
 
-  const result = await get(fileRecord.storageKey, {
-    access: "private",
-    ifNoneMatch: request.headers.get("if-none-match") ?? undefined,
-  });
+  let result;
+  try {
+    result = await get(fileRecord.storageKey, {
+      access: "private",
+      ifNoneMatch: request.headers.get("if-none-match") ?? undefined,
+    });
+  } catch (error) {
+    // A blob-access failure (e.g. a token/permission error in production) must
+    // not surface as a 500 that breaks <Image>; log safe metadata and 404 so
+    // the UI falls back gracefully.
+    console.error("jury profile-photo blob fetch failed", {
+      fileId,
+      hasStorageKey: true,
+      status:
+        typeof error === "object" && error && "status" in error
+          ? (error as { status?: number }).status
+          : undefined,
+    });
+    return new Response("Not found", { status: 404 });
+  }
 
   if (!result) {
     return new Response("Not found", { status: 404 });

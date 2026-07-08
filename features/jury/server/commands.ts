@@ -18,6 +18,7 @@ import {
 } from "@/features/jury/server/uploads";
 import { readEnv } from "@/lib/env";
 import { prisma } from "@/shared/lib/prisma";
+import { revalidatePublicJuryMembers } from "@/features/jury/server/queries";
 import { syncApplicationOnChange, syncJuryOnChange } from "@/features/google-sheets";
 
 function getAppUrl() {
@@ -664,6 +665,9 @@ export async function deleteJuryApplication(id: string) {
   }
 
   await prisma.juryApplication.delete({ where: { id } });
+
+  // A deleted member must drop off the public /jury listing.
+  revalidatePublicJuryMembers();
 }
 
 export async function approveJuryApplicationWithoutPayment(id: string) {
@@ -696,6 +700,7 @@ export async function approveJuryApplicationWithoutPayment(id: string) {
   ]);
 
   syncJuryOnChange(id);
+  revalidatePublicJuryMembers();
 }
 
 export async function setJuryApplicationStatusDirectly(
@@ -710,6 +715,7 @@ export async function setJuryApplicationStatusDirectly(
   await prisma.juryApplication.update({ where: { id }, data: { status } });
 
   syncJuryOnChange(id);
+  revalidatePublicJuryMembers();
 }
 
 export async function editJuryApplicationFields(
@@ -755,6 +761,8 @@ export async function editJuryApplicationFields(
   });
 
   syncJuryOnChange(id);
+  // Name / title / bio changes are surfaced on the public /jury listing.
+  revalidatePublicJuryMembers();
 }
 
 export async function editParticipantApplicationFields(
