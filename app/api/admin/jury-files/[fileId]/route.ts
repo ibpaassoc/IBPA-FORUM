@@ -27,10 +27,25 @@ export async function GET(
     return new Response("Not found", { status: 404 });
   }
 
-  const result = await get(fileRecord.storageKey, {
-    access: "private",
-    ifNoneMatch: request.headers.get("if-none-match") ?? undefined,
-  });
+  let result;
+  try {
+    result = await get(fileRecord.storageKey, {
+      access: "private",
+      ifNoneMatch: request.headers.get("if-none-match") ?? undefined,
+    });
+  } catch (error) {
+    // Don't let a blob-access error 500 the admin preview; log safe metadata
+    // and return 404 so the editor shows its empty state instead of crashing.
+    console.error("admin jury-file blob fetch failed", {
+      fileId,
+      hasStorageKey: true,
+      status:
+        typeof error === "object" && error && "status" in error
+          ? (error as { status?: number }).status
+          : undefined,
+    });
+    return new Response("Not found", { status: 404 });
+  }
 
   if (!result) {
     return new Response("Not found", { status: 404 });

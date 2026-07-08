@@ -26,6 +26,9 @@ export default function JuryActiveMembers({
   const { t } = useLanguage();
   const sliderRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  // Ids whose photo failed to load (e.g. a transient 403/404 from the private
+  // blob route) — fall back to the initials placeholder instead of a broken img.
+  const [failedPhotoIds, setFailedPhotoIds] = useState<Set<string>>(new Set());
 
   if (juryMembers.length === 0) return null;
 
@@ -96,9 +99,10 @@ export default function JuryActiveMembers({
       >
         {juryMembers.map((member) => {
           const location = [member.city, member.country].filter(Boolean).join(", ");
-          const photoSrc = member.profilePhotoFileId
-            ? `/api/jury/profile-photo/${member.profilePhotoFileId}`
-            : null;
+          const photoSrc =
+            member.profilePhotoFileId && !failedPhotoIds.has(member.id)
+              ? `/api/jury/profile-photo/${member.profilePhotoFileId}`
+              : null;
 
           return (
             <article
@@ -112,6 +116,15 @@ export default function JuryActiveMembers({
                     src={photoSrc}
                     alt={member.fullName}
                     fill
+                    unoptimized
+                    onError={() =>
+                      setFailedPhotoIds((prev) => {
+                        if (prev.has(member.id)) return prev;
+                        const next = new Set(prev);
+                        next.add(member.id);
+                        return next;
+                      })
+                    }
                     className="object-cover transition duration-300 group-hover:scale-[1.02]"
                     sizes="(max-width: 640px) 78vw, 390px"
                   />

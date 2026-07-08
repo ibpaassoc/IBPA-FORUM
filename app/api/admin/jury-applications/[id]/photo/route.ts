@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { replaceJuryProfilePhoto } from "@/features/jury/server/commands";
+import { revalidatePublicJuryMembers } from "@/features/jury/server/queries";
 import type { BlobFileInfo } from "@/features/jury/server/uploads";
 import { getProfilePhotoRejectReason } from "@/features/jury/lib/profile-photo";
 import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
@@ -64,6 +65,11 @@ export async function POST(
   revalidatePath("/admin/jury-applications");
   revalidatePath(`/admin/jury-applications/${id}`);
   revalidatePath(`/admin/jury-applications/${id}/edit`);
+
+  // The public /jury listing caches the profile-photo file id; without this the
+  // swap only appears after the timed cache window (production-only, since dev
+  // does not persist these caches).
+  revalidatePublicJuryMembers();
 
   return NextResponse.json({ ok: true });
 }

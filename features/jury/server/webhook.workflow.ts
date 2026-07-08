@@ -3,6 +3,7 @@ import type Stripe from "stripe";
 import { sendJuryPaymentConfirmedEmail } from "@/features/email/server/jury-email.workflow";
 import { sendPaymentAdminNotificationEmail } from "@/features/email/server/payment-email.workflow";
 import { syncJuryOnChange } from "@/features/google-sheets";
+import { revalidatePublicJuryMembers } from "@/features/jury/server/queries";
 import { prisma } from "@/shared/lib/prisma";
 
 type JuryPaymentEmailPayload = {
@@ -146,6 +147,10 @@ async function handleCheckoutCompleted(event: Stripe.Event): Promise<boolean> {
   }
 
   syncJuryOnChange(applicationId);
+
+  // A newly paid member becomes visible on the public /jury listing — refresh
+  // the cached listing so the "active" section reflects them immediately.
+  revalidatePublicJuryMembers();
 
   if (!emailPayload) {
     return true;
