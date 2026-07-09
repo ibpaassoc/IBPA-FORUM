@@ -72,10 +72,26 @@ export type MembershipValidationResult = {
   source: "api" | "stub";
 };
 
+/**
+ * A file that has already been uploaded to Vercel Blob from the browser.
+ * The applicant flow uploads files directly to Blob before the final submit,
+ * so the POST /api/applications payload only carries these lightweight
+ * references instead of the raw bytes (avoids Vercel's request-body limit).
+ * `fileUrl` holds the private Blob pathname (stored on ApplicationFile.fileUrl).
+ */
+export type ApplicationFileRef = {
+  fieldKey: string;
+  fileName: string;
+  fileUrl: string;
+  mimeType: string;
+  fileSize: number;
+};
+
 export type ApplicationValue =
   | string
   | string[]
   | File[]
+  | ApplicationFileRef[]
   | null
   | undefined;
 

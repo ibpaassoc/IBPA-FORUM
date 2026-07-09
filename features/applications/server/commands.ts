@@ -6,12 +6,31 @@ import {
   extractNominationBlockBValues,
 } from "@/features/applications/server/form-mapping";
 import { getApplicationCategories } from "@/features/applications/server/queries";
-import { uploadApplicationFile, uploadNominationFile } from "@/features/applications/server/uploads";
+import { isApplicationFileRef } from "@/features/applications/lib/file-ref";
 import { createCompetitorCheckoutSession } from "@/features/payments/server/checkout-sessions";
 import { syncApplicationOnChange } from "@/features/google-sheets";
 import { prisma } from "@/shared/lib/prisma";
 import { Prisma } from "@prisma/client";
-import type { ApplicationValues } from "@/features/applications/types/application.types";
+import type {
+  ApplicationFileRef,
+  ApplicationValues,
+  UploadedApplicationFile,
+} from "@/features/applications/types/application.types";
+
+/** Maps an uploaded Blob reference to the ApplicationFile / NominationApplicationFile row shape. */
+function toFileRecord(ref: ApplicationFileRef, fieldKey: string): UploadedApplicationFile {
+  return {
+    fieldKey,
+    fileName: ref.fileName,
+    fileUrl: ref.fileUrl,
+    mimeType: ref.mimeType,
+    fileSize: ref.fileSize,
+  };
+}
+
+function getFileRefs(value: ApplicationValues[string]): ApplicationFileRef[] {
+  return Array.isArray(value) ? value.filter(isApplicationFileRef) : [];
+}
 
 // Tiered pricing in cents: index = nomination count (1–5)
 const MEMBER_PRICES_CENTS = [0, 5000, 10000, 13000, 18000, 20000] as const;
@@ -45,17 +64,15 @@ async function createNominationApplication({
     valueJson?: Prisma.InputJsonValue;
   }> = [];
 
-  const pendingFileUploads: Array<{ fieldKey: string; files: File[] }> = [];
+  const fileRecords: UploadedApplicationFile[] = [];
 
   for (const field of fields) {
     const rawValue = nomValues[field.key];
 
     if (field.type === "file") {
-      const files = Array.isArray(rawValue)
-        ? rawValue.filter((f): f is File => f instanceof File)
-        : [];
-      if (files.length > 0) {
-        pendingFileUploads.push({ fieldKey: field.key, files });
+      // Files were already uploaded to Blob client-side; persist their metadata.
+      for (const ref of getFileRefs(rawValue)) {
+        fileRecords.push(toFileRecord(ref, field.key));
       }
       continue;
     }
@@ -97,25 +114,15 @@ async function createNominationApplication({
     select: { id: true },
   });
 
-  const uploadedFiles = (
-    await Promise.all(
-      pendingFileUploads.flatMap(({ fieldKey, files }) =>
-        files.map((file, index) =>
-          uploadNominationFile(file, applicationId, nominationApplication.id, fieldKey, index)
-        )
-      )
-    )
-  ).filter(Boolean);
-
-  if (answerEntries.length > 0 || uploadedFiles.length > 0) {
+  if (answerEntries.length > 0 || fileRecords.length > 0) {
     await prisma.nominationApplication.update({
       where: { id: nominationApplication.id },
       data: {
         answers: answerEntries.length
           ? { create: answerEntries }
           : undefined,
-        files: uploadedFiles.length
-          ? { create: uploadedFiles }
+        files: fileRecords.length
+          ? { create: fileRecords }
           : undefined,
       },
     });
@@ -164,9 +171,10 @@ export async function saveApplicationSubmission(formData: FormData) {
   const isIbpaMember = formData.get("isIbpaMember") === "true";
   const ibpaMemberNumber = String(formData.get("ibpaMemberNumber") ?? "").trim();
 
-  const licenseFiles = Array.isArray(values.licenseCertification)
-    ? values.licenseCertification.filter((file): file is File => file instanceof File)
-    : [];
+  // License files were uploaded to Blob client-side; we only persist metadata.
+  const licenseFileRecords = getFileRefs(values.licenseCertification).map((ref) =>
+    toFileRecord(ref, "licenseCertification")
+  );
 
   const selectedNominations = validation.selectedAwards.map((item) => ({
     categoryId: item.category.id,
@@ -222,25 +230,6 @@ export async function saveApplicationSubmission(formData: FormData) {
     throw error;
   }
 
-  let uploadedLicenseFiles: Array<NonNullable<Awaited<ReturnType<typeof uploadApplicationFile>>>>;
-
-  try {
-    uploadedLicenseFiles = (
-      await Promise.all(
-        licenseFiles.map((file, index) =>
-          uploadApplicationFile(file, application.id, "licenseCertification", index)
-        )
-      )
-    ).filter(Boolean);
-    console.info("License files uploaded", {
-      applicationId: application.id,
-      fileCount: uploadedLicenseFiles.length,
-    });
-  } catch (error) {
-    console.error("License file upload failed", { applicationId: application.id, error });
-    throw error;
-  }
-
   try {
     const heardAboutOtherText =
       typeof values.heardAboutOther === "string" ? values.heardAboutOther.trim() : "";
@@ -263,7 +252,7 @@ export async function saveApplicationSubmission(formData: FormData) {
       where: { id: application.id },
       data: {
         answers: blockAAnswers.length ? { create: blockAAnswers } : undefined,
-        files: uploadedLicenseFiles.length ? { create: uploadedLicenseFiles } : undefined,
+        files: licenseFileRecords.length ? { create: licenseFileRecords } : undefined,
       },
     });
     console.info("Block A answers/files saved", { applicationId: application.id });
