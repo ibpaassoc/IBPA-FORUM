@@ -999,23 +999,18 @@ const en = {
       items: [
         {
           label: "Applications to the jury panel",
-          title: "Jury applications",
-          date: "June 20 – August 15, 2026",
-        },
-        {
-          label: "Application review",
-          title: "Review period",
-          date: "Until August 20, 2026",
+          title: "Jury Submissions",
+          date: "Jun 1 – Jul 8",
         },
         {
           label: "Evaluation of competition entries",
-          title: "Judging period",
-          date: "August 16 – September 5, 2026",
+          title: "Judging",
+          date: "Aug 16 – Sep 5",
         },
         {
           label: "Final and announcement of results",
-          title: "Results announcement",
-          date: "September 26, 2026",
+          title: "Results",
+          date: "Sep 26",
         },
       ],
     },
@@ -2718,23 +2713,18 @@ const ru: typeof en = {
       items: [
         {
           label: "Подача заявок в судейскую коллегию",
-          title: "Заявки в жюри",
-          date: "20 июня – 15 августа 2026",
-        },
-        {
-          label: "Рассмотрение заявок",
-          title: "Период рассмотрения",
-          date: "До 20 августа 2026",
+          title: "Прием заявок",
+          date: "1 июня – 8 июля",
         },
         {
           label: "Период оценки конкурсных работ",
           title: "Оценка работ",
-          date: "16 августа – 5 сентября 2026",
+          date: "16 авг – 5 сен",
         },
         {
           label: "Финал и оглашение результатов",
-          title: "Оглашение результатов",
-          date: "26 сентября 2026",
+          title: "Награждение",
+          date: "26 сентября",
         },
       ],
     },
@@ -4437,23 +4427,18 @@ const ua: typeof en = {
       items: [
         {
           label: "Подача заявок до суддівської колегії",
-          title: "Заявки до журі",
-          date: "20 червня – 15 серпня 2026",
-        },
-        {
-          label: "Розгляд заявок",
-          title: "Період розгляду",
-          date: "До 20 серпня 2026",
+          title: "Прийом заявок",
+          date: "1 чер – 8 лип ",
         },
         {
           label: "Період оцінювання конкурсних робіт",
           title: "Оцінювання робіт",
-          date: "16 серпня – 5 вересня 2026",
+          date: "16 сер – 5 вер ",
         },
         {
           label: "Фінал і оголошення результатів",
           title: "Оголошення результатів",
-          date: "26 вересня 2026",
+          date: "26 вересня ",
         },
       ],
     },

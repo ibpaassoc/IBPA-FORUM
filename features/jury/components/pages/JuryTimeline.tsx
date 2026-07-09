@@ -65,8 +65,8 @@ export default function JuryTimeline() {
               </div>
             </aside>
 
-            <div className="rounded-[2.2rem] border border-white/70 bg-white/62 p-4 shadow-[0_20px_58px_rgba(114,160,193,0.1)] backdrop-blur-xl md:p-5">
-              <div className="grid gap-3">
+            <div className="rounded-[2.2rem] border border-white/70 bg-white/62 px-4 py-10 shadow-[0_20px_58px_rgba(114,160,193,0.1)] backdrop-blur-xl ">
+              <div className="grid gap-15">
                 {steps.map((step, index) => {
                   const Icon = step.icon;
 
