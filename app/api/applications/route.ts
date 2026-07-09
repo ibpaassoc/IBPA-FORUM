@@ -86,15 +86,35 @@ export async function POST(request: NextRequest) {
       );
     }
     const formData = await request.formData();
+
+    // Files must be uploaded to Vercel Blob first (POST /api/applications/upload)
+    // and referenced by metadata. Raw File objects here would balloon the request
+    // body past Vercel's limit (the 413 this endpoint used to hit), so reject them
+    // with a helpful 400 instead of letting the platform drop the request.
+    const rawFileFields = Array.from(formData.entries())
+      .filter(([, value]) => value instanceof File)
+      .map(([key, value]) => ({
+        key,
+        size: value instanceof File ? value.size : 0,
+        type: value instanceof File ? value.type : "",
+      }));
+
+    if (rawFileFields.length > 0) {
+      console.warn("POST /api/applications rejected raw file payload", {
+        rawFileFields,
+      });
+      return NextResponse.json(
+        {
+          errorCode: "RAW_FILE_REJECTED",
+          message:
+            "Files must be uploaded before submitting. Please reload the application form and try again.",
+        },
+        { status: 400 }
+      );
+    }
+
     console.info("POST /api/applications form data received", {
       keys: Array.from(new Set(Array.from(formData.keys()))),
-      fileFields: Array.from(formData.entries())
-        .filter(([, value]) => value instanceof File)
-        .map(([key, value]) => ({
-          key,
-          size: value instanceof File ? value.size : 0,
-          type: value instanceof File ? value.type : "",
-        })),
     });
 
     const result = await saveApplicationSubmission(formData);

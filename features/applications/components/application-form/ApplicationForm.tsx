@@ -44,6 +44,12 @@ import {
   validateNominationBlockB,
 } from "@/features/applications/schemas/category-field-validation";
 import {
+  sanitizeBlobName,
+  uploadApplicationBlob,
+  validateUploadFile,
+} from "@/features/applications/client/upload-files";
+import {
+  type ApplicationFileRef,
   type ApplicationValues,
   type BlockBValuesByNomination,
   type CategoryOption,
@@ -65,6 +71,7 @@ function HeroPrimaryButtonLayers() {
 }
 
 const NOM_FORM_PREFIX = "__nom__";
+const NOM_BLOB_PREFIX = "__nomblob__";
 
 // Fixed step index where Block B sections begin (one per selected nomination)
 const BLOCK_B_START = 4;
@@ -249,6 +256,9 @@ const formCopy = {
     continue: "Continue",
     submit: "Submit Application",
     submitting: "Submitting...",
+    uploading: "Uploading files...",
+    uploadError:
+      "We couldn't upload your files. Please check your connection and try again.",
     category: "Category",
     nomination: "Nomination",
     firstName: "First Name",
@@ -350,6 +360,9 @@ const formCopy = {
     continue: "Продолжить",
     submit: "Отправить заявку",
     submitting: "Отправка...",
+    uploading: "Загрузка файлов...",
+    uploadError:
+      "Не удалось загрузить файлы. Проверьте подключение и попробуйте снова.",
     category: "Категория",
     nomination: "Номинация",
     firstName: "Имя",
@@ -451,6 +464,9 @@ const formCopy = {
     continue: "Продовжити",
     submit: "Надіслати заявку",
     submitting: "Надсилання...",
+    uploading: "Завантаження файлів...",
+    uploadError:
+      "Не вдалося завантажити файли. Перевірте з'єднання та спробуйте ще раз.",
     category: "Категорія",
     nomination: "Номінація",
     firstName: "Ім'я",
@@ -541,6 +557,7 @@ export default function ApplyForm({
     Record<string, ValidationErrors>
   >({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [submissionState, setSubmissionState] = useState<{
     type: "idle" | "success" | "error";
     message: string;
@@ -965,12 +982,86 @@ export default function ApplyForm({
 
     setErrors({});
     setBlockBErrors({});
+    setSubmissionState({ type: "idle", message: "" });
     setIsSubmitting(true);
 
     try {
+      const uploadSessionId = crypto.randomUUID();
+
+      // 1. Gather every File the applicant attached — Block A license files plus
+      //    any Block B nomination files — so we can upload them before submit.
+      const licenseFiles = (
+        Array.isArray(values.licenseCertification)
+          ? values.licenseCertification
+          : []
+      ).filter((item): item is File => item instanceof File);
+
+      const nominationFiles: Array<{
+        awardId: string;
+        fieldKey: string;
+        file: File;
+      }> = [];
+      for (const [awardId, nomValues] of Object.entries(blockBValues)) {
+        for (const [fieldKey, rawValue] of Object.entries(nomValues)) {
+          if (!Array.isArray(rawValue)) continue;
+          for (const item of rawValue) {
+            if (item instanceof File) {
+              nominationFiles.push({ awardId, fieldKey, file: item });
+            }
+          }
+        }
+      }
+
+      // 2. Client-side guardrails (type + size) before spending upload bandwidth.
+      const allFiles = [
+        ...licenseFiles,
+        ...nominationFiles.map((entry) => entry.file),
+      ];
+      for (const file of allFiles) {
+        const problem = validateUploadFile(file);
+        if (problem) {
+          setSubmissionState({ type: "error", message: problem });
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
+      // 3. Upload files directly to Vercel Blob so the final POST stays small.
+      let licenseRefs: ApplicationFileRef[];
+      let nominationRefs: Array<{ awardId: string; ref: ApplicationFileRef }>;
+      try {
+        setIsUploading(true);
+        [licenseRefs, nominationRefs] = await Promise.all([
+          Promise.all(
+            licenseFiles.map((file, index) =>
+              uploadApplicationBlob(
+                file,
+                `applications/${uploadSessionId}/licenseCertification-${index + 1}-${sanitizeBlobName(file.name)}`,
+                "licenseCertification",
+              ),
+            ),
+          ),
+          Promise.all(
+            nominationFiles.map(({ awardId, fieldKey, file }, index) =>
+              uploadApplicationBlob(
+                file,
+                `applications/${uploadSessionId}/nominations/${awardId}/${fieldKey}-${index + 1}-${sanitizeBlobName(file.name)}`,
+                fieldKey,
+              ).then((ref) => ({ awardId, ref })),
+            ),
+          ),
+        ]);
+      } catch {
+        setSubmissionState({ type: "error", message: copy.uploadError });
+        return;
+      } finally {
+        setIsUploading(false);
+      }
+
+      // 4. Build a text-only FormData carrying blob references — no raw files.
       const formData = new FormData();
 
-      // Block A values
+      // Block A values (skip File objects — they travel as blob references)
       for (const [key, rawValue] of Object.entries(values)) {
         if (!rawValue) {
           continue;
@@ -978,7 +1069,8 @@ export default function ApplyForm({
 
         if (Array.isArray(rawValue)) {
           for (const item of rawValue) {
-            formData.append(key, item);
+            if (item instanceof File) continue;
+            formData.append(key, String(item));
           }
           continue;
         }
@@ -986,19 +1078,31 @@ export default function ApplyForm({
         formData.append(key, String(rawValue));
       }
 
-      // Per-nomination Block B values (encoded as __nom__<awardId>__<fieldKey>)
+      // Per-nomination Block B text values (encoded as __nom__<awardId>__<fieldKey>)
       for (const [awardId, nomValues] of Object.entries(blockBValues)) {
         for (const [fieldKey, rawValue] of Object.entries(nomValues)) {
           if (!rawValue) continue;
           const formKey = `${NOM_FORM_PREFIX}${awardId}__${fieldKey}`;
           if (Array.isArray(rawValue)) {
             for (const item of rawValue) {
-              formData.append(formKey, item);
+              if (item instanceof File) continue;
+              formData.append(formKey, String(item));
             }
           } else {
             formData.append(formKey, String(rawValue));
           }
         }
+      }
+
+      // Uploaded-file references (metadata only)
+      for (const ref of licenseRefs) {
+        formData.append("licenseCertificationBlob", JSON.stringify(ref));
+      }
+      for (const { awardId, ref } of nominationRefs) {
+        formData.append(
+          `${NOM_BLOB_PREFIX}${awardId}__${ref.fieldKey}`,
+          JSON.stringify(ref),
+        );
       }
 
       // Membership — only send "true" if cert was verified
@@ -1784,12 +1888,16 @@ export default function ApplyForm({
           ) : (
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || isUploading}
               className={HERO_PRIMARY_BUTTON_CLASS}
             >
               <HeroPrimaryButtonLayers />
               <span className="relative z-10">
-                {isSubmitting ? copy.submitting : copy.submit}
+                {isUploading
+                  ? copy.uploading
+                  : isSubmitting
+                    ? copy.submitting
+                    : copy.submit}
               </span>
               <ChevronRight
                 size={16}

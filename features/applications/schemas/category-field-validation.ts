@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
+import { isApplicationFileRef } from "@/features/applications/lib/file-ref";
 import { baseApplicationSchema } from "@/features/applications/schemas/application.schema";
 import type {
   ApplicationValues,
@@ -47,11 +48,27 @@ function getStringArrayValue(values: ApplicationValues, key: string) {
     : [];
 }
 
-function getFileArrayValue(values: ApplicationValues, key: string) {
+// Normalizes attached files to a `{ type, size }` shape so validation works
+// identically for raw File objects (client) and uploaded Blob references
+// (server, where files are already in Blob and only metadata is present).
+function getFileArrayValue(
+  values: ApplicationValues,
+  key: string
+): Array<{ type: string; size: number }> {
   const value = values[key];
-  return Array.isArray(value)
-    ? value.filter((item): item is File => item instanceof File)
-    : [];
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.flatMap((item) => {
+    if (item instanceof File) {
+      return [{ type: item.type, size: item.size }];
+    }
+    if (isApplicationFileRef(item)) {
+      return [{ type: item.mimeType, size: item.fileSize }];
+    }
+    return [];
+  });
 }
 
 function getUniqueCategoryFields(categories: CategoryOption[]) {
