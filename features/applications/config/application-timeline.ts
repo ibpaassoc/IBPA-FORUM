@@ -1,7 +1,7 @@
 export const applicationTimeline = {
   deadlineLabel: "July 31, 2026",
   judgingLabel: "August 5-20, 2026",
-  ceremonyLabel: "September 4-5, 2026",
+  ceremonyLabel: "September 26, 2026",
   membershipMinimum: "Trainer / Coach",
   feeLabel: "$50 per category",
 };

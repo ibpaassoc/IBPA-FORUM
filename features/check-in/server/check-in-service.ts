@@ -2,12 +2,15 @@ import "server-only";
 import { prisma } from "@/shared/lib/prisma";
 import type { Application, JuryApplication, Ticket } from "@prisma/client";
 import { syncCheckInOnChange } from "@/features/google-sheets";
+import { adminT } from "@/lib/i18n/admin";
 import { parseScanCode, buildScanPayload } from "./scan-code";
+import { scanModeScope, ticketAccessTypes } from "../scan-mode";
 import type {
   CheckInScope,
   CheckInScopeState,
   NormalizedTicket,
   PaymentStatusValue,
+  ScanMode,
   TicketKind,
 } from "../types";
 
@@ -22,11 +25,24 @@ export type CheckInError =
   | { ok: false; code: "NOT_FOUND"; status: 404; message: string }
   | { ok: false; code: "NOT_PAID"; status: 422; message: string }
   | { ok: false; code: "ALREADY_CHECKED_IN"; status: 409; message: string; checkedInAt: string }
+  | { ok: false; code: "MODE_MISMATCH"; status: 422; message: string }
   | { ok: false; code: "BAD_SCOPE"; status: 400; message: string };
 
 export type ResolveResult =
   | { ok: true; ticket: NormalizedTicket }
-  | Extract<CheckInError, { code: "INVALID_CODE" | "NOT_FOUND" }>;
+  | Extract<CheckInError, { code: "INVALID_CODE" | "NOT_FOUND" | "MODE_MISMATCH" }>;
+
+/** Clear, mode-specific rejection message ("Билет не действует для …"). */
+function modeMismatchError(
+  mode: ScanMode,
+): Extract<CheckInError, { code: "MODE_MISMATCH" }> {
+  return {
+    ok: false,
+    code: "MODE_MISMATCH",
+    status: 422,
+    message: adminT.scanner.modeMismatch[mode] ?? adminT.scanner.checkInFailed,
+  };
+}
 
 export type CheckInResult =
   | { ok: true; ticket: NormalizedTicket }
@@ -66,6 +82,7 @@ function normalizeTicket(ticket: Ticket): NormalizedTicket {
     paymentStatus: ticketEligible(ticket.status) ? "PAID" : "PENDING",
     checkInStatus: checkedIn ? "CHECKED_IN" : "NOT_CHECKED_IN",
     scopes,
+    accessTypes: ticketAccessTypes(ticket.type, ticket.galaDinner),
     eligibleForCheckIn: ticketEligible(ticket.status),
     sourceRecordId: ticket.id,
     code: buildScanPayload("TICKET", ticket.secureToken),
@@ -90,6 +107,7 @@ function normalizeApplication(app: Application): NormalizedTicket {
         checkedInAt: app.checkedInAt?.toISOString() ?? null,
       },
     ],
+    accessTypes: [],
     eligibleForCheckIn: paid,
     sourceRecordId: app.id,
     code: buildScanPayload("PARTICIPANT", app.id),
@@ -114,6 +132,7 @@ function normalizeJury(jury: JuryApplication): NormalizedTicket {
         checkedInAt: jury.checkedInAt?.toISOString() ?? null,
       },
     ],
+    accessTypes: [],
     eligibleForCheckIn: paid,
     sourceRecordId: jury.id,
     code: buildScanPayload("JURY", jury.id),
@@ -146,8 +165,16 @@ async function findByKind(
  * Resolve a scanned QR string to a normalized ticket, searching across every
  * ticket-like source. When the kind is unknown (bare token) each source is
  * tried in turn.
+ *
+ * When a scanner `mode` is supplied it gates forum tickets: a resolved TICKET
+ * that does not qualify for the selected mode is rejected with a clear,
+ * mode-specific message so the ticket is never marked checked in. Participant
+ * and jury records are not day-typed, so the mode does not apply to them.
  */
-export async function resolveScan(rawCode: unknown): Promise<ResolveResult> {
+export async function resolveScan(
+  rawCode: unknown,
+  mode?: ScanMode,
+): Promise<ResolveResult> {
   const parsed = parseScanCode(rawCode);
   if (!parsed) {
     return {
@@ -158,22 +185,30 @@ export async function resolveScan(rawCode: unknown): Promise<ResolveResult> {
     };
   }
 
+  let resolved: NormalizedTicket | null = null;
   if (parsed.kind) {
-    const ticket = await findByKind(parsed.kind, parsed.token);
-    if (ticket) return { ok: true, ticket };
+    resolved = await findByKind(parsed.kind, parsed.token);
   } else {
     for (const kind of ["TICKET", "PARTICIPANT", "JURY"] as const) {
-      const ticket = await findByKind(kind, parsed.token);
-      if (ticket) return { ok: true, ticket };
+      resolved = await findByKind(kind, parsed.token);
+      if (resolved) break;
     }
   }
 
-  return {
-    ok: false,
-    code: "NOT_FOUND",
-    status: 404,
-    message: "Билет с таким кодом не найден.",
-  };
+  if (!resolved) {
+    return {
+      ok: false,
+      code: "NOT_FOUND",
+      status: 404,
+      message: "Билет с таким кодом не найден.",
+    };
+  }
+
+  if (mode && resolved.ticketKind === "TICKET" && !resolved.accessTypes.includes(mode)) {
+    return modeMismatchError(mode);
+  }
+
+  return { ok: true, ticket: resolved };
 }
 
 // ─── Check-in ────────────────────────────────────────────────────────────────
@@ -181,6 +216,7 @@ export async function resolveScan(rawCode: unknown): Promise<ResolveResult> {
 async function checkInTicketRecord(
   recordId: string,
   scope: CheckInScope,
+  mode?: ScanMode,
 ): Promise<CheckInResult> {
   const ticket = await prisma.ticket.findUnique({ where: { id: recordId } });
   if (!ticket) {
@@ -193,6 +229,15 @@ async function checkInTicketRecord(
       status: 422,
       message: "Билет не оплачен — чек-ин невозможен.",
     };
+  }
+  // When a scanner mode is selected it is authoritative: the ticket must
+  // qualify for it, and the effective scope is derived from it (defence in
+  // depth — the verify step already rejected mismatches on the client).
+  if (mode) {
+    if (!ticketAccessTypes(ticket.type, ticket.galaDinner).includes(mode)) {
+      return modeMismatchError(mode);
+    }
+    scope = scanModeScope(mode);
   }
   if (scope !== "FORUM" && scope !== "GALA") {
     return { ok: false, code: "BAD_SCOPE", status: 400, message: "Недопустимый тип чек-ина для этого билета." };
@@ -300,6 +345,7 @@ export async function performCheckIn(input: {
   ticketKind: TicketKind;
   sourceRecordId: string;
   scope: CheckInScope;
+  mode?: ScanMode;
 }): Promise<CheckInResult> {
   const result = await runCheckIn(input);
 
@@ -315,10 +361,11 @@ function runCheckIn(input: {
   ticketKind: TicketKind;
   sourceRecordId: string;
   scope: CheckInScope;
+  mode?: ScanMode;
 }): Promise<CheckInResult> {
   switch (input.ticketKind) {
     case "TICKET":
-      return checkInTicketRecord(input.sourceRecordId, input.scope);
+      return checkInTicketRecord(input.sourceRecordId, input.scope, input.mode);
     case "PARTICIPANT":
       return checkInApplicationRecord(input.sourceRecordId);
     case "JURY":

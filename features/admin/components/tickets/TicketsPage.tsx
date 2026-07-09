@@ -17,6 +17,7 @@ import {
 } from "@/shared/components/admin/DashboardUI";
 import { instagramProfileUrl } from "@/features/tickets/lib/instagram";
 import { adminT } from "@/lib/i18n/admin";
+import { ticketAccessTypes, scanModeScope } from "@/features/check-in/scan-mode";
 import UnifiedScanner from "@/features/check-in/components/UnifiedScanner";
 
 type TicketPayment = {
@@ -84,19 +85,37 @@ function DetailItem({ label, value }: { label: string; value: React.ReactNode })
   );
 }
 
+function AccessCheckIn({ ticket }: { ticket: TicketRecord }) {
+  const accessTypes = ticketAccessTypes(ticket.type, ticket.galaDinner);
+  if (accessTypes.length === 0) {
+    return <span className="text-[var(--color-ink-muted)]">—</span>;
+  }
+  return (
+    <div className="flex flex-col gap-1.5">
+      {accessTypes.map((mode) => {
+        const checkedAt =
+          scanModeScope(mode) === "GALA" ? ticket.galaCheckInAt : ticket.forumCheckInAt;
+        return (
+          <div key={mode} className="flex items-center justify-between gap-2">
+            <span className="font-medium text-[var(--color-ink)]">
+              {adminT.scanner.modes[mode]}
+            </span>
+            {checkedAt ? (
+              <DashboardBadge tone="green">{formatDate(checkedAt)}</DashboardBadge>
+            ) : (
+              <span className="text-[0.78rem] text-[var(--color-ink-muted)]">
+                {adminT.tickets.notCheckedIn}
+              </span>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function TicketDetailPanel({ ticket }: { ticket: TicketRecord }) {
   const payment = ticket.payments[0] ?? null;
-  const checkInValue =
-    ticket.forumCheckInAt || ticket.galaCheckInAt
-      ? [
-          ticket.forumCheckInAt ? `${adminT.tickets.forum} · ${formatDate(ticket.forumCheckInAt)}` : null,
-          ticket.galaCheckInAt ? `${adminT.tickets.gala} · ${formatDate(ticket.galaCheckInAt)}` : null,
-        ]
-          .filter(Boolean)
-          .join("  ·  ")
-      : ticket.status.startsWith("CHECKED")
-        ? formatDate(ticket.lastCheckIn)
-        : adminT.tickets.notCheckedIn;
 
   return (
     <div className="grid gap-2.5 px-4 pb-4 pt-1 sm:grid-cols-2 lg:px-5">
@@ -143,7 +162,9 @@ function TicketDetailPanel({ ticket }: { ticket: TicketRecord }) {
       <DetailItem label={adminT.tickets.paymentStatus} value={ticketStatusBadge(ticket.status)} />
       <DetailItem label={adminT.tickets.paymentTime} value={ticket.paidAt ? formatDate(ticket.paidAt) : null} />
       <DetailItem label={adminT.tickets.created} value={formatDate(ticket.createdAt)} />
-      <DetailItem label={adminT.tickets.checkIn} value={checkInValue} />
+      <div className="sm:col-span-2">
+        <DetailItem label={adminT.tickets.checkIn} value={<AccessCheckIn ticket={ticket} />} />
+      </div>
       <DetailItem label={adminT.tickets.membership} value={ticket.isIbpaMember ? adminT.tickets.ibpaMember : adminT.tickets.standard} />
     </div>
   );

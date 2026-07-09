@@ -104,7 +104,7 @@ const en = {
 
       registration: {
         title: "Registration Period",
-        date: "20 June – 15 August 2026",
+        date: "1 June – 8 July 2026",
         description:
           "Applications are accepted from June 20 through August 15, 2026."
       },
@@ -134,8 +134,8 @@ const en = {
 
       registrationInfo: {
         eyebrow: "Registration Period",
-        value: "June 20 – August 15",
-        text: "Applications are accepted from June 20 through August 15, 2026 inclusive.",
+        value: "1 June – 8 July",
+        text: "Applications are accepted from June 1 through July 8, 2026 inclusive.",
       },
 
       feeInfo: {
@@ -700,7 +700,7 @@ const en = {
         },
         {
           number: "06",
-          title: "Submit before August 15, 2026",
+          title: "Submit before July 8, 2026",
         },
       ],
 
@@ -854,7 +854,7 @@ const en = {
         },
         registrationCloses: {
           label: "Registration closes",
-          date: "Aug 15",
+          date: "8 July",
           sub: "2026",
         },
         awardCeremony: {
@@ -936,7 +936,7 @@ const en = {
         {
           question: "When does the application period close?",
           answer:
-            "Applications are open from June 20 to August 15, 2026, inclusive.",
+            "Applications are open from June 1 to July 8, 2026, inclusive.",
         },
         {
           question: "When will the results be announced?",
@@ -999,23 +999,18 @@ const en = {
       items: [
         {
           label: "Applications to the jury panel",
-          title: "Jury applications",
-          date: "June 20 – August 15, 2026",
-        },
-        {
-          label: "Application review",
-          title: "Review period",
-          date: "Until August 20, 2026",
+          title: "Jury Submissions",
+          date: "Jun 1 – Jul 8",
         },
         {
           label: "Evaluation of competition entries",
-          title: "Judging period",
-          date: "August 16 – September 5, 2026",
+          title: "Judging",
+          date: "Aug 16 – Sep 5",
         },
         {
           label: "Final and announcement of results",
-          title: "Results announcement",
-          date: "September 26, 2026",
+          title: "Results",
+          date: "Sep 26",
         },
       ],
     },
@@ -1336,7 +1331,7 @@ const en = {
       timelineTitle: "Designed for clarity at each award stage",
       timelineDescription: "Visual emphasis across nomination, review, and award presentation.",
       appWindow: "Application window",
-      appWindowText: "Submit your nominations from June 20 to August 15, 2026.",
+      appWindowText: "Submit your nominations from June 1 to July 8, 2026.",
       scorePeriod: "Panel scoring period",
       scorePeriodText: "Judges evaluate entries from August 16 to September 5, 2026.",
       reveal: "Grand reveal",
@@ -1819,9 +1814,9 @@ const ru: typeof en = {
 
       registration: {
         title: "Период регистрации",
-        date: "20 июня – 15 августа 2026",
+        date: "1 июня – 8 июля 2026",
         description:
-          "Приём заявок осуществляется с 20 июня по 15 августа 2026 года включительно."
+          "Приём заявок осуществляется с 1 июня по 8 июля 2026 года включительно."
       },
 
       tabs: {
@@ -1849,8 +1844,8 @@ const ru: typeof en = {
 
       registrationInfo: {
         eyebrow: "Период регистрации",
-        value: "20 июня – 15 августа 2026",
-        text: "Приём заявок на участие осуществляется с 20 июня по 15 августа 2026 года включительно.",
+        value: "1 июня – 8 июля 2026",
+        text: "Приём заявок на участие осуществляется с 1 июня по 8 июля 2026 года включительно.",
       },
 
       feeInfo: {
@@ -2419,7 +2414,7 @@ const ru: typeof en = {
         },
         {
           number: "06",
-          title: "Приём заявок до 15 августа 2026 года",
+          title: "Приём заявок до 8 июля 2026 года",
         },
       ],
 
@@ -2568,18 +2563,18 @@ const ru: typeof en = {
       timeline: {
         applicationsOpen: {
           label: "Прием заявок открыт",
-          date: "20 июня",
+          date: "1 июня",
           sub: "2026",
         },
         registrationCloses: {
           label: "Регистрация закрывается",
-          date: "15 августа",
+          date: "8 июля",
           sub: "2026",
         },
         awardCeremony: {
           label: "Церемония награждения",
           date: "26 сентября",
-          sub: "Beauty Business Forum",
+          sub: "IBPA Beauty Awards",
         },
       },
       jury: {
@@ -2655,7 +2650,7 @@ const ru: typeof en = {
         {
           question: "Когда заканчивается приём заявок?",
           answer:
-            "Приём заявок открыт с 20 июня по 15 августа 2026 года включительно.",
+            "Приём заявок открыт с 1 июня по 8 июля 2026 года включительно.",
         },
         {
           question: "Когда будут объявлены результаты?",
@@ -2718,23 +2713,18 @@ const ru: typeof en = {
       items: [
         {
           label: "Подача заявок в судейскую коллегию",
-          title: "Заявки в жюри",
-          date: "20 июня – 15 августа 2026",
-        },
-        {
-          label: "Рассмотрение заявок",
-          title: "Период рассмотрения",
-          date: "До 20 августа 2026",
+          title: "Прием заявок",
+          date: "1 июня – 8 июля",
         },
         {
           label: "Период оценки конкурсных работ",
           title: "Оценка работ",
-          date: "16 августа – 5 сентября 2026",
+          date: "16 авг – 5 сен",
         },
         {
           label: "Финал и оглашение результатов",
-          title: "Оглашение результатов",
-          date: "26 сентября 2026",
+          title: "Награждение",
+          date: "26 сентября",
         },
       ],
     },
@@ -3056,7 +3046,7 @@ const ru: typeof en = {
       timelineTitle: "Понятная логика на каждом этапе премии",
       timelineDescription: "Акцент на номинации, оценивании и финальной презентации премии.",
       appWindow: "Период подачи заявок",
-      appWindowText: "Подавайте номинации с 20 июня по 15 августа 2026 года.",
+      appWindowText: "Подавайте номинации с 1 июня по 8 июля 2026 года.",
       scorePeriod: "Период оценивания",
       scorePeriodText: "Жюри оценивает работы с 16 августа по 5 сентября 2026 года.",
       reveal: "Финальное объявление",
@@ -3539,9 +3529,9 @@ const ua: typeof en = {
 
       registration: {
         title: "Період реєстрації",
-        date: "20 червня – 15 серпня 2026",
+        date: "1 червня – 8 липня 2026",
         description:
-          "Прийом заявок триває з 20 червня до 15 серпня 2026 року включно."
+          "Прийом заявок триває з 1 червня до 8 липня 2026 року включно."
       },
 
       tabs: {
@@ -3569,8 +3559,8 @@ const ua: typeof en = {
 
       registrationInfo: {
         eyebrow: "Період реєстрації",
-        value: "20 червня – 15 серпня 2026",
-        text: "Прийом заявок на участь здійснюється з 20 червня до 15 серпня 2026 року включно.",
+        value: "1 червня – 8 липня 2026",
+        text: "Прийом заявок на участь здійснюється з 1 червня до 8 липня 2026 року включно.",
       },
 
       feeInfo: {
@@ -4138,7 +4128,7 @@ const ua: typeof en = {
         },
         {
           number: "06",
-          title: "Подайте заявку до 15 серпня 2026 року",
+          title: "Подайте заявку до 8 липня 2026 року",
         },
       ],
 
@@ -4292,7 +4282,7 @@ const ua: typeof en = {
         },
         registrationCloses: {
           label: "Реєстрація завершується",
-          date: "15 серпня",
+          date: "8 липня",
           sub: "2026",
         },
         awardCeremony: {
@@ -4374,7 +4364,7 @@ const ua: typeof en = {
         {
           question: "Коли завершується прийом заявок?",
           answer:
-            "Прийом заявок відкритий з 20 червня по 15 серпня 2026 року включно.",
+            "Прийом заявок відкритий з 1 червня по 8 липня 2026 року включно.",
         },
         {
           question: "Коли будуть оголошені результати?",
@@ -4437,23 +4427,18 @@ const ua: typeof en = {
       items: [
         {
           label: "Подача заявок до суддівської колегії",
-          title: "Заявки до журі",
-          date: "20 червня – 15 серпня 2026",
-        },
-        {
-          label: "Розгляд заявок",
-          title: "Період розгляду",
-          date: "До 20 серпня 2026",
+          title: "Прийом заявок",
+          date: "1 чер – 8 лип ",
         },
         {
           label: "Період оцінювання конкурсних робіт",
           title: "Оцінювання робіт",
-          date: "16 серпня – 5 вересня 2026",
+          date: "16 сер – 5 вер ",
         },
         {
           label: "Фінал і оголошення результатів",
           title: "Оголошення результатів",
-          date: "26 вересня 2026",
+          date: "26 вересня ",
         },
       ],
     },
@@ -4776,7 +4761,7 @@ const ua: typeof en = {
       timelineTitle: "Зрозуміла логіка на кожному етапі премії",
       timelineDescription: "Акцент на номінації, оцінюванні та фінальній презентації премії.",
       appWindow: "Період подання заявок",
-      appWindowText: "Подавайте номінації з 20 червня по 15 серпня 2026 року.",
+      appWindowText: "Подавайте номінації з 1 червня по 8 липня 2026 року.",
       scorePeriod: "Період оцінювання",
       scorePeriodText: "Журі оцінює роботи з 16 серпня по 5 вересня 2026 року.",
       reveal: "Фінальне оголошення",

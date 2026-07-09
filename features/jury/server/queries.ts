@@ -1,5 +1,6 @@
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { prisma } from "@/shared/lib/prisma";
+import { resolveJuryPhotoSrc } from "@/features/jury/lib/profile-photo";
 
 // Cache tag shared by the public jury listing and the mutations that change it.
 // Any write that alters who appears on /jury (or their photo) must invalidate it.
@@ -41,22 +42,26 @@ async function readPublicJuryMembersFromDb() {
           },
           select: {
             id: true,
+            storageKey: true,
           },
           take: 1,
         },
       },
     });
 
-    return members.map((member) => ({
-      id: member.id,
-      fullName: member.fullName,
-      professionalTitle: member.professionalTitle,
-      city: member.city,
-      country: member.country,
-      expertise: member.expertiseAreas,
-      bio: member.professionalBio,
-      profilePhotoFileId: member.files[0]?.id ?? null,
-    }));
+    return members.map((member) => {
+      const photo = member.files[0];
+      return {
+        id: member.id,
+        fullName: member.fullName,
+        professionalTitle: member.professionalTitle,
+        city: member.city,
+        country: member.country,
+        expertise: member.expertiseAreas,
+        bio: member.professionalBio,
+        profilePhotoSrc: resolveJuryPhotoSrc(photo?.id, photo?.storageKey),
+      };
+    });
   } catch (error) {
     console.warn("Failed to load public jury members.", error);
     return [];

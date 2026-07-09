@@ -373,6 +373,18 @@ export const adminT = {
     kindForumGala: "Форум / Гала",
     kindParticipant: "Участник",
     kindJury: "Жюри",
+    modeSelectLabel: "Режим сканирования",
+    modes: {
+      one_day: "1 день",
+      two_day: "2 дня",
+      gala_dinner: "Гала-ужин",
+    } as Record<string, string>,
+    // Показывается, когда отсканированный билет не подходит под выбранный режим.
+    modeMismatch: {
+      one_day: "Этот билет не действует для входа на 1 день.",
+      two_day: "Этот билет не действует для входа на 2 дня.",
+      gala_dinner: "Этот билет не действует для гала-ужина.",
+    } as Record<string, string>,
     idleTitle: "Сканируйте любой билет IBPA",
     idleText: "Билеты форума, гала-ужина, участников и жюри распознаются автоматически.",
     startCamera: "Включить камеру",

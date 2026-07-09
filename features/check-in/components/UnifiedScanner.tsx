@@ -5,14 +5,17 @@ import type { ReactNode } from "react";
 import jsQR from "jsqr";
 import {
   AlertTriangle,
+  CalendarDays,
   Camera,
   CheckCircle2,
   Keyboard,
   RefreshCw,
   ScanLine,
+  Sun,
   Ticket,
   UserCheck,
   Users,
+  UtensilsCrossed,
   XCircle,
 } from "lucide-react";
 import { adminT } from "@/lib/i18n/admin";
@@ -22,10 +25,13 @@ import {
   DashboardSecondaryBtn,
   dashboardInputClass,
 } from "@/shared/components/admin/DashboardUI";
+import { scanModeScope } from "../scan-mode";
+import { SCAN_MODES } from "../types";
 import type {
   CheckInScope,
   CheckInScopeState,
   NormalizedTicket,
+  ScanMode,
   TicketKind,
 } from "../types";
 
@@ -41,6 +47,12 @@ const KIND_META: Record<TicketKind, { label: string; icon: typeof Ticket }> = {
   TICKET: { label: adminT.scanner.kindForumGala, icon: Ticket },
   PARTICIPANT: { label: adminT.scanner.kindParticipant, icon: UserCheck },
   JURY: { label: adminT.scanner.kindJury, icon: Users },
+};
+
+const MODE_META: Record<ScanMode, { label: string; icon: typeof Ticket }> = {
+  one_day: { label: adminT.scanner.modes.one_day, icon: Sun },
+  two_day: { label: adminT.scanner.modes.two_day, icon: CalendarDays },
+  gala_dinner: { label: adminT.scanner.modes.gala_dinner, icon: UtensilsCrossed },
 };
 
 function formatDateTime(value: string | null) {
@@ -70,6 +82,13 @@ export default function UnifiedScanner({
   const [state, setState] = useState<ScanState>({ phase: "idle" });
   const [manualCode, setManualCode] = useState("");
   const [busyScope, setBusyScope] = useState<CheckInScope | null>(null);
+  // Selected access mode; set once at the entrance and kept across scans.
+  const [mode, setMode] = useState<ScanMode>("one_day");
+  // Latest mode for the scan loop / async callbacks without re-creating them.
+  const modeRef = useRef<ScanMode>(mode);
+  useEffect(() => {
+    modeRef.current = mode;
+  }, [mode]);
 
   const stopCamera = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -83,7 +102,7 @@ export default function UnifiedScanner({
       const res = await fetch("/api/admin/check-in/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code }),
+        body: JSON.stringify({ code, mode: modeRef.current }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -197,6 +216,9 @@ export default function UnifiedScanner({
           ticketKind: ticket.ticketKind,
           sourceRecordId: ticket.sourceRecordId,
           scope,
+          // Forum tickets carry the selected mode so the server re-validates
+          // and records the correct scope; participant/jury are not gated.
+          ...(ticket.ticketKind === "TICKET" ? { mode } : {}),
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -238,6 +260,8 @@ export default function UnifiedScanner({
 
   return (
     <div className="mx-auto w-full max-w-md">
+      <ModeSelector mode={mode} onChange={setMode} />
+
       {state.phase === "idle" && (
         <div className="space-y-4">
           <div className="rounded-[24px] border border-dashed border-[rgba(114,160,193,0.3)] bg-white/62 p-8 text-center backdrop-blur-xl">
@@ -326,6 +350,7 @@ export default function UnifiedScanner({
       {state.phase === "result" && (
         <ResultView
           ticket={state.ticket}
+          mode={mode}
           notice={state.notice}
           busyScope={busyScope}
           onCheckIn={confirmCheckIn}
@@ -350,12 +375,14 @@ export default function UnifiedScanner({
 
 function ResultView({
   ticket,
+  mode,
   notice,
   busyScope,
   onCheckIn,
   onReset,
 }: {
   ticket: NormalizedTicket;
+  mode: ScanMode;
   notice?: string;
   busyScope: CheckInScope | null;
   onCheckIn: (ticket: NormalizedTicket, scope: CheckInScope) => void;
@@ -363,6 +390,14 @@ function ResultView({
 }) {
   const KindIcon = KIND_META[ticket.ticketKind].icon;
   const justChecked = notice === adminT.scanner.checkedInNotice;
+
+  // Forum tickets are gated by the selected mode, so only surface the check-in
+  // action for that mode's scope. Participant/jury records aren't day-typed —
+  // show their single attendance scope unchanged.
+  const actionableScopes =
+    ticket.ticketKind === "TICKET"
+      ? ticket.scopes.filter((s) => s.scope === scanModeScope(mode))
+      : ticket.scopes;
 
   return (
     <div className="space-y-4">
@@ -413,7 +448,7 @@ function ResultView({
         </div>
       ) : (
         <div className="space-y-2.5">
-          {ticket.scopes.map((scope) => (
+          {actionableScopes.map((scope) => (
             <ScopeRow
               key={scope.scope}
               scope={scope}
@@ -462,6 +497,50 @@ function ScopeRow({
         {busy ? <RefreshCw size={15} className="animate-spin" /> : <CheckCircle2 size={15} />}
         {adminT.scanner.checkInButton}
       </DashboardPrimaryBtn>
+    </div>
+  );
+}
+
+function ModeSelector({
+  mode,
+  onChange,
+}: {
+  mode: ScanMode;
+  onChange: (mode: ScanMode) => void;
+}) {
+  return (
+    <div className="mb-5">
+      <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-blue)]">
+        {adminT.scanner.modeSelectLabel}
+      </p>
+      <div
+        role="radiogroup"
+        aria-label={adminT.scanner.modeSelectLabel}
+        className="grid grid-cols-3 gap-2 rounded-[20px] border border-[rgba(114,160,193,0.24)] bg-white/62 p-1.5 backdrop-blur-xl"
+      >
+        {SCAN_MODES.map((value) => {
+          const meta = MODE_META[value];
+          const Icon = meta.icon;
+          const active = value === mode;
+          return (
+            <button
+              key={value}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              onClick={() => onChange(value)}
+              className={`flex min-h-[68px] flex-col items-center justify-center gap-1.5 rounded-[15px] px-2 py-2.5 text-center transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(114,160,193,0.55)] ${
+                active
+                  ? "bg-[var(--color-blue)] text-white shadow-[0_10px_24px_rgba(114,160,193,0.35)]"
+                  : "text-[var(--color-ink-soft)] hover:bg-[var(--color-blue-wash)]/70 active:bg-[var(--color-blue-wash)]"
+              }`}
+            >
+              <Icon size={20} strokeWidth={active ? 2 : 1.6} />
+              <span className="text-[0.78rem] font-semibold leading-tight">{meta.label}</span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

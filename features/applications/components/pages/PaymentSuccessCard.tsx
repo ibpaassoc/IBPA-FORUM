@@ -25,7 +25,7 @@ const copy = {
       {
         icon: Trophy,
         title: "Award ceremony",
-        body: "Finalists and winners are announced at the IBPA Ceremony on September 4–5, 2026.",
+        body: "Finalists and winners are announced at the сeremony on September 26, 2026.",
       },
     ],
     cta: "Back to Home",
@@ -50,7 +50,7 @@ const copy = {
       {
         icon: Trophy,
         title: "Церемония награждения",
-        body: "Финалисты и победители объявляются на церемонии IBPA 4–5 сентября 2026 года.",
+        body: "Финалисты и победители объявляются на церемонии 26 сентября 2026 года.",
       },
     ],
     cta: "На главную",
@@ -75,7 +75,7 @@ const copy = {
       {
         icon: Trophy,
         title: "Церемонія нагородження",
-        body: "Фіналістів і переможців оголошують на церемонії IBPA 4–5 вересня 2026 року.",
+        body: "Фіналістів і переможців оголошують на церемонії 26 вересня 2026 року.",
       },
     ],
     cta: "На головну",

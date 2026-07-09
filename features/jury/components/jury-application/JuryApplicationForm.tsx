@@ -377,12 +377,15 @@ export default function JuryApplicationForm() {
 
       const [profilePhotoResult, ...certResults] = await Promise.all([
         profilePhotoFile
-          ? upload(
+          ? // Profile photo is published on the public jury page, so it is stored
+            // as a public blob and its URL is served directly (no proxy).
+            upload(
               `jury/${uploadSessionId}/profilePhoto-1-${sanitizeBlobName(profilePhotoFile.name)}`,
               profilePhotoFile,
-              { access: "private", handleUploadUrl: "/api/jury/upload", multipart: true }
+              { access: "public", handleUploadUrl: "/api/jury/upload", multipart: true }
             )
           : null,
+        // Certifications stay private and are only viewable by admins.
         ...certFiles.map((file, i) =>
           upload(
             `jury/${uploadSessionId}/certifications-${i + 1}-${sanitizeBlobName(file.name)}`,
@@ -413,7 +416,8 @@ export default function JuryApplicationForm() {
             fileName: profilePhotoFile.name,
             mimeType: profilePhotoFile.type || "image/jpeg",
             fileSize: profilePhotoFile.size,
-            storageKey: profilePhotoResult.pathname,
+            // Public blob URL, rendered directly on the jury page.
+            storageKey: profilePhotoResult.url,
           })
         );
       }

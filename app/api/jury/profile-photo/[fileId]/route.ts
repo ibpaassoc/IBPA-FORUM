@@ -1,6 +1,18 @@
 import { get } from "@vercel/blob";
 import { prisma } from "@/shared/lib/prisma";
+import { isPublicBlobUrl } from "@/features/jury/lib/profile-photo";
 
+/**
+ * Serves an approved jury member's profile photo.
+ *
+ * New photos are stored as public blobs; `storageKey` holds the public URL and
+ * we simply redirect to it. Legacy photos are private blobs (`storageKey` holds
+ * a pathname) and are streamed through this route using the read/write token.
+ *
+ * The route never throws and never returns an empty/`null` body: any failure
+ * (missing record, missing token, blob 403/404, unexpected error) resolves to a
+ * clean `404` so the client image `onError` fallback can render a placeholder.
+ */
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ fileId: string }> }

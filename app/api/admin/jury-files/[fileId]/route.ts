@@ -1,6 +1,7 @@
 import { get } from "@vercel/blob";
 import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
 import { prisma } from "@/shared/lib/prisma";
+import { isPublicBlobUrl } from "@/features/jury/lib/profile-photo";
 
 export async function GET(
   request: Request,

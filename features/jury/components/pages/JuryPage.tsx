@@ -8,7 +8,7 @@ type JuryMember = {
   country?: string | null;
   bio?: string | null;
   expertise?: string[] | null;
-  profilePhotoFileId?: string | null;
+  profilePhotoSrc?: string | null;
 };
 
 import {
