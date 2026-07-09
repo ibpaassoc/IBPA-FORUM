@@ -1,17 +1,51 @@
+import { isApplicationFileRef } from "@/features/applications/lib/file-ref";
 import type {
+  ApplicationFileRef,
   ApplicationValues,
   BlockBValuesByNomination,
   CategoryOption,
 } from "@/features/applications/types/application.types";
 
 const NOM_PREFIX = "__nom__";
-
-function isFilledFile(value: FormDataEntryValue | null): value is File {
-  return value instanceof File && value.size > 0;
-}
+const NOM_BLOB_PREFIX = "__nomblob__";
 
 function getTextValue(formData: FormData, key: string) {
   return String(formData.get(key) ?? "").trim();
+}
+
+/**
+ * Parses uploaded-file metadata that the browser attached as JSON strings.
+ * Malformed entries are skipped so a bad payload can never crash submission.
+ */
+function parseBlobRefs(
+  entries: FormDataEntryValue[],
+  fallbackFieldKey: string
+): ApplicationFileRef[] {
+  const refs: ApplicationFileRef[] = [];
+
+  for (const entry of entries) {
+    if (typeof entry !== "string") continue;
+
+    try {
+      const parsed = JSON.parse(entry) as unknown;
+      if (!isApplicationFileRef(parsed)) continue;
+
+      refs.push({
+        fieldKey:
+          typeof parsed.fieldKey === "string" && parsed.fieldKey
+            ? parsed.fieldKey
+            : fallbackFieldKey,
+        fileName: String(parsed.fileName ?? "file"),
+        fileUrl: parsed.fileUrl,
+        mimeType: parsed.mimeType || "application/octet-stream",
+        fileSize: Number.isFinite(parsed.fileSize) ? parsed.fileSize : 0,
+      });
+    } catch {
+      // Ignore malformed metadata.
+    }
+  }
+
+  return refs;
 }
 
 export function extractApplicationValues(
@@ -44,9 +78,11 @@ export function extractApplicationValues(
     reviewsUrl: getTextValue(formData, "reviewsUrl"),
     heardAbout: getTextValue(formData, "heardAbout"),
     heardAboutOther: getTextValue(formData, "heardAboutOther"),
-    licenseCertification: formData
-      .getAll("licenseCertification")
-      .filter((entry): entry is File => isFilledFile(entry)),
+    // Files are uploaded to Blob client-side; only references arrive here.
+    licenseCertification: parseBlobRefs(
+      formData.getAll("licenseCertificationBlob"),
+      "licenseCertification"
+    ),
   };
 
   // No longer extract flat Block B fields — they come via extractNominationBlockBValues
@@ -55,7 +91,8 @@ export function extractApplicationValues(
 
 /**
  * Parses per-nomination Block B values from FormData.
- * Keys are encoded as __nom__<awardId>__<fieldKey>.
+ * Text values are encoded as __nom__<awardId>__<fieldKey>; uploaded-file
+ * references as __nomblob__<awardId>__<fieldKey> (JSON metadata).
  * CUIDs have no underscores, so splitting on "__" after the prefix is unambiguous.
  */
 export function extractNominationBlockBValues(
@@ -76,13 +113,16 @@ export function extractNominationBlockBValues(
     }
   }
 
-  // Collect all __nom__ prefixed keys
   const seenKeys = new Set<string>();
   for (const key of formData.keys()) {
-    if (!key.startsWith(NOM_PREFIX) || seenKeys.has(key)) continue;
+    if (seenKeys.has(key)) continue;
+
+    const isBlob = key.startsWith(NOM_BLOB_PREFIX);
+    const isText = !isBlob && key.startsWith(NOM_PREFIX);
+    if (!isBlob && !isText) continue;
     seenKeys.add(key);
 
-    const rest = key.slice(NOM_PREFIX.length);
+    const rest = key.slice((isBlob ? NOM_BLOB_PREFIX : NOM_PREFIX).length);
     const sepIdx = rest.indexOf("__");
     if (sepIdx === -1) continue;
 
@@ -95,15 +135,18 @@ export function extractNominationBlockBValues(
       result[awardId] = {};
     }
 
-    const allValues = formData.getAll(key);
-    const files = allValues.filter((v): v is File => isFilledFile(v));
-
-    if (files.length > 0) {
-      result[awardId][fieldKey] = files;
+    if (isBlob) {
+      const refs = parseBlobRefs(formData.getAll(key), fieldKey);
+      if (refs.length > 0) {
+        result[awardId][fieldKey] = refs;
+      }
       continue;
     }
 
-    const texts = allValues.map((v) => String(v).trim()).filter(Boolean);
+    const texts = formData
+      .getAll(key)
+      .map((v) => String(v).trim())
+      .filter(Boolean);
     if (texts.length > 1) {
       result[awardId][fieldKey] = texts;
     } else if (texts.length === 1) {
@@ -115,3 +158,4 @@ export function extractNominationBlockBValues(
 }
 
 export const NOMINATION_FORM_PREFIX = NOM_PREFIX;
+export const NOMINATION_BLOB_PREFIX = NOM_BLOB_PREFIX;

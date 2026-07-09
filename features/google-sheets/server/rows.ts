@@ -40,7 +40,6 @@ const applicationSelect = {
   fullName: true,
   email: true,
   phone: true,
-  websiteUrl: true,
   socialUrl: true,
   membershipLevel: true,
   membershipNumber: true,
@@ -106,25 +105,26 @@ function mapApplicationCategorized(app: ApplicationRecord): CategorizedRow {
   const nominationLabel =
     nominations.length > 0 ? joinList(nominations) : app.award.name;
   const member = isApplicationMember(app);
+  const categories = applicationCategories(app);
 
-  return [
-    app.id,
-    app.fullName,
-    app.email,
-    app.phone,
-    app.websiteUrl ?? "",
-    app.category.name,
-    nominationLabel,
-    yesNo(member),
-    app.membershipNumber ?? "",
-    formatUsd(applicationAmountPaidCents(app)),
-    humanizeEnum(app.status),
-    formatDateTime(app.submittedAt),
-    formatDateTime(app.updatedAt),
-    // Application has no dedicated reviewed-at timestamp.
-    "",
-    applicationScoreSummary(app),
-  ];
+  return {
+    categories,
+    values: [
+      app.id,
+      app.fullName,
+      app.email,
+      app.phone,
+      app.socialUrl ?? "",
+      categories.join(CATEGORY_SEPARATOR),
+      nominationLabel,
+      yesNo(member),
+      app.membershipNumber ?? "",
+      formatUsd(applicationAmountPaidCents(app)),
+      formatDateTime(app.submittedAt),
+      formatDateTime(app.updatedAt),
+      applicationScoreSummary(app),
+    ],
+  };
 }
 
 export async function fetchApplicationRow(id: string): Promise<CategorizedRow | null> {
@@ -156,7 +156,6 @@ const jurySelect = {
   expertiseAreas: true,
   ibpaAssociationMember: true,
   ibpaNumber: true,
-  professionalWebsite: true,
   status: true,
   submittedAt: true,
   updatedAt: true,
@@ -186,27 +185,35 @@ function juryPriceCents(jury: JuryRecord): number {
   return jury.ibpaAssociationMember ? 10000 : 25000;
 }
 
-export function mapJuryRow(jury: JuryRecord): SheetValues[number] {
-  return [
-    jury.id,
-    jury.fullName,
-    jury.email,
-    jury.phone,
-    jury.professionalWebsite ?? "",
-    jury.country,
-    jury.city,
-    jury.professionalTitle,
-    jury.yearsExperience,
-    joinList(jury.expertiseAreas),
-    yesNo(jury.ibpaAssociationMember),
-    jury.ibpaNumber ?? "",
-    formatUsd(juryPriceCents(jury)),
-    humanizeEnum(jury.status),
-    formatDateTime(jury.submittedAt),
-    formatDateTime(jury.updatedAt),
-    formatDateTime(jury.approvedAt ?? jury.rejectedAt),
-    jury.adminNotes ?? "",
-  ];
+function mapJuryCategorized(jury: JuryRecord): CategorizedRow {
+  // Areas of expertise are the jury member's categories (shared vocabulary with
+  // the Applications tab), so they colour-code and route into tabs identically.
+  const categories = orderCategories(jury.expertiseAreas);
+
+  return {
+    categories,
+    values: [
+      jury.id,
+      jury.fullName,
+      jury.email,
+      jury.phone,
+      jury.country,
+      jury.city,
+      jury.professionalTitle,
+      jury.yearsExperience,
+      categories.join(CATEGORY_SEPARATOR),
+      yesNo(jury.ibpaAssociationMember),
+      jury.ibpaNumber ?? "",
+      formatUsd(juryPriceCents(jury)),
+      formatDateTime(jury.submittedAt),
+      formatDateTime(jury.updatedAt),
+      formatDateTime(jury.approvedAt ?? jury.rejectedAt),
+      jury.adminNotes ?? "",
+      // The trailing checkbox columns (Приглашение / Благодарственное письмо /
+      // Сертификат судьи) are admin-editable and preserved by the sheet layer,
+      // so they are intentionally not produced here.
+    ],
+  };
 }
 
 export async function fetchJuryRow(id: string): Promise<CategorizedRow | null> {

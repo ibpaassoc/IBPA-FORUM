@@ -1,5 +1,15 @@
 import type { CategoryCatalogDefinition } from "@/features/applications/types/application.types";
 
+/**
+ * SEED-ONLY initial catalog.
+ *
+ * This static list is used to bootstrap the database (see prisma/seed.ts and
+ * the seed-only syncApplicationCatalog helper). It is NOT the runtime source of
+ * truth for the application flow: nominations/awards shown in the app are read
+ * live from the DB via getApplicationCategories(). Do not import this into
+ * request/runtime code to build the award selector — add awards to the DB
+ * instead and they appear automatically.
+ */
 export const categoryCatalog: CategoryCatalogDefinition[] = [
   {
     slug: "hair",

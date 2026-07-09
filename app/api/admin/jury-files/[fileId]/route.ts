@@ -28,11 +28,6 @@ export async function GET(
     return new Response("Not found", { status: 404 });
   }
 
-  // Profile photos are stored as public blobs (storageKey is a URL) — redirect.
-  if (isPublicBlobUrl(fileRecord.storageKey)) {
-    return Response.redirect(fileRecord.storageKey, 308);
-  }
-
   let result;
   try {
     result = await get(fileRecord.storageKey, {
@@ -40,10 +35,15 @@ export async function GET(
       ifNoneMatch: request.headers.get("if-none-match") ?? undefined,
     });
   } catch (error) {
-    console.error("[admin/jury-files] Failed to read private jury file blob.", {
+    // Don't let a blob-access error 500 the admin preview; log safe metadata
+    // and return 404 so the editor shows its empty state instead of crashing.
+    console.error("admin jury-file blob fetch failed", {
       fileId,
-      pathname: fileRecord.storageKey,
-      message: error instanceof Error ? error.message : String(error),
+      hasStorageKey: true,
+      status:
+        typeof error === "object" && error && "status" in error
+          ? (error as { status?: number }).status
+          : undefined,
     });
     return new Response("Not found", { status: 404 });
   }

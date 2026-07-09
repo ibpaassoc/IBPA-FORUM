@@ -11,6 +11,11 @@ export const metadata: Metadata = {
     "Submit your official participant application for the IBPA Beauty Award.",
 };
 
+// The application form loads categories/nominations live from the DB, so this
+// page must render dynamically — otherwise a build-time snapshot would hide
+// newly added Award rows in production.
+export const dynamic = "force-dynamic";
+
 const heroStats = [
   { label: "Categories", value: "11" },
   { label: "Open to", value: "Global" },

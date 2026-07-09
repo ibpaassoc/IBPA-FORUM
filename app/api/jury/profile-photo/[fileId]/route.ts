@@ -44,20 +44,6 @@ export async function GET(
     return new Response("Not found", { status: 404 });
   }
 
-  // New records store a public blob URL — redirect straight to the CDN.
-  if (isPublicBlobUrl(fileRecord.storageKey)) {
-    return Response.redirect(fileRecord.storageKey, 308);
-  }
-
-  // Legacy records store a private blob pathname — stream it via the token.
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    console.error(
-      "[jury/profile-photo] BLOB_READ_WRITE_TOKEN is not configured; cannot serve private jury photo.",
-      { fileId }
-    );
-    return new Response("Not found", { status: 404 });
-  }
-
   let result;
   try {
     result = await get(fileRecord.storageKey, {
@@ -65,12 +51,16 @@ export async function GET(
       ifNoneMatch: request.headers.get("if-none-match") ?? undefined,
     });
   } catch (error) {
-    // Blob may reject private reads with 403 (e.g. access mismatch). Log
-    // context without leaking the token, and fall back to a 404 placeholder.
-    console.error("[jury/profile-photo] Failed to read private jury photo blob.", {
+    // A blob-access failure (e.g. a token/permission error in production) must
+    // not surface as a 500 that breaks <Image>; log safe metadata and 404 so
+    // the UI falls back gracefully.
+    console.error("jury profile-photo blob fetch failed", {
       fileId,
-      pathname: fileRecord.storageKey,
-      message: error instanceof Error ? error.message : String(error),
+      hasStorageKey: true,
+      status:
+        typeof error === "object" && error && "status" in error
+          ? (error as { status?: number }).status
+          : undefined,
     });
     return new Response("Not found", { status: 404 });
   }
