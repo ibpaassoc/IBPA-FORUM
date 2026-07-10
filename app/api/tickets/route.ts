@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { ticketApiSchema } from "@/features/tickets/schemas/ticket-form-schema";
 import { initiateTicketPurchase, TicketConflictError, InvalidCertError } from "@/features/tickets/server/ticket-service";
 import { isProduction, validateProductionEnv } from "@/lib/env";
+import { getServerLanguage } from "@/lib/i18n/server";
+import { translations } from "@/lib/i18n/translations";
 
 function getErrorMessage(error: unknown) {
   if (error instanceof Error) return error.message;
@@ -10,6 +12,8 @@ function getErrorMessage(error: unknown) {
 
 export async function POST(request: NextRequest) {
   console.info("POST /api/tickets called");
+
+  const locale = await getServerLanguage();
 
   try {
     validateProductionEnv([
@@ -28,12 +32,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result = await initiateTicketPurchase(parsed.data);
+    const result = await initiateTicketPurchase({ ...parsed.data, locale });
 
     return NextResponse.json({ checkoutUrl: result.checkoutUrl }, { status: 201 });
   } catch (error) {
     if (error instanceof TicketConflictError) {
-      return NextResponse.json({ message: error.message }, { status: 409 });
+      // A paid ticket already exists for this email — localized, per site language.
+      return NextResponse.json(
+        { message: translations[locale].ticketFlow.alreadyPurchased },
+        { status: 409 }
+      );
     }
 
     if (error instanceof InvalidCertError) {

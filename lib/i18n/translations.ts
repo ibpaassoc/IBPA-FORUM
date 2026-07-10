@@ -1715,6 +1715,19 @@ const en = {
     toggle: "Filters",
     clearAll: "Clear all",
   },
+  ticketFlow: {
+    alreadyPurchased: "You have already purchased a ticket using this email address.",
+    success: {
+      eyebrow: "IBPA BEAUTY AWARD 2026",
+      title: "Payment Confirmed",
+      subtitle: "Your ticket for the IBPA BEAUTY AWARD 2026 is confirmed.",
+      emailed:
+        "We've emailed your QR code ticket to the address you provided. Please show it at the forum check-in desk.",
+      backHome: "Back to Home",
+      refundNotice:
+        "Please note! If you have purchased a ticket to the Beauty Business Forum but your plans change and you are unable to attend, please notify us no later than one month before the event begins. In that case, we will be able to issue a refund in accordance with the event's refund policy.",
+    },
+  },
 };
 
 const ru: typeof en = {
@@ -3430,6 +3443,19 @@ const ru: typeof en = {
     toggle: "Фильтры",
     clearAll: "Очистить",
   },
+  ticketFlow: {
+    alreadyPurchased: "Вы уже приобрели билет, используя этот адрес электронной почты.",
+    success: {
+      eyebrow: "IBPA BEAUTY AWARD 2026",
+      title: "Оплата подтверждена",
+      subtitle: "Ваш билет на IBPA BEAUTY AWARD 2026 подтверждён.",
+      emailed:
+        "Мы отправили ваш билет с QR-кодом на указанный адрес. Пожалуйста, покажите его на стойке регистрации форума.",
+      backHome: "На главную",
+      refundNotice:
+        "Обратите, пожалуйста, внимание! Если вы уже приобрели билет на Beauty Business Forum, но ваши планы изменились и вы не сможете присутствовать, пожалуйста, сообщите нам об этом не позднее чем за один месяц до начала мероприятия. В этом случае мы сможем оформить возврат средств согласно правилам мероприятия.",
+    },
+  },
 };
 
 const ua: typeof en = {
@@ -5144,6 +5170,19 @@ const ua: typeof en = {
     sortName: "Ім'я А–Я",
     toggle: "Фільтри",
     clearAll: "Очистити",
+  },
+  ticketFlow: {
+    alreadyPurchased: "Ви вже придбали квиток, використовуючи цю електронну адресу.",
+    success: {
+      eyebrow: "IBPA BEAUTY AWARD 2026",
+      title: "Оплату підтверджено",
+      subtitle: "Ваш квиток на IBPA BEAUTY AWARD 2026 підтверджено.",
+      emailed:
+        "Ми надіслали ваш квиток із QR-кодом на вказану адресу. Будь ласка, покажіть його на стійці реєстрації форуму.",
+      backHome: "На головну",
+      refundNotice:
+        "Будь ласка, зверніть увагу! Якщо ви вже придбали квиток на Beauty Business Forum, але ваші плани змінилися і ви не зможете бути присутніми, будь ласка, повідомте нас про це не пізніше ніж за один місяць до початку заходу. У такому разі ми зможемо оформити повернення коштів відповідно до правил заходу.",
+    },
   },
 };
 

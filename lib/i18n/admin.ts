@@ -360,6 +360,18 @@ export const adminT = {
     forum: "Форум",
     scanTitle: "Сканирование билета",
     closeScanner: "Закрыть сканер",
+    sendPaymentLink: "Отправить ссылку на оплату",
+    sendingPaymentLink: "Отправка...",
+    paymentLinkSent: "Новая ссылка на оплату была создана и успешно отправлена.",
+    paymentLinkEmailFailed:
+      "Ссылка создана, но письмо не отправлено. Попробуйте отправить ещё раз.",
+    paymentLinkAlreadyPaid: "Билет уже оплачен — ссылка на оплату не требуется.",
+    paymentLinkNotFound: "Билет не найден.",
+    paymentLinkError: "Не удалось создать ссылку на оплату. Попробуйте ещё раз.",
+    resendHint: "Клиент оплатит по новой ссылке. Прежняя ссылка перестанет действовать.",
+    paymentLink: "Ссылка на оплату",
+    badgeFailed: "Ошибка оплаты",
+    badgeExpired: "Срок истёк",
     typeLabels: {
       ONE_DAY: "Форум — 1 день",
       TWO_DAYS: "Форум — 2 дня",

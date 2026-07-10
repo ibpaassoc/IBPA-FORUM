@@ -1,11 +1,15 @@
 import Link from "next/link";
 import { CheckCircle } from "lucide-react";
+import { getServerTranslations } from "@/lib/i18n/server";
+import { RefundNotice } from "@/features/tickets/components/RefundNotice";
 
 export const metadata = {
   title: "Ticket Confirmed — IBPA BEAUTY AWARD 2026",
 };
 
-export default function TicketsSuccessPage() {
+export default async function TicketsSuccessPage() {
+  const t = (await getServerTranslations()).ticketFlow.success;
+
   return (
     <main className="page-shell flex min-h-screen items-center justify-center p-6">
       <div className="premium-glass w-full max-w-md px-8 py-10 text-center">
@@ -13,18 +17,20 @@ export default function TicketsSuccessPage() {
           <CheckCircle className="h-7 w-7 text-[var(--color-blue)]" strokeWidth={1.5} />
         </div>
         <h1 className="mb-3 text-[1.9rem] leading-tight [font-family:var(--font-accent-family)] text-[var(--color-ink)]">
-          Payment Confirmed
+          {t.title}
         </h1>
         <p className="mb-2 text-[0.95rem] text-[var(--color-ink-soft)] leading-relaxed">
-          Your ticket for the <strong>IBPA BEAUTY AWARD 2026</strong> is confirmed.
+          {t.subtitle}
         </p>
         <p className="mb-8 text-[0.88rem] text-[var(--color-ink-soft)] leading-relaxed">
-          We&rsquo;ve emailed your QR code ticket to the address you provided.
-          Please show it at the forum check-in desk.
+          {t.emailed}
         </p>
         <Link href="/" className="ibpa-button ibpa-button-blue">
-          Back to Home
+          {t.backHome}
         </Link>
+
+        {/* Refund policy — shown only here, after a real ticket payment succeeds. */}
+        <RefundNotice text={t.refundNotice} />
       </div>
     </main>
   );

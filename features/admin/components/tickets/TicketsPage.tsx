@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Ticket, Camera, X, Tag, ChevronDown } from "lucide-react";
+import { Ticket, Camera, X, Tag, ChevronDown, Send } from "lucide-react";
 import {
   DashboardAccentBlock,
   DashboardCard,
@@ -44,16 +44,90 @@ type TicketRecord = {
   payments: TicketPayment[];
 };
 
-function ticketStatusBadge(status: string) {
+function ticketStatusBadge(status: string, paymentStatus?: string) {
   switch (status) {
     case "PAID": return <DashboardBadge tone="blue">{adminT.tickets.badgePaid}</DashboardBadge>;
     case "CHECKED_ONE_DAY": return <DashboardBadge tone="green">{adminT.tickets.badgeCheckedIn}</DashboardBadge>;
     case "CHECKED_TWO_DAY": return <DashboardBadge tone="green">{adminT.tickets.badgeCheckedIn}</DashboardBadge>;
     case "CHECKED_GALA_DINNER": return <DashboardBadge tone="purple">{adminT.tickets.badgeGalaCheckedIn}</DashboardBadge>;
-    case "PENDING": return <DashboardBadge tone="amber">{adminT.tickets.badgePending}</DashboardBadge>;
+    case "PENDING":
+      // Surface the latest payment state so an unpaid ticket shows why it is still
+      // unpaid (failed / expired) rather than a flat "pending".
+      if (paymentStatus === "FAILED") return <DashboardBadge tone="red">{adminT.tickets.badgeFailed}</DashboardBadge>;
+      if (paymentStatus === "EXPIRED") return <DashboardBadge tone="neutral">{adminT.tickets.badgeExpired}</DashboardBadge>;
+      return <DashboardBadge tone="amber">{adminT.tickets.badgePending}</DashboardBadge>;
     case "CANCELED": return <DashboardBadge tone="red">{adminT.tickets.badgeCanceled}</DashboardBadge>;
     default: return <DashboardBadge tone="neutral">{status}</DashboardBadge>;
   }
+}
+
+function SendPaymentLinkAction({ ticketId }: { ticketId: string }) {
+  const router = useRouter();
+  const [state, setState] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [message, setMessage] = useState<string | null>(null);
+
+  async function send() {
+    setState("loading");
+    setMessage(null);
+    try {
+      const res = await fetch(`/api/admin/tickets/${ticketId}/payment-link`, {
+        method: "POST",
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        reason?: string;
+      };
+
+      if (res.ok && data.ok) {
+        setState("success");
+        setMessage(adminT.tickets.paymentLinkSent);
+        router.refresh();
+        return;
+      }
+
+      setState("error");
+      setMessage(
+        data.reason === "already_paid"
+          ? adminT.tickets.paymentLinkAlreadyPaid
+          : data.reason === "not_found"
+            ? adminT.tickets.paymentLinkNotFound
+            : data.reason === "email_failed"
+              ? adminT.tickets.paymentLinkEmailFailed
+              : adminT.tickets.paymentLinkError
+      );
+    } catch {
+      setState("error");
+      setMessage(adminT.tickets.paymentLinkError);
+    }
+  }
+
+  const loading = state === "loading";
+
+  return (
+    <div className="mt-1 flex flex-col gap-2">
+      <button
+        type="button"
+        onClick={send}
+        disabled={loading}
+        className="inline-flex w-full items-center justify-center gap-2 rounded-[16px] border border-[var(--color-blue)]/40 bg-[var(--color-blue-wash)]/70 px-4 py-2.5 text-[0.85rem] font-semibold text-[var(--color-blue)] transition-colors hover:bg-[var(--color-blue-wash)] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+      >
+        <Send size={15} strokeWidth={1.9} />
+        {loading ? adminT.tickets.sendingPaymentLink : adminT.tickets.sendPaymentLink}
+      </button>
+      {message && (
+        <p
+          className={`text-[0.8rem] ${state === "success" ? "text-emerald-600" : "text-red-600"}`}
+        >
+          {message}
+        </p>
+      )}
+      {state !== "error" && (
+        <p className="text-[0.76rem] text-[var(--color-ink-muted)]">
+          {adminT.tickets.resendHint}
+        </p>
+      )}
+    </div>
+  );
 }
 
 function ticketTypeLabelRu(type: string) {
@@ -159,13 +233,21 @@ function TicketDetailPanel({ ticket }: { ticket: TicketRecord }) {
         label={adminT.tickets.price}
         value={payment ? formatMoney(payment.amount, payment.currency) : null}
       />
-      <DetailItem label={adminT.tickets.paymentStatus} value={ticketStatusBadge(ticket.status)} />
+      <DetailItem label={adminT.tickets.paymentStatus} value={ticketStatusBadge(ticket.status, payment?.status)} />
       <DetailItem label={adminT.tickets.paymentTime} value={ticket.paidAt ? formatDate(ticket.paidAt) : null} />
       <DetailItem label={adminT.tickets.created} value={formatDate(ticket.createdAt)} />
       <div className="sm:col-span-2">
         <DetailItem label={adminT.tickets.checkIn} value={<AccessCheckIn ticket={ticket} />} />
       </div>
       <DetailItem label={adminT.tickets.membership} value={ticket.isIbpaMember ? adminT.tickets.ibpaMember : adminT.tickets.standard} />
+      {ticket.status === "PENDING" && (
+        <div className="sm:col-span-2">
+          <DetailItem
+            label={adminT.tickets.paymentLink}
+            value={<SendPaymentLinkAction ticketId={ticket.id} />}
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -210,7 +292,7 @@ function TicketRow({
             )}
           </div>
           <div className="flex items-center gap-2 lg:hidden">
-            {ticketStatusBadge(ticket.status)}
+            {ticketStatusBadge(ticket.status, ticket.payments[0]?.status)}
             <ChevronDown
               size={16}
               className={`shrink-0 text-[var(--color-ink-muted)] transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
@@ -228,7 +310,7 @@ function TicketRow({
           {ticket.galaDinner ? <DashboardBadge tone="purple">{adminT.common.yes}</DashboardBadge> : <span className="text-xs text-[var(--color-ink-muted)]">{adminT.common.no}</span>}
         </div>
 
-        <div className="hidden lg:block">{ticketStatusBadge(ticket.status)}</div>
+        <div className="hidden lg:block">{ticketStatusBadge(ticket.status, ticket.payments[0]?.status)}</div>
 
         <p className="flex items-center justify-between gap-2 text-xs text-[var(--color-ink-muted)] lg:block">
           <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)] lg:hidden">{adminT.tickets.lastCheckIn}</span>
