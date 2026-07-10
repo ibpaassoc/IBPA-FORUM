@@ -1,16 +1,15 @@
 import "server-only";
 import type { TicketType } from "@prisma/client";
 import { prisma } from "@/shared/lib/prisma";
-import { createTicket, findActiveTicketByEmail } from "./ticket-repository";
+import { reserveTicketForCheckout } from "./ticket-repository";
 import { createTicketCheckoutSession } from "./ticket-checkout";
 import { verifyIbpaMembership } from "./ibpa-membership";
-import { getSiteSettingBool } from "@/features/settings/server/site-settings";
-import { getStripe } from "@/features/payments/server/stripe-client";
-import { readEnv } from "@/lib/env";
-import { applyDiscountToCents } from "@/features/tickets/types";
-import type { EarlyBirdDiscount } from "@/features/tickets/types";
+import { getEarlyBirdDiscount } from "./early-bird";
 import { normalizeInstagramHandle } from "@/features/tickets/lib/instagram";
+import { normalizeTicketEmail } from "@/features/tickets/lib/normalize-email";
+import { computeTicketAmountCents } from "@/features/tickets/lib/pricing";
 import { syncTicketOnChange } from "@/features/google-sheets";
+import type { Language } from "@/lib/i18n/translations";
 
 export class TicketConflictError extends Error {
   constructor(message: string) {
@@ -26,13 +25,9 @@ export class InvalidCertError extends Error {
   }
 }
 
-// Source of truth for ticket pricing — also consumed by the Google Sheets sync
-// to derive the early-bird discount shown in the tickets tab.
-export const TICKET_AMOUNTS_CENTS: Record<TicketType, { ibpa: number; standard: number }> = {
-  ONE_DAY:  { ibpa: 29500, standard: 39500 },
-  TWO_DAYS: { ibpa: 59500, standard: 69500 },
-};
-export const GALA_DINNER_CENTS = 15000;
+// Re-exported for backwards compatibility; the canonical definitions now live in
+// the shared pricing calculator so the checkout and admin-resend flows agree.
+export { TICKET_AMOUNTS_CENTS, GALA_DINNER_CENTS } from "@/features/tickets/lib/pricing";
 
 export type InitiateTicketPurchaseInput = {
   firstName: string;
@@ -44,33 +39,12 @@ export type InitiateTicketPurchaseInput = {
   galaDinner: boolean;
   isIbpaMember: boolean;
   ibpaCertNumber?: string | null;
+  locale: Language;
 };
-
-async function getEarlyBirdDiscount(): Promise<EarlyBirdDiscount> {
-  const enabled = await getSiteSettingBool("earlyBirdEnabled");
-  if (!enabled) return null;
-
-  const couponId = readEnv(["STRIPE_EARLY_BIRD_COUPON"]);
-  if (!couponId) return null;
-
-  try {
-    const stripe = getStripe();
-    const coupon = await stripe.coupons.retrieve(couponId);
-    if (coupon.percent_off) {
-      return { type: "percent", value: coupon.percent_off };
-    }
-    if (coupon.amount_off && coupon.currency) {
-      return { type: "amount", value: coupon.amount_off, currency: coupon.currency };
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
 
 export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput) {
   const fullName = `${input.firstName.trim()} ${input.lastName.trim()}`.trim();
-  const email = input.email.trim().toLowerCase();
+  const email = normalizeTicketEmail(input.email);
 
   if (input.isIbpaMember && input.ibpaCertNumber?.trim()) {
     const verification = await verifyIbpaMembership(input.ibpaCertNumber);
@@ -81,24 +55,9 @@ export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput)
     }
   }
 
-  const existing = await findActiveTicketByEmail(email);
-  if (existing) {
-    const isPaid = existing.status !== "PENDING";
-    throw new TicketConflictError(
-      isPaid
-        ? "A ticket has already been purchased for this email address. Check your inbox for your confirmation."
-        : "A checkout session is already in progress for this email. Please complete your payment or wait a few minutes before trying again."
-    );
-  }
-
-  const earlyBirdDiscount = await getEarlyBirdDiscount();
-  const memberKey = input.isIbpaMember ? "ibpa" : "standard";
-  const baseTicketAmountCents = TICKET_AMOUNTS_CENTS[input.type][memberKey];
-  const discountedTicketAmountCents = earlyBirdDiscount
-    ? applyDiscountToCents(baseTicketAmountCents, earlyBirdDiscount)
-    : null;
-
-  const ticket = await createTicket({
+  // Reserve the single active ticket for this email. If a paid ticket already
+  // exists we refuse here; if an unpaid one exists it is safely replaced.
+  const reservation = await reserveTicketForCheckout({
     fullName,
     email,
     phone: input.phone.trim(),
@@ -109,39 +68,54 @@ export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput)
     ibpaCertNumber: input.ibpaCertNumber?.trim() || null,
   });
 
-  const session = await createTicketCheckoutSession({
-    ticketId: ticket.id,
-    email,
-    type: ticket.type,
-    galaDinner: ticket.galaDinner,
-    isIbpaMember: ticket.isIbpaMember,
-    earlyBirdDiscountedAmountCents: discountedTicketAmountCents,
+  if (!reservation.ok) {
+    // Message is overridden with a localized string at the API boundary.
+    throw new TicketConflictError(
+      "A ticket has already been purchased for this email address."
+    );
+  }
+
+  const ticketId = reservation.ticketId;
+
+  const earlyBirdDiscount = await getEarlyBirdDiscount();
+  const amounts = computeTicketAmountCents({
+    type: input.type,
+    isIbpaMember: input.isIbpaMember,
+    galaDinner: input.galaDinner,
+    earlyBirdDiscount,
   });
 
-  const finalTicketAmountCents = discountedTicketAmountCents ?? baseTicketAmountCents;
-  const totalAmountCents = finalTicketAmountCents + (input.galaDinner ? GALA_DINNER_CENTS : 0);
+  const session = await createTicketCheckoutSession({
+    ticketId,
+    email,
+    type: input.type,
+    galaDinner: input.galaDinner,
+    isIbpaMember: input.isIbpaMember,
+    earlyBirdDiscountedAmountCents: amounts.discountedTicketCents,
+    locale: input.locale,
+  });
 
   await prisma.$transaction([
     prisma.ticket.update({
-      where: { id: ticket.id },
+      where: { id: ticketId },
       data: { stripeSessionId: session.id },
     }),
     prisma.payment.create({
       data: {
         source: "TICKET",
-        ticketId: ticket.id,
+        ticketId,
         stripeSessionId: session.id,
-        amount: totalAmountCents,
+        amount: amounts.totalCents,
         currency: "usd",
         status: "PENDING",
       },
     }),
   ]);
 
-  syncTicketOnChange(ticket.id);
+  syncTicketOnChange(ticketId);
 
   return {
-    ticketId: ticket.id,
+    ticketId,
     checkoutUrl: session.url,
   };
 }

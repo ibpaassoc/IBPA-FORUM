@@ -1,7 +1,15 @@
 import "server-only";
-import { requireEnv } from "@/lib/env";
 import { getAppUrl, getStripe } from "@/features/payments/server/stripe-client";
+import { requireEnv } from "@/lib/env";
 import type { TicketType } from "@prisma/client";
+import type { Language } from "@/lib/i18n/translations";
+import { buildTicketCheckoutMetadata } from "@/features/tickets/lib/checkout-metadata";
+
+// Stripe Checkout Sessions may live at most 24h. We set this explicitly (rather
+// than leaning on the default) so both the initial purchase and an admin-resent
+// link have a well-defined, valid expiration and callers never assume a session
+// stays payable forever.
+const CHECKOUT_SESSION_TTL_SECONDS = 24 * 60 * 60;
 
 function getTicketPriceId(type: TicketType, isIbpaMember: boolean): string {
   if (type === "ONE_DAY") {
@@ -26,6 +34,7 @@ export async function createTicketCheckoutSession({
   galaDinner,
   isIbpaMember,
   earlyBirdDiscountedAmountCents,
+  locale,
 }: {
   ticketId: string;
   email: string;
@@ -33,6 +42,7 @@ export async function createTicketCheckoutSession({
   galaDinner: boolean;
   isIbpaMember: boolean;
   earlyBirdDiscountedAmountCents: number | null;
+  locale: Language;
 }) {
   const stripe = getStripe();
   const appUrl = getAppUrl();
@@ -58,17 +68,20 @@ export async function createTicketCheckoutSession({
     lineItems.push({ price: getGalaDinnerPriceId(), quantity: 1 });
   }
 
-  const metadata = {
-    flowType: "ticket",
+  const metadata = buildTicketCheckoutMetadata({
     ticketId,
     email,
-  };
+    type,
+    galaDinner,
+    locale,
+  });
 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
     customer_email: email,
     success_url: `${appUrl}/tickets/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${appUrl}/#pricing`,
+    expires_at: Math.floor(Date.now() / 1000) + CHECKOUT_SESSION_TTL_SECONDS,
     metadata,
     payment_intent_data: { metadata },
     line_items: lineItems,

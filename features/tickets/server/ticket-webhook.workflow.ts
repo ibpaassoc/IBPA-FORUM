@@ -2,7 +2,7 @@ import "server-only";
 import { Prisma } from "@prisma/client";
 import type Stripe from "stripe";
 import { prisma } from "@/shared/lib/prisma";
-import { findTicketByStripeSessionId } from "./ticket-repository";
+import { findTicketById, findTicketByStripeSessionId } from "./ticket-repository";
 import { sendTicketConfirmationEmail } from "./ticket-email.workflow";
 import { syncTicketOnChange } from "@/features/google-sheets";
 
@@ -40,11 +40,19 @@ async function handleTicketCheckoutCompleted(event: Stripe.Event): Promise<boole
     return false;
   }
 
-  const ticket = await findTicketByStripeSessionId(session.id);
+  // Resolve by the ticket id carried in metadata first: it stays correct even
+  // after an unpaid ticket was replaced or an admin issued a fresh session
+  // (which supersedes the stripeSessionId stored on the row). Fall back to the
+  // session id for any older sessions created before metadata.ticketId existed.
+  const metadataTicketId = session.metadata?.ticketId;
+  const ticket = metadataTicketId
+    ? await findTicketById(metadataTicketId)
+    : await findTicketByStripeSessionId(session.id);
 
   if (!ticket) {
     console.warn("Ticket webhook: no ticket found for Stripe session", {
       sessionId: session.id,
+      metadataTicketId,
     });
     return true;
   }

@@ -7,7 +7,9 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
     "test:application-submission": "tsx scripts/test-application-submission.ts",
+    "test:tickets": "tsx scripts/test-tickets-logic.ts",
     "seed:checkin-samples": "tsx scripts/seed-checkin-samples.ts",
     "postinstall": "prisma generate"
   },

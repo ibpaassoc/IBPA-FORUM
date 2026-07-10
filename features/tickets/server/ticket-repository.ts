@@ -2,6 +2,7 @@ import "server-only";
 import crypto from "crypto";
 import { prisma } from "@/shared/lib/prisma";
 import type { TicketStatus, TicketType } from "@prisma/client";
+import { decideTicketReplacement } from "@/features/tickets/lib/replacement";
 
 export type CreateTicketInput = {
   fullName: string;
@@ -33,9 +34,102 @@ export async function createTicket(input: CreateTicketInput) {
   });
 }
 
+export type ReserveTicketResult =
+  | { ok: true; ticketId: string }
+  | { ok: false; reason: "already_paid" };
+
+/**
+ * Atomically reserve the single active ticket for a (normalized) email.
+ *
+ * Everything runs inside one transaction guarded by a Postgres transaction-level
+ * advisory lock keyed on the email, so two near-simultaneous submissions for the
+ * same address are serialized and can never produce two active tickets:
+ *
+ *   • If a confirmed-paid ticket exists → nothing is touched; returns already_paid.
+ *   • If unpaid ticket(s) exist → the newest is refreshed in place with the new
+ *     details (fresh token, Stripe references cleared, old pending payments
+ *     removed) and any older unpaid duplicates are deleted. Reusing the row keeps
+ *     the Google Sheets sync updating the same line instead of orphaning it.
+ *   • Otherwise a brand-new ticket is created.
+ *
+ * Deleting a ticket cascades to its Payment rows (see schema onDelete: Cascade),
+ * so no orphaned payment/session references are left behind. A paid ticket is
+ * never deleted.
+ */
+export async function reserveTicketForCheckout(
+  input: CreateTicketInput
+): Promise<ReserveTicketResult> {
+  return prisma.$transaction(async (tx) => {
+    // Serialize all reservations for this email (auto-released on commit/rollback).
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${input.email}))`;
+
+    const existing = await tx.ticket.findMany({
+      where: {
+        email: { equals: input.email, mode: "insensitive" },
+        status: { not: "CANCELED" },
+      },
+      select: { id: true, status: true },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const decision = decideTicketReplacement(existing);
+
+    if (decision.kind === "blocked-paid") {
+      return { ok: false, reason: "already_paid" };
+    }
+
+    if (decision.deleteIds.length > 0) {
+      await tx.ticket.deleteMany({ where: { id: { in: decision.deleteIds } } });
+    }
+
+    const secureToken = crypto.randomBytes(32).toString("hex");
+    const data = {
+      fullName: input.fullName,
+      email: input.email,
+      phone: input.phone,
+      instagram: input.instagram ?? null,
+      type: input.type,
+      galaDinner: input.galaDinner,
+      isIbpaMember: input.isIbpaMember,
+      ibpaCertNumber: input.ibpaCertNumber ?? null,
+    };
+
+    if (decision.kind === "reuse") {
+      // Drop the stale pending payment(s) tied to the old checkout session.
+      await tx.payment.deleteMany({ where: { ticketId: decision.reuseId } });
+      const ticket = await tx.ticket.update({
+        where: { id: decision.reuseId },
+        data: {
+          ...data,
+          secureToken,
+          status: "PENDING",
+          stripeSessionId: null,
+          stripePaymentIntentId: null,
+          paidAt: null,
+          lastCheckIn: null,
+          forumCheckInAt: null,
+          galaCheckInAt: null,
+        },
+      });
+      return { ok: true, ticketId: ticket.id };
+    }
+
+    const ticket = await tx.ticket.create({
+      data: { ...data, secureToken, status: "PENDING" },
+    });
+    return { ok: true, ticketId: ticket.id };
+  });
+}
+
 export async function findTicketByStripeSessionId(stripeSessionId: string) {
   return prisma.ticket.findUnique({
     where: { stripeSessionId },
+  });
+}
+
+export async function findTicketById(id: string) {
+  return prisma.ticket.findUnique({
+    where: { id },
   });
 }
 
