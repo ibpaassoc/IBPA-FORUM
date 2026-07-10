@@ -21,7 +21,6 @@ const ALLOWED_PATH_PREFIXES = [
   "/",
   "/association",
   "/apply",
-  "/apply/jury",
   "/categories",
   "/grand-prix",
   "/jury",

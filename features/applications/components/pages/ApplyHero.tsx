@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { HeroPrimaryButton, LandingSecondaryButton } from "@/shared/components/public";
+import { HeroPrimaryButton } from "@/shared/components/public";
 import { PUBLIC_MOTION_EASE, PUBLIC_MOTION_DURATION } from "@/shared/components/public/motion-tokens";
 
 export default function ApplyHero({
@@ -21,7 +21,6 @@ export default function ApplyHero({
       description:
         "Official IBPA Beauty Award 2026 participant applications. Submit your portfolio, select your nominations, and be evaluated by the international jury.",
       cta: "Start application",
-      juryLink: "Apply as a judge instead",
     },
     ru: {
       eyebrow: "Заявки участников",
@@ -29,7 +28,6 @@ export default function ApplyHero({
       description:
         "Официальные заявки на IBPA Beauty Award 2026. Отправьте портфолио, выберите номинации и пройдите оценку международного жюри.",
       cta: "Начать заявку",
-      juryLink: "Подать заявку как судья",
     },
     ua: {
       eyebrow: "Заявки учасників",
@@ -37,7 +35,6 @@ export default function ApplyHero({
       description:
         "Офіційні заявки на IBPA Beauty Award 2026. Надішліть портфоліо, оберіть номінації та пройдіть оцінювання міжнародного журі.",
       cta: "Розпочати заявку",
-      juryLink: "Подати заявку як суддя",
     },
   }[language];
 
@@ -91,7 +88,6 @@ export default function ApplyHero({
 
           <motion.div {...enter(0.46)} className="mt-9 flex flex-wrap items-center gap-4">
             <HeroPrimaryButton href="#apply-form">{copy.cta}</HeroPrimaryButton>
-            <LandingSecondaryButton href="/apply/jury">{copy.juryLink}</LandingSecondaryButton>
           </motion.div>
         </div>
       </div>

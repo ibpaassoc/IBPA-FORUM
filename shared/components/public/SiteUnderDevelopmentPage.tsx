@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 export default function SiteUnderDevelopmentPage() {
@@ -10,8 +9,7 @@ export default function SiteUnderDevelopmentPage() {
       eyebrow: "Website Update",
       title: "We are currently updating the IBPA Beauty Award website.",
       description:
-        "Our team is refining the platform ahead of the 2026 award season. Jury applications remain open.",
-      applyLabel: "Apply as Jury Member",
+        "Our team is refining the platform ahead of the 2026 award season.",
       contact: "Questions? Contact us at",
       email: "forum-support@ibpassociations.org",
     },
@@ -19,8 +17,7 @@ export default function SiteUnderDevelopmentPage() {
       eyebrow: "Обновление сайта",
       title: "Мы обновляем сайт IBPA Beauty Award.",
       description:
-        "Команда дорабатывает платформу перед сезоном премии 2026 года. Приём заявок в жюри продолжается.",
-      applyLabel: "Подать заявку в жюри",
+        "Команда дорабатывает платформу перед сезоном премии 2026 года.",
       contact: "Вопросы? Напишите нам:",
       email: "forum-support@ibpassociations.org",
     },
@@ -28,8 +25,7 @@ export default function SiteUnderDevelopmentPage() {
       eyebrow: "Оновлення сайту",
       title: "Ми оновлюємо сайт IBPA Beauty Award.",
       description:
-        "Команда вдосконалює платформу перед сезоном премії 2026 року. Прийом заявок до журі триває.",
-      applyLabel: "Подати заявку до журі",
+        "Команда вдосконалює платформу перед сезоном премії 2026 року.",
       contact: "Питання? Напишіть нам:",
       email: "forum-support@ibpassociations.org",
     },
@@ -49,15 +45,6 @@ export default function SiteUnderDevelopmentPage() {
         <p className="mt-5 text-[clamp(0.9rem,1.4vw,1.05rem)] leading-[1.75] text-(--color-ink-soft)">
           {copy.description}
         </p>
-
-        <div className="mt-10">
-          <Link
-            href="/apply/jury"
-            className="ibpa-button ibpa-button-primary inline-flex items-center gap-2"
-          >
-            {copy.applyLabel}
-          </Link>
-        </div>
 
         <p className="mt-10 text-xs leading-relaxed text-(--color-ink-soft)">
           {copy.contact}{" "}

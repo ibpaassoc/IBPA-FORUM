@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { HeroPrimaryButton, HeroSecondaryButton } from "@/shared/components/public";
+import { HeroSecondaryButton } from "@/shared/components/public";
 import { PUBLIC_MOTION_EASE, PUBLIC_MOTION_DURATION } from "@/shared/components/public/motion-tokens";
 
 export default function JuryHero() {
@@ -60,9 +60,6 @@ export default function JuryHero() {
           {...enter(0.46)}
           className="mt-10 flex flex-wrap items-center justify-center gap-4"
         >
-          <HeroPrimaryButton href="/apply/jury">
-            {t.common.applyAsJury}
-          </HeroPrimaryButton>
           <HeroSecondaryButton href="/jury/register">
             {t.common.juryAccount}
           </HeroSecondaryButton>

@@ -14,7 +14,6 @@ export default function JuryCta() {
       eyebrow={c.eyebrow}
       title={c.title}
       description={c.description}
-      primaryButton={{ href: "/apply/jury", label: t.common.applyAsJury }}
       secondaryButton={{ href: "/jury/login", label: t.common.juryAccount }}
       feesLabel={c.registrationFee}
       pricingItems={[

@@ -18,7 +18,7 @@ type LandingCtaBlockProps = {
   eyebrow: string;
   title: ReactNode;
   description: string;
-  primaryButton: { href: string; label: string };
+  primaryButton?: { href: string; label: string };
   secondaryButton?: { href: string; label: ReactNode };
   feesLabel: string;
   pricingItems: PricingItem[];
@@ -50,9 +50,11 @@ export function LandingCtaBlock({
           </p>
 
           <div className="mt-auto flex flex-wrap items-center gap-3 pt-8">
-            <LandingPrimaryButton href={primaryButton.href}>
-              {primaryButton.label}
-            </LandingPrimaryButton>
+            {primaryButton && (
+              <LandingPrimaryButton href={primaryButton.href}>
+                {primaryButton.label}
+              </LandingPrimaryButton>
+            )}
 
             {secondaryButton && (
               <LandingSecondaryButton href={secondaryButton.href}>
