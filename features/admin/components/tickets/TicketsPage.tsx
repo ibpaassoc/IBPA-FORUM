@@ -70,8 +70,10 @@ function SendPaymentLinkAction({ ticketId }: { ticketId: string }) {
     setState("loading");
     setMessage(null);
     try {
-      const res = await fetch(`/api/admin/tickets/${ticketId}/payment-link`, {
+      const res = await fetch(`/api/admin/tickets/payment-link`, {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticketId }),
       });
       const data = (await res.json().catch(() => ({}))) as {
         ok?: boolean;

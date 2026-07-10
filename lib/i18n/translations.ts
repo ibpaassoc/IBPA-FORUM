@@ -1728,6 +1728,12 @@ const en = {
         "Please note! If you have purchased a ticket to the Beauty Business Forum but your plans change and you are unable to attend, please notify us no later than one month before the event begins. In that case, we will be able to issue a refund in accordance with the event's refund policy.",
     },
   },
+  notFound: {
+    title: "Page not found",
+    description: "The page you are looking for does not exist or is no longer available.",
+    backHome: "Return to homepage",
+    back: "Go back",
+  },
 };
 
 const ru: typeof en = {
@@ -3456,6 +3462,12 @@ const ru: typeof en = {
         "Обратите, пожалуйста, внимание! Если вы уже приобрели билет на Beauty Business Forum, но ваши планы изменились и вы не сможете присутствовать, пожалуйста, сообщите нам об этом не позднее чем за один месяц до начала мероприятия. В этом случае мы сможем оформить возврат средств согласно правилам мероприятия.",
     },
   },
+  notFound: {
+    title: "Страница не найдена",
+    description: "Страница, которую вы ищете, не существует или больше недоступна.",
+    backHome: "Вернуться на главную",
+    back: "Назад",
+  },
 };
 
 const ua: typeof en = {
@@ -5183,6 +5195,12 @@ const ua: typeof en = {
       refundNotice:
         "Будь ласка, зверніть увагу! Якщо ви вже придбали квиток на Beauty Business Forum, але ваші плани змінилися і ви не зможете бути присутніми, будь ласка, повідомте нас про це не пізніше ніж за один місяць до початку заходу. У такому разі ми зможемо оформити повернення коштів відповідно до правил заходу.",
     },
+  },
+  notFound: {
+    title: "Сторінку не знайдено",
+    description: "Сторінка, яку ви шукаєте, не існує або більше недоступна.",
+    backHome: "Повернутися на головну",
+    back: "Назад",
   },
 };
 

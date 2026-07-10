@@ -47,7 +47,6 @@ export default function JuryMenu({
 
   const menuItems = [
     { href: "/apply", label: t.common.applyAsParticipant },
-    { href: "/apply/jury", label: t.common.applyAsJury },
     { href: "/jury/login", label: t.common.juryAccount },
   ];
 

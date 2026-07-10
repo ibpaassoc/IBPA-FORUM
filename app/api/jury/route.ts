@@ -1,35 +1,17 @@
 import { NextResponse } from "next/server";
-import { submitJuryApplication } from "@/features/jury/server/commands";
 
-export async function POST(request: Request) {
-  try {
-    const formData = await request.formData();
-    const result = await submitJuryApplication(formData);
-
-    return NextResponse.json(result.body, { status: result.status });
-  } catch (error) {
-    if (
-      typeof error === "object" &&
-      error !== null &&
-      "code" in error &&
-      error.code === "P2002"
-    ) {
-      return NextResponse.json(
-        {
-          message: "You already submitted the application.",
-        },
-        { status: 409 }
-      );
-    }
-
-    console.error("Failed to submit jury application", error);
-
-    return NextResponse.json(
-      {
-        message:
-          "We could not submit the jury application right now. Please try again.",
-      },
-      { status: 500 }
-    );
-  }
+// Public jury applications are permanently closed. This endpoint used to accept
+// new jury submissions (submitJuryApplication). It now rejects every request at
+// the server level — including direct API calls, old browser tabs, cached JS,
+// bookmarked pages, and automated requests — so no new jury application can be
+// created. 410 Gone signals the resource existed but is intentionally retired.
+//
+// This does NOT affect existing jury records or the other /api/jury/* routes
+// (uploads, additional-info, file serving, scoring), which serve existing jury
+// members and admin review.
+export function POST() {
+  return NextResponse.json(
+    { message: "Jury applications are closed. New applications are no longer accepted." },
+    { status: 410 }
+  );
 }

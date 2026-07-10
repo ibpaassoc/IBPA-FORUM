@@ -1,19 +1,9 @@
-import { Suspense } from "react";
-import ApplicationFormSkeleton from "@/features/applications/components/application-form/ApplicationFormSkeleton";
-import JuryApplicationFormLoader from "@/features/jury/components/jury-application/JuryApplicationFormLoader";
-import JuryApplyHero from "@/features/jury/components/jury-application/JuryApplyHero";
-import { LandingPageShell, PageSection } from "@/shared/components/public";
+import { notFound } from "next/navigation";
 
+// Public jury applications are closed. This route intentionally renders the
+// global 404 (via notFound()) so the old application form is no longer reachable
+// and search engines drop the URL. Existing jury accounts, dashboards, scoring,
+// and admin review are unaffected.
 export default function JuryApplyPage() {
-
-  return (
-    <LandingPageShell>
-      <JuryApplyHero></JuryApplyHero>
-      <PageSection id="jury-form" className="landing-section py-8">
-        <Suspense fallback={<ApplicationFormSkeleton />}>
-          <JuryApplicationFormLoader />
-        </Suspense>
-      </PageSection>
-    </LandingPageShell>
-  );
+  notFound();
 }
