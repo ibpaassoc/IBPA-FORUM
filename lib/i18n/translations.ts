@@ -169,7 +169,7 @@ const en = {
           "Forum tickets, award nominations, and jury registration are priced separately. Forum and award pricing differs for IBPA members and standard participants.",
         option: "Option",
         members: "IBPA Members",
-        standard: "Standard",
+        standard: "Guest",
         nonMembers: "Non-members",
         memberPricingNote: "IBPA Member pricing is available to current IBPA Association members.",
         awardPricingNote: "Save more with multi-nomination packages.",
@@ -197,7 +197,7 @@ const en = {
           eyebrow: "Jury",
           title: "Jury Registration",
           member: "IBPA Member",
-          standard: "Standard",
+          standard: "Guest",
         },
 
         ctaEyebrow: "Ready to Join",
@@ -1899,7 +1899,7 @@ const ru: typeof en = {
 
         option: "Опция",
         members: "IBPA Участники",
-        standard: "Стандарт",
+        standard: "Гости",
         nonMembers: "Без участия",
         memberPricingNote: "Специальные цены для участников IBPA.",
         awardPricingNote: "Сэкономьте больше с пакетами для подачи нескольких заявок.",
@@ -1927,7 +1927,7 @@ const ru: typeof en = {
           eyebrow: "Жюри",
           title: "Регистрация судьи",
           member: "Участник IBPA",
-          standard: "Стандарт",
+          standard: "Гости",
         },
 
         ctaEyebrow: "Готовы участвовать",
@@ -3633,7 +3633,7 @@ const ua: typeof en = {
 
         option: "Опція",
         members: "IBPA Учасники",
-        standard: "Стандарт",
+        standard: "Гості",
         nonMembers: "Без участі",
         memberPricingNote: "Спеціальні ціни для учасників IBPA",
         awardPricingNote: "Заощаджуйте більше з пакетами для подання кількох заявок.",
@@ -3661,7 +3661,7 @@ const ua: typeof en = {
           eyebrow: "Журі",
           title: "Реєстрація судді",
           member: "Учасник IBPA",
-          standard: "Стандарт",
+          standard: "Гості",
         },
 
         ctaEyebrow: "Готові долучитися",
