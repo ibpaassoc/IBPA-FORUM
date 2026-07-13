@@ -2,6 +2,10 @@ import { Prisma, type StripeWebhookEvent } from "@prisma/client";
 import type Stripe from "stripe";
 import { sendCompetitorApplicationConfirmedEmail } from "@/features/email/server/competitor-email.workflow";
 import { sendPaymentAdminNotificationEmail } from "@/features/email/server/payment-email.workflow";
+import {
+  sendSetupEmailForAccount,
+  upsertApplicantAccountForApplication,
+} from "@/features/account/server/accounts";
 import { syncApplicationOnChange } from "@/features/google-sheets";
 import { prisma } from "@/shared/lib/prisma";
 
@@ -92,6 +96,7 @@ async function handleCompetitorCheckoutCompleted(event: Stripe.Event) {
 
   const paymentIntentId = getPaymentIntentId(session.payment_intent);
   let emailPayload: CompetitorPaymentEmailPayload | null = null;
+  let setupAccountId: string | null = null;
 
   try {
     await prisma.$transaction(async (tx) => {
@@ -109,6 +114,17 @@ async function handleCompetitorCheckoutCompleted(event: Stripe.Event) {
           currency: true,
           paymentStatus: true,
           submittedAt: true,
+          phone: true,
+          country: true,
+          stateProvince: true,
+          city: true,
+          professionalTitle: true,
+          yearsExperience: true,
+          membershipNumber: true,
+          membershipLevel: true,
+          websiteUrl: true,
+          socialUrl: true,
+          reviewsUrl: true,
           category: {
             select: {
               name: true,
@@ -127,12 +143,26 @@ async function handleCompetitorCheckoutCompleted(event: Stripe.Event) {
       }
 
       const paidAt = new Date();
+      const { account, profile } = await upsertApplicantAccountForApplication(tx, application);
 
       await tx.application.update({
         where: {
           id: application.id,
         },
         data: {
+          status: "SUBMITTED",
+          paymentStatus: "PAID",
+          paidAt,
+          submittedAt: application.submittedAt ?? paidAt,
+          stripeCheckoutSessionId: session.id,
+          stripePaymentIntentId: paymentIntentId,
+        },
+      });
+
+      await tx.nominationApplication.updateMany({
+        where: { applicationId: application.id },
+        data: {
+          applicantProfileId: profile.id,
           status: "SUBMITTED",
           paymentStatus: "PAID",
           paidAt,
@@ -161,6 +191,9 @@ async function handleCompetitorCheckoutCompleted(event: Stripe.Event) {
         amount: application.amount,
         currency: application.currency,
       };
+      if (account.status !== "ACTIVE" || !account.passwordHash) {
+        setupAccountId = account.id;
+      }
     });
   } catch (error) {
     if (isDuplicateStripeEventError(error)) {
@@ -175,6 +208,14 @@ async function handleCompetitorCheckoutCompleted(event: Stripe.Event) {
 
   if (!emailPayload) {
     return true;
+  }
+
+  if (setupAccountId) {
+    try {
+      await sendSetupEmailForAccount(setupAccountId);
+    } catch (error) {
+      console.error("Failed to send applicant account setup email", error);
+    }
   }
 
   const confirmedEmailPayload =

@@ -8,6 +8,7 @@ import {
 import { getApplicationCategories } from "@/features/applications/server/queries";
 import { isApplicationFileRef } from "@/features/applications/lib/file-ref";
 import { createCompetitorCheckoutSession } from "@/features/payments/server/checkout-sessions";
+import { upsertApplicantAccountForApplication } from "@/features/account/server/accounts";
 import { syncApplicationOnChange } from "@/features/google-sheets";
 import { prisma } from "@/shared/lib/prisma";
 import { Prisma } from "@prisma/client";
@@ -44,12 +45,14 @@ function computeApplicationAmountCents(count: number, isMember: boolean): number
 
 async function createNominationApplication({
   applicationId,
+  applicantProfileId,
   awardId,
   categoryId,
   categorySlug,
   nomValues,
 }: {
   applicationId: string;
+  applicantProfileId: string;
   awardId: string;
   categoryId: string;
   categorySlug: string;
@@ -108,6 +111,7 @@ async function createNominationApplication({
   const nominationApplication = await prisma.nominationApplication.create({
     data: {
       applicationId,
+      applicantProfileId,
       awardId,
       categoryId,
     },
@@ -197,6 +201,7 @@ export async function saveApplicationSubmission(formData: FormData) {
       : String(values.country ?? "").trim();
 
   let application: { id: string };
+  let applicantProfileId: string;
 
   try {
     application = await prisma.application.create({
@@ -227,6 +232,30 @@ export async function saveApplicationSubmission(formData: FormData) {
     console.info("Application database record created", { applicationId: application.id });
   } catch (error) {
     console.error("Application database insert failed", { error });
+    throw error;
+  }
+
+  try {
+    const accountData = await prisma.$transaction((tx) =>
+      upsertApplicantAccountForApplication(tx, {
+        fullName,
+        email: normalizedEmail,
+        phone: String(values.phone),
+        country,
+        stateProvince: String(values.stateProvince || "") || null,
+        city: String(values.city),
+        professionalTitle: String(values.professionalTitle),
+        yearsExperience: Number(values.yearsExperience),
+        membershipNumber: isIbpaMember && ibpaMemberNumber ? ibpaMemberNumber : null,
+        membershipLevel: isIbpaMember ? "member" : null,
+        websiteUrl: String(values.websiteUrl || "") || null,
+        socialUrl: String(values.socialUrl || "") || null,
+        reviewsUrl: String(values.reviewsUrl || "") || null,
+      })
+    );
+    applicantProfileId = accountData.profile.id;
+  } catch (error) {
+    console.error("Applicant account/profile upsert failed", { applicationId: application.id, error });
     throw error;
   }
 
@@ -265,6 +294,7 @@ export async function saveApplicationSubmission(formData: FormData) {
     for (const nom of selectedNominations) {
       await createNominationApplication({
         applicationId: application.id,
+        applicantProfileId,
         awardId: nom.awardId,
         categoryId: nom.categoryId,
         categorySlug: nom.categorySlug,

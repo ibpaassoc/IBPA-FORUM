@@ -106,13 +106,13 @@ export default function JuryDashboardPage({
       {expertiseAreas.length > 1 ? (
         <DashboardCard>
           <div className="flex flex-wrap gap-2">
-            <DashboardFilterChip href="/jury/dashboard" active={!activeCategory}>
+            <DashboardFilterChip href="/account/jury" active={!activeCategory}>
               All categories
             </DashboardFilterChip>
             {expertiseAreas.map((area) => (
               <DashboardFilterChip
                 key={area}
-                href={`/jury/dashboard?category=${encodeURIComponent(area)}`}
+                href={`/account/jury?category=${encodeURIComponent(area)}`}
                 active={activeCategory === area}
               >
                 {area}
@@ -137,7 +137,7 @@ export default function JuryDashboardPage({
       ) : (
         <DashboardStagger className="flex flex-col gap-3" stagger={0.05}>
           {applications.map((app) => (
-            <Link key={app.id} href={`/jury/dashboard/applications/${app.id}`} className="group block">
+            <Link key={app.id} href={`/account/jury/nominations/${app.id}`} className="group block">
               <DashboardCard className="p-0 transition-all duration-200 hover:border-[rgba(114,160,193,0.4)] hover:shadow-[0_18px_48px_rgba(114,160,193,0.16)]">
                 <div className="grid gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(260px,0.8fr)_148px] lg:items-center">
                   <div className="min-w-0">

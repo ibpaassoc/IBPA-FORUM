@@ -154,11 +154,11 @@ export async function requireActiveJuryJudge() {
   });
 
   if (!juryApplication) {
-    redirect("/jury/login");
+    redirect("/account/login");
   }
 
   if (!isEligibleScoringJudge(juryApplication.status)) {
-    redirect("/jury/login");
+    redirect("/account/login");
   }
 
   return {

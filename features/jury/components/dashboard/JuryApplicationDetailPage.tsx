@@ -223,7 +223,7 @@ export default function JuryApplicationDetailPage({
         title={nomination.award.name}
         description={`${nomination.category.name} / ${application.fullName}`}
         actions={
-          <DashboardSecondaryBtn href="/jury/dashboard">
+          <DashboardSecondaryBtn href="/account/jury">
             <ArrowLeft aria-hidden size={15} />
             Back
           </DashboardSecondaryBtn>

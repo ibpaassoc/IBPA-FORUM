@@ -68,7 +68,7 @@ export default function JuryScoresPage({
       ) : (
         <div className="flex flex-col gap-3">
           {applications.map((app) => (
-            <Link key={app.id} href={`/jury/dashboard/applications/${app.id}`} className="group block">
+            <Link key={app.id} href={`/account/jury/nominations/${app.id}`} className="group block">
               <DashboardCard className="p-0 transition-all duration-200 hover:border-[rgba(114,160,193,0.4)] hover:shadow-[0_18px_48px_rgba(114,160,193,0.16)]">
                 <div className="grid gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(260px,0.8fr)_148px] lg:items-center">
                   <div className="min-w-0">

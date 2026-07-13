@@ -20,20 +20,20 @@ import {
 } from "@/shared/components/admin/DashboardUI";
 
 const navItems = [
-  { href: "/jury/dashboard", label: "Review Queue", shortLabel: "Queue", icon: ClipboardList },
+  { href: "/account/jury", label: "Review Queue", shortLabel: "Queue", icon: ClipboardList },
   { href: "/jury/dashboard/scores", label: "Scores", shortLabel: "Scores", icon: CheckSquare },
 ];
 
 function isActive(pathname: string, href: string) {
   if (href === "/jury/dashboard/scores") return pathname === href;
-  return pathname === href || pathname.startsWith("/jury/dashboard/applications");
+  return pathname === href || pathname.startsWith("/account/jury/nominations");
 }
 
 function SignOutButton({ compact = false }: { compact?: boolean }) {
   return (
     <button
       type="button"
-      onClick={() => void signOut({ callbackUrl: "/jury/login" })}
+      onClick={() => void signOut({ callbackUrl: "/account/login" })}
       className="flex min-h-11 w-full items-center justify-center gap-3 rounded-[18px] border border-transparent px-3 text-[0.76rem] font-semibold uppercase tracking-[0.1em] text-[var(--color-ink-soft)] transition hover:border-red-200 hover:bg-red-50 hover:text-red-700"
     >
       <LogOut aria-hidden size={16} strokeWidth={1.8} />
@@ -71,7 +71,7 @@ export default function JurySidebar({
           <div className="rounded-[34px] border border-[rgba(114,160,193,0.2)] bg-white/76 p-3 shadow-[0_28px_90px_rgba(37,42,45,0.09)] backdrop-blur-2xl">
             <div className="rounded-[26px] bg-[linear-gradient(135deg,rgba(185,217,235,0.34),rgba(255,255,255,0.78))] p-3">
               <div className="flex items-start justify-between gap-2">
-                <Link href="/jury/dashboard" className="min-w-0">
+                <Link href="/account/jury" className="min-w-0">
                   <p className="font-[var(--font-title-family)] text-[1.45rem] font-light leading-none tracking-[-0.03em] text-[var(--color-ink)]">
                     IBPA
                   </p>

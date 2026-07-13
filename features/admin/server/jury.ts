@@ -4,7 +4,6 @@ import { revalidatePath } from "next/cache";
 import type { Prisma } from "@prisma/client";
 import { getAppSession } from "@/auth";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
-import { normalizeJuryEmail } from "@/features/jury/server/auth";
 import type { DraftScoreInput, SubmitScoreInput } from "@/features/admin/actions/scoring_schemas";
 import { prisma } from "@/shared/lib/prisma";
 import { syncScoreOnChange } from "@/features/google-sheets";
@@ -300,6 +299,8 @@ export async function saveJudgeScoreDraft({
 
   revalidatePath("/jury/dashboard");
   revalidatePath(`/jury/dashboard/applications/${nominationApplicationId}`);
+  revalidatePath("/account/jury");
+  revalidatePath(`/account/jury/nominations/${nominationApplicationId}`);
   revalidatePath("/admin/scoring");
   revalidatePath(`/admin/scoring/${nomination.applicationId}`);
 
@@ -368,6 +369,8 @@ export async function submitJudgeScore({
 
   revalidatePath("/jury/dashboard");
   revalidatePath(`/jury/dashboard/applications/${nominationApplicationId}`);
+  revalidatePath("/account/jury");
+  revalidatePath(`/account/jury/nominations/${nominationApplicationId}`);
   revalidatePath("/admin/scoring");
   revalidatePath(`/admin/scoring/${nomination.applicationId}`);
 
@@ -383,33 +386,31 @@ export async function getAuthenticatedJudgeScoringContext() {
 export async function getAuthenticatedJudgeScoringApiContext(): Promise<ActiveJudgeContext> {
   const session = await getAppSession();
 
-  if (!session?.user?.email) {
+  if (!session?.user?.accountId || session.user.role !== "JURY") {
     throw new ScoringHttpError(401, "Judge authentication is required.");
   }
 
-  const account = await prisma.juryAccount.findUnique({
-    where: {
-      email: normalizeJuryEmail(session.user.email),
-    },
+  const account = await prisma.account.findUnique({
+    where: { id: session.user.accountId },
     include: {
-      juryApplication: {
+      juryProfile: {
         select: {
           id: true,
+          juryApplicationId: true,
           fullName: true,
           professionalTitle: true,
           expertiseAreas: true,
-          status: true,
-          paymentStatus: true,
+          approvalStatus: true,
         },
       },
     },
   });
 
-  if (!account?.juryApplication) {
+  if (!account?.juryProfile?.juryApplicationId) {
     throw new ScoringHttpError(401, "Judge authentication is required.");
   }
 
-  if (!isEligibleScoringJudge(account.juryApplication.status)) {
+  if (!account.juryProfile.approvalStatus || !isEligibleScoringJudge(account.juryProfile.approvalStatus)) {
     throw new ScoringHttpError(
       403,
       "Only approved judges can access the scoring workspace."
@@ -419,9 +420,9 @@ export async function getAuthenticatedJudgeScoringApiContext(): Promise<ActiveJu
   return {
     accountId: account.id,
     email: account.email,
-    juryApplicationId: account.juryApplication.id,
-    fullName: account.juryApplication.fullName,
-    professionalTitle: account.juryApplication.professionalTitle,
-    expertiseAreas: account.juryApplication.expertiseAreas,
+    juryApplicationId: account.juryProfile.juryApplicationId,
+    fullName: account.juryProfile.fullName,
+    professionalTitle: account.juryProfile.professionalTitle ?? "",
+    expertiseAreas: account.juryProfile.expertiseAreas,
   };
 }

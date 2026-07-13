@@ -402,6 +402,7 @@ export async function reopenJudgeScore(scoreId: string) {
     select: {
       id: true,
       applicationId: true,
+      nominationApplicationId: true,
       status: true,
       updatedAt: true,
     },
@@ -409,6 +410,10 @@ export async function reopenJudgeScore(scoreId: string) {
 
   revalidatePath("/jury/dashboard");
   revalidatePath(`/jury/dashboard/applications/${score.applicationId}`);
+  revalidatePath("/account/jury");
+  if (score.nominationApplicationId) {
+    revalidatePath(`/account/jury/nominations/${score.nominationApplicationId}`);
+  }
   revalidatePath("/admin/scoring");
   revalidatePath(`/admin/scoring/${score.applicationId}`);
 
