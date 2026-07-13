@@ -14,6 +14,7 @@ export async function sendTicketConfirmationEmail({
   galaDinner,
   secureToken,
   instagram,
+  accessUpdated = false,
 }: {
   to: string;
   fullName: string;
@@ -21,10 +22,18 @@ export async function sendTicketConfirmationEmail({
   galaDinner: boolean;
   secureToken: string;
   instagram?: string | null;
+  accessUpdated?: boolean;
 }) {
   const qrBuffer = await generateTicketQRBuffer(secureToken);
   const paymentUrl = `${getAppUrl()}/tickets/${secureToken}`;
-  const template = ticketConfirmationTemplate({ fullName, type, galaDinner, paymentUrl, instagram });
+  const template = ticketConfirmationTemplate({
+    fullName,
+    type,
+    galaDinner,
+    paymentUrl,
+    instagram,
+    accessUpdated,
+  });
 
   return sendEmail({
     type: "user",
@@ -41,6 +50,8 @@ export async function sendTicketConfirmationEmail({
     ],
   });
 }
+
+export const sendTicketQrEmail = sendTicketConfirmationEmail;
 
 /**
  * Send an unpaid ticket holder a fresh payment link (admin resend flow).

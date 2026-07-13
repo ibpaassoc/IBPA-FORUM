@@ -23,6 +23,7 @@ const TICKET_TYPE_LABELS: Record<string, string> = {
 export type CheckInError =
   | { ok: false; code: "INVALID_CODE"; status: 400; message: string }
   | { ok: false; code: "NOT_FOUND"; status: 404; message: string }
+  | { ok: false; code: "QR_REPLACED"; status: 410; message: string }
   | { ok: false; code: "NOT_PAID"; status: 422; message: string }
   | { ok: false; code: "ALREADY_CHECKED_IN"; status: 409; message: string; checkedInAt: string }
   | { ok: false; code: "MODE_MISMATCH"; status: 422; message: string }
@@ -30,7 +31,7 @@ export type CheckInError =
 
 export type ResolveResult =
   | { ok: true; ticket: NormalizedTicket }
-  | Extract<CheckInError, { code: "INVALID_CODE" | "NOT_FOUND" | "MODE_MISMATCH" }>;
+  | Extract<CheckInError, { code: "INVALID_CODE" | "NOT_FOUND" | "QR_REPLACED" | "MODE_MISMATCH" }>;
 
 /** Clear, mode-specific rejection message ("Билет не действует для …"). */
 function modeMismatchError(
@@ -141,22 +142,37 @@ function normalizeJury(jury: JuryApplication): NormalizedTicket {
 
 // ─── Lookup ──────────────────────────────────────────────────────────────────
 
+type LookupResult =
+  | { kind: "found"; ticket: NormalizedTicket }
+  | { kind: "replaced" }
+  | { kind: "missing" };
+
 async function findByKind(
   kind: TicketKind,
   token: string,
-): Promise<NormalizedTicket | null> {
+): Promise<LookupResult> {
   switch (kind) {
     case "TICKET": {
+      const credential = await prisma.ticketQrCredential.findUnique({
+        where: { token },
+        include: { ticket: true },
+      });
+
+      if (credential) {
+        if (credential.status !== "ACTIVE") return { kind: "replaced" };
+        return { kind: "found", ticket: normalizeTicket(credential.ticket) };
+      }
+
       const ticket = await prisma.ticket.findUnique({ where: { secureToken: token } });
-      return ticket ? normalizeTicket(ticket) : null;
+      return ticket ? { kind: "found", ticket: normalizeTicket(ticket) } : { kind: "missing" };
     }
     case "PARTICIPANT": {
       const app = await prisma.application.findUnique({ where: { id: token } });
-      return app ? normalizeApplication(app) : null;
+      return app ? { kind: "found", ticket: normalizeApplication(app) } : { kind: "missing" };
     }
     case "JURY": {
       const jury = await prisma.juryApplication.findUnique({ where: { id: token } });
-      return jury ? normalizeJury(jury) : null;
+      return jury ? { kind: "found", ticket: normalizeJury(jury) } : { kind: "missing" };
     }
   }
 }
@@ -186,13 +202,32 @@ export async function resolveScan(
   }
 
   let resolved: NormalizedTicket | null = null;
+  let replaced = false;
   if (parsed.kind) {
-    resolved = await findByKind(parsed.kind, parsed.token);
+    const result = await findByKind(parsed.kind, parsed.token);
+    if (result.kind === "found") resolved = result.ticket;
+    if (result.kind === "replaced") replaced = true;
   } else {
     for (const kind of ["TICKET", "PARTICIPANT", "JURY"] as const) {
-      resolved = await findByKind(kind, parsed.token);
-      if (resolved) break;
+      const result = await findByKind(kind, parsed.token);
+      if (result.kind === "found") {
+        resolved = result.ticket;
+        break;
+      }
+      if (result.kind === "replaced") {
+        replaced = true;
+        break;
+      }
     }
+  }
+
+  if (replaced) {
+    return {
+      ok: false,
+      code: "QR_REPLACED",
+      status: 410,
+      message: "Этот QR-код был заменён. Используйте новый QR-код клиента.",
+    };
   }
 
   if (!resolved) {

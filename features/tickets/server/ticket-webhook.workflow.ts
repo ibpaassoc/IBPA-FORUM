@@ -4,6 +4,7 @@ import type Stripe from "stripe";
 import { prisma } from "@/shared/lib/prisma";
 import { findTicketById, findTicketByStripeSessionId } from "./ticket-repository";
 import { sendTicketConfirmationEmail } from "./ticket-email.workflow";
+import { ensureActiveTicketQr } from "./ticket-admin-service";
 import { syncTicketOnChange } from "@/features/google-sheets";
 
 function getPaymentIntentId(value: string | Stripe.PaymentIntent | null): string | null {
@@ -89,6 +90,8 @@ async function handleTicketCheckoutCompleted(event: Stripe.Event): Promise<boole
           paidAt,
         },
       });
+
+      await ensureActiveTicketQr(ticket.id, tx);
     });
   } catch (error) {
     if (isDuplicateStripeEventError(error)) {
