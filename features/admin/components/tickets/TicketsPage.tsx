@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Ticket, Camera, X, Tag, ChevronDown, Send, Pencil, QrCode, RefreshCw, Mail, Loader2, Save } from "lucide-react";
 import {
@@ -75,6 +76,65 @@ type QrPreview = {
   credential: TicketQrCredential | null;
   qrDataUrl: string | null;
 };
+
+const ticketAdminCopy = {
+  customerName: "Покупатель",
+  email: "Эл. почта",
+  phone: "Телефон",
+  ticketType: "Тип билета",
+  galaDinner: "Гала-ужин",
+  included: "Включён",
+  notIncluded: "Не включён",
+  qrCode: "QR-код",
+  ticketQr: "QR-код билета",
+  closeQrPreview: "Закрыть просмотр QR-кода",
+  qrStatus: "Статус QR",
+  generated: "Создан",
+  unavailable: "Недоступен",
+  noActiveQr: "Для этого билета нет активного QR-кода.",
+  generateQr: "Создать QR-код",
+  qrPreviewUnavailable: "Просмотр QR-кода недоступен.",
+  requiredFields: "Имя, email и телефон обязательны.",
+  confirmTicketChanges: "Подтвердите изменения билета",
+  accessChangeWarning:
+    "Сохранение этих изменений доступа создаст новый QR-код, потому что права доступа клиента изменились.",
+  sendUpdatedQrNow: "Отправить обновлённый QR-код клиенту сейчас?",
+  saveFailed: "Не удалось сохранить изменения билета.",
+  ticketUpdated: "Билет обновлён.",
+  ticketUpdatedQrSent: "Билет обновлён, новый QR-код отправлен.",
+  ticketUpdatedQrDeliveryHint:
+    "Билет обновлён, QR-код пересоздан. Если письмо не доставлено, используйте «Отправить текущий QR-код повторно».",
+  saveNetworkError: "Ошибка сети при сохранении билета.",
+  regenerateQrTitle: "Пересоздать QR-код?",
+  regenerateQrWarning:
+    "Это аннулирует предыдущий QR-код клиента и отправит новый QR-код на текущий email.",
+  loadQrFailed: "Не удалось загрузить QR-код.",
+  currentQrResent: "Текущий QR-код отправлен повторно.",
+  newQrSent: "Новый QR-код создан и отправлен.",
+  qrEmailFailed: "QR-код пересоздан, но письмо не удалось доставить.",
+  qrActionFailed: "Не удалось выполнить действие с QR-кодом.",
+  qrNetworkError: "Ошибка сети при обработке QR-кода.",
+  editTicket: "Редактировать билет",
+  cancel: "Отмена",
+  saveChanges: "Сохранить изменения",
+  qrCodeStatus: "Статус QR-кода",
+  lastSent: "Последняя отправка",
+  viewQr: "Посмотреть QR-код",
+  regenerateAndResend: "Пересоздать и отправить QR-код",
+  resendCurrent: "Отправить текущий QR-код повторно",
+  discardUnsaved: "Отменить несохранённые изменения билета?",
+} as const;
+
+const qrStatusLabels: Record<string, string> = {
+  ACTIVE: "Активен",
+  REPLACED: "Заменён",
+  REVOKED: "Отозван",
+};
+
+function qrStatusLabel(status?: string | null) {
+  if (!status) return ticketAdminCopy.unavailable;
+  return qrStatusLabels[status] ?? status;
+}
 
 function ticketStatusBadge(status: string, paymentStatus?: string) {
   switch (status) {
@@ -248,12 +308,12 @@ function isFormDirty(ticket: TicketRecord, form: TicketFormState) {
 function changedFieldSummary(ticket: TicketRecord, form: TicketFormState) {
   const initial = ticketFormState(ticket);
   const labels: Partial<Record<keyof TicketFormState, string>> = {
-    fullName: "Customer name",
-    email: "Email",
-    phone: "Phone",
+    fullName: ticketAdminCopy.customerName,
+    email: ticketAdminCopy.email,
+    phone: ticketAdminCopy.phone,
     instagram: "Instagram",
-    type: "Ticket type",
-    galaDinner: "Gala Dinner",
+    type: ticketAdminCopy.ticketType,
+    galaDinner: ticketAdminCopy.galaDinner,
   };
   return (Object.keys(labels) as Array<keyof TicketFormState>)
     .filter((field) => initial[field] !== form[field])
@@ -263,16 +323,16 @@ function changedFieldSummary(ticket: TicketRecord, form: TicketFormState) {
           ? ticketTypeLabelRu(String(initial[field]))
           : field === "galaDinner"
             ? initial[field]
-              ? "Included"
-              : "Not included"
+              ? ticketAdminCopy.included
+              : ticketAdminCopy.notIncluded
             : String(initial[field] || "—");
       const after =
         field === "type"
           ? ticketTypeLabelRu(String(form[field]))
           : field === "galaDinner"
             ? form[field]
-              ? "Included"
-              : "Not included"
+              ? ticketAdminCopy.included
+              : ticketAdminCopy.notIncluded
             : String(form[field] || "—");
       return `${labels[field]}: ${before} → ${after}`;
     });
@@ -319,19 +379,26 @@ function QrPreviewDialog({
   const ticket = preview?.ticket;
   const credential = preview?.credential ?? null;
 
-  return (
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-[rgba(3,2,19,0.28)] p-0 backdrop-blur-sm sm:items-center sm:p-4">
       <div className="max-h-[92vh] w-full max-w-lg overflow-auto rounded-t-[30px] border border-[rgba(114,160,193,0.22)] bg-white/95 p-6 shadow-[0_28px_90px_rgba(3,2,19,0.2)] backdrop-blur-2xl sm:rounded-[30px]">
         <div className="mb-5 flex items-start justify-between gap-4">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-blue)]">
-              QR code
+              {ticketAdminCopy.qrCode}
             </p>
             <h2 className="mt-1 font-[var(--font-title-family)] text-2xl font-light text-[var(--color-ink)]">
-              {ticket?.fullName ?? "Ticket QR"}
+              {ticket?.fullName ?? ticketAdminCopy.ticketQr}
             </h2>
           </div>
-          <IconButton label="Close QR preview" icon={X} onClick={onClose} className="size-9" />
+          <IconButton
+            label={ticketAdminCopy.closeQrPreview}
+            icon={X}
+            onClick={onClose}
+            className="size-9"
+          />
         </div>
 
         {loading ? (
@@ -345,15 +412,15 @@ function QrPreviewDialog({
               <DetailItem label={adminT.detail.email} value={ticket.email} />
               <DetailItem label={adminT.tickets.ticketType} value={ticketTypeLabelRu(ticket.type)} />
               <DetailItem label={adminT.tickets.galaDinner} value={ticket.galaDinner ? adminT.tickets.included : adminT.tickets.notIncluded} />
-              <DetailItem label="QR status" value={credential?.status ?? "Unavailable"} />
-              <DetailItem label="Generated" value={credential ? formatDate(credential.generatedAt) : null} />
+              <DetailItem label={ticketAdminCopy.qrStatus} value={qrStatusLabel(credential?.status)} />
+              <DetailItem label={ticketAdminCopy.generated} value={credential ? formatDate(credential.generatedAt) : null} />
             </div>
 
             {preview?.qrDataUrl ? (
               <div className="flex flex-col items-center rounded-[20px] border border-[rgba(37,42,45,0.08)] bg-[var(--color-blue-wash)]/50 p-5">
                 <Image
                   src={preview.qrDataUrl}
-                  alt={`QR code for ${ticket.fullName}`}
+                  alt={`QR-код для ${ticket.fullName}`}
                   width={256}
                   height={256}
                   unoptimized
@@ -363,20 +430,21 @@ function QrPreviewDialog({
             ) : (
               <div className="rounded-[18px] border border-dashed border-[rgba(114,160,193,0.32)] bg-white/70 p-5 text-center">
                 <p className="text-sm text-[var(--color-ink-soft)]">
-                  No active QR code is available for this ticket.
+                  {ticketAdminCopy.noActiveQr}
                 </p>
                 <button type="button" onClick={onGenerate} className={`${smallButtonClass} mt-4`}>
                   <RefreshCw size={15} />
-                  Generate QR code
+                  {ticketAdminCopy.generateQr}
                 </button>
               </div>
             )}
           </div>
         ) : (
-          <p className="text-sm text-red-600">QR preview is unavailable.</p>
+          <p className="text-sm text-red-600">{ticketAdminCopy.qrPreviewUnavailable}</p>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -416,7 +484,7 @@ function TicketDetailPanel({
 
   async function saveEdit() {
     if (!form.fullName.trim() || !form.email.trim() || !form.phone.trim()) {
-      onToast({ tone: "error", message: "Name, email, and phone are required." });
+      onToast({ tone: "error", message: ticketAdminCopy.requiredFields });
       return;
     }
 
@@ -426,14 +494,14 @@ function TicketDetailPanel({
 
     if (accessChanged) {
       const confirmed = window.confirm(
-        `Confirm ticket changes\n\n${changes.join("\n")}\n\nSaving these access changes will generate a new QR code because the customer's access permissions changed.`
+        `${ticketAdminCopy.confirmTicketChanges}\n\n${changes.join("\n")}\n\n${ticketAdminCopy.accessChangeWarning}`
       );
       if (!confirmed) return;
-      sendUpdatedQr = window.confirm("Send the updated QR code to the customer now?");
+      sendUpdatedQr = window.confirm(ticketAdminCopy.sendUpdatedQrNow);
     }
 
     if (!accessChanged && changes.length > 0) {
-      const confirmed = window.confirm(`Confirm ticket changes\n\n${changes.join("\n")}`);
+      const confirmed = window.confirm(`${ticketAdminCopy.confirmTicketChanges}\n\n${changes.join("\n")}`);
       if (!confirmed) return;
     }
 
@@ -460,7 +528,7 @@ function TicketDetailPanel({
       };
 
       if (!res.ok || !data.ok) {
-        onToast({ tone: "error", message: data.message ?? "Could not save ticket changes." });
+        onToast({ tone: "error", message: ticketAdminCopy.saveFailed });
         return;
       }
 
@@ -470,13 +538,13 @@ function TicketDetailPanel({
         tone: data.email?.delivered === false ? "info" : "success",
         message: data.qrRegenerated
           ? data.email?.delivered
-            ? "Ticket updated and a new QR code was sent."
-            : "Ticket updated and QR regenerated. Use “Resend current QR code” if delivery failed."
-          : "Ticket updated.",
+            ? ticketAdminCopy.ticketUpdatedQrSent
+            : ticketAdminCopy.ticketUpdatedQrDeliveryHint
+          : ticketAdminCopy.ticketUpdated,
       });
       router.refresh();
     } catch {
-      onToast({ tone: "error", message: "Network error while saving ticket." });
+      onToast({ tone: "error", message: ticketAdminCopy.saveNetworkError });
     } finally {
       setSaving(false);
     }
@@ -485,7 +553,7 @@ function TicketDetailPanel({
   async function runQrAction(action: "preview" | "generate" | "regenerate_resend" | "resend_current") {
     if (action === "regenerate_resend") {
       const confirmed = window.confirm(
-        "Regenerate QR code?\n\nThis will invalidate the customer's previous QR code and send a newly generated QR code to their current email address."
+        `${ticketAdminCopy.regenerateQrTitle}\n\n${ticketAdminCopy.regenerateQrWarning}`
       );
       if (!confirmed) return;
     }
@@ -524,7 +592,7 @@ function TicketDetailPanel({
             qrDataUrl: data.qrDataUrl ?? null,
           });
         } else {
-          onToast({ tone: "error", message: data.message ?? "Could not load QR code." });
+          onToast({ tone: "error", message: ticketAdminCopy.loadQrFailed });
         }
         return;
       }
@@ -534,8 +602,8 @@ function TicketDetailPanel({
           tone: "success",
           message:
             action === "resend_current"
-              ? "Current QR code was resent."
-              : "New QR code was generated and sent.",
+              ? ticketAdminCopy.currentQrResent
+              : ticketAdminCopy.newQrSent,
         });
         router.refresh();
         return;
@@ -544,14 +612,13 @@ function TicketDetailPanel({
       onToast({
         tone: data.reason === "email_failed" ? "info" : "error",
         message:
-          data.message ??
-          (data.reason === "email_failed"
-            ? "QR was regenerated, but the email could not be delivered."
-            : "QR action failed."),
+          data.reason === "email_failed"
+            ? ticketAdminCopy.qrEmailFailed
+            : ticketAdminCopy.qrActionFailed,
       });
       router.refresh();
     } catch {
-      onToast({ tone: "error", message: "Network error while processing QR action." });
+      onToast({ tone: "error", message: ticketAdminCopy.qrNetworkError });
     } finally {
       setQrPending(null);
     }
@@ -562,7 +629,7 @@ function TicketDetailPanel({
       <div className="relative">
         {!editing && (
           <IconButton
-            label="Edit ticket"
+            label={ticketAdminCopy.editTicket}
             icon={Pencil}
             onClick={() => {
               setForm(ticketFormState(ticket));
@@ -606,11 +673,11 @@ function TicketDetailPanel({
             <div className="flex flex-col gap-2 pt-1 sm:col-span-2 sm:flex-row sm:justify-end">
               <button type="button" className={smallButtonClass} onClick={cancelEdit} disabled={saving}>
                 <X size={15} />
-                Cancel
+                {ticketAdminCopy.cancel}
               </button>
               <button type="button" className={`${smallButtonClass} border-[var(--color-blue)] bg-[var(--color-blue)] text-white hover:bg-[#4d86ad]`} onClick={saveEdit} disabled={saving || !dirty}>
                 {saving ? <Loader2 className="animate-spin" size={15} /> : <Save size={15} />}
-                Save changes
+                {ticketAdminCopy.saveChanges}
               </button>
             </div>
           </div>
@@ -678,25 +745,25 @@ function TicketDetailPanel({
       <div className="mt-4 border-t border-[rgba(37,42,45,0.08)] pt-4">
         <div className="mb-3 flex flex-col gap-1 text-[0.8rem] text-[var(--color-ink-soft)] sm:flex-row sm:items-center sm:justify-between">
           <span>
-            QR code status:{" "}
-            <strong className="text-[var(--color-ink)]">{qr?.status ?? "Unavailable"}</strong>
-            {qr ? ` · Generated ${formatDate(qr.generatedAt)}` : ""}
+            {ticketAdminCopy.qrCodeStatus}:{" "}
+            <strong className="text-[var(--color-ink)]">{qrStatusLabel(qr?.status)}</strong>
+            {qr ? ` · ${ticketAdminCopy.generated} ${formatDate(qr.generatedAt)}` : ""}
           </span>
-          {qr?.lastSentAt ? <span>Last sent {formatDate(qr.lastSentAt)}</span> : null}
+          {qr?.lastSentAt ? <span>{ticketAdminCopy.lastSent}: {formatDate(qr.lastSentAt)}</span> : null}
         </div>
         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           <button type="button" className={smallButtonClass} onClick={() => runQrAction("preview")} disabled={saving || qrPending !== null}>
             {qrPending === "preview" ? <Loader2 className="animate-spin" size={15} /> : <QrCode size={15} />}
-            View QR code
+            {ticketAdminCopy.viewQr}
           </button>
           <button type="button" className={smallButtonClass} onClick={() => runQrAction("regenerate_resend")} disabled={saving || qrPending !== null || ticket.status === "PENDING" || ticket.status === "CANCELED"}>
             {qrPending === "regenerate" ? <Loader2 className="animate-spin" size={15} /> : <RefreshCw size={15} />}
-            Regenerate and resend QR code
+            {ticketAdminCopy.regenerateAndResend}
           </button>
           {qr && (
             <button type="button" className={smallButtonClass} onClick={() => runQrAction("resend_current")} disabled={saving || qrPending !== null || ticket.status === "PENDING" || ticket.status === "CANCELED"}>
               {qrPending === "resend" ? <Loader2 className="animate-spin" size={15} /> : <Mail size={15} />}
-              Resend current QR code
+              {ticketAdminCopy.resendCurrent}
             </button>
           )}
         </div>
@@ -733,7 +800,7 @@ function TicketRow({
     if (
       expanded &&
       hasUnsavedEdits &&
-      !window.confirm("Discard unsaved ticket changes?")
+      !window.confirm(ticketAdminCopy.discardUnsaved)
     ) {
       return;
     }
