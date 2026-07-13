@@ -794,7 +794,7 @@ const en = {
         },
         {
           number: "06",
-          title: "Submit before July 8, 2026",
+          title: "Submit before August 10, 2026",
         },
       ],
 
@@ -2621,7 +2621,7 @@ const ru: typeof en = {
         },
         {
           number: "06",
-          title: "Приём заявок до 8 июля 2026 года",
+          title: "Приём заявок до 10 августа 2026 года",
         },
       ],
 
@@ -4448,7 +4448,7 @@ const ua: typeof en = {
         },
         {
           number: "06",
-          title: "Подайте заявку до 8 липня 2026 року",
+          title: "Подайте заявку до 10 серпня 2026 року",
         },
       ],
 
