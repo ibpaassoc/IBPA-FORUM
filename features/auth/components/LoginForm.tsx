@@ -29,12 +29,16 @@ export default function LoginForm() {
       email,
       password,
       redirect: false,
-      callbackUrl: "/",
+      callbackUrl: "/account",
     });
 
     if (!result || result.error) {
       if (result?.error === "No account is registered with this email.") {
         setError(t.auth.form.noRegisteredAccount);
+      } else if (result?.error === "Account setup is required.") {
+        setError("This account has not been activated yet. Please use your setup link or request a new one.");
+      } else if (result?.error === "This account is disabled.") {
+        setError("This account is disabled. Please contact IBPA support.");
       } else {
         setError(t.auth.form.invalidCredentials);
       }
@@ -42,7 +46,7 @@ export default function LoginForm() {
       return;
     }
 
-    router.replace("/jury/dashboard");
+    router.replace("/account");
     router.refresh();
   }
 
@@ -69,7 +73,7 @@ export default function LoginForm() {
             {t.auth.form.password}
           </label>
           <Link
-            href="/jury/forgot-password"
+            href="/account/forgot-password"
             className="text-[clamp(0.65rem,0.95vw,0.75rem)] text-[var(--color-hover-accent)] transition hover:text-[var(--color-blue)] hover:underline"
           >
             {t.auth.form.forgotPassword}
@@ -103,10 +107,10 @@ export default function LoginForm() {
       <p className="text-sm leading-6 text-[var(--color-ink-soft)]">
         {t.auth.form.noAccount}{" "}
         <Link
-          href="/jury/register"
+          href="/account/setup"
           className="text-[var(--color-hover-accent)] hover:text-[var(--color-blue)] hover:underline"
         >
-          {t.auth.form.register}
+          Set up account
         </Link>
         .
       </p>

@@ -1,5 +1,5 @@
-import JuryLoginContent from "@/features/auth/components/JuryLoginContent";
+import { redirect } from "next/navigation";
 
 export default async function JuryLoginPage() {
-  return <JuryLoginContent />;
+  redirect("/account/login");
 }

@@ -4,33 +4,40 @@ import { prisma } from "@/shared/lib/prisma";
 import { createPasswordHash, isStrongPassword } from "@/features/account/server/password";
 import { validateAccountToken } from "@/features/account/server/tokens";
 
-export type ResetPasswordState = {
+export type SetupPasswordState = {
   success?: boolean;
   invalidToken?: boolean;
   expiredToken?: boolean;
   error?: string;
+  email?: string;
 };
 
-export async function resetPasswordAction(
-  _prev: ResetPasswordState | undefined,
+export async function setupPasswordAction(
+  _prev: SetupPasswordState | undefined,
   formData: FormData
-): Promise<ResetPasswordState> {
+): Promise<SetupPasswordState> {
   const token = String(formData.get("token") ?? "");
   const password = String(formData.get("password") ?? "");
   const confirmPassword = String(formData.get("confirmPassword") ?? "");
 
-  const validation = await validateAccountToken({ token, purpose: "PASSWORD_RESET" });
+  const validation = await validateAccountToken({ token, purpose: "SETUP" });
 
   if (!validation.valid) {
     return validation.expired ? { expiredToken: true } : { invalidToken: true };
   }
 
   if (!isStrongPassword(password)) {
-    return { error: "Password must be at least 8 characters long." };
+    return {
+      email: validation.record.account.email,
+      error: "Password must be at least 8 characters long.",
+    };
   }
 
   if (password !== confirmPassword) {
-    return { error: "Passwords do not match." };
+    return {
+      email: validation.record.account.email,
+      error: "Passwords do not match.",
+    };
   }
 
   const passwordHash = await createPasswordHash(password);
@@ -49,5 +56,8 @@ export async function resetPasswordAction(
     }),
   ]);
 
-  return { success: true };
+  return {
+    success: true,
+    email: validation.record.account.email,
+  };
 }

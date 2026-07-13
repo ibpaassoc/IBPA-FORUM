@@ -1,5 +1,5 @@
-import JuryRegisterContent from "@/features/auth/components/JuryRegisterContent";
+import { redirect } from "next/navigation";
 
 export default async function JuryRegisterPage() {
-  return <JuryRegisterContent />;
+  redirect("/account/setup");
 }

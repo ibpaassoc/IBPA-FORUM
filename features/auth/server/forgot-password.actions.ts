@@ -1,10 +1,9 @@
 "use server";
 
-import { randomBytes } from "node:crypto";
 import { prisma } from "@/shared/lib/prisma";
-import { findJuryAccountByEmail, normalizeJuryEmail } from "@/features/jury/server/auth";
-import { sendEmail } from "@/features/email/server/send-email";
-import { juryPasswordReset } from "@/features/email/templates/jury-password-reset";
+import { normalizeAccountEmail } from "@/features/account/server/password";
+import { createAccountSetupToken } from "@/features/account/server/tokens";
+import { sendAccountPasswordResetEmail } from "@/features/account/server/emails";
 
 export type ForgotPasswordState = {
   sent?: boolean;
@@ -15,40 +14,31 @@ export async function forgotPasswordAction(
   _prev: ForgotPasswordState | undefined,
   formData: FormData
 ): Promise<ForgotPasswordState> {
-  const email = normalizeJuryEmail(String(formData.get("email") ?? ""));
+  const email = normalizeAccountEmail(String(formData.get("email") ?? ""));
 
   if (!email) {
     return { error: "Email is required." };
   }
 
-  const account = await findJuryAccountByEmail(email);
+  const payload = await prisma.$transaction(async (tx) => {
+    const account = await tx.account.findUnique({ where: { email } });
 
-  // Always return success to prevent email enumeration attacks
-  if (!account) {
-    return { sent: true };
+    // Always return success to prevent email enumeration attacks.
+    if (!account || account.status === "DISABLED") {
+      return null;
+    }
+
+    const token = await createAccountSetupToken(tx, {
+      accountId: account.id,
+      purpose: "PASSWORD_RESET",
+    });
+
+    return { token: token.token, email: account.email };
+  });
+
+  if (payload) {
+    await sendAccountPasswordResetEmail({ to: payload.email, token: payload.token });
   }
-
-  const token = randomBytes(32).toString("hex");
-  const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
-
-  await prisma.juryPasswordReset.deleteMany({ where: { email } });
-
-  await prisma.juryPasswordReset.create({
-    data: { email, token, expiresAt },
-  });
-
-  const baseUrl = process.env.NEXTAUTH_URL ?? "";
-  const resetUrl = `${baseUrl}/jury/reset-password?token=${token}`;
-
-  const emailPayload = juryPasswordReset({ resetUrl });
-
-  await sendEmail({
-    type: "user",
-    to: email,
-    subject: emailPayload.subject,
-    html: emailPayload.html,
-    text: emailPayload.text,
-  });
 
   return { sent: true };
 }
