@@ -312,6 +312,32 @@ const en = {
             "This session is designed for brow artists, lash artists, nail technicians, makeup artists, cosmetologists, salon owners, educators, and beginners. Eleonora will demonstrate how to build a sustainable content strategy, attract clients through social media, create content that converts into sales, and grow a strong personal brand. The presentation is based on her real experience of growing an audience from 1,700 to 30,000 followers in just six months.",
           instagram: "",
           website: ""
+        },
+        {
+          name: "Yulia Malina",
+          photo: "/images/speakers/yulia-malina.png",
+          role:
+              "AI strategist, entrepreneur, and founder of the educational platform AI Insiders. Yulia develops AI agents and intelligent systems for content creation, marketing, and business automation, helping entrepreneurs transform scattered AI usage into efficient teams of specialized AI assistants.",
+          city: "Miami, Florida, USA",
+          topic:
+              "The Next Generation of Beauty Business: How an AI Team Helps You Create, Sell, and Grow",
+          description:
+              "Artificial intelligence is no longer just one chatbot or a collection of disconnected tools. Yulia will demonstrate how a team of specialized AI assistants can help beauty professionals research the market, develop new services and products, create content, strengthen marketing, improve client communication, analyze business data, and streamline operations. The presentation includes practical use cases for independent beauty professionals, salons, academies, entrepreneurs, and beauty brands. Participants will also learn which business tasks should remain human-driven to preserve authenticity, expertise, and customer trust.",
+          instagram: "https://www.instagram.com/yulia.malina.usa/",
+          website: "https://ainsiders.club"
+        },
+        {
+          name: "Hanna Vakulych",
+          photo: "/images/speakers/hanna-vakulych.jpg",
+          role:
+              "Founder of Magica Beauty LLC (USA), international educator, beauty industry expert with more than 25 years of experience, former regional trainer for L'Oréal and Vitality's, international championship judge, and creator of proprietary educational methodologies.",
+          city: "United States",
+          topic:
+              "Who Is Your Client? The Psychology of Sales Through Simple Examples",
+          description:
+              "Hanna will introduce her unique client profiling methodology based on well-known cartoon characters. This practical approach helps beauty professionals quickly understand different customer personalities, confidently handle objections, improve communication, and naturally increase sales. Participants will leave with an easy-to-use psychological framework that can be applied immediately in consultations and everyday client interactions.",
+          instagram: "",
+          website: ""
         }
       ]
     },
@@ -2042,6 +2068,32 @@ const ru: typeof en = {
             "Контент, который продаёт: система продвижения бьюти-мастера в соцсетях без хаоса и выгорания",
           description:
             "Выступление предназначено для бровистов, лешмейкеров, нейл-мастеров, визажистов, косметологов, владельцев салонов, тренеров и начинающих специалистов. Элеонора расскажет, как выстроить понятную контент-стратегию, привлекать клиентов через социальные сети без постоянного выгорания, создавать контент, который действительно продаёт, и развивать личный бренд. Основано на личном опыте роста аудитории с 1 700 до 30 000 подписчиков всего за 6 месяцев.",
+          instagram: "",
+          website: ""
+        },
+        {
+          name: "Юлия Малина",
+          photo: "/images/speakers/yulia-malina.png",
+          role:
+            "AI-стратег, предприниматель и создатель образовательного проекта «ИИнсайдеры». Разрабатывает AI-агентов и интеллектуальные системы для создания контента, маркетинга и автоматизации бизнес-процессов, помогая предпринимателям перейти от разрозненного использования нейросетей к системной работе с командой специализированных AI-помощников.",
+          city: "Майами, Флорида, США",
+          topic:
+            "Beauty-бизнес нового поколения: как AI-команда помогает создавать, продавать и расти",
+          description:
+            "Сегодня искусственный интеллект — это уже не один чат и не набор отдельных инструментов, а команда специализированных AI-помощников для разных задач бизнеса. Юлия покажет, как AI-команда помогает исследовать рынок, создавать новые услуги, продукты и контент, усиливать маркетинг и коммуникацию с клиентами, анализировать данные и систематизировать бизнес-процессы. Практические кейсы будут полезны мастерам, салонам, студиям, преподавателям, предпринимателям и beauty-брендам. Участники также узнают, какие задачи важно оставить человеку, чтобы сохранить экспертность, индивидуальность и доверие клиентов.",
+          instagram: "https://www.instagram.com/yulia.malina.usa/",
+          website: "https://ainsiders.club"
+        },
+        {
+          name: "Ханна Вакулич",
+          photo: "/images/speakers/hanna-vakulych.jpg",
+          role:
+            "Основатель компании Magica Beauty LLC (США), международный преподаватель и эксперт beauty-индустрии с опытом более 25 лет. Много лет являлась региональным тренером L'Oréal и Vitality's, международным судьёй чемпионатов и автором собственных образовательных методик.",
+          city: "США",
+          topic:
+            "Кто ваш клиент? Психология продаж на простых примерах",
+          description:
+            "Ханна представит авторскую методику определения типа клиента, основанную на известных мультипликационных персонажах. Вы получите простой и понятный инструмент, который поможет с первых минут понимать клиента, легко работать с возражениями, выстраивать доверительное общение и уверенно увеличивать продажи. Методика легко применяется в ежедневной работе мастеров, преподавателей и владельцев beauty-бизнеса.",
           instagram: "",
           website: ""
         }
@@ -3775,6 +3827,32 @@ const ua: typeof en = {
             "Контент, який продає: система просування beauty-майстра в соціальних мережах без хаосу та вигорання",
           description:
             "Виступ буде корисний бровистам, лешмейкерам, нейл-майстрам, візажистам, косметологам, власникам салонів, викладачам та початківцям. Елеонора покаже, як побудувати зрозумілу контент-стратегію, залучати клієнтів через соціальні мережі без постійного вигорання, створювати контент, який продає, та розвивати особистий бренд. В основі виступу — власний досвід зростання аудиторії з 1 700 до 30 000 підписників лише за шість місяців.",
+          instagram: "",
+          website: ""
+        },
+        {
+          name: "Юлія Маліна",
+          photo: "/images/speakers/yulia-malina.png",
+          role:
+            "AI-стратег, підприємиця та засновниця освітнього проєкту «AI Insiders». Розробляє AI-агентів та інтелектуальні системи для створення контенту, маркетингу й автоматизації бізнес-процесів, допомагаючи підприємцям перейти від хаотичного використання нейромереж до системної роботи з командою спеціалізованих AI-помічників.",
+          city: "Маямі, Флорида, США",
+          topic:
+            "Beauty-бізнес нового покоління: як AI-команда допомагає створювати, продавати та зростати",
+          description:
+            "Сьогодні штучний інтелект — це вже не один чат і не набір окремих інструментів, а команда спеціалізованих AI-помічників для різних бізнес-завдань. Юлія покаже, як AI-команда допомагає досліджувати ринок, створювати нові послуги, продукти та контент, посилювати маркетинг і комунікацію з клієнтами, аналізувати дані та систематизувати бізнес-процеси. Практичні приклади будуть корисними для майстрів, салонів, студій, викладачів, підприємців і beauty-брендів. Окрему увагу буде приділено тому, які завдання важливо залишити людині, щоб зберегти експертність, індивідуальність і довіру клієнтів.",
+          instagram: "https://www.instagram.com/yulia.malina.usa/",
+          website: "https://ainsiders.club"
+        },
+        {
+          name: "Ганна Вакулич",
+          photo: "/images/speakers/hanna-vakulych.jpg",
+          role:
+            "Засновниця Magica Beauty LLC (США), міжнародний викладач та експерт beauty-індустрії з понад 25-річним досвідом. Багато років працювала регіональним тренером L'Oréal і Vitality's, є міжнародним суддею чемпіонатів та авторкою власних освітніх методик.",
+          city: "США",
+          topic:
+            "Хто ваш клієнт? Психологія продажів на простих прикладах",
+          description:
+            "Ганна представить авторську методику визначення типу клієнта, засновану на відомих мультиплікаційних персонажах. Ви отримаєте простий і зрозумілий інструмент, який допоможе з перших хвилин зрозуміти клієнта, легко працювати із запереченнями, будувати довірливу комунікацію та впевнено збільшувати продажі. Методика легко застосовується у щоденній роботі майстрів, викладачів і власників beauty-бізнесу.",
           instagram: "",
           website: ""
         }
