@@ -325,6 +325,8 @@ model Ticket {
   createdAt             DateTime     @default(now())
   updatedAt             DateTime     @updatedAt
   payments              Payment[]
+  qrCredentials         TicketQrCredential[]
+  activities            TicketActivity[]
 }
 
 enum TicketType {
@@ -339,6 +341,54 @@ enum TicketStatus {
   CHECKED_ONE_DAY
   CHECKED_TWO_DAY
   CHECKED_GALA_DINNER
+}
+
+enum TicketQrStatus {
+  ACTIVE
+  REPLACED
+  REVOKED
+}
+
+enum TicketActivityType {
+  UPDATED
+  QR_GENERATED
+  QR_REGENERATED
+  QR_RESENT
+  QR_EMAIL_FAILED
+}
+
+model TicketQrCredential {
+  id                     String         @id @default(cuid())
+  ticketId               String
+  token                  String         @unique
+  status                 TicketQrStatus @default(ACTIVE)
+  generatedAt            DateTime       @default(now())
+  replacedAt             DateTime?
+  revokedAt              DateTime?
+  lastSentAt             DateTime?
+  lastDeliveryStatus     String?
+  lastDeliveryProviderId String?
+  lastDeliveryError      String?
+  ticket                 Ticket         @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId, status])
+  @@index([generatedAt])
+}
+
+model TicketActivity {
+  id             String             @id @default(cuid())
+  ticketId       String
+  adminId        String?
+  type           TicketActivityType
+  changedFields  Json?
+  previousValues Json?
+  newValues      Json?
+  emailDelivery  Json?
+  createdAt      DateTime           @default(now())
+  ticket         Ticket             @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId, createdAt])
+  @@index([type])
 }
 
 model SiteSetting {

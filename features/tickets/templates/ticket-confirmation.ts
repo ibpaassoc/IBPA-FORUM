@@ -9,6 +9,7 @@ type TicketConfirmationParams = {
   galaDinner: boolean;
   paymentUrl: string;
   instagram?: string | null;
+  accessUpdated?: boolean;
 };
 
 export function ticketConfirmationTemplate({
@@ -17,6 +18,7 @@ export function ticketConfirmationTemplate({
   galaDinner,
   paymentUrl,
   instagram,
+  accessUpdated = false,
 }: TicketConfirmationParams) {
   const ticketLabel = TICKET_TYPE_LABELS[type];
   const instagramRow = instagram
@@ -68,6 +70,13 @@ export function ticketConfirmationTemplate({
               Your registration for the <strong>IBPA BEAUTY AWARD 2026</strong> is complete.
               Below are your ticket details and the QR code you'll use to check in on the day of the event.
             </p>
+            ${
+              accessUpdated
+                ? `<p style="margin:0 0 24px;font-size:14px;line-height:1.65;color:#374151;background:#f2f8fb;border:1px solid #dbeafe;border-radius:10px;padding:14px 16px;">
+              Your ticket access has been updated. Please use this new QR code at the event. Any QR code previously sent to you is no longer valid.
+            </p>`
+                : ""
+            }
 
             <!-- Ticket details -->
             <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;border-radius:10px;padding:20px 24px;margin-bottom:28px;">
@@ -143,6 +152,11 @@ export function ticketConfirmationTemplate({
     `Your ticket for the IBPA BEAUTY AWARD 2026 is confirmed.`,
     `Ticket type: ${ticketLabel}`,
     `Gala Dinner: ${galaDinner ? "Included" : "Not included"}`,
+    ...(accessUpdated
+      ? [
+          "Your ticket access has been updated. Please use this new QR code at the event. Any QR code previously sent to you is no longer valid.",
+        ]
+      : []),
     ...(instagram ? [`Instagram: @${instagram}`] : []),
     `Please show the attached QR code at the check-in desk on arrival.`,
     `View your payment details: ${paymentUrl}`,

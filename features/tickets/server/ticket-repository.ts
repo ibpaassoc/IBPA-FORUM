@@ -192,11 +192,26 @@ export async function getAllTickets() {
       forumCheckInAt: true,
       galaCheckInAt: true,
       createdAt: true,
+      updatedAt: true,
       payments: {
         where: { source: "TICKET" },
         orderBy: { createdAt: "desc" },
         take: 1,
         select: { amount: true, currency: true, status: true },
+      },
+      qrCredentials: {
+        orderBy: { generatedAt: "desc" },
+        take: 5,
+        select: {
+          id: true,
+          status: true,
+          generatedAt: true,
+          replacedAt: true,
+          revokedAt: true,
+          lastSentAt: true,
+          lastDeliveryStatus: true,
+          lastDeliveryError: true,
+        },
       },
     },
   });

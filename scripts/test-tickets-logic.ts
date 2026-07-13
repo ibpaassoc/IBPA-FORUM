@@ -22,6 +22,12 @@ import {
   buildTicketCheckoutMetadata,
   TICKET_FLOW_TYPE,
 } from "@/features/tickets/lib/checkout-metadata";
+import {
+  adminTicketUpdateSchema,
+  compareEditableTicketChanges,
+  hasQrRelevantChanges,
+  ticketCanReceiveQr,
+} from "@/features/tickets/lib/admin-ticket-rules";
 import { translations } from "@/lib/i18n/translations";
 
 let passed = 0;
@@ -184,6 +190,84 @@ console.log("buildTicketCheckoutMetadata");
     Object.values(meta).every((v) => typeof v === "string"),
     "all metadata values are strings"
   );
+}
+
+// ── Admin ticket edit validation and QR relevance ───────────────────────────
+console.log("admin ticket updates");
+{
+  const base = {
+    ticketId: "tk_123",
+    updatedAt: "2026-07-13T12:00:00.000Z",
+    fullName: "Jane Client",
+    email: "Jane@Example.COM",
+    phone: "+1 555 000 0000",
+    instagram: "jane",
+    type: "ONE_DAY" as const,
+    galaDinner: false,
+  };
+
+  const parsed = adminTicketUpdateSchema.safeParse(base);
+  assert(parsed.success, "valid admin edit payload parses");
+  if (parsed.success) {
+    eq(parsed.data.email, "jane@example.com", "admin edit normalizes email");
+  }
+
+  assert(
+    !adminTicketUpdateSchema.safeParse({ ...base, email: "not-an-email" }).success,
+    "admin edit rejects invalid email"
+  );
+  assert(
+    !adminTicketUpdateSchema.safeParse({ ...base, fullName: "" }).success,
+    "admin edit requires customer name"
+  );
+  assert(
+    !adminTicketUpdateSchema.safeParse({ ...base, type: "VIP" }).success,
+    "admin edit rejects unsupported ticket type"
+  );
+
+  const contactOnly = compareEditableTicketChanges(
+    {
+      fullName: "Jane Client",
+      email: "jane@example.com",
+      phone: "+1",
+      instagram: null,
+      type: "ONE_DAY",
+      galaDinner: false,
+    },
+    {
+      fullName: "Jane Corrected",
+      email: "jane.corrected@example.com",
+      phone: "+2",
+      instagram: null,
+      type: "ONE_DAY",
+      galaDinner: false,
+    }
+  );
+  eq(hasQrRelevantChanges(contactOnly), false, "contact-only edits do not require QR regeneration");
+
+  const access = compareEditableTicketChanges(
+    {
+      fullName: "Jane Client",
+      email: "jane@example.com",
+      phone: "+1",
+      instagram: null,
+      type: "ONE_DAY",
+      galaDinner: false,
+    },
+    {
+      fullName: "Jane Client",
+      email: "jane@example.com",
+      phone: "+1",
+      instagram: null,
+      type: "TWO_DAYS",
+      galaDinner: true,
+    }
+  );
+  eq(hasQrRelevantChanges(access), true, "ticket type and gala edits require QR regeneration");
+  eq(ticketCanReceiveQr("PAID"), true, "paid ticket can receive QR");
+  eq(ticketCanReceiveQr("CHECKED_ONE_DAY"), true, "checked-in ticket can receive refreshed QR");
+  eq(ticketCanReceiveQr("PENDING"), false, "pending ticket cannot receive QR");
+  eq(ticketCanReceiveQr("CANCELED"), false, "canceled ticket cannot receive QR");
 }
 
 // ── Refund notice localization (scenarios 13, 14, 15, 16) ────────────────────
