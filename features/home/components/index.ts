@@ -22,5 +22,5 @@ export { default as HomePricing } from "./HomePricing"
 export { default as HomeGrandPrix } from "./HomeGrandPrix"
 export { default as HomeWhyAttend } from "./HomeWhyAttend"
 export { default as HomeConversionBlock } from "./HomeConversionBlock"
-
+export { default as HomeDressCode } from "./HomeDressCode"
 export {default as EventExperienceCollage} from "./EventExperienceCollage"

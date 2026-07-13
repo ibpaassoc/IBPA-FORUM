@@ -341,6 +341,74 @@ const en = {
         }
       ]
     },
+    dressCode: {
+      eyebrow: "Beauty Business Forum",
+      title: "Dress Code",
+      description:
+        "A style that highlights your professionalism and creates an inspiring atmosphere.",
+      image: {
+        src: "/images/forum/dress-code.jpg",
+        alt: "Beauty Business Forum dress code examples",
+      },
+      colors: [
+        {
+          label: "White",
+          value: "#FFFFFF",
+        },
+        {
+          label: "Milk",
+          value: "#E9DCCF",
+        },
+        {
+          label: "Light Blue",
+          value: "#B8CDE5",
+        },
+        {
+          label: "Chocolate",
+          value: "#442817",
+        },
+      ],
+      days: [
+        {
+          eyebrow: "Day 1",
+          title: "Business Casual",
+          description:
+            "A polished and comfortable business look in white, milk, light blue, and chocolate tones.",
+        },
+        {
+          eyebrow: "Day 2",
+          title: "Business Casual",
+          description:
+            "Modern business styling with refined silhouettes and harmonious details.",
+        },
+        {
+          eyebrow: "Gala Dinner",
+          title: "Evening Look",
+          description:
+            "An elegant evening outfit in sophisticated milk or chocolate tones.",
+        },
+      ],
+      values: [
+        {
+          title: "Lightness",
+          description: "Style and confidence",
+        },
+        {
+          title: "Refinement",
+          description: "Harmony in the details",
+        },
+        {
+          title: "Modernity",
+          description: "Inspiration and individuality",
+        },
+        {
+          title: "Be Yourself",
+          description: "Inspire. Create.",
+        },
+      ],
+      footer:
+        "We look forward to seeing you in the style of our forum!",
+    },
     previousForum: {
       eyebrow: "Previous Event",
       title: "Beauty Business Forum 2025",
@@ -2098,6 +2166,74 @@ const ru: typeof en = {
           website: ""
         }
       ]
+    },
+    dressCode: {
+      eyebrow: "Beauty Business Forum",
+      title: "Дресс-код",
+      description:
+        "Стиль, который подчёркивает ваш профессионализм и создаёт вдохновляющую атмосферу.",
+      image: {
+        src: "/images/forum/dress-code.jpg",
+        alt: "Примеры дресс-кода Beauty Business Forum",
+      },
+      colors: [
+        {
+          label: "Белый",
+          value: "#FFFFFF",
+        },
+        {
+          label: "Молочный",
+          value: "#E9DCCF",
+        },
+        {
+          label: "Голубой",
+          value: "#B8CDE5",
+        },
+        {
+          label: "Шоколадный",
+          value: "#442817",
+        },
+      ],
+      days: [
+        {
+          eyebrow: "День 1",
+          title: "Business Casual",
+          description:
+            "Элегантный и комфортный деловой образ в белых, молочных, голубых и шоколадных оттенках.",
+        },
+        {
+          eyebrow: "День 2",
+          title: "Business Casual",
+          description:
+            "Современный деловой стиль с утончёнными силуэтами и гармоничными деталями.",
+        },
+        {
+          eyebrow: "Гала-ужин",
+          title: "Вечерний образ",
+          description:
+            "Элегантный вечерний образ в изысканных молочных или шоколадных оттенках.",
+        },
+      ],
+      values: [
+        {
+          title: "Лёгкость",
+          description: "Стиль и уверенность",
+        },
+        {
+          title: "Утончённость",
+          description: "Гармония в деталях",
+        },
+        {
+          title: "Современность",
+          description: "Вдохновение и индивидуальность",
+        },
+        {
+          title: "Будьте собой",
+          description: "Вдохновляйте. Создавайте.",
+        },
+      ],
+      footer:
+        "Будем рады видеть вас в стиле нашего форума!",
     },
     previousForum: {
       eyebrow: "Предыдущий ивент",
@@ -3857,6 +3993,74 @@ const ua: typeof en = {
           website: ""
         }
       ]
+    },
+    dressCode: {
+      eyebrow: "Beauty Business Forum",
+      title: "Дрес-код",
+      description:
+        "Стиль, який підкреслює ваш професіоналізм і створює натхненну атмосферу.",
+      image: {
+        src: "/images/forum/dress-code.jpg",
+        alt: "Приклади дрес-коду Beauty Business Forum",
+      },
+      colors: [
+        {
+          label: "Білий",
+          value: "#FFFFFF",
+        },
+        {
+          label: "Молочний",
+          value: "#E9DCCF",
+        },
+        {
+          label: "Блакитний",
+          value: "#B8CDE5",
+        },
+        {
+          label: "Шоколадний",
+          value: "#442817",
+        },
+      ],
+      days: [
+        {
+          eyebrow: "День 1",
+          title: "Business Casual",
+          description:
+            "Елегантний і комфортний діловий образ у білих, молочних, блакитних і шоколадних відтінках.",
+        },
+        {
+          eyebrow: "День 2",
+          title: "Business Casual",
+          description:
+            "Сучасний діловий стиль із витонченими силуетами та гармонійними деталями.",
+        },
+        {
+          eyebrow: "Гала-вечеря",
+          title: "Вечірній образ",
+          description:
+            "Елегантний вечірній образ у вишуканих молочних або шоколадних відтінках.",
+        },
+      ],
+      values: [
+        {
+          title: "Легкість",
+          description: "Стиль і впевненість",
+        },
+        {
+          title: "Вишуканість",
+          description: "Гармонія в деталях",
+        },
+        {
+          title: "Сучасність",
+          description: "Натхнення та індивідуальність",
+        },
+        {
+          title: "Будьте собою",
+          description: "Надихайте. Створюйте.",
+        },
+      ],
+      footer:
+        "Будемо раді бачити вас у стилі нашого форуму!",
     },
     previousForum: {
       eyebrow: "Попередній івент",

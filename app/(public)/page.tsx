@@ -5,6 +5,7 @@ import {
   HomeThreeExperiences,
   HomeProgram,
   HomeConversionBlock,
+  HomeDressCode,
   HomePreviousForum,
   HomePartners,
 } from "@/features/home/components";
@@ -33,6 +34,7 @@ export default function HomePagePremium() {
       {/*<HomeProgram />*/}
       <HomeConversionBlock />
       <HomeSpeakers />
+      <HomeDressCode />
       <HomePreviousForum />
       <HomePreviousWinners />
       {/*<HomePartners />*/}
