@@ -134,7 +134,7 @@ const en = {
 
       registrationInfo: {
         eyebrow: "Registration Period",
-        value: "1 June – 8 July",
+        value: "2 July – 10 August",
         text: "Applications are accepted from June 1 through July 8, 2026 inclusive.",
       },
 
@@ -169,7 +169,7 @@ const en = {
           "Forum tickets, award nominations, and jury registration are priced separately. Forum and award pricing differs for IBPA members and standard participants.",
         option: "Option",
         members: "IBPA Members",
-        standard: "Standard",
+        standard: "Guest",
         nonMembers: "Non-members",
         memberPricingNote: "IBPA Member pricing is available to current IBPA Association members.",
         awardPricingNote: "Save more with multi-nomination packages.",
@@ -197,7 +197,7 @@ const en = {
           eyebrow: "Jury",
           title: "Jury Registration",
           member: "IBPA Member",
-          standard: "Standard",
+          standard: "Guest",
         },
 
         ctaEyebrow: "Ready to Join",
@@ -312,8 +312,102 @@ const en = {
             "This session is designed for brow artists, lash artists, nail technicians, makeup artists, cosmetologists, salon owners, educators, and beginners. Eleonora will demonstrate how to build a sustainable content strategy, attract clients through social media, create content that converts into sales, and grow a strong personal brand. The presentation is based on her real experience of growing an audience from 1,700 to 30,000 followers in just six months.",
           instagram: "",
           website: ""
+        },
+        {
+          name: "Yulia Malina",
+          photo: "/images/speakers/yulia-malina.png",
+          role:
+              "AI strategist, entrepreneur, and founder of the educational platform AI Insiders. Yulia develops AI agents and intelligent systems for content creation, marketing, and business automation, helping entrepreneurs transform scattered AI usage into efficient teams of specialized AI assistants.",
+          city: "Miami, Florida, USA",
+          topic:
+              "The Next Generation of Beauty Business: How an AI Team Helps You Create, Sell, and Grow",
+          description:
+              "Artificial intelligence is no longer just one chatbot or a collection of disconnected tools. Yulia will demonstrate how a team of specialized AI assistants can help beauty professionals research the market, develop new services and products, create content, strengthen marketing, improve client communication, analyze business data, and streamline operations. The presentation includes practical use cases for independent beauty professionals, salons, academies, entrepreneurs, and beauty brands. Participants will also learn which business tasks should remain human-driven to preserve authenticity, expertise, and customer trust.",
+          instagram: "https://www.instagram.com/yulia.malina.usa/",
+          website: "https://ainsiders.club"
+        },
+        {
+          name: "Hanna Vakulych",
+          photo: "/images/speakers/hanna-vakulych.jpg",
+          role:
+              "Founder of Magica Beauty LLC (USA), international educator, beauty industry expert with more than 25 years of experience, former regional trainer for L'Oréal and Vitality's, international championship judge, and creator of proprietary educational methodologies.",
+          city: "United States",
+          topic:
+              "Who Is Your Client? The Psychology of Sales Through Simple Examples",
+          description:
+              "Hanna will introduce her unique client profiling methodology based on well-known cartoon characters. This practical approach helps beauty professionals quickly understand different customer personalities, confidently handle objections, improve communication, and naturally increase sales. Participants will leave with an easy-to-use psychological framework that can be applied immediately in consultations and everyday client interactions.",
+          instagram: "",
+          website: ""
         }
       ]
+    },
+    dressCode: {
+      eyebrow: "Beauty Business Forum",
+      title: "Dress Code",
+      description:
+        "A style that highlights your professionalism and creates an inspiring atmosphere.",
+      image: {
+        src: "/images/forum/dress-code.jpg",
+        alt: "Beauty Business Forum dress code examples",
+      },
+      colors: [
+        {
+          label: "White",
+          value: "#FFFFFF",
+        },
+        {
+          label: "Milk",
+          value: "#E9DCCF",
+        },
+        {
+          label: "Light Blue",
+          value: "#B8CDE5",
+        },
+        {
+          label: "Chocolate",
+          value: "#442817",
+        },
+      ],
+      days: [
+        {
+          eyebrow: "Day 1",
+          title: "Business Casual",
+          description:
+            "A polished and comfortable business look in white, milk, light blue, and chocolate tones.",
+        },
+        {
+          eyebrow: "Day 2",
+          title: "Business Casual",
+          description:
+            "Modern business styling with refined silhouettes and harmonious details.",
+        },
+        {
+          eyebrow: "Gala Dinner",
+          title: "Evening Look",
+          description:
+            "An elegant evening outfit in sophisticated milk or chocolate tones.",
+        },
+      ],
+      values: [
+        {
+          title: "Lightness",
+          description: "Style and confidence",
+        },
+        {
+          title: "Refinement",
+          description: "Harmony in the details",
+        },
+        {
+          title: "Modernity",
+          description: "Inspiration and individuality",
+        },
+        {
+          title: "Be Yourself",
+          description: "Inspire. Create.",
+        },
+      ],
+      footer:
+        "We look forward to seeing you in the style of our forum!",
     },
     previousForum: {
       eyebrow: "Previous Event",
@@ -700,7 +794,7 @@ const en = {
         },
         {
           number: "06",
-          title: "Submit before July 8, 2026",
+          title: "Submit before August 10, 2026",
         },
       ],
 
@@ -735,6 +829,7 @@ const en = {
           "Award of Excellence in Hair Color Technique",
           "Barbering Excellence Award",
           "Hair Restoration Mastery Award",
+          "Award for Outstanding Achievements in Hair Extensions"
         ],
       },
       {
@@ -849,12 +944,12 @@ const en = {
       timeline: {
         applicationsOpen: {
           label: "Applications open",
-          date: "Jun 20",
+          date: "Jul 2",
           sub: "2026",
         },
         registrationCloses: {
           label: "Registration closes",
-          date: "8 July",
+          date: "10 Aug",
           sub: "2026",
         },
         awardCeremony: {
@@ -1863,7 +1958,7 @@ const ru: typeof en = {
 
       registrationInfo: {
         eyebrow: "Период регистрации",
-        value: "1 июня – 8 июля 2026",
+        value: "2 июля – 10 августа 2026",
         text: "Приём заявок на участие осуществляется с 1 июня по 8 июля 2026 года включительно.",
       },
 
@@ -1899,7 +1994,7 @@ const ru: typeof en = {
 
         option: "Опция",
         members: "IBPA Участники",
-        standard: "Стандарт",
+        standard: "Гости",
         nonMembers: "Без участия",
         memberPricingNote: "Специальные цены для участников IBPA.",
         awardPricingNote: "Сэкономьте больше с пакетами для подачи нескольких заявок.",
@@ -1927,7 +2022,7 @@ const ru: typeof en = {
           eyebrow: "Жюри",
           title: "Регистрация судьи",
           member: "Участник IBPA",
-          standard: "Стандарт",
+          standard: "Гости",
         },
 
         ctaEyebrow: "Готовы участвовать",
@@ -2044,8 +2139,102 @@ const ru: typeof en = {
             "Выступление предназначено для бровистов, лешмейкеров, нейл-мастеров, визажистов, косметологов, владельцев салонов, тренеров и начинающих специалистов. Элеонора расскажет, как выстроить понятную контент-стратегию, привлекать клиентов через социальные сети без постоянного выгорания, создавать контент, который действительно продаёт, и развивать личный бренд. Основано на личном опыте роста аудитории с 1 700 до 30 000 подписчиков всего за 6 месяцев.",
           instagram: "",
           website: ""
+        },
+        {
+          name: "Юлия Малина",
+          photo: "/images/speakers/yulia-malina.png",
+          role:
+            "AI-стратег, предприниматель и создатель образовательного проекта «ИИнсайдеры». Разрабатывает AI-агентов и интеллектуальные системы для создания контента, маркетинга и автоматизации бизнес-процессов, помогая предпринимателям перейти от разрозненного использования нейросетей к системной работе с командой специализированных AI-помощников.",
+          city: "Майами, Флорида, США",
+          topic:
+            "Beauty-бизнес нового поколения: как AI-команда помогает создавать, продавать и расти",
+          description:
+            "Сегодня искусственный интеллект — это уже не один чат и не набор отдельных инструментов, а команда специализированных AI-помощников для разных задач бизнеса. Юлия покажет, как AI-команда помогает исследовать рынок, создавать новые услуги, продукты и контент, усиливать маркетинг и коммуникацию с клиентами, анализировать данные и систематизировать бизнес-процессы. Практические кейсы будут полезны мастерам, салонам, студиям, преподавателям, предпринимателям и beauty-брендам. Участники также узнают, какие задачи важно оставить человеку, чтобы сохранить экспертность, индивидуальность и доверие клиентов.",
+          instagram: "https://www.instagram.com/yulia.malina.usa/",
+          website: "https://ainsiders.club"
+        },
+        {
+          name: "Ханна Вакулич",
+          photo: "/images/speakers/hanna-vakulych.jpg",
+          role:
+            "Основатель компании Magica Beauty LLC (США), международный преподаватель и эксперт beauty-индустрии с опытом более 25 лет. Много лет являлась региональным тренером L'Oréal и Vitality's, международным судьёй чемпионатов и автором собственных образовательных методик.",
+          city: "США",
+          topic:
+            "Кто ваш клиент? Психология продаж на простых примерах",
+          description:
+            "Ханна представит авторскую методику определения типа клиента, основанную на известных мультипликационных персонажах. Вы получите простой и понятный инструмент, который поможет с первых минут понимать клиента, легко работать с возражениями, выстраивать доверительное общение и уверенно увеличивать продажи. Методика легко применяется в ежедневной работе мастеров, преподавателей и владельцев beauty-бизнеса.",
+          instagram: "",
+          website: ""
         }
       ]
+    },
+    dressCode: {
+      eyebrow: "Beauty Business Forum",
+      title: "Дресс-код",
+      description:
+        "Стиль, который подчёркивает ваш профессионализм и создаёт вдохновляющую атмосферу.",
+      image: {
+        src: "/images/forum/dress-code.jpg",
+        alt: "Примеры дресс-кода Beauty Business Forum",
+      },
+      colors: [
+        {
+          label: "Белый",
+          value: "#FFFFFF",
+        },
+        {
+          label: "Молочный",
+          value: "#E9DCCF",
+        },
+        {
+          label: "Голубой",
+          value: "#B8CDE5",
+        },
+        {
+          label: "Шоколадный",
+          value: "#442817",
+        },
+      ],
+      days: [
+        {
+          eyebrow: "День 1",
+          title: "Business Casual",
+          description:
+            "Элегантный и комфортный деловой образ в белых, молочных, голубых и шоколадных оттенках.",
+        },
+        {
+          eyebrow: "День 2",
+          title: "Business Casual",
+          description:
+            "Современный деловой стиль с утончёнными силуэтами и гармоничными деталями.",
+        },
+        {
+          eyebrow: "Гала-ужин",
+          title: "Вечерний образ",
+          description:
+            "Элегантный вечерний образ в изысканных молочных или шоколадных оттенках.",
+        },
+      ],
+      values: [
+        {
+          title: "Лёгкость",
+          description: "Стиль и уверенность",
+        },
+        {
+          title: "Утончённость",
+          description: "Гармония в деталях",
+        },
+        {
+          title: "Современность",
+          description: "Вдохновение и индивидуальность",
+        },
+        {
+          title: "Будьте собой",
+          description: "Вдохновляйте. Создавайте.",
+        },
+      ],
+      footer:
+        "Будем рады видеть вас в стиле нашего форума!",
     },
     previousForum: {
       eyebrow: "Предыдущий ивент",
@@ -2433,7 +2622,7 @@ const ru: typeof en = {
         },
         {
           number: "06",
-          title: "Приём заявок до 8 июля 2026 года",
+          title: "Приём заявок до 10 августа 2026 года",
         },
       ],
 
@@ -2468,6 +2657,7 @@ const ru: typeof en = {
           "Премия за выдающиеся достижения в технике окрашивания волос",
           "Премия за выдающиеся достижения в барберинге",
           "Премия за выдающиеся достижения в восстановлении волос",
+          "Премия за выдающиеся достижения в области наращивания волос"
         ],
       },
       {
@@ -2582,12 +2772,12 @@ const ru: typeof en = {
       timeline: {
         applicationsOpen: {
           label: "Прием заявок открыт",
-          date: "1 июня",
+          date: "2 июля",
           sub: "2026",
         },
         registrationCloses: {
           label: "Регистрация закрывается",
-          date: "8 июля",
+          date: "10 августа",
           sub: "2026",
         },
         awardCeremony: {
@@ -3597,7 +3787,7 @@ const ua: typeof en = {
 
       registrationInfo: {
         eyebrow: "Період реєстрації",
-        value: "1 червня – 8 липня 2026",
+        value: "2 липня – 10 серпня 2026",
         text: "Прийом заявок на участь здійснюється з 1 червня до 8 липня 2026 року включно.",
       },
 
@@ -3633,7 +3823,7 @@ const ua: typeof en = {
 
         option: "Опція",
         members: "IBPA Учасники",
-        standard: "Стандарт",
+        standard: "Гості",
         nonMembers: "Без участі",
         memberPricingNote: "Спеціальні ціни для учасників IBPA",
         awardPricingNote: "Заощаджуйте більше з пакетами для подання кількох заявок.",
@@ -3661,7 +3851,7 @@ const ua: typeof en = {
           eyebrow: "Журі",
           title: "Реєстрація судді",
           member: "Учасник IBPA",
-          standard: "Стандарт",
+          standard: "Гості",
         },
 
         ctaEyebrow: "Готові долучитися",
@@ -3777,8 +3967,102 @@ const ua: typeof en = {
             "Виступ буде корисний бровистам, лешмейкерам, нейл-майстрам, візажистам, косметологам, власникам салонів, викладачам та початківцям. Елеонора покаже, як побудувати зрозумілу контент-стратегію, залучати клієнтів через соціальні мережі без постійного вигорання, створювати контент, який продає, та розвивати особистий бренд. В основі виступу — власний досвід зростання аудиторії з 1 700 до 30 000 підписників лише за шість місяців.",
           instagram: "",
           website: ""
+        },
+        {
+          name: "Юлія Маліна",
+          photo: "/images/speakers/yulia-malina.png",
+          role:
+            "AI-стратег, підприємиця та засновниця освітнього проєкту «AI Insiders». Розробляє AI-агентів та інтелектуальні системи для створення контенту, маркетингу й автоматизації бізнес-процесів, допомагаючи підприємцям перейти від хаотичного використання нейромереж до системної роботи з командою спеціалізованих AI-помічників.",
+          city: "Маямі, Флорида, США",
+          topic:
+            "Beauty-бізнес нового покоління: як AI-команда допомагає створювати, продавати та зростати",
+          description:
+            "Сьогодні штучний інтелект — це вже не один чат і не набір окремих інструментів, а команда спеціалізованих AI-помічників для різних бізнес-завдань. Юлія покаже, як AI-команда допомагає досліджувати ринок, створювати нові послуги, продукти та контент, посилювати маркетинг і комунікацію з клієнтами, аналізувати дані та систематизувати бізнес-процеси. Практичні приклади будуть корисними для майстрів, салонів, студій, викладачів, підприємців і beauty-брендів. Окрему увагу буде приділено тому, які завдання важливо залишити людині, щоб зберегти експертність, індивідуальність і довіру клієнтів.",
+          instagram: "https://www.instagram.com/yulia.malina.usa/",
+          website: "https://ainsiders.club"
+        },
+        {
+          name: "Ганна Вакулич",
+          photo: "/images/speakers/hanna-vakulych.jpg",
+          role:
+            "Засновниця Magica Beauty LLC (США), міжнародний викладач та експерт beauty-індустрії з понад 25-річним досвідом. Багато років працювала регіональним тренером L'Oréal і Vitality's, є міжнародним суддею чемпіонатів та авторкою власних освітніх методик.",
+          city: "США",
+          topic:
+            "Хто ваш клієнт? Психологія продажів на простих прикладах",
+          description:
+            "Ганна представить авторську методику визначення типу клієнта, засновану на відомих мультиплікаційних персонажах. Ви отримаєте простий і зрозумілий інструмент, який допоможе з перших хвилин зрозуміти клієнта, легко працювати із запереченнями, будувати довірливу комунікацію та впевнено збільшувати продажі. Методика легко застосовується у щоденній роботі майстрів, викладачів і власників beauty-бізнесу.",
+          instagram: "",
+          website: ""
         }
       ]
+    },
+    dressCode: {
+      eyebrow: "Beauty Business Forum",
+      title: "Дрес-код",
+      description:
+        "Стиль, який підкреслює ваш професіоналізм і створює натхненну атмосферу.",
+      image: {
+        src: "/images/forum/dress-code.jpg",
+        alt: "Приклади дрес-коду Beauty Business Forum",
+      },
+      colors: [
+        {
+          label: "Білий",
+          value: "#FFFFFF",
+        },
+        {
+          label: "Молочний",
+          value: "#E9DCCF",
+        },
+        {
+          label: "Блакитний",
+          value: "#B8CDE5",
+        },
+        {
+          label: "Шоколадний",
+          value: "#442817",
+        },
+      ],
+      days: [
+        {
+          eyebrow: "День 1",
+          title: "Business Casual",
+          description:
+            "Елегантний і комфортний діловий образ у білих, молочних, блакитних і шоколадних відтінках.",
+        },
+        {
+          eyebrow: "День 2",
+          title: "Business Casual",
+          description:
+            "Сучасний діловий стиль із витонченими силуетами та гармонійними деталями.",
+        },
+        {
+          eyebrow: "Гала-вечеря",
+          title: "Вечірній образ",
+          description:
+            "Елегантний вечірній образ у вишуканих молочних або шоколадних відтінках.",
+        },
+      ],
+      values: [
+        {
+          title: "Легкість",
+          description: "Стиль і впевненість",
+        },
+        {
+          title: "Вишуканість",
+          description: "Гармонія в деталях",
+        },
+        {
+          title: "Сучасність",
+          description: "Натхнення та індивідуальність",
+        },
+        {
+          title: "Будьте собою",
+          description: "Надихайте. Створюйте.",
+        },
+      ],
+      footer:
+        "Будемо раді бачити вас у стилі нашого форуму!",
     },
     previousForum: {
       eyebrow: "Попередній івент",
@@ -4166,7 +4450,7 @@ const ua: typeof en = {
         },
         {
           number: "06",
-          title: "Подайте заявку до 8 липня 2026 року",
+          title: "Подайте заявку до 10 серпня 2026 року",
         },
       ],
 
@@ -4201,6 +4485,7 @@ const ua: typeof en = {
           "Премія за видатні досягнення у техніці фарбування волосся",
           "Премія за видатні досягнення у барберингу",
           "Премія за видатні досягнення у відновленні волосся",
+          "Премія за видатні досягнення у сфері нарощування волосся"
         ],
       },
       {
@@ -4315,12 +4600,12 @@ const ua: typeof en = {
       timeline: {
         applicationsOpen: {
           label: "Прийом заявок відкрито",
-          date: "20 червня",
+          date: "2 липня",
           sub: "2026",
         },
         registrationCloses: {
           label: "Реєстрація завершується",
-          date: "8 липня",
+          date: "10 серпня",
           sub: "2026",
         },
         awardCeremony: {
