@@ -134,7 +134,7 @@ const en = {
 
       registrationInfo: {
         eyebrow: "Registration Period",
-        value: "1 June – 8 July",
+        value: "2 July – 10 August",
         text: "Applications are accepted from June 1 through July 8, 2026 inclusive.",
       },
 
@@ -849,12 +849,12 @@ const en = {
       timeline: {
         applicationsOpen: {
           label: "Applications open",
-          date: "Jun 20",
+          date: "Jul 2",
           sub: "2026",
         },
         registrationCloses: {
           label: "Registration closes",
-          date: "8 July",
+          date: "10 Aug",
           sub: "2026",
         },
         awardCeremony: {
@@ -1863,7 +1863,7 @@ const ru: typeof en = {
 
       registrationInfo: {
         eyebrow: "Период регистрации",
-        value: "1 июня – 8 июля 2026",
+        value: "2 июля – 10 августа 2026",
         text: "Приём заявок на участие осуществляется с 1 июня по 8 июля 2026 года включительно.",
       },
 
@@ -2582,12 +2582,12 @@ const ru: typeof en = {
       timeline: {
         applicationsOpen: {
           label: "Прием заявок открыт",
-          date: "1 июня",
+          date: "2 июля",
           sub: "2026",
         },
         registrationCloses: {
           label: "Регистрация закрывается",
-          date: "8 июля",
+          date: "10 августа",
           sub: "2026",
         },
         awardCeremony: {
@@ -3597,7 +3597,7 @@ const ua: typeof en = {
 
       registrationInfo: {
         eyebrow: "Період реєстрації",
-        value: "1 червня – 8 липня 2026",
+        value: "2 липня – 10 серпня 2026",
         text: "Прийом заявок на участь здійснюється з 1 червня до 8 липня 2026 року включно.",
       },
 
@@ -4315,12 +4315,12 @@ const ua: typeof en = {
       timeline: {
         applicationsOpen: {
           label: "Прийом заявок відкрито",
-          date: "20 червня",
+          date: "2 липня",
           sub: "2026",
         },
         registrationCloses: {
           label: "Реєстрація завершується",
-          date: "8 липня",
+          date: "10 серпня",
           sub: "2026",
         },
         awardCeremony: {
