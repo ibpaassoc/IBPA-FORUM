@@ -7,7 +7,6 @@ import {
   DashboardEmptyState,
   DashboardPageHeader,
   DashboardPanel,
-  DashboardShell,
   PremiumButton,
   SecondaryButton,
 } from "@/shared/components/admin/DashboardUI";
@@ -36,9 +35,8 @@ export default async function ApplicantDashboardPage() {
   const data = await getApplicantDashboardData();
 
   return (
-    <DashboardShell className="font-[var(--font-ui-family)]">
-      <main className="mx-auto flex w-full max-w-[1320px] flex-col gap-5 px-3 pb-24 pt-4 sm:px-5 md:px-6 lg:px-7 lg:py-6">
-        <DashboardPageHeader label="Account" title="Applicant dashboard" />
+    <div className="flex flex-col gap-5">
+      <DashboardPageHeader label="Account" title="Applicant dashboard" />
 
         <DashboardPanel>
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -193,7 +191,6 @@ export default async function ApplicantDashboardPage() {
             </DashboardPanel>
           </aside>
         </div>
-      </main>
-    </DashboardShell>
+    </div>
   );
 }

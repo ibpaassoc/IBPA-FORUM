@@ -5,7 +5,6 @@ import { categoryFieldConfigs } from "@/features/applications/config/category-fi
 import {
   DashboardBadge,
   DashboardPanel,
-  DashboardShell,
   SecondaryButton,
 } from "@/shared/components/admin/DashboardUI";
 
@@ -28,73 +27,73 @@ export default async function ApplicantNominationPage({
       : null;
 
   return (
-    <DashboardShell className="font-[var(--font-ui-family)]">
-      <main className="mx-auto flex w-full max-w-[1120px] flex-col gap-5 px-3 pb-24 pt-4 sm:px-5 md:px-6 lg:px-7 lg:py-6">
-        <SecondaryButton href="/account/applicant">
-          <ArrowLeft size={16} /> Back to dashboard
+    <div className="mx-auto flex w-full max-w-[1120px] flex-col gap-5">
+      <div>
+        <SecondaryButton href="/account/applicant/nominations">
+          <ArrowLeft size={16} /> Back to nominations
         </SecondaryButton>
+      </div>
 
+      <DashboardPanel>
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div>
+            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-blue)]">
+              {nomination.category.name}
+            </p>
+            <h1 className="mt-2 font-[var(--font-title-family)] text-4xl font-light leading-tight text-[var(--color-ink)]">
+              {nomination.award.name}
+            </h1>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <DashboardBadge tone={nomination.paymentStatus === "PAID" ? "green" : "amber"}>
+              {nomination.paymentStatus.toLowerCase()}
+            </DashboardBadge>
+            <DashboardBadge tone={locked ? "purple" : "neutral"}>
+              {locked ? "Locked" : nomination.status.toLowerCase().replaceAll("_", " ")}
+            </DashboardBadge>
+          </div>
+        </div>
+      </DashboardPanel>
+
+      <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
         <DashboardPanel>
-          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-            <div>
-              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-blue)]">
-                {nomination.category.name}
-              </p>
-              <h1 className="mt-2 font-[var(--font-title-family)] text-4xl font-light leading-tight text-[var(--color-ink)]">
-                {nomination.award.name}
-              </h1>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <DashboardBadge tone={nomination.paymentStatus === "PAID" ? "green" : "amber"}>
-                {nomination.paymentStatus.toLowerCase()}
-              </DashboardBadge>
-              <DashboardBadge tone={locked ? "purple" : "neutral"}>
-                {locked ? "Locked" : nomination.status.toLowerCase().replaceAll("_", " ")}
-              </DashboardBadge>
-            </div>
+          <h2 className="font-[var(--font-title-family)] text-2xl font-light text-[var(--color-ink)]">
+            Nomination editor
+          </h2>
+          <div className="mt-4">
+            <NominationEditorForm
+              nominationId={nomination.id}
+              fields={categoryFields}
+              initialAnswers={nomination.answers}
+              initialFiles={nomination.files}
+              locked={locked}
+              initialStatus={nomination.status}
+            />
           </div>
         </DashboardPanel>
 
-        <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
+        <aside className="flex flex-col gap-5">
           <DashboardPanel>
             <h2 className="font-[var(--font-title-family)] text-2xl font-light text-[var(--color-ink)]">
-              Nomination editor
+              Status
             </h2>
-            <div className="mt-4">
-              <NominationEditorForm
-                nominationId={nomination.id}
-                fields={categoryFields}
-                initialAnswers={nomination.answers}
-                initialFiles={nomination.files}
-                locked={locked}
-                initialStatus={nomination.status}
-              />
-            </div>
+            <p className="mt-3 text-sm leading-6 text-[var(--color-ink-soft)]">
+              Purchased nominations can be saved as drafts or submitted to the jury. Submitted nominations stay editable until applications close.
+            </p>
           </DashboardPanel>
 
-          <aside className="flex flex-col gap-5">
-            <DashboardPanel>
-              <h2 className="font-[var(--font-title-family)] text-2xl font-light text-[var(--color-ink)]">
-                Status
-              </h2>
-              <p className="mt-3 text-sm leading-6 text-[var(--color-ink-soft)]">
-                Purchased nominations can be saved as drafts or submitted to the jury. Submitted nominations stay editable until applications close.
-              </p>
-            </DashboardPanel>
-
-            <DashboardPanel>
-              <h2 className="font-[var(--font-title-family)] text-2xl font-light text-[var(--color-ink)]">
-                Scores
-              </h2>
-              <p className="mt-3 text-sm leading-6 text-[var(--color-ink-soft)]">
-                {scoreVisible && averageScore !== null
-                  ? `Final score: ${averageScore.toFixed(1)}`
-                  : "Scores have not been released yet."}
-              </p>
-            </DashboardPanel>
-          </aside>
-        </div>
-      </main>
-    </DashboardShell>
+          <DashboardPanel>
+            <h2 className="font-[var(--font-title-family)] text-2xl font-light text-[var(--color-ink)]">
+              Scores
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-[var(--color-ink-soft)]">
+              {scoreVisible && averageScore !== null
+                ? `Final score: ${averageScore.toFixed(1)}`
+                : "Scores have not been released yet."}
+            </p>
+          </DashboardPanel>
+        </aside>
+      </div>
+    </div>
   );
 }
