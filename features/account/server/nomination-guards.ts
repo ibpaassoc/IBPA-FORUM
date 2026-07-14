@@ -16,7 +16,7 @@ export async function requireOwnedNomination(nominationId: string) {
       category: true,
       award: true,
       answers: { orderBy: { createdAt: "asc" } },
-      files: { orderBy: { createdAt: "asc" } },
+      files: { where: { deletedAt: null }, orderBy: { createdAt: "asc" } },
       payments: { orderBy: { createdAt: "desc" } },
       judgeScores: {
         where: { status: "SUBMITTED" },

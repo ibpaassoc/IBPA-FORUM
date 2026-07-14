@@ -1,10 +1,10 @@
 import { CreditCard, FileText, Plus, QrCode, UserRound } from "lucide-react";
 import { getApplicantDashboardData } from "@/features/account/server/applicant-dashboard";
+import TicketQrPanel from "@/features/tickets/components/TicketQrPanel";
 import {
   DashboardBadge,
   DashboardCard,
   DashboardEmptyState,
-  DashboardMetricTile,
   DashboardPageHeader,
   DashboardPanel,
   DashboardShell,
@@ -18,29 +18,18 @@ function formatDate(value: Date | null | undefined) {
     : "Not set";
 }
 
-function money(amount: number, currency: string) {
-  return new Intl.NumberFormat("en", {
-    style: "currency",
-    currency: currency.toUpperCase(),
-  }).format(amount / 100);
-}
-
-function paymentBadge(status: string) {
-  if (status === "PAID") return <DashboardBadge tone="green">Paid</DashboardBadge>;
-  if (status === "PENDING") return <DashboardBadge tone="amber">Payment pending</DashboardBadge>;
-  return <DashboardBadge tone="red">{status.toLowerCase()}</DashboardBadge>;
-}
-
 function nominationAction(nomination: {
   id: string;
-  paymentStatus: string;
   status: string;
   lockedAt: Date | null;
 }) {
   if (nomination.lockedAt || nomination.status === "LOCKED") return "Locked";
-  if (nomination.paymentStatus !== "PAID") return "Pay";
   if (nomination.status === "SUBMITTED" || nomination.status === "UNDER_REVIEW") return "Review submission";
   return "Continue nomination";
+}
+
+function daysUntil(value: Date) {
+  return Math.max(0, Math.ceil((value.getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
 }
 
 export default async function ApplicantDashboardPage() {
@@ -51,13 +40,38 @@ export default async function ApplicantDashboardPage() {
       <main className="mx-auto flex w-full max-w-[1320px] flex-col gap-5 px-3 pb-24 pt-4 sm:px-5 md:px-6 lg:px-7 lg:py-6">
         <DashboardPageHeader label="Account" title="Applicant dashboard" />
 
-        <div className="grid gap-3 md:grid-cols-5">
-          <DashboardMetricTile label="Nominations" value={data.totals.nominations} />
-          <DashboardMetricTile label="Paid" value={data.totals.paid} accent="green" />
-          <DashboardMetricTile label="Incomplete" value={data.totals.incomplete} accent="amber" />
-          <DashboardMetricTile label="Submitted" value={data.totals.submitted} accent="blue" />
-          <DashboardMetricTile label="Locked" value={data.totals.locked} accent="purple" />
-        </div>
+        <DashboardPanel>
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-blue)]">
+                Welcome, {data.applicantProfile.fullName}
+              </p>
+              <h2 className="mt-2 font-[var(--font-title-family)] text-3xl font-light text-[var(--color-ink)]">
+                Complete each purchased nomination before {formatDate(data.deadline)}
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-[var(--color-ink-soft)]">
+                {data.closedAt
+                  ? `Applications closed on ${formatDate(data.closedAt)}. Submitted nominations are read-only for judging.`
+                  : `${daysUntil(data.deadline)} day(s) remaining. Purchased and draft nominations are not visible to judges until submitted.`}
+              </p>
+            </div>
+            <PremiumButton href="/account/applicant/add-nomination"><Plus size={16} /> Add nominations</PremiumButton>
+          </div>
+          <div className="mt-5 grid gap-3 md:grid-cols-3">
+            <DashboardCard className="p-4">
+              <DashboardBadge tone="neutral">Purchased</DashboardBadge>
+              <p className="mt-3 text-sm leading-6 text-[var(--color-ink-soft)]">Paid and waiting for required details.</p>
+            </DashboardCard>
+            <DashboardCard className="p-4">
+              <DashboardBadge tone="amber">Draft</DashboardBadge>
+              <p className="mt-3 text-sm leading-6 text-[var(--color-ink-soft)]">Saved progress, not visible to judges.</p>
+            </DashboardCard>
+            <DashboardCard className="p-4">
+              <DashboardBadge tone="green">Submitted</DashboardBadge>
+              <p className="mt-3 text-sm leading-6 text-[var(--color-ink-soft)]">Visible to judges and editable until applications close.</p>
+            </DashboardCard>
+          </div>
+        </DashboardPanel>
 
         <div className="grid gap-5 xl:grid-cols-[1fr_360px]">
           <section className="flex flex-col gap-5">
@@ -71,7 +85,6 @@ export default async function ApplicantDashboardPage() {
                     {data.applicantProfile.fullName} · {data.account.status.toLowerCase()} account
                   </p>
                 </div>
-                <PremiumButton href="/account/applicant/add-nomination"><Plus size={16} /> Add nomination</PremiumButton>
               </div>
               {data.nominations.length === 0 ? (
                 <DashboardEmptyState
@@ -86,9 +99,11 @@ export default async function ApplicantDashboardPage() {
                       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
-                            {paymentBadge(nomination.paymentStatus)}
                             <DashboardBadge tone={nomination.lockedAt ? "purple" : "neutral"}>
                               {nomination.lockedAt ? "Locked" : nomination.status.toLowerCase().replaceAll("_", " ")}
+                            </DashboardBadge>
+                            <DashboardBadge tone={nomination.missingRequiredCount === 0 ? "green" : "amber"}>
+                              {nomination.completionPercentage}% complete
                             </DashboardBadge>
                           </div>
                           <h2 className="mt-3 font-[var(--font-title-family)] text-2xl font-light text-[var(--color-ink)]">
@@ -97,8 +112,10 @@ export default async function ApplicantDashboardPage() {
                           <p className="mt-1 text-sm text-[var(--color-ink-soft)]">
                             {nomination.category.name} · Updated {formatDate(nomination.updatedAt)}
                           </p>
-                          <p className="mt-2 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
-                            {money(nomination.amount, nomination.currency)}
+                          <p className="mt-2 text-sm text-[var(--color-ink-soft)]">
+                            {nomination.missingRequiredCount === 0
+                              ? "No required fields missing."
+                              : `${nomination.missingRequiredCount} required item(s) missing.`}
                           </p>
                         </div>
                         <SecondaryButton href={`/account/applicant/nominations/${nomination.id}`}>
@@ -157,11 +174,10 @@ export default async function ApplicantDashboardPage() {
                             <DashboardBadge tone="blue">Purchased {formatDate(ticket.createdAt)}</DashboardBadge>
                           </div>
                           {ticket.qrDataUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={ticket.qrDataUrl}
-                              alt={`QR code for ${ticket.fullName}`}
-                              className="mt-4 w-full max-w-[220px] rounded-[18px] border border-[rgba(114,160,193,0.2)] bg-white p-3"
+                            <TicketQrPanel
+                              ticketId={ticket.id}
+                              fullName={ticket.fullName}
+                              qrDataUrl={ticket.qrDataUrl}
                             />
                           ) : (
                             <p className="mt-3 text-sm text-[var(--color-ink-soft)]">

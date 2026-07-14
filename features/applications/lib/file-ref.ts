@@ -5,7 +5,8 @@ import type { ApplicationFileRef } from "@/features/applications/types/applicati
  * APIs) so it can be shared by client validation and server persistence.
  */
 export function isApplicationFileRef(value: unknown): value is ApplicationFileRef {
-  if (typeof value !== "object" || value === null || value instanceof File) {
+  const isBrowserFile = typeof File !== "undefined" && value instanceof File;
+  if (typeof value !== "object" || value === null || isBrowserFile) {
     return false;
   }
 

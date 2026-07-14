@@ -1,36 +1,13 @@
-import Link from "next/link";
-import { ArrowLeft, ExternalLink, FileText } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import NominationEditorForm from "@/features/account/components/NominationEditorForm";
 import { requireOwnedNomination } from "@/features/account/server/nomination-guards";
+import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import {
   DashboardBadge,
-  DashboardCard,
-  DashboardEmptyState,
   DashboardPanel,
   DashboardShell,
   SecondaryButton,
 } from "@/shared/components/admin/DashboardUI";
-
-function answerValue(answer: {
-  valueText: string | null;
-  valueNumber: number | null;
-  valueBoolean: boolean | null;
-  valueJson: unknown;
-}) {
-  if (answer.valueText) return answer.valueText;
-  if (answer.valueNumber !== null) return String(answer.valueNumber);
-  if (answer.valueBoolean !== null) return answer.valueBoolean ? "Yes" : "No";
-  if (Array.isArray(answer.valueJson)) return answer.valueJson.join(", ");
-  if (answer.valueJson && typeof answer.valueJson === "object") return JSON.stringify(answer.valueJson);
-  return "Not provided";
-}
-
-function label(fieldKey: string) {
-  return fieldKey
-    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
-    .replaceAll("_", " ")
-    .trim()
-    .replace(/^./, (value) => value.toUpperCase());
-}
 
 export default async function ApplicantNominationPage({
   params,
@@ -41,6 +18,7 @@ export default async function ApplicantNominationPage({
   const { nomination } = await requireOwnedNomination(nominationId);
   const locked = nomination.lockedAt !== null || nomination.status === "LOCKED";
   const scoreVisible = nomination.scoresReleasedAt !== null;
+  const categoryFields = categoryFieldConfigs[nomination.category.slug] ?? [];
   const submittedScores = nomination.judgeScores
     .map((score) => score.totalScore)
     .filter((value): value is number => typeof value === "number");
@@ -80,55 +58,28 @@ export default async function ApplicantNominationPage({
         <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
           <DashboardPanel>
             <h2 className="font-[var(--font-title-family)] text-2xl font-light text-[var(--color-ink)]">
-              Nomination answers
+              Nomination editor
             </h2>
-            {nomination.answers.length === 0 ? (
-              <div className="mt-4">
-                <DashboardEmptyState
-                  icon={<FileText size={20} />}
-                  title="No saved answers"
-                  description="Use the application form to complete this nomination."
-                />
-              </div>
-            ) : (
-              <div className="mt-4 grid gap-3">
-                {nomination.answers.map((answer) => (
-                  <DashboardCard key={answer.id} className="p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
-                      {label(answer.fieldKey)}
-                    </p>
-                    <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-[var(--color-ink)]">
-                      {answerValue(answer)}
-                    </p>
-                  </DashboardCard>
-                ))}
-              </div>
-            )}
+            <div className="mt-4">
+              <NominationEditorForm
+                nominationId={nomination.id}
+                fields={categoryFields}
+                initialAnswers={nomination.answers}
+                initialFiles={nomination.files}
+                locked={locked}
+                initialStatus={nomination.status}
+              />
+            </div>
           </DashboardPanel>
 
           <aside className="flex flex-col gap-5">
             <DashboardPanel>
               <h2 className="font-[var(--font-title-family)] text-2xl font-light text-[var(--color-ink)]">
-                Files
+                Status
               </h2>
-              {nomination.files.length === 0 ? (
-                <p className="mt-3 text-sm text-[var(--color-ink-soft)]">No files uploaded.</p>
-              ) : (
-                <div className="mt-4 grid gap-2">
-                  {nomination.files.map((file) => (
-                    <Link
-                      key={file.id}
-                      href={file.fileUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center justify-between gap-3 rounded-[18px] border border-[rgba(114,160,193,0.18)] bg-white/72 px-3 py-3 text-sm text-[var(--color-ink)] hover:bg-[var(--color-blue-wash)]"
-                    >
-                      <span className="min-w-0 truncate">{file.fileName}</span>
-                      <ExternalLink size={14} className="shrink-0 text-[var(--color-blue)]" />
-                    </Link>
-                  ))}
-                </div>
-              )}
+              <p className="mt-3 text-sm leading-6 text-[var(--color-ink-soft)]">
+                Purchased nominations can be saved as drafts or submitted to the jury. Submitted nominations stay editable until applications close.
+              </p>
             </DashboardPanel>
 
             <DashboardPanel>

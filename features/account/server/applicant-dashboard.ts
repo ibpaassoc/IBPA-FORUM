@@ -1,29 +1,34 @@
 import "server-only";
 
 import { requireApplicantAccount } from "@/features/account/server/accounts";
+import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
+import {
+  getApplicantApplicationsClosedAt,
+  getApplicantSubmissionDeadline,
+} from "@/features/applications/server/deadlines";
 import { generateTicketQRDataUrl } from "@/features/tickets/server/ticket-qr";
 import { prisma } from "@/shared/lib/prisma";
 
 export async function getApplicantDashboardData() {
   const { account, applicantProfile } = await requireApplicantAccount();
 
-  const [nominations, tickets] = await Promise.all([
+  const [nominations, tickets, deadline, closedAt] = await Promise.all([
     prisma.nominationApplication.findMany({
-      where: { applicantProfileId: applicantProfile.id },
+      where: { applicantProfileId: applicantProfile.id, deletedAt: null },
       orderBy: { createdAt: "desc" },
       select: {
         id: true,
         status: true,
         paymentStatus: true,
-        amount: true,
-        currency: true,
         paidAt: true,
         submittedAt: true,
         lockedAt: true,
         scoresReleasedAt: true,
         updatedAt: true,
-        category: { select: { name: true } },
+        category: { select: { name: true, slug: true } },
         award: { select: { name: true } },
+        answers: { select: { fieldKey: true } },
+        files: { where: { deletedAt: null }, select: { fieldKey: true } },
         judgeScores: {
           where: { status: "SUBMITTED" },
           select: { totalScore: true },
@@ -61,7 +66,29 @@ export async function getApplicantDashboardData() {
         },
       },
     }),
+    getApplicantSubmissionDeadline(),
+    getApplicantApplicationsClosedAt(),
   ]);
+
+  const nominationCards = nominations.map((nomination) => {
+    const fields = categoryFieldConfigs[nomination.category.slug] ?? [];
+    const requiredFields = fields.filter((field) => field.required);
+    const answeredKeys = new Set(nomination.answers.map((answer) => answer.fieldKey));
+    const fileKeys = new Set(nomination.files.map((file) => file.fieldKey));
+    const missingRequiredFields = requiredFields.filter((field) =>
+      field.type === "file" ? !fileKeys.has(field.key) : !answeredKeys.has(field.key)
+    );
+    const completionPercentage =
+      requiredFields.length === 0
+        ? 100
+        : Math.round(((requiredFields.length - missingRequiredFields.length) / requiredFields.length) * 100);
+
+    return {
+      ...nomination,
+      completionPercentage,
+      missingRequiredCount: missingRequiredFields.length,
+    };
+  });
 
   const ticketCards = await Promise.all(
     tickets.map(async (ticket) => {
@@ -79,14 +106,9 @@ export async function getApplicantDashboardData() {
   return {
     account,
     applicantProfile,
-    nominations,
+    nominations: nominationCards,
     tickets: ticketCards,
-    totals: {
-      nominations: nominations.length,
-      paid: nominations.filter((item) => item.paymentStatus === "PAID").length,
-      incomplete: nominations.filter((item) => item.paymentStatus !== "PAID" || item.status === "DRAFT").length,
-      submitted: nominations.filter((item) => item.status === "SUBMITTED" || item.status === "UNDER_REVIEW" || item.status === "SCORED").length,
-      locked: nominations.filter((item) => item.lockedAt !== null || item.status === "LOCKED").length,
-    },
+    deadline,
+    closedAt,
   };
 }
