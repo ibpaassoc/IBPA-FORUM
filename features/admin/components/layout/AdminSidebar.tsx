@@ -22,7 +22,6 @@ import {
   Drawer,
   FloatingActionButton,
   IconButton,
-  MobileBottomNavigation,
 } from "@/shared/components/admin/DashboardUI";
 
 const navItems = [
@@ -65,13 +64,6 @@ export default function AdminSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const hideMobileChrome = isReviewDetailRoute(pathname);
-
-  const mobileItems = navItems.map((item) => ({
-    href: item.href,
-    label: item.short,
-    icon: item.icon,
-    active: isActive(pathname, item.href),
-  }));
 
   return (
     <>

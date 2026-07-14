@@ -9,7 +9,6 @@ export {
   saveJuryApplicationNotesAction,
   updateJuryApplicationStatusAction,
 } from "@/features/admin/actions/jury.actions";
-export { updateParticipantApplicationStatus } from "@/features/admin/actions/participant.actions";
 export {
   addManualApplicantNominationAction,
   bulkResendApplicantRegistrationLinksAction,
