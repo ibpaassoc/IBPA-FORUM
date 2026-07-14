@@ -46,6 +46,8 @@ type ApplicationRow = {
 export default function ApplicationListPage({
   applications,
   totals,
+  error,
+  notice,
 }: {
   applications: ApplicationRow[];
   totals: {
@@ -55,6 +57,8 @@ export default function ApplicationListPage({
     underReview: number;
     approved: number;
   };
+  error?: string;
+  notice?: string;
 }) {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
@@ -88,7 +92,21 @@ export default function ApplicationListPage({
       }
       if (payment && app.paymentStatus !== payment) return false;
       if (q) {
-        const haystack = `${app.fullName} ${app.email} ${app.membershipNumber ?? ""}`.toLowerCase();
+        const haystack = [
+          app.fullName,
+          app.email,
+          app.membershipNumber ?? "",
+          app.city,
+          app.country,
+          app.category.name,
+          app.award.name,
+          ...app.nominationApplications.flatMap((nomination) => [
+            nomination.category.name,
+            nomination.award.name,
+          ]),
+        ]
+          .join(" ")
+          .toLowerCase();
         if (!haystack.includes(q)) return false;
       }
       return true;
@@ -107,7 +125,6 @@ export default function ApplicationListPage({
       key: "status",
       label: adminT.filters.allStatuses,
       value: status,
-      variant: "segmented",
       options: [
         { value: "", label: adminT.filters.all },
         ...statusesPresent.map((value) => ({ value, label: adminT.statuses[value] })),
@@ -194,6 +211,17 @@ export default function ApplicationListPage({
         }
       />
 
+      {error ? (
+        <div role="alert" className="rounded-[22px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      ) : null}
+      {notice ? (
+        <div role="status" className="rounded-[22px] border border-[rgba(114,160,193,0.3)] bg-[var(--color-blue-wash)] px-4 py-3 text-sm text-[var(--color-ink)]">
+          {notice}
+        </div>
+      ) : null}
+
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-[1.1fr_repeat(4,minmax(0,0.75fr))]">
         <DashboardAccentBlock>
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-soft)]">
@@ -234,8 +262,8 @@ export default function ApplicationListPage({
             const remainingNominationCount = nominations.length - previewNominations.length;
 
             return (
-              <div key={app.id} className="grid gap-3 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-stretch">
-                <label className="flex min-h-16 items-center justify-center rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white/70 px-4 shadow-[0_12px_30px_rgba(37,42,45,0.04)]">
+              <DashboardCard key={app.id} className="relative p-0 transition hover:border-[rgba(114,160,193,0.34)] hover:bg-[rgba(242,248,251,0.82)] hover:shadow-[0_24px_64px_rgba(114,160,193,0.16)]">
+                <label className="absolute left-4 top-4 z-10 flex size-9 items-center justify-center rounded-full border border-[rgba(114,160,193,0.2)] bg-white/88 shadow-sm">
                   <span className="sr-only">{adminT.applications.selectForResend}</span>
                   <input
                     form="bulk-registration-resend"
@@ -247,8 +275,7 @@ export default function ApplicationListPage({
                   />
                 </label>
                 <Link href={`/admin/applications/${app.id}`} className="group block min-w-0">
-                  <DashboardCard className="p-0 transition hover:border-[rgba(114,160,193,0.34)] hover:shadow-[0_24px_64px_rgba(114,160,193,0.16)]">
-                    <div className="grid gap-4 p-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(260px,0.8fr)_minmax(180px,0.45fr)] lg:items-stretch">
+                    <div className="grid gap-4 p-4 pl-16 lg:grid-cols-[minmax(0,1.15fr)_minmax(260px,0.8fr)_minmax(180px,0.45fr)] lg:items-stretch">
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
                           <ApplicationStatusBadge status={app.status} />
@@ -316,9 +343,8 @@ export default function ApplicationListPage({
                         />
                       </div>
                     </div>
-                  </DashboardCard>
                 </Link>
-              </div>
+              </DashboardCard>
             );
           })}
         </div>

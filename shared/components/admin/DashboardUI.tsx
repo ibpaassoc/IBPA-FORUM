@@ -63,7 +63,7 @@ export function DashboardShell({
   return (
     <div
       className={cn(
-        "min-h-screen overflow-hidden bg-[radial-gradient(circle_at_8%_14%,rgba(185,217,235,0.36),transparent_30%),radial-gradient(circle_at_88%_10%,rgba(114,160,193,0.18),transparent_28%),linear-gradient(180deg,#ffffff_0%,#f7f9fb_48%,#ffffff_100%)] text-[var(--color-ink)]",
+        "min-h-screen overflow-hidden bg-[#f6fafc] text-[var(--color-ink)]",
         className,
       )}
     >
@@ -122,8 +122,7 @@ export function GlassCard({
   const classes = cn(
     glassBase,
     "rounded-[28px]",
-    tone === "blue" &&
-      "bg-[linear-gradient(135deg,rgba(255,255,255,0.84),rgba(185,217,235,0.34))]",
+    tone === "blue" && "bg-[rgba(225,240,248,0.82)]",
     tone === "plain" && "bg-white shadow-[0_18px_48px_rgba(37,42,45,0.06)]",
     className,
   );
@@ -700,7 +699,7 @@ export function Skeleton({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "animate-pulse rounded-full bg-[linear-gradient(90deg,rgba(185,217,235,0.22),rgba(255,255,255,0.82),rgba(185,217,235,0.22))]",
+        "animate-pulse rounded-full bg-[rgba(185,217,235,0.38)]",
         className,
       )}
     />

@@ -82,7 +82,7 @@ export default function AdminSidebar() {
       >
         <div className="sticky top-6 flex max-h-[calc(100vh-3rem)] flex-col gap-3">
           <div className="rounded-[34px] border border-[rgba(114,160,193,0.2)] bg-white/76 p-3 shadow-[0_28px_90px_rgba(37,42,45,0.09)] backdrop-blur-2xl">
-            <div className={`flex items-center gap-2 rounded-[26px] bg-[linear-gradient(135deg,rgba(185,217,235,0.34),rgba(255,255,255,0.78))] p-3 ${collapsed ? "justify-center" : "justify-between"}`}>
+            <div className={`flex items-center gap-2 rounded-[26px] bg-[rgba(225,240,248,0.72)] p-3 ${collapsed ? "justify-center" : "justify-between"}`}>
               {!collapsed && (
                 <Link href="/admin" className="min-w-0">
                   <p className="font-[var(--font-title-family)] text-[1.85rem] font-light leading-none tracking-[-0.04em] text-[var(--color-ink)]">
