@@ -10,6 +10,7 @@ import { isApplicationFileRef } from "@/features/applications/lib/file-ref";
 import { createCompetitorCheckoutSession } from "@/features/payments/server/checkout-sessions";
 import { upsertApplicantAccountForApplication } from "@/features/account/server/accounts";
 import { syncApplicationOnChange } from "@/features/google-sheets";
+import { computeApplicantNominationPrice } from "@/features/applications/lib/pricing";
 import { prisma } from "@/shared/lib/prisma";
 import { Prisma } from "@prisma/client";
 import type {
@@ -33,14 +34,11 @@ function getFileRefs(value: ApplicationValues[string]): ApplicationFileRef[] {
   return Array.isArray(value) ? value.filter(isApplicationFileRef) : [];
 }
 
-// Tiered pricing in cents: index = nomination count (1–5)
-const MEMBER_PRICES_CENTS = [0, 5000, 10000, 13000, 18000, 20000] as const;
-const NON_MEMBER_PRICES_CENTS = [0, 7000, 14000, 19000, 26000, 30000] as const;
-
 function computeApplicationAmountCents(count: number, isMember: boolean): number {
-  const prices = isMember ? MEMBER_PRICES_CENTS : NON_MEMBER_PRICES_CENTS;
-  const idx = Math.min(5, Math.max(1, count)) as 1 | 2 | 3 | 4 | 5;
-  return prices[idx];
+  return computeApplicantNominationPrice({
+    nominationCount: count,
+    isIbpaMember: isMember,
+  }).amountCents;
 }
 
 async function createNominationApplication({
