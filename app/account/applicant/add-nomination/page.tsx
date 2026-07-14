@@ -1,17 +1,17 @@
 import { ArrowLeft } from "lucide-react";
-import AddNominationsForm from "@/features/account/components/AddNominationsForm";
+import AddNominationFlow from "@/features/account/components/add-nomination/AddNominationFlow";
 import { requireApplicantAccount } from "@/features/account/server/accounts";
 import { getApplicationCategories } from "@/features/applications/server/queries";
+import { getServerTranslations } from "@/lib/i18n/server";
 import { prisma } from "@/shared/lib/prisma";
 import {
   DashboardPageHeader,
-  DashboardPanel,
   SecondaryButton,
 } from "@/shared/components/admin/DashboardUI";
 
 export default async function AddNominationPage() {
   const { applicantProfile } = await requireApplicantAccount();
-  const [categories, ownedNominations] = await Promise.all([
+  const [categories, ownedNominations, t] = await Promise.all([
     getApplicationCategories(),
     prisma.nominationApplication.findMany({
       where: {
@@ -20,23 +20,23 @@ export default async function AddNominationPage() {
       },
       select: { awardId: true },
     }),
+    getServerTranslations(),
   ]);
+  const flow = t.account.addFlow;
 
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <SecondaryButton href="/account/applicant">
-          <ArrowLeft size={16} /> Back to dashboard
+        <SecondaryButton href="/account/applicant/nominations">
+          <ArrowLeft size={16} /> {flow.backToNominations}
         </SecondaryButton>
       </div>
-      <DashboardPageHeader label="Applicant account" title="Add nominations" />
-      <DashboardPanel>
-        <AddNominationsForm
-          categories={categories}
-          ownedAwardIds={ownedNominations.map((item) => item.awardId)}
-          isVerifiedMember={Boolean(applicantProfile.membershipNumber && applicantProfile.membershipLevel)}
-        />
-      </DashboardPanel>
+      <DashboardPageHeader label={flow.label} title={flow.title} description={flow.description} />
+      <AddNominationFlow
+        categories={categories}
+        ownedAwardIds={ownedNominations.map((item) => item.awardId)}
+        isVerifiedMember={Boolean(applicantProfile.membershipNumber && applicantProfile.membershipLevel)}
+      />
     </div>
   );
 }
