@@ -20,7 +20,7 @@ function accountSetupTemplate({
     greeting,
     "Your IBPA account is ready. Use the secure link below to set your password and open your dashboard.",
     ctaButton("Set account password", setupUrl),
-    "This link is single-use and expires in 1 hour.",
+    "This link is single-use and expires in 3 days.",
   ];
 
   return {
@@ -30,7 +30,7 @@ function accountSetupTemplate({
       greeting,
       "Your IBPA account is ready. Set your password using this secure link:",
       setupUrl,
-      "This link is single-use and expires in 1 hour.",
+      "This link is single-use and expires in 3 days.",
     ]),
   };
 }

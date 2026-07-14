@@ -42,19 +42,26 @@ export async function setupPasswordAction(
 
   const passwordHash = await createPasswordHash(password);
 
-  await prisma.$transaction([
-    prisma.account.update({
+  await prisma.$transaction(async (tx) => {
+    await tx.account.update({
       where: { id: validation.record.accountId },
       data: {
         passwordHash,
         status: "ACTIVE",
+        setupTokenHash: null,
+        setupTokenExpiresAt: null,
+        setupTokenIssuedAt: null,
+        setupTokenUsedAt: new Date(),
       },
-    }),
-    prisma.accountSetupToken.update({
-      where: { id: validation.record.id },
-      data: { usedAt: new Date() },
-    }),
-  ]);
+    });
+
+    if (validation.record.source === "table") {
+      await tx.accountSetupToken.update({
+        where: { id: validation.record.id },
+        data: { usedAt: new Date() },
+      });
+    }
+  });
 
   return {
     success: true,

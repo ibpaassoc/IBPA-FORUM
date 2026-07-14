@@ -1,9 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useActionState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import {
+  resendRegistrationLinkAction,
+  type ResendRegistrationState,
+} from "@/features/auth/server/resend-registration.actions";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 const inputClass =
@@ -15,6 +20,10 @@ const labelClass =
 export default function LoginForm() {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [resendState, resendAction, resendPending] = useActionState<
+    ResendRegistrationState | undefined,
+    FormData
+  >(resendRegistrationLinkAction, undefined);
   const router = useRouter();
   const { t } = useLanguage();
 
@@ -51,7 +60,8 @@ export default function LoginForm() {
   }
 
   return (
-    <form action={handleSubmit} className="space-y-[var(--space-md)]">
+    <div className="space-y-[var(--space-md)]">
+      <form action={handleSubmit} className="space-y-[var(--space-md)]">
       <div>
         <label htmlFor="email" className={`mb-[var(--space-xs)] ${labelClass}`}>
           {t.auth.form.email}
@@ -114,6 +124,40 @@ export default function LoginForm() {
         </Link>
         .
       </p>
-    </form>
+      </form>
+
+      <div className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-white/70 p-4">
+        <p className="text-sm font-semibold text-[var(--color-ink)]">
+          Need a registration link?
+        </p>
+        <p className="mt-1 text-xs leading-5 text-[var(--color-ink-soft)]">
+          Enter the purchase email. If an eligible unregistered applicant account exists, we will send a fresh secure link.
+        </p>
+        <form action={resendAction} className="mt-3 flex flex-col gap-2">
+          <input
+            name="registrationEmail"
+            type="email"
+            required
+            autoComplete="email"
+            className={inputClass}
+            placeholder={t.auth.form.emailPlaceholder}
+          />
+          <button
+            type="submit"
+            disabled={resendPending}
+            className="ibpa-button ibpa-button-ghost w-full disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {resendPending ? "Sending..." : "Resend registration link"}
+          </button>
+        </form>
+        {resendState?.sent ? (
+          <p className="mt-2 text-xs leading-5 text-[var(--color-ink-soft)]">
+            If the email is eligible, a secure registration link will arrive shortly.
+          </p>
+        ) : resendState?.error ? (
+          <p className="mt-2 text-xs leading-5 text-red-700">{resendState.error}</p>
+        ) : null}
+      </div>
+    </div>
   );
 }

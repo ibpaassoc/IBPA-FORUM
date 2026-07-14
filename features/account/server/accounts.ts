@@ -201,6 +201,7 @@ export async function sendSetupEmailForAccount(accountId: string) {
     });
 
     return {
+      accountId: account.id,
       email: account.email,
       token: token.token,
       fullName: account.applicantProfile?.fullName ?? account.juryProfile?.fullName ?? null,
@@ -211,11 +212,22 @@ export async function sendSetupEmailForAccount(accountId: string) {
     return null;
   }
 
-  return sendAccountSetupEmail({
+  const result = await sendAccountSetupEmail({
     to: payload.email,
     fullName: payload.fullName,
     token: payload.token,
   });
+
+  await prisma.account.update({
+    where: { id: payload.accountId },
+    data: {
+      lastSetupEmailSentAt: new Date(),
+      lastSetupEmailDeliveryStatus: result.delivered ? "delivered" : result.reason ?? "failed",
+      lastSetupEmailDeliveryError: result.delivered ? null : result.error ?? result.reason ?? "Email delivery failed.",
+    },
+  });
+
+  return result;
 }
 
 export function getDashboardPathForRole(role: AccountRole) {
