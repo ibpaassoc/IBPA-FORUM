@@ -100,8 +100,8 @@ export default function NominationCard({ nomination }: { nomination: NominationC
       whileHover={shouldReduceMotion ? undefined : { y: -4, scale: 1.004 }}
       transition={{ duration: 0.45, ease }}
     >
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="min-w-0 md:flex-1">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0 flex-1 basis-60">
           <h3 className="font-[var(--font-title-family)] text-[1.45rem] font-light leading-snug text-[var(--color-ink)]">
             {nomination.awardName}
           </h3>
@@ -109,26 +109,26 @@ export default function NominationCard({ nomination }: { nomination: NominationC
             {nomination.categoryName} · Updated {nomination.updatedAtLabel}
           </p>
         </div>
+        <NominationStatusBadge tone={tone}>
+          {nominationStatusLabel(nomination)}
+        </NominationStatusBadge>
+      </div>
 
-        <div className="w-full md:w-[220px] md:shrink-0">
-          <NominationProgressBar value={nomination.completionPercentage} tone={tone} />
-          <p className="mt-2 text-[0.78rem] leading-5 text-[var(--color-ink-soft)]">
-            {missingFieldsLabel(nomination.missingRequiredCount)}
-          </p>
-        </div>
+      <div className="mt-4">
+        <NominationProgressBar value={nomination.completionPercentage} tone={tone} />
+      </div>
 
-        <div className="flex shrink-0 flex-wrap items-center gap-3 md:flex-col md:items-end">
-          <NominationStatusBadge tone={tone}>
-            {nominationStatusLabel(nomination)}
-          </NominationStatusBadge>
-          <Link
-            href={`/account/applicant/nominations/${nomination.id}`}
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[rgba(114,160,193,0.22)] bg-white/78 px-5 py-2.5 text-[0.72rem] font-semibold uppercase leading-none tracking-[0.12em] text-[var(--color-ink)] shadow-[0_12px_28px_rgba(37,42,45,0.055)] backdrop-blur-xl transition duration-300 hover:-translate-y-0.5 hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-wash)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.22)]"
-          >
-            {nominationActionLabel(nomination)}
-            <ArrowRight aria-hidden size={15} />
-          </Link>
-        </div>
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-[0.78rem] leading-5 text-[var(--color-ink-soft)]">
+          {missingFieldsLabel(nomination.missingRequiredCount)}
+        </p>
+        <Link
+          href={`/account/applicant/nominations/${nomination.id}`}
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[rgba(114,160,193,0.22)] bg-white/78 px-5 py-2.5 text-[0.72rem] font-semibold uppercase leading-none tracking-[0.12em] text-[var(--color-ink)] shadow-[0_12px_28px_rgba(37,42,45,0.055)] backdrop-blur-xl transition duration-300 hover:-translate-y-0.5 hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-wash)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.22)]"
+        >
+          {nominationActionLabel(nomination)}
+          <ArrowRight aria-hidden size={15} />
+        </Link>
       </div>
     </motion.article>
   );
