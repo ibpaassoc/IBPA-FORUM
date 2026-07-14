@@ -2,7 +2,7 @@
 
 import { prisma } from "@/shared/lib/prisma";
 import { createPasswordHash, isStrongPassword } from "@/features/account/server/password";
-import { validateAccountToken } from "@/features/account/server/tokens";
+import { hashAccountToken, validateAccountToken } from "@/features/account/server/tokens";
 
 export type SetupPasswordState = {
   success?: boolean;
@@ -42,26 +42,59 @@ export async function setupPasswordAction(
 
   const passwordHash = await createPasswordHash(password);
 
-  await prisma.$transaction(async (tx) => {
-    await tx.account.update({
-      where: { id: validation.record.accountId },
-      data: {
-        passwordHash,
-        status: "ACTIVE",
-        setupTokenHash: null,
-        setupTokenExpiresAt: null,
-        setupTokenIssuedAt: null,
-        setupTokenUsedAt: new Date(),
-      },
-    });
-
-    if (validation.record.source === "table") {
-      await tx.accountSetupToken.update({
-        where: { id: validation.record.id },
-        data: { usedAt: new Date() },
+  const now = new Date();
+  const tokenHash = hashAccountToken(token);
+  const activated = await prisma.$transaction(async (tx) => {
+    if (validation.record.source === "account") {
+      const consumed = await tx.account.updateMany({
+        where: {
+          id: validation.record.accountId,
+          setupTokenHash: tokenHash,
+          setupTokenUsedAt: null,
+          setupTokenExpiresAt: { gte: now },
+          passwordHash: null,
+          status: { not: "DISABLED" },
+          deletedAt: null,
+        },
+        data: {
+          passwordHash,
+          status: "ACTIVE",
+          setupTokenHash: null,
+          setupTokenExpiresAt: null,
+          setupTokenIssuedAt: null,
+          setupTokenUsedAt: now,
+        },
       });
+      return consumed.count === 1;
     }
+
+    const consumed = await tx.accountSetupToken.updateMany({
+      where: {
+        id: validation.record.id,
+        accountId: validation.record.accountId,
+        tokenHash,
+        usedAt: null,
+        expiresAt: { gte: now },
+      },
+      data: { usedAt: now },
+    });
+    if (consumed.count !== 1) return false;
+
+    const accountActivated = await tx.account.updateMany({
+      where: {
+        id: validation.record.accountId,
+        passwordHash: null,
+        status: { not: "DISABLED" },
+        deletedAt: null,
+      },
+      data: { passwordHash, status: "ACTIVE" },
+    });
+    return accountActivated.count === 1;
   });
+
+  if (!activated) {
+    return { invalidToken: true };
+  }
 
   return {
     success: true,

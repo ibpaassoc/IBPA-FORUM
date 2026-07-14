@@ -70,16 +70,13 @@ export const authOptions: NextAuthOptions = {
 
         const account = await findAccountByEmail(email);
 
-        if (!account) {
-          throw new Error("No account is registered with this email.");
-        }
-
-        if (account.status === "DISABLED") {
-          throw new Error("This account is disabled.");
-        }
-
-        if (!account.passwordHash) {
-          throw new Error("Account setup is required.");
+        if (
+          !account ||
+          account.deletedAt ||
+          account.status === "DISABLED" ||
+          !account.passwordHash
+        ) {
+          return null;
         }
 
         const isValid = await verifyPasswordHash(password, account.passwordHash);

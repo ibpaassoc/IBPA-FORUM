@@ -3,11 +3,9 @@ import type Stripe from "stripe";
 import { sendCompetitorApplicationConfirmedEmail } from "@/features/email/server/competitor-email.workflow";
 import { sendPaymentAdminNotificationEmail } from "@/features/email/server/payment-email.workflow";
 import {
-  sendSetupEmailForAccount,
   upsertApplicantAccountForApplication,
 } from "@/features/account/server/accounts";
-import { createAccountSetupToken } from "@/features/account/server/tokens";
-import { sendAccountSetupEmail } from "@/features/account/server/emails";
+import { issueApplicantRegistrationLink } from "@/features/account/server/applicant-registration";
 import { allocateApplicantNominationAmounts } from "@/features/applications/lib/pricing";
 import {
   APPLICANT_NOMINATION_PURCHASE_FLOW,
@@ -24,13 +22,6 @@ type CompetitorPaymentEmailPayload = {
   awardName: string;
   amount: number;
   currency: string;
-};
-
-type SetupEmailPayload = {
-  accountId: string;
-  email: string;
-  fullName: string | null;
-  token: string;
 };
 
 function serializeStripeEvent(event: Stripe.Event): Prisma.InputJsonValue {
@@ -193,7 +184,7 @@ async function handleApplicantNominationCheckoutCompleted(event: Stripe.Event) {
   }
 
   const paymentIntentId = getPaymentIntentId(session.payment_intent);
-  const setupEmailPayloads: SetupEmailPayload[] = [];
+  const setupAccountIds: string[] = [];
 
   try {
     await prisma.$transaction(async (tx) => {
@@ -277,16 +268,7 @@ async function handleApplicantNominationCheckoutCompleted(event: Stripe.Event) {
       });
 
       if (!account.passwordHash && account.status !== "ACTIVE" && !account.lastSetupEmailSentAt) {
-        const token = await createAccountSetupToken(tx, {
-          accountId: account.id,
-          purpose: "SETUP",
-        });
-        setupEmailPayloads.push({
-          accountId: account.id,
-          email: account.email,
-          fullName: profile.fullName,
-          token: token.token,
-        });
+        setupAccountIds.push(account.id);
       }
     });
   } catch (error) {
@@ -297,22 +279,9 @@ async function handleApplicantNominationCheckoutCompleted(event: Stripe.Event) {
     throw error;
   }
 
-  const payload = setupEmailPayloads[0] ?? null;
-  if (payload) {
-    const result = await sendAccountSetupEmail({
-      to: payload.email,
-      fullName: payload.fullName,
-      token: payload.token,
-    });
-
-    await prisma.account.update({
-      where: { id: payload.accountId },
-      data: {
-        lastSetupEmailSentAt: new Date(),
-        lastSetupEmailDeliveryStatus: result.delivered ? "delivered" : result.reason ?? "failed",
-        lastSetupEmailDeliveryError: result.delivered ? null : result.error ?? result.reason ?? "Email delivery failed.",
-      },
-    });
+  const setupAccountId = setupAccountIds[0] ?? null;
+  if (setupAccountId) {
+    await issueApplicantRegistrationLink({ accountId: setupAccountId });
   }
 
   return true;
@@ -523,7 +492,7 @@ async function handleCompetitorCheckoutCompleted(event: Stripe.Event) {
 
   if (setupAccountId) {
     try {
-      await sendSetupEmailForAccount(setupAccountId);
+      await issueApplicantRegistrationLink({ accountId: setupAccountId });
     } catch (error) {
       console.error("Failed to send applicant account setup email", error);
     }

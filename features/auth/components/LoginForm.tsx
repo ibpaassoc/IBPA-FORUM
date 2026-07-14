@@ -42,15 +42,7 @@ export default function LoginForm() {
     });
 
     if (!result || result.error) {
-      if (result?.error === "No account is registered with this email.") {
-        setError(t.auth.form.noRegisteredAccount);
-      } else if (result?.error === "Account setup is required.") {
-        setError("This account has not been activated yet. Please use your setup link or request a new one.");
-      } else if (result?.error === "This account is disabled.") {
-        setError("This account is disabled. Please contact IBPA support.");
-      } else {
-        setError(t.auth.form.invalidCredentials);
-      }
+      setError(t.auth.form.invalidCredentials);
       setIsSubmitting(false);
       return;
     }

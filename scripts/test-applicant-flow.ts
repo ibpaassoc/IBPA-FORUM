@@ -145,7 +145,7 @@ assert(has(webhookWorkflow, "tx.nominationApplication.upsert"), "webhook fulfill
 assert(has(webhookWorkflow, 'status: "PURCHASED"'), "new paid nominations start in PURCHASED state");
 assert(has(webhookWorkflow, "purchasePaymentId"), "nominations are linked to the purchase payment");
 assert(has(webhookWorkflow, "fulfilledAt: paidAt"), "payment fulfillment is marked idempotently");
-assert(has(webhookWorkflow, "createAccountSetupToken"), "webhook issues setup tokens for invited applicants");
+assert(has(webhookWorkflow, "issueApplicantRegistrationLink"), "webhook issues setup links through the shared service");
 
 // -- Account token lifecycle ---------------------------------------------------
 console.log("account setup tokens");
@@ -161,6 +161,17 @@ assert(
 const setupActions = read("features/auth/server/setup.actions.ts");
 assert(has(setupActions, "setupTokenUsedAt"), "password setup marks account token as used");
 assert(has(setupActions, "setupTokenHash: null"), "password setup clears account token hash");
+assert(has(setupActions, "tx.account.updateMany"), "password setup consumes account tokens atomically");
+assert(has(setupActions, "setupTokenExpiresAt: { gte: now }"), "password setup rechecks expiry during activation");
+assert(has(setupActions, 'status: { not: "DISABLED" }'), "password setup cannot reactivate a disabled account");
+assert(has(setupActions, "deletedAt: null"), "password setup cannot reactivate a deleted account");
+
+const registrationService = read("features/account/server/applicant-registration.ts");
+assert(has(registrationService, 'paymentStatus: "PAID"'), "registration links require a paid nomination");
+assert(has(registrationService, 'where: { status: "PAID" }'), "registration links accept a paid applicant payment");
+assert(has(registrationService, "FOR UPDATE"), "registration token issuance is serialized per account");
+assert(has(registrationService, "setupTokenHash: null"), "failed email delivery invalidates its setup token");
+assert(has(registrationService, "lastSetupEmailDeliveryStatus === \"delivered\""), "cooldown only follows successful delivery");
 
 // -- Admin applicant operations ------------------------------------------------
 console.log("admin applicant operations");
@@ -175,8 +186,17 @@ assert(has(applicantAdminActions, "addManualApplicantNominationAction"), "admin 
 assert(has(applicantAdminActions, 'provider: "manual_admin"'), "manual admin payments do not fake Stripe identifiers");
 assert(has(applicantAdminActions, "resendApplicantRegistrationLinkAction"), "admin can resend one registration link");
 assert(has(applicantAdminActions, "bulkResendApplicantRegistrationLinksAction"), "admin can bulk resend registration links");
+assert(has(applicantAdminActions, "issueApplicantRegistrationLink"), "admin resend uses shared registration service");
 assert(has(applicantAdminActions, "updateApplicantDeadlineOverrideAction"), "admin can set applicant deadline overrides");
 assert(has(applicantAdminActions, "processApplicantDeadlineClosure"), "admin close-all action uses deadline closure workflow");
+
+const publicResendAction = read("features/auth/server/resend-registration.actions.ts");
+assert(has(publicResendAction, "issueApplicantRegistrationLink"), "public resend uses shared registration service");
+assert(has(publicResendAction, "return { sent: true }"), "public resend always returns a generic success response");
+
+const accountAuth = read("auth.ts");
+assert(!has(accountAuth, "No account is registered with this email."), "login does not disclose missing accounts");
+assert(!has(accountAuth, "Account setup is required."), "login does not disclose setup state");
 
 // -- Applicant account and deadline closure -----------------------------------
 console.log("applicant account editing and closure");

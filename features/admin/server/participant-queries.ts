@@ -148,7 +148,10 @@ export async function getParticipantApplications(status?: string) {
         createdAt: profile.createdAt,
         category: profile.nominations[0]?.category ?? { name: adminT.system.applicantAccount },
         award: profile.nominations[0]?.award ?? { name: adminT.system.noNominations },
-        registrationEligible: !profile.account.passwordHash && profile.account.status !== "DISABLED",
+        registrationEligible:
+          paymentStatus === "PAID" &&
+          !profile.account.passwordHash &&
+          profile.account.status !== "DISABLED",
         setupEmailNeedsAttention:
           !profile.account.passwordHash &&
           Boolean(profile.account.lastSetupEmailDeliveryStatus) &&

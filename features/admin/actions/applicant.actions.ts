@@ -3,8 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { Prisma } from "@prisma/client";
-import { createAccountSetupToken } from "@/features/account/server/tokens";
-import { sendAccountSetupEmail } from "@/features/account/server/emails";
+import { issueApplicantRegistrationLink } from "@/features/account/server/applicant-registration";
 import {
   APPLICANT_NOMINATION_PURCHASE_FLOW,
   APPLICANT_PURCHASE_MANIFEST_VERSION,
@@ -51,64 +50,6 @@ function isUniqueConstraintError(error: unknown) {
     "code" in error &&
     error.code === "P2002"
   );
-}
-
-async function issueRegistrationLink(accountId: string) {
-  const payload = await prisma.$transaction(async (tx) => {
-    const account = await tx.account.findUnique({
-      where: { id: accountId },
-      include: { applicantProfile: { select: { id: true, fullName: true } } },
-    });
-
-    if (
-      !account ||
-      account.role !== "APPLICANT" ||
-      account.status === "DISABLED" ||
-      account.passwordHash ||
-      !account.applicantProfile
-    ) {
-      return null;
-    }
-
-    const token = await createAccountSetupToken(tx, {
-      accountId: account.id,
-      purpose: "SETUP",
-    });
-
-    return {
-      accountId: account.id,
-      profileId: account.applicantProfile.id,
-      email: account.email,
-      fullName: account.applicantProfile.fullName,
-      token: token.token,
-    };
-  });
-
-  if (!payload) {
-    return { sent: false, skipped: true, profileId: null as string | null };
-  }
-
-  const result = await sendAccountSetupEmail({
-    to: payload.email,
-    fullName: payload.fullName,
-    token: payload.token,
-  });
-
-  await prisma.account.update({
-    where: { id: payload.accountId },
-    data: {
-      lastSetupEmailSentAt: new Date(),
-      lastSetupEmailDeliveryStatus: result.delivered ? "delivered" : result.reason ?? "failed",
-      lastSetupEmailDeliveryError: result.delivered ? null : result.error ?? result.reason ?? adminT.system.emailDeliveryFailed,
-    },
-  });
-
-  return {
-    sent: result.delivered,
-    skipped: false,
-    profileId: payload.profileId,
-    error: result.delivered ? null : result.error ?? result.reason ?? adminT.system.emailDeliveryFailed,
-  };
 }
 
 export async function updateApplicantProfileAction(formData: FormData) {
@@ -181,15 +122,15 @@ export async function resendApplicantRegistrationLinkAction(formData: FormData) 
     redirect(adminApplicationsPath({ error: adminT.actions.applicantNotFound }));
   }
 
-  const result = await issueRegistrationLink(profile.accountId);
+  const result = await issueApplicantRegistrationLink({ accountId: profile.accountId });
   revalidatePath("/admin/applications");
   revalidatePath(`/admin/applications/${profileId}`);
 
-  if (result.skipped) {
+  if (result.status === "ineligible" || result.status === "cooldown") {
     redirect(adminApplicantPath(profileId, { notice: adminT.actions.registrationIneligible }));
   }
 
-  if (!result.sent) {
+  if (result.status === "delivery_failed") {
     redirect(adminApplicantPath(profileId, { error: adminT.actions.registrationDeliveryFailed }));
   }
 
@@ -218,10 +159,10 @@ export async function bulkResendApplicantRegistrationLinksAction(formData: FormD
   let failed = 0;
 
   for (const profile of profiles) {
-    const result = await issueRegistrationLink(profile.accountId);
-    if (result.skipped) {
+    const result = await issueApplicantRegistrationLink({ accountId: profile.accountId });
+    if (result.status === "ineligible" || result.status === "cooldown") {
       skipped += 1;
-    } else if (result.sent) {
+    } else if (result.status === "sent") {
       sent += 1;
     } else {
       failed += 1;
