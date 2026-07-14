@@ -29,41 +29,60 @@ model Award {
 }
 
 model Account {
-  id               String              @id @default(cuid())
-  email            String              @unique
-  passwordHash     String?
-  role             AccountRole
-  status           AccountStatus       @default(INVITED)
-  createdAt        DateTime            @default(now())
-  updatedAt        DateTime            @updatedAt
-  applicantProfile ApplicantProfile?
-  juryProfile      JuryProfile?
-  setupTokens      AccountSetupToken[]
-  tickets          Ticket[]
+  id                           String              @id @default(cuid())
+  email                        String              @unique
+  passwordHash                 String?
+  role                         AccountRole
+  status                       AccountStatus       @default(INVITED)
+  setupTokenHash               String?             @unique
+  setupTokenExpiresAt          DateTime?
+  setupTokenIssuedAt           DateTime?
+  setupTokenUsedAt             DateTime?
+  lastSetupEmailSentAt         DateTime?
+  lastSetupEmailDeliveryStatus String?
+  lastSetupEmailDeliveryError  String?
+  deletedAt                    DateTime?
+  createdAt                    DateTime            @default(now())
+  updatedAt                    DateTime            @updatedAt
+  applicantProfile             ApplicantProfile?
+  juryProfile                  JuryProfile?
+  setupTokens                  AccountSetupToken[]
+  tickets                      Ticket[]
+
+  @@index([role, status])
+  @@index([deletedAt])
 }
 
 model ApplicantProfile {
-  id                String                  @id @default(cuid())
-  accountId         String                  @unique
-  fullName          String
-  phone             String?
-  country           String?
-  stateProvince     String?
-  city              String?
-  professionalTitle String?
-  yearsExperience   Int?
-  membershipNumber  String?
-  membershipLevel   String?
-  websiteUrl        String?
-  socialUrl         String?
-  reviewsUrl        String?
-  createdAt         DateTime                @default(now())
-  updatedAt         DateTime                @updatedAt
-  account           Account                 @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  nominations       NominationApplication[]
-  tickets           Ticket[]
+  id                           String                  @id @default(cuid())
+  accountId                    String                  @unique
+  fullName                     String
+  phone                        String?
+  country                      String?
+  stateProvince                String?
+  city                         String?
+  professionalTitle            String?
+  yearsExperience              Int?
+  membershipNumber             String?
+  membershipLevel              String?
+  membershipVerifiedAt         DateTime?
+  membershipVerificationSource String?
+  preferredLocale              String                  @default("en")
+  websiteUrl                   String?
+  socialUrl                    String?
+  reviewsUrl                   String?
+  deadlineOverrideAt           DateTime?
+  deletedAt                    DateTime?
+  createdAt                    DateTime                @default(now())
+  updatedAt                    DateTime                @updatedAt
+  account                      Account                 @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  nominations                  NominationApplication[]
+  payments                     Payment[]
+  tickets                      Ticket[]
 
   @@index([fullName])
+  @@index([deadlineOverrideAt])
+  @@index([deletedAt])
 }
 
 model JuryProfile {
@@ -225,25 +244,35 @@ model ApplicationFile {
 }
 
 model Payment {
-  id                      String                 @id @default(cuid())
+  id                      String                  @id @default(cuid())
   source                  PaymentSource
   applicationId           String?
   nominationApplicationId String?
+  applicantProfileId      String?
   juryApplicationId       String?
   ticketId                String?
-  stripeSessionId         String?                @unique
-  stripePaymentIntentId   String?                @unique
+  stripeSessionId         String?                 @unique
+  stripePaymentIntentId   String?                 @unique
+  provider                String                  @default("stripe")
+  applicantEmail          String?
+  purchaseManifest        Json?
   amount                  Int
-  currency                String                 @default("usd")
-  status                  PaymentStatus          @default(PENDING)
+  currency                String                  @default("usd")
+  status                  PaymentStatus           @default(PENDING)
   paidAt                  DateTime?
-  createdAt               DateTime               @default(now())
-  application             Application?           @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-  nominationApplication   NominationApplication? @relation(fields: [nominationApplicationId], references: [id], onDelete: Cascade)
-  juryApplication         JuryApplication?       @relation(fields: [juryApplicationId], references: [id], onDelete: Cascade)
-  ticket                  Ticket?                @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  fulfilledAt             DateTime?
+  createdAt               DateTime                @default(now())
+  application             Application?            @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  nominationApplication   NominationApplication?  @relation(fields: [nominationApplicationId], references: [id], onDelete: Cascade)
+  applicantProfile        ApplicantProfile?       @relation(fields: [applicantProfileId], references: [id], onDelete: SetNull)
+  purchasedNominations    NominationApplication[] @relation("NominationPurchasePayment")
+  juryApplication         JuryApplication?        @relation(fields: [juryApplicationId], references: [id], onDelete: Cascade)
+  ticket                  Ticket?                 @relation(fields: [ticketId], references: [id], onDelete: Cascade)
 
   @@index([nominationApplicationId])
+  @@index([applicantProfileId, status])
+  @@index([applicantEmail])
+  @@index([source, status])
 }
 
 model StripeWebhookEvent {
@@ -257,7 +286,7 @@ model StripeWebhookEvent {
 
 model JudgeScore {
   id                      String                 @id @default(cuid())
-  applicationId           String
+  applicationId           String?
   nominationApplicationId String?
   judgeId                 String
   juryProfileId           String?
@@ -272,7 +301,7 @@ model JudgeScore {
   submittedAt             DateTime?
   createdAt               DateTime               @default(now())
   updatedAt               DateTime               @updatedAt
-  application             Application            @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  application             Application?           @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   nominationApplication   NominationApplication? @relation(fields: [nominationApplicationId], references: [id], onDelete: Cascade)
   judge                   JuryApplication        @relation(fields: [judgeId], references: [id], onDelete: Cascade)
   juryProfile             JuryProfile?           @relation(fields: [juryProfileId], references: [id], onDelete: SetNull)
@@ -288,8 +317,9 @@ model JudgeScore {
 
 model NominationApplication {
   id                      String                 @id @default(cuid())
-  applicationId           String
+  applicationId           String?
   applicantProfileId      String?
+  purchasePaymentId       String?
   awardId                 String
   categoryId              String
   status                  NominationStatus       @default(PAYMENT_PENDING)
@@ -299,13 +329,16 @@ model NominationApplication {
   paidAt                  DateTime?
   submittedAt             DateTime?
   lockedAt                DateTime?
+  closedIncompleteAt      DateTime?
   scoresReleasedAt        DateTime?
   stripeCheckoutSessionId String?
   stripePaymentIntentId   String?
+  deletedAt               DateTime?
   createdAt               DateTime               @default(now())
   updatedAt               DateTime               @updatedAt
   applicantProfile        ApplicantProfile?      @relation(fields: [applicantProfileId], references: [id], onDelete: Cascade)
-  application             Application            @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  application             Application?           @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  purchasePayment         Payment?               @relation("NominationPurchasePayment", fields: [purchasePaymentId], references: [id], onDelete: SetNull)
   award                   Award                  @relation(fields: [awardId], references: [id])
   category                Category               @relation(fields: [categoryId], references: [id])
   answers                 NominationAnswer[]
@@ -315,10 +348,16 @@ model NominationApplication {
   reviews                 JuryNominationReview[]
 
   @@unique([applicationId, awardId])
+  @@unique([applicantProfileId, awardId])
   @@index([applicantProfileId, createdAt])
+  @@index([purchasePaymentId])
+  @@index([awardId])
   @@index([applicationId])
+  @@index([status])
+  @@index([submittedAt])
   @@index([categoryId])
   @@index([categoryId, status, paymentStatus])
+  @@index([deletedAt])
 }
 
 model JuryNominationReview {
@@ -361,12 +400,20 @@ model NominationFile {
   fieldKey                String
   fileName                String
   fileUrl                 String
+  originalFileName        String?
+  displayFileName         String?
   mimeType                String
   fileSize                Int
+  originalFileSize        Int?
+  compressedFileSize      Int?
+  storageKey              String?
+  deletedAt               DateTime?
   createdAt               DateTime              @default(now())
   nominationApplication   NominationApplication @relation(fields: [nominationApplicationId], references: [id], onDelete: Cascade)
 
   @@index([nominationApplicationId])
+  @@index([fieldKey])
+  @@index([deletedAt])
 }
 
 enum ApplicationStatus {
@@ -380,8 +427,10 @@ enum ApplicationStatus {
 
 enum NominationStatus {
   PAYMENT_PENDING
+  PURCHASED
   DRAFT
   SUBMITTED
+  RETURNED_FOR_CHANGES
   UNDER_REVIEW
   SCORED
   WITHDRAWN

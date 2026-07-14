@@ -16,6 +16,10 @@ async function main() {
     orphanNominations,
     orphanScores,
     unmatchedTickets,
+    duplicateApplicantAwards,
+    orphanNominationFiles,
+    orphanPayments,
+    missingStripePaidPayments,
   ] = await Promise.all([
     prisma.account.count(),
     prisma.applicantProfile.count(),
@@ -59,6 +63,37 @@ async function main() {
         applicantProfileId: null,
       },
     }),
+    prisma.$queryRaw<Array<{ applicantProfileId: string; awardId: string; count: bigint }>>`
+      SELECT "applicantProfileId", "awardId", count(*) AS count
+      FROM "NominationApplication"
+      WHERE "applicantProfileId" IS NOT NULL AND "deletedAt" IS NULL
+      GROUP BY "applicantProfileId", "awardId"
+      HAVING count(*) > 1
+      ORDER BY count(*) DESC
+    `,
+    prisma.$queryRaw<Array<{ count: bigint }>>`
+      SELECT count(*) AS count
+      FROM "NominationFile" nf
+      LEFT JOIN "NominationApplication" na ON na."id" = nf."nominationApplicationId"
+      WHERE na."id" IS NULL
+    `,
+    prisma.payment.count({
+      where: {
+        source: "COMPETITOR",
+        applicationId: null,
+        applicantProfileId: null,
+        nominationApplicationId: null,
+        ticketId: null,
+        juryApplicationId: null,
+      },
+    }),
+    prisma.payment.count({
+      where: {
+        status: "PAID",
+        provider: "stripe",
+        stripeSessionId: null,
+      },
+    }),
   ]);
 
   const report = {
@@ -72,8 +107,16 @@ async function main() {
     orphanRecords: {
       nominationsWithoutApplicantProfile: orphanNominations,
       nominationScoresWithoutJuryProfile: orphanScores,
+      nominationFilesWithoutNomination: Number(orphanNominationFiles[0]?.count ?? 0),
+      paymentsWithoutOwner: orphanPayments,
       ticketsWithoutAccountOrApplicantProfile: unmatchedTickets,
     },
+    paidStripePaymentsMissingSession: missingStripePaidPayments,
+    duplicateApplicantAwardPairs: duplicateApplicantAwards.map((item) => ({
+      applicantProfileId: item.applicantProfileId,
+      awardId: item.awardId,
+      count: Number(item.count),
+    })),
     duplicateNormalizedEmails: {
       applications: duplicateApplicationEmails.map((item) => ({
         email: item.email,
