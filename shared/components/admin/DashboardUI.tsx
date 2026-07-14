@@ -22,6 +22,7 @@ import type {
   ReactNode,
 } from "react";
 import clsx from "clsx";
+import { adminT } from "@/lib/i18n/admin";
 import { PUBLIC_MOTION_EASE } from "@/shared/components/public/motion-tokens";
 
 const IBPA_BLUE = "#72a0c1";
@@ -458,7 +459,7 @@ export function SearchBar({
   defaultValue,
   value,
   onChange,
-  placeholder = "Search",
+  placeholder = adminT.common.search,
   className,
 }: {
   name?: string;
@@ -569,7 +570,7 @@ export function TableCard({
 }
 
 export function ActionMenu({
-  label = "More actions",
+  label = adminT.common.moreActions,
   children,
   align = "right",
 }: {
@@ -623,7 +624,7 @@ export function Drawer({
         >
           <button
             type="button"
-            aria-label="Close drawer"
+            aria-label={adminT.common.closeDialog}
             className="absolute inset-0 cursor-default"
             onClick={() => onOpenChange(false)}
           />
@@ -642,7 +643,7 @@ export function Drawer({
               ) : (
                 <span />
               )}
-              <IconButton label="Close" icon={X} onClick={() => onOpenChange(false)} />
+              <IconButton label={adminT.common.close} icon={X} onClick={() => onOpenChange(false)} />
             </div>
             {children}
           </motion.div>
@@ -658,8 +659,8 @@ export function ConfirmDialog({
   open,
   title,
   description,
-  confirmLabel = "Confirm",
-  cancelLabel = "Cancel",
+  confirmLabel = adminT.common.confirm,
+  cancelLabel = adminT.common.cancel,
   onConfirm,
   onCancel,
 }: {
@@ -686,7 +687,7 @@ export function ConfirmDialog({
   );
 }
 
-export function LoadingState({ label = "Loading" }: { label?: string }) {
+export function LoadingState({ label = adminT.common.loading }: { label?: string }) {
   return (
     <div className="flex min-h-48 flex-col items-center justify-center gap-3 text-[var(--color-ink-soft)]">
       <Loader2 aria-hidden size={24} className="animate-spin text-[var(--color-blue)]" />
@@ -754,7 +755,7 @@ export function MobileBottomNavigation({
         "fixed inset-x-3 bottom-3 z-50 rounded-[28px] border border-[rgba(114,160,193,0.2)] bg-white/88 p-1.5 shadow-[0_-18px_50px_rgba(37,42,45,0.1)] backdrop-blur-2xl lg:hidden",
         className,
       )}
-      aria-label="Mobile dashboard navigation"
+      aria-label={adminT.common.mobileNavigation}
     >
       <div
         className="grid gap-1"
@@ -781,7 +782,7 @@ export function MobileBottomNavigation({
 }
 
 export function FloatingActionButton({
-  label = "Create",
+  label = adminT.common.create,
   icon: Icon = Plus,
   onClick,
   href,

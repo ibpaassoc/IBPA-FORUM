@@ -2,6 +2,7 @@ import { categoryFieldConfigs } from "@/features/applications/config/category-fi
 import { validateNominationBlockB } from "@/features/applications/schemas/category-field-validation";
 import type { ApplicationFileRef, ApplicationValues } from "@/features/applications/types/application.types";
 import { prisma } from "@/shared/lib/prisma";
+import { adminT } from "@/lib/i18n/admin";
 
 type AnswerLike = {
   fieldKey: string;
@@ -145,8 +146,8 @@ export async function getParticipantApplications(status?: string) {
         status: statusValue,
         paymentStatus,
         createdAt: profile.createdAt,
-        category: profile.nominations[0]?.category ?? { name: "Applicant account" },
-        award: profile.nominations[0]?.award ?? { name: "No nominations yet" },
+        category: profile.nominations[0]?.category ?? { name: adminT.system.applicantAccount },
+        award: profile.nominations[0]?.award ?? { name: adminT.system.noNominations },
         registrationEligible: !profile.account.passwordHash && profile.account.status !== "DISABLED",
         setupEmailNeedsAttention:
           !profile.account.passwordHash &&

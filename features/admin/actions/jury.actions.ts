@@ -47,7 +47,7 @@ export async function saveJuryApplicationNotesAction(formData: FormData) {
   const adminNotes = String(formData.get("adminNotes") ?? "").trim();
 
   if (!id) {
-    throw new Error("Missing jury application id.");
+    throw new Error(adminT.actions.missingJuryApplicationId);
   }
 
   try {
@@ -81,7 +81,7 @@ export async function approveJuryApplicationAction(formData: FormData) {
     isIbpaMemberRaw === "true" ? true : isIbpaMemberRaw === "false" ? false : undefined;
 
   if (!id) {
-    throw new Error("Missing jury application id.");
+    throw new Error(adminT.actions.missingJuryApplicationId);
   }
 
   let notice: string = adminT.actions.approvedWithLink;
@@ -119,7 +119,7 @@ export async function rejectJuryApplicationAction(formData: FormData) {
   const adminNotes = String(formData.get("adminNotes") ?? "").trim();
 
   if (!id) {
-    throw new Error("Missing jury application id.");
+    throw new Error(adminT.actions.missingJuryApplicationId);
   }
 
   try {
@@ -152,7 +152,7 @@ export async function updateJuryApplicationStatusAction(formData: FormData) {
   const adminNotes = String(formData.get("adminNotes") ?? "").trim();
 
   if (!id) {
-    throw new Error("Missing jury application id.");
+    throw new Error(adminT.actions.missingJuryApplicationId);
   }
 
   if (
@@ -161,7 +161,7 @@ export async function updateJuryApplicationStatusAction(formData: FormData) {
     status !== "REJECTED" &&
     status !== "PAID"
   ) {
-    throw new Error("Invalid jury application status.");
+    throw new Error(adminT.actions.invalidJuryStatus);
   }
 
   let notice = "";
@@ -195,7 +195,7 @@ export async function requestAdditionalInfoAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   const infoRequestDetails = String(formData.get("infoRequestDetails") ?? "").trim();
 
-  if (!id) throw new Error("Missing jury application id.");
+  if (!id) throw new Error(adminT.actions.missingJuryApplicationId);
   if (!infoRequestDetails) {
     redirect(
       getJuryApplicationDetailPath(id, {
@@ -231,7 +231,7 @@ export async function deleteJuryApplicationAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");
 
   if (!id) {
-    throw new Error("Missing jury application id.");
+    throw new Error(adminT.actions.missingJuryApplicationId);
   }
 
   try {
@@ -252,7 +252,7 @@ export async function approveJuryApplicationWithoutPaymentAction(formData: FormD
   await requireAdmin();
 
   const id = String(formData.get("id") ?? "");
-  if (!id) throw new Error("Missing jury application id.");
+  if (!id) throw new Error(adminT.actions.missingJuryApplicationId);
 
   try {
     await approveJuryApplicationWithoutPayment(id);
@@ -271,7 +271,7 @@ export async function overrideJuryApplicationStatusAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   const status = String(formData.get("status") ?? "") as JuryApplicationStatus;
 
-  if (!id) throw new Error("Missing jury application id.");
+  if (!id) throw new Error(adminT.actions.missingJuryApplicationId);
 
   const validStatuses: JuryApplicationStatus[] = [
     "SUBMITTED",
@@ -303,7 +303,7 @@ export async function editJuryApplicationAction(formData: FormData) {
   await requireAdmin();
 
   const id = String(formData.get("id") ?? "");
-  if (!id) throw new Error("Missing jury application id.");
+  if (!id) throw new Error(adminT.actions.missingJuryApplicationId);
 
   const fullName = String(formData.get("fullName") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
@@ -343,7 +343,7 @@ export async function editJuryApplicationAction(formData: FormData) {
   if (!professionalWebsite) {
     redirect(
       getJuryApplicationDetailPath(id, {
-        error: "Instagram is required.",
+        error: adminT.actions.instagramRequired,
       }),
     );
   }
@@ -351,7 +351,7 @@ export async function editJuryApplicationAction(formData: FormData) {
   if (!isValidUrl(professionalWebsite)) {
     redirect(
       getJuryApplicationDetailPath(id, {
-        error: "Please enter a valid Instagram URL.",
+        error: adminT.actions.instagramInvalid,
       }),
     );
   }

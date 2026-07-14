@@ -23,7 +23,7 @@ export async function updateParticipantApplicationStatus(formData: FormData) {
   const status = String(formData.get("status") ?? "");
 
   if (!id) {
-    throw new Error("Missing participant application id.");
+    throw new Error(adminT.actions.missingApplicationId);
   }
 
   if (
@@ -33,7 +33,7 @@ export async function updateParticipantApplicationStatus(formData: FormData) {
     status !== "APPROVED" &&
     status !== "REJECTED"
   ) {
-    throw new Error("Invalid participant application status.");
+    throw new Error(adminT.actions.invalidApplicationStatus);
   }
 
   await prisma.application.update({
@@ -53,7 +53,7 @@ export async function editParticipantApplicationAction(formData: FormData) {
   await requireAdmin();
 
   const id = String(formData.get("id") ?? "");
-  if (!id) throw new Error("Missing application id.");
+  if (!id) throw new Error(adminT.actions.missingApplicationId);
 
   const fullName = String(formData.get("fullName") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
@@ -71,11 +71,11 @@ export async function editParticipantApplicationAction(formData: FormData) {
   const heardAbout = String(formData.get("heardAbout") ?? "").trim() || null;
 
   if (!websiteUrl) {
-    redirect(`/admin/applications/${id}?error=Instagram+is+required.`);
+    redirect(`/admin/applications/${id}?error=${encodeURIComponent(adminT.actions.instagramRequired)}`);
   }
 
   if (!isValidUrl(websiteUrl)) {
-    redirect(`/admin/applications/${id}?error=Please+enter+a+valid+Instagram+URL.`);
+    redirect(`/admin/applications/${id}?error=${encodeURIComponent(adminT.actions.instagramInvalid)}`);
   }
 
   await prisma.application.update({

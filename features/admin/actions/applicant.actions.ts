@@ -12,6 +12,7 @@ import {
 import { processApplicantDeadlineClosure } from "@/features/applications/server/closure";
 import { requireAdmin } from "@/shared/lib/admin-auth";
 import { prisma } from "@/shared/lib/prisma";
+import { adminT } from "@/lib/i18n/admin";
 
 function adminApplicationsPath(params?: Record<string, string>) {
   const query = new URLSearchParams(params).toString();
@@ -98,7 +99,7 @@ async function issueRegistrationLink(accountId: string) {
     data: {
       lastSetupEmailSentAt: new Date(),
       lastSetupEmailDeliveryStatus: result.delivered ? "delivered" : result.reason ?? "failed",
-      lastSetupEmailDeliveryError: result.delivered ? null : result.error ?? result.reason ?? "Email delivery failed.",
+      lastSetupEmailDeliveryError: result.delivered ? null : result.error ?? result.reason ?? adminT.system.emailDeliveryFailed,
     },
   });
 
@@ -106,7 +107,7 @@ async function issueRegistrationLink(accountId: string) {
     sent: result.delivered,
     skipped: false,
     profileId: payload.profileId,
-    error: result.delivered ? null : result.error ?? result.reason ?? "Email delivery failed.",
+    error: result.delivered ? null : result.error ?? result.reason ?? adminT.system.emailDeliveryFailed,
   };
 }
 
@@ -115,7 +116,7 @@ export async function updateApplicantProfileAction(formData: FormData) {
 
   const profileId = getString(formData, "profileId");
   if (!profileId) {
-    redirect(adminApplicationsPath({ error: "Missing applicant profile id." }));
+    redirect(adminApplicationsPath({ error: adminT.actions.missingApplicantId }));
   }
 
   const fullName = getString(formData, "fullName");
@@ -124,11 +125,11 @@ export async function updateApplicantProfileAction(formData: FormData) {
   const yearsExperience = parseOptionalInt(getString(formData, "yearsExperience"));
 
   if (!fullName || !city || !country) {
-    redirect(adminApplicantPath(profileId, { error: "Full name, country, and city are required." }));
+    redirect(adminApplicantPath(profileId, { error: adminT.actions.applicantRequiredFields }));
   }
 
   if (Number.isNaN(yearsExperience)) {
-    redirect(adminApplicantPath(profileId, { error: "Years of experience must be a whole number." }));
+    redirect(adminApplicantPath(profileId, { error: adminT.actions.yearsWholeNumber }));
   }
 
   await prisma.applicantProfile.update({
@@ -160,7 +161,7 @@ export async function updateApplicantProfileAction(formData: FormData) {
 
   revalidatePath("/admin/applications");
   revalidatePath(`/admin/applications/${profileId}`);
-  redirect(adminApplicantPath(profileId, { notice: "Applicant profile updated." }));
+  redirect(adminApplicantPath(profileId, { notice: adminT.actions.applicantUpdated }));
 }
 
 export async function resendApplicantRegistrationLinkAction(formData: FormData) {
@@ -168,7 +169,7 @@ export async function resendApplicantRegistrationLinkAction(formData: FormData) 
 
   const profileId = getString(formData, "profileId");
   if (!profileId) {
-    redirect(adminApplicationsPath({ error: "Missing applicant profile id." }));
+    redirect(adminApplicationsPath({ error: adminT.actions.missingApplicantId }));
   }
 
   const profile = await prisma.applicantProfile.findUnique({
@@ -177,7 +178,7 @@ export async function resendApplicantRegistrationLinkAction(formData: FormData) 
   });
 
   if (!profile) {
-    redirect(adminApplicationsPath({ error: "Applicant profile not found." }));
+    redirect(adminApplicationsPath({ error: adminT.actions.applicantNotFound }));
   }
 
   const result = await issueRegistrationLink(profile.accountId);
@@ -185,14 +186,14 @@ export async function resendApplicantRegistrationLinkAction(formData: FormData) 
   revalidatePath(`/admin/applications/${profileId}`);
 
   if (result.skipped) {
-    redirect(adminApplicantPath(profileId, { notice: "Registration link was skipped because this account is not eligible." }));
+    redirect(adminApplicantPath(profileId, { notice: adminT.actions.registrationIneligible }));
   }
 
   if (!result.sent) {
-    redirect(adminApplicantPath(profileId, { error: "Registration link was generated, but email delivery failed." }));
+    redirect(adminApplicantPath(profileId, { error: adminT.actions.registrationDeliveryFailed }));
   }
 
-  redirect(adminApplicantPath(profileId, { notice: "Secure registration link sent." }));
+  redirect(adminApplicantPath(profileId, { notice: adminT.actions.registrationSent }));
 }
 
 export async function bulkResendApplicantRegistrationLinksAction(formData: FormData) {
@@ -204,7 +205,7 @@ export async function bulkResendApplicantRegistrationLinksAction(formData: FormD
     .filter(Boolean);
 
   if (profileIds.length === 0) {
-    redirect(adminApplicationsPath({ error: "Select at least one applicant." }));
+    redirect(adminApplicationsPath({ error: adminT.actions.selectApplicant }));
   }
 
   const profiles = await prisma.applicantProfile.findMany({
@@ -230,7 +231,7 @@ export async function bulkResendApplicantRegistrationLinksAction(formData: FormD
   revalidatePath("/admin/applications");
   redirect(
     adminApplicationsPath({
-      notice: `Registration links processed: attempted ${profileIds.length}, sent ${sent}, skipped ${skipped}, failed ${failed}.`,
+      notice: adminT.actions.registrationBatch(profileIds.length, sent, skipped, failed),
     })
   );
 }
@@ -242,7 +243,7 @@ export async function addManualApplicantNominationAction(formData: FormData) {
   const awardId = getString(formData, "awardId");
 
   if (!profileId || !awardId) {
-    redirect(adminApplicantPath(profileId, { error: "Choose an applicant and nomination." }));
+    redirect(adminApplicantPath(profileId, { error: adminT.actions.chooseApplicantNomination }));
   }
 
   const [profile, award, duplicate] = await Promise.all([
@@ -261,15 +262,15 @@ export async function addManualApplicantNominationAction(formData: FormData) {
   ]);
 
   if (!profile || profile.deletedAt) {
-    redirect(adminApplicationsPath({ error: "Applicant profile not found." }));
+    redirect(adminApplicationsPath({ error: adminT.actions.applicantNotFound }));
   }
 
   if (!award) {
-    redirect(adminApplicantPath(profileId, { error: "Nomination not found." }));
+    redirect(adminApplicantPath(profileId, { error: adminT.actions.nominationNotFound }));
   }
 
   if (duplicate) {
-    redirect(adminApplicantPath(profileId, { error: "You already have this nomination." }));
+    redirect(adminApplicantPath(profileId, { error: adminT.actions.nominationAlreadyOwned }));
   }
 
   const paidAt = new Date();
@@ -352,14 +353,14 @@ export async function addManualApplicantNominationAction(formData: FormData) {
     });
   } catch (error) {
     if (isUniqueConstraintError(error)) {
-      redirect(adminApplicantPath(profileId, { error: "You already have this nomination." }));
+      redirect(adminApplicantPath(profileId, { error: adminT.actions.nominationAlreadyOwned }));
     }
     throw error;
   }
 
   revalidatePath("/admin/applications");
   revalidatePath(`/admin/applications/${profileId}`);
-  redirect(adminApplicantPath(profileId, { notice: "Manual paid nomination added." }));
+  redirect(adminApplicantPath(profileId, { notice: adminT.actions.manualNominationAdded }));
 }
 
 export async function updateApplicantDeadlineOverrideAction(formData: FormData) {
@@ -369,11 +370,11 @@ export async function updateApplicantDeadlineOverrideAction(formData: FormData) 
   const override = parseOverrideDate(getString(formData, "deadlineOverrideAt"));
 
   if (!profileId) {
-    redirect(adminApplicationsPath({ error: "Missing applicant profile id." }));
+    redirect(adminApplicationsPath({ error: adminT.actions.missingApplicantId }));
   }
 
   if (override === undefined) {
-    redirect(adminApplicantPath(profileId, { error: "Invalid deadline override date." }));
+    redirect(adminApplicantPath(profileId, { error: adminT.actions.invalidDeadline }));
   }
 
   await prisma.applicantProfile.update({
@@ -383,7 +384,7 @@ export async function updateApplicantDeadlineOverrideAction(formData: FormData) 
 
   revalidatePath("/admin/applications");
   revalidatePath(`/admin/applications/${profileId}`);
-  redirect(adminApplicantPath(profileId, { notice: "Deadline override updated." }));
+  redirect(adminApplicantPath(profileId, { notice: adminT.actions.deadlineUpdated }));
 }
 
 export async function closeApplicantApplicationsAction() {
@@ -393,7 +394,7 @@ export async function closeApplicantApplicationsAction() {
   revalidatePath("/admin/applications");
   redirect(
     adminApplicationsPath({
-      notice: `Applications closed: processed ${result.processed}, auto-submitted ${result.autoSubmitted}, incomplete ${result.incompleteClosed}.`,
+      notice: adminT.actions.closureComplete(result.processed, result.autoSubmitted, result.incompleteClosed),
     })
   );
 }

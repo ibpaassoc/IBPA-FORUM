@@ -150,13 +150,13 @@ export default function ApplicantAdminDetailPage({
               <label className="grid gap-1.5">
                 <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-soft)]">{adminT.applicantAccount.preferredLanguage}</span>
                 <select name="preferredLocale" defaultValue={profile.preferredLocale} className={dashboardSelectClass}>
-                  <option value="en">English</option>
-                  <option value="ru">Русский</option>
-                  <option value="ua">Українська</option>
+                  <option value="en">{adminT.common.english}</option>
+                  <option value="ru">{adminT.common.russian}</option>
+                  <option value="ua">{adminT.common.ukrainian}</option>
                 </select>
               </label>
               <label className="grid gap-1.5">
-                <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-soft)]">Instagram</span>
+                <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-soft)]">{adminT.common.instagram}</span>
                 <input name="websiteUrl" defaultValue={profile.websiteUrl ?? ""} className={dashboardInputClass} />
               </label>
               <label className="grid gap-1.5">

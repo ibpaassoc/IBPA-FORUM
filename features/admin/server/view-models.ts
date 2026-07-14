@@ -1,9 +1,11 @@
+import { adminT } from "@/lib/i18n/admin";
+
 export function formatAdminDate(date: Date | null) {
   if (!date) {
-    return "Not set";
+    return adminT.system.notSet;
   }
 
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat("ru-RU", {
     dateStyle: "medium"
   }).format(date);
 }

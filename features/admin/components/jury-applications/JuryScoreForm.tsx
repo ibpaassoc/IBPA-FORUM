@@ -5,6 +5,7 @@ import { useState, useTransition } from "react";
 import { CheckCircle2, Minus, PenSquare, Plus, Save } from "lucide-react";
 import { formatAdminDate } from "@/features/admin/server/view-models";
 import ScoreStatusBadge from "@/features/admin/components/scoring/ScoreStatusBadge";
+import { adminT } from "@/lib/i18n/admin";
 import {
   DashboardAccentBlock,
   DashboardCard,
@@ -33,11 +34,11 @@ type JuryScoreFormProps = {
 };
 
 const criteria = [
-  { key: "technical", label: "Technical" },
-  { key: "aesthetic", label: "Aesthetic" },
-  { key: "creativity", label: "Creativity" },
-  { key: "impact", label: "Impact" },
-  { key: "presentation", label: "Presentation" },
+  { key: "technical", label: adminT.scoring.criteria.technical },
+  { key: "aesthetic", label: adminT.scoring.criteria.aesthetic },
+  { key: "creativity", label: adminT.scoring.criteria.creativity },
+  { key: "impact", label: adminT.scoring.criteria.impact },
+  { key: "presentation", label: adminT.scoring.criteria.presentation },
 ] as const;
 
 function toValue(value: number | null | undefined): ScoreFormValue {
@@ -86,11 +87,11 @@ export default function JuryScoreForm({ nominationApplicationId, initialScore }:
     const payload = (await response.json().catch(() => null)) as { message?: string } | null;
 
     if (!response.ok) {
-      setError(payload?.message ?? "We could not save this score right now.");
+      setError(payload?.message ?? adminT.scoring.saveError);
       return;
     }
 
-    setNotice(mode === "draft" ? "Draft saved." : "Final score submitted.");
+    setNotice(mode === "draft" ? adminT.scoring.draftSaved : adminT.scoring.finalSubmitted);
     startTransition(() => {
       router.refresh();
     });
@@ -126,7 +127,7 @@ export default function JuryScoreForm({ nominationApplicationId, initialScore }:
               <PenSquare aria-hidden size={15} />
             </span>
             <h2 className="font-[var(--font-title-family)] text-2xl font-light tracking-[-0.025em] text-[var(--color-ink)]">
-              Scorecard
+              {adminT.scoring.scorecard}
             </h2>
           </div>
           <div className="text-right">
@@ -145,7 +146,7 @@ export default function JuryScoreForm({ nominationApplicationId, initialScore }:
           <div className="flex items-end justify-between gap-4">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-soft)]">
-                Current total
+                {adminT.scoring.currentTotal}
               </p>
               <p className="mt-2 font-[var(--font-title-family)] text-5xl font-light tracking-[-0.05em]">
                 {total}
@@ -163,13 +164,13 @@ export default function JuryScoreForm({ nominationApplicationId, initialScore }:
 
         {initialScore?.status === "REOPENED" ? (
           <div className="rounded-[22px] border border-[rgba(114,160,193,0.34)] bg-[var(--color-blue-wash)] px-4 py-3 text-sm text-[var(--color-ink)]">
-            This score was reopened by an admin.
+            {adminT.scoring.reopenedNotice}
           </div>
         ) : null}
 
         {isSubmitted ? (
           <div className="rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white/62 px-4 py-3 text-sm text-[var(--color-ink-soft)]">
-            Submitted scores are read-only until reopened.
+            {adminT.scoring.submittedReadOnly}
           </div>
         ) : null}
 
@@ -184,7 +185,7 @@ export default function JuryScoreForm({ nominationApplicationId, initialScore }:
                 <span className="block font-[var(--font-title-family)] text-lg font-light leading-tight text-[var(--color-ink)]">
                   {criterion.label}
                 </span>
-                <span className="text-xs text-[var(--color-ink-muted)]">0 to 10</span>
+                <span className="text-xs text-[var(--color-ink-muted)]">{adminT.scoring.range}</span>
               </span>
               <span className="grid grid-cols-[44px_minmax(0,72px)_44px] items-center rounded-full border border-[rgba(114,160,193,0.22)] bg-white/82 p-1 shadow-sm">
                 <button
@@ -195,7 +196,7 @@ export default function JuryScoreForm({ nominationApplicationId, initialScore }:
                     adjustScore(criterion.key, -1);
                   }}
                   className="flex size-10 items-center justify-center rounded-full text-[var(--color-blue)] transition hover:bg-[var(--color-blue-wash)] disabled:cursor-not-allowed disabled:opacity-45"
-                  aria-label={`Decrease ${criterion.label}`}
+                  aria-label={adminT.scoring.decrease(criterion.label)}
                 >
                   <Minus aria-hidden size={15} />
                 </button>
@@ -219,7 +220,7 @@ export default function JuryScoreForm({ nominationApplicationId, initialScore }:
                     adjustScore(criterion.key, 1);
                   }}
                   className="flex size-10 items-center justify-center rounded-full bg-[var(--color-blue-wash)] text-[var(--color-blue)] transition hover:bg-[var(--color-blue-light)] disabled:cursor-not-allowed disabled:opacity-45"
-                  aria-label={`Increase ${criterion.label}`}
+                  aria-label={adminT.scoring.increase(criterion.label)}
                 >
                   <Plus aria-hidden size={15} />
                 </button>
@@ -230,7 +231,7 @@ export default function JuryScoreForm({ nominationApplicationId, initialScore }:
 
         <label className="block rounded-[24px] border border-[rgba(37,42,45,0.08)] bg-white/62 p-3" htmlFor="comment">
           <span className="font-[var(--font-title-family)] text-lg font-light text-[var(--color-ink)]">
-            Judge comment
+            {adminT.scoring.judgeComment}
           </span>
           <textarea
             id="comment"
@@ -263,7 +264,7 @@ export default function JuryScoreForm({ nominationApplicationId, initialScore }:
               }}
             >
               <Save aria-hidden size={15} />
-              Save draft
+              {adminT.scoring.saveDraft}
             </DashboardSecondaryBtn>
             <DashboardPrimaryBtn
               type="button"
@@ -273,7 +274,7 @@ export default function JuryScoreForm({ nominationApplicationId, initialScore }:
               }}
             >
               <CheckCircle2 aria-hidden size={15} />
-              Submit final
+              {adminT.scoring.submitFinal}
             </DashboardPrimaryBtn>
           </div>
         ) : null}
