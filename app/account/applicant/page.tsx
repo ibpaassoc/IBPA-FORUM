@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { ArrowRight, FileText, Gauge, PenLine, Plus, Send, ShoppingBag } from "lucide-react";
+import { ArrowRight, FileText, Plus } from "lucide-react";
 import { getApplicantDashboardData } from "@/features/account/server/applicant-dashboard";
 import ApplicantHero from "@/features/account/components/ApplicantHero";
+import ApplicantStats from "@/features/account/components/ApplicantStats";
 import NominationCard from "@/features/account/components/NominationCard";
 import {
   DeadlineCard,
@@ -17,7 +18,6 @@ import {
 import {
   DashboardStagger,
   EmptyState,
-  MetricCard,
   PremiumButton,
 } from "@/shared/components/admin/DashboardUI";
 
@@ -42,36 +42,12 @@ export default async function ApplicantDashboardPage() {
         closedAtLabel={data.closedAt ? formatDateLabel(data.closedAt) : null}
       />
 
-      <DashboardStagger className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-        <MetricCard
-          label="Purchased"
-          value={stats.total}
-          detail="Paid nominations in your account"
-          icon={ShoppingBag}
-          accent="blue"
-        />
-        <MetricCard
-          label="Drafts"
-          value={stats.drafts}
-          detail="Saved progress, not visible to judges"
-          icon={PenLine}
-          accent="amber"
-        />
-        <MetricCard
-          label="Submitted"
-          value={stats.submitted}
-          detail="Visible to the jury"
-          icon={Send}
-          accent="green"
-        />
-        <MetricCard
-          label="Completion"
-          value={`${stats.overallCompletion}%`}
-          detail="Average across nominations"
-          icon={Gauge}
-          accent="blue"
-        />
-      </DashboardStagger>
+      <ApplicantStats
+        total={stats.total}
+        drafts={stats.drafts}
+        submitted={stats.submitted}
+        overallCompletion={stats.overallCompletion}
+      />
 
       <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
         <section
