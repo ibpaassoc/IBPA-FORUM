@@ -271,7 +271,7 @@ export function mapScoreRow(score: ScoreRecord): SheetValues[number] {
     score.nominationApplicationId ?? "",
     score.judgeId,
     score.judge.fullName,
-    score.application.fullName,
+    score.application?.fullName ?? "",
     score.nominationApplication?.category.name ?? "",
     criteria(score.technical),
     criteria(score.aesthetic),
