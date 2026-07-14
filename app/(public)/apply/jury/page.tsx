@@ -1,9 +1,17 @@
-import { notFound } from "next/navigation";
+"use client";
 
-// Public jury applications are closed. This route intentionally renders the
-// global 404 (via notFound()) so the old application form is no longer reachable
-// and search engines drop the URL. Existing jury accounts, dashboards, scoring,
-// and admin review are unaffected.
+import JuryApplicationForm from "@/features/jury/components/jury-application/JuryApplicationForm";
+import JuryApplyHero from "@/features/jury/components/jury-application/JuryApplyHero";
+import { PageSection } from "@/shared/components/public";
+
 export default function JuryApplyPage() {
-  notFound();
+
+  return (
+    <main className="page-shell">
+      <JuryApplyHero></JuryApplyHero>
+      <PageSection id="jury-form" className="py-8">
+        <JuryApplicationForm />
+      </PageSection>
+    </main>
+  );
 }
