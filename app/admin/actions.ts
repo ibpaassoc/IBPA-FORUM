@@ -10,3 +10,11 @@ export {
   updateJuryApplicationStatusAction,
 } from "@/features/admin/actions/jury.actions";
 export { updateParticipantApplicationStatus } from "@/features/admin/actions/participant.actions";
+export {
+  addManualApplicantNominationAction,
+  bulkResendApplicantRegistrationLinksAction,
+  closeApplicantApplicationsAction,
+  resendApplicantRegistrationLinkAction,
+  updateApplicantDeadlineOverrideAction,
+  updateApplicantProfileAction,
+} from "@/features/admin/actions/applicant.actions";

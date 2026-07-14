@@ -20,8 +20,13 @@ export const adminT = {
   statuses: {
     DRAFT: "Черновик",
     PAYMENT_PENDING: "Ожидает оплаты",
+    PURCHASED: "Куплено",
     SUBMITTED: "Отправлено",
     UNDER_REVIEW: "На рассмотрении",
+    RETURNED_FOR_CHANGES: "Возвращено на правки",
+    LOCKED: "Закрыто",
+    SCORED: "Оценено",
+    WITHDRAWN: "Отозвано",
     ADDITIONAL_INFO_REQUIRED: "Нужны уточнения",
     APPROVED: "Одобрено",
     REJECTED: "Отклонено",
@@ -117,6 +122,8 @@ export const adminT = {
     selectedCount: "Выбрано:",
     primaryPath: "Основная номинация",
     createdDate: "Дата отправки",
+    closeAll: "Закрыть прием заявок",
+    closeAllConfirm: "Закрыть все заявки участников? Действие зафиксирует время закрытия и заблокирует редактирование.",
   },
   jury: {
     label: "Жюри",

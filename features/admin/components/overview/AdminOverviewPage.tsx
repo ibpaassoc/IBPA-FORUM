@@ -25,8 +25,8 @@ type ParticipantOverview = {
   id: string;
   fullName: string;
   email: string;
-  status: "DRAFT" | "PAYMENT_PENDING" | "SUBMITTED" | "UNDER_REVIEW" | "APPROVED" | "REJECTED";
-  paymentStatus: "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "REFUNDED";
+  status: string;
+  paymentStatus: string;
   createdAt: Date;
   category: { name: string };
   award: { name: string };
@@ -48,9 +48,9 @@ type TicketOverview = {
 };
 
 function participantTone(status: ParticipantOverview["status"]) {
-  if (status === "APPROVED") return "green";
+  if (status === "APPROVED" || status === "SCORED") return "green";
   if (status === "REJECTED") return "red";
-  if (status === "PAYMENT_PENDING") return "amber";
+  if (status === "PAYMENT_PENDING" || status === "PURCHASED" || status === "LOCKED") return "amber";
   return "blue";
 }
 
