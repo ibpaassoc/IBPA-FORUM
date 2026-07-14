@@ -2,46 +2,44 @@
 
 import Link from "next/link";
 import { RefreshCcw } from "lucide-react";
-import RetryCheckoutButton from "@/features/applications/components/application-form/RetryCheckoutButton";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { IconBadge, PageHero, PageSection } from "@/shared/components/public";
 
-export default function PaymentCancelCard({
-  applicationId,
-}: {
-  applicationId?: string;
-}) {
+export default function PaymentCancelCard() {
   const { language } = useLanguage();
   const copy = {
     en: {
       eyebrow: "Payment Canceled",
-      title: "Your application is saved, but not complete yet",
+      title: "Checkout was canceled",
       description:
-        "Stripe Checkout was canceled before payment finished. Your participant application has not been finalized and will not be reviewed until payment succeeds.",
+        "No nomination was purchased, and no applicant account or nomination record was created from this canceled checkout.",
       nextStep: "Next Step",
       body:
-        "You can return to secure Stripe Checkout using the saved application, or go back to the application page if you need to start over.",
-      back: "Back to Application Form",
+        "Return to the application purchase flow to choose nominations again, or sign in if you already have an applicant account.",
+      back: "Back to Apply",
+      login: "Applicant Login",
     },
     ru: {
       eyebrow: "Оплата отменена",
-      title: "Ваша заявка сохранена, но еще не завершена",
+      title: "Оплата была отменена",
       description:
-        "Stripe Checkout был отменен до завершения оплаты. Заявка участника не финализирована и не попадет на рассмотрение, пока оплата не пройдет успешно.",
+        "Номинация не была куплена, а аккаунт участника и записи номинаций не создавались из этой отмененной оплаты.",
       nextStep: "Следующий шаг",
       body:
-        "Вы можете вернуться к защищенной оплате Stripe Checkout по сохраненной заявке или вернуться к форме, чтобы начать заново.",
-      back: "Вернуться к форме заявки",
+        "Вернитесь к покупке номинаций или войдите в аккаунт, если он у вас уже есть.",
+      back: "Вернуться к заявке",
+      login: "Вход участника",
     },
     ua: {
       eyebrow: "Оплату скасовано",
-      title: "Вашу заявку збережено, але її ще не завершено",
+      title: "Оплату було скасовано",
       description:
-        "Stripe Checkout було скасовано до завершення оплати. Заявку учасника не фіналізовано, і вона не потрапить на розгляд, доки оплата не буде успішною.",
+        "Номінацію не було придбано, а акаунт учасника та записи номінацій не створювалися з цієї скасованої оплати.",
       nextStep: "Наступний крок",
       body:
-        "Ви можете повернутися до захищеної оплати Stripe Checkout за збереженою заявкою або повернутися до форми, щоб почати заново.",
-      back: "Повернутися до форми заявки",
+        "Поверніться до купівлі номінацій або увійдіть в акаунт, якщо він у вас уже є.",
+      back: "Повернутися до заявки",
+      login: "Вхід учасника",
     },
   }[language];
 
@@ -63,14 +61,12 @@ export default function PaymentCancelCard({
             {copy.body}
           </p>
 
-          <div className="mt-8 flex flex-col items-center gap-4">
-            {applicationId ? <RetryCheckoutButton applicationId={applicationId} /> : null}
-
-            <Link
-              href="/apply"
-              className="ibpa-button ibpa-button-ghost"
-            >
+          <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row">
+            <Link href="/apply" className="ibpa-button ibpa-button-primary">
               {copy.back}
+            </Link>
+            <Link href="/account/login" className="ibpa-button ibpa-button-ghost">
+              {copy.login}
             </Link>
           </div>
         </div>
