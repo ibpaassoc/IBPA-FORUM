@@ -6,12 +6,13 @@ import {
   regenerateTicketQr,
   sendCurrentTicketQr,
 } from "@/features/tickets/server/ticket-admin-service";
+import { adminT } from "@/lib/i18n/admin";
 
 type QrAction = "preview" | "generate" | "regenerate_resend" | "resend_current";
 
 export async function POST(request: Request) {
   if (!(await isAdminAuthenticated())) {
-    return NextResponse.json({ ok: false, message: "Unauthorized." }, { status: 401 });
+    return NextResponse.json({ ok: false, message: adminT.api.unauthorized }, { status: 401 });
   }
 
   const body = (await request.json().catch(() => ({}))) as {
@@ -22,7 +23,7 @@ export async function POST(request: Request) {
   const action = body.action as QrAction;
 
   if (!ticketId) {
-    return NextResponse.json({ ok: false, message: "Ticket ID is required." }, { status: 400 });
+    return NextResponse.json({ ok: false, message: adminT.api.ticketIdRequired }, { status: 400 });
   }
 
   if (action === "preview") {
@@ -64,6 +65,5 @@ export async function POST(request: Request) {
     return NextResponse.json(result);
   }
 
-  return NextResponse.json({ ok: false, message: "Unsupported QR action." }, { status: 400 });
+  return NextResponse.json({ ok: false, message: adminT.api.unsupportedQrAction }, { status: 400 });
 }
-

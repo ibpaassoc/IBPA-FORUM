@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
 import { updateAdminTicket } from "@/features/tickets/server/ticket-admin-service";
+import { adminT } from "@/lib/i18n/admin";
 
 export async function PATCH(request: Request) {
   if (!(await isAdminAuthenticated())) {
-    return NextResponse.json({ ok: false, message: "Unauthorized." }, { status: 401 });
+    return NextResponse.json({ ok: false, message: adminT.api.unauthorized }, { status: 401 });
   }
 
   const body = (await request.json().catch(() => ({}))) as {
@@ -24,4 +25,3 @@ export async function PATCH(request: Request) {
 
   return NextResponse.json(result);
 }
-

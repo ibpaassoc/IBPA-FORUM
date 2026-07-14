@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { findTicketByToken } from "@/features/tickets/server/ticket-repository";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { adminT } from "@/lib/i18n/admin";
 
 /**
  * GET /api/admin/tickets/:token
@@ -19,19 +20,19 @@ export async function GET(
   { params }: { params: Promise<{ token: string }> }
 ) {
   if (!(await isAdminAuthenticated())) {
-    return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
+    return NextResponse.json({ message: adminT.api.unauthorized }, { status: 401 });
   }
 
   const { token } = await params;
 
   if (!token || token.length < 16) {
-    return NextResponse.json({ message: "Invalid token." }, { status: 400 });
+    return NextResponse.json({ message: adminT.api.invalidToken }, { status: 400 });
   }
 
   const ticket = await findTicketByToken(token);
 
   if (!ticket) {
-    return NextResponse.json({ message: "Ticket not found." }, { status: 404 });
+    return NextResponse.json({ message: adminT.api.ticketNotFound }, { status: 404 });
   }
 
   return NextResponse.json({

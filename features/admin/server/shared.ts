@@ -1,6 +1,8 @@
 import "server-only";
 
-import type { JudgeScore, Prisma, ScoreStatus } from "@prisma/client";
+import { adminT } from "@/lib/i18n/admin";
+
+import type { JudgeScore, Prisma } from "@prisma/client";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/shared/lib/prisma";
 import { requireJuryAuth } from "@/features/jury/server/auth";
@@ -130,7 +132,7 @@ export function getAverageSubmittedScore(
 
 export function formatAverageScore(value: number | null) {
   if (value === null) {
-    return "Not scored";
+    return adminT.system.notScored;
   }
 
   return value.toFixed(1);
@@ -268,8 +270,4 @@ export function serializeScoreValues(score: Partial<ScoreValues>) {
     impact: score.impact ?? null,
     presentation: score.presentation ?? null,
   } satisfies ScoreValues;
-}
-
-export function getScoreStatusLabel(status: ScoreStatus) {
-  return status.replaceAll("_", " ");
 }

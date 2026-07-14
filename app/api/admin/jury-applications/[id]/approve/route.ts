@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { approveJuryApplication } from "@/features/jury/server/commands";
 import { requireAdmin } from "@/shared/lib/admin-auth";
+import { adminT } from "@/lib/i18n/admin";
 
 export async function POST(
   _request: Request,
@@ -13,7 +14,7 @@ export async function POST(
   if (!id) {
     return NextResponse.json(
       {
-        message: "Missing jury application id.",
+        message: adminT.actions.missingJuryApplicationId,
       },
       { status: 400 }
     );
@@ -30,10 +31,7 @@ export async function POST(
 
     return NextResponse.json(
       {
-        message:
-          error instanceof Error
-            ? error.message
-            : "Could not approve the jury application.",
+        message: adminT.api.approveJuryFailed,
       },
       { status: 400 }
     );

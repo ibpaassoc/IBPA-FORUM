@@ -1,4 +1,6 @@
 import "server-only";
+
+import { adminT } from "@/lib/i18n/admin";
 import crypto from "crypto";
 import type { Prisma, Ticket, TicketQrCredential } from "@prisma/client";
 import { prisma } from "@/shared/lib/prisma";
@@ -181,7 +183,7 @@ export async function updateAdminTicket(
     return {
       ok: false,
       reason: "invalid",
-      message: "Check the highlighted fields and try again.",
+      message: adminT.tickets.admin.invalidFields,
       fieldErrors: parsed.error.flatten().fieldErrors,
     };
   }
@@ -192,14 +194,14 @@ export async function updateAdminTicket(
 
     const current = await tx.ticket.findUnique({ where: { id: input.ticketId } });
     if (!current) {
-      return { ok: false as const, reason: "not_found" as const, message: "Ticket not found." };
+      return { ok: false as const, reason: "not_found" as const, message: adminT.api.ticketNotFound };
     }
 
     if (current.updatedAt.toISOString() !== input.updatedAt) {
       return {
         ok: false as const,
         reason: "stale" as const,
-        message: "This ticket changed after you opened it. Refresh and try again.",
+        message: adminT.tickets.admin.staleTicket,
       };
     }
 
@@ -375,7 +377,7 @@ export async function regenerateAndSendTicketQr(ticketId: string, adminId?: stri
       ok: false as const,
       reason: "email_failed" as const,
       message:
-        "The QR code was regenerated, but the email could not be delivered. The previous QR code is no longer valid.",
+        adminT.tickets.admin.regeneratedQrDeliveryFailed,
       delivery: sent.delivery,
     };
   }
@@ -383,4 +385,3 @@ export async function regenerateAndSendTicketQr(ticketId: string, adminId?: stri
   syncTicketOnChange(ticketId);
   return { ok: true as const, delivery: sent.ok ? sent.delivery : undefined };
 }
-

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
 import { resolveScan } from "@/features/check-in/server/check-in-service";
 import { SCAN_MODES } from "@/features/check-in/types";
+import { adminT } from "@/lib/i18n/admin";
 
 const verifySchema = z.object({
   code: z.string().min(1).max(256),
@@ -21,19 +22,19 @@ const verifySchema = z.object({
  */
 export async function POST(request: NextRequest) {
   if (!(await isAdminAuthenticated())) {
-    return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
+    return NextResponse.json({ message: adminT.api.unauthorized }, { status: 401 });
   }
 
   let body: unknown;
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ message: "Invalid JSON body." }, { status: 400 });
+    return NextResponse.json({ message: adminT.api.invalidJson }, { status: 400 });
   }
 
   const parsed = verifySchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ message: "A scanned code is required." }, { status: 400 });
+    return NextResponse.json({ message: adminT.api.scannedCodeRequired }, { status: 400 });
   }
 
   const result = await resolveScan(parsed.data.code, parsed.data.mode);

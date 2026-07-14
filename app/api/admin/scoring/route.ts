@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { getAdminScoringOverview } from "@/features/admin/server/admin";
 import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
+import { adminT } from "@/lib/i18n/admin";
 
 export async function GET(request: Request) {
   try {
     if (!(await isAdminAuthenticated())) {
       return NextResponse.json(
-        { message: "Admin authentication is required." },
+        { message: adminT.api.unauthorized },
         { status: 401 }
       );
     }
@@ -31,14 +32,14 @@ export async function GET(request: Request) {
       typeof error.status === "number"
     ) {
       return NextResponse.json(
-        { message: error instanceof Error ? error.message : "Request failed." },
+        { message: error instanceof Error ? error.message : adminT.api.requestFailed },
         { status: error.status }
       );
     }
 
     console.error("GET /api/admin/scoring error:", error);
     return NextResponse.json(
-      { message: "Failed to load admin scoring overview." },
+      { message: adminT.api.scoringOverviewFailed },
       { status: 500 }
     );
   }

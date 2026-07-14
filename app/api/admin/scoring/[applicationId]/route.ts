@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAdminApplicationScoringDetail } from "@/features/admin/server/admin";
 import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
+import { adminT } from "@/lib/i18n/admin";
 
 export async function GET(
   _request: Request,
@@ -9,7 +10,7 @@ export async function GET(
   try {
     if (!(await isAdminAuthenticated())) {
       return NextResponse.json(
-        { message: "Admin authentication is required." },
+        { message: adminT.api.unauthorized },
         { status: 401 }
       );
     }
@@ -18,7 +19,7 @@ export async function GET(
 
     if (!detail) {
       return NextResponse.json(
-        { message: "The participant application could not be found." },
+        { message: adminT.api.participantApplicationNotFound },
         { status: 404 }
       );
     }
@@ -32,14 +33,14 @@ export async function GET(
       typeof error.status === "number"
     ) {
       return NextResponse.json(
-        { message: error instanceof Error ? error.message : "Request failed." },
+        { message: error instanceof Error ? error.message : adminT.api.requestFailed },
         { status: error.status }
       );
     }
 
     console.error("GET /api/admin/scoring/[applicationId] error:", error);
     return NextResponse.json(
-      { message: "Failed to load admin scoring detail." },
+      { message: adminT.api.scoringDetailFailed },
       { status: 500 }
     );
   }
