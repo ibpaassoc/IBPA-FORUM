@@ -180,14 +180,14 @@ export default function ApplicationListPage({
               id="bulk-registration-resend"
               action={bulkResendApplicantRegistrationLinksAction}
               onSubmit={(event) => {
-                if (!window.confirm("Отправить выбранным участникам новые ссылки регистрации?")) {
+                if (!window.confirm(adminT.applications.bulkResendConfirm)) {
                   event.preventDefault();
                 }
               }}
             >
               <DashboardSecondaryBtn type="submit">
                 <MailPlus aria-hidden size={15} />
-                Регистрация
+                {adminT.applications.bulkResend}
               </DashboardSecondaryBtn>
             </form>
           </>
@@ -236,7 +236,7 @@ export default function ApplicationListPage({
             return (
               <div key={app.id} className="grid gap-3 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-stretch">
                 <label className="flex min-h-16 items-center justify-center rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white/70 px-4 shadow-[0_12px_30px_rgba(37,42,45,0.04)]">
-                  <span className="sr-only">Выбрать для повторной отправки регистрации</span>
+                  <span className="sr-only">{adminT.applications.selectForResend}</span>
                   <input
                     form="bulk-registration-resend"
                     type="checkbox"
@@ -254,12 +254,12 @@ export default function ApplicationListPage({
                           <ApplicationStatusBadge status={app.status} />
                           {app.registrationEligible ? (
                             <span className="rounded-full border border-[rgba(114,160,193,0.22)] bg-[var(--color-blue-wash)] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#356f98]">
-                              Нужно зарегистрировать
+                              {adminT.applications.needsRegistration}
                             </span>
                           ) : null}
                           {app.setupEmailNeedsAttention ? (
                             <span className="rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-red-700">
-                              Email ошибка
+                              {adminT.applications.emailIssue}
                             </span>
                           ) : null}
                         </div>

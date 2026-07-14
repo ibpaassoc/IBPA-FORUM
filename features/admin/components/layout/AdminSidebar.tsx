@@ -101,7 +101,7 @@ export default function AdminSidebar() {
               />
             </div>
 
-            <nav className="mt-3 flex flex-col gap-1" aria-label="Admin navigation">
+            <nav className="mt-3 flex flex-col gap-1" aria-label={adminT.nav.mainAria}>
               {navItems.map(({ href, label, icon: Icon }) => {
                 const active = isActive(pathname, href);
 
@@ -144,7 +144,7 @@ export default function AdminSidebar() {
 
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} title={adminT.nav.drawerTitle}>
         <div className="space-y-4">
-          <nav className="grid gap-2" aria-label="Admin drawer navigation">
+          <nav className="grid gap-2" aria-label={adminT.nav.drawerAria}>
             {navItems.map(({ href, label, icon: Icon }) => {
               const active = isActive(pathname, href);
               return (

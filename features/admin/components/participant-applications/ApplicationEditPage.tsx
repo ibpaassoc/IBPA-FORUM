@@ -201,7 +201,7 @@ export default function ApplicationEditPage({
                   className={dashboardInputClass}
                 />
               </FormField>
-              <FormField label="Social media profile">
+              <FormField label={adminT.edit.socialProfile}>
                 <input
                   type="url"
                   name="socialUrl"

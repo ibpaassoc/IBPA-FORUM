@@ -171,7 +171,7 @@ export default function JuryApplicationDetailPage({
         <DashboardDetailCard label={adminT.detail.motivation} value={application.motivation} />
         <DashboardDetailCard
           label="Instagram"
-          value={application.professionalWebsite || "Not provided"}
+          value={application.professionalWebsite || adminT.common.notProvided}
         />
       </DashboardCard>
     </div>
