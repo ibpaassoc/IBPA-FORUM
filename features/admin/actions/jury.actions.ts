@@ -10,6 +10,7 @@ import {
   editJuryApplicationFields,
   rejectJuryApplication,
   requestAdditionalInfoFromJuryApplication,
+  resendJuryRegistrationLink,
   saveJuryApplicationNotes,
   setJuryApplicationStatusDirectly,
   updateJuryApplicationStatus,
@@ -263,6 +264,32 @@ export async function approveJuryApplicationWithoutPaymentAction(formData: FormD
   revalidatePath("/admin/jury-applications");
   revalidatePath(`/admin/jury-applications/${id}`);
   redirect(getJuryApplicationDetailPath(id, { notice: adminT.actions.activatedWithoutPayment }));
+}
+
+export async function resendJuryRegistrationLinkAction(formData: FormData) {
+  await requireAdmin();
+
+  const id = String(formData.get("id") ?? "");
+  if (!id) throw new Error(adminT.actions.missingJuryApplicationId);
+
+  const result = await resendJuryRegistrationLink(id);
+
+  revalidatePath("/admin/jury-applications");
+  revalidatePath(`/admin/jury-applications/${id}`);
+
+  if (result.status === "ineligible") {
+    redirect(getJuryApplicationDetailPath(id, { notice: adminT.actions.registrationIneligible }));
+  }
+
+  if (result.status === "delivery_failed") {
+    redirect(getJuryApplicationDetailPath(id, { error: adminT.actions.registrationDeliveryFailed }));
+  }
+
+  if (result.status === "registered") {
+    redirect(getJuryApplicationDetailPath(id, { notice: adminT.actions.registrationAlreadyComplete }));
+  }
+
+  redirect(getJuryApplicationDetailPath(id, { notice: adminT.actions.registrationSent }));
 }
 
 export async function overrideJuryApplicationStatusAction(formData: FormData) {

@@ -6,6 +6,7 @@ export {
 export {
   approveJuryApplicationAction,
   rejectJuryApplicationAction,
+  resendJuryRegistrationLinkAction,
   saveJuryApplicationNotesAction,
   updateJuryApplicationStatusAction,
 } from "@/features/admin/actions/jury.actions";

@@ -166,6 +166,10 @@ assert(has(setupActions, "setupTokenExpiresAt: { gte: now }"), "password setup r
 assert(has(setupActions, 'status: { not: "DISABLED" }'), "password setup cannot reactivate a disabled account");
 assert(has(setupActions, "deletedAt: null"), "password setup cannot reactivate a deleted account");
 
+const forgotPasswordActions = read("features/auth/server/forgot-password.actions.ts");
+assert(!has(forgotPasswordActions, "$transaction"), "forgot password does not require an interactive transaction");
+assert(has(forgotPasswordActions, "createPasswordResetToken"), "forgot password uses direct reset token issuance");
+
 const registrationService = read("features/account/server/applicant-registration.ts");
 assert(has(registrationService, 'paymentStatus: "PAID"'), "registration links require a paid nomination");
 assert(has(registrationService, 'where: { status: "PAID" }'), "registration links accept a paid applicant payment");
@@ -190,9 +194,10 @@ assert(has(applicantAdminActions, "issueApplicantRegistrationLink"), "admin rese
 assert(has(applicantAdminActions, "updateApplicantDeadlineOverrideAction"), "admin can set applicant deadline overrides");
 assert(has(applicantAdminActions, "processApplicantDeadlineClosure"), "admin close-all action uses deadline closure workflow");
 
-const publicResendAction = read("features/auth/server/resend-registration.actions.ts");
-assert(has(publicResendAction, "issueApplicantRegistrationLink"), "public resend uses shared registration service");
-assert(has(publicResendAction, "return { sent: true }"), "public resend always returns a generic success response");
+const loginForm = read("features/auth/components/LoginForm.tsx");
+assert(!has(loginForm, "resendRegistrationLinkAction"), "login page does not expose public registration resend");
+assert(!has(loginForm, "Need a registration link"), "login page has no resend registration panel");
+assert(!has(loginForm, "unregistered applicant account"), "resend copy is not applicant-only");
 
 const accountAuth = read("auth.ts");
 assert(!has(accountAuth, "No account is registered with this email."), "login does not disclose missing accounts");
@@ -226,6 +231,22 @@ const juryDetail = read("features/jury/components/dashboard/JuryApplicationDetai
 assert(has(juryDetail, "/api/jury/nomination-files/"), "jury detail loads files through protected route");
 assert(!has(juryDetail, "fileUrl"), "jury detail does not render direct blob URLs");
 assert(!has(juryDetail, "storageKey"), "jury detail does not render storage keys");
+
+const juryCommands = read("features/jury/server/commands.ts");
+const accountServer = read("features/account/server/accounts.ts");
+assert(has(accountServer, "existingProfile"), "jury account upsert reuses application-linked profiles");
+assert(has(accountServer, "where: { juryApplicationId: application.id }"), "jury account upsert checks unique application link");
+assert(has(juryCommands, "upsertJuryAccountForApplication"), "manual paid jury activation creates a jury account");
+assert(has(juryCommands, "sendSetupEmailForAccount(setupAccountId)"), "manual paid jury activation sends setup email");
+assert(has(juryCommands, "resendJuryRegistrationLink"), "jury registration links can be resent by admin");
+
+const juryAdminActions = read("features/admin/actions/jury.actions.ts");
+assert(has(juryAdminActions, "resendJuryRegistrationLinkAction"), "admin can resend a jury registration link");
+
+const juryAdminDetail = read("features/admin/components/jury-applications/JuryApplicationDetailPage.tsx");
+assert(has(juryAdminDetail, "resendJuryRegistrationLinkAction"), "jury admin page exposes resend registration action");
+assert(has(juryAdminDetail, "isRegistered"), "jury admin resend detects already registered accounts");
+assert(has(juryAdminDetail, "juryRegistrationAlreadyComplete"), "jury admin page explains completed registration");
 
 const juryFileRoute = read("app/api/jury/nomination-files/[fileId]/route.ts");
 assert(has(juryFileRoute, "requireJuryAuth"), "jury file route requires jury auth");

@@ -43,6 +43,17 @@ export async function getJuryApplicationDetail(id: string) {
           createdAt: "asc",
         },
       },
+      profile: {
+        select: {
+          account: {
+            select: {
+              status: true,
+              passwordHash: true,
+              deletedAt: true,
+            },
+          },
+        },
+      },
     },
   });
 }

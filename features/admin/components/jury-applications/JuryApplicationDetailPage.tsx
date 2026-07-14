@@ -10,6 +10,7 @@ import {
   FileText,
   Files,
   Mail,
+  MailPlus,
   MapPin,
   Pencil,
   Phone,
@@ -24,6 +25,7 @@ import {
   approveJuryApplicationWithoutPaymentAction,
   overrideJuryApplicationStatusAction,
   rejectJuryApplicationAction,
+  resendJuryRegistrationLinkAction,
   saveJuryApplicationNotesAction,
 } from "@/features/admin/actions/jury.actions";
 import DeleteJuryApplicationButton from "@/features/admin/components/jury-applications/DeleteJuryApplicationButton";
@@ -48,6 +50,13 @@ import IbpaDropdown from "@/shared/components/admin/IbpaDropdown";
 
 type JuryApplicationDetail = JuryApplication & {
   files: JuryApplicationFile[];
+  profile?: {
+    account: {
+      status: string;
+      passwordHash: string | null;
+      deletedAt: Date | null;
+    };
+  } | null;
   infoRequestDetails?: string | null;
   infoRequestedAt?: Date | null;
   infoResubmittedAt?: Date | null;
@@ -109,6 +118,14 @@ export default function JuryApplicationDetailPage({
   const certifications = application.files.filter((file) => file.fieldKey === "certifications");
   const canDecide = application.status !== "PAID";
   const canReject = application.status !== "REJECTED" && application.status !== "PAID";
+  const account = application.profile?.account;
+  const isRegistered = Boolean(account?.passwordHash);
+  const isAccountUnavailable = account?.status === "DISABLED" || Boolean(account?.deletedAt);
+  const registrationEligible =
+    application.status === "PAID" &&
+    application.paymentStatus === "PAID" &&
+    !isRegistered &&
+    !isAccountUnavailable;
 
   // ── Tab content ─────────────────────────────────────────────────────────
   const overview = (
@@ -334,6 +351,23 @@ export default function JuryApplicationDetailPage({
           infoRequestedAt={application.infoRequestedAt}
           infoResubmittedAt={application.infoResubmittedAt}
         />
+
+        <div className="mt-4 border-t border-[rgba(37,42,45,0.06)] pt-4">
+          <form action={resendJuryRegistrationLinkAction}>
+            <input type="hidden" name="id" value={application.id} />
+            <DashboardSecondaryBtn type="submit" disabled={!registrationEligible} className="w-full">
+              <MailPlus aria-hidden size={15} />
+              {adminT.applicantAccount.resendRegistration}
+            </DashboardSecondaryBtn>
+          </form>
+          {!registrationEligible ? (
+            <p className="mt-2 text-xs leading-5 text-[var(--color-ink-soft)]">
+              {isRegistered
+                ? adminT.detail.juryRegistrationAlreadyComplete
+                : adminT.detail.juryRegistrationPaidRequired}
+            </p>
+          ) : null}
+        </div>
 
         <div className="mt-4 border-t border-[rgba(37,42,45,0.06)] pt-4">
           <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-muted)]">

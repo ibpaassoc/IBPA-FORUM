@@ -100,6 +100,9 @@ console.log("existing flows preserved");
 assert(existsSync(join(ROOT, "app/admin/jury-applications")), "admin jury applications route still present");
 assert(existsSync(join(ROOT, "app/jury/dashboard/page.tsx")), "jury dashboard still present");
 assert(existsSync(join(ROOT, "app/(public)/jury/login/page.tsx")), "jury login still present");
+const juryRegister = read("app/(public)/jury/register/page.tsx");
+assert(juryRegister.includes("searchParams"), "jury register alias reads search params");
+assert(juryRegister.includes("encodeURIComponent(token)"), "jury register alias preserves setup token");
 assert(
   read("app/(public)/apply/page.tsx").includes("notFound") === false,
   "participant /apply route NOT closed"

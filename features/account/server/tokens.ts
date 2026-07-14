@@ -73,6 +73,34 @@ export async function createAccountSetupToken(
   return { token, tokenHash, expiresAt };
 }
 
+export async function createPasswordResetToken(accountId: string) {
+  const token = randomBytes(32).toString("hex");
+  const tokenHash = hashAccountToken(token);
+  const expiresAt = new Date(Date.now() + PASSWORD_RESET_TOKEN_TTL_MS);
+  const now = new Date();
+
+  await prisma.accountSetupToken.updateMany({
+    where: {
+      accountId,
+      purpose: "PASSWORD_RESET",
+      usedAt: null,
+      expiresAt: { gt: now },
+    },
+    data: { usedAt: now },
+  });
+
+  await prisma.accountSetupToken.create({
+    data: {
+      accountId,
+      purpose: "PASSWORD_RESET",
+      tokenHash,
+      expiresAt,
+    },
+  });
+
+  return { token, tokenHash, expiresAt };
+}
+
 type ValidAccountTokenRecord = {
   id: string;
   accountId: string;

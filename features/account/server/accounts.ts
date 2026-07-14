@@ -126,13 +126,48 @@ export async function upsertJuryAccountForApplication(
   }
 ) {
   const email = normalizeAccountEmail(application.email);
-  const existing = await tx.account.findUnique({
-    where: { email },
-    include: { juryProfile: true },
-  });
+  const [existing, existingProfile] = await Promise.all([
+    tx.account.findUnique({
+      where: { email },
+      include: { juryProfile: true },
+    }),
+    tx.juryProfile.findUnique({
+      where: { juryApplicationId: application.id },
+      include: { account: true },
+    }),
+  ]);
 
   if (existing && existing.role !== "JURY") {
     throw new AccountRoleConflictError(email, existing.role, "JURY");
+  }
+
+  if (existingProfile) {
+    if (existingProfile.account.role !== "JURY") {
+      throw new AccountRoleConflictError(
+        existingProfile.account.email,
+        existingProfile.account.role,
+        "JURY",
+      );
+    }
+
+    const profile = await tx.juryProfile.update({
+      where: { id: existingProfile.id },
+      data: {
+        fullName: application.fullName,
+        phone: application.phone,
+        country: application.country,
+        city: application.city,
+        professionalTitle: application.professionalTitle,
+        yearsExperience: application.yearsExperience,
+        employerAffiliation: application.employerAffiliation,
+        expertiseAreas: application.expertiseAreas,
+        professionalBio: application.professionalBio,
+        professionalWebsite: application.professionalWebsite,
+        approvalStatus: application.status,
+      },
+    });
+
+    return { account: existingProfile.account, profile };
   }
 
   const account =

@@ -3,6 +3,10 @@ import { del } from "@vercel/blob";
 import type { JuryApplicationStatus } from "@prisma/client";
 import { sendApplicationReceivedNotificationEmail } from "@/features/email/server/application-email.workflow";
 import {
+  sendSetupEmailForAccount,
+  upsertJuryAccountForApplication,
+} from "@/features/account/server/accounts";
+import {
   sendJuryAdditionalInfoRequestedEmail,
   sendJuryApplicationReceivedEmail,
   sendJuryApprovedPaymentLinkEmail,
@@ -673,20 +677,36 @@ export async function deleteJuryApplication(id: string) {
 export async function approveJuryApplicationWithoutPayment(id: string) {
   const application = await prisma.juryApplication.findUnique({
     where: { id },
-    select: { id: true, status: true, approvedAt: true },
+    select: {
+      id: true,
+      fullName: true,
+      email: true,
+      phone: true,
+      country: true,
+      city: true,
+      professionalTitle: true,
+      yearsExperience: true,
+      employerAffiliation: true,
+      expertiseAreas: true,
+      professionalBio: true,
+      professionalWebsite: true,
+      status: true,
+      approvedAt: true,
+    },
   });
 
   if (!application) throw new Error("Jury application not found.");
   if (application.status === "PAID") throw new Error("Application is already marked as paid.");
 
   const now = new Date();
+  let setupAccountId: string | null = null;
 
-  await prisma.$transaction([
-    prisma.payment.updateMany({
+  await prisma.$transaction(async (tx) => {
+    await tx.payment.updateMany({
       where: { juryApplicationId: id, status: "PENDING" },
       data: { status: "EXPIRED" },
-    }),
-    prisma.juryApplication.update({
+    });
+    await tx.juryApplication.update({
       where: { id },
       data: {
         status: "PAID",
@@ -696,11 +716,81 @@ export async function approveJuryApplicationWithoutPayment(id: string) {
         rejectedAt: null,
         stripeCheckoutSessionId: null,
       },
-    }),
-  ]);
+    });
+
+    const { account } = await upsertJuryAccountForApplication(tx, {
+      ...application,
+      status: "PAID",
+    });
+
+    if (account.status !== "ACTIVE" || !account.passwordHash) {
+      setupAccountId = account.id;
+    }
+  });
 
   syncJuryOnChange(id);
   revalidatePublicJuryMembers();
+
+  if (setupAccountId) {
+    try {
+      await sendSetupEmailForAccount(setupAccountId);
+    } catch (error) {
+      console.error("Failed to send jury account setup email", error);
+    }
+  }
+}
+
+export async function resendJuryRegistrationLink(id: string) {
+  const application = await prisma.juryApplication.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      fullName: true,
+      email: true,
+      phone: true,
+      country: true,
+      city: true,
+      professionalTitle: true,
+      yearsExperience: true,
+      employerAffiliation: true,
+      expertiseAreas: true,
+      professionalBio: true,
+      professionalWebsite: true,
+      status: true,
+      paymentStatus: true,
+    },
+  });
+
+  if (!application) {
+    return { status: "ineligible" as const };
+  }
+
+  if (application.status !== "PAID" || application.paymentStatus !== "PAID") {
+    return { status: "ineligible" as const };
+  }
+
+  const { account } = await prisma.$transaction((tx) =>
+    upsertJuryAccountForApplication(tx, {
+      ...application,
+      status: "PAID",
+    }),
+  );
+
+  if (account.status === "DISABLED" || account.deletedAt) {
+    return { status: "ineligible" as const };
+  }
+
+  if (account.passwordHash) {
+    return { status: "registered" as const };
+  }
+
+  const result = await sendSetupEmailForAccount(account.id);
+
+  if (!result?.delivered) {
+    return { status: "delivery_failed" as const };
+  }
+
+  return { status: "sent" as const };
 }
 
 export async function setJuryApplicationStatusDirectly(

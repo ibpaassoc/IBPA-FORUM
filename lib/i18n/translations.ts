@@ -618,7 +618,20 @@ const en = {
               "Hanna will introduce her unique client profiling methodology based on well-known cartoon characters. This practical approach helps beauty professionals quickly understand different customer personalities, confidently handle objections, improve communication, and naturally increase sales. Participants will leave with an easy-to-use psychological framework that can be applied immediately in consultations and everyday client interactions.",
           instagram: "",
           website: ""
-        }
+        },
+        {
+          name: "Yulia Bailo",
+          photo: "/images/speakers/yulia-bailo.jpg",
+          role:
+            "Certified business mentor, neurocoach, entrepreneur with more than 15 years of business experience in the United States, and international speaker.",
+          city: "United States",
+          topic:
+            "Before Scaling: How to Identify Bottlenecks and Find Growth Opportunities in Your Beauty Business",
+          description:
+            "In this presentation, participants will discover where sustainable business growth truly begins. Yulia will explain how to define clear business goals, identify the hidden limitations that slow growth and profitability, and recognize the most common bottlenecks beauty business owners face. She will also demonstrate which growth opportunities should be addressed before investing in scaling. Attendees will leave with a practical framework for diagnosing their own business, identifying what is holding it back, and understanding the highest-priority actions needed to build a more systematic, profitable, and sustainable business.",
+          instagram: "",
+          website: ""
+        },
       ]
     },
     dressCode: {
@@ -2725,7 +2738,20 @@ const ru: typeof en = {
             "Ханна представит авторскую методику определения типа клиента, основанную на известных мультипликационных персонажах. Вы получите простой и понятный инструмент, который поможет с первых минут понимать клиента, легко работать с возражениями, выстраивать доверительное общение и уверенно увеличивать продажи. Методика легко применяется в ежедневной работе мастеров, преподавателей и владельцев beauty-бизнеса.",
           instagram: "",
           website: ""
-        }
+        },
+        {
+          name: "Юлия Байло",
+          photo: "/images/speakers/yulia-bailo.jpg",
+          role:
+            "Сертифицированный бизнес-наставник, нейрокоуч, предприниматель с более чем 15-летним опытом ведения бизнеса в США и международный спикер.",
+          city: "США",
+          topic:
+            "Перед масштабом: как выявить узкие места и найти точки роста в бьюти-бизнесе",
+          description:
+            "На выступлении участники разберутся, с чего начинается устойчивый рост бизнеса, как правильно определить свои цели и увидеть ограничения, которые мешают развитию и увеличению прибыли. Юлия покажет основные узкие места, с которыми чаще всего сталкиваются владельцы бьюти-бизнеса, и объяснит, на какие точки роста важно обратить внимание прежде, чем вкладываться в масштабирование. После выступления участники смогут провести первичную диагностику своего бизнеса, определить, что именно сдерживает рост, и понять, какие действия необходимо предпринять в первую очередь для более системного, устойчивого и прибыльного развития.",
+          instagram: "",
+          website: ""
+        },
       ]
     },
     dressCode: {
@@ -4833,7 +4859,20 @@ const ua: typeof en = {
             "Ганна представить авторську методику визначення типу клієнта, засновану на відомих мультиплікаційних персонажах. Ви отримаєте простий і зрозумілий інструмент, який допоможе з перших хвилин зрозуміти клієнта, легко працювати із запереченнями, будувати довірливу комунікацію та впевнено збільшувати продажі. Методика легко застосовується у щоденній роботі майстрів, викладачів і власників beauty-бізнесу.",
           instagram: "",
           website: ""
-        }
+        },
+        {
+          name: "Юлія Байло",
+          photo: "/images/speakers/yulia-bailo.jpg",
+          role:
+            "Сертифікований бізнес-наставник, нейрокоуч, підприємиця з понад 15-річним досвідом ведення бізнесу у США та міжнародна спікерка.",
+          city: "США",
+          topic:
+            "Перед масштабуванням: як виявити вузькі місця та знайти точки зростання в beauty-бізнесі",
+          description:
+            "Під час виступу учасники дізнаються, з чого починається стале зростання бізнесу, як правильно визначити свої цілі та побачити обмеження, що заважають розвитку й збільшенню прибутку. Юлія покаже найпоширеніші вузькі місця, з якими стикаються власники beauty-бізнесу, та пояснить, на які точки зростання варто звернути увагу ще до інвестування в масштабування. Після виступу учасники зможуть провести первинну діагностику свого бізнесу, визначити, що саме стримує його розвиток, і зрозуміти, які кроки потрібно зробити насамперед для більш системного, стабільного та прибуткового зростання.",
+          instagram: "",
+          website: ""
+        },
       ]
     },
     dressCode: {

@@ -246,6 +246,8 @@ export const adminT = {
     activateWithoutPayment: "Активировать без оплаты",
     activateWithoutPaymentNote:
       "Судья сразу станет активным (статус «Оплачено») — без Stripe-сессии и письма.",
+    juryRegistrationPaidRequired: "Ссылка регистрации доступна только для оплаченных судей.",
+    juryRegistrationAlreadyComplete: "Аккаунт судьи уже зарегистрирован. Для доступа используйте сброс пароля.",
     statusOverride: "Смена статуса вручную",
     statusOverrideNote: "Статус изменится без писем и Stripe-сессий.",
     deleteApplication: "Удалить заявку",
@@ -674,6 +676,7 @@ export const adminT = {
     applicantUpdated: "Профиль участника обновлён.",
     registrationIneligible: "Ссылка не отправлена: аккаунт не соответствует условиям регистрации.",
     registrationDeliveryFailed: "Ссылка создана, но письмо не доставлено.",
+    registrationAlreadyComplete: "Аккаунт уже зарегистрирован. Используйте сброс пароля, если нужен новый доступ.",
     registrationSent: "Защищённая ссылка регистрации отправлена.",
     selectApplicant: "Выберите хотя бы одного участника.",
     registrationBatch: (attempted: number, sent: number, skipped: number, failed: number) =>
