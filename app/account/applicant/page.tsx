@@ -19,7 +19,6 @@ import {
   EmptyState,
   MetricCard,
   PremiumButton,
-  StatGrid,
 } from "@/shared/components/admin/DashboardUI";
 
 const OVERVIEW_NOMINATION_LIMIT = 4;
