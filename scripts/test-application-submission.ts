@@ -7,20 +7,6 @@ type CategoryOption = {
 
 const baseUrl = process.env.TEST_APP_URL ?? "http://localhost:3000";
 
-// Files are uploaded to Vercel Blob from the browser first; the submit endpoint
-// only accepts lightweight references. This mirrors that shape with placeholder
-// blob pathnames so the smoke test exercises the DB + checkout path without the
-// (now-rejected) raw-file payload.
-function makeBlobRef(fieldKey: string, name: string, type: string) {
-  return JSON.stringify({
-    fieldKey,
-    fileName: name,
-    fileUrl: `applications/smoke-test/${fieldKey}-${name}`,
-    mimeType: type,
-    fileSize: 4,
-  });
-}
-
 async function main() {
   const categoriesResponse = await fetch(`${baseUrl}/api/categories`);
   if (!categoriesResponse.ok) {
@@ -36,9 +22,6 @@ async function main() {
     throw new Error("No application category and award are available.");
   }
 
-  const nom = (fieldKey: string) => `__nom__${award.id}__${fieldKey}`;
-  const nomBlob = (fieldKey: string) => `__nomblob__${award.id}__${fieldKey}`;
-
   const formData = new FormData();
   formData.set("firstName", "Local");
   formData.set("lastName", "Smoke Test");
@@ -52,39 +35,13 @@ async function main() {
   formData.set("awardId", award.id);
   formData.append("selectedAwardIds", award.id);
   formData.set("websiteUrl", "https://instagram.com/smoke-test");
+  formData.set("socialUrl", "https://instagram.com/smoke-test");
   formData.set("heardAbout", "email");
-  formData.append(
-    "licenseCertificationBlob",
-    makeBlobRef("licenseCertification", "license.pdf", "application/pdf")
-  );
-
-  // Per-nomination Block B references + text (encoded with the __nom__ scheme).
-  for (let i = 1; i <= 5; i += 1) {
-    formData.append(
-      nomBlob("portfolioPhotos"),
-      makeBlobRef("portfolioPhotos", `portfolio-${i}.jpg`, "image/jpeg")
-    );
-  }
-  formData.append(
-    nomBlob("beforeAfterPhotos"),
-    makeBlobRef("beforeAfterPhotos", "before.jpg", "image/jpeg")
-  );
-  formData.append(
-    nomBlob("beforeAfterPhotos"),
-    makeBlobRef("beforeAfterPhotos", "after.jpg", "image/jpeg")
-  );
-  formData.set(
-    nom("statementOfAchievements"),
-    "This smoke test validates the application submission flow."
-  );
-  formData.set(
-    nom("signatureTechnique"),
-    "Technique combinations are selected based on hair, skin type, and long-term client goals."
-  );
-  formData.set(
-    nom("sterilizationProtocol"),
-    "Tools and surfaces are disinfected before and after each appointment."
-  );
+  formData.set("isIbpaMember", "false");
+  formData.set("rulesAccepted", "true");
+  formData.set("privacyAccepted", "true");
+  formData.set("paymentTermsAccepted", "true");
+  formData.set("refundNoticeAccepted", "true");
 
   const response = await fetch(`${baseUrl}/api/applications`, {
     method: "POST",
@@ -96,6 +53,10 @@ async function main() {
 
   if (!response.ok) {
     throw new Error("Application submission smoke test failed.");
+  }
+
+  if (typeof body.checkoutUrl !== "string" || typeof body.paymentId !== "string") {
+    throw new Error("Application submission did not return a Stripe checkout target.");
   }
 }
 
