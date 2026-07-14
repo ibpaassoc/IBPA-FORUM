@@ -9,7 +9,6 @@ import {
   Check,
   ChevronDown,
   ClipboardCheck,
-  CreditCard,
   FileText,
   ListChecks,
   PenLine,

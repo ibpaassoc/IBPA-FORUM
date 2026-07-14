@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Briefcase, ClipboardCheck, PenLine, UploadCloud } from "lucide-react";
+import { Briefcase, PenLine, UploadCloud } from "lucide-react";
 import { nominationTone, type NominationTone } from "@/features/account/components/nomination-presentation";
 import { computeNominationProgress } from "@/features/account/lib/nomination-progress";
 import {

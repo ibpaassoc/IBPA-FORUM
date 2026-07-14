@@ -29,23 +29,6 @@ export function nominationTone(nomination: Pick<NominationCardData, "status" | "
   }
 }
 
-export function nominationStatusLabel(nomination: Pick<NominationCardData, "status" | "locked">) {
-  if (nomination.locked) return "Locked";
-  return nomination.status.toLowerCase().replaceAll("_", " ");
-}
-
-export function nominationActionLabel(nomination: Pick<NominationCardData, "status" | "locked" | "completionPercentage">) {
-  if (nomination.locked) return "View";
-  if (nomination.status === "SUBMITTED" || nomination.status === "UNDER_REVIEW") return "View";
-  if (nomination.completionPercentage === 0) return "Start";
-  return "Continue";
-}
-
-export function missingFieldsLabel(count: number) {
-  if (count === 0) return "All required fields complete";
-  return `${count} required field${count === 1 ? "" : "s"} missing`;
-}
-
 export function formatDateLabel(value: Date | null | undefined, locale = "en") {
   return value
     ? new Intl.DateTimeFormat(locale === "ua" ? "uk" : locale, {
