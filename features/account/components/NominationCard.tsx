@@ -5,10 +5,8 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import clsx from "clsx";
 import { PUBLIC_MOTION_EASE } from "@/shared/components/public/motion-tokens";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import {
-  missingFieldsLabel,
-  nominationActionLabel,
-  nominationStatusLabel,
   nominationTone,
   type NominationCardData,
   type NominationTone,
@@ -59,12 +57,13 @@ export function NominationProgressBar({
   className?: string;
 }) {
   const shouldReduceMotion = useReducedMotion();
+  const { t } = useLanguage();
   const clamped = Math.max(0, Math.min(value, 100));
 
   return (
     <div className={clsx("min-w-0", className)}>
       <div className="flex items-center justify-between text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">
-        <span>Progress</span>
+        <span>{t.account.card.progress}</span>
         <span className="text-[var(--color-ink)]">{clamped}%</span>
       </div>
       <div
@@ -72,7 +71,7 @@ export function NominationProgressBar({
         aria-valuenow={clamped}
         aria-valuemin={0}
         aria-valuemax={100}
-        aria-label={`Nomination ${clamped}% complete`}
+        aria-label={`${clamped}%`}
         className="mt-2 h-2 overflow-hidden rounded-full bg-[rgba(3,2,19,0.08)]"
       >
         {shouldReduceMotion ? (
@@ -92,7 +91,20 @@ export function NominationProgressBar({
 
 export default function NominationCard({ nomination }: { nomination: NominationCardData }) {
   const shouldReduceMotion = useReducedMotion();
+  const { t } = useLanguage();
+  const card = t.account.card;
   const tone = nominationTone(nomination);
+  const statusLabel = nomination.locked
+    ? t.account.badges.locked
+    : t.account.statuses[nomination.status] ?? nomination.status.toLowerCase().replaceAll("_", " ");
+  const actionLabel =
+    nomination.locked ||
+    nomination.status === "SUBMITTED" ||
+    nomination.status === "UNDER_REVIEW"
+      ? card.view
+      : nomination.completionPercentage === 0
+        ? card.start
+        : card.continue;
 
   return (
     <motion.article
@@ -106,12 +118,10 @@ export default function NominationCard({ nomination }: { nomination: NominationC
             {nomination.awardName}
           </h3>
           <p className="mt-1 text-sm text-[var(--color-ink-soft)]">
-            {nomination.categoryName} · Updated {nomination.updatedAtLabel}
+            {nomination.categoryName} · {card.updated} {nomination.updatedAtLabel}
           </p>
         </div>
-        <NominationStatusBadge tone={tone}>
-          {nominationStatusLabel(nomination)}
-        </NominationStatusBadge>
+        <NominationStatusBadge tone={tone}>{statusLabel}</NominationStatusBadge>
       </div>
 
       <div className="mt-4">
@@ -120,13 +130,15 @@ export default function NominationCard({ nomination }: { nomination: NominationC
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
         <p className="text-[0.78rem] leading-5 text-[var(--color-ink-soft)]">
-          {missingFieldsLabel(nomination.missingRequiredCount)}
+          {nomination.missingRequiredCount === 0
+            ? card.allComplete
+            : `${card.missingLabel} ${nomination.missingRequiredCount}`}
         </p>
         <Link
           href={`/account/applicant/nominations/${nomination.id}`}
           className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[rgba(114,160,193,0.22)] bg-white/78 px-5 py-2.5 text-[0.72rem] font-semibold uppercase leading-none tracking-[0.12em] text-[var(--color-ink)] shadow-[0_12px_28px_rgba(37,42,45,0.055)] backdrop-blur-xl transition duration-300 hover:-translate-y-0.5 hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-wash)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.22)]"
         >
-          {nominationActionLabel(nomination)}
+          {actionLabel}
           <ArrowRight aria-hidden size={15} />
         </Link>
       </div>

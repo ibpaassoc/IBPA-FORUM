@@ -2,6 +2,7 @@ import { CalendarDays, Mail, QrCode, ScanLine, Sparkles, Sun } from "lucide-reac
 import { getApplicantDashboardData } from "@/features/account/server/applicant-dashboard";
 import TicketQrPanel from "@/features/tickets/components/TicketQrPanel";
 import { formatDateLabel } from "@/features/account/components/nomination-presentation";
+import { getServerLanguage, getServerTranslations } from "@/lib/i18n/server";
 import {
   DashboardPageHeader,
   DashboardStagger,
@@ -11,41 +12,33 @@ import {
   StatusBadge,
 } from "@/shared/components/admin/DashboardUI";
 
-const entrySteps = [
-  {
-    icon: ScanLine,
-    title: "Present your QR code",
-    description: "Your personal QR code is scanned once at the entrance on the day of the event.",
-  },
-  {
-    icon: Sun,
-    title: "Keep your screen bright",
-    description: "Open the QR code full screen and raise your brightness so scanning is instant.",
-  },
-  {
-    icon: Mail,
-    title: "Bring your confirmation",
-    description: "Your ticket is tied to the email used at purchase. A copy was sent to your inbox.",
-  },
-];
-
 export default async function ApplicantTicketsPage() {
-  const data = await getApplicantDashboardData();
+  const [data, language, t] = await Promise.all([
+    getApplicantDashboardData(),
+    getServerLanguage(),
+    getServerTranslations(),
+  ]);
+  const tk = t.account.tickets;
+  const entrySteps = [
+    { icon: ScanLine, title: tk.stepQrTitle, description: tk.stepQrText },
+    { icon: Sun, title: tk.stepBrightTitle, description: tk.stepBrightText },
+    { icon: Mail, title: tk.stepMailTitle, description: tk.stepMailText },
+  ];
 
   return (
     <div className="flex flex-col gap-5">
       <DashboardPageHeader
-        label="Applicant account"
-        title="Tickets"
-        description="Your forum and gala access. Tickets purchased with this email appear here automatically after payment."
+        label={t.account.nav.brand}
+        title={tk.title}
+        description={tk.description}
       />
 
       {data.tickets.length === 0 ? (
         <EmptyState
           icon={<QrCode size={20} />}
-          title="No ticket found"
-          description="Tickets purchased with this email will appear here after payment."
-          action={<SecondaryButton href="/tickets">Browse tickets</SecondaryButton>}
+          title={tk.emptyTitle}
+          description={tk.emptyText}
+          action={<SecondaryButton href="/tickets">{tk.browseTickets}</SecondaryButton>}
         />
       ) : (
         <DashboardStagger className="grid gap-5 xl:grid-cols-2">
@@ -59,7 +52,7 @@ export default async function ApplicantTicketsPage() {
                   <p className="mt-1 text-sm text-[var(--color-ink-soft)]">{ticket.email}</p>
                 </div>
                 <StatusBadge tone={ticket.status === "PAID" ? "green" : "neutral"}>
-                  {ticket.status.toLowerCase().replaceAll("_", " ")}
+                  {t.account.statuses[ticket.status] ?? ticket.status.toLowerCase().replaceAll("_", " ")}
                 </StatusBadge>
               </div>
 
@@ -67,20 +60,20 @@ export default async function ApplicantTicketsPage() {
                 <div className="rounded-[20px] border border-[rgba(37,42,45,0.08)] bg-white/66 p-3.5">
                   <p className="inline-flex items-center gap-2 text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">
                     <Sparkles aria-hidden size={13} className="text-[var(--color-blue)]" />
-                    Access
+                    {tk.access}
                   </p>
                   <p className="mt-1.5 text-sm capitalize text-[var(--color-ink)]">
                     {ticket.type.replaceAll("_", " ").toLowerCase()}
-                    {ticket.galaDinner ? " · Gala dinner included" : " · Forum access"}
+                    {ticket.galaDinner ? ` · ${tk.galaIncluded}` : ` · ${tk.forumAccess}`}
                   </p>
                 </div>
                 <div className="rounded-[20px] border border-[rgba(37,42,45,0.08)] bg-white/66 p-3.5">
                   <p className="inline-flex items-center gap-2 text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">
                     <CalendarDays aria-hidden size={13} className="text-[var(--color-blue)]" />
-                    Purchased
+                    {tk.purchased}
                   </p>
                   <p className="mt-1.5 text-sm text-[var(--color-ink)]">
-                    {formatDateLabel(ticket.createdAt)}
+                    {formatDateLabel(ticket.createdAt, language)}
                   </p>
                 </div>
               </div>
@@ -93,7 +86,7 @@ export default async function ApplicantTicketsPage() {
                 />
               ) : (
                 <p className="mt-4 text-sm text-[var(--color-ink-soft)]">
-                  QR code is not active yet. It will appear here once your entry credential is issued.
+                  {tk.qrPending}
                 </p>
               )}
             </GlassCard>
@@ -109,7 +102,7 @@ export default async function ApplicantTicketsPage() {
           id="entry-instructions-heading"
           className="font-[var(--font-title-family)] text-[clamp(1.5rem,2.6vw,2rem)] font-light tracking-[-0.02em] text-[var(--color-ink)]"
         >
-          Entry instructions
+          {tk.entryInstructions}
         </h2>
         <div className="mt-4 grid gap-3 md:grid-cols-3">
           {entrySteps.map(({ icon: Icon, title, description }) => (

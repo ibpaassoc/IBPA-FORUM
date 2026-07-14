@@ -46,10 +46,14 @@ export function missingFieldsLabel(count: number) {
   return `${count} required field${count === 1 ? "" : "s"} missing`;
 }
 
-export function formatDateLabel(value: Date | null | undefined) {
+export function formatDateLabel(value: Date | null | undefined, locale = "en") {
   return value
-    ? new Intl.DateTimeFormat("en", { month: "short", day: "numeric", year: "numeric" }).format(value)
-    : "Not set";
+    ? new Intl.DateTimeFormat(locale === "ua" ? "uk" : locale, {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }).format(value)
+    : "—";
 }
 
 export function daysUntil(value: Date) {
@@ -67,14 +71,17 @@ type NominationSource = {
   missingRequiredCount: number;
 };
 
-export function toNominationCardData(nomination: NominationSource): NominationCardData {
+export function toNominationCardData(
+  nomination: NominationSource,
+  locale = "en",
+): NominationCardData {
   return {
     id: nomination.id,
     status: nomination.status,
     locked: nomination.lockedAt !== null || nomination.status === "LOCKED",
     awardName: nomination.award.name,
     categoryName: nomination.category.name,
-    updatedAtLabel: formatDateLabel(nomination.updatedAt),
+    updatedAtLabel: formatDateLabel(nomination.updatedAt, locale),
     completionPercentage: nomination.completionPercentage,
     missingRequiredCount: nomination.missingRequiredCount,
   };

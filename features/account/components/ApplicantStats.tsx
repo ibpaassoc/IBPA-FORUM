@@ -1,6 +1,7 @@
 "use client";
 
 import { Gauge, PenLine, Send, ShoppingBag } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { DashboardStagger, MetricCard } from "@/shared/components/admin/DashboardUI";
 
 export default function ApplicantStats({
@@ -14,33 +15,35 @@ export default function ApplicantStats({
   submitted: number;
   overallCompletion: number;
 }) {
+  const { t } = useLanguage();
+  const stats = t.account.stats;
   return (
     <DashboardStagger className="grid grid-cols-2 gap-3 xl:grid-cols-4">
       <MetricCard
-        label="Purchased"
+        label={stats.purchased}
         value={total}
-        detail="Paid nominations in your account"
+        detail={stats.purchasedDetail}
         icon={ShoppingBag}
         accent="blue"
       />
       <MetricCard
-        label="Drafts"
+        label={stats.drafts}
         value={drafts}
-        detail="Saved progress, not visible to judges"
+        detail={stats.draftsDetail}
         icon={PenLine}
         accent="amber"
       />
       <MetricCard
-        label="Submitted"
+        label={stats.submitted}
         value={submitted}
-        detail="Visible to the jury"
+        detail={stats.submittedDetail}
         icon={Send}
         accent="green"
       />
       <MetricCard
-        label="Completion"
+        label={stats.completion}
         value={`${overallCompletion}%`}
-        detail="Average across nominations"
+        detail={stats.completionDetail}
         icon={Gauge}
         accent="blue"
       />

@@ -1,6 +1,7 @@
 import { BadgeCheck, Globe, Link2, MapPin, Star, UserRound } from "lucide-react";
 import { requireApplicantAccount } from "@/features/account/server/accounts";
 import { formatDateLabel } from "@/features/account/components/nomination-presentation";
+import { getServerLanguage, getServerTranslations } from "@/lib/i18n/server";
 import {
   DashboardDetailCard,
   DashboardPageHeader,
@@ -9,12 +10,12 @@ import {
   StatusBadge,
 } from "@/shared/components/admin/DashboardUI";
 
-function value(input: string | number | null | undefined) {
-  return input === null || input === undefined || input === "" ? "Not set" : String(input);
+function value(input: string | number | null | undefined, notSet: string) {
+  return input === null || input === undefined || input === "" ? notSet : String(input);
 }
 
-function ProfileLink({ href }: { href: string | null }) {
-  if (!href) return <>Not set</>;
+function ProfileLink({ href, notSet }: { href: string | null; notSet: string }) {
+  if (!href) return <>{notSet}</>;
   return (
     <a
       href={href}
@@ -28,7 +29,12 @@ function ProfileLink({ href }: { href: string | null }) {
 }
 
 export default async function ApplicantProfilePage() {
-  const { account, applicantProfile } = await requireApplicantAccount();
+  const [{ account, applicantProfile }, language, t] = await Promise.all([
+    requireApplicantAccount(),
+    getServerLanguage(),
+    getServerTranslations(),
+  ]);
+  const pr = t.account.profile;
   const location = [applicantProfile.city, applicantProfile.stateProvince, applicantProfile.country]
     .filter(Boolean)
     .join(", ");
@@ -39,9 +45,9 @@ export default async function ApplicantProfilePage() {
   return (
     <div className="flex flex-col gap-5">
       <DashboardPageHeader
-        label="Applicant account"
-        title="Profile"
-        description="These details are attached to every nomination you submit. To correct anything, contact our support team."
+        label={t.account.nav.brand}
+        title={pr.title}
+        description={pr.description}
       />
 
       <GlassCard className="p-5 sm:p-6">
@@ -69,45 +75,45 @@ export default async function ApplicantProfilePage() {
           {isVerifiedMember ? (
             <StatusBadge tone="green" className="shrink-0">
               <BadgeCheck aria-hidden size={13} className="mr-1.5" />
-              Verified member
+              {pr.verifiedMember}
             </StatusBadge>
           ) : null}
         </div>
       </GlassCard>
 
       <DashboardStagger className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        <DashboardDetailCard label="Phone" value={value(applicantProfile.phone)} />
-        <DashboardDetailCard label="Professional title" value={value(applicantProfile.professionalTitle)} />
+        <DashboardDetailCard label={pr.phone} value={value(applicantProfile.phone, pr.notSet)} />
+        <DashboardDetailCard label={pr.professionalTitle} value={value(applicantProfile.professionalTitle, pr.notSet)} />
         <DashboardDetailCard
-          label="Years of experience"
-          value={value(applicantProfile.yearsExperience)}
+          label={pr.yearsExperience}
+          value={value(applicantProfile.yearsExperience, pr.notSet)}
         />
-        <DashboardDetailCard label="Country" value={value(applicantProfile.country)} />
-        <DashboardDetailCard label="State / province" value={value(applicantProfile.stateProvince)} />
-        <DashboardDetailCard label="City" value={value(applicantProfile.city)} />
+        <DashboardDetailCard label={pr.country} value={value(applicantProfile.country, pr.notSet)} />
+        <DashboardDetailCard label={pr.stateProvince} value={value(applicantProfile.stateProvince, pr.notSet)} />
+        <DashboardDetailCard label={pr.city} value={value(applicantProfile.city, pr.notSet)} />
       </DashboardStagger>
 
       <div className="grid items-start gap-5 xl:grid-cols-2">
         <GlassCard className="p-5">
           <h2 className="inline-flex items-center gap-2 font-[var(--font-title-family)] text-[1.4rem] font-light text-[var(--color-ink)]">
             <Star aria-hidden size={17} className="text-[var(--color-blue)]" />
-            IBPA membership
+            {pr.membership}
           </h2>
           <div className="mt-4 grid gap-3">
             <DashboardDetailCard
-              label="Membership number"
-              value={value(applicantProfile.membershipNumber)}
+              label={pr.membershipNumber}
+              value={value(applicantProfile.membershipNumber, pr.notSet)}
             />
             <DashboardDetailCard
-              label="Membership level"
-              value={value(applicantProfile.membershipLevel)}
+              label={pr.membershipLevel}
+              value={value(applicantProfile.membershipLevel, pr.notSet)}
             />
             <DashboardDetailCard
-              label="Verified"
+              label={pr.verified}
               value={
                 applicantProfile.membershipVerifiedAt
-                  ? formatDateLabel(applicantProfile.membershipVerifiedAt)
-                  : "Not verified"
+                  ? formatDateLabel(applicantProfile.membershipVerifiedAt, language)
+                  : pr.notVerified
               }
             />
           </div>
@@ -116,25 +122,25 @@ export default async function ApplicantProfilePage() {
         <GlassCard className="p-5">
           <h2 className="inline-flex items-center gap-2 font-[var(--font-title-family)] text-[1.4rem] font-light text-[var(--color-ink)]">
             <Globe aria-hidden size={17} className="text-[var(--color-blue)]" />
-            Public links
+            {pr.publicLinks}
           </h2>
           <div className="mt-4 grid gap-3">
             <DashboardDetailCard
-              label="Website"
-              value={<ProfileLink href={applicantProfile.websiteUrl} />}
+              label={pr.website}
+              value={<ProfileLink href={applicantProfile.websiteUrl} notSet={pr.notSet} />}
             />
             <DashboardDetailCard
-              label="Social profile"
-              value={<ProfileLink href={applicantProfile.socialUrl} />}
+              label={pr.socialProfile}
+              value={<ProfileLink href={applicantProfile.socialUrl} notSet={pr.notSet} />}
             />
             <DashboardDetailCard
-              label="Reviews"
-              value={<ProfileLink href={applicantProfile.reviewsUrl} />}
+              label={pr.reviews}
+              value={<ProfileLink href={applicantProfile.reviewsUrl} notSet={pr.notSet} />}
             />
           </div>
           <p className="mt-4 inline-flex items-center gap-2 text-[0.8rem] leading-5 text-[var(--color-ink-soft)]">
             <Link2 aria-hidden size={14} className="shrink-0 text-[var(--color-blue)]" />
-            Links may be shown to the jury alongside your nominations.
+            {pr.linksNote}
           </p>
         </GlassCard>
       </div>

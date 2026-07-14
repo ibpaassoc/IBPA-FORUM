@@ -1,5 +1,6 @@
 import { FileText, Plus } from "lucide-react";
 import { getApplicantDashboardData } from "@/features/account/server/applicant-dashboard";
+import { getServerLanguage, getServerTranslations } from "@/lib/i18n/server";
 import NominationCard from "@/features/account/components/NominationCard";
 import {
   applicantNominationStats,
@@ -13,23 +14,31 @@ import {
 } from "@/shared/components/admin/DashboardUI";
 
 export default async function ApplicantNominationsPage() {
-  const data = await getApplicantDashboardData();
+  const [data, language, t] = await Promise.all([
+    getApplicantDashboardData(),
+    getServerLanguage(),
+    getServerTranslations(),
+  ]);
+  const np = t.account.nominationsPage;
+  const ov = t.account.overview;
   const stats = applicantNominationStats(data.nominations);
-  const nominationCards = data.nominations.map(toNominationCardData);
+  const nominationCards = data.nominations.map((nomination) =>
+    toNominationCardData(nomination, language),
+  );
 
   return (
     <div className="flex flex-col gap-5">
       <DashboardPageHeader
-        label="Applicant account"
-        title="My nominations"
+        label={t.account.nav.brand}
+        title={np.title}
         description={
           nominationCards.length === 0
-            ? "Paid nominations appear here after checkout is confirmed."
-            : `${stats.total} purchased · ${stats.drafts} in draft · ${stats.submitted} submitted. Purchased and draft nominations are not visible to judges until submitted.`
+            ? ov.emptyText
+            : `${stats.total} ${np.purchasedWord} · ${stats.drafts} ${np.draftWord} · ${stats.submitted} ${np.submittedWord}. ${np.visibilityNote}`
         }
         actions={
           <PremiumButton href="/account/applicant/add-nomination">
-            <Plus size={16} /> Add nominations
+            <Plus size={16} /> {ov.addNominations}
           </PremiumButton>
         }
       />
@@ -37,11 +46,11 @@ export default async function ApplicantNominationsPage() {
       {nominationCards.length === 0 ? (
         <EmptyState
           icon={<FileText size={20} />}
-          title="No nominations yet"
-          description="Paid nominations will appear here after checkout is confirmed."
+          title={ov.emptyTitle}
+          description={ov.emptyText}
           action={
             <PremiumButton href="/account/applicant/add-nomination">
-              <Plus size={16} /> Add nominations
+              <Plus size={16} /> {ov.addNominations}
             </PremiumButton>
           }
         />

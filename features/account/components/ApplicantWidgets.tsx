@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   Bell,
@@ -8,6 +10,7 @@ import {
   UserRound,
 } from "lucide-react";
 import type { ComponentType, ReactNode } from "react";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 type IconType = ComponentType<{ size?: number | string; className?: string; "aria-hidden"?: boolean }>;
 
@@ -49,25 +52,27 @@ function QuickActionRow({
 }
 
 export function QuickActionsCard({ latestNominationId }: { latestNominationId: string | null }) {
+  const { t } = useLanguage();
+  const w = t.account.widgets;
   return (
     <WidgetCard>
       <h2 className="font-[var(--font-title-family)] text-[1.4rem] font-light text-[var(--color-ink)]">
-        Quick actions
+        {w.quickActions}
       </h2>
-      <nav aria-label="Quick actions" className="mt-3 flex flex-col">
+      <nav aria-label={w.quickActions} className="mt-3 flex flex-col">
         {latestNominationId ? (
           <QuickActionRow href={`/account/applicant/nominations/${latestNominationId}`} icon={Play}>
-            Continue latest nomination
+            {w.continueLatest}
           </QuickActionRow>
         ) : null}
         <QuickActionRow href="/account/applicant/add-nomination" icon={CirclePlus}>
-          Add nominations
+          {w.addNominations}
         </QuickActionRow>
         <QuickActionRow href="/account/applicant/tickets" icon={Ticket}>
-          Open tickets
+          {w.openTickets}
         </QuickActionRow>
         <QuickActionRow href="/account/applicant/profile" icon={UserRound}>
-          Edit profile
+          {w.editProfile}
         </QuickActionRow>
       </nav>
     </WidgetCard>
@@ -85,11 +90,13 @@ export function DeadlineCard({
   daysRemaining: number;
   closed: boolean;
 }) {
+  const { t } = useLanguage();
+  const w = t.account.widgets;
   return (
     <WidgetCard>
       <p className="inline-flex items-center gap-2 text-[0.66rem] font-semibold uppercase tracking-[0.17em] text-[var(--color-ink-soft)]">
         <Bell aria-hidden size={13} className="text-[var(--color-blue)]" />
-        Important reminder
+        {w.reminder}
       </p>
       <div className="mt-4 flex items-center gap-4">
         <div className="flex size-16 shrink-0 flex-col items-center justify-center rounded-[20px] border border-[rgba(114,160,193,0.22)] bg-white/85 shadow-[0_12px_30px_rgba(37,42,45,0.06)]">
@@ -102,12 +109,10 @@ export function DeadlineCard({
         </div>
         <div className="min-w-0">
           <p className="text-sm font-semibold text-[var(--color-ink)]">
-            {closed ? "Applications closed" : "Applications close"}
+            {closed ? w.closed : w.close}
           </p>
           <p className="mt-1 text-sm text-[var(--color-ink-soft)]">
-            {closed
-              ? "Submitted nominations are read-only for judging."
-              : `${daysRemaining} day${daysRemaining === 1 ? "" : "s"} remaining`}
+            {closed ? w.closedText : `${w.daysRemainingLabel} ${daysRemaining}`}
           </p>
         </div>
       </div>
@@ -116,21 +121,24 @@ export function DeadlineCard({
 }
 
 export function SupportCard() {
+  const { t } = useLanguage();
+  const w = t.account.widgets;
   return (
-    <section className="rounded-[28px] border border-[rgba(3,2,19,0.2)] bg-[linear-gradient(150deg,#1d2a3a,#0b1622)] p-5 text-white shadow-[0_24px_70px_rgba(3,2,19,0.28)]">
-      <p className="font-[var(--font-title-family)] text-[1.3rem] font-light leading-snug">
-        Thank you for being part of the IBPA community.
-      </p>
-      <p className="mt-2 text-sm leading-6 text-white/70">
-        We can&apos;t wait to see your work. If anything is unclear, our team is happy to help.
-      </p>
-      <a
-        href="mailto:forum-support@ibpassociations.org"
-        className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/25"
-      >
-        Contact support
-        <ChevronRight aria-hidden size={14} />
-      </a>
+    <section className="relative overflow-hidden rounded-[28px] border border-[rgba(114,160,193,0.26)] bg-[var(--color-blue-wash)]/90 p-5 shadow-[0_22px_70px_rgba(114,160,193,0.16)] backdrop-blur-2xl">
+      <div className="pointer-events-none absolute -right-14 -top-16 size-40 rounded-full bg-[rgba(185,217,235,0.5)] blur-2xl" />
+      <div className="relative">
+        <p className="font-[var(--font-title-family)] text-[1.3rem] font-light leading-snug text-[var(--color-ink)]">
+          {w.supportTitle}
+        </p>
+        <p className="mt-2 text-sm leading-6 text-[var(--color-ink-soft)]">{w.supportText}</p>
+        <a
+          href="mailto:forum-support@ibpassociations.org"
+          className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-full border border-[rgba(114,160,193,0.3)] bg-white/78 px-4 text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink)] transition hover:-translate-y-0.5 hover:border-[var(--color-blue)] hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.3)]"
+        >
+          {w.contactSupport}
+          <ChevronRight aria-hidden size={14} />
+        </a>
+      </div>
     </section>
   );
 }
