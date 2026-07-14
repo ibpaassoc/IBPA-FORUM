@@ -29,6 +29,9 @@ import {
 } from "lucide-react";
 import { updateParticipantApplicationStatus } from "@/features/admin/actions/participant.actions";
 import PaymentStatusBadge from "@/features/admin/components/badges/PaymentStatusBadge";
+import AdminNominationBrowser, {
+  type NominationBrowserItem,
+} from "@/features/admin/components/review/AdminNominationBrowser";
 import ReviewWorkspace, { type ReviewTab } from "@/features/admin/components/review/ReviewWorkspace";
 import {
   MobileActionBar,
@@ -337,28 +340,49 @@ export default function ApplicationDetailPage({
     </DashboardCard>
   );
 
-  const submission = (
-    <div className="flex flex-col gap-4">
-      {hasNominationData ? (
-        orderedNominations.map((nomination, index) => {
-          const fields = categoryFieldConfigs[nomination.category.slug] ?? [];
-          const nomAnswerMap = new Map(nomination.answers.map((answer) => [answer.fieldKey, answer]));
-          const textFields = fields.filter((field) => field.type !== "file");
-          const hasTextAnswers = textFields.some((field) => nomAnswerMap.get(field.key));
-          return (
-            <DashboardCard key={nomination.id} className="p-0">
-              <div className="flex items-center justify-between gap-3 border-b border-[rgba(37,42,45,0.08)] p-4 md:p-5">
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-blue)]">
-                    {adminT.detail.nomination} {String(index + 1).padStart(2, "0")}
-                  </p>
-                  <h3 className="mt-1 font-[var(--font-title-family)] text-2xl font-light tracking-[-0.025em] text-[var(--color-ink)]">
-                    {nomination.award.name}
-                  </h3>
-                  <p className="mt-0.5 text-sm text-[var(--color-ink-soft)]">{nomination.category.name}</p>
-                </div>
-              </div>
-              <div className="p-4 md:p-5">
+  // One browser item per nomination: answers and that nomination's files
+  // together, shown one nomination at a time.
+  const nominationItems: NominationBrowserItem[] = orderedNominations.map((nomination, index) => {
+    const fields = categoryFieldConfigs[nomination.category.slug] ?? [];
+    const nomAnswerMap = new Map(nomination.answers.map((answer) => [answer.fieldKey, answer]));
+    const textFields = fields.filter((field) => field.type !== "file");
+    const hasTextAnswers = textFields.some((field) => nomAnswerMap.get(field.key));
+    const fileFields = fields.filter((field) => field.type === "file");
+    const nomFileMap = new Map<string, NominationFile[]>();
+    for (const file of nomination.files) {
+      const group = nomFileMap.get(file.fieldKey) ?? [];
+      group.push(file);
+      nomFileMap.set(file.fieldKey, group);
+    }
+
+    return {
+      id: nomination.id,
+      awardName: nomination.award.name,
+      categoryName: nomination.category.name,
+      meta: (
+        <span className="inline-flex min-h-5 items-center rounded-full border border-[rgba(114,160,193,0.22)] bg-white/70 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-[0.08em] text-[#356f98]">
+          {adminT.detail.filesSection}: {nomination.files.length}
+        </span>
+      ),
+      content: (
+        <DashboardCard className="p-0">
+          <div className="flex items-center justify-between gap-3 border-b border-[rgba(37,42,45,0.08)] p-4 md:p-5">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-blue)]">
+                {adminT.detail.nomination} {String(index + 1).padStart(2, "0")}
+              </p>
+              <h3 className="mt-1 font-[var(--font-title-family)] text-2xl font-light tracking-[-0.025em] text-[var(--color-ink)]">
+                {nomination.award.name}
+              </h3>
+              <p className="mt-0.5 text-sm text-[var(--color-ink-soft)]">{nomination.category.name}</p>
+            </div>
+          </div>
+          <div className="flex flex-col gap-5 p-4 md:p-5">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
+                {adminT.detail.answersSection}
+              </p>
+              <div className="mt-3">
                 {hasTextAnswers ? (
                   <div className="grid gap-3 sm:grid-cols-2">
                     {textFields.map((field) => {
@@ -373,9 +397,36 @@ export default function ApplicationDetailPage({
                   <EmptyInline>{adminT.detail.noTextAnswers}</EmptyInline>
                 )}
               </div>
-            </DashboardCard>
-          );
-        })
+            </div>
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
+                {adminT.detail.filesSection}
+              </p>
+              <div className="mt-3 flex flex-col gap-4">
+                {fileFields.length > 0 ? (
+                  fileFields.map((field) => (
+                    <FileGroup
+                      key={field.key}
+                      label={field.label}
+                      files={nomFileMap.get(field.key) ?? []}
+                      apiPath="/api/admin/nomination-files"
+                    />
+                  ))
+                ) : (
+                  <EmptyInline>{adminT.detail.noFileFields}</EmptyInline>
+                )}
+              </div>
+            </div>
+          </div>
+        </DashboardCard>
+      ),
+    };
+  });
+
+  const submission = (
+    <div className="flex flex-col gap-4">
+      {hasNominationData ? (
+        <AdminNominationBrowser items={nominationItems} listLabel={adminT.detail.nominationList} />
       ) : (
         <DashboardCard>
           {legacyAnswerEntries.length > 0 ? (
@@ -396,6 +447,8 @@ export default function ApplicationDetailPage({
     </div>
   );
 
+  // Nomination files now live inside the per-nomination browser; this tab
+  // keeps only applicant-level documents (license + legacy uploads).
   const documents = (
     <div className="flex flex-col gap-4">
       <DashboardCard>
@@ -406,41 +459,8 @@ export default function ApplicationDetailPage({
         />
       </DashboardCard>
 
-      {hasNominationData
-        ? orderedNominations.map((nomination) => {
-            const fields = categoryFieldConfigs[nomination.category.slug] ?? [];
-            const fileFields = fields.filter((field) => field.type === "file");
-            const nomFileMap = new Map<string, NominationFile[]>();
-            for (const file of nomination.files) {
-              const group = nomFileMap.get(file.fieldKey) ?? [];
-              group.push(file);
-              nomFileMap.set(file.fieldKey, group);
-            }
-            return (
-              <DashboardCard key={nomination.id} className="p-0">
-                <div className="border-b border-[rgba(37,42,45,0.08)] p-4 md:p-5">
-                  <h3 className="font-[var(--font-title-family)] text-xl font-light tracking-[-0.02em] text-[var(--color-ink)]">
-                    {nomination.award.name}
-                  </h3>
-                </div>
-                <div className="flex flex-col gap-4 p-4 md:p-5">
-                  {fileFields.length > 0 ? (
-                    fileFields.map((field) => (
-                      <FileGroup
-                        key={field.key}
-                        label={field.label}
-                        files={nomFileMap.get(field.key) ?? []}
-                        apiPath="/api/admin/nomination-files"
-                      />
-                    ))
-                  ) : (
-                    <EmptyInline>{adminT.detail.noFileFields}</EmptyInline>
-                  )}
-                </div>
-              </DashboardCard>
-            );
-          })
-        : legacyFileEntries.map(([key, files]) => (
+      {!hasNominationData
+        ? legacyFileEntries.map(([key, files]) => (
             <DashboardCard key={key}>
               <FileGroup
                 label={`${formatLegacyFieldLabel(key)} (${adminT.detail.legacy})`}
@@ -448,7 +468,8 @@ export default function ApplicationDetailPage({
                 apiPath="/api/admin/application-files"
               />
             </DashboardCard>
-          ))}
+          ))
+        : null}
     </div>
   );
 
