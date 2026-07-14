@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import {
   Drawer,
   FloatingActionButton,
@@ -22,13 +23,13 @@ import {
   MobileBottomNavigation,
 } from "@/shared/components/admin/DashboardUI";
 
-const navItems = [
-  { href: "/account/applicant", label: "Overview", shortLabel: "Overview", icon: LayoutDashboard },
-  { href: "/account/applicant/nominations", label: "My Nominations", shortLabel: "Nominations", icon: FileText },
-  { href: "/account/applicant/tickets", label: "Tickets", shortLabel: "Tickets", icon: Ticket },
-  { href: "/account/applicant/profile", label: "Profile", shortLabel: "Profile", icon: UserRound },
-  { href: "/account/applicant/settings", label: "Account Settings", shortLabel: "Settings", icon: Settings },
-];
+const navItemDefs = [
+  { href: "/account/applicant", key: "overview", shortKey: "overviewShort", icon: LayoutDashboard },
+  { href: "/account/applicant/nominations", key: "nominations", shortKey: "nominationsShort", icon: FileText },
+  { href: "/account/applicant/tickets", key: "tickets", shortKey: "ticketsShort", icon: Ticket },
+  { href: "/account/applicant/profile", key: "profile", shortKey: "profileShort", icon: UserRound },
+  { href: "/account/applicant/settings", key: "settings", shortKey: "settingsShort", icon: Settings },
+] as const;
 
 function isActive(pathname: string, href: string) {
   if (href === "/account/applicant") return pathname === href;
@@ -42,7 +43,7 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-function SignOutButton({ compact = false }: { compact?: boolean }) {
+function SignOutButton({ compact = false, label }: { compact?: boolean; label: string }) {
   return (
     <button
       type="button"
@@ -50,7 +51,7 @@ function SignOutButton({ compact = false }: { compact?: boolean }) {
       className="flex min-h-11 w-full items-center justify-center gap-3 rounded-[18px] border border-transparent px-3 text-[0.76rem] font-semibold uppercase tracking-[0.1em] text-[var(--color-ink-soft)] transition hover:border-red-200 hover:bg-red-50 hover:text-red-700"
     >
       <LogOut aria-hidden size={16} strokeWidth={1.8} />
-      {compact ? null : <span>Log out</span>}
+      {compact ? null : <span>{label}</span>}
     </button>
   );
 }
@@ -65,10 +66,18 @@ export default function ApplicantSidebar({
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const { t } = useLanguage();
+  const nav = t.account.nav;
 
-  const mobileItems = navItems.slice(0, 4).map((item) => ({
+  const navItems = navItemDefs.map((item) => ({
     href: item.href,
-    label: item.shortLabel,
+    label: nav[item.key],
+    icon: item.icon,
+  }));
+
+  const mobileItems = navItemDefs.slice(0, 4).map((item) => ({
+    href: item.href,
+    label: nav[item.shortKey],
     icon: item.icon,
     active: isActive(pathname, item.href),
   }));
@@ -93,19 +102,19 @@ export default function ApplicantSidebar({
                     IBPA
                   </p>
                   <p className="mt-1 text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-ink-soft)]">
-                    Applicant account
+                    {nav.brand}
                   </p>
                 </Link>
               )}
               <IconButton
-                label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                label={collapsed ? nav.expandSidebar : nav.collapseSidebar}
                 icon={collapsed ? PanelLeftOpen : PanelLeftClose}
                 onClick={() => setCollapsed((value) => !value)}
                 className="size-9 shrink-0"
               />
             </div>
 
-            <nav className="mt-3 flex flex-col gap-1" aria-label="Applicant navigation">
+            <nav className="mt-3 flex flex-col gap-1" aria-label={nav.navAria}>
               {navItems.map(({ href, label, icon: Icon }) => {
                 const active = isActive(pathname, href);
 
@@ -146,7 +155,7 @@ export default function ApplicantSidebar({
                   </div>
                 ) : null}
               </div>
-              <SignOutButton compact={collapsed} />
+              <SignOutButton compact={collapsed} label={nav.signOut} />
             </div>
           </div>
         </div>
@@ -157,13 +166,13 @@ export default function ApplicantSidebar({
         className="max-w-sm sm:left-1/2 sm:right-auto sm:w-full sm:-translate-x-1/2"
       />
       <FloatingActionButton
-        label="Open applicant menu"
+        label={nav.openMenu}
         icon={MoreHorizontal}
         onClick={() => setDrawerOpen(true)}
         className="lg:hidden"
       />
 
-      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} title="Applicant account">
+      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} title={nav.drawerTitle}>
         <div className="space-y-4">
           <div className="flex items-center gap-3 rounded-[24px] bg-[linear-gradient(135deg,rgba(185,217,235,0.32),rgba(255,255,255,0.86))] p-4">
             <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white/78 font-[var(--font-title-family)] text-lg text-[var(--color-blue)] shadow-sm">
@@ -176,7 +185,7 @@ export default function ApplicantSidebar({
               <p className="truncate text-xs text-[var(--color-ink-soft)]">{email}</p>
             </div>
           </div>
-          <nav className="grid gap-2" aria-label="Applicant drawer navigation">
+          <nav className="grid gap-2" aria-label={nav.drawerAria}>
             {navItems.map(({ href, label, icon: Icon }) => {
               const active = isActive(pathname, href);
               return (
@@ -198,7 +207,7 @@ export default function ApplicantSidebar({
               );
             })}
           </nav>
-          <SignOutButton />
+          <SignOutButton label={nav.signOut} />
         </div>
       </Drawer>
     </>
