@@ -57,13 +57,6 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Site-wide maintenance lock: rewrite disallowed routes to /under-development
-  // Skip lock in dev mode
-  const devMode = process.env.DEV_MODE === "true" || process.env.DEV_MODE === "True";
-  if (!devMode && !isSiteLockAllowed(pathname)) {
-    return NextResponse.rewrite(new URL("/under-development", request.url));
-  }
-
   // Protect /jury/dashboard with JWT auth
   if (isProtectedJuryPath(pathname)) {
     const token = await getToken({
