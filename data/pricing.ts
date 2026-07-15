@@ -13,7 +13,7 @@ export const PRICING = {
     },
   },
   awardParticipation: {
-    startingFrom: "$50",
+    startingFrom: "$50+",
     ibpaMembers: {
       oneNomination: "$50",
       threeNominations: "$130",

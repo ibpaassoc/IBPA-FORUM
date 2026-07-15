@@ -1,7 +1,7 @@
 export const stats = [
   {
     title: "Entry Fee",
-    value: "$50",
+    value: "$50+",
     text: "Per category application. Each category and nomination entry is submitted separately.",
   },
   {
@@ -66,7 +66,7 @@ export const steps = [
 export const faqs = [
   {
     q: "How much does it cost to apply?",
-    a: "Participant applications cost $50 per category.",
+    a: "Participant applications cost $50+ per category.",
   },
   {
     q: "Do members get free category entry?",

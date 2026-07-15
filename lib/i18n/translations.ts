@@ -140,7 +140,7 @@ const en = {
 
       feeInfo: {
         eyebrow: "Registration Fee",
-        value: "$50",
+        value: "$50+",
         text: "Participation is paid separately for each selected nomination.",
       },
 
@@ -166,7 +166,7 @@ const en = {
         eyebrow: "Pricing",
         title: "Participation Pricing",
         description:
-          "Forum tickets, award nominations, and jury registration are priced separately. Forum and award pricing differs for IBPA members and standard participants.",
+          "Forum tickets, award nominations, and jury registration are priced separately. Forum and award pricing differs for IBPA members and guests.",
         option: "Option",
         members: "IBPA Members",
         standard: "Guest",
@@ -1964,7 +1964,7 @@ const ru: typeof en = {
 
       feeInfo: {
         eyebrow: "Регистрационный взнос",
-        value: "$50",
+        value: "$50+",
         text: "Стоимость участия оплачивается отдельно за каждую выбранную номинацию.",
       },
 
@@ -1990,7 +1990,7 @@ const ru: typeof en = {
         eyebrow: "Стоимость",
         title: "Стоимость участия",
         description:
-          "Билеты на форум, номинации премии и регистрация судей оплачиваются отдельно. Стоимость форума и премии отличается для участников IBPA и стандартных участников.",
+          "Билеты на форум, номинации премии и регистрация судей оплачиваются отдельно. Стоимость форума и премии отличается для участников IBPA и гостей.",
 
         option: "Опция",
         members: "IBPA Участники",
@@ -3793,7 +3793,7 @@ const ua: typeof en = {
 
       feeInfo: {
         eyebrow: "Реєстраційний внесок",
-        value: "$50",
+        value: "$50+",
         text: "Вартість участі сплачується окремо за кожну обрану номінацію.",
       },
 
@@ -3819,7 +3819,7 @@ const ua: typeof en = {
         eyebrow: "Вартість",
         title: "Вартість участі",
         description:
-          "Квитки на форум, номінації премії та реєстрація суддів оплачуються окремо. Вартість форуму й премії відрізняється для учасників IBPA та стандартних учасників.",
+          "Квитки на форум, номінації премії та реєстрація суддів оплачуються окремо. Вартість форуму й премії відрізняється для учасників IBPA та гостей.",
 
         option: "Опція",
         members: "IBPA Учасники",
