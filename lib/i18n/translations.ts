@@ -629,7 +629,7 @@ const en = {
             "Before Scaling: How to Identify Bottlenecks and Find Growth Opportunities in Your Beauty Business",
           description:
             "In this presentation, participants will discover where sustainable business growth truly begins. Yulia will explain how to define clear business goals, identify the hidden limitations that slow growth and profitability, and recognize the most common bottlenecks beauty business owners face. She will also demonstrate which growth opportunities should be addressed before investing in scaling. Attendees will leave with a practical framework for diagnosing their own business, identifying what is holding it back, and understanding the highest-priority actions needed to build a more systematic, profitable, and sustainable business.",
-          instagram: "",
+          instagram: "https://www.instagram.com/yuliabailo_coach?igsh=NTc4MTIwNjQ2YQ==",
           website: ""
         },
       ]
@@ -2749,7 +2749,7 @@ const ru: typeof en = {
             "Перед масштабом: как выявить узкие места и найти точки роста в бьюти-бизнесе",
           description:
             "На выступлении участники разберутся, с чего начинается устойчивый рост бизнеса, как правильно определить свои цели и увидеть ограничения, которые мешают развитию и увеличению прибыли. Юлия покажет основные узкие места, с которыми чаще всего сталкиваются владельцы бьюти-бизнеса, и объяснит, на какие точки роста важно обратить внимание прежде, чем вкладываться в масштабирование. После выступления участники смогут провести первичную диагностику своего бизнеса, определить, что именно сдерживает рост, и понять, какие действия необходимо предпринять в первую очередь для более системного, устойчивого и прибыльного развития.",
-          instagram: "",
+          instagram: "https://www.instagram.com/yuliabailo_coach?igsh=NTc4MTIwNjQ2YQ==",
           website: ""
         },
       ]
@@ -4870,7 +4870,7 @@ const ua: typeof en = {
             "Перед масштабуванням: як виявити вузькі місця та знайти точки зростання в beauty-бізнесі",
           description:
             "Під час виступу учасники дізнаються, з чого починається стале зростання бізнесу, як правильно визначити свої цілі та побачити обмеження, що заважають розвитку й збільшенню прибутку. Юлія покаже найпоширеніші вузькі місця, з якими стикаються власники beauty-бізнесу, та пояснить, на які точки зростання варто звернути увагу ще до інвестування в масштабування. Після виступу учасники зможуть провести первинну діагностику свого бізнесу, визначити, що саме стримує його розвиток, і зрозуміти, які кроки потрібно зробити насамперед для більш системного, стабільного та прибуткового зростання.",
-          instagram: "",
+          instagram: "https://www.instagram.com/yuliabailo_coach?igsh=NTc4MTIwNjQ2YQ==",
           website: ""
         },
       ]
