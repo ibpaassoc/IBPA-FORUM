@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
 import { useActionState } from "react";
 import {
   setupPasswordAction,
@@ -20,39 +19,24 @@ export default function SetupPasswordForm({
   token: string;
   tokenState: "missing" | "invalid" | "expired" | "valid";
 }) {
-  const passwordRef = useRef<HTMLInputElement>(null);
-  const signingInRef = useRef(false);
   const router = useRouter();
+  const [redirecting, setRedirecting] = useState(false);
   const [state, action, pending] = useActionState<SetupPasswordState | undefined, FormData>(
     setupPasswordAction,
     undefined
   );
 
   useEffect(() => {
-    if (!state?.success || !state.email || signingInRef.current) return;
-    const password = passwordRef.current?.value ?? "";
-    if (!password) return;
+    if (!state?.success || redirecting) return;
 
-    signingInRef.current = true;
-    void (async () => {
-      const result = await signIn("credentials", {
-        email: state.email,
-        password,
-        redirect: false,
-        callbackUrl: "/account",
-      });
-
-      if (!result || result.error) {
-        signingInRef.current = false;
-        router.replace("/account/login");
-        router.refresh();
-        return;
-      }
-
-      router.replace("/account");
+    setRedirecting(true);
+    const timer = setTimeout(() => {
+      router.replace("/account/login");
       router.refresh();
-    })();
-  }, [router, state]);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [redirecting, router, state]);
 
   if (tokenState !== "valid") {
     const message =
@@ -74,6 +58,8 @@ export default function SetupPasswordForm({
     );
   }
 
+  const done = Boolean(state?.success) || redirecting;
+
   return (
     <form action={action} className="space-y-[var(--space-md)]">
       <input type="hidden" name="token" value={token} />
@@ -87,7 +73,7 @@ export default function SetupPasswordForm({
           type="password"
           required
           minLength={8}
-          ref={passwordRef}
+          disabled={done}
           autoComplete="new-password"
           className={inputClass}
           placeholder="At least 8 characters"
@@ -104,13 +90,18 @@ export default function SetupPasswordForm({
           type="password"
           required
           minLength={8}
+          disabled={done}
           autoComplete="new-password"
           className={inputClass}
           placeholder="Repeat password"
         />
       </div>
 
-      {(state?.error || state?.invalidToken || state?.expiredToken) ? (
+      {done ? (
+        <p className="rounded-[var(--radius-sm)] border border-[var(--color-hover-accent)] bg-[rgba(185,217,235,0.26)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-ink)]">
+          Account activated. Redirecting you to the login page…
+        </p>
+      ) : (state?.error || state?.invalidToken || state?.expiredToken) ? (
         <p className="rounded-[var(--radius-sm)] border border-[var(--color-hover-accent)] bg-[rgba(185,217,235,0.26)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-ink)]">
           {state.error ?? (state.expiredToken ? "This link has expired." : "This link is invalid or has already been used.")}
         </p>
@@ -118,10 +109,10 @@ export default function SetupPasswordForm({
 
       <button
         type="submit"
-        disabled={pending || state?.success}
+        disabled={pending || done}
         className="ibpa-button ibpa-button-primary w-full disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {pending || state?.success ? "Activating..." : "Activate account"}
+        {done ? "Account activated" : pending ? "Activating..." : "Activate account"}
       </button>
     </form>
   );
