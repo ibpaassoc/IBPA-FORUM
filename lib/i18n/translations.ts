@@ -297,7 +297,7 @@ const en = {
             "Building a World-Class Beauty Career Through Education, Championships, and Leadership",
           description:
             "Gulnara will share her journey of building an international career in the beauty industry, creating a strong personal brand, and educating professionals worldwide. She will explain how to develop successful educational programs, train beauty educators, and organize international championships based on her experience of teaching more than 100,000 professionals and delivering educational programs in over 20 countries.",
-          instagram: "",
+          instagram: "https://www.instagram.com/gulnarachekoeva?igsh=NTc4MTIwNjQ2YQ==",
           website: ""
         },
         {
@@ -310,7 +310,7 @@ const en = {
             "Content That Sells: A Social Media Growth System for Beauty Professionals Without Burnout",
           description:
             "This session is designed for brow artists, lash artists, nail technicians, makeup artists, cosmetologists, salon owners, educators, and beginners. Eleonora will demonstrate how to build a sustainable content strategy, attract clients through social media, create content that converts into sales, and grow a strong personal brand. The presentation is based on her real experience of growing an audience from 1,700 to 30,000 followers in just six months.",
-          instagram: "",
+          instagram: "https://www.instagram.com/elionora.brows?igsh=NTc4MTIwNjQ2YQ==",
           website: ""
         },
         {
@@ -336,7 +336,7 @@ const en = {
               "Who Is Your Client? The Psychology of Sales Through Simple Examples",
           description:
               "Hanna will introduce her unique client profiling methodology based on well-known cartoon characters. This practical approach helps beauty professionals quickly understand different customer personalities, confidently handle objections, improve communication, and naturally increase sales. Participants will leave with an easy-to-use psychological framework that can be applied immediately in consultations and everyday client interactions.",
-          instagram: "",
+          instagram: "https://www.instagram.com/anna.vakulych.miami?igsh=NTc4MTIwNjQ2YQ==",
           website: ""
         }
       ]
@@ -2124,7 +2124,7 @@ const ru: typeof en = {
             "Путь мастера мирового уровня: образование, чемпионаты и построение международной карьеры",
           description:
             "Гульнара поделится своим опытом развития международной карьеры в индустрии красоты, расскажет, как создать сильный личный бренд, выйти на мировой уровень и обучать профессионалов по всему миру. Она раскроет принципы создания успешных образовательных программ, подготовки преподавателей нового поколения и организации международных чемпионатов, основанные на опыте обучения более 100 000 мастеров и проведения авторских программ более чем в 20 странах.",
-          instagram: "",
+          instagram: "https://www.instagram.com/gulnarachekoeva?igsh=NTc4MTIwNjQ2YQ==",
           website: ""
         },
         {
@@ -2137,7 +2137,7 @@ const ru: typeof en = {
             "Контент, который продаёт: система продвижения бьюти-мастера в соцсетях без хаоса и выгорания",
           description:
             "Выступление предназначено для бровистов, лешмейкеров, нейл-мастеров, визажистов, косметологов, владельцев салонов, тренеров и начинающих специалистов. Элеонора расскажет, как выстроить понятную контент-стратегию, привлекать клиентов через социальные сети без постоянного выгорания, создавать контент, который действительно продаёт, и развивать личный бренд. Основано на личном опыте роста аудитории с 1 700 до 30 000 подписчиков всего за 6 месяцев.",
-          instagram: "",
+          instagram: "https://www.instagram.com/elionora.brows?igsh=NTc4MTIwNjQ2YQ==",
           website: ""
         },
         {
@@ -2163,7 +2163,7 @@ const ru: typeof en = {
             "Кто ваш клиент? Психология продаж на простых примерах",
           description:
             "Ханна представит авторскую методику определения типа клиента, основанную на известных мультипликационных персонажах. Вы получите простой и понятный инструмент, который поможет с первых минут понимать клиента, легко работать с возражениями, выстраивать доверительное общение и уверенно увеличивать продажи. Методика легко применяется в ежедневной работе мастеров, преподавателей и владельцев beauty-бизнеса.",
-          instagram: "",
+          instagram: "https://www.instagram.com/anna.vakulych.miami?igsh=NTc4MTIwNjQ2YQ==",
           website: ""
         }
       ]
@@ -3952,7 +3952,7 @@ const ua: typeof en = {
             "Шлях майстра світового рівня: освіта, чемпіонати та побудова міжнародної кар'єри",
           description:
             "Гульнара поділиться досвідом розвитку міжнародної кар'єри у beauty-індустрії, розповість, як створити сильний особистий бренд, вийти на світовий рівень та навчати професіоналів по всьому світу. Вона розкриє принципи створення успішних освітніх програм, підготовки викладачів нового покоління та організації міжнародних чемпіонатів, спираючись на досвід навчання понад 100 000 майстрів і проведення авторських програм у більш ніж 20 країнах.",
-          instagram: "",
+          instagram: "https://www.instagram.com/gulnarachekoeva?igsh=NTc4MTIwNjQ2YQ==",
           website: ""
         },
         {
@@ -3965,7 +3965,7 @@ const ua: typeof en = {
             "Контент, який продає: система просування beauty-майстра в соціальних мережах без хаосу та вигорання",
           description:
             "Виступ буде корисний бровистам, лешмейкерам, нейл-майстрам, візажистам, косметологам, власникам салонів, викладачам та початківцям. Елеонора покаже, як побудувати зрозумілу контент-стратегію, залучати клієнтів через соціальні мережі без постійного вигорання, створювати контент, який продає, та розвивати особистий бренд. В основі виступу — власний досвід зростання аудиторії з 1 700 до 30 000 підписників лише за шість місяців.",
-          instagram: "",
+          instagram: "https://www.instagram.com/elionora.brows?igsh=NTc4MTIwNjQ2YQ==",
           website: ""
         },
         {
@@ -3991,7 +3991,7 @@ const ua: typeof en = {
             "Хто ваш клієнт? Психологія продажів на простих прикладах",
           description:
             "Ганна представить авторську методику визначення типу клієнта, засновану на відомих мультиплікаційних персонажах. Ви отримаєте простий і зрозумілий інструмент, який допоможе з перших хвилин зрозуміти клієнта, легко працювати із запереченнями, будувати довірливу комунікацію та впевнено збільшувати продажі. Методика легко застосовується у щоденній роботі майстрів, викладачів і власників beauty-бізнесу.",
-          instagram: "",
+          instagram: "https://www.instagram.com/anna.vakulych.miami?igsh=NTc4MTIwNjQ2YQ==",
           website: ""
         }
       ]
