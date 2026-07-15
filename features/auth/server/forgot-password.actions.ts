@@ -28,11 +28,40 @@ export async function forgotPasswordAction(
   }
 
   const token = await createPasswordResetToken(account.id);
-  const payload = { token: token.token, email: account.email };
+  const result = await sendAccountPasswordResetEmail({ to: account.email, token: token.token });
 
-  if (payload) {
-    await sendAccountPasswordResetEmail({ to: payload.email, token: payload.token });
+  if (!result.delivered) {
+    const error = result.error ?? result.reason ?? "Password reset email delivery failed.";
+    await Promise.all([
+      prisma.accountSetupToken.updateMany({
+        where: { tokenHash: token.tokenHash, accountId: account.id },
+        data: { usedAt: new Date() },
+      }),
+      prisma.account.update({
+        where: { id: account.id },
+        data: {
+          lastSetupEmailDeliveryStatus: result.reason ?? "failed",
+          lastSetupEmailDeliveryError: error,
+        },
+      }),
+    ]);
+    console.error("Failed to send password reset email", {
+      accountId: account.id,
+      email: account.email,
+      reason: result.reason,
+      error,
+    });
+    return { sent: true };
   }
+
+  await prisma.account.update({
+    where: { id: account.id },
+    data: {
+      lastSetupEmailSentAt: new Date(),
+      lastSetupEmailDeliveryStatus: "delivered",
+      lastSetupEmailDeliveryError: null,
+    },
+  });
 
   return { sent: true };
 }

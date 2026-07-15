@@ -169,6 +169,8 @@ assert(has(setupActions, "deletedAt: null"), "password setup cannot reactivate a
 const forgotPasswordActions = read("features/auth/server/forgot-password.actions.ts");
 assert(!has(forgotPasswordActions, "$transaction"), "forgot password does not require an interactive transaction");
 assert(has(forgotPasswordActions, "createPasswordResetToken"), "forgot password uses direct reset token issuance");
+assert(has(forgotPasswordActions, "lastSetupEmailDeliveryStatus"), "forgot password records reset email delivery status");
+assert(has(forgotPasswordActions, "accountSetupToken.updateMany"), "forgot password invalidates undelivered reset tokens");
 
 const registrationService = read("features/account/server/applicant-registration.ts");
 assert(has(registrationService, 'paymentStatus: "PAID"'), "registration links require a paid nomination");
