@@ -1,14 +1,15 @@
 import type { TicketType } from "@prisma/client";
 import { z } from "zod";
+import { adminT } from "@/lib/i18n/admin";
 
 export const ADMIN_EDITABLE_TICKET_TYPES = ["ONE_DAY", "TWO_DAYS"] as const;
 
 export const adminTicketUpdateSchema = z.object({
-  ticketId: z.string().trim().min(1, "Ticket ID is required."),
-  updatedAt: z.string().datetime("Ticket version is required."),
-  fullName: z.string().trim().min(1, "Customer name is required."),
-  email: z.email("Enter a valid email address.").transform((value) => value.trim().toLowerCase()),
-  phone: z.string().trim().min(1, "Phone number is required."),
+  ticketId: z.string().trim().min(1, adminT.api.ticketIdRequired),
+  updatedAt: z.string().datetime(adminT.tickets.admin.ticketVersionRequired),
+  fullName: z.string().trim().min(1, adminT.tickets.admin.customerNameRequired),
+  email: z.email(adminT.tickets.admin.validEmailRequired).transform((value) => value.trim().toLowerCase()),
+  phone: z.string().trim().min(1, adminT.tickets.admin.phoneRequired),
   instagram: z
     .string()
     .trim()
@@ -77,4 +78,3 @@ export function hasQrRelevantChanges(changes: TicketChange[]) {
 export function ticketCanReceiveQr(status: string) {
   return status !== "PENDING" && status !== "CANCELED";
 }
-

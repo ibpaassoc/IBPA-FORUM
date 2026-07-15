@@ -22,6 +22,7 @@ import type {
   ReactNode,
 } from "react";
 import clsx from "clsx";
+import { adminT } from "@/lib/i18n/admin";
 import { PUBLIC_MOTION_EASE } from "@/shared/components/public/motion-tokens";
 
 const IBPA_BLUE = "#72a0c1";
@@ -62,7 +63,7 @@ export function DashboardShell({
   return (
     <div
       className={cn(
-        "min-h-screen overflow-hidden bg-[radial-gradient(circle_at_8%_14%,rgba(185,217,235,0.36),transparent_30%),radial-gradient(circle_at_88%_10%,rgba(114,160,193,0.18),transparent_28%),linear-gradient(180deg,#ffffff_0%,#f7f9fb_48%,#ffffff_100%)] text-[var(--color-ink)]",
+        "min-h-screen overflow-hidden bg-[#f6fafc] text-[var(--color-ink)]",
         className,
       )}
     >
@@ -121,8 +122,7 @@ export function GlassCard({
   const classes = cn(
     glassBase,
     "rounded-[28px]",
-    tone === "blue" &&
-      "bg-[linear-gradient(135deg,rgba(255,255,255,0.84),rgba(185,217,235,0.34))]",
+    tone === "blue" && "bg-[rgba(225,240,248,0.82)]",
     tone === "plain" && "bg-white shadow-[0_18px_48px_rgba(37,42,45,0.06)]",
     className,
   );
@@ -458,7 +458,7 @@ export function SearchBar({
   defaultValue,
   value,
   onChange,
-  placeholder = "Search",
+  placeholder = adminT.common.search,
   className,
 }: {
   name?: string;
@@ -569,7 +569,7 @@ export function TableCard({
 }
 
 export function ActionMenu({
-  label = "More actions",
+  label = adminT.common.moreActions,
   children,
   align = "right",
 }: {
@@ -623,7 +623,7 @@ export function Drawer({
         >
           <button
             type="button"
-            aria-label="Close drawer"
+            aria-label={adminT.common.closeDialog}
             className="absolute inset-0 cursor-default"
             onClick={() => onOpenChange(false)}
           />
@@ -642,7 +642,7 @@ export function Drawer({
               ) : (
                 <span />
               )}
-              <IconButton label="Close" icon={X} onClick={() => onOpenChange(false)} />
+              <IconButton label={adminT.common.close} icon={X} onClick={() => onOpenChange(false)} />
             </div>
             {children}
           </motion.div>
@@ -658,8 +658,8 @@ export function ConfirmDialog({
   open,
   title,
   description,
-  confirmLabel = "Confirm",
-  cancelLabel = "Cancel",
+  confirmLabel = adminT.common.confirm,
+  cancelLabel = adminT.common.cancel,
   onConfirm,
   onCancel,
 }: {
@@ -686,7 +686,7 @@ export function ConfirmDialog({
   );
 }
 
-export function LoadingState({ label = "Loading" }: { label?: string }) {
+export function LoadingState({ label = adminT.common.loading }: { label?: string }) {
   return (
     <div className="flex min-h-48 flex-col items-center justify-center gap-3 text-[var(--color-ink-soft)]">
       <Loader2 aria-hidden size={24} className="animate-spin text-[var(--color-blue)]" />
@@ -699,7 +699,7 @@ export function Skeleton({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "animate-pulse rounded-full bg-[linear-gradient(90deg,rgba(185,217,235,0.22),rgba(255,255,255,0.82),rgba(185,217,235,0.22))]",
+        "animate-pulse rounded-full bg-[rgba(185,217,235,0.38)]",
         className,
       )}
     />
@@ -754,7 +754,7 @@ export function MobileBottomNavigation({
         "fixed inset-x-3 bottom-3 z-50 rounded-[28px] border border-[rgba(114,160,193,0.2)] bg-white/88 p-1.5 shadow-[0_-18px_50px_rgba(37,42,45,0.1)] backdrop-blur-2xl lg:hidden",
         className,
       )}
-      aria-label="Mobile dashboard navigation"
+      aria-label={adminT.common.mobileNavigation}
     >
       <div
         className="grid gap-1"
@@ -781,7 +781,7 @@ export function MobileBottomNavigation({
 }
 
 export function FloatingActionButton({
-  label = "Create",
+  label = adminT.common.create,
   icon: Icon = Plus,
   onClick,
   href,

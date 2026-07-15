@@ -1,6 +1,7 @@
 import { get } from "@vercel/blob";
 import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
 import { prisma } from "@/shared/lib/prisma";
+import { adminT } from "@/lib/i18n/admin";
 
 export async function GET(
   request: Request,
@@ -9,7 +10,7 @@ export async function GET(
   const isAuthenticated = await isAdminAuthenticated();
 
   if (!isAuthenticated) {
-    return new Response("Unauthorized", { status: 401 });
+    return new Response(adminT.api.unauthorized, { status: 401 });
   }
 
   const { fileId } = await params;
@@ -24,7 +25,7 @@ export async function GET(
   });
 
   if (!fileRecord?.fileUrl) {
-    return new Response("Not found", { status: 404 });
+    return new Response(adminT.api.notFound, { status: 404 });
   }
 
   const result = await get(fileRecord.fileUrl, {
@@ -33,7 +34,7 @@ export async function GET(
   });
 
   if (!result) {
-    return new Response("Not found", { status: 404 });
+    return new Response(adminT.api.notFound, { status: 404 });
   }
 
   if (result.statusCode === 304) {

@@ -29,25 +29,22 @@ export default function LoginForm() {
       email,
       password,
       redirect: false,
-      callbackUrl: "/",
+      callbackUrl: "/account",
     });
 
     if (!result || result.error) {
-      if (result?.error === "No account is registered with this email.") {
-        setError(t.auth.form.noRegisteredAccount);
-      } else {
-        setError(t.auth.form.invalidCredentials);
-      }
+      setError(t.auth.form.invalidCredentials);
       setIsSubmitting(false);
       return;
     }
 
-    router.replace("/jury/dashboard");
+    router.replace("/account");
     router.refresh();
   }
 
   return (
-    <form action={handleSubmit} className="space-y-[var(--space-md)]">
+    <div className="space-y-[var(--space-md)]">
+      <form action={handleSubmit} className="space-y-[var(--space-md)]">
       <div>
         <label htmlFor="email" className={`mb-[var(--space-xs)] ${labelClass}`}>
           {t.auth.form.email}
@@ -69,7 +66,7 @@ export default function LoginForm() {
             {t.auth.form.password}
           </label>
           <Link
-            href="/jury/forgot-password"
+            href="/account/forgot-password"
             className="text-[clamp(0.65rem,0.95vw,0.75rem)] text-[var(--color-hover-accent)] transition hover:text-[var(--color-blue)] hover:underline"
           >
             {t.auth.form.forgotPassword}
@@ -103,13 +100,15 @@ export default function LoginForm() {
       <p className="text-sm leading-6 text-[var(--color-ink-soft)]">
         {t.auth.form.noAccount}{" "}
         <Link
-          href="/jury/register"
+          href="/account/setup"
           className="text-[var(--color-hover-accent)] hover:text-[var(--color-blue)] hover:underline"
         >
-          {t.auth.form.register}
+          Set up account
         </Link>
         .
       </p>
-    </form>
+      </form>
+
+    </div>
   );
 }

@@ -1,6 +1,4 @@
-import { notFound } from "next/navigation";
-import ApplicationEditPage from "@/features/admin/components/participant-applications/ApplicationEditPage";
-import { getParticipantApplicationDetail } from "@/features/admin/server/participant-queries";
+import { redirect } from "next/navigation";
 import { requireAdmin } from "@/shared/lib/admin-auth";
 
 export default async function AdminApplicationEditPage({
@@ -11,16 +9,5 @@ export default async function AdminApplicationEditPage({
   await requireAdmin();
 
   const { id } = await params;
-
-  if (!id) {
-    notFound();
-  }
-
-  const application = await getParticipantApplicationDetail(id);
-
-  if (!application) {
-    notFound();
-  }
-
-  return <ApplicationEditPage application={application} />;
+  redirect(`/admin/applications/${id}`);
 }

@@ -49,7 +49,10 @@ console.log("global not-found page");
 const notFoundSrc = read("app/not-found.tsx");
 assert(existsSync(join(ROOT, "app/not-found.tsx")), "app/not-found.tsx exists");
 assert(notFoundSrc.includes("useLanguage"), "not-found localizes via useLanguage");
-assert(notFoundSrc.includes("t.notFound") || notFoundSrc.includes("nf ="), "not-found reads notFound copy");
+assert(
+  notFoundSrc.includes("t.notFound") || notFoundSrc.includes("nf =") || notFoundSrc.includes("copy ="),
+  "not-found reads notFound copy"
+);
 assert(notFoundSrc.includes('href="/"'), "not-found links to homepage");
 
 // ── /apply/jury renders the 404 (scenarios 2, 3) ─────────────────────────────
@@ -72,10 +75,10 @@ const uiFiles = [
 for (const file of uiFiles) {
   assert(!read(file).includes("/apply/jury"), `${file} has no /apply/jury link`);
 }
-// The header "Apply" dropdown still offers participant apply + jury account login.
+// The header "Apply" dropdown still offers participant apply + shared account login.
 const juryMenu = read("shared/components/layout/JuryMenu.tsx");
 assert(juryMenu.includes('href: "/apply"'), "header still offers participant apply");
-assert(juryMenu.includes('href: "/jury/login"'), "header still offers jury account login");
+assert(juryMenu.includes('href: "/account/login"'), "header still offers shared account login");
 
 // ── Backend rejects new jury submissions (scenario 8) ────────────────────────
 console.log("jury submission backend closed");
@@ -97,6 +100,9 @@ console.log("existing flows preserved");
 assert(existsSync(join(ROOT, "app/admin/jury-applications")), "admin jury applications route still present");
 assert(existsSync(join(ROOT, "app/jury/dashboard/page.tsx")), "jury dashboard still present");
 assert(existsSync(join(ROOT, "app/(public)/jury/login/page.tsx")), "jury login still present");
+const juryRegister = read("app/(public)/jury/register/page.tsx");
+assert(juryRegister.includes("searchParams"), "jury register alias reads search params");
+assert(juryRegister.includes("encodeURIComponent(token)"), "jury register alias preserves setup token");
 assert(
   read("app/(public)/apply/page.tsx").includes("notFound") === false,
   "participant /apply route NOT closed"

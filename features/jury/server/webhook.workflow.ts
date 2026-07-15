@@ -2,6 +2,10 @@ import { Prisma, type StripeWebhookEvent } from "@prisma/client";
 import type Stripe from "stripe";
 import { sendJuryPaymentConfirmedEmail } from "@/features/email/server/jury-email.workflow";
 import { sendPaymentAdminNotificationEmail } from "@/features/email/server/payment-email.workflow";
+import {
+  sendSetupEmailForAccount,
+  upsertJuryAccountForApplication,
+} from "@/features/account/server/accounts";
 import { syncJuryOnChange } from "@/features/google-sheets";
 import { revalidatePublicJuryMembers } from "@/features/jury/server/queries";
 import { prisma } from "@/shared/lib/prisma";
@@ -89,6 +93,7 @@ async function handleCheckoutCompleted(event: Stripe.Event): Promise<boolean> {
 
   const paymentIntentId = getPaymentIntentId(session.payment_intent);
   let emailPayload: JuryPaymentEmailPayload | null = null;
+  let setupAccountId: string | null = null;
 
   try {
     await prisma.$transaction(async (tx) => {
@@ -102,6 +107,16 @@ async function handleCheckoutCompleted(event: Stripe.Event): Promise<boolean> {
           id: true,
           email: true,
           fullName: true,
+          phone: true,
+          country: true,
+          city: true,
+          professionalTitle: true,
+          yearsExperience: true,
+          employerAffiliation: true,
+          expertiseAreas: true,
+          professionalBio: true,
+          professionalWebsite: true,
+          status: true,
           paymentStatus: true,
         },
       });
@@ -111,6 +126,7 @@ async function handleCheckoutCompleted(event: Stripe.Event): Promise<boolean> {
       }
 
       const paidAt = new Date();
+      const paidStatus = "PAID" as const;
 
       await tx.juryApplication.update({
         where: { id: application.id },
@@ -120,6 +136,11 @@ async function handleCheckoutCompleted(event: Stripe.Event): Promise<boolean> {
           paidAt,
           stripeCheckoutSessionId: session.id,
         },
+      });
+
+      const { account } = await upsertJuryAccountForApplication(tx, {
+        ...application,
+        status: paidStatus,
       });
 
       await tx.payment.updateMany({
@@ -137,6 +158,9 @@ async function handleCheckoutCompleted(event: Stripe.Event): Promise<boolean> {
         amount: session.amount_total ?? 0,
         currency: session.currency ?? "usd",
       };
+      if (account.status !== "ACTIVE" || !account.passwordHash) {
+        setupAccountId = account.id;
+      }
     });
   } catch (error) {
     if (isDuplicateStripeEventError(error)) {
@@ -154,6 +178,14 @@ async function handleCheckoutCompleted(event: Stripe.Event): Promise<boolean> {
 
   if (!emailPayload) {
     return true;
+  }
+
+  if (setupAccountId) {
+    try {
+      await sendSetupEmailForAccount(setupAccountId);
+    } catch (error) {
+      console.error("Failed to send jury account setup email", error);
+    }
   }
 
   const confirmedEmailPayload = emailPayload as JuryPaymentEmailPayload;

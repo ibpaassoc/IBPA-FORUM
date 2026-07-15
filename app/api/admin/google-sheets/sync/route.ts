@@ -12,6 +12,7 @@ import {
   syncAllToSheets,
   syncStatsToSheet,
 } from "@/features/google-sheets";
+import { adminT } from "@/lib/i18n/admin";
 
 // Backfills can touch many rows; give the function room on Vercel.
 export const maxDuration = 60;
@@ -40,10 +41,6 @@ function emptyResponse(): SyncResponse {
   };
 }
 
-function errorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
-}
-
 async function runScope(scope: z.infer<typeof bodySchema>["scope"]): Promise<SyncResponse> {
   if (scope === "all") {
     const result = await syncAllToSheets();
@@ -64,7 +61,8 @@ async function runScope(scope: z.infer<typeof bodySchema>["scope"]): Promise<Syn
       await syncStatsToSheet();
       response.statsUpdated = true;
     } catch (error) {
-      response.errors.push(`statistics: ${errorMessage(error)}`);
+      console.error("Google Sheets statistics sync failed", error);
+      response.errors.push(`${adminT.sheets.scopeLabels.stats}: ${adminT.actions.genericError}`);
     }
     return response;
   }
@@ -75,7 +73,10 @@ async function runScope(scope: z.infer<typeof bodySchema>["scope"]): Promise<Syn
     else if (scope === "scores") response.scores = await syncAllScores();
     else if (scope === "tickets") response.tickets = await syncAllTickets();
   } catch (error) {
-    response.errors.push(`${scope}: ${errorMessage(error)}`);
+    console.error(`Google Sheets ${scope} sync failed`, error);
+    response.errors.push(
+      `${adminT.sheets.scopeLabels[scope]}: ${adminT.actions.genericError}`,
+    );
   }
 
   // Keep the statistics tab in step after any single-domain backfill.
@@ -83,7 +84,8 @@ async function runScope(scope: z.infer<typeof bodySchema>["scope"]): Promise<Syn
     await syncStatsToSheet();
     response.statsUpdated = true;
   } catch (error) {
-    response.errors.push(`statistics: ${errorMessage(error)}`);
+    console.error("Google Sheets statistics sync failed", error);
+    response.errors.push(`${adminT.sheets.scopeLabels.stats}: ${adminT.actions.genericError}`);
   }
 
   return response;
@@ -97,14 +99,13 @@ async function runScope(scope: z.infer<typeof bodySchema>["scope"]): Promise<Syn
  */
 export async function POST(request: Request) {
   if (!(await isAdminAuthenticated())) {
-    return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
+    return NextResponse.json({ message: adminT.api.unauthorized }, { status: 401 });
   }
 
   if (!isGoogleSheetsConfigured()) {
     return NextResponse.json(
       {
-        message:
-          "Google Sheets is not configured. Set the GOOGLE_SHEETS_* environment variables first.",
+        message: adminT.api.sheetsNotConfigured,
       },
       { status: 400 }
     );
@@ -114,12 +115,12 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ message: "Invalid JSON body." }, { status: 400 });
+    return NextResponse.json({ message: adminT.api.invalidJson }, { status: 400 });
   }
 
   const parsed = bodySchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ message: "Invalid sync scope." }, { status: 400 });
+    return NextResponse.json({ message: adminT.api.invalidSyncScope }, { status: 400 });
   }
 
   const result = await runScope(parsed.data.scope);

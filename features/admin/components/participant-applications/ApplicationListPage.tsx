@@ -2,7 +2,11 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Clock3, FileText, Layers3, MapPin, ReceiptText } from "lucide-react";
+import { ArrowRight, FileText, Layers3, Lock, MailPlus, MapPin } from "lucide-react";
+import {
+  bulkResendApplicantRegistrationLinksAction,
+  closeApplicantApplicationsAction,
+} from "@/features/admin/actions/applicant.actions";
 import { adminT, formatAdminDate } from "@/lib/i18n/admin";
 import ApplicationStatusBadge from "@/features/admin/components/badges/ApplicationStatusBadge";
 import ApplicationFilters, {
@@ -15,16 +19,8 @@ import {
   DashboardMetricTile,
   DashboardPageHeader,
   DashboardPanel,
+  DashboardSecondaryBtn,
 } from "@/shared/components/admin/DashboardUI";
-
-type ParticipantStatus =
-  | "DRAFT"
-  | "PAYMENT_PENDING"
-  | "SUBMITTED"
-  | "UNDER_REVIEW"
-  | "APPROVED"
-  | "REJECTED";
-type PaymentStatus = "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "REFUNDED";
 
 type ApplicationRow = {
   id: string;
@@ -33,11 +29,13 @@ type ApplicationRow = {
   city: string;
   country: string;
   membershipNumber: string | null;
-  status: ParticipantStatus;
-  paymentStatus: PaymentStatus;
+  status: string;
+  paymentStatus: string;
   createdAt: Date;
   category: { name: string };
   award: { name: string };
+  registrationEligible: boolean;
+  setupEmailNeedsAttention: boolean;
   nominationApplications: Array<{
     id: string;
     category: { name: string };
@@ -48,6 +46,8 @@ type ApplicationRow = {
 export default function ApplicationListPage({
   applications,
   totals,
+  error,
+  notice,
 }: {
   applications: ApplicationRow[];
   totals: {
@@ -57,6 +57,8 @@ export default function ApplicationListPage({
     underReview: number;
     approved: number;
   };
+  error?: string;
+  notice?: string;
 }) {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
@@ -81,10 +83,30 @@ export default function ApplicationListPage({
     const q = search.trim().toLowerCase();
     const list = applications.filter((app) => {
       if (status && app.status !== status) return false;
-      if (category && app.category.name !== category) return false;
+      if (
+        category &&
+        app.category.name !== category &&
+        !app.nominationApplications.some((nomination) => nomination.category.name === category)
+      ) {
+        return false;
+      }
       if (payment && app.paymentStatus !== payment) return false;
       if (q) {
-        const haystack = `${app.fullName} ${app.email} ${app.membershipNumber ?? ""}`.toLowerCase();
+        const haystack = [
+          app.fullName,
+          app.email,
+          app.membershipNumber ?? "",
+          app.city,
+          app.country,
+          app.category.name,
+          app.award.name,
+          ...app.nominationApplications.flatMap((nomination) => [
+            nomination.category.name,
+            nomination.award.name,
+          ]),
+        ]
+          .join(" ")
+          .toLowerCase();
         if (!haystack.includes(q)) return false;
       }
       return true;
@@ -103,7 +125,6 @@ export default function ApplicationListPage({
       key: "status",
       label: adminT.filters.allStatuses,
       value: status,
-      variant: "segmented",
       options: [
         { value: "", label: adminT.filters.all },
         ...statusesPresent.map((value) => ({ value, label: adminT.statuses[value] })),
@@ -156,7 +177,50 @@ export default function ApplicationListPage({
 
   return (
     <div className="flex flex-col gap-5">
-      <DashboardPageHeader label={adminT.applications.label} title={adminT.applications.title} />
+      <DashboardPageHeader
+        label={adminT.applications.label}
+        title={adminT.applications.title}
+        actions={
+          <>
+            <form
+              action={closeApplicantApplicationsAction}
+              onSubmit={(event) => {
+                if (!window.confirm(adminT.applications.closeAllConfirm)) event.preventDefault();
+              }}
+            >
+              <DashboardSecondaryBtn type="submit">
+                <Lock aria-hidden size={15} />
+                {adminT.applications.closeAll}
+              </DashboardSecondaryBtn>
+            </form>
+            <form
+              id="bulk-registration-resend"
+              action={bulkResendApplicantRegistrationLinksAction}
+              onSubmit={(event) => {
+                if (!window.confirm(adminT.applications.bulkResendConfirm)) {
+                  event.preventDefault();
+                }
+              }}
+            >
+              <DashboardSecondaryBtn type="submit">
+                <MailPlus aria-hidden size={15} />
+                {adminT.applications.bulkResend}
+              </DashboardSecondaryBtn>
+            </form>
+          </>
+        }
+      />
+
+      {error ? (
+        <div role="alert" className="rounded-[22px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      ) : null}
+      {notice ? (
+        <div role="status" className="rounded-[22px] border border-[rgba(114,160,193,0.3)] bg-[var(--color-blue-wash)] px-4 py-3 text-sm text-[var(--color-ink)]">
+          {notice}
+        </div>
+      ) : null}
 
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-[1.1fr_repeat(4,minmax(0,0.75fr))]">
         <DashboardAccentBlock>
@@ -198,68 +262,89 @@ export default function ApplicationListPage({
             const remainingNominationCount = nominations.length - previewNominations.length;
 
             return (
-              <Link key={app.id} href={`/admin/applications/${app.id}`} className="group block">
-                <DashboardCard className="p-0 transition hover:border-[rgba(114,160,193,0.34)] hover:shadow-[0_24px_64px_rgba(114,160,193,0.16)]">
-                  <div className="grid gap-4 p-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(260px,0.8fr)_minmax(180px,0.45fr)] lg:items-stretch">
-                    <div className="min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <ApplicationStatusBadge status={app.status} />
-                      </div>
-                      <h2 className="mt-3 font-[var(--font-title-family)] text-[1.55rem] font-light tracking-[-0.025em] text-[var(--color-ink)]">
-                        {app.fullName}
-                      </h2>
-                      <p className="mt-1 truncate text-sm text-[var(--color-ink-soft)]">{app.email}</p>
-                      <p className="mt-3 inline-flex items-center gap-2 rounded-[18px] border border-[rgba(37,42,45,0.08)] bg-white/62 px-2.5 py-1 text-xs text-[var(--color-ink-soft)]">
-                        <MapPin aria-hidden size={13} />
-                        {app.city}, {app.country}
-                      </p>
-                    </div>
-
-                    <DashboardPanel className="flex flex-col justify-between gap-4">
-                      <div>
-                        <div className="flex items-center gap-2 text-[var(--color-blue)]">
-                          <Layers3 aria-hidden size={16} />
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">{adminT.applications.nominations}</p>
+              <DashboardCard key={app.id} className="relative p-0 transition hover:border-[rgba(114,160,193,0.34)] hover:bg-[rgba(242,248,251,0.82)] hover:shadow-[0_24px_64px_rgba(114,160,193,0.16)]">
+                <label className="absolute left-4 top-4 z-10 flex size-9 items-center justify-center rounded-full border border-[rgba(114,160,193,0.2)] bg-white/88 shadow-sm">
+                  <span className="sr-only">{adminT.applications.selectForResend}</span>
+                  <input
+                    form="bulk-registration-resend"
+                    type="checkbox"
+                    name="profileIds"
+                    value={app.id}
+                    disabled={!app.registrationEligible}
+                    className="size-4 rounded border-[rgba(114,160,193,0.35)] text-[var(--color-blue)] disabled:opacity-35"
+                  />
+                </label>
+                <Link href={`/admin/applications/${app.id}`} className="group block min-w-0">
+                    <div className="grid gap-4 p-4 pl-16 lg:grid-cols-[minmax(0,1.15fr)_minmax(260px,0.8fr)_minmax(180px,0.45fr)] lg:items-stretch">
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <ApplicationStatusBadge status={app.status} />
+                          {app.registrationEligible ? (
+                            <span className="rounded-full border border-[rgba(114,160,193,0.22)] bg-[var(--color-blue-wash)] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#356f98]">
+                              {adminT.applications.needsRegistration}
+                            </span>
+                          ) : null}
+                          {app.setupEmailNeedsAttention ? (
+                            <span className="rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-red-700">
+                              {adminT.applications.emailIssue}
+                            </span>
+                          ) : null}
                         </div>
-                        <p className="mt-2 text-sm font-medium text-[var(--color-ink)]">
-                          {adminT.applications.selectedCount} {nominations.length}
+                        <h2 className="mt-3 font-[var(--font-title-family)] text-[1.55rem] font-light tracking-[-0.025em] text-[var(--color-ink)]">
+                          {app.fullName}
+                        </h2>
+                        <p className="mt-1 truncate text-sm text-[var(--color-ink-soft)]">{app.email}</p>
+                        <p className="mt-3 inline-flex items-center gap-2 rounded-[18px] border border-[rgba(37,42,45,0.08)] bg-white/62 px-2.5 py-1 text-xs text-[var(--color-ink-soft)]">
+                          <MapPin aria-hidden size={13} />
+                          {[app.city, app.country].filter(Boolean).join(", ") || adminT.common.notProvided}
                         </p>
                       </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {previewNominations.map((nomination) => (
-                          <span
-                            key={nomination.id}
-                            className="rounded-[18px] border border-[rgba(37,42,45,0.08)] bg-white px-2 py-1 text-xs font-medium text-[var(--color-ink-soft)]"
-                          >
-                            {nomination.award.name}
-                          </span>
-                        ))}
-                        {remainingNominationCount > 0 ? (
-                          <span className="rounded-[18px] border border-[rgba(114,160,193,0.34)] bg-[var(--color-blue-wash)] px-2 py-1 text-xs font-semibold text-[var(--color-ink)]">
-                            +{remainingNominationCount}
-                          </span>
-                        ) : null}
-                      </div>
-                    </DashboardPanel>
 
-                    <div className="flex items-center justify-between gap-3 rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white p-4 lg:flex-col lg:items-start">
-                      <div>
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
-                          {adminT.applications.createdDate}
-                        </p>
-                        <p className="mt-2 text-sm font-medium text-[var(--color-ink)]">
-                          {formatAdminDate(app.createdAt)}
-                        </p>
+                      <DashboardPanel className="flex flex-col justify-between gap-4">
+                        <div>
+                          <div className="flex items-center gap-2 text-[var(--color-blue)]">
+                            <Layers3 aria-hidden size={16} />
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">{adminT.applications.nominations}</p>
+                          </div>
+                          <p className="mt-2 text-sm font-medium text-[var(--color-ink)]">
+                            {adminT.applications.selectedCount} {nominations.length}
+                          </p>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {previewNominations.map((nomination) => (
+                            <span
+                              key={nomination.id}
+                              className="rounded-[18px] border border-[rgba(37,42,45,0.08)] bg-white px-2 py-1 text-xs font-medium text-[var(--color-ink-soft)]"
+                            >
+                              {nomination.award.name}
+                            </span>
+                          ))}
+                          {remainingNominationCount > 0 ? (
+                            <span className="rounded-[18px] border border-[rgba(114,160,193,0.34)] bg-[var(--color-blue-wash)] px-2 py-1 text-xs font-semibold text-[var(--color-ink)]">
+                              +{remainingNominationCount}
+                            </span>
+                          ) : null}
+                        </div>
+                      </DashboardPanel>
+
+                      <div className="flex items-center justify-between gap-3 rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white p-4 lg:flex-col lg:items-start">
+                        <div>
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
+                            {adminT.applications.createdDate}
+                          </p>
+                          <p className="mt-2 text-sm font-medium text-[var(--color-ink)]">
+                            {formatAdminDate(app.createdAt)}
+                          </p>
+                        </div>
+                        <ArrowRight
+                          aria-hidden
+                          size={17}
+                          className="text-[var(--color-ink-muted)] transition group-hover:translate-x-0.5 group-hover:text-[var(--color-blue)]"
+                        />
                       </div>
-                      <ArrowRight
-                        aria-hidden
-                        size={17}
-                        className="text-[var(--color-ink-muted)] transition group-hover:translate-x-0.5 group-hover:text-[var(--color-blue)]"
-                      />
                     </div>
-                  </div>
-                </DashboardCard>
-              </Link>
+                </Link>
+              </DashboardCard>
             );
           })}
         </div>

@@ -14,6 +14,10 @@ export async function GET(
     include: {
       nominationApplication: {
         select: {
+          status: true,
+          paymentStatus: true,
+          closedIncompleteAt: true,
+          deletedAt: true,
           category: { select: { name: true } },
         },
       },
@@ -22,6 +26,11 @@ export async function GET(
 
   if (
     !fileRecord?.fileUrl ||
+    fileRecord.deletedAt ||
+    fileRecord.nominationApplication.deletedAt ||
+    fileRecord.nominationApplication.closedIncompleteAt ||
+    fileRecord.nominationApplication.paymentStatus !== "PAID" ||
+    !["SUBMITTED", "UNDER_REVIEW", "LOCKED", "SCORED"].includes(fileRecord.nominationApplication.status) ||
     !juryUser.expertiseAreas.includes(fileRecord.nominationApplication.category.name)
   ) {
     return new Response("Not found", { status: 404 });
@@ -50,7 +59,7 @@ export async function GET(
     status: 200,
     headers: {
       "Content-Type": fileRecord.mimeType || result.blob.contentType,
-      "Content-Disposition": `inline; filename="${fileRecord.fileName}"`,
+      "Content-Disposition": `inline; filename="${fileRecord.displayFileName || fileRecord.fileName}"`,
       "X-Content-Type-Options": "nosniff",
       ETag: result.blob.etag,
       "Cache-Control": "private, no-cache",

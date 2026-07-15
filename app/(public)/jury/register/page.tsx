@@ -1,5 +1,10 @@
-import JuryRegisterContent from "@/features/auth/components/JuryRegisterContent";
+import { redirect } from "next/navigation";
 
-export default async function JuryRegisterPage() {
-  return <JuryRegisterContent />;
+export default async function JuryRegisterPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ token?: string }>;
+}) {
+  const { token } = await searchParams;
+  redirect(`/account/setup${token ? `?token=${encodeURIComponent(token)}` : ""}`);
 }

@@ -27,7 +27,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
           </p>
         </div>
         <Link
-          href="/jury/login"
+          href="/account/login"
           className="ibpa-button ibpa-button-primary inline-flex w-full"
         >
           {t.auth.form.backToLogin}

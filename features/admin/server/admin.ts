@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/shared/lib/prisma";
 import { syncScoreOnChange } from "@/features/google-sheets";
+import { adminT } from "@/lib/i18n/admin";
 import {
   buildCategoryRanks,
   formatAverageScore,
@@ -384,11 +385,11 @@ export async function reopenJudgeScore(scoreId: string) {
   });
 
   if (!existingScore) {
-    throw new ScoringHttpError(404, "The judge score could not be found.");
+    throw new ScoringHttpError(404, adminT.api.judgeScoreNotFound);
   }
 
   if (existingScore.status !== "SUBMITTED") {
-    throw new ScoringHttpError(409, "Only submitted scores can be reopened.");
+    throw new ScoringHttpError(409, adminT.api.submittedScoresOnly);
   }
 
   const score = await prisma.judgeScore.update({
@@ -402,6 +403,7 @@ export async function reopenJudgeScore(scoreId: string) {
     select: {
       id: true,
       applicationId: true,
+      nominationApplicationId: true,
       status: true,
       updatedAt: true,
     },
@@ -409,6 +411,10 @@ export async function reopenJudgeScore(scoreId: string) {
 
   revalidatePath("/jury/dashboard");
   revalidatePath(`/jury/dashboard/applications/${score.applicationId}`);
+  revalidatePath("/account/jury");
+  if (score.nominationApplicationId) {
+    revalidatePath(`/account/jury/nominations/${score.nominationApplicationId}`);
+  }
   revalidatePath("/admin/scoring");
   revalidatePath(`/admin/scoring/${score.applicationId}`);
 
@@ -421,25 +427,10 @@ export async function exportApplicationScoresCsv(applicationId: string) {
   const detail = await getAdminApplicationScoringDetail(applicationId);
 
   if (!detail) {
-    throw new ScoringHttpError(404, "The participant application could not be found.");
+    throw new ScoringHttpError(404, adminT.api.participantApplicationNotFound);
   }
 
-  const headers = [
-    "Participant Name",
-    "Category",
-    "Award",
-    "Judge Name",
-    "Judge Email",
-    "Status",
-    "Technical",
-    "Aesthetic",
-    "Creativity",
-    "Impact",
-    "Presentation",
-    "Total",
-    "Comment",
-    "Submitted At",
-  ];
+  const headers = [...adminT.scoring.exportHeaders];
 
   const rows = detail.judgeRows.map((row) => [
     detail.application.fullName,

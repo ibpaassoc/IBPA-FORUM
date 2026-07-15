@@ -2,10 +2,22 @@ import ApplicationListPage from "@/features/admin/components/participant-applica
 import { getParticipantApplications } from "@/features/admin/server/participant-queries";
 import { requireAdmin } from "@/shared/lib/admin-auth";
 
-export default async function AdminApplicationsPage() {
+export default async function AdminApplicationsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string; notice?: string }>;
+}) {
   await requireAdmin();
 
+  const { error, notice } = await searchParams;
   const { applications, totals } = await getParticipantApplications();
 
-  return <ApplicationListPage applications={applications} totals={totals} />;
+  return (
+    <ApplicationListPage
+      applications={applications}
+      totals={totals}
+      error={error}
+      notice={notice}
+    />
+  );
 }

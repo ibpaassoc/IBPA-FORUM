@@ -1,5 +1,4 @@
-import { validatePasswordResetToken } from "@/features/jury/server/auth";
-import ResetPasswordContent from "@/features/auth/components/ResetPasswordContent";
+import { redirect } from "next/navigation";
 
 export default async function ResetPasswordPage({
   searchParams,
@@ -7,16 +6,5 @@ export default async function ResetPasswordPage({
   searchParams: Promise<{ token?: string }>;
 }) {
   const { token } = await searchParams;
-
-  if (!token) {
-    return <ResetPasswordContent token="" tokenState="missing" />;
-  }
-
-  const { valid, expired } = await validatePasswordResetToken(token);
-
-  if (!valid) {
-    return <ResetPasswordContent token={token} tokenState={expired ? "expired" : "invalid"} />;
-  }
-
-  return <ResetPasswordContent token={token} tokenState="valid" />;
+  redirect(`/account/reset-password${token ? `?token=${encodeURIComponent(token)}` : ""}`);
 }

@@ -1,7 +1,8 @@
 "use server";
 
 import { prisma } from "@/shared/lib/prisma";
-import { createPasswordHash, isStrongPassword } from "@/features/jury/server/auth";
+import { createPasswordHash, isStrongPassword } from "@/features/account/server/password";
+import { validateAccountToken } from "@/features/account/server/tokens";
 
 export type ResetPasswordState = {
   success?: boolean;
@@ -18,14 +19,10 @@ export async function resetPasswordAction(
   const password = String(formData.get("password") ?? "");
   const confirmPassword = String(formData.get("confirmPassword") ?? "");
 
-  const record = await prisma.juryPasswordReset.findUnique({ where: { token } });
+  const validation = await validateAccountToken({ token, purpose: "PASSWORD_RESET" });
 
-  if (!record || record.usedAt) {
-    return { invalidToken: true };
-  }
-
-  if (record.expiresAt < new Date()) {
-    return { expiredToken: true };
+  if (!validation.valid) {
+    return validation.expired ? { expiredToken: true } : { invalidToken: true };
   }
 
   if (!isStrongPassword(password)) {
@@ -38,15 +35,19 @@ export async function resetPasswordAction(
 
   const passwordHash = await createPasswordHash(password);
 
-  await prisma.juryAccount.update({
-    where: { email: record.email },
-    data: { passwordHash },
-  });
-
-  await prisma.juryPasswordReset.update({
-    where: { token },
-    data: { usedAt: new Date() },
-  });
+  await prisma.$transaction([
+    prisma.account.update({
+      where: { id: validation.record.accountId },
+      data: {
+        passwordHash,
+        status: "ACTIVE",
+      },
+    }),
+    prisma.accountSetupToken.update({
+      where: { id: validation.record.id },
+      data: { usedAt: new Date() },
+    }),
+  ]);
 
   return { success: true };
 }

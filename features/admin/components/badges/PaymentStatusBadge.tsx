@@ -12,10 +12,15 @@ const paymentStatusTones = {
 export default function PaymentStatusBadge({
   status,
 }: {
-  status: keyof typeof paymentStatusTones;
+  status: string;
 }) {
+  const tone =
+    status in paymentStatusTones
+      ? paymentStatusTones[status as keyof typeof paymentStatusTones]
+      : "neutral";
+
   return (
-    <DashboardBadge tone={paymentStatusTones[status]}>
+    <DashboardBadge tone={tone}>
       {adminT.statuses[status]}
     </DashboardBadge>
   );

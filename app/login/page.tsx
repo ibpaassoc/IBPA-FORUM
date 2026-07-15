@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function LoginAliasPage() {
-  redirect("/jury/login");
+  redirect("/account/login");
 }

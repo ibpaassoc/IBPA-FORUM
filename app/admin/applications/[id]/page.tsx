@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import ApplicationDetailPage from "@/features/admin/components/participant-applications/ApplicationDetailPage";
+import ApplicantAdminDetailPage from "@/features/admin/components/participant-applications/ApplicantAdminDetailPage";
 import { getParticipantApplicationDetail } from "@/features/admin/server/participant-queries";
 import { requireAdmin } from "@/shared/lib/admin-auth";
 
@@ -25,5 +25,5 @@ export default async function AdminApplicationDetailPage({
     notFound();
   }
 
-  return <ApplicationDetailPage application={application} error={error} notice={notice} />;
+  return <ApplicantAdminDetailPage data={application} error={error} notice={notice} />;
 }

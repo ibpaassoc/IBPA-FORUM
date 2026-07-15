@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { reopenJudgeScore } from "@/features/admin/server/admin";
 import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
+import { adminT } from "@/lib/i18n/admin";
 
 export async function POST(request: Request) {
   try {
     if (!(await isAdminAuthenticated())) {
       return NextResponse.json(
-        { message: "Admin authentication is required." },
+        { message: adminT.api.unauthorized },
         { status: 401 }
       );
     }
@@ -14,7 +15,7 @@ export async function POST(request: Request) {
     const scoreId = String(body.scoreId ?? "").trim();
 
     if (!scoreId) {
-      return NextResponse.json({ message: "Missing score id." }, { status: 400 });
+      return NextResponse.json({ message: adminT.api.missingScoreId }, { status: 400 });
     }
 
     const score = await reopenJudgeScore(scoreId);
@@ -27,12 +28,12 @@ export async function POST(request: Request) {
       typeof error.status === "number"
     ) {
       return NextResponse.json(
-        { message: error instanceof Error ? error.message : "Request failed." },
+        { message: error instanceof Error ? error.message : adminT.api.requestFailed },
         { status: error.status }
       );
     }
 
     console.error("POST /api/admin/scoring/reopen error:", error);
-    return NextResponse.json({ message: "Failed to reopen score." }, { status: 500 });
+    return NextResponse.json({ message: adminT.api.reopenScoreFailed }, { status: 500 });
   }
 }

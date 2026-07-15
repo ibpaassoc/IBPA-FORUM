@@ -34,13 +34,13 @@ export default function ResetPasswordContent({
             </p>
           </div>
           <Link
-            href="/jury/forgot-password"
+            href="/account/forgot-password"
             className="ibpa-button ibpa-button-primary inline-flex w-full"
           >
             {t.auth.form.sendResetLink}
           </Link>
           <Link
-            href="/jury/login"
+            href="/account/login"
             className="block text-center text-sm text-[var(--color-ink-soft)] transition hover:text-[var(--color-hover-accent)]"
           >
             ← {t.auth.form.backToLogin}

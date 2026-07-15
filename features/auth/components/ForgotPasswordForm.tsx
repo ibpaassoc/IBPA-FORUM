@@ -24,7 +24,7 @@ export default function ForgotPasswordForm() {
           </p>
         </div>
         <Link
-          href="/jury/login"
+          href="/account/login"
           className="block text-sm text-[var(--color-hover-accent)] transition hover:text-[var(--color-blue)] hover:underline"
         >
           ← {t.auth.form.backToLogin}
@@ -68,7 +68,7 @@ export default function ForgotPasswordForm() {
       </button>
 
       <Link
-        href="/jury/login"
+        href="/account/login"
         className="block text-center text-sm text-[var(--color-ink-soft)] transition hover:text-[var(--color-hover-accent)]"
       >
         ← {t.auth.form.backToLogin}

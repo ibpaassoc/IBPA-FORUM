@@ -1,0 +1,279 @@
+/**
+ * Framework-free checks for the applicant nomination purchase refactor.
+ *
+ * The project uses tsx smoke scripts instead of a unit-test runner. These tests
+ * keep DB/Stripe out of process and exercise pure helpers plus source-level
+ * guarantees for the webhook, privacy filters, QR access, setup tokens, and
+ * deadline closure.
+ *
+ *   npm run test:applicant-flow
+ */
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import {
+  allocateApplicantNominationAmounts,
+  computeApplicantNominationPrice,
+} from "@/features/applications/lib/pricing";
+import { isApplicationFileRef } from "@/features/applications/lib/file-ref";
+
+const ROOT = process.cwd();
+let passed = 0;
+let failed = 0;
+
+function assert(condition: boolean, label: string) {
+  if (condition) {
+    passed += 1;
+    console.log(`  PASS ${label}`);
+  } else {
+    failed += 1;
+    console.error(`  FAIL ${label}`);
+  }
+}
+
+function eq<T>(actual: T, expected: T, label: string) {
+  assert(
+    JSON.stringify(actual) === JSON.stringify(expected),
+    `${label} (expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)})`
+  );
+}
+
+function read(rel: string) {
+  return readFileSync(join(ROOT, rel), "utf8");
+}
+
+function has(source: string, pattern: string | RegExp) {
+  return typeof pattern === "string" ? source.includes(pattern) : pattern.test(source);
+}
+
+// -- Pricing and allocation ----------------------------------------------------
+console.log("applicant pricing");
+eq(
+  computeApplicantNominationPrice({ nominationCount: 1, isIbpaMember: true }).amountCents,
+  5000,
+  "member first nomination is $50"
+);
+eq(
+  computeApplicantNominationPrice({ nominationCount: 1, isIbpaMember: false }).amountCents,
+  7000,
+  "non-member first nomination is $70"
+);
+eq(
+  computeApplicantNominationPrice({ nominationCount: 3, isIbpaMember: true }).amountCents,
+  13000,
+  "member three-nomination package is $130"
+);
+eq(
+  computeApplicantNominationPrice({ nominationCount: 5, isIbpaMember: false }).amountCents,
+  30000,
+  "non-member five-nomination package is $300"
+);
+eq(
+  computeApplicantNominationPrice({ nominationCount: 6, isIbpaMember: true }).billableCount,
+  5,
+  "six nominations bill as 5+ package"
+);
+eq(
+  computeApplicantNominationPrice({ nominationCount: 0, isIbpaMember: false }).nominationCount,
+  1,
+  "zero nominations clamps to one for pricing safety"
+);
+eq(
+  allocateApplicantNominationAmounts(19000, 3),
+  [6334, 6333, 6333],
+  "allocation preserves total cents with remainder on first nomination"
+);
+eq(
+  allocateApplicantNominationAmounts(0, 0),
+  [0],
+  "allocation safely handles empty counts"
+);
+
+// -- File-ref guard ------------------------------------------------------------
+console.log("file reference guard");
+const blobRef = {
+  fieldKey: "portfolioPhotos",
+  fileName: "portfolio.pdf",
+  fileUrl: "applications/applicant/portfolio.pdf",
+  mimeType: "application/pdf",
+  fileSize: 12345,
+};
+assert(isApplicationFileRef(blobRef), "uploaded blob reference is accepted");
+assert(!isApplicationFileRef("applications/applicant/portfolio.pdf"), "plain strings are rejected");
+assert(!isApplicationFileRef({ ...blobRef, fileSize: "12345" }), "invalid file sizes are rejected");
+assert(
+  has(read("features/applications/lib/file-ref.ts"), 'typeof File !== "undefined"'),
+  "file-ref guard is safe when File is not a server global"
+);
+
+// -- Public purchase endpoint --------------------------------------------------
+console.log("public apply endpoint");
+const publicApplyRoute = read("app/api/applications/route.ts");
+assert(
+  has(publicApplyRoute, "createPublicApplicantNominationCheckout"),
+  "POST /api/applications creates an applicant purchase checkout"
+);
+assert(has(publicApplyRoute, "RAW_FILE_REJECTED"), "POST /api/applications rejects raw file payloads");
+assert(has(publicApplyRoute, "validateProductionEnv"), "POST /api/applications validates production env");
+assert(!has(publicApplyRoute, "submitApplication("), "POST /api/applications no longer calls legacy submit command");
+assert(
+  !has(publicApplyRoute, "prisma.application.create"),
+  "POST /api/applications no longer creates legacy Application rows before payment"
+);
+assert(has(publicApplyRoute, "isAdminAuthenticated"), "GET /api/applications is admin-gated");
+assert(has(publicApplyRoute, "prisma.applicantProfile.findMany"), "GET /api/applications reads applicant profiles");
+assert(!has(publicApplyRoute, "include: {\n        category: true"), "GET /api/applications no longer returns legacy Application payloads");
+
+// -- Purchase workflow and webhook --------------------------------------------
+console.log("purchase workflow");
+const purchaseWorkflow = read("features/applications/server/purchase-workflow.ts");
+assert(has(purchaseWorkflow, "validateMembershipNumber"), "membership discount is validated server-side");
+assert(has(purchaseWorkflow, "assertNoOwnedDuplicateNominations"), "duplicate nominations are blocked server-side");
+assert(has(purchaseWorkflow, "purchaseManifest"), "pending payment stores a purchase manifest");
+assert(has(purchaseWorkflow, 'source: "applicant_account"'), "account add-nomination checkout uses account profile data");
+assert(
+  has(purchaseWorkflow, "APPLICATIONS_CLOSED"),
+  "purchase workflow rejects checkout after deadline closure"
+);
+
+const webhookWorkflow = read("features/applications/server/webhook.workflow.ts");
+assert(
+  has(webhookWorkflow, /metadata\??\.flowType === APPLICANT_NOMINATION_PURCHASE_FLOW/),
+  "webhook routes applicant purchases by flowType"
+);
+assert(has(webhookWorkflow, "amountTotal !== payment.amount"), "webhook validates Stripe amount");
+assert(has(webhookWorkflow, "tx.nominationApplication.upsert"), "webhook fulfills by upserting nominations");
+assert(has(webhookWorkflow, 'status: "PURCHASED"'), "new paid nominations start in PURCHASED state");
+assert(has(webhookWorkflow, "purchasePaymentId"), "nominations are linked to the purchase payment");
+assert(has(webhookWorkflow, "fulfilledAt: paidAt"), "payment fulfillment is marked idempotently");
+assert(has(webhookWorkflow, "issueApplicantRegistrationLink"), "webhook issues setup links through the shared service");
+
+// -- Account token lifecycle ---------------------------------------------------
+console.log("account setup tokens");
+const tokens = read("features/account/server/tokens.ts");
+assert(has(tokens, "SETUP_TOKEN_TTL_MS = 3 * 24 * 60 * 60 * 1000"), "setup token TTL is three days");
+assert(has(tokens, "setupTokenHash"), "setup tokens are stored on Account as a hash");
+assert(has(tokens, 'source: "account"'), "validator recognizes account-backed setup tokens");
+assert(
+  has(tokens, /purpose === "SETUP"[\s\S]*tx\.account\.update/),
+  "SETUP purpose writes token state to Account"
+);
+
+const setupActions = read("features/auth/server/setup.actions.ts");
+assert(has(setupActions, "setupTokenUsedAt"), "password setup marks account token as used");
+assert(has(setupActions, "setupTokenHash: null"), "password setup clears account token hash");
+assert(has(setupActions, "tx.account.updateMany"), "password setup consumes account tokens atomically");
+assert(has(setupActions, "setupTokenExpiresAt: { gte: now }"), "password setup rechecks expiry during activation");
+assert(has(setupActions, 'status: { not: "DISABLED" }'), "password setup cannot reactivate a disabled account");
+assert(has(setupActions, "deletedAt: null"), "password setup cannot reactivate a deleted account");
+
+const forgotPasswordActions = read("features/auth/server/forgot-password.actions.ts");
+assert(!has(forgotPasswordActions, "$transaction"), "forgot password does not require an interactive transaction");
+assert(has(forgotPasswordActions, "createPasswordResetToken"), "forgot password uses direct reset token issuance");
+assert(has(forgotPasswordActions, "lastSetupEmailDeliveryStatus"), "forgot password records reset email delivery status");
+assert(has(forgotPasswordActions, "accountSetupToken.updateMany"), "forgot password invalidates undelivered reset tokens");
+
+const registrationService = read("features/account/server/applicant-registration.ts");
+assert(has(registrationService, 'paymentStatus: "PAID"'), "registration links require a paid nomination");
+assert(has(registrationService, 'where: { status: "PAID" }'), "registration links accept a paid applicant payment");
+assert(has(registrationService, "FOR UPDATE"), "registration token issuance is serialized per account");
+assert(has(registrationService, "setupTokenHash: null"), "failed email delivery invalidates its setup token");
+assert(has(registrationService, "lastSetupEmailDeliveryStatus === \"delivered\""), "cooldown only follows successful delivery");
+
+// -- Admin applicant operations ------------------------------------------------
+console.log("admin applicant operations");
+const participantQueries = read("features/admin/server/participant-queries.ts");
+assert(has(participantQueries, "prisma.applicantProfile.findMany"), "admin application list reads applicant profiles");
+assert(has(participantQueries, "nominations:"), "admin application detail loads owned nominations");
+assert(!has(participantQueries, "prisma.application.findMany"), "admin application list no longer reads legacy Application rows");
+assert(!has(participantQueries, "prisma.application.findUnique"), "admin application detail no longer reads legacy Application rows");
+
+const applicantAdminActions = read("features/admin/actions/applicant.actions.ts");
+assert(has(applicantAdminActions, "addManualApplicantNominationAction"), "admin can add manual paid nominations");
+assert(has(applicantAdminActions, 'provider: "manual_admin"'), "manual admin payments do not fake Stripe identifiers");
+assert(has(applicantAdminActions, "resendApplicantRegistrationLinkAction"), "admin can resend one registration link");
+assert(has(applicantAdminActions, "bulkResendApplicantRegistrationLinksAction"), "admin can bulk resend registration links");
+assert(has(applicantAdminActions, "issueApplicantRegistrationLink"), "admin resend uses shared registration service");
+assert(has(applicantAdminActions, "updateApplicantDeadlineOverrideAction"), "admin can set applicant deadline overrides");
+assert(has(applicantAdminActions, "processApplicantDeadlineClosure"), "admin close-all action uses deadline closure workflow");
+
+const loginForm = read("features/auth/components/LoginForm.tsx");
+assert(!has(loginForm, "resendRegistrationLinkAction"), "login page does not expose public registration resend");
+assert(!has(loginForm, "Need a registration link"), "login page has no resend registration panel");
+assert(!has(loginForm, "unregistered applicant account"), "resend copy is not applicant-only");
+
+const accountAuth = read("auth.ts");
+assert(!has(accountAuth, "No account is registered with this email."), "login does not disclose missing accounts");
+assert(!has(accountAuth, "Account setup is required."), "login does not disclose setup state");
+
+// -- Applicant account and deadline closure -----------------------------------
+console.log("applicant account editing and closure");
+const saveNominationRoute = read("app/api/applicant/nominations/[nominationId]/route.ts");
+assert(has(saveNominationRoute, "requireEditableNomination"), "nomination editor enforces account ownership");
+assert(has(saveNominationRoute, "validateNominationBlockB"), "nomination submit validates category requirements");
+assert(has(saveNominationRoute, "deletedAt"), "file replacement uses soft-delete metadata");
+
+const closure = read("features/applications/server/closure.ts");
+assert(has(closure, "validateNominationBlockB"), "deadline closure validates draft completeness");
+assert(has(closure, 'status: "LOCKED"'), "deadline closure locks incomplete nominations");
+assert(has(closure, "isApplicationFileRef"), "deadline closure only reuses stored file references");
+assert(!has(closure, "instanceof File"), "deadline closure does not reference browser File in server code");
+
+// -- Jury privacy and file access ---------------------------------------------
+console.log("jury privacy");
+const juryServer = read("features/admin/server/jury.ts");
+assert(has(juryServer, 'paymentStatus: "PAID"'), "jury queries only expose paid nominations");
+assert(has(juryServer, "closedIncompleteAt: null"), "jury queries exclude closed incomplete nominations");
+assert(has(juryServer, "deletedAt: null"), "jury queries exclude deleted nominations");
+assert(!has(juryServer, "email: true"), "jury queries do not select applicant email");
+assert(!has(juryServer, "city: true"), "jury queries do not select applicant city");
+assert(!has(juryServer, "country: true"), "jury queries do not select applicant country");
+assert(!has(juryServer, "storageKey: true"), "jury queries do not select storage keys");
+
+const juryDetail = read("features/jury/components/dashboard/JuryApplicationDetailPage.tsx");
+assert(has(juryDetail, "/api/jury/nomination-files/"), "jury detail loads files through protected route");
+assert(!has(juryDetail, "fileUrl"), "jury detail does not render direct blob URLs");
+assert(!has(juryDetail, "storageKey"), "jury detail does not render storage keys");
+
+const juryCommands = read("features/jury/server/commands.ts");
+const accountServer = read("features/account/server/accounts.ts");
+assert(has(accountServer, "existingProfile"), "jury account upsert reuses application-linked profiles");
+assert(has(accountServer, "where: { juryApplicationId: application.id }"), "jury account upsert checks unique application link");
+assert(has(juryCommands, "upsertJuryAccountForApplication"), "manual paid jury activation creates a jury account");
+assert(has(juryCommands, "sendSetupEmailForAccount(setupAccountId)"), "manual paid jury activation sends setup email");
+assert(has(juryCommands, "resendJuryRegistrationLink"), "jury registration links can be resent by admin");
+
+const juryAdminActions = read("features/admin/actions/jury.actions.ts");
+assert(has(juryAdminActions, "resendJuryRegistrationLinkAction"), "admin can resend a jury registration link");
+
+const juryAdminDetail = read("features/admin/components/jury-applications/JuryApplicationDetailPage.tsx");
+assert(has(juryAdminDetail, "resendJuryRegistrationLinkAction"), "jury admin page exposes resend registration action");
+assert(has(juryAdminDetail, "isRegistered"), "jury admin resend detects already registered accounts");
+assert(has(juryAdminDetail, "juryRegistrationAlreadyComplete"), "jury admin page explains completed registration");
+
+const juryFileRoute = read("app/api/jury/nomination-files/[fileId]/route.ts");
+assert(has(juryFileRoute, "requireJuryAuth"), "jury file route requires jury auth");
+assert(has(juryFileRoute, 'paymentStatus !== "PAID"'), "jury file route rejects unpaid nominations");
+assert(has(juryFileRoute, "closedIncompleteAt"), "jury file route rejects incomplete closed nominations");
+assert(has(juryFileRoute, "expertiseAreas.includes"), "jury file route enforces category expertise");
+assert(has(juryFileRoute, "displayFileName || fileRecord.fileName"), "jury file route uses display-safe filenames");
+
+// -- Ticket QR ownership -------------------------------------------------------
+console.log("ticket QR");
+const qrRoute = read("app/api/account/tickets/[ticketId]/qr/route.ts");
+assert(has(qrRoute, "requireAccount"), "account QR route requires account auth");
+assert(has(qrRoute, "ownershipFilters"), "account QR route builds explicit ownership filters");
+assert(has(qrRoute, "account.applicantProfile ?"), "account QR route conditionally includes applicant ownership");
+assert(!has(qrRoute, "{}"), "account QR route does not include empty OR ownership objects");
+assert(has(qrRoute, "new Uint8Array(buffer)"), "account QR route returns a NextResponse-compatible binary body");
+assert(has(qrRoute, "safeSlug(ticket.fullName)"), "account QR filename omits the raw QR token");
+
+// -- Migration verification ----------------------------------------------------
+console.log("migration verification scripts");
+const verifyMigration = read("scripts/verify-account-migration.ts");
+assert(has(verifyMigration, "duplicateApplicantAwards"), "migration verifier checks duplicate applicant/award pairs");
+assert(has(verifyMigration, "nominationFilesWithoutNomination"), "migration verifier checks orphan nomination files");
+assert(has(verifyMigration, "paymentsWithoutOwner"), "migration verifier checks orphan payments");
+assert(has(verifyMigration, "paidStripePaymentsMissingSession"), "migration verifier checks paid Stripe session linkage");
+
+console.log(`\n${passed} passed, ${failed} failed`);
+if (failed > 0) process.exitCode = 1;

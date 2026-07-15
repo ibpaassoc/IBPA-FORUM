@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { saveApplicationSubmission } from "@/features/applications/server/commands";
+import {
+  ApplicantPurchaseError,
+  createPublicApplicantNominationCheckout,
+} from "@/features/applications/server/purchase-workflow";
 import { EnvConfigError, isProduction, validateProductionEnv } from "@/lib/env";
+import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
 import { prisma } from "@/shared/lib/prisma";
 
 function getErrorMessage(error: unknown) {
@@ -35,15 +39,31 @@ function getSubmissionErrorCode(error: unknown) {
 
 export async function GET() {
   try {
-    const applications = await prisma.application.findMany({
-      orderBy: {
-        createdAt: "desc",
-      },
-      include: {
-        category: true,
-        award: true,
-        files: true,
-        answers: true,
+    if (!(await isAdminAuthenticated())) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const applications = await prisma.applicantProfile.findMany({
+      where: { deletedAt: null, account: { role: "APPLICANT", deletedAt: null } },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        fullName: true,
+        city: true,
+        country: true,
+        account: { select: { email: true, status: true } },
+        nominations: {
+          where: { deletedAt: null },
+          select: {
+            id: true,
+            status: true,
+            paymentStatus: true,
+            submittedAt: true,
+            category: { select: { name: true } },
+            award: { select: { name: true } },
+          },
+          orderBy: { createdAt: "asc" },
+        },
       },
     });
 
@@ -67,7 +87,6 @@ export async function POST(request: NextRequest) {
   try {
     validateProductionEnv([
       { names: ["DATABASE_URL"] },
-      { names: ["BLOB_READ_WRITE_TOKEN"] },
       { names: ["STRIPE_SECRET_KEY"], ascii: true },
       { names: ["APP_URL", "FRONTEND_URL", "NEXT_PUBLIC_APP_URL"] },
     ]);
@@ -87,10 +106,6 @@ export async function POST(request: NextRequest) {
     }
     const formData = await request.formData();
 
-    // Files must be uploaded to Vercel Blob first (POST /api/applications/upload)
-    // and referenced by metadata. Raw File objects here would balloon the request
-    // body past Vercel's limit (the 413 this endpoint used to hit), so reject them
-    // with a helpful 400 instead of letting the platform drop the request.
     const rawFileFields = Array.from(formData.entries())
       .filter(([, value]) => value instanceof File)
       .map(([key, value]) => ({
@@ -107,7 +122,7 @@ export async function POST(request: NextRequest) {
         {
           errorCode: "RAW_FILE_REJECTED",
           message:
-            "Files must be uploaded before submitting. Please reload the application form and try again.",
+            "The purchase form does not accept files. Files can be added from the applicant account after payment.",
         },
         { status: 400 }
       );
@@ -117,10 +132,30 @@ export async function POST(request: NextRequest) {
       keys: Array.from(new Set(Array.from(formData.keys()))),
     });
 
-    const result = await saveApplicationSubmission(formData);
+    const result = await createPublicApplicantNominationCheckout(formData);
 
-    return NextResponse.json(result.body, { status: result.status });
+    return NextResponse.json(
+      {
+        message: "Redirecting to secure Stripe Checkout.",
+        paymentId: result.paymentId,
+        checkoutUrl: result.checkoutUrl,
+        amount: result.amount,
+        currency: result.currency,
+      },
+      { status: 201 }
+    );
   } catch (error) {
+    if (error instanceof ApplicantPurchaseError) {
+      return NextResponse.json(
+        {
+          errorCode: error.code,
+          message: error.message,
+          fieldErrors: error.fieldErrors,
+        },
+        { status: error.status }
+      );
+    }
+
     const errorCode = getSubmissionErrorCode(error);
     console.error("POST /api/applications error:", error);
     const devMessage =

@@ -1,9 +1,9 @@
 "use server";
 
 import { prisma } from "@/shared/lib/prisma";
+import { upsertJuryAccountForApplication } from "@/features/account/server/accounts";
 import {
   createPasswordHash,
-  findJuryAccountByEmail,
   getJuryApplicationByEmail,
   isStrongPassword,
   normalizeJuryEmail,
@@ -59,23 +59,38 @@ export async function registerAccountAction(
     };
   }
 
-  const existingAccount = await findJuryAccountByEmail(email);
+  const passwordHash = await createPasswordHash(password);
 
-  if (existingAccount) {
+  const existingAccount = await prisma.account.findUnique({ where: { email } });
+
+  if (existingAccount?.role && existingAccount.role !== "JURY") {
+    return {
+      email,
+      error: "An account with this email already exists for another role. Please contact IBPA support.",
+    };
+  }
+
+  if (existingAccount?.passwordHash && existingAccount.status === "ACTIVE") {
     return {
       email,
       error: "An account with this email already exists.",
     };
   }
 
-  const passwordHash = await createPasswordHash(password);
+  await prisma.$transaction(async (tx) => {
+    const fullApplication = await tx.juryApplication.findUniqueOrThrow({
+      where: { id: juryApplication.id },
+    });
 
-  await prisma.juryAccount.create({
-    data: {
-      email,
-      passwordHash,
-      juryApplicationId: juryApplication.id,
-    },
+    const { account } = await upsertJuryAccountForApplication(tx, fullApplication);
+
+    await tx.account.update({
+      where: { id: account.id },
+      data: {
+        passwordHash,
+        status: "ACTIVE",
+      },
+    });
   });
 
   return {

@@ -74,13 +74,6 @@ export default function NotFound() {
             <Link href="/" className="ibpa-button ibpa-button-blue w-full sm:w-auto">
               {copy.backHome}
             </Link>
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="ibpa-button ibpa-button-ghost w-full sm:w-auto"
-            >
-              {copy.back}
-            </button>
           </div>
         </div>
       </div>

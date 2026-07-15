@@ -11,47 +11,7 @@ export type FilterSelect = {
   label: string;
   value: string;
   options: Array<{ value: string; label: string }>;
-  /**
-   * "segmented" renders the options as a glassmorphic chip row (great for
-   * short status lists); "select" (default) renders a styled dropdown.
-   */
-  variant?: "segmented" | "select";
 };
-
-function SegmentedControl({
-  select,
-  onSelectChange,
-}: {
-  select: FilterSelect;
-  onSelectChange: (key: string, value: string) => void;
-}) {
-  return (
-    <div
-      role="group"
-      aria-label={select.label}
-      className="flex gap-1 overflow-x-auto rounded-[20px] border border-[rgba(114,160,193,0.16)] bg-white/62 p-1 shadow-[0_10px_28px_rgba(37,42,45,0.04)] backdrop-blur-xl no-scrollbar"
-    >
-      {select.options.map((option) => {
-        const active = select.value === option.value;
-        return (
-          <button
-            key={option.value}
-            type="button"
-            aria-pressed={active}
-            onClick={() => onSelectChange(select.key, option.value)}
-            className={`inline-flex min-h-9 shrink-0 items-center justify-center rounded-[16px] px-3.5 text-[0.68rem] font-semibold uppercase leading-none tracking-[0.09em] transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.22)] ${
-              active
-                ? "bg-[var(--color-blue)] text-white shadow-[0_10px_22px_rgba(114,160,193,0.28)]"
-                : "text-[var(--color-ink-soft)] hover:bg-[var(--color-blue-wash)] hover:text-[var(--color-ink)]"
-            }`}
-          >
-            {option.label}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
 
 /**
  * Glassmorphic filter bar for application lists.
@@ -73,13 +33,11 @@ export default function ApplicationFilters({
   onSelectChange: (key: string, value: string) => void;
   onClearAll: () => void;
 }) {
-  const dropdowns = selects.filter((select) => select.variant !== "segmented");
-
   const chips = [
     ...(search.trim()
       ? [{ key: "__search", label: `“${search.trim()}”`, clear: () => onSearchChange("") }]
       : []),
-    ...dropdowns
+    ...selects
       .filter((select) => select.value)
       .map((select) => ({
         key: select.key,
@@ -99,7 +57,7 @@ export default function ApplicationFilters({
           className="w-full sm:min-w-[60px] sm:flex-1"
         />
 
-        {dropdowns.map((select) => (
+        {selects.map((select) => (
           <IbpaDropdown
             key={select.key}
             ariaLabel={select.label}
@@ -110,6 +68,29 @@ export default function ApplicationFilters({
           />
         ))}
       </div>
+
+      {chips.length > 0 ? (
+        <div className="flex flex-wrap items-center gap-2 border-t border-[rgba(114,160,193,0.14)] pt-3">
+          {chips.map((chip) => (
+            <button
+              key={chip.key}
+              type="button"
+              onClick={chip.clear}
+              className="inline-flex min-h-8 items-center gap-1.5 rounded-full border border-[rgba(114,160,193,0.24)] bg-[var(--color-blue-wash)] px-3 text-xs font-medium text-[var(--color-ink-soft)] transition hover:border-[var(--color-blue)] hover:bg-[rgba(225,240,248,0.92)] hover:text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.2)]"
+            >
+              <span className="max-w-48 truncate">{chip.label}</span>
+              <X aria-hidden size={13} />
+            </button>
+          ))}
+          <button
+            type="button"
+            onClick={onClearAll}
+            className="min-h-8 rounded-full px-3 text-xs font-semibold text-[var(--color-blue)] transition hover:bg-[var(--color-blue-wash)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.2)]"
+          >
+            {adminT.filters.clearAll}
+          </button>
+        </div>
+      ) : null}
     </DashboardCard>
   );
 }

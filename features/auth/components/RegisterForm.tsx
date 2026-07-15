@@ -39,7 +39,7 @@ export default function RegisterForm() {
         email: state.email,
         password,
         redirect: false,
-        callbackUrl: "/jury/dashboard",
+        callbackUrl: "/account",
       });
 
       if (!result || result.error) {
@@ -48,7 +48,7 @@ export default function RegisterForm() {
         return;
       }
 
-      router.replace("/jury/dashboard");
+      router.replace("/account");
       router.refresh();
     })();
   }, [router, state]);
@@ -124,7 +124,7 @@ export default function RegisterForm() {
 
       <p className="text-sm leading-6 text-[var(--color-ink-soft)]">
         {t.auth.form.haveAccount}{" "}
-        <Link href="/jury/login" className="text-[var(--color-hover-accent)] hover:text-[var(--color-blue)] hover:underline">
+        <Link href="/account/login" className="text-[var(--color-hover-accent)] hover:text-[var(--color-blue)] hover:underline">
           {t.auth.form.backToLogin}
         </Link>
         .

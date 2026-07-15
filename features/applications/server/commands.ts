@@ -8,7 +8,9 @@ import {
 import { getApplicationCategories } from "@/features/applications/server/queries";
 import { isApplicationFileRef } from "@/features/applications/lib/file-ref";
 import { createCompetitorCheckoutSession } from "@/features/payments/server/checkout-sessions";
+import { upsertApplicantAccountForApplication } from "@/features/account/server/accounts";
 import { syncApplicationOnChange } from "@/features/google-sheets";
+import { computeApplicantNominationPrice } from "@/features/applications/lib/pricing";
 import { prisma } from "@/shared/lib/prisma";
 import { Prisma } from "@prisma/client";
 import type {
@@ -32,24 +34,23 @@ function getFileRefs(value: ApplicationValues[string]): ApplicationFileRef[] {
   return Array.isArray(value) ? value.filter(isApplicationFileRef) : [];
 }
 
-// Tiered pricing in cents: index = nomination count (1–5)
-const MEMBER_PRICES_CENTS = [0, 5000, 10000, 13000, 18000, 20000] as const;
-const NON_MEMBER_PRICES_CENTS = [0, 7000, 14000, 19000, 26000, 30000] as const;
-
 function computeApplicationAmountCents(count: number, isMember: boolean): number {
-  const prices = isMember ? MEMBER_PRICES_CENTS : NON_MEMBER_PRICES_CENTS;
-  const idx = Math.min(5, Math.max(1, count)) as 1 | 2 | 3 | 4 | 5;
-  return prices[idx];
+  return computeApplicantNominationPrice({
+    nominationCount: count,
+    isIbpaMember: isMember,
+  }).amountCents;
 }
 
 async function createNominationApplication({
   applicationId,
+  applicantProfileId,
   awardId,
   categoryId,
   categorySlug,
   nomValues,
 }: {
   applicationId: string;
+  applicantProfileId: string;
   awardId: string;
   categoryId: string;
   categorySlug: string;
@@ -108,6 +109,7 @@ async function createNominationApplication({
   const nominationApplication = await prisma.nominationApplication.create({
     data: {
       applicationId,
+      applicantProfileId,
       awardId,
       categoryId,
     },
@@ -197,6 +199,7 @@ export async function saveApplicationSubmission(formData: FormData) {
       : String(values.country ?? "").trim();
 
   let application: { id: string };
+  let applicantProfileId: string;
 
   try {
     application = await prisma.application.create({
@@ -227,6 +230,30 @@ export async function saveApplicationSubmission(formData: FormData) {
     console.info("Application database record created", { applicationId: application.id });
   } catch (error) {
     console.error("Application database insert failed", { error });
+    throw error;
+  }
+
+  try {
+    const accountData = await prisma.$transaction((tx) =>
+      upsertApplicantAccountForApplication(tx, {
+        fullName,
+        email: normalizedEmail,
+        phone: String(values.phone),
+        country,
+        stateProvince: String(values.stateProvince || "") || null,
+        city: String(values.city),
+        professionalTitle: String(values.professionalTitle),
+        yearsExperience: Number(values.yearsExperience),
+        membershipNumber: isIbpaMember && ibpaMemberNumber ? ibpaMemberNumber : null,
+        membershipLevel: isIbpaMember ? "member" : null,
+        websiteUrl: String(values.websiteUrl || "") || null,
+        socialUrl: String(values.socialUrl || "") || null,
+        reviewsUrl: String(values.reviewsUrl || "") || null,
+      })
+    );
+    applicantProfileId = accountData.profile.id;
+  } catch (error) {
+    console.error("Applicant account/profile upsert failed", { applicationId: application.id, error });
     throw error;
   }
 
@@ -265,6 +292,7 @@ export async function saveApplicationSubmission(formData: FormData) {
     for (const nom of selectedNominations) {
       await createNominationApplication({
         applicationId: application.id,
+        applicantProfileId,
         awardId: nom.awardId,
         categoryId: nom.categoryId,
         categorySlug: nom.categorySlug,

@@ -4,14 +4,12 @@ import { revalidatePath } from "next/cache";
 import type { Prisma } from "@prisma/client";
 import { getAppSession } from "@/auth";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
-import { normalizeJuryEmail } from "@/features/jury/server/auth";
 import type { DraftScoreInput, SubmitScoreInput } from "@/features/admin/actions/scoring_schemas";
 import { prisma } from "@/shared/lib/prisma";
 import { syncScoreOnChange } from "@/features/google-sheets";
 import {
   calculateTotalScore,
   getJuryScoreListStatus,
-  getScoreableApplicationsWhere,
   isEligibleScoringJudge,
   requireActiveJuryJudge,
   ScoringHttpError,
@@ -22,9 +20,7 @@ import {
 export type JuryDashboardApplicationRecord = {
   id: string; // nominationApplicationId — used as URL [id] param
   fullName: string;
-  email: string;
-  city: string;
-  country: string;
+  instagram: string | null;
   createdAt: Date;
   submittedAt: Date | null;
   category: { name: string };
@@ -33,26 +29,39 @@ export type JuryDashboardApplicationRecord = {
   scoreId: string | null;
 };
 
-export type JuryNominationScoringRecord = Prisma.NominationApplicationGetPayload<{
-  include: {
-    award: true;
-    category: true;
-    answers: true;
-    files: true;
-    application: {
-      include: {
-        answers: true;
-        files: true;
-        nominationApplications: {
-          include: {
-            award: true;
-            category: true;
-          };
-        };
-      };
-    };
+export type JuryNominationScoringRecord = {
+  id: string;
+  applicationId: string | null;
+  applicant: {
+    fullName: string;
+    instagram: string | null;
   };
-}>;
+  award: { id: string; name: string };
+  category: { id: string; name: string; slug: string };
+  answers: Array<{
+    id: string;
+    fieldKey: string;
+    valueText: string | null;
+    valueNumber: number | null;
+    valueBoolean: boolean | null;
+    valueJson: Prisma.JsonValue | null;
+  }>;
+  files: Array<{
+    id: string;
+    fieldKey: string;
+    fileName: string;
+    displayFileName: string | null;
+    mimeType: string;
+    fileSize: number;
+  }>;
+  peerNominations: Array<{
+    id: string;
+    awardId: string;
+    createdAt: Date;
+    award: { name: string };
+    category: { name: string };
+  }>;
+};
 
 // Kept for any legacy imports
 export type JuryScoringApplicationRecord = Prisma.ApplicationGetPayload<{
@@ -88,7 +97,10 @@ async function getAccessibleNominationForJudge({
   const nomination = await prisma.nominationApplication.findFirst({
     where: {
       id: nominationApplicationId,
-      application: getScoreableApplicationsWhere(),
+      paymentStatus: "PAID",
+      status: { in: ["SUBMITTED", "UNDER_REVIEW", "LOCKED", "SCORED"] },
+      closedIncompleteAt: null,
+      deletedAt: null,
       category: { name: { in: judge.expertiseAreas } },
     },
     select: {
@@ -117,27 +129,34 @@ export async function getJudgeAssignedApplications({
 
   const nominations = await prisma.nominationApplication.findMany({
     where: {
-      application: getScoreableApplicationsWhere(),
+      paymentStatus: "PAID",
+      status: { in: ["SUBMITTED", "UNDER_REVIEW", "LOCKED", "SCORED"] },
+      closedIncompleteAt: null,
+      deletedAt: null,
       category: activeCategory
         ? { name: activeCategory }
         : { name: { in: judge.expertiseAreas } },
     },
     orderBy: [
-      { application: { submittedAt: "desc" } },
-      { application: { createdAt: "desc" } },
+      { submittedAt: "desc" },
+      { createdAt: "desc" },
     ],
     select: {
       id: true,
-      application: {
+      applicantProfile: {
         select: {
           fullName: true,
-          email: true,
-          city: true,
-          country: true,
+          websiteUrl: true,
+        },
+      },
+      application: {
+        select: {
           createdAt: true,
           submittedAt: true,
         },
       },
+      createdAt: true,
+      submittedAt: true,
       category: { select: { name: true } },
       award: { select: { name: true } },
       judgeScores: {
@@ -153,12 +172,10 @@ export async function getJudgeAssignedApplications({
 
   const dashboardApplications: JuryDashboardApplicationRecord[] = nominations.map((nom) => ({
     id: nom.id,
-    fullName: nom.application.fullName,
-    email: nom.application.email,
-    city: nom.application.city,
-    country: nom.application.country,
-    createdAt: nom.application.createdAt,
-    submittedAt: nom.application.submittedAt,
+    fullName: nom.applicantProfile?.fullName ?? "Applicant",
+    instagram: nom.applicantProfile?.websiteUrl ?? null,
+    createdAt: nom.application?.createdAt ?? nom.createdAt,
+    submittedAt: nom.submittedAt ?? nom.application?.submittedAt ?? null,
     category: nom.category,
     award: nom.award,
     scoreId: nom.judgeScores[0]?.id ?? null,
@@ -192,32 +209,40 @@ export async function getJudgeApplicationScoringDetail({
   const nomination = await prisma.nominationApplication.findFirst({
     where: {
       id: nominationApplicationId,
-      application: getScoreableApplicationsWhere(),
+      paymentStatus: "PAID",
+      status: { in: ["SUBMITTED", "UNDER_REVIEW", "LOCKED", "SCORED"] },
+      closedIncompleteAt: null,
+      deletedAt: null,
       category: { name: { in: judge.expertiseAreas } },
     },
-    include: {
-      award: true,
-      category: true,
+    select: {
+      id: true,
+      applicationId: true,
+      applicantProfileId: true,
+      applicantProfile: {
+        select: {
+          fullName: true,
+          websiteUrl: true,
+        },
+      },
+      award: { select: { id: true, name: true } },
+      category: { select: { id: true, name: true, slug: true } },
       answers: { orderBy: { createdAt: "asc" } },
-      files: { orderBy: { createdAt: "asc" } },
+      files: {
+        where: { deletedAt: null },
+        orderBy: { createdAt: "asc" },
+        select: {
+          id: true,
+          fieldKey: true,
+          fileName: true,
+          displayFileName: true,
+          mimeType: true,
+          fileSize: true,
+        },
+      },
       judgeScores: {
         where: { judgeId: judge.juryApplicationId },
         select: SCORE_DETAIL_SELECT,
-      },
-      application: {
-        include: {
-          answers: { orderBy: { createdAt: "asc" } },
-          files: { orderBy: { createdAt: "asc" } },
-          nominationApplications: {
-            include: {
-              award: true,
-              category: true,
-            },
-            orderBy: {
-              createdAt: "asc",
-            },
-          },
-        },
       },
     },
   });
@@ -227,9 +252,40 @@ export async function getJudgeApplicationScoringDetail({
   }
 
   const score = nomination.judgeScores[0] ?? null;
+  const peerNominations = nomination.applicantProfileId
+    ? await prisma.nominationApplication.findMany({
+        where: {
+          applicantProfileId: nomination.applicantProfileId,
+          paymentStatus: "PAID",
+          status: { in: ["SUBMITTED", "UNDER_REVIEW", "LOCKED", "SCORED"] },
+          closedIncompleteAt: null,
+          deletedAt: null,
+        },
+        select: {
+          id: true,
+          awardId: true,
+          createdAt: true,
+          award: { select: { name: true } },
+          category: { select: { name: true } },
+        },
+        orderBy: { createdAt: "asc" },
+      })
+    : [];
 
   return {
-    nomination: nomination as JuryNominationScoringRecord,
+    nomination: {
+      id: nomination.id,
+      applicationId: nomination.applicationId,
+      applicant: {
+        fullName: nomination.applicantProfile?.fullName ?? "Applicant",
+        instagram: nomination.applicantProfile?.websiteUrl ?? null,
+      },
+      award: nomination.award,
+      category: nomination.category,
+      answers: nomination.answers,
+      files: nomination.files,
+      peerNominations,
+    } satisfies JuryNominationScoringRecord,
     categoryFields: categoryFieldConfigs[nomination.category.slug] ?? [],
     score:
       score === null
@@ -300,8 +356,12 @@ export async function saveJudgeScoreDraft({
 
   revalidatePath("/jury/dashboard");
   revalidatePath(`/jury/dashboard/applications/${nominationApplicationId}`);
-  revalidatePath("/admin/scoring");
-  revalidatePath(`/admin/scoring/${nomination.applicationId}`);
+  revalidatePath("/account/jury");
+  revalidatePath(`/account/jury/nominations/${nominationApplicationId}`);
+  if (nomination.applicationId) {
+    revalidatePath("/admin/scoring");
+    revalidatePath(`/admin/scoring/${nomination.applicationId}`);
+  }
 
   syncScoreOnChange(score.id);
 
@@ -368,8 +428,12 @@ export async function submitJudgeScore({
 
   revalidatePath("/jury/dashboard");
   revalidatePath(`/jury/dashboard/applications/${nominationApplicationId}`);
-  revalidatePath("/admin/scoring");
-  revalidatePath(`/admin/scoring/${nomination.applicationId}`);
+  revalidatePath("/account/jury");
+  revalidatePath(`/account/jury/nominations/${nominationApplicationId}`);
+  if (nomination.applicationId) {
+    revalidatePath("/admin/scoring");
+    revalidatePath(`/admin/scoring/${nomination.applicationId}`);
+  }
 
   syncScoreOnChange(score.id, { refreshStats: true });
 
@@ -383,33 +447,31 @@ export async function getAuthenticatedJudgeScoringContext() {
 export async function getAuthenticatedJudgeScoringApiContext(): Promise<ActiveJudgeContext> {
   const session = await getAppSession();
 
-  if (!session?.user?.email) {
+  if (!session?.user?.accountId || session.user.role !== "JURY") {
     throw new ScoringHttpError(401, "Judge authentication is required.");
   }
 
-  const account = await prisma.juryAccount.findUnique({
-    where: {
-      email: normalizeJuryEmail(session.user.email),
-    },
+  const account = await prisma.account.findUnique({
+    where: { id: session.user.accountId },
     include: {
-      juryApplication: {
+      juryProfile: {
         select: {
           id: true,
+          juryApplicationId: true,
           fullName: true,
           professionalTitle: true,
           expertiseAreas: true,
-          status: true,
-          paymentStatus: true,
+          approvalStatus: true,
         },
       },
     },
   });
 
-  if (!account?.juryApplication) {
+  if (!account?.juryProfile?.juryApplicationId) {
     throw new ScoringHttpError(401, "Judge authentication is required.");
   }
 
-  if (!isEligibleScoringJudge(account.juryApplication.status)) {
+  if (!account.juryProfile.approvalStatus || !isEligibleScoringJudge(account.juryProfile.approvalStatus)) {
     throw new ScoringHttpError(
       403,
       "Only approved judges can access the scoring workspace."
@@ -419,9 +481,9 @@ export async function getAuthenticatedJudgeScoringApiContext(): Promise<ActiveJu
   return {
     accountId: account.id,
     email: account.email,
-    juryApplicationId: account.juryApplication.id,
-    fullName: account.juryApplication.fullName,
-    professionalTitle: account.juryApplication.professionalTitle,
-    expertiseAreas: account.juryApplication.expertiseAreas,
+    juryApplicationId: account.juryProfile.juryApplicationId,
+    fullName: account.juryProfile.fullName,
+    professionalTitle: account.juryProfile.professionalTitle ?? "",
+    expertiseAreas: account.juryProfile.expertiseAreas,
   };
 }

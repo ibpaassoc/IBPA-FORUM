@@ -2,32 +2,37 @@ import type { DefaultSession, NextAuthOptions } from "next-auth";
 import { getServerSession } from "next-auth";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { findJuryAccountByEmail, verifyPasswordHash } from "@/features/jury/server/auth";
+import { findAccountByEmail } from "@/features/account/server/accounts";
+import { normalizeAccountEmail, verifyPasswordHash } from "@/features/account/server/password";
 
 declare module "next-auth" {
   interface Session {
     user: DefaultSession["user"] & {
-      id: string;
+      accountId: string;
       email: string;
-      juryApplicationId?: string;
-      expertiseAreas: string[];
+      role: "APPLICANT" | "JURY";
+      applicantProfileId?: string;
+      juryProfileId?: string;
     };
   }
 
   interface User {
     id: string;
+    accountId: string;
     email: string;
-    juryApplicationId?: string;
-    expertiseAreas: string[];
+    role: "APPLICANT" | "JURY";
+    applicantProfileId?: string;
+    juryProfileId?: string;
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
-    id?: string;
+    accountId?: string;
     email?: string;
-    juryApplicationId?: string;
-    expertiseAreas?: string[];
+    role?: "APPLICANT" | "JURY";
+    applicantProfileId?: string;
+    juryProfileId?: string;
   }
 }
 
@@ -40,11 +45,11 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   pages: {
-    signIn: "/jury/login",
+    signIn: "/account/login",
   },
   providers: [
     CredentialsProvider({
-      name: "Jury Credentials",
+      name: "IBPA Account",
       credentials: {
         email: {
           label: "Email",
@@ -56,17 +61,22 @@ export const authOptions: NextAuthOptions = {
         },
       },
       async authorize(credentials) {
-        const email = String(credentials?.email ?? "").trim().toLowerCase();
+        const email = normalizeAccountEmail(String(credentials?.email ?? ""));
         const password = String(credentials?.password ?? "");
 
         if (!email || !password) {
           return null;
         }
 
-        const account = await findJuryAccountByEmail(email);
+        const account = await findAccountByEmail(email);
 
-        if (!account) {
-          throw new Error("No account is registered with this email.");
+        if (
+          !account ||
+          account.deletedAt ||
+          account.status === "DISABLED" ||
+          !account.passwordHash
+        ) {
+          return null;
         }
 
         const isValid = await verifyPasswordHash(password, account.passwordHash);
@@ -77,9 +87,11 @@ export const authOptions: NextAuthOptions = {
 
         return {
           id: account.id,
+          accountId: account.id,
           email: account.email,
-          juryApplicationId: account.juryApplicationId ?? undefined,
-          expertiseAreas: account.juryApplication?.expertiseAreas ?? [],
+          role: account.role,
+          applicantProfileId: account.applicantProfile?.id,
+          juryProfileId: account.juryProfile?.id,
         };
       },
     }),
@@ -87,30 +99,36 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
+        token.accountId = user.accountId;
         token.email = user.email;
-        token.juryApplicationId = user.juryApplicationId;
-        token.expertiseAreas = user.expertiseAreas;
+        token.role = user.role;
+        token.applicantProfileId = user.applicantProfileId;
+        token.juryProfileId = user.juryProfileId;
       }
 
       return token;
     },
     async session({ session, token }) {
-      if (!session.user || !token.id || !token.email) {
+      if (!session.user || !token.accountId || !token.email || !token.role) {
         return session;
       }
 
       session.user = {
         ...session.user,
-        id: token.id,
+        accountId: token.accountId,
         email: token.email,
-        juryApplicationId: token.juryApplicationId,
-        expertiseAreas: token.expertiseAreas ?? [],
+        role: token.role,
+        applicantProfileId: token.applicantProfileId,
+        juryProfileId: token.juryProfileId,
       };
 
       return session;
     },
     async redirect({ url, baseUrl }) {
+      if (url === `${baseUrl}/account` || url === "/account") {
+        return `${baseUrl}/account`;
+      }
+
       if (url.startsWith("/")) {
         return `${baseUrl}${url}`;
       }

@@ -92,7 +92,6 @@ export default function JuryApplicationListPage({
       key: "status",
       label: adminT.filters.allStatuses,
       value: status,
-      variant: "segmented",
       options: [
         { value: "", label: adminT.filters.all },
         ...statusesPresent.map((value) => ({ value, label: adminT.statuses[value] })),

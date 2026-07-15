@@ -3,6 +3,7 @@ import { z } from "zod";
 import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
 import { performCheckIn } from "@/features/check-in/server/check-in-service";
 import { SCAN_MODES } from "@/features/check-in/types";
+import { adminT } from "@/lib/i18n/admin";
 
 const checkInSchema = z.object({
   ticketKind: z.enum(["TICKET", "PARTICIPANT", "JURY"]),
@@ -25,19 +26,19 @@ const checkInSchema = z.object({
  */
 export async function POST(request: NextRequest) {
   if (!(await isAdminAuthenticated())) {
-    return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
+    return NextResponse.json({ message: adminT.api.unauthorized }, { status: 401 });
   }
 
   let body: unknown;
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ message: "Invalid JSON body." }, { status: 400 });
+    return NextResponse.json({ message: adminT.api.invalidJson }, { status: 400 });
   }
 
   const parsed = checkInSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ message: "Invalid check-in request." }, { status: 400 });
+    return NextResponse.json({ message: adminT.api.invalidCheckInRequest }, { status: 400 });
   }
 
   const result = await performCheckIn(parsed.data);

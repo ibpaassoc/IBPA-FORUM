@@ -77,63 +77,11 @@ type QrPreview = {
   qrDataUrl: string | null;
 };
 
-const ticketAdminCopy = {
-  customerName: "Покупатель",
-  email: "Эл. почта",
-  phone: "Телефон",
-  ticketType: "Тип билета",
-  galaDinner: "Гала-ужин",
-  included: "Включён",
-  notIncluded: "Не включён",
-  qrCode: "QR-код",
-  ticketQr: "QR-код билета",
-  closeQrPreview: "Закрыть просмотр QR-кода",
-  qrStatus: "Статус QR",
-  generated: "Создан",
-  unavailable: "Недоступен",
-  noActiveQr: "Для этого билета нет активного QR-кода.",
-  generateQr: "Создать QR-код",
-  qrPreviewUnavailable: "Просмотр QR-кода недоступен.",
-  requiredFields: "Имя, email и телефон обязательны.",
-  confirmTicketChanges: "Подтвердите изменения билета",
-  accessChangeWarning:
-    "Сохранение этих изменений доступа создаст новый QR-код, потому что права доступа клиента изменились.",
-  sendUpdatedQrNow: "Отправить обновлённый QR-код клиенту сейчас?",
-  saveFailed: "Не удалось сохранить изменения билета.",
-  ticketUpdated: "Билет обновлён.",
-  ticketUpdatedQrSent: "Билет обновлён, новый QR-код отправлен.",
-  ticketUpdatedQrDeliveryHint:
-    "Билет обновлён, QR-код пересоздан. Если письмо не доставлено, используйте «Отправить текущий QR-код повторно».",
-  saveNetworkError: "Ошибка сети при сохранении билета.",
-  regenerateQrTitle: "Пересоздать QR-код?",
-  regenerateQrWarning:
-    "Это аннулирует предыдущий QR-код клиента и отправит новый QR-код на текущий email.",
-  loadQrFailed: "Не удалось загрузить QR-код.",
-  currentQrResent: "Текущий QR-код отправлен повторно.",
-  newQrSent: "Новый QR-код создан и отправлен.",
-  qrEmailFailed: "QR-код пересоздан, но письмо не удалось доставить.",
-  qrActionFailed: "Не удалось выполнить действие с QR-кодом.",
-  qrNetworkError: "Ошибка сети при обработке QR-кода.",
-  editTicket: "Редактировать билет",
-  cancel: "Отмена",
-  saveChanges: "Сохранить изменения",
-  qrCodeStatus: "Статус QR-кода",
-  lastSent: "Последняя отправка",
-  viewQr: "Посмотреть QR-код",
-  regenerateAndResend: "Пересоздать и отправить QR-код",
-  resendCurrent: "Отправить текущий QR-код повторно",
-  discardUnsaved: "Отменить несохранённые изменения билета?",
-} as const;
-
-const qrStatusLabels: Record<string, string> = {
-  ACTIVE: "Активен",
-  REPLACED: "Заменён",
-  REVOKED: "Отозван",
-};
+const ticketAdminCopy = adminT.tickets.admin;
 
 function qrStatusLabel(status?: string | null) {
   if (!status) return ticketAdminCopy.unavailable;
-  return qrStatusLabels[status] ?? status;
+  return ticketAdminCopy.qrStatuses[status] ?? status;
 }
 
 function ticketStatusBadge(status: string, paymentStatus?: string) {

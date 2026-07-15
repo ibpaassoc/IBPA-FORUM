@@ -1,12 +1,14 @@
 import "server-only";
-import { randomBytes, scrypt as scryptCallback, timingSafeEqual } from "node:crypto";
-import { promisify } from "node:util";
 import { redirect } from "next/navigation";
 import { getAppSession } from "@/auth";
+import {
+  createPasswordHash,
+  isStrongPassword,
+  normalizeAccountEmail,
+  verifyPasswordHash,
+} from "@/features/account/server/password";
+import { validateAccountToken } from "@/features/account/server/tokens";
 import { prisma } from "@/shared/lib/prisma";
-
-const scrypt = promisify(scryptCallback);
-const HASH_KEY_LENGTH = 64;
 
 export type JuryAuthUser = {
   id: string;
@@ -16,48 +18,19 @@ export type JuryAuthUser = {
 };
 
 export function normalizeJuryEmail(email: string) {
-  return email.trim().toLowerCase();
-}
-
-export function isStrongPassword(password: string) {
-  return password.length >= 8;
-}
-
-export async function createPasswordHash(password: string) {
-  const salt = randomBytes(16).toString("hex");
-  const derived = (await scrypt(password, salt, HASH_KEY_LENGTH)) as Buffer;
-  return `${salt}:${derived.toString("hex")}`;
-}
-
-export async function verifyPasswordHash(password: string, storedHash: string) {
-  const [salt, hash] = storedHash.split(":");
-
-  if (!salt || !hash) {
-    return false;
-  }
-
-  const storedBuffer = Buffer.from(hash, "hex");
-  const derived = (await scrypt(password, salt, HASH_KEY_LENGTH)) as Buffer;
-
-  if (storedBuffer.length !== derived.length) {
-    return false;
-  }
-
-  return timingSafeEqual(storedBuffer, derived);
+  return normalizeAccountEmail(email);
 }
 
 export async function findJuryAccountByEmail(email: string) {
-  return prisma.juryAccount.findUnique({
-    where: {
-      email: normalizeJuryEmail(email),
-    },
+  return prisma.account.findFirst({
+    where: { email: normalizeJuryEmail(email), role: "JURY" },
     include: {
-      juryApplication: {
+      juryProfile: {
         select: {
           id: true,
+          juryApplicationId: true,
           expertiseAreas: true,
-          status: true,
-          paymentStatus: true,
+          approvalStatus: true,
         },
       },
     },
@@ -100,48 +73,40 @@ export async function validatePasswordResetToken(token: string): Promise<{
   valid: boolean;
   expired?: boolean;
 }> {
-  const record = await prisma.juryPasswordReset.findUnique({ where: { token } });
-
-  if (!record || record.usedAt) {
-    return { valid: false };
-  }
-
-  if (record.expiresAt < new Date()) {
-    return { valid: false, expired: true };
-  }
-
-  return { valid: true };
+  const result = await validateAccountToken({ token, purpose: "PASSWORD_RESET" });
+  return result.valid ? { valid: true } : { valid: false, expired: result.expired };
 }
 
 export async function requireJuryAuth() {
   const session = await getAppSession();
 
-  if (!session?.user?.email) {
-    redirect("/jury/login");
+  if (!session?.user?.accountId || session.user.role !== "JURY") {
+    redirect("/account/login");
   }
 
-  const account = await prisma.juryAccount.findUnique({
-    where: {
-      email: normalizeJuryEmail(session.user.email),
-    },
+  const account = await prisma.account.findUnique({
+    where: { id: session.user.accountId },
     include: {
-      juryApplication: {
+      juryProfile: {
         select: {
           id: true,
+          juryApplicationId: true,
           expertiseAreas: true,
         },
       },
     },
   });
 
-  if (!account?.juryApplication) {
+  if (!account?.juryProfile?.juryApplicationId) {
     redirect("/");
   }
 
   return {
     id: account.id,
     email: account.email,
-    juryApplicationId: account.juryApplication.id,
-    expertiseAreas: account.juryApplication.expertiseAreas,
+    juryApplicationId: account.juryProfile.juryApplicationId,
+    expertiseAreas: account.juryProfile.expertiseAreas,
   } satisfies JuryAuthUser;
 }
+
+export { createPasswordHash, isStrongPassword, verifyPasswordHash };
