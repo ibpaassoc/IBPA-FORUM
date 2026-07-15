@@ -1095,17 +1095,17 @@ const en = {
         {
           label: "Applications to the jury panel",
           title: "Jury Submissions",
-          date: "Jun 1 – Jul 8",
+          date: "June 1 – July 8",
         },
         {
           label: "Evaluation of competition entries",
           title: "Judging",
-          date: "Aug 16 – Sep 5",
+          date: "August 16 – September 5",
         },
         {
           label: "Final and announcement of results",
           title: "Results",
-          date: "Sep 26",
+          date: "September 26",
         },
       ],
     },
@@ -2928,7 +2928,7 @@ const ru: typeof en = {
         {
           label: "Период оценки конкурсных работ",
           title: "Оценка работ",
-          date: "16 авг – 5 сен",
+          date: "16 августа – 5 сентября",
         },
         {
           label: "Финал и оглашение результатов",
@@ -4751,12 +4751,12 @@ const ua: typeof en = {
         {
           label: "Подача заявок до суддівської колегії",
           title: "Прийом заявок",
-          date: "1 чер – 8 лип ",
+          date: "1 червня – 8 липня ",
         },
         {
           label: "Період оцінювання конкурсних робіт",
           title: "Оцінювання робіт",
-          date: "16 сер – 5 вер ",
+          date: "16 серпня – 5 вересня ",
         },
         {
           label: "Фінал і оголошення результатів",
