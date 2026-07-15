@@ -264,14 +264,14 @@ export default function ApplicationListPage({
             return (
               <DashboardCard key={app.id} className="relative p-0 transition hover:border-[rgba(114,160,193,0.34)] hover:bg-[rgba(242,248,251,0.82)] hover:shadow-[0_24px_64px_rgba(114,160,193,0.16)]">
                 {app.registrationEligible ? (
-                  <label className="absolute left-4 top-4 z-10 flex size-9 items-center justify-center rounded-full border border-[rgba(114,160,193,0.2)] bg-white/88 shadow-sm">
+                  <label className="absolute left-3 top-3 z-10 flex size-9 cursor-pointer items-center justify-center rounded-[10px] transition hover:bg-[rgba(114,160,193,0.08)]">
                     <span className="sr-only">{adminT.applications.selectForResend}</span>
                     <input
                       form="bulk-registration-resend"
                       type="checkbox"
                       name="profileIds"
                       value={app.id}
-                      className="size-4 rounded border-[rgba(114,160,193,0.35)] text-[var(--color-blue)]"
+                      className="admin-checkbox"
                     />
                   </label>
                 ) : null}
