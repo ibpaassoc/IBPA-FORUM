@@ -613,7 +613,7 @@ function TicketDetailPanel({
                   type="checkbox"
                   checked={form.galaDinner}
                   onChange={(e) => updateForm("galaDinner", e.target.checked)}
-                  className="size-4 rounded border-[rgba(37,42,45,0.18)] accent-[var(--color-blue)]"
+                  className="admin-checkbox"
                 />
                 {form.galaDinner ? adminT.tickets.included : adminT.tickets.notIncluded}
               </label>

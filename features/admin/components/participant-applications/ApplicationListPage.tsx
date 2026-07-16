@@ -263,19 +263,20 @@ export default function ApplicationListPage({
 
             return (
               <DashboardCard key={app.id} className="relative p-0 transition hover:border-[rgba(114,160,193,0.34)] hover:bg-[rgba(242,248,251,0.82)] hover:shadow-[0_24px_64px_rgba(114,160,193,0.16)]">
-                <label className="absolute left-4 top-4 z-10 flex size-9 items-center justify-center rounded-full border border-[rgba(114,160,193,0.2)] bg-white/88 shadow-sm">
-                  <span className="sr-only">{adminT.applications.selectForResend}</span>
-                  <input
-                    form="bulk-registration-resend"
-                    type="checkbox"
-                    name="profileIds"
-                    value={app.id}
-                    disabled={!app.registrationEligible}
-                    className="size-4 rounded border-[rgba(114,160,193,0.35)] text-[var(--color-blue)] disabled:opacity-35"
-                  />
-                </label>
+                {app.registrationEligible ? (
+                  <label className="absolute left-3 top-3 z-10 flex size-9 cursor-pointer items-center justify-center rounded-[10px] transition hover:bg-[rgba(114,160,193,0.08)]">
+                    <span className="sr-only">{adminT.applications.selectForResend}</span>
+                    <input
+                      form="bulk-registration-resend"
+                      type="checkbox"
+                      name="profileIds"
+                      value={app.id}
+                      className="admin-checkbox"
+                    />
+                  </label>
+                ) : null}
                 <Link href={`/admin/applications/${app.id}`} className="group block min-w-0">
-                    <div className="grid gap-4 p-4 pl-16 lg:grid-cols-[minmax(0,1.15fr)_minmax(260px,0.8fr)_minmax(180px,0.45fr)] lg:items-stretch">
+                    <div className={`grid gap-4 p-4 ${app.registrationEligible ? "pl-16" : ""} lg:grid-cols-[minmax(0,1.15fr)_minmax(260px,0.8fr)_minmax(180px,0.45fr)] lg:items-stretch`}>
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
                           <ApplicationStatusBadge status={app.status} />
