@@ -96,19 +96,12 @@ function PromoCard({ promo }: { promo: PromoCode }) {
             </p>
           </div>
         </div>
+        <div className="flex flex-col items-center  gap-10 sm:flex-row">
+          <DashboardPrimaryBtn type="submit" disabled={pending}>
+            <Save aria-hidden size={15} /> {pending ? adminT.common.loading : t.saveChanges}
+          </DashboardPrimaryBtn>
 
-        <div className="flex items-center justify-between gap-4 rounded-[18px] border border-[rgba(114,160,193,0.18)] bg-white/62 px-4 py-3">
-          <span>
-            <span className="block text-[0.86rem] font-semibold text-[var(--color-ink)]">
-              {enabled ? t.disable : t.enable}
-            </span>
-            <span className="mt-0.5 block text-[0.78rem] text-[var(--color-ink-soft)]">
-              {enabled ? t.disableHint : t.enableHint}
-            </span>
-          </span>
-        </div>
-
-        {state.message ? (
+          {state.message ? (
           <p className={`rounded-[16px] border px-4 py-3 text-sm ${
             state.ok
               ? "border-emerald-200 bg-emerald-50 text-emerald-700"
@@ -117,10 +110,7 @@ function PromoCard({ promo }: { promo: PromoCode }) {
             {state.message}
           </p>
         ) : null}
-
-        <DashboardPrimaryBtn type="submit" disabled={pending}>
-          <Save aria-hidden size={15} /> {pending ? adminT.common.loading : t.saveChanges}
-        </DashboardPrimaryBtn>
+        </div>
       </form>
     </DashboardCard>
   );
@@ -134,7 +124,6 @@ export default function DiscountManagementPage({ promos }: { promos: PromoCode[]
       <DashboardPageHeader
         label={t.label}
         title={t.title}
-        description={t.description}
       />
 
       <div className="grid gap-4 xl:grid-cols-2">
