@@ -9,6 +9,7 @@ import { PRICING } from "@/data/pricing";
 import { applyDiscountToPrice } from "@/features/tickets/types";
 import { useEarlyBird } from "@/features/tickets/useEarlyBird";
 import { validateInstagramInput } from "@/features/tickets/lib/instagram";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 type FormValues = {
   firstName: string;
@@ -23,6 +24,14 @@ type FormValues = {
 };
 
 type CertStatus = "idle" | "checking" | "valid" | "invalid" | "error";
+
+type PromoPreview = {
+  keyword: string;
+  discountPercent: number;
+  originalAmountCents: number;
+  discountAmountCents: number;
+  finalAmountCents: number;
+};
 
 const inputBase =
   "w-full rounded-[12px] border border-[var(--border-default)] bg-white px-4 py-3 text-[0.92rem] text-[var(--color-ink)] placeholder-[var(--color-ink-muted)] outline-none transition focus:border-[var(--color-blue)] focus:ring-2 focus:ring-[var(--color-blue)]/20 disabled:cursor-not-allowed disabled:opacity-50";
@@ -43,6 +52,14 @@ const membershipSectionTransition = {
 
 function priceStrToNum(str: string) {
   return parseFloat(str.replace("$", ""));
+}
+
+function centsToMoney(amountCents: number) {
+  return new Intl.NumberFormat("en", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 2,
+  }).format(amountCents / 100);
 }
 
 const CERT_STATUS_CONTENT: Record<Exclude<CertStatus, "idle">, React.ReactNode> = {
@@ -88,9 +105,15 @@ function CertStatusBadge({ status }: { status: CertStatus }) {
 }
 
 export default function TicketForm() {
+  const { t } = useLanguage();
+  const promoText = t.promo;
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [certStatus, setCertStatus] = useState<CertStatus>("idle");
+  const [promoInput, setPromoInput] = useState("");
+  const [promoPreview, setPromoPreview] = useState<PromoPreview | null>(null);
+  const [promoError, setPromoError] = useState("");
+  const [promoPending, setPromoPending] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { discount } = useEarlyBird();
@@ -175,9 +198,57 @@ export default function TicketForm() {
   const ticketPriceStr = discountedTicketPriceStr ?? rawTicketPriceStr;
 
   const galaPrice = PRICING.forumTickets.ibpaMembers.galaDinner;
+  const rawTicketCents = rawTicketPriceStr ? Math.round(priceStrToNum(rawTicketPriceStr) * 100) : 0;
+  const rawGalaCents = galaDinner ? Math.round(priceStrToNum(galaPrice) * 100) : 0;
+  const promoEligibleTotalCents = rawTicketCents + rawGalaCents;
   const ticketNum = ticketPriceStr ? priceStrToNum(ticketPriceStr) : 0;
   const galaNum = galaDinner ? priceStrToNum(galaPrice) : 0;
-  const total = Math.round((ticketNum + galaNum) * 100) / 100;
+  const total = promoPreview
+    ? promoPreview.finalAmountCents / 100
+    : Math.round((ticketNum + galaNum) * 100) / 100;
+
+  function promoMessage(errorCode?: string) {
+    if (errorCode === "DISABLED") return promoText.promoCodeDisabled;
+    if (errorCode === "WRONG_FLOW") return promoText.wrongFlow;
+    return promoText.invalidPromoCode;
+  }
+
+  async function applyPromoCode() {
+    if (!type || promoPending) return;
+    const code = promoInput.trim();
+    setPromoError("");
+    setPromoPreview(null);
+    if (!code) {
+      setPromoError(promoText.invalidPromoCode);
+      return;
+    }
+    setPromoPending(true);
+    try {
+      const response = await fetch("/api/promo-codes/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          promoCode: code,
+          paymentFlow: "TICKETS",
+          amountCents: promoEligibleTotalCents,
+        }),
+      });
+      const payload = (await response.json()) as {
+        ok?: boolean;
+        errorCode?: string;
+        promo?: PromoPreview;
+      };
+      if (!response.ok || !payload.ok || !payload.promo) {
+        setPromoError(promoMessage(payload.errorCode));
+        return;
+      }
+      setPromoPreview(payload.promo);
+    } catch {
+      setPromoError(promoText.invalidPromoCode);
+    } finally {
+      setPromoPending(false);
+    }
+  }
 
   const onSubmit = async (data: FormValues) => {
     if (!data.type) return;
@@ -194,6 +265,11 @@ export default function TicketForm() {
       return;
     }
 
+    if (promoInput.trim() && !promoPreview) {
+      setPromoError(promoText.invalidPromoCode);
+      return;
+    }
+
     setSubmitting(true);
     setServerError(null);
 
@@ -201,7 +277,7 @@ export default function TicketForm() {
       const response = await fetch("/api/tickets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, promoCode: promoPreview ? promoInput : "" }),
       });
 
       const json = await response.json();
@@ -491,11 +567,63 @@ export default function TicketForm() {
                     <span className="font-semibold text-[var(--color-ink)]">{galaPrice}</span>
                   </div>
                 )}
+                <div className="border-t border-[var(--border-soft)] pt-3">
+                  <label className={labelBase} htmlFor="tf-promo">
+                    {promoText.promoCode}
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      id="tf-promo"
+                      type="text"
+                      value={promoInput}
+                      onChange={(event) => {
+                        setPromoInput(event.target.value);
+                        setPromoPreview(null);
+                        setPromoError("");
+                      }}
+                      className={inputBase}
+                      autoCapitalize="characters"
+                      autoCorrect="off"
+                      spellCheck={false}
+                    />
+                    <button
+                      type="button"
+                      disabled={promoPending || !promoInput.trim()}
+                      onClick={() => void applyPromoCode()}
+                      className="inline-flex min-h-11 items-center justify-center rounded-[12px] border border-[var(--color-blue)]/35 bg-[var(--color-blue-wash)] px-4 text-[0.72rem] font-semibold uppercase tracking-[0.1em] text-[var(--color-blue)] transition hover:bg-[var(--color-blue-wash)] disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {promoPending ? promoText.applying : promoText.apply}
+                    </button>
+                  </div>
+                  {promoPreview ? (
+                    <p className="mt-2 text-[0.77rem] text-emerald-700">
+                      {promoText.promoCodeApplied}
+                    </p>
+                  ) : promoError ? (
+                    <p className={errorText}>{promoError}</p>
+                  ) : null}
+                </div>
+                {promoPreview ? (
+                  <>
+                    <div className="flex justify-between text-[0.88rem]">
+                      <span className="text-[var(--color-ink-soft)]">{promoText.originalPrice}</span>
+                      <span className="font-semibold text-[var(--color-ink)]">
+                        {centsToMoney(promoPreview.originalAmountCents)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-[0.88rem] text-emerald-700">
+                      <span>{promoText.discount} {promoPreview.discountPercent}%</span>
+                      <span className="font-semibold">
+                        -{centsToMoney(promoPreview.discountAmountCents)}
+                      </span>
+                    </div>
+                  </>
+                ) : null}
                 <div className="flex justify-between border-t border-[var(--border-soft)] pt-2 text-[0.92rem] font-bold text-[var(--color-ink)]">
-                  <span>Total</span>
+                  <span>{promoPreview ? promoText.finalTotal : "Total"}</span>
                   <span>${total % 1 === 0 ? total.toFixed(0) : total.toFixed(2)}</span>
                 </div>
-                {discount && (
+                {discount && !promoPreview && (
                   <p className="text-[0.72rem] text-[var(--color-blue)]">
                     Early Bird discount applied to forum pass only.
                   </p>
