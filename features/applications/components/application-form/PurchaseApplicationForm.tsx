@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   AlertCircle,
@@ -8,7 +9,6 @@ import {
   BadgeCheck,
   BriefcaseBusiness,
   Check,
-  ChevronDown,
   ClipboardCheck,
   CreditCard,
   FileText,
@@ -20,6 +20,8 @@ import {
   UserRound,
   X,
 } from "lucide-react";
+import NominationCategoryAccordion from "@/features/applications/components/nomination-selection/NominationCategoryAccordion";
+import { presentNominationCategories } from "@/features/applications/components/nomination-selection/nomination-presentation";
 import {
   SelectField,
   TextField,
@@ -29,6 +31,7 @@ import { computeApplicantNominationPrice } from "@/features/applications/lib/pri
 import { countryOptions } from "@/features/applications/config/countries";
 import type { CategoryOption } from "@/features/applications/types/application.types";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { translations } from "@/lib/i18n/translations";
 import { legalContent } from "@/shared/components/layout/legal-content";
 import {
   ButtonLayers,
@@ -77,6 +80,7 @@ const STEP_LOCATION = 2;
 const STEP_PROFESSIONAL = 3;
 const STEP_REVIEW = 4;
 const STEP_PAYMENT = 5;
+const MAX_NOMINATIONS = 5;
 
 const initialValues: FormValues = {
   firstName: "",
@@ -445,6 +449,17 @@ function SummaryFact({ label, value }: { label: string; value: string }) {
   );
 }
 
+function findRequestedNomination(categories: CategoryOption[], nominationId: string | null) {
+  if (!nominationId) return null;
+
+  for (const category of categories) {
+    const award = category.awards.find((candidate) => candidate.id === nominationId);
+    if (award) return { category, award };
+  }
+
+  return null;
+}
+
 /**
  * Public Apply flow as six horizontal steps: nominations, personal details,
  * location, professional details, review, and payment. All state lives here, so
@@ -455,28 +470,33 @@ function SummaryFact({ label, value }: { label: string; value: string }) {
  */
 export default function PurchaseApplicationForm({ categories }: { categories: CategoryOption[] }) {
   const { language, t: sharedT } = useLanguage();
+  const searchParams = useSearchParams();
   const t = copy[language] ?? copy.en;
   const promoText = sharedT.promo;
   const reducedMotion = useReducedMotion();
-  const restored = useMemo(() => restoreState(), []);
-  const [values, setValues] = useState<FormValues>({ ...initialValues, ...restored?.values });
-  const [selectedAwardIds, setSelectedAwardIds] = useState<string[]>(restored?.selectedAwardIds ?? []);
-  const [step, setStep] = useState<number>(() => {
-    const saved = restored?.step ?? STEP_NOMINATIONS;
-    if (saved > STEP_NOMINATIONS && (restored?.selectedAwardIds?.length ?? 0) === 0) {
-      return STEP_NOMINATIONS;
-    }
-    return Math.min(Math.max(saved, STEP_NOMINATIONS), STEP_PAYMENT);
-  });
-  const [furthestStep, setFurthestStep] = useState<number>(() =>
-    Math.min(
-      Math.max(restored?.furthestStep ?? restored?.step ?? STEP_NOMINATIONS, STEP_NOMINATIONS),
-      STEP_PAYMENT,
-    ),
+  const nominationParam = searchParams.get("nomination")?.trim() || null;
+  const requestedNomination = findRequestedNomination(categories, nominationParam);
+  const requestedAwardId = requestedNomination?.award.id ?? null;
+  const requestedCategoryId = requestedNomination?.category.id ?? null;
+  const initialSelectedAwardIds = requestedAwardId ? [requestedAwardId] : [];
+  const presentedCategories = useMemo(
+    () =>
+      presentNominationCategories(
+        categories,
+        translations.en.categoriesPage.directions,
+        sharedT.categoriesPage.directions,
+      ),
+    [categories, sharedT.categoriesPage.directions],
   );
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
-    () => new Set(categories.slice(0, 1).map((category) => category.id)),
+  const [values, setValues] = useState<FormValues>(initialValues);
+  const [selectedAwardIds, setSelectedAwardIds] = useState<string[]>(initialSelectedAwardIds);
+  const [step, setStep] = useState<number>(STEP_NOMINATIONS);
+  const [furthestStep, setFurthestStep] = useState<number>(STEP_NOMINATIONS);
+  const [openCategoryId, setOpenCategoryId] = useState<string | null>(
+    requestedNomination?.category.id ?? categories[0]?.id ?? null,
   );
+  const [focusAwardId, setFocusAwardId] = useState<string | null>(requestedNomination?.award.id ?? null);
+  const handledNominationParam = useRef(nominationParam);
   const [certState, setCertState] = useState<CertState>("idle");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [openAgreement, setOpenAgreement] = useState<keyof typeof t.agreementsCopy | null>(null);
@@ -492,10 +512,14 @@ export default function PurchaseApplicationForm({ categories }: { categories: Ca
     nominationCount: Math.max(1, selectedAwardIds.length),
     isIbpaMember: verifiedMember,
   });
-  const selectedAwards = categories.flatMap((category) =>
+  const selectedAwards = presentedCategories.flatMap((category) =>
     category.awards
       .filter((award) => selectedAwardIds.includes(award.id))
-      .map((award) => ({ ...award, category }))
+      .map((award) => ({
+        ...award,
+        name: award.displayName,
+        category: { ...category, name: category.displayName },
+      }))
   );
   const count = selectedAwardIds.length;
   const finalAmountCents = promoPreview?.finalAmountCents ?? pricing.amountCents;
@@ -535,6 +559,69 @@ export default function PurchaseApplicationForm({ categories }: { categories: Ca
     payment: [siteLegal.terms.sections[2], siteLegal.privacy.sections[2]],
     refund: [],
   };
+
+  useEffect(() => {
+    const restored = restoreState();
+    if (!restored) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      const restoredIds = restored.selectedAwardIds ?? [];
+      const mergedIds =
+        requestedAwardId &&
+        !restoredIds.includes(requestedAwardId) &&
+        restoredIds.length < MAX_NOMINATIONS
+          ? [...restoredIds, requestedAwardId]
+          : restoredIds;
+      const savedStep = requestedAwardId ? STEP_NOMINATIONS : restored.step ?? STEP_NOMINATIONS;
+      const safeStep =
+        savedStep > STEP_NOMINATIONS && mergedIds.length === 0
+          ? STEP_NOMINATIONS
+          : Math.min(Math.max(savedStep, STEP_NOMINATIONS), STEP_PAYMENT);
+
+      setValues({ ...initialValues, ...restored.values });
+      setSelectedAwardIds(mergedIds);
+      setStep(safeStep);
+      setFurthestStep(
+        Math.min(
+          Math.max(
+            restored.furthestStep ?? restored.step ?? STEP_NOMINATIONS,
+            STEP_NOMINATIONS,
+          ),
+          STEP_PAYMENT,
+        ),
+      );
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [requestedAwardId]);
+
+  useEffect(() => {
+    if (handledNominationParam.current === nominationParam) return;
+    handledNominationParam.current = nominationParam;
+
+    const frame = window.requestAnimationFrame(() => {
+      if (!requestedAwardId || !requestedCategoryId) {
+        setFocusAwardId(null);
+        return;
+      }
+
+      setSelectedAwardIds((current) => {
+        if (current.includes(requestedAwardId) || current.length >= MAX_NOMINATIONS) {
+          return current;
+        }
+        return [...current, requestedAwardId];
+      });
+      setOpenCategoryId(requestedCategoryId);
+      setFocusAwardId(requestedAwardId);
+      setStep(STEP_NOMINATIONS);
+      setFieldErrors((current) => ({ ...current, selectedAwardIds: "" }));
+      setSubmitError("");
+      setPromoPreview(null);
+      setPromoError("");
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [nominationParam, requestedAwardId, requestedCategoryId]);
 
   useEffect(() => {
     window.sessionStorage.setItem(
@@ -606,15 +693,6 @@ export default function PurchaseApplicationForm({ categories }: { categories: Ca
     setFieldErrors((current) => ({ ...current, selectedAwardIds: "" }));
     setPromoPreview(null);
     setPromoError("");
-  }
-
-  function toggleCategory(categoryId: string) {
-    setExpandedCategories((current) => {
-      const next = new Set(current);
-      if (next.has(categoryId)) next.delete(categoryId);
-      else next.add(categoryId);
-      return next;
-    });
   }
 
   function goToStep(next: number) {
@@ -813,59 +891,19 @@ export default function PurchaseApplicationForm({ categories }: { categories: Ca
             </p>
           ) : null}
 
-          <div className="grid items-start gap-4 md:grid-cols-2">
-            {categories.map((category, categoryIndex) => {
-              const expanded = expandedCategories.has(category.id);
-              const selectedInCategory = category.awards.filter((award) => selectedAwardIds.includes(award.id)).length;
-              return (
-                <motion.section
-                  layout={!reducedMotion}
-                  key={category.id}
-                  initial={reducedMotion ? false : { opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.28, delay: reducedMotion ? 0 : categoryIndex * 0.035 }}
-                  whileHover={reducedMotion ? undefined : { y: -3, scale: 1.003 }}
-                  className="group relative self-start overflow-hidden rounded-[2rem] border border-white/70 bg-white/[0.72] p-px shadow-[0_18px_54px_rgba(42,66,82,0.06)] backdrop-blur-xl transition hover:border-[var(--color-blue)]/35 hover:shadow-[0_22px_62px_rgba(114,160,193,0.13)]"
-                >
-                  <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(145deg,rgba(255,255,255,0.95),rgba(255,255,255,0.48),rgba(185,217,235,0.24))]" />
-                  <div className="pointer-events-none absolute -right-14 -top-16 size-44 rounded-full bg-[var(--color-blue-light)]/28 blur-2xl" />
-                  <div className="relative rounded-[calc(2rem-1px)] bg-white/[0.48] backdrop-blur-xl">
-                    <h3>
-                      <button type="button" aria-expanded={expanded} onClick={() => toggleCategory(category.id)} className="flex min-h-[148px] w-full items-stretch justify-between gap-4 rounded-[calc(2rem-1px)] px-5 py-5 text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-[rgba(114,160,193,0.3)] sm:px-6">
-                        <span className="flex min-w-0 flex-col justify-between">
-                          <span className="w-fit rounded-full border border-[var(--color-blue)]/18 bg-white/60 px-3 py-1 text-[0.64rem] font-semibold tracking-[0.2em] text-[var(--color-blue)] shadow-sm backdrop-blur-xl">{String(categoryIndex + 1).padStart(2, "0")}</span>
-                          <span className="mt-7 block font-[var(--font-title-family)] text-[clamp(1.35rem,2.4vw,1.85rem)] font-light leading-[1.02] tracking-[-0.035em] text-[var(--color-ink)]">{category.name}</span>
-                          <span className="mt-2 block text-[0.76rem] text-[var(--color-ink-soft)]">
-                            {category.awards.length} {t.nominationsWord}
-                            {selectedInCategory > 0 ? <span className="ml-2 font-semibold text-[#4d88b2]">· {selectedInCategory} {t.selectedWord}</span> : null}
-                          </span>
-                        </span>
-                        <span className="flex flex-col items-end justify-between">
-                          {selectedInCategory > 0 ? <span className="inline-flex size-7 items-center justify-center rounded-full border border-white/70 bg-[var(--color-blue-wash)] text-[0.68rem] font-bold text-[#356f98]">{selectedInCategory}</span> : <span className="mt-2 size-2.5 rounded-full bg-[var(--color-blue)]/35 shadow-[0_0_18px_rgba(114,160,193,0.42)] transition group-hover:bg-[var(--color-blue)]" />}
-                          <span className="flex size-9 items-center justify-center rounded-full border border-[var(--color-blue)]/18 bg-white/64 text-[var(--color-blue)] shadow-sm"><ChevronDown aria-hidden size={17} className={`transition-transform duration-300 motion-reduce:transition-none ${expanded ? "rotate-180" : ""}`} /></span>
-                        </span>
-                      </button>
-                    </h3>
-                    <div className={`grid transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none ${expanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
-                      <div className="overflow-hidden">
-                        <div className="mx-5 mb-5 grid gap-2.5 border-t border-[var(--color-blue)]/14 pt-4 sm:mx-6 xl:grid-cols-2">
-                          {category.awards.map((award) => {
-                            const selected = selectedAwardIds.includes(award.id);
-                            return (
-                              <button key={award.id} type="button" aria-pressed={selected} onClick={() => toggleAward(award.id)} className={`relative flex min-h-[70px] items-start justify-between gap-3 rounded-[20px] border p-4 text-left backdrop-blur-xl transition duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.3)] ${selected ? "border-[var(--color-blue)]/55 bg-[linear-gradient(150deg,rgba(255,255,255,0.96),rgba(185,217,235,0.4))] text-[var(--color-ink)] shadow-[0_14px_34px_rgba(114,160,193,0.14)]" : "border-[rgba(114,160,193,0.18)] bg-white/70 text-[var(--color-ink-soft)] hover:-translate-y-px hover:border-[var(--color-blue)]/40 hover:bg-[var(--color-blue-wash)]/60 hover:text-[var(--color-ink)]"}`}>
-                                <span className="min-w-0 break-words text-sm leading-snug">{award.name}</span>
-                                <span aria-hidden className={`flex size-6 shrink-0 items-center justify-center rounded-full border transition ${selected ? "border-[var(--color-blue)]/50 bg-[var(--color-blue-wash)] text-[#356f98]" : "border-[rgba(114,160,193,0.3)] bg-white/80 text-transparent"}`}><Check size={13} strokeWidth={3} /></span>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </motion.section>
-              );
-            })}
-          </div>
+          <NominationCategoryAccordion
+            categories={presentedCategories}
+            openCategoryId={openCategoryId}
+            onOpenCategoryChange={setOpenCategoryId}
+            selectedAwardIds={selectedAwardIds}
+            onAwardToggle={toggleAward}
+            focusAwardId={focusAwardId}
+            copy={{
+              nominationSingular: t.nominationWord,
+              nominationPlural: t.nominationsWord,
+              selected: t.selectedWord,
+            }}
+          />
 
           <div className="sticky bottom-3 z-20 flex flex-col gap-3 rounded-[24px] border border-[rgba(114,160,193,0.24)] bg-white/88 p-4 shadow-[0_18px_54px_rgba(37,42,45,0.12)] backdrop-blur-2xl sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-[var(--color-ink-soft)]" aria-live="polite">
