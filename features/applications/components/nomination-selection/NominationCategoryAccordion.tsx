@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowUpRight,
@@ -10,7 +10,6 @@ import {
   Brush,
   Camera,
   Check,
-  ChevronDown,
   Gem,
   GraduationCap,
   HeartHandshake,
@@ -94,9 +93,8 @@ export default function NominationCategoryAccordion({
   const contentTransition = reducedMotion
     ? { duration: 0 }
     : { duration: PUBLIC_MOTION_DURATION.base, ease: PUBLIC_MOTION_EASE };
-  const categoryPairs = Array.from(
-    { length: Math.ceil(categories.length / 2) },
-    (_, pairIndex) => categories.slice(pairIndex * 2, pairIndex * 2 + 2),
+  const openCategoryIndex = categories.findIndex(
+    (category) => category.id === openCategoryId,
   );
 
   return (
@@ -109,42 +107,52 @@ export default function NominationCategoryAccordion({
           transition: { staggerChildren: reducedMotion ? 0 : 0.045 },
         },
       }}
-      className={`flex flex-col gap-4 lg:gap-5 ${className}`}
+      className={`grid items-start gap-4 lg:grid-cols-2 lg:gap-5 ${className}`}
     >
-      {categoryPairs.map((pair, pairIndex) => (
-        <motion.div
-          layout={reducedMotion ? false : true}
-          key={`category-pair-${pairIndex}`}
-          variants={{
-            hidden: {},
-            visible: {
-              transition: { staggerChildren: reducedMotion ? 0 : 0.045 },
-            },
-          }}
-          transition={{ layout: layoutTransition }}
-          className="grid items-start gap-4 lg:grid-cols-2 lg:gap-5"
-        >
-          {pair.map((category) => {
-            const isOpen = openCategoryId === category.id;
-            const selectedInCategory = category.awards.filter((award) => selectedAwards.has(award.id)).length;
-            const Icon = categoryIconBySlug[category.slug] ?? Award;
-            const contentId = `nomination-category-${category.id}`;
+      {categories.map((category, categoryIndex) => {
+        const isOpen = openCategoryId === category.id;
+        const categoryOrder =
+          openCategoryIndex > 0 && openCategoryIndex % 2 === 1
+            ? categoryIndex === openCategoryIndex
+              ? openCategoryIndex
+              : categoryIndex === openCategoryIndex - 1
+                ? openCategoryIndex + 1
+                : categoryIndex + 1
+            : categoryIndex + 1;
+        const selectedInCategory = category.awards.filter((award) =>
+          selectedAwards.has(award.id),
+        ).length;
+        const Icon = categoryIconBySlug[category.slug] ?? Award;
+        const contentId = `nomination-category-${category.id}`;
 
-            return (
-              <motion.article
-                layout={reducedMotion ? false : true}
-                key={category.id}
-                variants={{
-                  hidden: { opacity: 0, y: 14 },
-                  visible: { opacity: 1, y: 0 },
-                }}
-                transition={{ ...contentTransition, layout: layoutTransition }}
-                className={`relative self-start overflow-hidden rounded-[2rem] border bg-white/78 p-px backdrop-blur-2xl ${
-                  isOpen
-                    ? "border-[rgba(114,160,193,0.56)] shadow-[0_28px_76px_rgba(114,160,193,0.2)] lg:order-first lg:col-span-2"
-                    : "border-white/90 shadow-[0_18px_52px_rgba(79,115,139,0.09)]"
-                }`}
-              >
+        return (
+          <motion.article
+            layout={reducedMotion ? false : true}
+            key={category.id}
+            variants={{
+              hidden: { opacity: 0, y: 14 },
+              visible: { opacity: 1, y: 0 },
+            }}
+            transition={{ ...contentTransition, layout: layoutTransition }}
+            whileHover={
+              reducedMotion || isOpen
+                ? undefined
+                : {
+                    y: -4,
+                    scale: 1.006,
+                    transition: {
+                      duration: PUBLIC_MOTION_DURATION.fast,
+                      ease: PUBLIC_MOTION_EASE,
+                    },
+                  }
+            }
+            style={{ "--category-order": categoryOrder } as CSSProperties}
+            className={`group/category relative self-start overflow-hidden rounded-[2rem] border bg-white/78 p-px backdrop-blur-2xl motion-reduce:transform-none lg:[order:var(--category-order)] ${
+              isOpen
+                ? "border-[rgba(114,160,193,0.56)] shadow-[0_28px_76px_rgba(114,160,193,0.2)] lg:col-span-2"
+                : "border-white/90 shadow-[0_18px_52px_rgba(79,115,139,0.09)] transition-[border-color,box-shadow] duration-300 hover:border-[rgba(114,160,193,0.42)] hover:shadow-[0_24px_60px_rgba(114,160,193,0.16)] motion-reduce:transition-none"
+            }`}
+          >
             <div className="pointer-events-none absolute right-5 top-4 size-28 rounded-full bg-[rgba(185,217,235,0.18)] blur-2xl" />
             <div className="relative rounded-[calc(2rem-1px)] border border-[rgba(114,160,193,0.1)] bg-white/72 backdrop-blur-xl">
               <h3>
@@ -152,20 +160,28 @@ export default function NominationCategoryAccordion({
                   type="button"
                   aria-expanded={isOpen}
                   aria-controls={contentId}
-                  onClick={() => onOpenCategoryChange(isOpen ? null : category.id)}
-                  className="block min-h-[142px] w-full rounded-[calc(2rem-1px)] px-5 py-5 text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-[rgba(114,160,193,0.3)] sm:px-6"
+                  onClick={() =>
+                    onOpenCategoryChange(isOpen ? null : category.id)
+                  }
+                  className="block min-h-[142px] w-full cursor-pointer rounded-[calc(2rem-1px)] px-5 py-5 text-left transition-colors duration-300 hover:bg-[#f8fbfd]/55 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-[rgba(114,160,193,0.3)] motion-reduce:transition-none sm:px-6"
                 >
-                  <motion.div layout="position" className="flex min-h-[100px] items-stretch justify-between gap-4">
+                  <motion.div
+                    layout="position"
+                    className="flex min-h-[100px] items-stretch justify-between gap-4"
+                  >
                     <span className="flex min-w-0 items-start gap-4">
-                      <span className="flex size-11 shrink-0 items-center justify-center rounded-[16px] border border-[rgba(114,160,193,0.2)] bg-white/86 text-[#5689ad] shadow-[0_12px_28px_rgba(114,160,193,0.12)]">
+                      <span className="flex size-11 shrink-0 items-center justify-center rounded-[16px] border border-[rgba(114,160,193,0.2)] bg-white/86 text-[#5689ad] shadow-[0_12px_28px_rgba(114,160,193,0.12)] transition duration-300 group-hover/category:scale-105 group-hover/category:-rotate-3 group-hover/category:border-[rgba(114,160,193,0.4)] group-hover/category:bg-[#f1f8fc] motion-reduce:transform-none motion-reduce:transition-none">
                         <Icon aria-hidden className="size-[17px]" />
                       </span>
                       <span className="flex min-w-0 flex-col justify-center">
-                        <span className="block max-w-xl break-words font-[var(--font-title-family)] text-[clamp(1.28rem,2.3vw,1.85rem)] font-light leading-[1.04] tracking-[-0.035em] text-[var(--color-ink)]">
+                        <span className="block max-w-xl break-words font-[var(--font-title-family)] text-[clamp(1.28rem,2.3vw,1.85rem)] font-light leading-[1.04] tracking-[-0.035em] text-[var(--color-ink)] transition-transform duration-300 group-hover/category:translate-x-1 motion-reduce:transform-none motion-reduce:transition-none">
                           {category.displayName}
                         </span>
                         <span className="mt-2 block text-[0.76rem] text-[var(--color-ink-soft)]">
-                          {category.awards.length} {category.awards.length === 1 ? copy.nominationSingular : copy.nominationPlural}
+                          {category.awards.length}{" "}
+                          {category.awards.length === 1
+                            ? copy.nominationSingular
+                            : copy.nominationPlural}
                           {selectedInCategory > 0 ? (
                             <span className="ml-2 font-semibold text-[#5689ad]">
                               · {selectedInCategory} {copy.selected}
@@ -175,21 +191,11 @@ export default function NominationCategoryAccordion({
                       </span>
                     </span>
 
-                    <span className="flex shrink-0 flex-col items-end justify-between">
-                      {selectedInCategory > 0 ? (
-                        <span className="inline-flex size-7 items-center justify-center rounded-full border border-[rgba(114,160,193,0.24)] bg-[#edf6fb] text-[0.68rem] font-bold text-[#477b9f]">
-                          {selectedInCategory}
-                        </span>
-                      ) : null}
-                      <motion.span
-                        aria-hidden
-                        animate={{ rotate: isOpen ? 180 : 0 }}
-                        transition={contentTransition}
-                        className="flex size-9 items-center justify-center rounded-full border border-[rgba(114,160,193,0.2)] bg-white/84 text-[#6391b1] shadow-sm"
-                      >
-                        <ChevronDown size={17} />
-                      </motion.span>
-                    </span>
+                    {selectedInCategory > 0 ? (
+                      <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-full border border-[rgba(114,160,193,0.24)] bg-[#edf6fb] text-[0.68rem] font-bold text-[#477b9f]">
+                        {selectedInCategory}
+                      </span>
+                    ) : null}
                   </motion.div>
                 </button>
               </h3>
@@ -211,7 +217,9 @@ export default function NominationCategoryAccordion({
                       variants={{
                         hidden: {},
                         visible: {
-                          transition: { staggerChildren: reducedMotion ? 0 : 0.045 },
+                          transition: {
+                            staggerChildren: reducedMotion ? 0 : 0.045,
+                          },
                         },
                       }}
                       className="grid grid-cols-1 gap-3 border-t border-[rgba(114,160,193,0.16)] pt-5 md:grid-cols-2 xl:grid-cols-3"
@@ -226,7 +234,9 @@ export default function NominationCategoryAccordion({
                         const label = (
                           <>
                             <span className="flex min-w-0 flex-1 flex-col self-stretch justify-between gap-3">
-                              <span className="break-words text-sm leading-snug">{award.displayName}</span>
+                              <span className="break-words text-sm leading-snug">
+                                {award.displayName}
+                              </span>
                               {getAwardHref && copy.continueToApplication ? (
                                 <span className="inline-flex items-center gap-1 text-[0.65rem] font-semibold uppercase tracking-[0.11em] text-[#6391b1]">
                                   {copy.continueToApplication}
@@ -242,7 +252,11 @@ export default function NominationCategoryAccordion({
                                   : "border-[rgba(114,160,193,0.28)] bg-white/90 text-transparent"
                               }`}
                             >
-                              {getAwardHref ? <ArrowUpRight size={13} /> : <Check size={13} strokeWidth={3} />}
+                              {getAwardHref ? (
+                                <ArrowUpRight size={13} />
+                              ) : (
+                                <Check size={13} strokeWidth={3} />
+                              )}
                             </span>
                           </>
                         );
@@ -255,13 +269,17 @@ export default function NominationCategoryAccordion({
                               hidden: { opacity: 0, y: 10 },
                               visible: { opacity: 1, y: 0 },
                             }}
-                            transition={{ ...contentTransition, delay: reducedMotion ? 0 : awardIndex * 0.005 }}
+                            transition={{
+                              ...contentTransition,
+                              delay: reducedMotion ? 0 : awardIndex * 0.005,
+                            }}
                             className="h-full"
                           >
                             {getAwardHref ? (
                               <Link
                                 ref={(node) => {
-                                  if (node) nominationRefs.current.set(award.id, node);
+                                  if (node)
+                                    nominationRefs.current.set(award.id, node);
                                   else nominationRefs.current.delete(award.id);
                                 }}
                                 href={getAwardHref(award.id)}
@@ -273,7 +291,8 @@ export default function NominationCategoryAccordion({
                             ) : (
                               <button
                                 ref={(node) => {
-                                  if (node) nominationRefs.current.set(award.id, node);
+                                  if (node)
+                                    nominationRefs.current.set(award.id, node);
                                   else nominationRefs.current.delete(award.id);
                                 }}
                                 type="button"
@@ -292,11 +311,9 @@ export default function NominationCategoryAccordion({
                 ) : null}
               </AnimatePresence>
             </div>
-              </motion.article>
-            );
-          })}
-        </motion.div>
-      ))}
+          </motion.article>
+        );
+      })}
     </motion.div>
   );
 }
