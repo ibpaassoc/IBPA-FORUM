@@ -35,6 +35,7 @@ export async function createTicketCheckoutSession({
   isIbpaMember,
   earlyBirdDiscountedAmountCents,
   locale,
+  promoDiscountId,
 }: {
   ticketId: string;
   email: string;
@@ -43,6 +44,7 @@ export async function createTicketCheckoutSession({
   isIbpaMember: boolean;
   earlyBirdDiscountedAmountCents: number | null;
   locale: Language;
+  promoDiscountId?: string | null;
 }) {
   const stripe = getStripe();
   const appUrl = getAppUrl();
@@ -85,6 +87,7 @@ export async function createTicketCheckoutSession({
     metadata,
     payment_intent_data: { metadata },
     line_items: lineItems,
+    ...(promoDiscountId ? { discounts: [{ coupon: promoDiscountId }] } : {}),
   });
 
   if (!session.url) {

@@ -125,15 +125,19 @@ export async function createCompetitorCheckoutSession({
 export async function createApplicantNominationCheckoutSession({
   paymentId,
   email,
-  amountCents,
+  originalAmountCents,
+  finalAmountCents,
   currency = "usd",
   nominationCount,
+  promoDiscountId,
 }: {
   paymentId: string;
   email: string;
-  amountCents: number;
+  originalAmountCents: number;
+  finalAmountCents: number;
   currency?: "usd";
   nominationCount: number;
+  promoDiscountId?: string | null;
 }) {
   const stripe = getStripe();
   const appUrl = getAppUrl();
@@ -155,7 +159,7 @@ export async function createApplicantNominationCheckoutSession({
       {
         price_data: {
           currency,
-          unit_amount: amountCents,
+          unit_amount: originalAmountCents,
           product_data: {
             name:
               safeCount === 1
@@ -166,10 +170,19 @@ export async function createApplicantNominationCheckoutSession({
         quantity: 1,
       },
     ],
+    ...(promoDiscountId ? { discounts: [{ coupon: promoDiscountId }] } : {}),
   });
 
   if (!session.url) {
     throw new Error("Stripe Checkout session was created without a payment URL.");
+  }
+
+  if (promoDiscountId && session.amount_total !== null && session.amount_total !== finalAmountCents) {
+    console.warn("Stripe Checkout session amount differs from calculated promo total.", {
+      paymentId,
+      expectedAmountCents: finalAmountCents,
+      stripeAmountCents: session.amount_total,
+    });
   }
 
   return {

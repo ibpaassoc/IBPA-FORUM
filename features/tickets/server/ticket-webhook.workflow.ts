@@ -86,6 +86,7 @@ async function handleTicketCheckoutCompleted(event: Stripe.Event): Promise<boole
         where: { stripeSessionId: session.id },
         data: {
           status: "PAID",
+          ...(session.amount_total !== null ? { amount: session.amount_total } : {}),
           stripePaymentIntentId: paymentIntentId,
           paidAt,
         },

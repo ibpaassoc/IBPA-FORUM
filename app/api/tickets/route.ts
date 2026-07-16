@@ -4,6 +4,7 @@ import { initiateTicketPurchase, TicketConflictError, InvalidCertError } from "@
 import { isProduction, validateProductionEnv } from "@/lib/env";
 import { getServerLanguage } from "@/lib/i18n/server";
 import { translations } from "@/lib/i18n/translations";
+import { PromoCodeError } from "@/features/promos/server/promo-service";
 
 function getErrorMessage(error: unknown) {
   if (error instanceof Error) return error.message;
@@ -46,6 +47,13 @@ export async function POST(request: NextRequest) {
 
     if (error instanceof InvalidCertError) {
       return NextResponse.json({ message: error.message }, { status: 422 });
+    }
+
+    if (error instanceof PromoCodeError) {
+      return NextResponse.json(
+        { errorCode: `PROMO_${error.code}`, message: error.message },
+        { status: error.code === "DISABLED" ? 409 : 400 }
+      );
     }
 
     console.error("POST /api/tickets error:", error);

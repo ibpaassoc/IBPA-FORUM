@@ -7,15 +7,20 @@ import {
 
 export async function POST(request: Request) {
   const { applicantProfile } = await requireApplicantAccount();
-  const body = (await request.json().catch(() => ({}))) as { awardIds?: unknown };
+  const body = (await request.json().catch(() => ({}))) as {
+    awardIds?: unknown;
+    promoCode?: unknown;
+  };
   const awardIds = Array.isArray(body.awardIds)
     ? body.awardIds.filter((item): item is string => typeof item === "string")
     : [];
+  const promoCode = typeof body.promoCode === "string" ? body.promoCode : "";
 
   try {
     const result = await createAccountApplicantNominationCheckout({
       applicantProfileId: applicantProfile.id,
       awardIds,
+      promoCode,
     });
 
     return NextResponse.json({

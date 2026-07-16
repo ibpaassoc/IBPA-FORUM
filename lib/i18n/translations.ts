@@ -2116,6 +2116,23 @@ const en = {
         "Please note! If you have purchased a ticket to the Beauty Business Forum but your plans change and you are unable to attend, please notify us no later than one month before the event begins. In that case, we will be able to issue a refund in accordance with the event's refund policy.",
     },
   },
+  promo: {
+    promoCode: "Promo code",
+    apply: "Apply",
+    promoCodeApplied: "Promo code applied",
+    invalidPromoCode: "Invalid promo code",
+    promoCodeDisabled: "Promo code is disabled",
+    wrongFlow: "Promo code cannot be used for this purchase",
+    originalPrice: "Original price",
+    discount: "Discount",
+    finalTotal: "Final total",
+    active: "Active",
+    inactive: "Inactive",
+    enable: "Enable",
+    disable: "Disable",
+    saveChanges: "Save changes",
+    applying: "Applying...",
+  },
   notFound: {
     title: "Page not found",
     description: "The page you are looking for does not exist or is no longer available.",
@@ -4237,6 +4254,23 @@ const ru: typeof en = {
       refundNotice:
         "Обратите, пожалуйста, внимание! Если вы уже приобрели билет на Beauty Business Forum, но ваши планы изменились и вы не сможете присутствовать, пожалуйста, сообщите нам об этом не позднее чем за один месяц до начала мероприятия. В этом случае мы сможем оформить возврат средств согласно правилам мероприятия.",
     },
+  },
+  promo: {
+    promoCode: "Промокод",
+    apply: "Применить",
+    promoCodeApplied: "Промокод применён",
+    invalidPromoCode: "Недействительный промокод",
+    promoCodeDisabled: "Промокод отключён",
+    wrongFlow: "Промокод нельзя использовать для этой покупки",
+    originalPrice: "Исходная цена",
+    discount: "Скидка",
+    finalTotal: "Итоговая сумма",
+    active: "Активен",
+    inactive: "Неактивен",
+    enable: "Включить",
+    disable: "Отключить",
+    saveChanges: "Сохранить изменения",
+    applying: "Применяем...",
   },
   notFound: {
     title: "Страница не найдена",
@@ -6360,6 +6394,23 @@ const ua: typeof en = {
         "Будь ласка, зверніть увагу! Якщо ви вже придбали квиток на Beauty Business Forum, але ваші плани змінилися і ви не зможете бути присутніми, будь ласка, повідомте нас про це не пізніше ніж за один місяць до початку заходу. У такому разі ми зможемо оформити повернення коштів відповідно до правил заходу.",
     },
   },
+  promo: {
+    promoCode: "Промокод",
+    apply: "Застосувати",
+    promoCodeApplied: "Промокод застосовано",
+    invalidPromoCode: "Недійсний промокод",
+    promoCodeDisabled: "Промокод вимкнено",
+    wrongFlow: "Промокод не можна використати для цієї покупки",
+    originalPrice: "Початкова ціна",
+    discount: "Знижка",
+    finalTotal: "Підсумкова сума",
+    active: "Активний",
+    inactive: "Неактивний",
+    enable: "Увімкнути",
+    disable: "Вимкнути",
+    saveChanges: "Зберегти зміни",
+    applying: "Застосовуємо...",
+  },
   notFound: {
     title: "Сторінку не знайдено",
     description: "Сторінка, яку ви шукаєте, не існує або більше недоступна.",
@@ -6375,4 +6426,3 @@ export const translations: Record<Language, typeof en> = {
 };
 
 export type Translations = typeof en;
-

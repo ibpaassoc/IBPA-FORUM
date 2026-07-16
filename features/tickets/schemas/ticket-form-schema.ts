@@ -22,6 +22,7 @@ export const ticketApiSchema = z
     galaDinner: z.boolean(),
     isIbpaMember: z.boolean(),
     ibpaCertNumber: z.string().optional(),
+    promoCode: z.string().trim().optional(),
   })
   .refine(
     (data) =>

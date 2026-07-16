@@ -5,6 +5,14 @@ import { computeApplicantNominationPrice } from "@/features/applications/lib/pri
 import type { CategoryOption } from "@/features/applications/types/application.types";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
+type PromoPreview = {
+  keyword: string;
+  discountPercent: number;
+  originalAmountCents: number;
+  discountAmountCents: number;
+  finalAmountCents: number;
+};
+
 function money(amountCents: number) {
   return new Intl.NumberFormat("en", {
     style: "currency",
@@ -38,6 +46,12 @@ export default function NominationPurchaseSummary({
   isVerifiedMember,
   submitting,
   error,
+  promoInput,
+  promoPreview,
+  promoError,
+  promoPending,
+  onPromoInputChange,
+  onApplyPromo,
   onRemoveAward,
   onCheckout,
 }: {
@@ -46,6 +60,12 @@ export default function NominationPurchaseSummary({
   isVerifiedMember: boolean;
   submitting: boolean;
   error: string;
+  promoInput: string;
+  promoPreview: PromoPreview | null;
+  promoError: string;
+  promoPending: boolean;
+  onPromoInputChange: (value: string) => void;
+  onApplyPromo: () => void;
   onRemoveAward: (awardId: string) => void;
   onCheckout: () => void;
 }) {
@@ -58,6 +78,7 @@ export default function NominationPurchaseSummary({
     nominationCount: Math.max(1, count),
     isIbpaMember: isVerifiedMember,
   });
+  const finalAmountCents = promoPreview?.finalAmountCents ?? pricing.amountCents;
 
   return (
     <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
@@ -126,11 +147,59 @@ export default function NominationPurchaseSummary({
           </dl>
 
           <div className="mt-4 border-t border-[rgba(114,160,193,0.18)] pt-4">
+            <label className="block">
+              <span className="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-soft)]">
+                {t.promo.promoCode}
+              </span>
+              <span className="mt-2 flex gap-2">
+                <input
+                  type="text"
+                  value={promoInput}
+                  onChange={(event) => onPromoInputChange(event.target.value)}
+                  className="h-11 min-w-0 flex-1 rounded-[18px] border border-[rgba(114,160,193,0.22)] bg-white/74 px-4 text-sm text-[var(--color-ink)] outline-none transition focus:border-[var(--color-blue)] focus:ring-4 focus:ring-[rgba(114,160,193,0.16)]"
+                  autoCapitalize="characters"
+                  autoCorrect="off"
+                  spellCheck={false}
+                />
+                <button
+                  type="button"
+                  disabled={promoPending || !promoInput.trim() || count === 0}
+                  onClick={onApplyPromo}
+                  className="inline-flex min-h-11 items-center justify-center rounded-[18px] border border-[rgba(114,160,193,0.24)] bg-white/78 px-4 text-[0.68rem] font-semibold uppercase tracking-[0.1em] text-[var(--color-blue)] transition hover:bg-[var(--color-blue-wash)] disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {promoPending ? t.promo.applying : t.promo.apply}
+                </button>
+              </span>
+            </label>
+            {promoPreview ? (
+              <p className="mt-2 text-[0.74rem] text-emerald-700">
+                {t.promo.promoCodeApplied}
+              </p>
+            ) : promoError ? (
+              <p className="mt-2 text-[0.74rem] text-red-700">{promoError}</p>
+            ) : null}
+          </div>
+
+          <div className="mt-4 border-t border-[rgba(114,160,193,0.18)] pt-4">
+            {promoPreview ? (
+              <dl className="mb-3 space-y-2 text-[0.82rem]">
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="text-[var(--color-ink-soft)]">{t.promo.originalPrice}</dt>
+                  <dd className="font-semibold text-[var(--color-ink)]">
+                    {money(promoPreview.originalAmountCents)}
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between gap-3 text-emerald-700">
+                  <dt>{t.promo.discount} {promoPreview.discountPercent}%</dt>
+                  <dd className="font-semibold">-{money(promoPreview.discountAmountCents)}</dd>
+                </div>
+              </dl>
+            ) : null}
             <p className="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-soft)]">
-              {flow.totalDue}
+              {promoPreview ? t.promo.finalTotal : flow.totalDue}
             </p>
             <p className="mt-1 font-[var(--font-title-family)] text-[2.6rem] font-light leading-none tracking-[-0.03em] text-[var(--color-ink)]">
-              {count > 0 ? money(pricing.amountCents) : "$0"}
+              {count > 0 ? money(finalAmountCents) : "$0"}
             </p>
             {isVerifiedMember ? (
               <p className="mt-2 flex items-center gap-1.5 text-[0.74rem] text-emerald-700">

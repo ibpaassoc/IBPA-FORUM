@@ -27,6 +27,13 @@ const STEP_NOMINATIONS = 1;
 const STEP_REVIEW = 2;
 const STEP_PAYMENT = 3;
 
+type PromoPreview = {
+  keyword: string;
+  discountPercent: number;
+  originalAmountCents: number;
+  discountAmountCents: number;
+  finalAmountCents: number;
+};
 
 function money(amountCents: number) {
   return new Intl.NumberFormat("en", {
@@ -65,6 +72,10 @@ export default function AddNominationFlow({
   const [selectedAwardIds, setSelectedAwardIds] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [promoInput, setPromoInput] = useState("");
+  const [promoPreview, setPromoPreview] = useState<PromoPreview | null>(null);
+  const [promoError, setPromoError] = useState("");
+  const [promoPending, setPromoPending] = useState(false);
 
   const activeCategory = categories.find((category) => category.id === activeCategoryId) ?? null;
   const count = selectedAwardIds.length;
@@ -72,6 +83,7 @@ export default function AddNominationFlow({
     nominationCount: Math.max(1, count),
     isIbpaMember: isVerifiedMember,
   });
+  const finalAmountCents = promoPreview?.finalAmountCents ?? pricing.amountCents;
 
   const maxUnlockedStep =
     count > 0 ? STEP_REVIEW : activeCategory ? STEP_NOMINATIONS : STEP_CATEGORY;
@@ -95,10 +107,58 @@ export default function AddNominationFlow({
         : [...current, awardId],
     );
     setError("");
+    setPromoPreview(null);
+    setPromoError("");
+  }
+
+  function promoMessage(errorCode?: string) {
+    if (errorCode === "DISABLED") return t.promo.promoCodeDisabled;
+    if (errorCode === "WRONG_FLOW") return t.promo.wrongFlow;
+    return t.promo.invalidPromoCode;
+  }
+
+  async function applyPromoCode() {
+    const code = promoInput.trim();
+    setPromoPreview(null);
+    setPromoError("");
+    if (!code || count === 0) {
+      setPromoError(t.promo.invalidPromoCode);
+      return;
+    }
+    setPromoPending(true);
+    try {
+      const response = await fetch("/api/promo-codes/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          promoCode: code,
+          paymentFlow: "APPLICATIONS",
+          amountCents: pricing.amountCents,
+        }),
+      });
+      const payload = (await response.json()) as {
+        ok?: boolean;
+        errorCode?: string;
+        promo?: PromoPreview;
+      };
+      if (!response.ok || !payload.ok || !payload.promo) {
+        setPromoError(promoMessage(payload.errorCode));
+        return;
+      }
+      setPromoPreview(payload.promo);
+    } catch {
+      setPromoError(t.promo.invalidPromoCode);
+    } finally {
+      setPromoPending(false);
+    }
   }
 
   async function checkout() {
     if (submitting || count === 0) return;
+    if (promoInput.trim() && !promoPreview) {
+      setPromoError(t.promo.invalidPromoCode);
+      return;
+    }
     setSubmitting(true);
     setError("");
     setStep(STEP_PAYMENT);
@@ -106,7 +166,10 @@ export default function AddNominationFlow({
       const response = await fetch("/api/applicant/nominations/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ awardIds: selectedAwardIds }),
+        body: JSON.stringify({
+          awardIds: selectedAwardIds,
+          promoCode: promoPreview ? promoInput : "",
+        }),
       });
       const payload = (await response.json()) as {
         checkoutUrl?: string;
@@ -231,6 +294,16 @@ export default function AddNominationFlow({
               isVerifiedMember={isVerifiedMember}
               submitting={submitting}
               error={error}
+              promoInput={promoInput}
+              promoPreview={promoPreview}
+              promoError={promoError}
+              promoPending={promoPending}
+              onPromoInputChange={(value) => {
+                setPromoInput(value);
+                setPromoPreview(null);
+                setPromoError("");
+              }}
+              onApplyPromo={() => void applyPromoCode()}
               onRemoveAward={toggleAward}
               onCheckout={() => void checkout()}
             />
@@ -258,7 +331,7 @@ export default function AddNominationFlow({
                 <p className="max-w-sm text-sm leading-relaxed text-[var(--color-ink-soft)]">
                   {flow.redirectText} {count}{" "}
                   {count === 1 ? flow.nominationLabel : flow.nominationsLabel} ·{" "}
-                  {money(pricing.amountCents)}
+                  {money(finalAmountCents)}
                 </p>
               </div>
             </div>
