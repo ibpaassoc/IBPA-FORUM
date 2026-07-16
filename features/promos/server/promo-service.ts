@@ -21,6 +21,22 @@ export class PromoCodeError extends Error {
   }
 }
 
+export class PromoCodeSetupError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "PromoCodeSetupError";
+  }
+}
+
+function isMissingPromoSchemaError(error: unknown) {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error.code === "P2021" || error.code === "P2022")
+  );
+}
+
 function promoError(code: PromoValidationCode): PromoCodeError {
   switch (code) {
     case "EMPTY":
@@ -56,31 +72,49 @@ async function findPromoByKeyword(keyword: string) {
 
 export async function getPromoCodesForAdmin() {
   await ensureDefaultPromoCodes();
-  return prisma.promoCode.findMany({
-    orderBy: [{ paymentFlow: "asc" }, { key: "asc" }],
-  });
+  try {
+    return await prisma.promoCode.findMany({
+      orderBy: [{ paymentFlow: "asc" }, { key: "asc" }],
+    });
+  } catch (error) {
+    if (isMissingPromoSchemaError(error)) {
+      throw new PromoCodeSetupError(
+        "Promo code database tables are missing. Run the promo-code migration before opening this page."
+      );
+    }
+    throw error;
+  }
 }
 
 export async function ensureDefaultPromoCodes() {
-  for (const definition of Object.values({
-    APPLICATION20: getPromoDefinition("APPLICATION20"),
-    TICKETS30: getPromoDefinition("TICKETS30"),
-  })) {
-    if (!definition) continue;
-    await prisma.promoCode.upsert({
-      where: { key: definition.key },
-      update: {
-        paymentFlow: definition.paymentFlow,
-        discountPercent: definition.discountPercent,
-      },
-      create: {
-        key: definition.key,
-        keyword: definition.defaultKeyword,
-        paymentFlow: definition.paymentFlow,
-        discountPercent: definition.discountPercent,
-        enabled: true,
-      },
-    });
+  try {
+    for (const definition of Object.values({
+      APPLICATION20: getPromoDefinition("APPLICATION20"),
+      TICKETS30: getPromoDefinition("TICKETS30"),
+    })) {
+      if (!definition) continue;
+      await prisma.promoCode.upsert({
+        where: { key: definition.key },
+        update: {
+          paymentFlow: definition.paymentFlow,
+          discountPercent: definition.discountPercent,
+        },
+        create: {
+          key: definition.key,
+          keyword: definition.defaultKeyword,
+          paymentFlow: definition.paymentFlow,
+          discountPercent: definition.discountPercent,
+          enabled: true,
+        },
+      });
+    }
+  } catch (error) {
+    if (isMissingPromoSchemaError(error)) {
+      throw new PromoCodeSetupError(
+        "Promo code database tables are missing. Run the promo-code migration before using promo codes."
+      );
+    }
+    throw error;
   }
 }
 

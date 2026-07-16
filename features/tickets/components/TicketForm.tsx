@@ -521,6 +521,43 @@ export default function TicketForm() {
         </AnimatePresence>
       </div>
 
+      <div className="space-y-3 rounded-[12px] border border-[var(--border-soft)] bg-[var(--surface-tint)] p-4">
+        <label className={labelBase} htmlFor="tf-promo">
+          {promoText.promoCode}
+        </label>
+        <div className="flex gap-2">
+          <input
+            id="tf-promo"
+            type="text"
+            value={promoInput}
+            onChange={(event) => {
+              setPromoInput(event.target.value);
+              setPromoPreview(null);
+              setPromoError("");
+            }}
+            className={inputBase}
+            autoCapitalize="characters"
+            autoCorrect="off"
+            spellCheck={false}
+          />
+          <button
+            type="button"
+            disabled={promoPending || !promoInput.trim() || !type}
+            onClick={() => void applyPromoCode()}
+            className="inline-flex min-h-11 items-center justify-center rounded-[12px] border border-[var(--color-blue)]/35 bg-[var(--color-blue-wash)] px-4 text-[0.72rem] font-semibold uppercase tracking-[0.1em] text-[var(--color-blue)] transition hover:bg-[var(--color-blue-wash)] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {promoPending ? promoText.applying : promoText.apply}
+          </button>
+        </div>
+        {promoPreview ? (
+          <p className="text-[0.77rem] text-emerald-700">
+            {promoText.promoCodeApplied}
+          </p>
+        ) : promoError ? (
+          <p className={errorText}>{promoError}</p>
+        ) : null}
+      </div>
+
       <AnimatePresence initial={false} mode="wait">
         {type && (
           <motion.div
@@ -567,42 +604,6 @@ export default function TicketForm() {
                     <span className="font-semibold text-[var(--color-ink)]">{galaPrice}</span>
                   </div>
                 )}
-                <div className="border-t border-[var(--border-soft)] pt-3">
-                  <label className={labelBase} htmlFor="tf-promo">
-                    {promoText.promoCode}
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      id="tf-promo"
-                      type="text"
-                      value={promoInput}
-                      onChange={(event) => {
-                        setPromoInput(event.target.value);
-                        setPromoPreview(null);
-                        setPromoError("");
-                      }}
-                      className={inputBase}
-                      autoCapitalize="characters"
-                      autoCorrect="off"
-                      spellCheck={false}
-                    />
-                    <button
-                      type="button"
-                      disabled={promoPending || !promoInput.trim()}
-                      onClick={() => void applyPromoCode()}
-                      className="inline-flex min-h-11 items-center justify-center rounded-[12px] border border-[var(--color-blue)]/35 bg-[var(--color-blue-wash)] px-4 text-[0.72rem] font-semibold uppercase tracking-[0.1em] text-[var(--color-blue)] transition hover:bg-[var(--color-blue-wash)] disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      {promoPending ? promoText.applying : promoText.apply}
-                    </button>
-                  </div>
-                  {promoPreview ? (
-                    <p className="mt-2 text-[0.77rem] text-emerald-700">
-                      {promoText.promoCodeApplied}
-                    </p>
-                  ) : promoError ? (
-                    <p className={errorText}>{promoError}</p>
-                  ) : null}
-                </div>
                 {promoPreview ? (
                   <>
                     <div className="flex justify-between text-[0.88rem]">
