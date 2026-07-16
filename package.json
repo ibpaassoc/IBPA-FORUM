@@ -11,6 +11,7 @@
     "test:application-submission": "tsx scripts/test-application-submission.ts",
     "test:applicant-flow": "tsx scripts/test-applicant-flow.ts",
     "test:tickets": "tsx scripts/test-tickets-logic.ts",
+    "test:promo-codes": "tsx scripts/test-promo-codes.ts",
     "test:jury-closure": "tsx scripts/test-jury-closure.ts",
     "verify:account-migration": "tsx scripts/verify-account-migration.ts",
     "backfill:applicant-nominations:dry-run": "tsx scripts/backfill-applicant-nominations.ts",
