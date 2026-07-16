@@ -51,6 +51,14 @@ type FormValues = {
 
 type CertState = "idle" | "checking" | "valid" | "invalid" | "error";
 
+type PromoPreview = {
+  keyword: string;
+  discountPercent: number;
+  originalAmountCents: number;
+  discountAmountCents: number;
+  finalAmountCents: number;
+};
+
 const STORAGE_KEY = "ibpa-apply-purchase-v1";
 
 const STEP_NOMINATIONS = 0;
@@ -370,6 +378,15 @@ function money(amount: number) {
   }).format(amount / 100);
 }
 
+function promoErrorMessage(
+  promoText: ReturnType<typeof useLanguage>["t"]["promo"],
+  errorCode?: string
+) {
+  if (errorCode === "DISABLED") return promoText.promoCodeDisabled;
+  if (errorCode === "WRONG_FLOW") return promoText.wrongFlow;
+  return promoText.invalidPromoCode;
+}
+
 function SummaryFact({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0 rounded-[18px] border border-[rgba(37,42,45,0.07)] bg-white/70 px-3.5 py-2.5">
@@ -390,8 +407,9 @@ function SummaryFact({ label, value }: { label: string; value: string }) {
  * recalculated server-side at checkout creation.
  */
 export default function PurchaseApplicationForm({ categories }: { categories: CategoryOption[] }) {
-  const { language } = useLanguage();
+  const { language, t: sharedT } = useLanguage();
   const t = copy[language] ?? copy.en;
+  const promoText = sharedT.promo;
   const restored = useMemo(() => restoreState(), []);
   const [values, setValues] = useState<FormValues>({ ...initialValues, ...restored?.values });
   const [selectedAwardIds, setSelectedAwardIds] = useState<string[]>(restored?.selectedAwardIds ?? []);
@@ -410,6 +428,10 @@ export default function PurchaseApplicationForm({ categories }: { categories: Ca
   const [openAgreement, setOpenAgreement] = useState<keyof typeof t.agreementsCopy | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [promoInput, setPromoInput] = useState("");
+  const [promoPreview, setPromoPreview] = useState<PromoPreview | null>(null);
+  const [promoError, setPromoError] = useState("");
+  const [promoPending, setPromoPending] = useState(false);
 
   const verifiedMember = values.isIbpaMember && certState === "valid";
   const pricing = computeApplicantNominationPrice({
@@ -422,6 +444,7 @@ export default function PurchaseApplicationForm({ categories }: { categories: Ca
       .map((award) => ({ ...award, category }))
   );
   const count = selectedAwardIds.length;
+  const finalAmountCents = promoPreview?.finalAmountCents ?? pricing.amountCents;
 
   const personalComplete = PERSONAL_REQUIRED.every((key) => String(values[key]).trim() !== "") &&
     (values.country !== "Other" || values.countryOther.trim() !== "");
@@ -496,6 +519,8 @@ export default function PurchaseApplicationForm({ categories }: { categories: Ca
         : [...current, awardId]
     );
     setFieldErrors((current) => ({ ...current, selectedAwardIds: "" }));
+    setPromoPreview(null);
+    setPromoError("");
   }
 
   function toggleCategory(categoryId: string) {
@@ -536,12 +561,54 @@ export default function PurchaseApplicationForm({ categories }: { categories: Ca
     goToStep(STEP_REVIEW);
   }
 
+  async function applyPromoCode() {
+    const code = promoInput.trim();
+    setPromoError("");
+    setPromoPreview(null);
+    if (!code || count === 0) {
+      setPromoError(promoText.invalidPromoCode);
+      return;
+    }
+    setPromoPending(true);
+    try {
+      const response = await fetch("/api/promo-codes/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          promoCode: code,
+          paymentFlow: "APPLICATIONS",
+          amountCents: pricing.amountCents,
+        }),
+      });
+      const payload = (await response.json()) as {
+        ok?: boolean;
+        errorCode?: string;
+        promo?: PromoPreview;
+      };
+      if (!response.ok || !payload.ok || !payload.promo) {
+        setPromoError(promoErrorMessage(promoText, payload.errorCode));
+        return;
+      }
+      setPromoPreview(payload.promo);
+    } catch {
+      setPromoError(promoText.invalidPromoCode);
+    } finally {
+      setPromoPending(false);
+    }
+  }
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (step !== STEP_REVIEW) return;
     setSubmitting(true);
     setSubmitError("");
     setFieldErrors({});
+
+    if (promoInput.trim() && !promoPreview) {
+      setPromoError(promoText.invalidPromoCode);
+      setSubmitting(false);
+      return;
+    }
 
     const formData = new FormData();
     for (const [key, value] of Object.entries(values)) {
@@ -550,6 +617,9 @@ export default function PurchaseApplicationForm({ categories }: { categories: Ca
     formData.set("locale", language);
     for (const awardId of selectedAwardIds) {
       formData.append("selectedAwardIds", awardId);
+    }
+    if (promoPreview) {
+      formData.set("promoCode", promoInput);
     }
 
     try {
@@ -724,7 +794,7 @@ export default function PurchaseApplicationForm({ categories }: { categories: Ca
                   </span>{" "}
                   · {verifiedMember ? t.memberRate : t.standardRate} ·{" "}
                   <span className="font-semibold text-[var(--color-ink)]">
-                    {money(pricing.amountCents)}
+                    {money(finalAmountCents)}
                   </span>
                 </>
               )}
@@ -991,11 +1061,63 @@ export default function PurchaseApplicationForm({ categories }: { categories: Ca
                 </div>
               </dl>
               <div className="mt-4 border-t border-[rgba(114,160,193,0.18)] pt-4">
+                <label className="block">
+                  <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
+                    {promoText.promoCode}
+                  </span>
+                  <span className="mt-2 flex gap-2">
+                    <input
+                      type="text"
+                      value={promoInput}
+                      onChange={(event) => {
+                        setPromoInput(event.target.value);
+                        setPromoPreview(null);
+                        setPromoError("");
+                      }}
+                      className="h-11 min-w-0 flex-1 rounded-[18px] border border-[rgba(114,160,193,0.22)] bg-white/74 px-4 text-sm text-[var(--color-ink)] outline-none transition focus:border-[var(--color-blue)] focus:ring-4 focus:ring-[rgba(114,160,193,0.16)]"
+                      autoCapitalize="characters"
+                      autoCorrect="off"
+                      spellCheck={false}
+                    />
+                    <button
+                      type="button"
+                      disabled={promoPending || !promoInput.trim() || count === 0}
+                      onClick={() => void applyPromoCode()}
+                      className="inline-flex min-h-11 items-center justify-center rounded-[18px] border border-[rgba(114,160,193,0.24)] bg-white/78 px-4 text-[0.68rem] font-semibold uppercase tracking-[0.1em] text-[var(--color-blue)] transition hover:bg-[var(--color-blue-wash)] disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {promoPending ? promoText.applying : promoText.apply}
+                    </button>
+                  </span>
+                </label>
+                {promoPreview ? (
+                  <p className="mt-2 text-[0.76rem] text-emerald-700">
+                    {promoText.promoCodeApplied}
+                  </p>
+                ) : promoError ? (
+                  <p className="mt-2 text-[0.76rem] text-red-700">{promoError}</p>
+                ) : null}
+              </div>
+
+              <div className="mt-4 border-t border-[rgba(114,160,193,0.18)] pt-4">
+                {promoPreview ? (
+                  <dl className="mb-3 space-y-2 text-[0.82rem]">
+                    <div className="flex items-center justify-between gap-3">
+                      <dt className="text-[var(--color-ink-soft)]">{promoText.originalPrice}</dt>
+                      <dd className="font-semibold text-[var(--color-ink)]">
+                        {money(promoPreview.originalAmountCents)}
+                      </dd>
+                    </div>
+                    <div className="flex items-center justify-between gap-3 text-emerald-700">
+                      <dt>{promoText.discount} {promoPreview.discountPercent}%</dt>
+                      <dd className="font-semibold">-{money(promoPreview.discountAmountCents)}</dd>
+                    </div>
+                  </dl>
+                ) : null}
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
-                  {t.totalLabel}
+                  {promoPreview ? promoText.finalTotal : t.totalLabel}
                 </p>
                 <p className="mt-1 font-[var(--font-title-family)] text-4xl font-light text-[var(--color-ink)]">
-                  {count > 0 ? money(pricing.amountCents) : "$0"}
+                  {count > 0 ? money(finalAmountCents) : "$0"}
                 </p>
                 {verifiedMember ? (
                   <p className="mt-2 flex items-center gap-1.5 text-[0.74rem] text-emerald-700">
