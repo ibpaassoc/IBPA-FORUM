@@ -57,7 +57,8 @@ async function findPromoByKeyword(keyword: string) {
   const normalized = normalizePromoKeyword(keyword);
   if (!normalized) return null;
 
-  const promos = await prisma.promoCode.findMany({
+  return prisma.promoCode.findUnique({
+    where: { keyword: normalized },
     select: {
       key: true,
       keyword: true,
@@ -66,8 +67,6 @@ async function findPromoByKeyword(keyword: string) {
       enabled: true,
     },
   });
-
-  return promos.find((promo) => normalizePromoKeyword(promo.keyword) === normalized) ?? null;
 }
 
 export async function getPromoCodesForAdmin() {

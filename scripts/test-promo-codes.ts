@@ -12,6 +12,10 @@ import {
   PROMO_DEFINITIONS,
   type PromoRecordForValidation,
 } from "@/features/promos/lib/promo-codes";
+import {
+  computeTicketAmountCents,
+  GALA_DINNER_CENTS,
+} from "@/features/tickets/lib/pricing";
 
 const ROOT = process.cwd();
 let passed = 0;
@@ -84,13 +88,13 @@ console.log("validation");
     inputKeyword: "tickets30",
     promo: ticketPromo,
     paymentFlow: "TICKETS",
-    amountCents: 54500,
+    amountCents: 39500,
   });
   assert(result.ok, "valid TICKETS30 is accepted for tickets");
   if (result.ok) {
     eq(result.promo.discountPercent, 30, "TICKETS30 returns 30%");
-    eq(result.promo.discountAmountCents, 16350, "TICKETS30 discounts the whole ticket total");
-    eq(result.promo.finalAmountCents, 38150, "TICKETS30 final total is correct");
+    eq(result.promo.discountAmountCents, 11850, "TICKETS30 discounts the ticket price only");
+    eq(result.promo.finalAmountCents, 27650, "TICKETS30 discounted ticket subtotal is correct");
   }
 }
 eq(
@@ -138,6 +142,78 @@ console.log("calculation and protections");
 eq(calculatePromoDiscount(9999, 20).discountAmountCents, 2000, "20% rounds to cents");
 eq(calculatePromoDiscount(10000, 30).finalAmountCents, 7000, "30% final total is enforced");
 
+console.log("ticket promo state and price matrix");
+const ticketScenarios = [
+  { label: "one-day", type: "ONE_DAY" as const, galaDinner: false },
+  { label: "one-day with Gala Dinner", type: "ONE_DAY" as const, galaDinner: true },
+  { label: "two-day", type: "TWO_DAYS" as const, galaDinner: false },
+  { label: "two-day with Gala Dinner", type: "TWO_DAYS" as const, galaDinner: true },
+];
+
+for (const scenario of ticketScenarios) {
+  const amounts = computeTicketAmountCents({
+    type: scenario.type,
+    isIbpaMember: false,
+    galaDinner: scenario.galaDinner,
+    earlyBirdDiscount: null,
+  });
+  const expectedDiscount = Math.round(amounts.ticketCents * 0.3);
+  const expectedTicketSubtotal = amounts.ticketCents - expectedDiscount;
+  const expectedTotal = expectedTicketSubtotal + amounts.galaCents;
+
+  const enabled = evaluatePromoRecordForFlow({
+    inputKeyword: "TICKETS30",
+    promo: ticketPromo,
+    paymentFlow: "TICKETS",
+    amountCents: amounts.ticketCents,
+  });
+  assert(enabled.ok, `${scenario.label}: enabled code is accepted`);
+  if (enabled.ok) {
+    eq(enabled.promo.originalAmountCents, amounts.ticketCents, `${scenario.label}: original ticket price`);
+    eq(enabled.promo.discountAmountCents, expectedDiscount, `${scenario.label}: ticket-only discount`);
+    eq(enabled.promo.finalAmountCents, expectedTicketSubtotal, `${scenario.label}: discounted ticket subtotal`);
+    eq(enabled.promo.finalAmountCents + amounts.galaCents, expectedTotal, `${scenario.label}: final total`);
+  }
+
+  eq(
+    evaluatePromoRecordForFlow({
+      inputKeyword: "TICKETS30",
+      promo: { ...ticketPromo, enabled: false },
+      paymentFlow: "TICKETS",
+      amountCents: amounts.ticketCents,
+    }),
+    { ok: false, code: "DISABLED" },
+    `${scenario.label}: disabled code is rejected`
+  );
+  eq(
+    evaluatePromoRecordForFlow({
+      inputKeyword: "NOT-A-PROMO",
+      promo: null,
+      paymentFlow: "TICKETS",
+      amountCents: amounts.ticketCents,
+    }),
+    { ok: false, code: "INVALID" },
+    `${scenario.label}: invalid code is rejected`
+  );
+
+  const reEnabled = evaluatePromoRecordForFlow({
+    inputKeyword: "TICKETS30",
+    promo: { ...ticketPromo, enabled: true },
+    paymentFlow: "TICKETS",
+    amountCents: amounts.ticketCents,
+  });
+  assert(reEnabled.ok, `${scenario.label}: re-enabled code is accepted again`);
+  if (reEnabled.ok) {
+    eq(reEnabled.promo.finalAmountCents + amounts.galaCents, expectedTotal, `${scenario.label}: re-enabled total`);
+  }
+
+  eq(
+    amounts.galaCents,
+    scenario.galaDinner ? GALA_DINNER_CENTS : 0,
+    `${scenario.label}: Gala Dinner remains undiscounted`
+  );
+}
+
 const checkoutSessions = read("features/payments/server/checkout-sessions.ts");
 assert(checkoutSessions.includes("discounts: [{ coupon: promoDiscountId }]"), "application Stripe discount is server-side only");
 assert(checkoutSessions.includes("originalAmountCents"), "application line item uses original amount");
@@ -145,7 +221,9 @@ assert(checkoutSessions.includes("originalAmountCents"), "application line item 
 const ticketService = read("features/tickets/server/ticket-service.ts");
 assert(ticketService.includes("earlyBirdDiscount = appliedPromo ? null"), "ticket promo prevents early-bird stacking");
 assert(!ticketService.includes("frontendTotal"), "ticket checkout does not accept frontend totals");
-assert(ticketService.includes("paymentAmountCents = appliedPromo?.finalAmountCents"), "ticket payment stores server-calculated final total");
+assert(ticketService.includes("amountCents: promoBaseAmounts.ticketCents"), "ticket promo validates the forum pass only");
+assert(ticketService.includes("appliedPromo.finalAmountCents + promoBaseAmounts.galaCents"), "ticket payment adds full Gala price after discount");
+assert(ticketService.includes("session.amountTotalCents !== paymentAmountCents"), "server rejects a Stripe total that differs from the modal quote");
 
 const purchaseWorkflow = read("features/applications/server/purchase-workflow.ts");
 assert(purchaseWorkflow.includes("resolveApplicationPromo"), "application promo validation is server-side");
@@ -155,9 +233,16 @@ assert(!purchaseWorkflow.includes("frontendTotal"), "application checkout does n
 const promoService = read("features/promos/server/promo-service.ts");
 assert(promoService.includes("EnvConfigError"), "missing Stripe discount env is reported as configuration error");
 assert(promoService.includes("readEnv([definition.envName])"), "Stripe discount IDs are read only on the server");
+assert(promoService.includes("prisma.promoCode.findUnique"), "every validation reads current promo state from the database");
 
 const ticketForm = read("features/tickets/components/TicketForm.tsx");
 assert(ticketForm.includes('paymentFlow: "TICKETS"'), "ticket UI validates ticket flow");
+assert(ticketForm.includes('cache: "no-store"'), "ticket UI bypasses cached promo validation");
+assert(ticketForm.includes("PROMO_REVALIDATION_INTERVAL_MS"), "applied ticket promos are revalidated while the modal stays open");
+
+const promoValidationRoute = read("app/api/promo-codes/validate/route.ts");
+assert(promoValidationRoute.includes("computeTicketAmountCents"), "ticket preview uses canonical server pricing");
+assert(promoValidationRoute.includes("ticketAmounts.ticketCents"), "ticket preview excludes Gala from promo eligibility");
 
 const applicationForm = read("features/applications/components/application-form/PurchaseApplicationForm.tsx");
 assert(applicationForm.includes('paymentFlow: "APPLICATIONS"'), "public application UI validates application flow");

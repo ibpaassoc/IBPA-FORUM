@@ -4,12 +4,25 @@ import {
   PromoCodeError,
   validatePromoCodeForFlow,
 } from "@/features/promos/server/promo-service";
+import {
+  computeTicketAmountCents,
+  type TicketAmountBreakdown,
+} from "@/features/tickets/lib/pricing";
 
-const schema = z.object({
-  promoCode: z.string().optional(),
-  paymentFlow: z.enum(["APPLICATIONS", "TICKETS"]),
-  amountCents: z.number().int().nonnegative(),
-});
+const schema = z.discriminatedUnion("paymentFlow", [
+  z.object({
+    promoCode: z.string().optional(),
+    paymentFlow: z.literal("APPLICATIONS"),
+    amountCents: z.number().int().nonnegative(),
+  }),
+  z.object({
+    promoCode: z.string().optional(),
+    paymentFlow: z.literal("TICKETS"),
+    ticketType: z.enum(["ONE_DAY", "TWO_DAYS"]),
+    isIbpaMember: z.boolean(),
+    galaDinner: z.boolean(),
+  }),
+]);
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
@@ -23,10 +36,25 @@ export async function POST(request: Request) {
   }
 
   try {
+    let ticketAmounts: TicketAmountBreakdown | null = null;
+    let eligibleAmountCents: number;
+
+    if (parsed.data.paymentFlow === "TICKETS") {
+      ticketAmounts = computeTicketAmountCents({
+        type: parsed.data.ticketType,
+        isIbpaMember: parsed.data.isIbpaMember,
+        galaDinner: parsed.data.galaDinner,
+        earlyBirdDiscount: null,
+      });
+      eligibleAmountCents = ticketAmounts.ticketCents;
+    } else {
+      eligibleAmountCents = parsed.data.amountCents;
+    }
+
     const promo = await validatePromoCodeForFlow({
       keyword: parsed.data.promoCode,
       paymentFlow: parsed.data.paymentFlow,
-      amountCents: parsed.data.amountCents,
+      amountCents: eligibleAmountCents,
     });
 
     if (!promo) {
@@ -43,7 +71,9 @@ export async function POST(request: Request) {
         discountPercent: promo.discountPercent,
         originalAmountCents: promo.originalAmountCents,
         discountAmountCents: promo.discountAmountCents,
-        finalAmountCents: promo.finalAmountCents,
+        discountedAmountCents: promo.finalAmountCents,
+        galaDinnerAmountCents: ticketAmounts?.galaCents ?? 0,
+        finalAmountCents: promo.finalAmountCents + (ticketAmounts?.galaCents ?? 0),
       },
     });
   } catch (error) {
