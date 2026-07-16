@@ -8,6 +8,10 @@ import { getEarlyBirdDiscount } from "./early-bird";
 import { normalizeInstagramHandle } from "@/features/tickets/lib/instagram";
 import { normalizeTicketEmail } from "@/features/tickets/lib/normalize-email";
 import { computeTicketAmountCents } from "@/features/tickets/lib/pricing";
+import {
+  getStripePromoDiscountId,
+  validatePromoCodeForFlow,
+} from "@/features/promos/server/promo-service";
 import { syncTicketOnChange } from "@/features/google-sheets";
 import type { Language } from "@/lib/i18n/translations";
 
@@ -40,6 +44,7 @@ export type InitiateTicketPurchaseInput = {
   isIbpaMember: boolean;
   ibpaCertNumber?: string | null;
   locale: Language;
+  promoCode?: string | null;
 };
 
 export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput) {
@@ -77,13 +82,28 @@ export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput)
 
   const ticketId = reservation.ticketId;
 
-  const earlyBirdDiscount = await getEarlyBirdDiscount();
-  const amounts = computeTicketAmountCents({
+  const promoBaseAmounts = computeTicketAmountCents({
     type: input.type,
     isIbpaMember: input.isIbpaMember,
     galaDinner: input.galaDinner,
-    earlyBirdDiscount,
+    earlyBirdDiscount: null,
   });
+  const appliedPromo = await validatePromoCodeForFlow({
+    keyword: input.promoCode,
+    paymentFlow: "TICKETS",
+    amountCents: promoBaseAmounts.totalCents,
+  });
+  const earlyBirdDiscount = appliedPromo ? null : await getEarlyBirdDiscount();
+  const amounts = appliedPromo
+    ? promoBaseAmounts
+    : computeTicketAmountCents({
+        type: input.type,
+        isIbpaMember: input.isIbpaMember,
+        galaDinner: input.galaDinner,
+        earlyBirdDiscount,
+      });
+  const paymentAmountCents = appliedPromo?.finalAmountCents ?? amounts.totalCents;
+  const promoDiscountId = appliedPromo ? getStripePromoDiscountId(appliedPromo.key) : null;
 
   const session = await createTicketCheckoutSession({
     ticketId,
@@ -93,20 +113,31 @@ export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput)
     isIbpaMember: input.isIbpaMember,
     earlyBirdDiscountedAmountCents: amounts.discountedTicketCents,
     locale: input.locale,
+    promoDiscountId,
   });
 
   await prisma.$transaction([
     prisma.ticket.update({
       where: { id: ticketId },
-      data: { stripeSessionId: session.id },
+      data: {
+        stripeSessionId: session.id,
+        promoCodeKey: appliedPromo?.key,
+        promoCodeKeyword: appliedPromo?.keyword,
+        promoDiscountPercent: appliedPromo?.discountPercent,
+        promoDiscountAmount: appliedPromo?.discountAmountCents,
+      },
     }),
     prisma.payment.create({
       data: {
         source: "TICKET",
         ticketId,
         stripeSessionId: session.id,
-        amount: amounts.totalCents,
+        amount: paymentAmountCents,
         currency: "usd",
+        promoCodeKey: appliedPromo?.key,
+        promoCodeKeyword: appliedPromo?.keyword,
+        promoDiscountPercent: appliedPromo?.discountPercent,
+        promoDiscountAmount: appliedPromo?.discountAmountCents,
         status: "PENDING",
       },
     }),

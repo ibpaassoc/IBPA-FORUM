@@ -11,6 +11,11 @@ import { validateMembershipNumber } from "@/features/applications/server/members
 import { getApplicationCategories } from "@/features/applications/server/queries";
 import type { CategoryOption } from "@/features/applications/types/application.types";
 import { createApplicantNominationCheckoutSession } from "@/features/payments/server/checkout-sessions";
+import {
+  getStripePromoDiscountId,
+  PromoCodeError,
+  validatePromoCodeForFlow,
+} from "@/features/promos/server/promo-service";
 import { prisma } from "@/shared/lib/prisma";
 
 export const APPLICANT_NOMINATION_PURCHASE_FLOW = "applicant_nomination_purchase";
@@ -66,10 +71,15 @@ export type ApplicantPurchaseManifest = {
   }>;
   pricing: {
     amountCents: number;
+    originalAmountCents?: number;
+    discountAmountCents?: number;
     currency: "usd";
     nominationCount: number;
     billableCount: number;
     isIbpaMember: boolean;
+    promoCodeKey?: string | null;
+    promoCodeKeyword?: string | null;
+    promoDiscountPercent?: number | null;
   };
 };
 
@@ -91,6 +101,7 @@ type PublicPurchaseInput = {
   ibpaMemberNumber?: string;
   locale: "en" | "ru" | "ua";
   selectedAwardIds: string[];
+  promoCode?: string;
   agreementsAccepted: boolean;
 };
 
@@ -122,6 +133,26 @@ async function assertApplicantPurchasingOpen() {
   }
 }
 
+async function resolveApplicationPromo(keyword: string | null | undefined, amountCents: number) {
+  try {
+    return await validatePromoCodeForFlow({
+      keyword,
+      paymentFlow: "APPLICATIONS",
+      amountCents,
+    });
+  } catch (error) {
+    if (error instanceof PromoCodeError) {
+      throw new ApplicantPurchaseError(
+        error.code === "DISABLED" ? 409 : 400,
+        `PROMO_${error.code}`,
+        error.message,
+        { promoCode: error.message }
+      );
+    }
+    throw error;
+  }
+}
+
 export function parsePublicPurchaseForm(formData: FormData): PublicPurchaseInput {
   const agreementsAccepted =
     getBool(formData, "rulesAccepted") &&
@@ -150,6 +181,7 @@ export function parsePublicPurchaseForm(formData: FormData): PublicPurchaseInput
       .getAll("selectedAwardIds")
       .map((item) => String(item).trim())
       .filter(Boolean),
+    promoCode: getString(formData, "promoCode"),
     agreementsAccepted,
   };
 }
@@ -296,6 +328,9 @@ export async function createPublicApplicantNominationCheckout(formData: FormData
     nominationCount: selectedAwards.length,
     isIbpaMember: isVerifiedMember,
   });
+  const appliedPromo = await resolveApplicationPromo(input.promoCode, pricing.amountCents);
+  const finalAmountCents = appliedPromo?.finalAmountCents ?? pricing.amountCents;
+  const promoDiscountId = appliedPromo ? getStripePromoDiscountId(appliedPromo.key) : null;
 
   const manifest: ApplicantPurchaseManifest = {
     version: APPLICANT_PURCHASE_MANIFEST_VERSION,
@@ -326,11 +361,16 @@ export async function createPublicApplicantNominationCheckout(formData: FormData
     },
     selectedAwards,
     pricing: {
-      amountCents: pricing.amountCents,
+      amountCents: finalAmountCents,
+      originalAmountCents: pricing.amountCents,
+      discountAmountCents: appliedPromo?.discountAmountCents ?? 0,
       currency: pricing.currency,
       nominationCount: pricing.nominationCount,
       billableCount: pricing.billableCount,
       isIbpaMember: pricing.isIbpaMember,
+      promoCodeKey: appliedPromo?.key ?? null,
+      promoCodeKeyword: appliedPromo?.keyword ?? null,
+      promoDiscountPercent: appliedPromo?.discountPercent ?? null,
     },
   };
 
@@ -341,8 +381,12 @@ export async function createPublicApplicantNominationCheckout(formData: FormData
       applicantEmail: email,
       provider: "stripe",
       purchaseManifest: manifest as unknown as Prisma.InputJsonValue,
-      amount: pricing.amountCents,
+      amount: finalAmountCents,
       currency: pricing.currency,
+      promoCodeKey: appliedPromo?.key,
+      promoCodeKeyword: appliedPromo?.keyword,
+      promoDiscountPercent: appliedPromo?.discountPercent,
+      promoDiscountAmount: appliedPromo?.discountAmountCents,
       status: "PENDING",
     },
     select: { id: true },
@@ -351,9 +395,11 @@ export async function createPublicApplicantNominationCheckout(formData: FormData
   const checkoutSession = await createApplicantNominationCheckoutSession({
     paymentId: payment.id,
     email,
-    amountCents: pricing.amountCents,
+    originalAmountCents: pricing.amountCents,
+    finalAmountCents,
     currency: pricing.currency,
     nominationCount: selectedAwards.length,
+    promoDiscountId,
   });
 
   await prisma.payment.update({
@@ -364,7 +410,7 @@ export async function createPublicApplicantNominationCheckout(formData: FormData
   return {
     paymentId: payment.id,
     checkoutUrl: checkoutSession.url,
-    amount: pricing.amountCents,
+    amount: finalAmountCents,
     currency: pricing.currency,
   };
 }
@@ -372,9 +418,11 @@ export async function createPublicApplicantNominationCheckout(formData: FormData
 export async function createAccountApplicantNominationCheckout({
   applicantProfileId,
   awardIds,
+  promoCode,
 }: {
   applicantProfileId: string;
   awardIds: string[];
+  promoCode?: string | null;
 }) {
   await assertApplicantPurchasingOpen();
   const selectedAwardIds = Array.from(new Set(awardIds.map((id) => id.trim()).filter(Boolean)));
@@ -407,6 +455,9 @@ export async function createAccountApplicantNominationCheckout({
     nominationCount: selectedAwards.length,
     isIbpaMember: isVerifiedMember,
   });
+  const appliedPromo = await resolveApplicationPromo(promoCode, pricing.amountCents);
+  const finalAmountCents = appliedPromo?.finalAmountCents ?? pricing.amountCents;
+  const promoDiscountId = appliedPromo ? getStripePromoDiscountId(appliedPromo.key) : null;
 
   const manifest: ApplicantPurchaseManifest = {
     version: APPLICANT_PURCHASE_MANIFEST_VERSION,
@@ -437,11 +488,16 @@ export async function createAccountApplicantNominationCheckout({
     },
     selectedAwards,
     pricing: {
-      amountCents: pricing.amountCents,
+      amountCents: finalAmountCents,
+      originalAmountCents: pricing.amountCents,
+      discountAmountCents: appliedPromo?.discountAmountCents ?? 0,
       currency: pricing.currency,
       nominationCount: pricing.nominationCount,
       billableCount: pricing.billableCount,
       isIbpaMember: pricing.isIbpaMember,
+      promoCodeKey: appliedPromo?.key ?? null,
+      promoCodeKeyword: appliedPromo?.keyword ?? null,
+      promoDiscountPercent: appliedPromo?.discountPercent ?? null,
     },
   };
 
@@ -452,8 +508,12 @@ export async function createAccountApplicantNominationCheckout({
       applicantEmail: profile.account.email,
       provider: "stripe",
       purchaseManifest: manifest as unknown as Prisma.InputJsonValue,
-      amount: pricing.amountCents,
+      amount: finalAmountCents,
       currency: pricing.currency,
+      promoCodeKey: appliedPromo?.key,
+      promoCodeKeyword: appliedPromo?.keyword,
+      promoDiscountPercent: appliedPromo?.discountPercent,
+      promoDiscountAmount: appliedPromo?.discountAmountCents,
       status: "PENDING",
     },
     select: { id: true },
@@ -462,9 +522,11 @@ export async function createAccountApplicantNominationCheckout({
   const checkoutSession = await createApplicantNominationCheckoutSession({
     paymentId: payment.id,
     email: profile.account.email,
-    amountCents: pricing.amountCents,
+    originalAmountCents: pricing.amountCents,
+    finalAmountCents,
     currency: pricing.currency,
     nominationCount: selectedAwards.length,
+    promoDiscountId,
   });
 
   await prisma.payment.update({
@@ -475,7 +537,7 @@ export async function createAccountApplicantNominationCheckout({
   return {
     paymentId: payment.id,
     checkoutUrl: checkoutSession.url,
-    amount: pricing.amountCents,
+    amount: finalAmountCents,
     currency: pricing.currency,
   };
 }
