@@ -19,6 +19,36 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
+  await prisma.promoCode.upsert({
+    where: { key: "APPLICATION20" },
+    update: {
+      paymentFlow: "APPLICATIONS",
+      discountPercent: 20,
+    },
+    create: {
+      key: "APPLICATION20",
+      keyword: "APPLICATION20",
+      paymentFlow: "APPLICATIONS",
+      discountPercent: 20,
+      enabled: true,
+    },
+  });
+
+  await prisma.promoCode.upsert({
+    where: { key: "TICKETS30" },
+    update: {
+      paymentFlow: "TICKETS",
+      discountPercent: 30,
+    },
+    create: {
+      key: "TICKETS30",
+      keyword: "TICKETS30",
+      paymentFlow: "TICKETS",
+      discountPercent: 30,
+      enabled: true,
+    },
+  });
+
   for (const definition of categoryCatalog) {
     const category = await prisma.category.upsert({
       where: {
