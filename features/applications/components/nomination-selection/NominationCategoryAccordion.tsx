@@ -94,6 +94,10 @@ export default function NominationCategoryAccordion({
   const contentTransition = reducedMotion
     ? { duration: 0 }
     : { duration: PUBLIC_MOTION_DURATION.base, ease: PUBLIC_MOTION_EASE };
+  const categoryPairs = Array.from(
+    { length: Math.ceil(categories.length / 2) },
+    (_, pairIndex) => categories.slice(pairIndex * 2, pairIndex * 2 + 2),
+  );
 
   return (
     <motion.div
@@ -105,29 +109,42 @@ export default function NominationCategoryAccordion({
           transition: { staggerChildren: reducedMotion ? 0 : 0.045 },
         },
       }}
-      className={`grid items-start gap-4 lg:grid-cols-2 lg:gap-5 ${className}`}
+      className={`flex flex-col gap-4 lg:gap-5 ${className}`}
     >
-      {categories.map((category, categoryIndex) => {
-        const isOpen = openCategoryId === category.id;
-        const selectedInCategory = category.awards.filter((award) => selectedAwards.has(award.id)).length;
-        const Icon = categoryIconBySlug[category.slug] ?? Award;
-        const contentId = `nomination-category-${category.id}`;
+      {categoryPairs.map((pair, pairIndex) => (
+        <motion.div
+          layout={reducedMotion ? false : true}
+          key={`category-pair-${pairIndex}`}
+          variants={{
+            hidden: {},
+            visible: {
+              transition: { staggerChildren: reducedMotion ? 0 : 0.045 },
+            },
+          }}
+          transition={{ layout: layoutTransition }}
+          className="grid items-start gap-4 lg:grid-cols-2 lg:gap-5"
+        >
+          {pair.map((category) => {
+            const isOpen = openCategoryId === category.id;
+            const selectedInCategory = category.awards.filter((award) => selectedAwards.has(award.id)).length;
+            const Icon = categoryIconBySlug[category.slug] ?? Award;
+            const contentId = `nomination-category-${category.id}`;
 
-        return (
-          <motion.article
-            layout={reducedMotion ? false : true}
-            key={category.id}
-            variants={{
-              hidden: { opacity: 0, y: 14 },
-              visible: { opacity: 1, y: 0 },
-            }}
-            transition={{ ...contentTransition, layout: layoutTransition }}
-            className={`relative self-start overflow-hidden rounded-[2rem] border bg-white/78 p-px backdrop-blur-2xl ${
-              isOpen
-                ? "border-[rgba(114,160,193,0.56)] shadow-[0_28px_76px_rgba(114,160,193,0.2)] lg:col-span-2"
-                : "border-white/90 shadow-[0_18px_52px_rgba(79,115,139,0.09)]"
-            }`}
-          >
+            return (
+              <motion.article
+                layout={reducedMotion ? false : true}
+                key={category.id}
+                variants={{
+                  hidden: { opacity: 0, y: 14 },
+                  visible: { opacity: 1, y: 0 },
+                }}
+                transition={{ ...contentTransition, layout: layoutTransition }}
+                className={`relative self-start overflow-hidden rounded-[2rem] border bg-white/78 p-px backdrop-blur-2xl ${
+                  isOpen
+                    ? "border-[rgba(114,160,193,0.56)] shadow-[0_28px_76px_rgba(114,160,193,0.2)] lg:order-first lg:col-span-2"
+                    : "border-white/90 shadow-[0_18px_52px_rgba(79,115,139,0.09)]"
+                }`}
+              >
             <div className="pointer-events-none absolute right-5 top-4 size-28 rounded-full bg-[rgba(185,217,235,0.18)] blur-2xl" />
             <div className="relative rounded-[calc(2rem-1px)] border border-[rgba(114,160,193,0.1)] bg-white/72 backdrop-blur-xl">
               <h3>
@@ -143,11 +160,8 @@ export default function NominationCategoryAccordion({
                       <span className="flex size-11 shrink-0 items-center justify-center rounded-[16px] border border-[rgba(114,160,193,0.2)] bg-white/86 text-[#5689ad] shadow-[0_12px_28px_rgba(114,160,193,0.12)]">
                         <Icon aria-hidden className="size-[17px]" />
                       </span>
-                      <span className="flex min-w-0 flex-col justify-between">
-                        <span className="w-fit rounded-full border border-[rgba(114,160,193,0.18)] bg-white/80 px-3 py-1 text-[0.62rem] font-semibold tracking-[0.2em] text-[#6391b1]">
-                          {String(categoryIndex + 1).padStart(2, "0")}
-                        </span>
-                        <span className="mt-5 block max-w-xl break-words font-[var(--font-title-family)] text-[clamp(1.28rem,2.3vw,1.85rem)] font-light leading-[1.04] tracking-[-0.035em] text-[var(--color-ink)]">
+                      <span className="flex min-w-0 flex-col justify-center">
+                        <span className="block max-w-xl break-words font-[var(--font-title-family)] text-[clamp(1.28rem,2.3vw,1.85rem)] font-light leading-[1.04] tracking-[-0.035em] text-[var(--color-ink)]">
                           {category.displayName}
                         </span>
                         <span className="mt-2 block text-[0.76rem] text-[var(--color-ink-soft)]">
@@ -166,9 +180,7 @@ export default function NominationCategoryAccordion({
                         <span className="inline-flex size-7 items-center justify-center rounded-full border border-[rgba(114,160,193,0.24)] bg-[#edf6fb] text-[0.68rem] font-bold text-[#477b9f]">
                           {selectedInCategory}
                         </span>
-                      ) : (
-                        <span className="mt-2 size-2.5 rounded-full bg-[rgba(114,160,193,0.42)] shadow-[0_0_16px_rgba(114,160,193,0.3)]" />
-                      )}
+                      ) : null}
                       <motion.span
                         aria-hidden
                         animate={{ rotate: isOpen ? 180 : 0 }}
@@ -182,7 +194,7 @@ export default function NominationCategoryAccordion({
                 </button>
               </h3>
 
-              <AnimatePresence initial={false}>
+              <AnimatePresence initial={false} mode="popLayout">
                 {isOpen ? (
                   <motion.div
                     id={contentId}
@@ -280,9 +292,11 @@ export default function NominationCategoryAccordion({
                 ) : null}
               </AnimatePresence>
             </div>
-          </motion.article>
-        );
-      })}
+              </motion.article>
+            );
+          })}
+        </motion.div>
+      ))}
     </motion.div>
   );
 }
