@@ -10,6 +10,7 @@ import {
   MoreHorizontal,
   PanelLeftClose,
   PanelLeftOpen,
+  BadgePercent,
   ScanLine,
   Star,
   Ticket,
@@ -30,6 +31,7 @@ const navItems = [
   { href: "/admin/jury-applications", ...adminT.nav.jury, icon: Users },
   { href: "/admin/scoring", ...adminT.nav.scoring, icon: Star },
   { href: "/admin/tickets", ...adminT.nav.tickets, icon: Ticket },
+  { href: "/admin/discounts", ...adminT.nav.discounts, icon: BadgePercent },
   { href: "/admin/scanner", ...adminT.nav.scanner, icon: ScanLine },
   { href: "/admin/google-sheets", ...adminT.nav.sheets, icon: FileSpreadsheet },
 ];
