@@ -16,16 +16,10 @@ export const metadata: Metadata = {
 // newly added Award rows in production.
 export const dynamic = "force-dynamic";
 
-const heroStats = [
-  { label: "Categories", value: "11" },
-  { label: "Open to", value: "Global" },
-  { label: "Season", value: "2026" },
-];
-
 export default function ApplyPage() {
   return (
     <LandingPageShell>
-      <ApplyHero heroStats={heroStats} />
+      <ApplyHero />
 
       <PageSection id="apply-form" className="landing-section py-16">
         <Suspense fallback={<ApplicationFormSkeleton />}>
