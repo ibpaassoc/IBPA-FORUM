@@ -94,5 +94,5 @@ export async function createTicketCheckoutSession({
     throw new Error("Stripe Checkout session was created without a payment URL.");
   }
 
-  return { id: session.id, url: session.url };
+  return { id: session.id, url: session.url, amountTotalCents: session.amount_total };
 }

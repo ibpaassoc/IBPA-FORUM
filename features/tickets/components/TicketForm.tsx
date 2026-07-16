@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
@@ -30,8 +30,16 @@ type PromoPreview = {
   discountPercent: number;
   originalAmountCents: number;
   discountAmountCents: number;
+  discountedAmountCents: number;
+  galaDinnerAmountCents: number;
   finalAmountCents: number;
 };
+
+type TicketPromoValidationResult =
+  | { ok: true; promo: PromoPreview }
+  | { ok: false; errorCode?: string };
+
+const PROMO_REVALIDATION_INTERVAL_MS = 5_000;
 
 const inputBase =
   "w-full rounded-[12px] border border-[var(--border-default)] bg-white px-4 py-3 text-[0.92rem] text-[var(--color-ink)] placeholder-[var(--color-ink-muted)] outline-none transition focus:border-[var(--color-blue)] focus:ring-2 focus:ring-[var(--color-blue)]/20 disabled:cursor-not-allowed disabled:opacity-50";
@@ -60,6 +68,46 @@ function centsToMoney(amountCents: number) {
     currency: "USD",
     maximumFractionDigits: 2,
   }).format(amountCents / 100);
+}
+
+async function requestTicketPromoPreview({
+  promoCode,
+  ticketType,
+  isIbpaMember,
+  galaDinner,
+}: {
+  promoCode: string;
+  ticketType: "ONE_DAY" | "TWO_DAYS";
+  isIbpaMember: boolean;
+  galaDinner: boolean;
+}): Promise<TicketPromoValidationResult> {
+  try {
+    const response = await fetch("/api/promo-codes/validate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      cache: "no-store",
+      body: JSON.stringify({
+        promoCode,
+        paymentFlow: "TICKETS",
+        ticketType,
+        isIbpaMember,
+        galaDinner,
+      }),
+    });
+    const payload = (await response.json()) as {
+      ok?: boolean;
+      errorCode?: string;
+      promo?: PromoPreview;
+    };
+
+    if (!response.ok || !payload.ok || !payload.promo) {
+      return { ok: false, errorCode: payload.errorCode };
+    }
+
+    return { ok: true, promo: payload.promo };
+  } catch {
+    return { ok: false };
+  }
 }
 
 const CERT_STATUS_CONTENT: Record<Exclude<CertStatus, "idle">, React.ReactNode> = {
@@ -192,26 +240,31 @@ export default function TicketForm() {
           : PRICING.forumTickets.standard.twoDays
         : null;
 
-  const discountedTicketPriceStr = rawTicketPriceStr
-    ? applyDiscountToPrice(rawTicketPriceStr, discount)
-    : null;
-  const ticketPriceStr = discountedTicketPriceStr ?? rawTicketPriceStr;
-
   const galaPrice = PRICING.forumTickets.ibpaMembers.galaDinner;
   const rawTicketCents = rawTicketPriceStr ? Math.round(priceStrToNum(rawTicketPriceStr) * 100) : 0;
   const rawGalaCents = galaDinner ? Math.round(priceStrToNum(galaPrice) * 100) : 0;
-  const promoEligibleTotalCents = rawTicketCents + rawGalaCents;
+  const activePromoPreview = promoPreview &&
+    promoPreview.originalAmountCents === rawTicketCents &&
+    promoPreview.galaDinnerAmountCents === rawGalaCents
+      ? promoPreview
+      : null;
+  const discountedTicketPriceStr = rawTicketPriceStr && !activePromoPreview
+    ? applyDiscountToPrice(rawTicketPriceStr, discount)
+    : null;
+  const ticketPriceStr = activePromoPreview
+    ? rawTicketPriceStr
+    : discountedTicketPriceStr ?? rawTicketPriceStr;
   const ticketNum = ticketPriceStr ? priceStrToNum(ticketPriceStr) : 0;
   const galaNum = galaDinner ? priceStrToNum(galaPrice) : 0;
-  const total = promoPreview
-    ? promoPreview.finalAmountCents / 100
+  const total = activePromoPreview
+    ? activePromoPreview.finalAmountCents / 100
     : Math.round((ticketNum + galaNum) * 100) / 100;
 
-  function promoMessage(errorCode?: string) {
+  const promoMessage = useCallback((errorCode?: string) => {
     if (errorCode === "DISABLED") return promoText.promoCodeDisabled;
     if (errorCode === "WRONG_FLOW") return promoText.wrongFlow;
     return promoText.invalidPromoCode;
-  }
+  }, [promoText]);
 
   async function applyPromoCode() {
     if (!type || promoPending) return;
@@ -223,32 +276,62 @@ export default function TicketForm() {
       return;
     }
     setPromoPending(true);
-    try {
-      const response = await fetch("/api/promo-codes/validate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          promoCode: code,
-          paymentFlow: "TICKETS",
-          amountCents: promoEligibleTotalCents,
-        }),
+    const result = await requestTicketPromoPreview({
+      promoCode: code,
+      ticketType: type,
+      isIbpaMember,
+      galaDinner,
+    });
+    if (!result.ok) {
+      setPromoError(promoMessage(result.errorCode));
+    } else {
+      setPromoPreview(result.promo);
+    }
+    setPromoPending(false);
+  }
+
+  const appliedPromoKeyword = promoPreview?.keyword ?? null;
+
+  useEffect(() => {
+    if (!appliedPromoKeyword || !type) return;
+
+    let active = true;
+    const revalidate = async () => {
+      const result = await requestTicketPromoPreview({
+        promoCode: promoInput.trim(),
+        ticketType: type,
+        isIbpaMember,
+        galaDinner,
       });
-      const payload = (await response.json()) as {
-        ok?: boolean;
-        errorCode?: string;
-        promo?: PromoPreview;
-      };
-      if (!response.ok || !payload.ok || !payload.promo) {
-        setPromoError(promoMessage(payload.errorCode));
+      if (!active) return;
+
+      if (!result.ok) {
+        setPromoPreview(null);
+        setPromoError(promoMessage(result.errorCode));
         return;
       }
-      setPromoPreview(payload.promo);
-    } catch {
-      setPromoError(promoText.invalidPromoCode);
-    } finally {
-      setPromoPending(false);
-    }
-  }
+
+      setPromoPreview(result.promo);
+      setPromoError("");
+    };
+
+    void revalidate();
+    const intervalId = window.setInterval(() => void revalidate(), PROMO_REVALIDATION_INTERVAL_MS);
+    const handleFocus = () => void revalidate();
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") void revalidate();
+    };
+
+    window.addEventListener("focus", handleFocus);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      active = false;
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", handleFocus);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [appliedPromoKeyword, galaDinner, isIbpaMember, promoInput, promoMessage, type]);
 
   const onSubmit = async (data: FormValues) => {
     if (!data.type) return;
@@ -265,7 +348,7 @@ export default function TicketForm() {
       return;
     }
 
-    if (promoInput.trim() && !promoPreview) {
+    if (promoInput.trim() && !activePromoPreview) {
       setPromoError(promoText.invalidPromoCode);
       return;
     }
@@ -277,17 +360,23 @@ export default function TicketForm() {
       const response = await fetch("/api/tickets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, promoCode: promoPreview ? promoInput : "" }),
+        body: JSON.stringify({ ...data, promoCode: activePromoPreview ? promoInput : "" }),
       });
 
-      const json = await response.json();
+      const json = (await response.json()) as { checkoutUrl?: string; errorCode?: string; message?: string };
 
       if (!response.ok) {
+        if (json.errorCode?.startsWith("PROMO_")) {
+          setPromoPreview(null);
+          setPromoError(promoMessage(json.errorCode.slice("PROMO_".length)));
+          setServerError(null);
+          return;
+        }
         setServerError(json.message ?? "Something went wrong. Please try again.");
         return;
       }
 
-      window.location.href = json.checkoutUrl;
+      if (json.checkoutUrl) window.location.href = json.checkoutUrl;
     } catch {
       setServerError("Network error. Please check your connection and try again.");
     } finally {
@@ -549,7 +638,7 @@ export default function TicketForm() {
             {promoPending ? promoText.applying : promoText.apply}
           </button>
         </div>
-        {promoPreview ? (
+        {activePromoPreview ? (
           <p className="text-[0.77rem] text-emerald-700">
             {promoText.promoCodeApplied}
           </p>
@@ -574,13 +663,17 @@ export default function TicketForm() {
                 {rawTicketPriceStr && (
                   <div className="flex items-start justify-between text-[0.88rem]">
                     <span className="text-[var(--color-ink-soft)]">
-                      {type === "ONE_DAY" ? "1-Day Forum Pass" : "2-Day Forum Pass"}
+                      {activePromoPreview
+                        ? `Original ticket price (${type === "ONE_DAY" ? "1-Day Forum Pass" : "2-Day Forum Pass"})`
+                        : type === "ONE_DAY"
+                          ? "1-Day Forum Pass"
+                          : "2-Day Forum Pass"}
                       {isIbpaMember && (
                         <span className="ml-2 inline-block rounded-full bg-[var(--color-blue-wash)] px-2 py-0.5 text-[0.68rem] font-semibold uppercase tracking-wide text-[var(--color-blue)]">
                           Member
                         </span>
                       )}
-                      {discount && (
+                      {discount && !activePromoPreview && (
                         <span className="ml-2 inline-flex items-center gap-0.5 rounded-full bg-[var(--color-blue-wash)] px-2 py-0.5 text-[0.68rem] font-semibold uppercase tracking-wide text-[var(--color-blue)]">
                           <Zap size={8} strokeWidth={2.5} /> Early Bird
                         </span>
@@ -598,33 +691,33 @@ export default function TicketForm() {
                     </span>
                   </div>
                 )}
+                {activePromoPreview ? (
+                  <>
+                    <div className="flex justify-between text-[0.88rem] text-emerald-700">
+                      <span>Ticket discount {activePromoPreview.discountPercent}%</span>
+                      <span className="font-semibold">
+                        -{centsToMoney(activePromoPreview.discountAmountCents)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-[0.88rem]">
+                      <span className="text-[var(--color-ink-soft)]">Discounted ticket subtotal</span>
+                      <span className="font-semibold text-[var(--color-ink)]">
+                        {centsToMoney(activePromoPreview.discountedAmountCents)}
+                      </span>
+                    </div>
+                  </>
+                ) : null}
                 {galaDinner && (
                   <div className="flex justify-between text-[0.88rem]">
                     <span className="text-[var(--color-ink-soft)]">Gala Dinner Add-on</span>
                     <span className="font-semibold text-[var(--color-ink)]">{galaPrice}</span>
                   </div>
                 )}
-                {promoPreview ? (
-                  <>
-                    <div className="flex justify-between text-[0.88rem]">
-                      <span className="text-[var(--color-ink-soft)]">{promoText.originalPrice}</span>
-                      <span className="font-semibold text-[var(--color-ink)]">
-                        {centsToMoney(promoPreview.originalAmountCents)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-[0.88rem] text-emerald-700">
-                      <span>{promoText.discount} {promoPreview.discountPercent}%</span>
-                      <span className="font-semibold">
-                        -{centsToMoney(promoPreview.discountAmountCents)}
-                      </span>
-                    </div>
-                  </>
-                ) : null}
                 <div className="flex justify-between border-t border-[var(--border-soft)] pt-2 text-[0.92rem] font-bold text-[var(--color-ink)]">
-                  <span>{promoPreview ? promoText.finalTotal : "Total"}</span>
+                  <span>{activePromoPreview ? promoText.finalTotal : "Total"}</span>
                   <span>${total % 1 === 0 ? total.toFixed(0) : total.toFixed(2)}</span>
                 </div>
-                {discount && !promoPreview && (
+                {discount && !activePromoPreview && (
                   <p className="text-[0.72rem] text-[var(--color-blue)]">
                     Early Bird discount applied to forum pass only.
                   </p>

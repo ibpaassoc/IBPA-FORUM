@@ -91,7 +91,7 @@ export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput)
   const appliedPromo = await validatePromoCodeForFlow({
     keyword: input.promoCode,
     paymentFlow: "TICKETS",
-    amountCents: promoBaseAmounts.totalCents,
+    amountCents: promoBaseAmounts.ticketCents,
   });
   const earlyBirdDiscount = appliedPromo ? null : await getEarlyBirdDiscount();
   const amounts = appliedPromo
@@ -102,7 +102,9 @@ export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput)
         galaDinner: input.galaDinner,
         earlyBirdDiscount,
       });
-  const paymentAmountCents = appliedPromo?.finalAmountCents ?? amounts.totalCents;
+  const paymentAmountCents = appliedPromo
+    ? appliedPromo.finalAmountCents + promoBaseAmounts.galaCents
+    : amounts.totalCents;
   const promoDiscountId = appliedPromo ? getStripePromoDiscountId(appliedPromo.key) : null;
 
   const session = await createTicketCheckoutSession({
@@ -115,6 +117,12 @@ export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput)
     locale: input.locale,
     promoDiscountId,
   });
+
+  if (session.amountTotalCents !== paymentAmountCents) {
+    throw new Error(
+      `Stripe ticket total mismatch: expected ${paymentAmountCents}, received ${session.amountTotalCents ?? "null"}.`
+    );
+  }
 
   await prisma.$transaction([
     prisma.ticket.update({
