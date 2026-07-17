@@ -19,8 +19,6 @@ export const dynamic = "force-dynamic";
 export default function ApplyPage() {
   return (
     <LandingPageShell>
-      <ApplyHero />
-
       <PageSection id="apply-form" className="landing-section py-16">
         <Suspense fallback={<ApplicationFormSkeleton />}>
           <ApplicationFormLoader />
