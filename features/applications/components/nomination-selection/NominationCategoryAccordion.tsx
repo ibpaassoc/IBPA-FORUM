@@ -111,6 +111,7 @@ export default function NominationCategoryAccordion({
     >
       {categories.map((category, categoryIndex) => {
         const isOpen = openCategoryId === category.id;
+        const isRightColumn = categoryIndex % 2 === 1;
         const categoryOrder =
           openCategoryIndex > 0 && openCategoryIndex % 2 === 1
             ? categoryIndex === openCategoryIndex
@@ -153,7 +154,11 @@ export default function NominationCategoryAccordion({
                 : "border-white/90 shadow-[0_18px_52px_rgba(79,115,139,0.09)] transition-[border-color,box-shadow] duration-300 hover:border-[rgba(114,160,193,0.42)] hover:shadow-[0_24px_60px_rgba(114,160,193,0.16)] motion-reduce:transition-none"
             }`}
           >
-            <div className="pointer-events-none absolute right-5 top-4 size-28 rounded-full bg-[rgba(185,217,235,0.18)] blur-2xl" />
+            <div
+              className={`pointer-events-none absolute top-4 size-28 rounded-full bg-[rgba(185,217,235,0.18)] blur-2xl ${
+                isRightColumn ? "right-5 lg:left-5 lg:right-auto" : "right-5"
+              }`}
+            />
             <div className="relative rounded-[calc(2rem-1px)] border border-[rgba(114,160,193,0.1)] bg-white/72 backdrop-blur-xl">
               <h3>
                 <button
@@ -163,18 +168,42 @@ export default function NominationCategoryAccordion({
                   onClick={() =>
                     onOpenCategoryChange(isOpen ? null : category.id)
                   }
-                  className="block min-h-[142px] w-full cursor-pointer rounded-[calc(2rem-1px)] px-5 py-5 text-left transition-colors duration-300 hover:bg-[#f8fbfd]/55 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-[rgba(114,160,193,0.3)] motion-reduce:transition-none sm:px-6"
+                  className={`block min-h-[142px] w-full cursor-pointer rounded-[calc(2rem-1px)] px-5 py-5 text-left transition-colors duration-300 hover:bg-[#f8fbfd]/55 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-[rgba(114,160,193,0.3)] motion-reduce:transition-none sm:px-6 ${
+                    isRightColumn ? "lg:text-right" : ""
+                  }`}
                 >
                   <motion.div
                     layout="position"
-                    className="flex min-h-[100px] items-stretch justify-between gap-4"
+                    className={`flex min-h-[100px] items-stretch justify-between gap-4 ${
+                      isRightColumn ? "lg:flex-row-reverse" : ""
+                    }`}
                   >
-                    <span className="flex min-w-0 items-start gap-4">
-                      <span className="flex size-11 shrink-0 items-center justify-center rounded-[16px] border border-[rgba(114,160,193,0.2)] bg-white/86 text-[#5689ad] shadow-[0_12px_28px_rgba(114,160,193,0.12)] transition duration-300 group-hover/category:scale-105 group-hover/category:-rotate-3 group-hover/category:border-[rgba(114,160,193,0.4)] group-hover/category:bg-[#f1f8fc] motion-reduce:transform-none motion-reduce:transition-none">
+                    <span
+                      className={`flex min-w-0 items-start gap-4 ${
+                        isRightColumn ? "lg:flex-row-reverse" : ""
+                      }`}
+                    >
+                      <span
+                        className={`flex size-11 shrink-0 items-center justify-center rounded-[16px] border border-[rgba(114,160,193,0.2)] bg-white/86 text-[#5689ad] shadow-[0_12px_28px_rgba(114,160,193,0.12)] transition duration-300 group-hover/category:scale-105 group-hover/category:border-[rgba(114,160,193,0.4)] group-hover/category:bg-[#f1f8fc] motion-reduce:transform-none motion-reduce:transition-none ${
+                          isRightColumn
+                            ? "lg:group-hover/category:rotate-3"
+                            : "group-hover/category:-rotate-3"
+                        }`}
+                      >
                         <Icon aria-hidden className="size-[17px]" />
                       </span>
-                      <span className="flex min-w-0 flex-col justify-center">
-                        <span className="block max-w-xl break-words font-[var(--font-title-family)] text-[clamp(1.28rem,2.3vw,1.85rem)] font-light leading-[1.04] tracking-[-0.035em] text-[var(--color-ink)] transition-transform duration-300 group-hover/category:translate-x-1 motion-reduce:transform-none motion-reduce:transition-none">
+                      <span
+                        className={`flex min-w-0 flex-col justify-center ${
+                          isRightColumn ? "lg:items-end lg:text-right" : ""
+                        }`}
+                      >
+                        <span
+                          className={`block max-w-xl break-words font-[var(--font-title-family)] text-[clamp(1.28rem,2.3vw,1.85rem)] font-light leading-[1.04] tracking-[-0.035em] text-[var(--color-ink)] transition-transform duration-300 motion-reduce:transform-none motion-reduce:transition-none ${
+                            isRightColumn
+                              ? "lg:group-hover/category:-translate-x-1"
+                              : "group-hover/category:translate-x-1"
+                          }`}
+                        >
                           {category.displayName}
                         </span>
                         <span className="mt-2 block text-[0.76rem] text-[var(--color-ink-soft)]">
