@@ -172,13 +172,14 @@ export default function NominationCategoryAccordion({
                     isRightColumn ? "lg:text-right" : ""
                   }`}
                 >
-                  <motion.div
-                    layout="position"
+                  <div
                     className={`flex min-h-[100px] items-stretch justify-between gap-4 ${
                       isRightColumn ? "lg:flex-row-reverse" : ""
                     }`}
                   >
-                    <span
+                    <motion.span
+                      layout={reducedMotion ? false : "position"}
+                      transition={{ layout: layoutTransition }}
                       className={`flex min-w-0 items-start gap-4 ${
                         isRightColumn ? "lg:flex-row-reverse" : ""
                       }`}
@@ -218,14 +219,14 @@ export default function NominationCategoryAccordion({
                           ) : null}
                         </span>
                       </span>
-                    </span>
+                    </motion.span>
 
                     {selectedInCategory > 0 ? (
                       <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-full border border-[rgba(114,160,193,0.24)] bg-[#edf6fb] text-[0.68rem] font-bold text-[#477b9f]">
                         {selectedInCategory}
                       </span>
                     ) : null}
-                  </motion.div>
+                  </div>
                 </button>
               </h3>
 
