@@ -3,14 +3,10 @@
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { HeroPrimaryButton } from "@/shared/components/public";
+import { LandingPrimaryButton } from "@/shared/components/public";
 import { PUBLIC_MOTION_EASE, PUBLIC_MOTION_DURATION } from "@/shared/components/public/motion-tokens";
 
-export default function ApplyHero({
-  heroStats,
-}: {
-  heroStats: Array<{ label: string; value: string }>;
-}) {
+export default function ApplyHero() {
   const { language } = useLanguage();
   const reducedMotion = useReducedMotion();
 
@@ -21,6 +17,11 @@ export default function ApplyHero({
       description:
         "Official IBPA Beauty Award 2026 participant applications. Submit your portfolio, select your nominations, and be evaluated by the international jury.",
       cta: "Start application",
+      stats: [
+        { label: "Categories", value: "11" },
+        { label: "Open to", value: "Global" },
+        { label: "Season", value: "2026" },
+      ],
     },
     ru: {
       eyebrow: "Заявки участников",
@@ -28,6 +29,11 @@ export default function ApplyHero({
       description:
         "Официальные заявки на IBPA Beauty Award 2026. Отправьте портфолио, выберите номинации и пройдите оценку международного жюри.",
       cta: "Начать заявку",
+      stats: [
+        { label: "Категории", value: "11" },
+        { label: "Участие", value: "По всему миру" },
+        { label: "Сезон", value: "2026" },
+      ],
     },
     ua: {
       eyebrow: "Заявки учасників",
@@ -35,6 +41,11 @@ export default function ApplyHero({
       description:
         "Офіційні заявки на IBPA Beauty Award 2026. Надішліть портфоліо, оберіть номінації та пройдіть оцінювання міжнародного журі.",
       cta: "Розпочати заявку",
+      stats: [
+        { label: "Категорії", value: "11" },
+        { label: "Участь", value: "У всьому світі" },
+        { label: "Сезон", value: "2026" },
+      ],
     },
   }[language];
 
@@ -73,7 +84,7 @@ export default function ApplyHero({
           </motion.h1>
 
           <motion.div {...enter(0.34)} className="mt-8 flex flex-wrap gap-2.5">
-            {heroStats.map((item) => (
+            {copy.stats.map((item) => (
               <div
                 key={item.label}
                 className="rounded-full border border-white/70 bg-white/70 px-4 py-2 text-[0.68rem] uppercase tracking-[0.18em] text-[var(--color-ink-soft)] shadow-[0_14px_40px_rgba(42,66,82,0.08)] backdrop-blur-xl"
@@ -87,7 +98,7 @@ export default function ApplyHero({
           </motion.div>
 
           <motion.div {...enter(0.46)} className="mt-9 flex flex-wrap items-center gap-4">
-            <HeroPrimaryButton href="#apply-form">{copy.cta}</HeroPrimaryButton>
+            <LandingPrimaryButton href="#apply-form">{copy.cta}</LandingPrimaryButton>
           </motion.div>
         </div>
       </div>

@@ -45,7 +45,7 @@ export async function sendTicketConfirmationEmail({
       {
         filename: "ticket-qr.png",
         content: qrBuffer,
-        content_id: QR_CID,
+        contentId: QR_CID,
       },
     ],
   });

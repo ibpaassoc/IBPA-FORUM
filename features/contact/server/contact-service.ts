@@ -51,7 +51,7 @@ export async function submitContactMessage(input: ContactFormInput) {
     type: "user",
     to: getContactRecipient(),
     replyTo: input.email,
-    subject: `Contact form — ${subject}`,
+    subject: `New Contact Message — ${subject}`,
     html,
     text,
   });

@@ -82,7 +82,7 @@ export async function sendJuryResubmittedAdminNotificationEmail({
   adminReviewUrl: string;
 }) {
   const paragraphs = [
-    `Jury application updated by applicant.`,
+    "A jury applicant has submitted the requested updates.",
     `Applicant: ${fullName}`,
     `Email: ${applicantEmail}`,
     `Review the updated application: ${adminReviewUrl}`,
@@ -91,8 +91,8 @@ export async function sendJuryResubmittedAdminNotificationEmail({
   return sendEmail({
     type: "application",
     to: EMAIL_APPLICATIONS,
-    subject: `IBPA Jury Application Updated: ${fullName}`,
-    html: wrapEmail(`${fullName} has updated their jury application`, paragraphs),
+    subject: `IBPA Jury Application Updated — ${fullName}`,
+    html: wrapEmail("Jury application updated", paragraphs),
     text: buildTextBody(paragraphs),
   });
 }

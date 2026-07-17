@@ -11,17 +11,17 @@ export function juryApprovedPaymentLink({
     subject: "Your IBPA Jury Application Has Been Approved",
     html: wrapEmail("Complete your jury registration", [
       `Dear ${fullName},`,
-      "We are pleased to let you know that your jury application has been approved.",
-      "To finalize your jury registration, please complete the payment using the secure Stripe Checkout link below.",
+      "We are pleased to let you know that your application to join the IBPA Beauty Award jury panel has been approved.",
+      "To finalize your registration, please pay the jury registration fee using the secure link below.",
       ctaButton("Complete Registration", checkoutUrl),
-      "Your public jury profile will be activated after Stripe confirms your payment.",
+      "Once your payment is confirmed, we will activate your public jury profile and send you the next steps.",
     ]),
     text: buildTextBody([
       `Dear ${fullName},`,
-      "We are pleased to let you know that your jury application has been approved.",
-      "To finalize your jury registration, please complete the payment using the secure link below.",
+      "We are pleased to let you know that your application to join the IBPA Beauty Award jury panel has been approved.",
+      "To finalize your registration, please pay the jury registration fee using the secure link below.",
       checkoutUrl,
-      "Your public jury profile will be activated after Stripe confirms your payment.",
+      "Once your payment is confirmed, we will activate your public jury profile and send you the next steps.",
     ]),
   };
 }

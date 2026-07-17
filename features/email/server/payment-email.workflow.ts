@@ -25,7 +25,7 @@ export async function sendPaymentAdminNotificationEmail({
     currency: normalizedCurrency,
   }).format(amount / 100);
   const paragraphs = [
-    `${flowLabel} payment confirmed.`,
+    `A ${flowLabel.toLowerCase()} payment has been confirmed.`,
     `Applicant: ${applicantName}`,
     `Email: ${applicantEmail}`,
     `Amount: ${formattedAmount}`,
@@ -36,7 +36,7 @@ export async function sendPaymentAdminNotificationEmail({
   const result = await sendEmail({
     type: "payment",
     to: EMAIL_PAYMENTS,
-    subject: `IBPA Payment Confirmed: ${flowLabel}`,
+    subject: `IBPA ${flowLabel} Payment Confirmed`,
     html: wrapEmail(`${flowLabel} payment confirmed`, paragraphs),
     text: buildTextBody(paragraphs),
   });

@@ -10,7 +10,8 @@ import {
 export type EmailAttachment = {
   filename: string;
   content: Buffer;
-  content_id: string;
+  /** Used by the email client to resolve inline images referenced with cid:. */
+  contentId?: string;
 };
 
 export type SendEmailInput = {

@@ -15,42 +15,42 @@ function accountSetupTemplate({
   fullName?: string | null;
   setupUrl: string;
 }) {
-  const greeting = fullName ? `Hello ${fullName},` : "Hello,";
+  const greeting = fullName ? `Dear ${fullName},` : "Hello,";
   const paragraphs = [
     greeting,
-    "Your IBPA account is ready. Use the secure link below to set your password and open your dashboard.",
-    ctaButton("Set account password", setupUrl),
-    "This link is single-use and expires in 3 days.",
+    "Your IBPA account is ready. Use the secure link below to create your password and access your dashboard.",
+    ctaButton("Create My Password", setupUrl),
+    "For your security, this link can be used only once and expires in 3 days.",
   ];
 
   return {
-    subject: "Set up your IBPA account",
-    html: wrapEmail("Set up your IBPA account", paragraphs),
+    subject: "Set Up Your IBPA Account",
+    html: wrapEmail("Welcome to your IBPA account", paragraphs),
     text: buildTextBody([
       greeting,
-      "Your IBPA account is ready. Set your password using this secure link:",
+      "Your IBPA account is ready. Create your password using this secure link:",
       setupUrl,
-      "This link is single-use and expires in 3 days.",
+      "For your security, this link can be used only once and expires in 3 days.",
     ]),
   };
 }
 
 function passwordResetTemplate({ resetUrl }: { resetUrl: string }) {
   const paragraphs = [
-    "You requested a password reset for your IBPA account.",
+    "We received a request to reset the password for your IBPA account.",
     "Click the button below to set a new password. This link is valid for 1 hour.",
     ctaButton("Reset password", resetUrl),
-    "If you did not request this, you can ignore this email.",
+    "If you did not request this, you can ignore this email. Your password will remain unchanged.",
   ];
 
   return {
-    subject: "IBPA account password reset",
-    html: wrapEmail("Password reset request", paragraphs),
+    subject: "Reset Your IBPA Account Password",
+    html: wrapEmail("Reset your password", paragraphs),
     text: buildTextBody([
-      "You requested a password reset for your IBPA account.",
-      "Use this link to set a new password:",
+      "We received a request to reset the password for your IBPA account.",
+      "Use this link to set a new password. The link is valid for 1 hour:",
       resetUrl,
-      "If you did not request this, you can ignore this email.",
+      "If you did not request this, you can ignore this email. Your password will remain unchanged.",
     ]),
   };
 }

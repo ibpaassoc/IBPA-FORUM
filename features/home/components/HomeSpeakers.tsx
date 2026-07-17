@@ -144,7 +144,7 @@ export default function HomeSpeakers() {
       <div
         ref={sliderRef}
         onScroll={updateActiveIndex}
-        className={`relative flex snap-x snap-mandatory gap-6 overflow-x-auto px-[max(1rem,calc((100vw-1200px)/2))] pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
+        className={`relative flex touch-pan-y snap-x snap-mandatory gap-6 overflow-x-hidden overscroll-x-none px-[max(1rem,calc((100vw-1200px)/2))] pb-4 pt-2 ${
           isScrollable ? "" : "justify-center"
         }`}
       >

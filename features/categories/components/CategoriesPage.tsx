@@ -1,4 +1,5 @@
 import dynamic from "next/dynamic";
+import type { CategoryOption } from "@/features/applications/types/application.types";
 import {
   CategoriesHero,
   CategoriesInfo,
@@ -15,12 +16,12 @@ const CategoriesFAQ = dynamic(
   () => import("@/features/categories/components/CategoriesFAQ")
 );
 
-export default function CategoriesPagePremium() {
+export default function CategoriesPagePremium({ categories }: { categories: CategoryOption[] }) {
   return (
     <LandingPageShell>
       <CategoriesHero />
       <CategoriesInfo />
-      <CategoriesFeatures />
+      <CategoriesFeatures categories={categories} />
       <CategoriesWhyJoin />
       <CategoriesAwardResults />
       <CategoriesCTA />

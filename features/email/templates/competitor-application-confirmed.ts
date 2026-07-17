@@ -21,14 +21,14 @@ export function competitorApplicationConfirmed({
 }) {
   const paragraphs = [
     `Dear ${fullName},`,
-    `Your ${formatAmount(amount, currency)} payment for the IBPA Beauty Award competitor application has been received successfully.`,
-    `Your application for ${categoryName} / ${awardName} is now complete and has been submitted for review.`,
-    "Our judges and admin team will review your materials and follow up with any next steps separately.",
+    `We have received your ${formatAmount(amount, currency)} payment for the IBPA Beauty Award.`,
+    `Your application for ${categoryName} / ${awardName} is complete and has been submitted for review.`,
+    "Our judging panel and the IBPA team will review your materials. We will contact you if any additional information is needed.",
   ];
 
   return {
-    subject: "Your IBPA Competitor Application Is Complete",
-    html: wrapEmail("Your competitor application has been confirmed", paragraphs),
+    subject: "Your IBPA Beauty Award Application Is Complete",
+    html: wrapEmail("Your application is complete", paragraphs),
     text: buildTextBody(paragraphs),
   };
 }
