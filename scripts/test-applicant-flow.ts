@@ -267,6 +267,13 @@ assert(!has(qrRoute, "{}"), "account QR route does not include empty OR ownershi
 assert(has(qrRoute, "new Uint8Array(buffer)"), "account QR route returns a NextResponse-compatible binary body");
 assert(has(qrRoute, "safeSlug(ticket.fullName)"), "account QR filename omits the raw QR token");
 
+const ticketEmailWorkflow = read("features/tickets/server/ticket-email.workflow.ts");
+const ticketEmailTemplate = read("features/tickets/templates/ticket-confirmation.ts");
+assert(has(ticketEmailWorkflow, "contentId: QR_CID"), "ticket email sends the QR with Resend's inline content ID");
+assert(!has(ticketEmailWorkflow, "content_id:"), "ticket email does not use Resend's internal API field name");
+assert(has(ticketEmailTemplate, 'src="cid:${QR_CID}"'), "ticket email references the inline QR content ID");
+assert(has(ticketEmailTemplate, 'role="presentation"'), "ticket email uses email-client-safe QR layout markup");
+
 // -- Migration verification ----------------------------------------------------
 console.log("migration verification scripts");
 const verifyMigration = read("scripts/verify-account-migration.ts");

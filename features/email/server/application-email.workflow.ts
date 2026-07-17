@@ -14,7 +14,7 @@ export async function sendApplicationReceivedNotificationEmail({
   details?: string[];
 }) {
   const paragraphs = [
-    `${applicationType} application received.`,
+    `A new ${applicationType.toLowerCase()} application has been received.`,
     `Applicant: ${applicantName}`,
     `Email: ${applicantEmail}`,
     ...details,
@@ -23,8 +23,8 @@ export async function sendApplicationReceivedNotificationEmail({
   const result = await sendEmail({
     type: "application",
     to: EMAIL_APPLICATIONS,
-    subject: `IBPA Application Received: ${applicationType}`,
-    html: wrapEmail(`${applicationType} application received`, paragraphs),
+    subject: `New IBPA ${applicationType} Application`,
+    html: wrapEmail(`New ${applicationType.toLowerCase()} application`, paragraphs),
     text: buildTextBody(paragraphs),
   });
 

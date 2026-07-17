@@ -22,23 +22,23 @@ export function ticketPaymentLinkTemplate({
 
   const paragraphs = [
     greeting,
-    "Here is a fresh, secure link to complete your ticket payment for the Beauty Business Forum.",
+    "Use the secure link below to complete your ticket payment for the IBPA Beauty Business Forum.",
     `Your selection: ${ticketSummary}`,
     `Amount due: ${amountFormatted}`,
     ctaButton("Complete Payment", checkoutUrl),
-    "Please note: any earlier payment link you may have received will no longer work — please use the button above.",
+    "Any payment link we sent previously is no longer valid. Please use the button above.",
   ];
 
   return {
-    subject: "Complete Your Payment — IBPA BEAUTY AWARD 2026",
+    subject: "Complete Your IBPA Forum Ticket Payment",
     html: wrapEmail("Complete your ticket payment", paragraphs),
     text: buildTextBody([
       greeting,
-      "Here is a fresh, secure link to complete your ticket payment for the Beauty Business Forum.",
+      "Use the secure link below to complete your ticket payment for the IBPA Beauty Business Forum.",
       `Your selection: ${ticketSummary}`,
       `Amount due: ${amountFormatted}`,
       checkoutUrl,
-      "Please note: any earlier payment link you may have received will no longer work.",
+      "Any payment link we sent previously is no longer valid. Please use the link above.",
     ]),
   };
 }

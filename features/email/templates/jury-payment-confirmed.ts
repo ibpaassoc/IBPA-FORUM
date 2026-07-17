@@ -17,13 +17,13 @@ export function juryPaymentConfirmed({
 }) {
   const paragraphs = [
     `Dear ${fullName},`,
-    `Your ${formatAmount(amount, currency)} jury registration fee has been received successfully.`,
-    "Your jury application is now fully confirmed, and the IBPA team will follow up with official next-step details separately.",
+    `We have received your ${formatAmount(amount, currency)} jury registration fee.`,
+    "Your place on the IBPA Beauty Award jury panel is now confirmed. The IBPA team will contact you soon with the next steps.",
   ];
 
   return {
     subject: "Your IBPA Jury Registration Is Confirmed",
-    html: wrapEmail("Your jury payment has been confirmed", paragraphs),
+    html: wrapEmail("Your jury registration is confirmed", paragraphs),
     text: buildTextBody(paragraphs),
   };
 }
