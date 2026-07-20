@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import "./globals.css";
 import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
 import { languages, type Language } from "@/lib/i18n/translations";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "IBPA Beauty Award 2026",
@@ -62,6 +63,7 @@ export default async function RootLayout({
         <LanguageProvider initialLanguage={initialLanguage}>
           {children}
         </LanguageProvider>
+        <Analytics />
       </body>
     </html>
   )
