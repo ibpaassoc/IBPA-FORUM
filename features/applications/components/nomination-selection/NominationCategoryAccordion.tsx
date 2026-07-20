@@ -21,6 +21,13 @@ import {
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import type { PresentedNominationCategory } from "@/features/applications/components/nomination-selection/nomination-presentation";
+import RegulationButton, {
+  type RegulationButtonCopy,
+} from "@/features/regulations/components/RegulationButton";
+import type {
+  RegulationAvailability,
+  RegulationLanguage,
+} from "@/features/regulations/types";
 import {
   PUBLIC_MOTION_DURATION,
   PUBLIC_MOTION_EASE,
@@ -57,7 +64,12 @@ type NominationCategoryAccordionProps = {
   getAwardHref?: (awardId: string) => string;
   focusAwardId?: string | null;
   className?: string;
+  regulationsByCategory?: Record<string, RegulationAvailability>;
+  regulationLanguage?: RegulationLanguage;
+  regulationCopy?: RegulationButtonCopy;
 };
+
+const noRegulations: RegulationAvailability = { en: false, ru: false, ua: false };
 
 export default function NominationCategoryAccordion({
   categories,
@@ -69,6 +81,9 @@ export default function NominationCategoryAccordion({
   getAwardHref,
   focusAwardId,
   className = "",
+  regulationsByCategory,
+  regulationLanguage,
+  regulationCopy,
 }: NominationCategoryAccordionProps) {
   const reducedMotion = useReducedMotion();
   const nominationRefs = useRef(new Map<string, HTMLElement>());
@@ -160,7 +175,7 @@ export default function NominationCategoryAccordion({
               }`}
             />
             <div className="relative rounded-[calc(2rem-1px)] border border-[rgba(114,160,193,0.1)] bg-white/72 backdrop-blur-xl">
-              <h3>
+              <h3 className="flex items-stretch">
                 <button
                   type="button"
                   aria-expanded={isOpen}
@@ -168,7 +183,7 @@ export default function NominationCategoryAccordion({
                   onClick={() =>
                     onOpenCategoryChange(isOpen ? null : category.id)
                   }
-                  className={`block min-h-[142px] w-full cursor-pointer rounded-[calc(2rem-1px)] px-5 py-5 text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-[rgba(114,160,193,0.3)] sm:px-6 ${
+                  className={`block min-h-[142px] min-w-0 flex-1 cursor-pointer rounded-[calc(2rem-1px)] px-4 py-5 text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-[rgba(114,160,193,0.3)] sm:px-6 ${
                     isRightColumn ? "lg:text-right" : ""
                   }`}
                 >
@@ -216,6 +231,18 @@ export default function NominationCategoryAccordion({
                     ) : null}
                   </div>
                 </button>
+                {regulationLanguage && regulationCopy ? (
+                  <div className="flex shrink-0 items-center pr-3 sm:pr-5">
+                    <RegulationButton
+                      regulationKey={`category:${category.id}`}
+                      availability={regulationsByCategory?.[category.id] ?? noRegulations}
+                      language={regulationLanguage}
+                      title={`${regulationCopy.regulations}: ${category.displayName}`}
+                      copy={regulationCopy}
+                      className="min-w-[96px] px-3 sm:min-w-[122px] sm:px-4"
+                    />
+                  </div>
+                ) : null}
               </h3>
 
               <AnimatePresence initial={false} mode="popLayout">

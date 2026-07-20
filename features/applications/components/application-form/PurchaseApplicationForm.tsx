@@ -30,6 +30,8 @@ import StepBar from "@/features/applications/components/application-form/StepBar
 import { computeApplicantNominationPrice } from "@/features/applications/lib/pricing";
 import { countryOptions } from "@/features/applications/config/countries";
 import type { CategoryOption } from "@/features/applications/types/application.types";
+import RegulationButton from "@/features/regulations/components/RegulationButton";
+import type { PublicRegulations } from "@/features/regulations/types";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { translations } from "@/lib/i18n/translations";
 import { legalContent } from "@/shared/components/layout/legal-content";
@@ -189,6 +191,17 @@ const copy = {
     selectedWord: "selected",
     details: "View details",
     close: "Close",
+    generalRegulations: "General regulations",
+    regulationCopy: {
+      regulations: "Regulations",
+      view: "View",
+      download: "Download",
+      noAvailable: "No regulations available yet.",
+      loading: "Loading PDF…",
+      error: "The PDF could not be loaded. Please try again.",
+      close: "Close",
+      russianFallback: "The Russian version is shown because this language is not available yet.",
+    },
     agreementsCopy: {
       rules: {
         label: "Competition rules",
@@ -283,6 +296,17 @@ const copy = {
     selectedWord: "выбрано",
     details: "Подробнее",
     close: "Закрыть",
+    generalRegulations: "Общие положения",
+    regulationCopy: {
+      regulations: "Положения",
+      view: "Просмотреть",
+      download: "Скачать",
+      noAvailable: "Положения пока недоступны.",
+      loading: "Загрузка PDF…",
+      error: "Не удалось загрузить PDF. Попробуйте ещё раз.",
+      close: "Закрыть",
+      russianFallback: "Показана русская версия, потому что документ на выбранном языке пока недоступен.",
+    },
     agreementsCopy: {
       rules: {
         label: "Правила конкурса",
@@ -377,6 +401,17 @@ const copy = {
     selectedWord: "обрано",
     details: "Докладніше",
     close: "Закрити",
+    generalRegulations: "Загальні положення",
+    regulationCopy: {
+      regulations: "Положення",
+      view: "Переглянути",
+      download: "Завантажити",
+      noAvailable: "Положення поки недоступні.",
+      loading: "Завантаження PDF…",
+      error: "Не вдалося завантажити PDF. Спробуйте ще раз.",
+      close: "Закрити",
+      russianFallback: "Показано російську версію, оскільки документ обраною мовою поки недоступний.",
+    },
     agreementsCopy: {
       rules: {
         label: "Правила конкурсу",
@@ -468,7 +503,13 @@ function findRequestedNomination(categories: CategoryOption[], nominationId: str
  * the same shared helper as the server, and the final amount is always
  * recalculated server-side at checkout creation.
  */
-export default function PurchaseApplicationForm({ categories }: { categories: CategoryOption[] }) {
+export default function PurchaseApplicationForm({
+  categories,
+  regulations,
+}: {
+  categories: CategoryOption[];
+  regulations: PublicRegulations;
+}) {
   const { language, t: sharedT } = useLanguage();
   const searchParams = useSearchParams();
   const t = copy[language] ?? copy.en;
@@ -901,6 +942,15 @@ export default function PurchaseApplicationForm({ categories }: { categories: Ca
             </p>
           ) : null}
 
+          <RegulationButton
+            regulationKey="general"
+            availability={regulations.general}
+            language={language}
+            title={t.generalRegulations}
+            variant="general"
+            copy={{ ...t.regulationCopy, regulations: t.generalRegulations }}
+          />
+
           <NominationCategoryAccordion
             categories={presentedCategories}
             openCategoryId={openCategoryId}
@@ -908,6 +958,9 @@ export default function PurchaseApplicationForm({ categories }: { categories: Ca
             selectedAwardIds={selectedAwardIds}
             onAwardToggle={toggleAward}
             focusAwardId={focusAwardId}
+            regulationsByCategory={regulations.categories}
+            regulationLanguage={language}
+            regulationCopy={t.regulationCopy}
             copy={{
               nominationSingular: t.nominationWord,
               nominationPlural: t.nominationsWord,

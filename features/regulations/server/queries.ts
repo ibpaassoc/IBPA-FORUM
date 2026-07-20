@@ -6,6 +6,7 @@ import type {
   RegulationKey,
   RegulationLanguage,
   RegulationUrls,
+  PublicRegulations,
 } from "@/features/regulations/types";
 import {
   regulationAvailability,
@@ -61,6 +62,31 @@ export async function getRegulationsForAdmin(): Promise<{
       storageScope: category.slug,
       availability: regulationAvailability(regulationUrls(category.regulation)),
     })),
+  };
+}
+
+export async function getPublicRegulations(): Promise<PublicRegulations> {
+  const records = await prisma.regulation.findMany({
+    select: {
+      key: true,
+      categoryId: true,
+      enUrl: true,
+      ruUrl: true,
+      uaUrl: true,
+    },
+  });
+  const general = records.find((record) => record.key === "general") ?? null;
+
+  return {
+    general: regulationAvailability(regulationUrls(general)),
+    categories: Object.fromEntries(
+      records
+        .filter((record) => record.categoryId)
+        .map((record) => [
+          record.categoryId as string,
+          regulationAvailability(regulationUrls(record)),
+        ]),
+    ),
   };
 }
 

@@ -22,6 +22,11 @@ export type AdminRegulationItem = {
   availability: RegulationAvailability;
 };
 
+export type PublicRegulations = {
+  general: RegulationAvailability;
+  categories: Record<string, RegulationAvailability>;
+};
+
 export function isRegulationKey(value: unknown): value is RegulationKey {
   return value === "general" || (typeof value === "string" && value.startsWith("category:"));
 }
