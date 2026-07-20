@@ -14,6 +14,7 @@ model Category {
   applications           Application[]
   awards                 Award[]
   nominationApplications NominationApplication[]
+  regulation             Regulation?
 }
 
 model Award {
@@ -616,4 +617,17 @@ model SiteSetting {
   key       String   @id
   value     String
   updatedAt DateTime @updatedAt
+}
+
+model Regulation {
+  id                    String    @id @default(cuid())
+  key                   String    @unique
+  categoryId            String?   @unique
+  enUrl                 String?
+  ruUrl                 String?
+  uaUrl                 String?
+  technicalRequirements Json?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  category              Category? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 }
