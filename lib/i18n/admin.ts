@@ -77,6 +77,7 @@ export const adminT = {
     scoring: { label: "Оценки", short: "Оценки" },
     tickets: { label: "Билеты", short: "Билеты" },
     discounts: { label: "Промокоды", short: "Скидки" },
+    regulations: { label: "Положения", short: "PDF" },
     scanner: { label: "Сканер", short: "Скан" },
     sheets: { label: "Google Sheets", short: "Sheets" },
     brandSub: "Админ-панель",

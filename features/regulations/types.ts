@@ -14,6 +14,18 @@ export type RegulationSummary = {
   urls: RegulationUrls;
 };
 
+export type AdminRegulationItem = {
+  key: RegulationKey;
+  categoryId: string | null;
+  title: string;
+  storageScope: string;
+  availability: RegulationAvailability;
+};
+
+export function isRegulationKey(value: unknown): value is RegulationKey {
+  return value === "general" || (typeof value === "string" && value.startsWith("category:"));
+}
+
 export function isRegulationLanguage(value: unknown): value is RegulationLanguage {
   return typeof value === "string" && regulationLanguages.includes(value as RegulationLanguage);
 }
