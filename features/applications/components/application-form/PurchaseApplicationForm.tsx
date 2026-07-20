@@ -645,14 +645,24 @@ export default function PurchaseApplicationForm({ categories }: { categories: Ca
     const timeout = window.setTimeout(async () => {
       setCertState("checking");
       try {
-        const response = await fetch("/api/membership/validate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ membershipNumber: values.ibpaMemberNumber }),
-          signal: controller.signal,
-        });
-        const payload = (await response.json()) as { qualified?: boolean };
-        setCertState(response.ok && payload.qualified ? "valid" : "invalid");
+        const response = await fetch(
+          `/api/tickets/verify-cert?certNumber=${encodeURIComponent(values.ibpaMemberNumber.trim())}`,
+          {
+            cache: "no-store",
+            signal: controller.signal,
+          }
+        );
+        const payload = (await response.json()) as {
+          valid?: boolean;
+          reason?: string;
+        };
+
+        if (response.status === 503) {
+          setCertState("error");
+          return;
+        }
+
+        setCertState(response.ok && payload.valid ? "valid" : "invalid");
       } catch {
         if (!controller.signal.aborted) setCertState("error");
       }
