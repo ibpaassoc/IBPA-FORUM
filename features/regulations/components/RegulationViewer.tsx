@@ -1,8 +1,9 @@
 "use client";
 
-import { AlertCircle, LoaderCircle, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { X } from "lucide-react";
+import { useEffect } from "react";
 import { createPortal } from "react-dom";
+import RegulationPdfFrame from "@/features/regulations/components/RegulationPdfFrame";
 
 type RegulationViewerProps = {
   open: boolean;
@@ -16,8 +17,6 @@ type RegulationViewerProps = {
   };
 };
 
-type ViewerState = "loading" | "ready" | "error";
-
 export default function RegulationViewer({
   open,
   onClose,
@@ -25,8 +24,6 @@ export default function RegulationViewer({
   src,
   copy,
 }: RegulationViewerProps) {
-  const [state, setState] = useState<ViewerState>("loading");
-
   useEffect(() => {
     if (!open) return;
 
@@ -57,24 +54,6 @@ export default function RegulationViewer({
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [onClose, open]);
-
-  useEffect(() => {
-    if (!open) return;
-
-    const controller = new AbortController();
-
-    void fetch(src, { method: "HEAD", signal: controller.signal })
-      .then((response) => {
-        if (!response.ok) throw new Error("PDF unavailable");
-        setState("ready");
-      })
-      .catch((error: unknown) => {
-        if (error instanceof DOMException && error.name === "AbortError") return;
-        setState("error");
-      });
-
-    return () => controller.abort();
-  }, [open, src]);
 
   if (!open) return null;
 
@@ -113,30 +92,13 @@ export default function RegulationViewer({
           </button>
         </header>
 
-        <div className="relative min-h-0 flex-1 bg-[#e9eef1]">
-          {state === "loading" ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white/82 text-[var(--color-ink-soft)]">
-              <LoaderCircle aria-hidden size={28} className="animate-spin text-[var(--color-blue)]" />
-              <p className="text-sm">{copy.loading}</p>
-            </div>
-          ) : null}
-
-          {state === "error" ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white/86 px-6 text-center">
-              <AlertCircle aria-hidden size={30} className="text-red-500" />
-              <p className="max-w-md text-sm leading-6 text-red-700">{copy.error}</p>
-            </div>
-          ) : null}
-
-          {state === "ready" ? (
-            <iframe
-              src={src}
-              title={title}
-              className="h-full w-full border-0 bg-white"
-              onError={() => setState("error")}
-            />
-          ) : null}
-        </div>
+        <RegulationPdfFrame
+          src={src}
+          title={title}
+          loadingText={copy.loading}
+          errorText={copy.error}
+          className="min-h-0 flex-1"
+        />
       </section>
     </div>,
     document.body,

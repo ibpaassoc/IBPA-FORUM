@@ -20,6 +20,15 @@ export const regulationUrlField = {
   ua: "uaUrl",
 } as const satisfies Record<RegulationLanguage, keyof Regulation>;
 
+function hasPrismaCode(error: unknown, code: string) {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code?: unknown }).code === code
+  );
+}
+
 export function regulationUrls(
   regulation: Pick<Regulation, "enUrl" | "ruUrl" | "uaUrl"> | null,
 ): RegulationUrls {
@@ -34,18 +43,35 @@ export async function getRegulationsForAdmin(): Promise<{
   general: AdminRegulationItem;
   categories: AdminRegulationItem[];
 }> {
-  const [generalRecord, categories] = await Promise.all([
-    prisma.regulation.findUnique({ where: { key: "general" } }),
-    prisma.category.findMany({
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        regulation: true,
-      },
+  let generalRecord: Regulation | null = null;
+  let categories: Array<{
+    id: string;
+    name: string;
+    slug: string;
+    regulation: Regulation | null;
+  }>;
+
+  try {
+    [generalRecord, categories] = await Promise.all([
+      prisma.regulation.findUnique({ where: { key: "general" } }),
+      prisma.category.findMany({
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          regulation: true,
+        },
+        orderBy: { createdAt: "asc" },
+      }),
+    ]);
+  } catch (error) {
+    if (!hasPrismaCode(error, "P2021")) throw error;
+    const existingCategories = await prisma.category.findMany({
+      select: { id: true, name: true, slug: true },
       orderBy: { createdAt: "asc" },
-    }),
-  ]);
+    });
+    categories = existingCategories.map((category) => ({ ...category, regulation: null }));
+  }
 
   return {
     general: {
@@ -66,15 +92,28 @@ export async function getRegulationsForAdmin(): Promise<{
 }
 
 export async function getPublicRegulations(): Promise<PublicRegulations> {
-  const records = await prisma.regulation.findMany({
-    select: {
-      key: true,
-      categoryId: true,
-      enUrl: true,
-      ruUrl: true,
-      uaUrl: true,
-    },
-  });
+  let records: Array<{
+    key: string;
+    categoryId: string | null;
+    enUrl: string | null;
+    ruUrl: string | null;
+    uaUrl: string | null;
+  }>;
+
+  try {
+    records = await prisma.regulation.findMany({
+      select: {
+        key: true,
+        categoryId: true,
+        enUrl: true,
+        ruUrl: true,
+        uaUrl: true,
+      },
+    });
+  } catch (error) {
+    if (!hasPrismaCode(error, "P2021")) throw error;
+    records = [];
+  }
   const general = records.find((record) => record.key === "general") ?? null;
 
   return {

@@ -18,6 +18,7 @@ import {
   DashboardPageHeader,
 } from "@/shared/components/admin/DashboardUI";
 import Modal from "@/shared/components/ui/Modal";
+import RegulationPdfFrame from "@/features/regulations/components/RegulationPdfFrame";
 
 const languageLabels: Record<RegulationLanguage, string> = {
   en: "English",
@@ -267,11 +268,13 @@ export default function RegulationsManagementPage({ general, categories }: Props
 
             {hasFile ? (
               <div className="overflow-hidden rounded-[22px] border border-[rgba(114,160,193,0.2)] bg-[#eef3f6]">
-                <iframe
+                <RegulationPdfFrame
                   key={`${versionKey}:${versions[versionKey] ?? 0}`}
                   src={fileUrl(activeItem, language, versions[versionKey] ?? 0)}
                   title={`${activeItem.title} — ${languageLabels[language]}`}
-                  className="h-[46vh] min-h-[320px] w-full bg-white"
+                  loadingText="Загрузка PDF…"
+                  errorText="Не удалось загрузить PDF. Попробуйте заменить файл."
+                  className="h-[46vh] min-h-[320px]"
                 />
               </div>
             ) : (
