@@ -15,8 +15,6 @@ import { FaInstagram } from "react-icons/fa6";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
-const CARD_GAP = 24;
-
 export default function HomeSpeakers() {
   const { t } = useLanguage();
   const c = t.home.speakersSection;
@@ -55,40 +53,42 @@ export default function HomeSpeakers() {
     };
   }, [openSpeaker]);
 
-  const getCardWidth = () => {
-    const card = sliderRef.current?.querySelector<HTMLElement>(
-      "[data-speaker-card]",
-    );
-    return card ? card.offsetWidth + CARD_GAP : null;
+  const getCardStep = () => {
+    const slider = sliderRef.current;
+    const card = slider?.querySelector<HTMLElement>("[data-speaker-card]");
+    if (!slider || !card) return null;
+
+    const gap = Number.parseFloat(getComputedStyle(slider).columnGap || "0");
+    return card.offsetWidth + (Number.isFinite(gap) ? gap : 0);
   };
 
   const updateActiveIndex = () => {
     const slider = sliderRef.current;
-    const width = getCardWidth();
-    if (!slider || !width) return;
+    const step = getCardStep();
+    if (!slider || !step) return;
 
     setActiveIndex(
-      Math.min(c.speakers.length - 1, Math.round(slider.scrollLeft / width)),
+      Math.min(c.speakers.length - 1, Math.round(slider.scrollLeft / step)),
     );
   };
 
   const scroll = (direction: "prev" | "next") => {
     const slider = sliderRef.current;
     if (!slider) return;
-    const width = getCardWidth() ?? 420;
+    const step = getCardStep() ?? 420;
 
     slider.scrollBy({
-      left: direction === "next" ? width : -width,
+      left: direction === "next" ? step : -step,
       behavior: "smooth",
     });
   };
 
   const scrollToIndex = (index: number) => {
     const slider = sliderRef.current;
-    const width = getCardWidth();
-    if (!slider || !width) return;
+    const step = getCardStep();
+    if (!slider || !step) return;
 
-    slider.scrollTo({ left: index * width, behavior: "smooth" });
+    slider.scrollTo({ left: index * step, behavior: "smooth" });
   };
 
   const activeSpeaker = openSpeaker !== null ? c.speakers[openSpeaker] : null;
@@ -143,10 +143,9 @@ export default function HomeSpeakers() {
 
       <div
         ref={sliderRef}
+        data-speakers-slider
         onScroll={updateActiveIndex}
-        className={`relative flex touch-pan-y snap-x snap-mandatory gap-6 overflow-x-hidden overscroll-x-none px-[max(1rem,calc((100vw-1200px)/2))] pb-4 pt-2 ${
-          isScrollable ? "" : "justify-center"
-        }`}
+        className="relative flex snap-x snap-mandatory scroll-px-[var(--page-gutter)] gap-6 overflow-x-auto overscroll-x-contain scroll-smooth px-[var(--page-gutter)] pb-4 pt-2 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] md:scroll-px-[max(1rem,calc((100vw-1200px)/2))] md:px-[max(1rem,calc((100vw-1200px)/2))] [&::-webkit-scrollbar]:hidden"
       >
         {c.speakers.map((speaker, index) => (
           <motion.article
@@ -156,14 +155,14 @@ export default function HomeSpeakers() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="w-[86vw] max-w-[420px] shrink-0 snap-start overflow-hidden rounded-[36px] border border-[#b9d9eb]/60 bg-white/70 backdrop-blur-2xl transition duration-300 hover:-translate-y-1 hover:bg-white/85 sm:w-[480px] sm:max-w-none lg:grid lg:w-[580px] lg:grid-cols-[240px_minmax(0,1fr)]"
+            className="w-[calc(100vw-(2*var(--page-gutter)))] max-w-[420px] shrink-0 snap-start overflow-hidden rounded-[36px] border border-[#b9d9eb]/60 bg-white/70 backdrop-blur-2xl transition duration-300 hover:-translate-y-1 hover:bg-white/85 sm:w-[480px] sm:max-w-none lg:grid lg:w-[580px] lg:grid-cols-[240px_minmax(0,1fr)]"
           >
             <div className="relative aspect-[4/5] overflow-hidden bg-[#eef5f9] sm:aspect-[16/11] lg:aspect-auto lg:h-full lg:min-h-[380px]">
               <Image
                 src={speaker.photo}
                 alt={speaker.name}
                 fill
-                sizes="(max-width: 640px) 86vw, (max-width: 1024px) 480px, 240px"
+                sizes="(max-width: 640px) calc(100vw - (2 * var(--page-gutter))), (max-width: 1024px) 480px, 240px"
                 className="object-cover"
               />
               <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_60%,rgba(16,24,42,0.24)_100%)] lg:bg-[linear-gradient(90deg,transparent_70%,rgba(243,248,251,0.35)_100%)]" />
