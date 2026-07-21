@@ -173,7 +173,7 @@ export default function RegulationButton({
                           setActionsOpen(false);
                           setViewerOpen(true);
                         }}
-                        className="flex min-h-11 w-full items-center gap-3 rounded-[13px] px-3 text-sm font-semibold text-[var(--color-ink)] transition hover:bg-[var(--color-blue-wash)]"
+                        className="flex min-h-11 w-full items-center gap-3 rounded-[13px] px-3 text-sm font-normal text-[var(--color-ink)] transition hover:bg-[var(--color-blue-wash)]"
                       >
                         <Eye aria-hidden size={17} className="text-[var(--color-blue)]" />
                         {copy.view}
@@ -182,7 +182,7 @@ export default function RegulationButton({
                         role="menuitem"
                         href={regulationUrl(regulationKey, language, true)}
                         onClick={() => setActionsOpen(false)}
-                        className="flex min-h-11 w-full items-center gap-3 rounded-[13px] px-3 text-sm font-semibold text-[var(--color-ink)] transition hover:bg-[var(--color-blue-wash)]"
+                        className="flex min-h-11 w-full items-center gap-3 rounded-[13px] px-3 text-sm font-normal text-[var(--color-ink)] transition hover:bg-[var(--color-blue-wash)]"
                       >
                         <Download aria-hidden size={17} className="text-[var(--color-blue)]" />
                         {copy.download}
