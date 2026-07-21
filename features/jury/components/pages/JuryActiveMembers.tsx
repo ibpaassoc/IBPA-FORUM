@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
-import { ArrowLeft, ArrowRight, BadgeCheck, MapPin } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { SectionHeading } from "@/shared/components/public";
@@ -41,14 +41,19 @@ export default function JuryActiveMembers({
 
   if (juryMembers.length === 0) return null;
 
+  const getCardStep = (slider: HTMLDivElement) => {
+    const card = slider.querySelector<HTMLElement>("[data-jury-card]");
+    if (!card) return 420;
+
+    const gap = Number.parseFloat(getComputedStyle(slider).columnGap || "0");
+    return card.offsetWidth + (Number.isFinite(gap) ? gap : 0);
+  };
+
   const updateActiveIndex = () => {
     const slider = sliderRef.current;
     if (!slider) return;
 
-    const card = slider.querySelector<HTMLElement>("[data-jury-card]");
-    if (!card) return;
-
-    const step = card.offsetWidth + 24;
+    const step = getCardStep(slider);
     setActiveIndex(Math.round(slider.scrollLeft / step));
   };
 
@@ -56,8 +61,7 @@ export default function JuryActiveMembers({
     const slider = sliderRef.current;
     if (!slider) return;
 
-    const card = slider.querySelector<HTMLElement>("[data-jury-card]");
-    const scrollAmount = card ? card.offsetWidth + 24 : 420;
+    const scrollAmount = getCardStep(slider);
 
     slider.scrollBy({
       left: direction === "next" ? scrollAmount : -scrollAmount,
@@ -103,11 +107,11 @@ export default function JuryActiveMembers({
 
       <div
         ref={sliderRef}
+        data-jury-slider
         onScroll={updateActiveIndex}
-        className="relative flex snap-x snap-mandatory gap-5 overflow-x-auto px-[max(1rem,calc((100vw-1200px)/2))] pb-2 [scrollbar-width:none] md:gap-6 [&::-webkit-scrollbar]:hidden"
+        className="relative flex snap-x snap-mandatory scroll-px-[var(--page-gutter)] gap-5 overflow-x-auto overscroll-x-contain scroll-smooth px-[var(--page-gutter)] pb-2 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] md:scroll-px-[max(1rem,calc((100vw-1200px)/2))] md:gap-6 md:px-[max(1rem,calc((100vw-1200px)/2))] [&::-webkit-scrollbar]:hidden"
       >
         {juryMembers.map((member) => {
-          const location = [member.city, member.country].filter(Boolean).join(", ");
           const photoSrc =
             member.profilePhotoSrc && !failedPhotos[member.id]
               ? member.profilePhotoSrc
@@ -117,7 +121,7 @@ export default function JuryActiveMembers({
             <article
               key={member.id}
               data-jury-card
-              className="group relative w-[78vw] max-w-[390px] shrink-0 snap-start overflow-hidden rounded-[2.3rem] border border-[#b9d9eb]/60 bg-white/86 p-2 backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 sm:w-[390px]"
+              className="group relative w-[calc(100vw-(2*var(--page-gutter)))] max-w-[390px] shrink-0 snap-start overflow-hidden rounded-[2.3rem] border border-[#b9d9eb]/60 bg-white/86 p-2 backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 sm:w-[390px]"
             >
               <div className="relative aspect-[4/5] overflow-hidden rounded-[1.9rem] bg-[#eef5f9]">
                 {photoSrc ? (
@@ -127,7 +131,7 @@ export default function JuryActiveMembers({
                     fill
                     unoptimized
                     className="object-cover transition duration-300 group-hover:scale-[1.02]"
-                    sizes="(max-width: 640px) 78vw, 390px"
+                    sizes="(max-width: 640px) calc(100vw - (2 * var(--page-gutter))), 390px"
                     onError={() =>
                       setFailedPhotos((current) => ({ ...current, [member.id]: true }))
                     }
@@ -163,11 +167,10 @@ export default function JuryActiveMembers({
             aria-label={`Go to jury member ${index + 1}`}
             onClick={() => {
               const slider = sliderRef.current;
-              const card = slider?.querySelector<HTMLElement>("[data-jury-card]");
-              if (!slider || !card) return;
+              if (!slider) return;
 
               slider.scrollTo({
-                left: index * (card.offsetWidth + 24),
+                left: index * getCardStep(slider),
                 behavior: "smooth",
               });
             }}
