@@ -16,6 +16,7 @@ export type JuryAuthUser = {
   juryProfileId: string;
   juryApplicationId: string;
   expertiseAreas: string[];
+  approvalStatus: "SUBMITTED" | "ADDITIONAL_INFO_REQUIRED" | "APPROVED" | "REJECTED" | "PAID" | null;
 };
 
 export function normalizeJuryEmail(email: string) {
@@ -93,6 +94,7 @@ export async function requireJuryAuth() {
           id: true,
           juryApplicationId: true,
           expertiseAreas: true,
+          approvalStatus: true,
         },
       },
     },
@@ -108,6 +110,7 @@ export async function requireJuryAuth() {
     juryProfileId: account.juryProfile.id,
     juryApplicationId: account.juryProfile.juryApplicationId,
     expertiseAreas: account.juryProfile.expertiseAreas,
+    approvalStatus: account.juryProfile.approvalStatus,
   } satisfies JuryAuthUser;
 }
 

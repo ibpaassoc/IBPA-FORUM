@@ -13,7 +13,7 @@ import {
   getScoreableNominationsWhere,
   getSubmittedJudgeCount,
   ScoringHttpError,
-} from "@/features/admin/server/shared";
+} from "@/features/jury/server/scoring-shared";
 
 export type AdminScoringSort = "averageScore" | "category" | "status";
 export type AdminScoringFilterStatus = "NOT_STARTED" | "IN_PROGRESS" | "COMPLETE";
@@ -434,10 +434,10 @@ export async function reopenJudgeScore(scoreId: string) {
     },
   });
 
-  revalidatePath("/jury/dashboard");
   revalidatePath("/account/jury");
-  revalidatePath(`/jury/dashboard/applications/${score.nominationId}`);
+  revalidatePath("/account/jury/nominations");
   revalidatePath(`/account/jury/nominations/${score.nominationId}`);
+  revalidatePath("/account/jury/completed");
   revalidatePath(`/admin/scoring/${score.nominationId}`);
   revalidatePath("/admin/scoring");
 
