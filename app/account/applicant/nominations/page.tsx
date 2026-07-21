@@ -31,11 +31,6 @@ export default async function ApplicantNominationsPage() {
       <DashboardPageHeader
         label={t.account.nav.brand}
         title={np.title}
-        description={
-          nominationCards.length === 0
-            ? ov.emptyText
-            : `${stats.total} ${np.purchasedWord} · ${stats.drafts} ${np.draftWord} · ${stats.submitted} ${np.submittedWord}. ${np.visibilityNote}`
-        }
         actions={
           <PremiumButton href="/account/applicant/add-nomination">
             <Plus size={16} /> {ov.addNominations}
