@@ -7,10 +7,11 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/shared/lib/prisma";
 import { requireJuryAuth } from "@/features/jury/server/auth";
 
-export const SCOREABLE_APPLICATION_STATUSES = [
+export const SCOREABLE_NOMINATION_STATUSES = [
   "SUBMITTED",
   "UNDER_REVIEW",
-  "APPROVED",
+  "LOCKED",
+  "SCORED",
 ] as const;
 
 export type JuryScoreListStatus = "NOT_STARTED" | "DRAFT" | "SUBMITTED";
@@ -47,15 +48,17 @@ export class ScoringHttpError extends Error {
   }
 }
 
-export function getScoreableApplicationsWhere() {
-  const statuses = [...SCOREABLE_APPLICATION_STATUSES];
+export function getScoreableNominationsWhere() {
+  const statuses = [...SCOREABLE_NOMINATION_STATUSES];
 
   return {
     paymentStatus: "PAID" as const,
     status: {
       in: statuses,
     },
-  } satisfies Prisma.ApplicationWhereInput;
+    closedIncompleteAt: null,
+    deletedAt: null,
+  } satisfies Prisma.NominationApplicationWhereInput;
 }
 
 export function calculateTotalScore(values: Partial<ScoreValues>) {
@@ -173,17 +176,17 @@ export async function requireActiveJuryJudge() {
   } satisfies ActiveJudgeContext;
 }
 
-export async function getScoringApplicationOrNotFound({
-  applicationId,
+export async function getScoringNominationOrNotFound({
+  nominationId,
   expertiseAreas,
 }: {
-  applicationId: string;
+  nominationId: string;
   expertiseAreas: string[];
 }) {
-  const application = await prisma.application.findFirst({
+  const nomination = await prisma.nominationApplication.findFirst({
     where: {
-      id: applicationId,
-      ...getScoreableApplicationsWhere(),
+      id: nominationId,
+      ...getScoreableNominationsWhere(),
       category: {
         name: {
           in: expertiseAreas,
@@ -191,6 +194,7 @@ export async function getScoringApplicationOrNotFound({
       },
     },
     include: {
+      applicantProfile: true,
       category: true,
       award: true,
       answers: {
@@ -206,11 +210,11 @@ export async function getScoringApplicationOrNotFound({
     },
   });
 
-  if (!application) {
+  if (!nomination) {
     notFound();
   }
 
-  return application;
+  return nomination;
 }
 
 export function buildCategoryRanks<T extends {

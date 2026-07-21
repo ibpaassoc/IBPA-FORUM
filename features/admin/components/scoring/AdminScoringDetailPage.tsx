@@ -1,4 +1,3 @@
-import type { ApplicationAnswer, ApplicationFile } from "@prisma/client";
 import type { AdminScoringApplicationRecord } from "@/features/admin/server/admin";
 import { ArrowLeft, Download, MessageSquareText } from "lucide-react";
 import { adminT } from "@/lib/i18n/admin";
@@ -13,10 +12,7 @@ import {
   DashboardSecondaryBtn,
 } from "@/shared/components/admin/DashboardUI";
 
-type ParticipantApplicationDetail = AdminScoringApplicationRecord & {
-  answers: ApplicationAnswer[];
-  files: ApplicationFile[];
-};
+type ParticipantApplicationDetail = AdminScoringApplicationRecord;
 
 function scoringBadge(status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETE") {
   switch (status) {

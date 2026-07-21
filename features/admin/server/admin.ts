@@ -10,21 +10,20 @@ import {
   formatAverageScore,
   getAdminScoringStatus,
   getAverageSubmittedScore,
-  getScoreableApplicationsWhere,
+  getScoreableNominationsWhere,
   getSubmittedJudgeCount,
   ScoringHttpError,
 } from "@/features/admin/server/shared";
 
 export type AdminScoringSort = "averageScore" | "category" | "status";
 export type AdminScoringFilterStatus = "NOT_STARTED" | "IN_PROGRESS" | "COMPLETE";
-export type AdminScoringApplicationRecord = Prisma.ApplicationGetPayload<{
-  include: {
-    category: true;
-    award: true;
-    answers: true;
-    files: true;
-  };
-}>;
+export type AdminScoringApplicationRecord = {
+  id: string;
+  fullName: string;
+  email: string;
+  category: { id: string; name: string; slug: string };
+  award: { id: string; name: string; categoryId: string; createdAt: Date };
+};
 
 function getSafeStatusFilter(status?: string): AdminScoringFilterStatus | undefined {
   if (status === "NOT_STARTED" || status === "IN_PROGRESS" || status === "COMPLETE") {
@@ -86,8 +85,8 @@ export async function getAdminScoringOverview({
   sort?: string;
 }) {
   const { countByCategory } = await getActiveJudgeAssignments();
-  const applications = await prisma.application.findMany({
-    where: getScoreableApplicationsWhere(),
+  const applications = await prisma.nominationApplication.findMany({
+    where: getScoreableNominationsWhere(),
     orderBy: [
       {
         submittedAt: "desc",
@@ -98,10 +97,14 @@ export async function getAdminScoringOverview({
     ],
     select: {
       id: true,
-      fullName: true,
-      email: true,
       createdAt: true,
       submittedAt: true,
+      applicantProfile: {
+        select: {
+          fullName: true,
+          account: { select: { email: true } },
+        },
+      },
       category: {
         select: {
           name: true,
@@ -129,8 +132,8 @@ export async function getAdminScoringOverview({
 
     return {
       id: application.id,
-      fullName: application.fullName,
-      email: application.email,
+      fullName: application.applicantProfile?.fullName ?? adminT.system.notSet,
+      email: application.applicantProfile?.account.email ?? "",
       createdAt: application.createdAt,
       submittedAt: application.submittedAt,
       categoryName: application.category.name,
@@ -244,15 +247,21 @@ export async function getAdminScoringOverview({
   };
 }
 
-export async function getAdminApplicationScoringDetail(applicationId: string) {
+export async function getAdminApplicationScoringDetail(nominationId: string) {
   const { judges, countByCategory } = await getActiveJudgeAssignments();
 
-  const application = await prisma.application.findFirst({
+  const application = await prisma.nominationApplication.findFirst({
     where: {
-      id: applicationId,
-      ...getScoreableApplicationsWhere(),
+      id: nominationId,
+      ...getScoreableNominationsWhere(),
     },
     include: {
+      applicantProfile: {
+        select: {
+          fullName: true,
+          account: { select: { email: true } },
+        },
+      },
       category: true,
       award: true,
       answers: {
@@ -300,9 +309,9 @@ export async function getAdminApplicationScoringDetail(applicationId: string) {
   const assignedJudgeCount = countByCategory.get(application.category.name) ?? 0;
   const averageScore = getAverageSubmittedScore(application.judgeScores);
 
-  const rankingPool = await prisma.application.findMany({
+  const rankingPool = await prisma.nominationApplication.findMany({
     where: {
-      ...getScoreableApplicationsWhere(),
+      ...getScoreableNominationsWhere(),
       categoryId: application.categoryId,
     },
     select: {
@@ -334,7 +343,13 @@ export async function getAdminApplicationScoringDetail(applicationId: string) {
   );
 
   return {
-    application: application as AdminScoringApplicationRecord,
+    application: {
+      id: application.id,
+      fullName: application.applicantProfile?.fullName ?? adminT.system.notSet,
+      email: application.applicantProfile?.account.email ?? "",
+      category: application.category,
+      award: application.award,
+    } satisfies AdminScoringApplicationRecord,
     summary: {
       assignedJudgeCount,
       submittedJudgeCount,
@@ -379,7 +394,7 @@ export async function reopenJudgeScore(scoreId: string) {
     },
     select: {
       id: true,
-      applicationId: true,
+      nominationApplicationId: true,
       status: true,
     },
   });
@@ -402,7 +417,6 @@ export async function reopenJudgeScore(scoreId: string) {
     },
     select: {
       id: true,
-      applicationId: true,
       nominationApplicationId: true,
       status: true,
       updatedAt: true,
@@ -410,21 +424,21 @@ export async function reopenJudgeScore(scoreId: string) {
   });
 
   revalidatePath("/jury/dashboard");
-  revalidatePath(`/jury/dashboard/applications/${score.applicationId}`);
   revalidatePath("/account/jury");
   if (score.nominationApplicationId) {
+    revalidatePath(`/jury/dashboard/applications/${score.nominationApplicationId}`);
     revalidatePath(`/account/jury/nominations/${score.nominationApplicationId}`);
+    revalidatePath(`/admin/scoring/${score.nominationApplicationId}`);
   }
   revalidatePath("/admin/scoring");
-  revalidatePath(`/admin/scoring/${score.applicationId}`);
 
   syncScoreOnChange(score.id, { refreshStats: true });
 
   return score;
 }
 
-export async function exportApplicationScoresCsv(applicationId: string) {
-  const detail = await getAdminApplicationScoringDetail(applicationId);
+export async function exportApplicationScoresCsv(nominationId: string) {
+  const detail = await getAdminApplicationScoringDetail(nominationId);
 
   if (!detail) {
     throw new ScoringHttpError(404, adminT.api.participantApplicationNotFound);

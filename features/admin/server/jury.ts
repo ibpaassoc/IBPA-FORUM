@@ -31,7 +31,6 @@ export type JuryDashboardApplicationRecord = {
 
 export type JuryNominationScoringRecord = {
   id: string;
-  applicationId: string | null;
   applicant: {
     fullName: string;
     instagram: string | null;
@@ -62,16 +61,6 @@ export type JuryNominationScoringRecord = {
     category: { name: string };
   }>;
 };
-
-// Kept for any legacy imports
-export type JuryScoringApplicationRecord = Prisma.ApplicationGetPayload<{
-  include: {
-    category: true;
-    award: true;
-    answers: true;
-    files: true;
-  };
-}>;
 
 const SCORE_DETAIL_SELECT = {
   id: true,
@@ -105,7 +94,6 @@ async function getAccessibleNominationForJudge({
     },
     select: {
       id: true,
-      applicationId: true,
       category: { select: { slug: true, name: true } },
     },
   });
@@ -149,12 +137,6 @@ export async function getJudgeAssignedApplications({
           websiteUrl: true,
         },
       },
-      application: {
-        select: {
-          createdAt: true,
-          submittedAt: true,
-        },
-      },
       createdAt: true,
       submittedAt: true,
       category: { select: { name: true } },
@@ -174,8 +156,8 @@ export async function getJudgeAssignedApplications({
     id: nom.id,
     fullName: nom.applicantProfile?.fullName ?? "Applicant",
     instagram: nom.applicantProfile?.websiteUrl ?? null,
-    createdAt: nom.application?.createdAt ?? nom.createdAt,
-    submittedAt: nom.submittedAt ?? nom.application?.submittedAt ?? null,
+    createdAt: nom.createdAt,
+    submittedAt: nom.submittedAt,
     category: nom.category,
     award: nom.award,
     scoreId: nom.judgeScores[0]?.id ?? null,
@@ -217,7 +199,6 @@ export async function getJudgeApplicationScoringDetail({
     },
     select: {
       id: true,
-      applicationId: true,
       applicantProfileId: true,
       applicantProfile: {
         select: {
@@ -275,7 +256,6 @@ export async function getJudgeApplicationScoringDetail({
   return {
     nomination: {
       id: nomination.id,
-      applicationId: nomination.applicationId,
       applicant: {
         fullName: nomination.applicantProfile?.fullName ?? "Applicant",
         instagram: nomination.applicantProfile?.websiteUrl ?? null,
@@ -345,7 +325,6 @@ export async function saveJudgeScoreDraft({
   } else {
     score = await prisma.judgeScore.create({
       data: {
-        applicationId: nomination.applicationId,
         nominationApplicationId,
         judgeId: judge.juryApplicationId,
         ...scoreData,
@@ -358,10 +337,8 @@ export async function saveJudgeScoreDraft({
   revalidatePath(`/jury/dashboard/applications/${nominationApplicationId}`);
   revalidatePath("/account/jury");
   revalidatePath(`/account/jury/nominations/${nominationApplicationId}`);
-  if (nomination.applicationId) {
-    revalidatePath("/admin/scoring");
-    revalidatePath(`/admin/scoring/${nomination.applicationId}`);
-  }
+  revalidatePath("/admin/scoring");
+  revalidatePath(`/admin/scoring/${nominationApplicationId}`);
 
   syncScoreOnChange(score.id);
 
@@ -417,7 +394,6 @@ export async function submitJudgeScore({
   } else {
     score = await prisma.judgeScore.create({
       data: {
-        applicationId: nomination.applicationId,
         nominationApplicationId,
         judgeId: judge.juryApplicationId,
         ...scoreData,
@@ -430,10 +406,8 @@ export async function submitJudgeScore({
   revalidatePath(`/jury/dashboard/applications/${nominationApplicationId}`);
   revalidatePath("/account/jury");
   revalidatePath(`/account/jury/nominations/${nominationApplicationId}`);
-  if (nomination.applicationId) {
-    revalidatePath("/admin/scoring");
-    revalidatePath(`/admin/scoring/${nomination.applicationId}`);
-  }
+  revalidatePath("/admin/scoring");
+  revalidatePath(`/admin/scoring/${nominationApplicationId}`);
 
   syncScoreOnChange(score.id, { refreshStats: true });
 
