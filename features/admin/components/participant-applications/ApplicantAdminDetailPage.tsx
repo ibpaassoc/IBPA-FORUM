@@ -137,11 +137,11 @@ function NominationContent({ nomination }: { nomination: Nomination }) {
   const workFields = fields.filter((field) => field.type !== "textarea" && field.type !== "file");
   const descriptionFields = fields.filter((field) => field.type === "textarea");
   const fileFields = fields.filter((field) => field.type === "file");
-  const submittedScores = nomination.judgeScores.filter(
-    (score) => score.status === "SUBMITTED" && typeof score.totalScore === "number",
+  const submittedScores = nomination.reviews.filter(
+    (score) => score.status === "COMPLETED" && score.totalScore !== null,
   );
   const averageScore = submittedScores.length
-    ? submittedScores.reduce((sum, score) => sum + (score.totalScore ?? 0), 0) / submittedScores.length
+    ? submittedScores.reduce((sum, score) => sum + Number(score.totalScore), 0) / submittedScores.length
     : null;
 
   return (

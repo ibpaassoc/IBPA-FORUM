@@ -17,12 +17,11 @@ export async function requireOwnedNomination(nominationId: string) {
       award: true,
       answers: { orderBy: { createdAt: "asc" } },
       files: { where: { deletedAt: null }, orderBy: { createdAt: "asc" } },
-      payments: { orderBy: { createdAt: "desc" } },
-      judgeScores: {
-        where: { status: "SUBMITTED" },
+      reviews: {
+        where: { status: "COMPLETED" },
         select: {
           totalScore: true,
-          submittedAt: true,
+          completedAt: true,
         },
       },
     },

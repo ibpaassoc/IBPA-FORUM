@@ -10,11 +10,10 @@ async function main() {
     answers,
     files,
     payments,
-    duplicateApplicationEmails,
+    duplicateAccountEmails,
     duplicateJuryEmails,
-    applicantJuryConflicts,
     orphanNominations,
-    orphanScores,
+    orphanReviews,
     unmatchedTickets,
     duplicateApplicantAwards,
     orphanNominationFiles,
@@ -30,7 +29,7 @@ async function main() {
     prisma.payment.count(),
     prisma.$queryRaw<Array<{ email: string; count: bigint }>>`
       SELECT lower(trim("email")) AS email, count(*) AS count
-      FROM "Application"
+      FROM "Account"
       GROUP BY lower(trim("email"))
       HAVING count(*) > 1
       ORDER BY count(*) DESC
@@ -42,21 +41,18 @@ async function main() {
       HAVING count(*) > 1
       ORDER BY count(*) DESC
     `,
-    prisma.$queryRaw<Array<{ email: string }>>`
-      SELECT DISTINCT lower(trim(a."email")) AS email
-      FROM "Application" a
-      JOIN "JuryApplication" j ON lower(trim(j."email")) = lower(trim(a."email"))
-      ORDER BY email
+    prisma.$queryRaw<Array<{ count: bigint }>>`
+      SELECT count(*) AS count
+      FROM "NominationApplication"
+      WHERE "applicantProfileId" IS NULL
     `,
-    prisma.nominationApplication.count({
-      where: { applicantProfileId: null },
-    }),
-    prisma.judgeScore.count({
-      where: {
-        nominationApplicationId: { not: null },
-        juryProfileId: null,
-      },
-    }),
+    prisma.$queryRaw<Array<{ count: bigint }>>`
+      SELECT count(*) AS count
+      FROM "JuryNominationReview" r
+      LEFT JOIN "JuryProfile" jp ON jp."id" = r."juryProfileId"
+      LEFT JOIN "NominationApplication" n ON n."id" = r."nominationId"
+      WHERE jp."id" IS NULL OR n."id" IS NULL
+    `,
     prisma.ticket.count({
       where: {
         accountId: null,
@@ -77,16 +73,16 @@ async function main() {
       LEFT JOIN "NominationApplication" na ON na."id" = nf."nominationApplicationId"
       WHERE na."id" IS NULL
     `,
-    prisma.payment.count({
-      where: {
-        source: "COMPETITOR",
-        applicationId: null,
-        applicantProfileId: null,
-        nominationApplicationId: null,
-        ticketId: null,
-        juryApplicationId: null,
-      },
-    }),
+    prisma.$queryRaw<Array<{ count: bigint }>>`
+      SELECT count(*) AS count
+      FROM "Payment"
+      WHERE "source" = 'COMPETITOR'
+        AND "applicantProfileId" IS NULL
+        AND "applicantEmail" IS NULL
+        AND "purchaseManifest" IS NULL
+        AND "ticketId" IS NULL
+        AND "juryApplicationId" IS NULL
+    `,
     prisma.payment.count({
       where: {
         status: "PAID",
@@ -105,10 +101,10 @@ async function main() {
     filesMigrated: files,
     paymentsMigrated: payments,
     orphanRecords: {
-      nominationsWithoutApplicantProfile: orphanNominations,
-      nominationScoresWithoutJuryProfile: orphanScores,
+      nominationsWithoutApplicantProfile: Number(orphanNominations[0]?.count ?? 0),
+      nominationReviewsWithoutOwner: Number(orphanReviews[0]?.count ?? 0),
       nominationFilesWithoutNomination: Number(orphanNominationFiles[0]?.count ?? 0),
-      paymentsWithoutOwner: orphanPayments,
+      paymentsWithoutOwner: Number(orphanPayments[0]?.count ?? 0),
       ticketsWithoutAccountOrApplicantProfile: unmatchedTickets,
     },
     paidStripePaymentsMissingSession: missingStripePaidPayments,
@@ -118,7 +114,7 @@ async function main() {
       count: Number(item.count),
     })),
     duplicateNormalizedEmails: {
-      applications: duplicateApplicationEmails.map((item) => ({
+      accounts: duplicateAccountEmails.map((item) => ({
         email: item.email,
         count: Number(item.count),
       })),
@@ -127,7 +123,6 @@ async function main() {
         count: Number(item.count),
       })),
     },
-    applicantJuryRoleConflicts: applicantJuryConflicts,
   };
 
   console.log(JSON.stringify(report, null, 2));

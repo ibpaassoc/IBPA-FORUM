@@ -52,8 +52,8 @@ const applicantSelect = {
       updatedAt: true,
       award: { select: { name: true } },
       category: { select: { name: true } },
-      judgeScores: {
-        where: { status: "SUBMITTED" as const },
+      reviews: {
+        where: { status: "COMPLETED" as const },
         select: { totalScore: true },
       },
     },
@@ -77,9 +77,10 @@ function applicationCategories(app: ApplicationRecord): string[] {
 
 function applicationScoreSummary(app: ApplicationRecord): string {
   const totals = app.nominations
-    .flatMap((nomination) => nomination.judgeScores)
+    .flatMap((nomination) => nomination.reviews)
     .map((score) => score.totalScore)
-    .filter((value): value is number => value != null);
+    .filter((value) => value != null)
+    .map(Number);
   if (totals.length === 0) return "";
   const average = totals.reduce((sum, value) => sum + value, 0) / totals.length;
   return `оценок: ${totals.length} · средн. ${average.toFixed(1)}`;
@@ -233,67 +234,69 @@ export async function fetchAllJuryRows(): Promise<CategorizedRow[]> {
 
 const scoreSelect = {
   id: true,
-  nominationApplicationId: true,
-  judgeId: true,
-  technical: true,
-  aesthetic: true,
-  creativity: true,
-  impact: true,
-  presentation: true,
+  nominationId: true,
+  juryProfileId: true,
+  scoreData: true,
   totalScore: true,
-  comment: true,
+  notes: true,
   status: true,
-  submittedAt: true,
+  completedAt: true,
   updatedAt: true,
-  judge: { select: { fullName: true } },
-  nominationApplication: {
+  juryProfile: { select: { fullName: true } },
+  nomination: {
     select: {
       applicantProfile: { select: { fullName: true } },
       category: { select: { name: true } },
     },
   },
-} satisfies Prisma.JudgeScoreSelect;
+} satisfies Prisma.JuryNominationReviewSelect;
 
-type ScoreRecord = Prisma.JudgeScoreGetPayload<{ select: typeof scoreSelect }>;
+type ScoreRecord = Prisma.JuryNominationReviewGetPayload<{ select: typeof scoreSelect }>;
+
+function reviewCriterion(scoreData: Prisma.JsonValue | null, key: string): number | null {
+  if (typeof scoreData !== "object" || scoreData === null || Array.isArray(scoreData)) return null;
+  const value = (scoreData as Record<string, Prisma.JsonValue>)[key];
+  return typeof value === "number" ? value : null;
+}
 
 function criteria(value: number | null): number | string {
   return value == null ? "" : value;
 }
 
-function averageScore(total: number | null): number | string {
+function averageScore(total: Prisma.Decimal | null): number | string {
   if (total == null) return "";
-  return Math.round((total / NUMBER_OF_SCORE_CRITERIA) * 10) / 10;
+  return Math.round((Number(total) / NUMBER_OF_SCORE_CRITERIA) * 10) / 10;
 }
 
 export function mapScoreRow(score: ScoreRecord): SheetValues[number] {
   return [
     score.id,
-    score.nominationApplicationId ?? "",
-    score.judgeId,
-    score.judge.fullName,
-    score.nominationApplication?.applicantProfile?.fullName ?? "",
-    score.nominationApplication?.category.name ?? "",
-    criteria(score.technical),
-    criteria(score.aesthetic),
-    criteria(score.creativity),
-    criteria(score.impact),
-    criteria(score.presentation),
-    score.totalScore ?? "",
+    score.nominationId,
+    score.juryProfileId,
+    score.juryProfile.fullName,
+    score.nomination.applicantProfile?.fullName ?? "",
+    score.nomination.category.name,
+    criteria(reviewCriterion(score.scoreData, "technical")),
+    criteria(reviewCriterion(score.scoreData, "aesthetic")),
+    criteria(reviewCriterion(score.scoreData, "creativity")),
+    criteria(reviewCriterion(score.scoreData, "impact")),
+    criteria(reviewCriterion(score.scoreData, "presentation")),
+    score.totalScore === null ? "" : Number(score.totalScore),
     averageScore(score.totalScore),
     scoreStatusLabel(score.status),
-    score.comment ?? "",
-    formatDateTime(score.submittedAt),
+    score.notes ?? "",
+    formatDateTime(score.completedAt),
     formatDateTime(score.updatedAt),
   ];
 }
 
 export async function fetchScoreRow(id: string): Promise<SheetValues[number] | null> {
-  const score = await prisma.judgeScore.findUnique({ where: { id }, select: scoreSelect });
+  const score = await prisma.juryNominationReview.findUnique({ where: { id }, select: scoreSelect });
   return score ? mapScoreRow(score) : null;
 }
 
 export async function fetchAllScoreRows(): Promise<SheetValues> {
-  const scores = await prisma.judgeScore.findMany({
+  const scores = await prisma.juryNominationReview.findMany({
     select: scoreSelect,
     orderBy: { createdAt: "asc" },
   });

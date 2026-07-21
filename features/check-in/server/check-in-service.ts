@@ -1,6 +1,6 @@
 import "server-only";
 import { prisma } from "@/shared/lib/prisma";
-import type { Application, JuryApplication, Ticket } from "@prisma/client";
+import { Prisma, type JuryApplication, type Ticket } from "@prisma/client";
 import { syncCheckInOnChange } from "@/features/google-sheets";
 import { adminT } from "@/lib/i18n/admin";
 import { parseScanCode, buildScanPayload } from "./scan-code";
@@ -90,16 +90,35 @@ function normalizeTicket(ticket: Ticket): NormalizedTicket {
   };
 }
 
-function normalizeApplication(app: Application): NormalizedTicket {
-  const paid = app.paymentStatus === "PAID";
+const applicantCheckInSelect = {
+  id: true,
+  fullName: true,
+  phone: true,
+  checkedInAt: true,
+  account: { select: { email: true } },
+  nominations: {
+    where: { deletedAt: null },
+    select: { status: true, paymentStatus: true },
+  },
+} satisfies Prisma.ApplicantProfileSelect;
+
+type ApplicantCheckInRecord = Prisma.ApplicantProfileGetPayload<{
+  select: typeof applicantCheckInSelect;
+}>;
+
+function normalizeApplication(app: ApplicantCheckInRecord, token: string): NormalizedTicket {
+  const paid = app.nominations.some((nomination) => nomination.paymentStatus === "PAID");
+  const status = app.nominations.find((nomination) => nomination.paymentStatus === "PAID")?.status
+    ?? app.nominations[0]?.status
+    ?? "PAYMENT_PENDING";
   return {
     ticketKind: "PARTICIPANT",
     ticketType: "Участник премии",
     ownerName: app.fullName,
-    email: app.email,
-    phone: app.phone,
-    status: app.status,
-    paymentStatus: app.paymentStatus as PaymentStatusValue,
+    email: app.account.email,
+    phone: app.phone ?? "",
+    status,
+    paymentStatus: paid ? "PAID" : "PENDING",
     checkInStatus: app.checkedInAt ? "CHECKED_IN" : "NOT_CHECKED_IN",
     scopes: [
       {
@@ -111,7 +130,7 @@ function normalizeApplication(app: Application): NormalizedTicket {
     accessTypes: [],
     eligibleForCheckIn: paid,
     sourceRecordId: app.id,
-    code: buildScanPayload("PARTICIPANT", app.id),
+    code: buildScanPayload("PARTICIPANT", token),
   };
 }
 
@@ -167,8 +186,13 @@ async function findByKind(
       return ticket ? { kind: "found", ticket: normalizeTicket(ticket) } : { kind: "missing" };
     }
     case "PARTICIPANT": {
-      const app = await prisma.application.findUnique({ where: { id: token } });
-      return app ? { kind: "found", ticket: normalizeApplication(app) } : { kind: "missing" };
+      const credential = await prisma.applicantCheckInCredential.findUnique({
+        where: { token },
+        include: { applicantProfile: { select: applicantCheckInSelect } },
+      });
+      return credential
+        ? { kind: "found", ticket: normalizeApplication(credential.applicantProfile, token) }
+        : { kind: "missing" };
     }
     case "JURY": {
       const jury = await prisma.juryApplication.findUnique({ where: { id: token } });
@@ -319,11 +343,14 @@ async function checkInTicketRecord(
 }
 
 async function checkInApplicationRecord(recordId: string): Promise<CheckInResult> {
-  const app = await prisma.application.findUnique({ where: { id: recordId } });
+  const app = await prisma.applicantProfile.findUnique({
+    where: { id: recordId },
+    select: applicantCheckInSelect,
+  });
   if (!app) {
     return { ok: false, code: "NOT_FOUND", status: 404, message: "Заявка не найдена." };
   }
-  if (app.paymentStatus !== "PAID") {
+  if (!app.nominations.some((nomination) => nomination.paymentStatus === "PAID")) {
     return {
       ok: false,
       code: "NOT_PAID",
@@ -340,11 +367,12 @@ async function checkInApplicationRecord(recordId: string): Promise<CheckInResult
       checkedInAt: app.checkedInAt.toISOString(),
     };
   }
-  const updated = await prisma.application.update({
+  const checkedInAt = new Date();
+  await prisma.applicantProfile.update({
     where: { id: app.id },
-    data: { checkedInAt: new Date() },
+    data: { checkedInAt },
   });
-  return { ok: true, ticket: normalizeApplication(updated) };
+  return { ok: true, ticket: normalizeApplication({ ...app, checkedInAt }, app.id) };
 }
 
 async function checkInJuryRecord(recordId: string): Promise<CheckInResult> {

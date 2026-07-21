@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { getAdminApplicationScoringDetail } from "@/features/admin/server/admin";
+import { exportApplicationScoresCsv } from "@/features/admin/server/admin";
 import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
 import { adminT } from "@/lib/i18n/admin";
 
 export async function GET(
   _request: Request,
-  { params }: { params: Promise<{ applicationId: string }> }
+  { params }: { params: Promise<{ nominationId: string }> }
 ) {
   try {
     if (!(await isAdminAuthenticated())) {
@@ -14,17 +14,16 @@ export async function GET(
         { status: 401 }
       );
     }
-    const { applicationId } = await params;
-    const detail = await getAdminApplicationScoringDetail(applicationId);
+    const { nominationId } = await params;
+    const csv = await exportApplicationScoresCsv(nominationId);
 
-    if (!detail) {
-      return NextResponse.json(
-        { message: adminT.api.participantApplicationNotFound },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(detail);
+    return new NextResponse(csv, {
+      status: 200,
+      headers: {
+        "Content-Type": "text/csv; charset=utf-8",
+        "Content-Disposition": `attachment; filename="nomination-${nominationId}-scores.csv"`,
+      },
+    });
   } catch (error) {
     if (
       typeof error === "object" &&
@@ -38,10 +37,7 @@ export async function GET(
       );
     }
 
-    console.error("GET /api/admin/scoring/[applicationId] error:", error);
-    return NextResponse.json(
-      { message: adminT.api.scoringDetailFailed },
-      { status: 500 }
-    );
+    console.error("GET /api/admin/scoring/[nominationId]/export error:", error);
+    return NextResponse.json({ message: adminT.api.scoreExportFailed }, { status: 500 });
   }
 }

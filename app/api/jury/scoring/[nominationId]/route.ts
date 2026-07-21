@@ -6,11 +6,11 @@ import {
 
 export async function GET(
   _request: Request,
-  { params }: { params: Promise<{ applicationId: string }> }
+  { params }: { params: Promise<{ nominationId: string }> }
 ) {
   try {
     const judge = await getAuthenticatedJudgeScoringApiContext();
-    const { applicationId: nominationApplicationId } = await params;
+    const { nominationId: nominationApplicationId } = await params;
     const data = await getJudgeApplicationScoringDetail({
       judge,
       nominationApplicationId,
@@ -30,7 +30,7 @@ export async function GET(
       );
     }
 
-    console.error("GET /api/jury/scoring/[applicationId] error:", error);
+    console.error("GET /api/jury/scoring/[nominationId] error:", error);
     return NextResponse.json(
       { message: "Failed to load application scoring detail." },
       { status: 500 }

@@ -2,7 +2,7 @@ import "server-only";
 
 import { adminT } from "@/lib/i18n/admin";
 
-import type { JudgeScore, Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/shared/lib/prisma";
 import { requireJuryAuth } from "@/features/jury/server/auth";
@@ -28,6 +28,7 @@ export type ScoreValues = {
 export type ActiveJudgeContext = {
   accountId: string;
   email: string;
+  juryProfileId: string;
   juryApplicationId: string;
   fullName: string;
   professionalTitle: string;
@@ -82,13 +83,13 @@ export function calculateTotalScore(values: Partial<ScoreValues>) {
 }
 
 export function getJuryScoreListStatus(
-  score: Pick<JudgeScore, "status"> | null
+  score: { status: string } | null
 ): JuryScoreListStatus {
   if (!score) {
     return "NOT_STARTED";
   }
 
-  if (score.status === "SUBMITTED") {
+  if (score.status === "COMPLETED" || score.status === "LOCKED") {
     return "SUBMITTED";
   }
 
@@ -113,23 +114,26 @@ export function getAdminScoringStatus({
   return "IN_PROGRESS";
 }
 
-export function getSubmittedJudgeCount(scores: Array<Pick<JudgeScore, "status">>) {
-  return scores.filter((score) => score.status === "SUBMITTED").length;
+export function getSubmittedJudgeCount(scores: Array<{ status: string }>) {
+  return scores.filter(
+    (score) => score.status === "COMPLETED" || score.status === "LOCKED"
+  ).length;
 }
 
 export function getAverageSubmittedScore(
-  scores: Array<Pick<JudgeScore, "status" | "totalScore">>
+  scores: Array<{ status: string; totalScore: Prisma.Decimal | number | null }>
 ) {
   const submittedScores = scores.filter(
-    (score): score is Pick<JudgeScore, "status" | "totalScore"> & { totalScore: number } =>
-      score.status === "SUBMITTED" && typeof score.totalScore === "number"
+    (score) =>
+      (score.status === "COMPLETED" || score.status === "LOCKED") &&
+      score.totalScore !== null
   );
 
   if (submittedScores.length === 0) {
     return null;
   }
 
-  const total = submittedScores.reduce((sum, score) => sum + score.totalScore, 0);
+  const total = submittedScores.reduce((sum, score) => sum + Number(score.totalScore), 0);
   return total / submittedScores.length;
 }
 
@@ -144,35 +148,34 @@ export function formatAverageScore(value: number | null) {
 export async function requireActiveJuryJudge() {
   const juryUser = await requireJuryAuth();
 
-  const juryApplication = await prisma.juryApplication.findUnique({
-    where: {
-      id: juryUser.juryApplicationId,
-    },
+  const juryProfile = await prisma.juryProfile.findUnique({
+    where: { id: juryUser.juryProfileId },
     select: {
       id: true,
+      juryApplicationId: true,
       fullName: true,
       professionalTitle: true,
       expertiseAreas: true,
-      status: true,
-      paymentStatus: true,
+      approvalStatus: true,
     },
   });
 
-  if (!juryApplication) {
+  if (!juryProfile?.juryApplicationId) {
     redirect("/account/login");
   }
 
-  if (!isEligibleScoringJudge(juryApplication.status)) {
+  if (!juryProfile.approvalStatus || !isEligibleScoringJudge(juryProfile.approvalStatus)) {
     redirect("/account/login");
   }
 
   return {
     accountId: juryUser.id,
     email: juryUser.email,
-    juryApplicationId: juryApplication.id,
-    fullName: juryApplication.fullName,
-    professionalTitle: juryApplication.professionalTitle,
-    expertiseAreas: juryApplication.expertiseAreas,
+    juryProfileId: juryProfile.id,
+    juryApplicationId: juryProfile.juryApplicationId,
+    fullName: juryProfile.fullName,
+    professionalTitle: juryProfile.professionalTitle ?? "",
+    expertiseAreas: juryProfile.expertiseAreas,
   } satisfies ActiveJudgeContext;
 }
 

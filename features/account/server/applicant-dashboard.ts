@@ -29,8 +29,8 @@ export async function getApplicantDashboardData() {
         award: { select: { name: true } },
         answers: { select: { fieldKey: true } },
         files: { where: { deletedAt: null }, select: { fieldKey: true } },
-        judgeScores: {
-          where: { status: "SUBMITTED" },
+        reviews: {
+          where: { status: "COMPLETED" },
           select: { totalScore: true },
         },
       },

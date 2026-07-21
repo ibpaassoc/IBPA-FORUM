@@ -199,34 +199,40 @@ async function handleApplicantNominationCheckoutCompleted(event: Stripe.Event) {
       );
 
       for (const [index, selectedAward] of manifest.selectedAwards.entries()) {
-        await tx.nominationApplication.upsert({
+        const existingNomination = await tx.nominationApplication.findFirst({
           where: {
-            applicantProfileId_awardId: {
+            applicantProfileId: profile.id,
+            awardId: selectedAward.awardId,
+            deletedAt: null,
+          },
+          select: { id: true },
+        });
+        const nominationData = {
+          purchasePaymentId: payment.id,
+          paymentStatus: "PAID" as const,
+          paidAt,
+          stripeCheckoutSessionId: session.id,
+          stripePaymentIntentId: paymentIntentId,
+        };
+
+        if (existingNomination) {
+          await tx.nominationApplication.update({
+            where: { id: existingNomination.id },
+            data: nominationData,
+          });
+        } else {
+          await tx.nominationApplication.create({
+            data: {
               applicantProfileId: profile.id,
               awardId: selectedAward.awardId,
+              categoryId: selectedAward.categoryId,
+              status: "PURCHASED",
+              amount: amountAllocations[index] ?? 0,
+              currency: payment.currency,
+              ...nominationData,
             },
-          },
-          create: {
-            applicantProfileId: profile.id,
-            purchasePaymentId: payment.id,
-            awardId: selectedAward.awardId,
-            categoryId: selectedAward.categoryId,
-            status: "PURCHASED",
-            paymentStatus: "PAID",
-            amount: amountAllocations[index] ?? 0,
-            currency: payment.currency,
-            paidAt,
-            stripeCheckoutSessionId: session.id,
-            stripePaymentIntentId: paymentIntentId,
-          },
-          update: {
-            purchasePaymentId: payment.id,
-            paymentStatus: "PAID",
-            paidAt,
-            stripeCheckoutSessionId: session.id,
-            stripePaymentIntentId: paymentIntentId,
-          },
-        });
+          });
+        }
       }
 
       await tx.payment.update({

@@ -25,6 +25,15 @@ export type AdminScoringApplicationRecord = {
   award: { id: string; name: string; categoryId: string; createdAt: Date };
 };
 
+function readReviewScore(scoreData: Prisma.JsonValue | null | undefined, key: string) {
+  if (typeof scoreData !== "object" || scoreData === null || Array.isArray(scoreData)) {
+    return null;
+  }
+
+  const value = (scoreData as Record<string, Prisma.JsonValue>)[key];
+  return typeof value === "number" ? value : null;
+}
+
 function getSafeStatusFilter(status?: string): AdminScoringFilterStatus | undefined {
   if (status === "NOT_STARTED" || status === "IN_PROGRESS" || status === "COMPLETE") {
     return status;
@@ -42,16 +51,16 @@ function getSafeSort(sort?: string): AdminScoringSort {
 }
 
 async function getActiveJudgeAssignments() {
-  const judges = await prisma.juryApplication.findMany({
+  const judges = await prisma.juryProfile.findMany({
     where: {
-      status: {
+      approvalStatus: {
         in: ["APPROVED", "PAID"],
       },
     },
     select: {
       id: true,
       fullName: true,
-      email: true,
+      account: { select: { email: true } },
       expertiseAreas: true,
     },
     orderBy: {
@@ -115,7 +124,7 @@ export async function getAdminScoringOverview({
           name: true,
         },
       },
-      judgeScores: {
+      reviews: {
         select: {
           id: true,
           status: true,
@@ -127,8 +136,8 @@ export async function getAdminScoringOverview({
 
   const enrichedApplications = applications.map((application) => {
     const assignedJudgeCount = countByCategory.get(application.category.name) ?? 0;
-    const submittedJudgeCount = getSubmittedJudgeCount(application.judgeScores);
-    const averageScore = getAverageSubmittedScore(application.judgeScores);
+    const submittedJudgeCount = getSubmittedJudgeCount(application.reviews);
+    const averageScore = getAverageSubmittedScore(application.reviews);
 
     return {
       id: application.id,
@@ -274,19 +283,19 @@ export async function getAdminApplicationScoringDetail(nominationId: string) {
           createdAt: "asc",
         },
       },
-      judgeScores: {
+      reviews: {
         include: {
-          judge: {
+          juryProfile: {
             select: {
               id: true,
               fullName: true,
-              email: true,
+              account: { select: { email: true } },
             },
           },
         },
         orderBy: [
           {
-            submittedAt: "desc",
+          completedAt: "desc",
           },
           {
             updatedAt: "desc",
@@ -304,10 +313,10 @@ export async function getAdminApplicationScoringDetail(nominationId: string) {
     judge.expertiseAreas.includes(application.category.name)
   );
 
-  const scoreByJudgeId = new Map(application.judgeScores.map((score) => [score.judgeId, score]));
-  const submittedJudgeCount = getSubmittedJudgeCount(application.judgeScores);
+  const scoreByJudgeId = new Map(application.reviews.map((score) => [score.juryProfileId, score]));
+  const submittedJudgeCount = getSubmittedJudgeCount(application.reviews);
   const assignedJudgeCount = countByCategory.get(application.category.name) ?? 0;
-  const averageScore = getAverageSubmittedScore(application.judgeScores);
+  const averageScore = getAverageSubmittedScore(application.reviews);
 
   const rankingPool = await prisma.nominationApplication.findMany({
     where: {
@@ -323,7 +332,7 @@ export async function getAdminApplicationScoringDetail(nominationId: string) {
           name: true,
         },
       },
-      judgeScores: {
+      reviews: {
         select: {
           status: true,
           totalScore: true,
@@ -336,7 +345,7 @@ export async function getAdminApplicationScoringDetail(nominationId: string) {
     rankingPool.map((item) => ({
       id: item.id,
       categoryName: item.category.name,
-      averageScore: getAverageSubmittedScore(item.judgeScores),
+      averageScore: getAverageSubmittedScore(item.reviews),
       submittedAt: item.submittedAt,
       createdAt: item.createdAt,
     }))
@@ -367,34 +376,36 @@ export async function getAdminApplicationScoringDetail(nominationId: string) {
       return {
         judgeId: judge.id,
         judgeName: judge.fullName,
-        judgeEmail: judge.email,
+        judgeEmail: judge.account.email,
         scoreId: score?.id ?? null,
-        technical: score?.technical ?? null,
-        aesthetic: score?.aesthetic ?? null,
-        creativity: score?.creativity ?? null,
-        impact: score?.impact ?? null,
-        presentation: score?.presentation ?? null,
-        totalScore: score?.totalScore ?? null,
-        comment: score?.comment ?? null,
-        scoreStatus: (score?.status ?? "NOT_STARTED") as
+        technical: readReviewScore(score?.scoreData, "technical"),
+        aesthetic: readReviewScore(score?.scoreData, "aesthetic"),
+        creativity: readReviewScore(score?.scoreData, "creativity"),
+        impact: readReviewScore(score?.scoreData, "impact"),
+        presentation: readReviewScore(score?.scoreData, "presentation"),
+        totalScore: score?.totalScore === null || score?.totalScore === undefined
+          ? null
+          : Number(score.totalScore),
+        comment: score?.notes ?? null,
+        scoreStatus: (score?.status === "COMPLETED" ? "SUBMITTED" : score ? "DRAFT" : "NOT_STARTED") as
           | "NOT_STARTED"
           | "DRAFT"
           | "SUBMITTED"
           | "REOPENED",
-        submittedAt: score?.submittedAt ?? null,
+        submittedAt: score?.completedAt ?? null,
       };
     }),
   };
 }
 
 export async function reopenJudgeScore(scoreId: string) {
-  const existingScore = await prisma.judgeScore.findUnique({
+  const existingScore = await prisma.juryNominationReview.findUnique({
     where: {
       id: scoreId,
     },
     select: {
       id: true,
-      nominationApplicationId: true,
+      nominationId: true,
       status: true,
     },
   });
@@ -403,21 +414,21 @@ export async function reopenJudgeScore(scoreId: string) {
     throw new ScoringHttpError(404, adminT.api.judgeScoreNotFound);
   }
 
-  if (existingScore.status !== "SUBMITTED") {
+  if (existingScore.status !== "COMPLETED" && existingScore.status !== "LOCKED") {
     throw new ScoringHttpError(409, adminT.api.submittedScoresOnly);
   }
 
-  const score = await prisma.judgeScore.update({
+  const score = await prisma.juryNominationReview.update({
     where: {
       id: scoreId,
     },
     data: {
-      status: "REOPENED",
-      submittedAt: null,
+      status: "IN_PROGRESS",
+      completedAt: null,
     },
     select: {
       id: true,
-      nominationApplicationId: true,
+      nominationId: true,
       status: true,
       updatedAt: true,
     },
@@ -425,11 +436,9 @@ export async function reopenJudgeScore(scoreId: string) {
 
   revalidatePath("/jury/dashboard");
   revalidatePath("/account/jury");
-  if (score.nominationApplicationId) {
-    revalidatePath(`/jury/dashboard/applications/${score.nominationApplicationId}`);
-    revalidatePath(`/account/jury/nominations/${score.nominationApplicationId}`);
-    revalidatePath(`/admin/scoring/${score.nominationApplicationId}`);
-  }
+  revalidatePath(`/jury/dashboard/applications/${score.nominationId}`);
+  revalidatePath(`/account/jury/nominations/${score.nominationId}`);
+  revalidatePath(`/admin/scoring/${score.nominationId}`);
   revalidatePath("/admin/scoring");
 
   syncScoreOnChange(score.id, { refreshStats: true });

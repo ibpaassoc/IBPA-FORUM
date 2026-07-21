@@ -44,7 +44,7 @@ export async function GET() {
     }
 
     const applications = await prisma.applicantProfile.findMany({
-      where: { deletedAt: null, account: { role: "APPLICANT", deletedAt: null } },
+      where: { deletedAt: null, account: { deletedAt: null } },
       orderBy: { createdAt: "desc" },
       select: {
         id: true,

@@ -1,29 +1,29 @@
 import { NextResponse } from "next/server";
-import { draftScoreSchema } from "@/features/admin/actions/scoring_schemas";
+import { submitScoreSchema } from "@/features/admin/actions/scoring_schemas";
 import {
   getAuthenticatedJudgeScoringApiContext,
-  saveJudgeScoreDraft,
+  submitJudgeScore,
 } from "@/features/admin/server/jury";
 
 export async function POST(
   request: Request,
-  { params }: { params: Promise<{ applicationId: string }> }
+  { params }: { params: Promise<{ nominationId: string }> }
 ) {
   try {
     const judge = await getAuthenticatedJudgeScoringApiContext();
-    const { applicationId: nominationApplicationId } = await params;
-    const parsed = draftScoreSchema.safeParse(await request.json());
+    const { nominationId: nominationApplicationId } = await params;
+    const parsed = submitScoreSchema.safeParse(await request.json());
 
     if (!parsed.success) {
       return NextResponse.json(
         {
-          message: parsed.error.issues[0]?.message ?? "Invalid draft score payload.",
+          message: parsed.error.issues[0]?.message ?? "Invalid final score payload.",
         },
         { status: 400 }
       );
     }
 
-    const score = await saveJudgeScoreDraft({
+    const score = await submitJudgeScore({
       judge,
       nominationApplicationId,
       input: parsed.data,
@@ -43,7 +43,7 @@ export async function POST(
       );
     }
 
-    console.error("POST /api/jury/scoring/[applicationId]/draft error:", error);
-    return NextResponse.json({ message: "Failed to save score draft." }, { status: 500 });
+    console.error("POST /api/jury/scoring/[nominationId]/submit error:", error);
+    return NextResponse.json({ message: "Failed to submit final score." }, { status: 500 });
   }
 }

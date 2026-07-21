@@ -15,8 +15,6 @@
     "test:regulations": "tsx scripts/test-regulations.ts",
     "test:jury-closure": "tsx scripts/test-jury-closure.ts",
     "verify:account-migration": "tsx scripts/verify-account-migration.ts",
-    "backfill:applicant-nominations:dry-run": "tsx scripts/backfill-applicant-nominations.ts",
-    "backfill:applicant-nominations": "tsx scripts/backfill-applicant-nominations.ts --apply",
     "seed:checkin-samples": "tsx scripts/seed-checkin-samples.ts",
     "postinstall": "prisma generate"
   },

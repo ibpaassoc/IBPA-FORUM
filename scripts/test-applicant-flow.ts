@@ -141,7 +141,7 @@ assert(
   "competitor webhook completion uses the nomination purchase handler"
 );
 assert(has(webhookWorkflow, "amountTotal !== payment.amount"), "webhook validates Stripe amount");
-assert(has(webhookWorkflow, "tx.nominationApplication.upsert"), "webhook fulfills by upserting nominations");
+assert(has(webhookWorkflow, "existingNomination"), "webhook fulfills nominations idempotently");
 assert(has(webhookWorkflow, 'status: "PURCHASED"'), "new paid nominations start in PURCHASED state");
 assert(has(webhookWorkflow, "purchasePaymentId"), "nominations are linked to the purchase payment");
 assert(has(webhookWorkflow, "fulfilledAt: paidAt"), "payment fulfillment is marked idempotently");
@@ -281,6 +281,29 @@ assert(has(verifyMigration, "duplicateApplicantAwards"), "migration verifier che
 assert(has(verifyMigration, "nominationFilesWithoutNomination"), "migration verifier checks orphan nomination files");
 assert(has(verifyMigration, "paymentsWithoutOwner"), "migration verifier checks orphan payments");
 assert(has(verifyMigration, "paidStripePaymentsMissingSession"), "migration verifier checks paid Stripe session linkage");
+
+const prismaSchema = read("prisma/schema.prisma");
+assert(!has(prismaSchema, /^model Application \{/m), "legacy Application model is removed");
+assert(!has(prismaSchema, /^model JudgeScore \{/m), "legacy JudgeScore model is removed");
+assert(has(prismaSchema, /^model JuryNominationReview \{/m), "jury scoring uses nomination reviews");
+
+const cleanupMigration = read(
+  "prisma/migrations/20260721120000_remove_legacy_applications_and_scores/migration.sql"
+);
+assert(
+  cleanupMigration.indexOf('INSERT INTO "ApplicantProfile"') < cleanupMigration.indexOf('DROP TABLE "Application"'),
+  "cleanup migration creates applicant profiles before dropping applications"
+);
+assert(
+  cleanupMigration.indexOf('INSERT INTO "JuryNominationReview"') < cleanupMigration.indexOf('DROP TABLE "JudgeScore"'),
+  "cleanup migration creates nomination reviews before dropping judge scores"
+);
+assert(has(cleanupMigration, "Legacy cleanup aborted"), "cleanup migration aborts on unmigrated owners");
+assert(
+  has(cleanupMigration, "applicant emails conflict with non-applicant accounts"),
+  "cleanup migration rejects single-role account conflicts"
+);
+assert(has(cleanupMigration, 'CREATE TABLE "ApplicantCheckInCredential"'), "legacy participant QR tokens are preserved");
 
 console.log(`\n${passed} passed, ${failed} failed`);
 if (failed > 0) process.exitCode = 1;
