@@ -19,8 +19,8 @@ const continueCopy = {
 
 const generalRegulationsCopy = {
   en: "General regulations",
-  ru: "Общие положения",
-  ua: "Загальні положення",
+  ru: "Общий регламент",
+  ua: "Загальний регламент",
 } as const;
 
 const regulationCopy: Record<"en" | "ru" | "ua", RegulationButtonCopy> = {
@@ -35,20 +35,20 @@ const regulationCopy: Record<"en" | "ru" | "ua", RegulationButtonCopy> = {
     russianFallback: "The Russian version is shown because this language is not available yet.",
   },
   ru: {
-    regulations: "Положения",
+    regulations: "Регламент",
     view: "Просмотреть",
     download: "Скачать",
-    noAvailable: "Положения пока недоступны.",
+    noAvailable: "Регламент пока недоступен.",
     loading: "Загрузка PDF…",
     error: "Не удалось загрузить PDF. Попробуйте ещё раз.",
     close: "Закрыть",
     russianFallback: "Показана русская версия, потому что документ на выбранном языке пока недоступен.",
   },
   ua: {
-    regulations: "Положення",
+    regulations: "Регламент",
     view: "Переглянути",
     download: "Завантажити",
-    noAvailable: "Положення поки недоступні.",
+    noAvailable: "Регламент поки недоступний.",
     loading: "Завантаження PDF…",
     error: "Не вдалося завантажити PDF. Спробуйте ще раз.",
     close: "Закрити",

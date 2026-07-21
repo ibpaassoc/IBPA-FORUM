@@ -77,7 +77,7 @@ export async function getRegulationsForAdmin(): Promise<{
     general: {
       key: "general",
       categoryId: null,
-      title: "Общие положения",
+      title: "Общий регламент",
       storageScope: "general",
       availability: regulationAvailability(regulationUrls(generalRecord)),
     },

@@ -212,13 +212,12 @@ export default function RegulationsManagementPage({ general, categories }: Props
     <div className="space-y-7">
       <DashboardPageHeader
         label="Документы"
-        title="Положения"
-        description="Общие положения и документы каждой категории на английском, русском и украинском языках."
+        title="Регламенты"
       />
 
       <section>
         <p className="mb-3 text-[0.66rem] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-soft)]">
-          Общие положения
+          Общие регламенты
         </p>
         <div className="max-w-xl">
           <RegulationCard item={generalItem} onOpen={() => openItem(generalItem.key)} />
@@ -227,7 +226,7 @@ export default function RegulationsManagementPage({ general, categories }: Props
 
       <section>
         <p className="mb-3 text-[0.66rem] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-soft)]">
-          Положения категорий
+          Регламенты категорий
         </p>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {categoryItems.map((item) => (
@@ -241,7 +240,7 @@ export default function RegulationsManagementPage({ general, categories }: Props
         onClose={() => {
           if (!pending) setActiveKey(null);
         }}
-        title={activeItem?.title ?? "Положения"}
+        title={activeItem?.title ?? "Регламенты"}
         labelledById="regulation-admin-dialog-title"
       >
         {activeItem ? (
