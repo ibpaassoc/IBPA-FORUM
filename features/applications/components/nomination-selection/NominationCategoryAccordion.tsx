@@ -147,7 +147,7 @@ export default function NominationCategoryAccordion({
           >
             <div className="pointer-events-none absolute inset-x-12 -top-14 h-24 rounded-full bg-[rgba(185,217,235,0.22)] blur-3xl" />
 
-            <h3 className="relative grid min-h-[82px] grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-3 py-2 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:gap-3 sm:px-4">
+            <h3 className="relative grid min-h-[82px] grid-cols-[minmax(0,1fr)_auto] items-center gap-x-2 gap-y-1 px-3 py-2 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:gap-3 sm:px-4">
               <button
                 type="button"
                 aria-expanded={isOpen}
@@ -183,7 +183,7 @@ export default function NominationCategoryAccordion({
                   language={regulationLanguage}
                   title={`${regulationCopy.regulations}: ${category.displayName}`}
                   copy={regulationCopy}
-                  className="col-start-1 row-start-2 ml-[3.75rem] justify-self-start sm:col-start-2 sm:row-start-1 sm:ml-0"
+                  className="col-span-2 row-start-2 mt-0.5 w-full justify-between px-4 sm:col-span-1 sm:col-start-2 sm:row-start-1 sm:mt-0 sm:w-auto sm:justify-center sm:px-3.5"
                 />
               ) : null}
 
