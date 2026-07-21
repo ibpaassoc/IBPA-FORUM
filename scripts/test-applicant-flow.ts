@@ -8,7 +8,7 @@
  *
  *   npm run test:applicant-flow
  */
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   allocateApplicantNominationAmounts,
@@ -220,7 +220,7 @@ assert(!has(closure, "instanceof File"), "deadline closure does not reference br
 
 // -- Jury privacy and file access ---------------------------------------------
 console.log("jury privacy");
-const juryServer = read("features/admin/server/jury.ts");
+const juryServer = read("features/jury/server/reviews.ts");
 assert(has(juryServer, 'paymentStatus: "PAID"'), "jury queries only expose paid nominations");
 assert(has(juryServer, "closedIncompleteAt: null"), "jury queries exclude closed incomplete nominations");
 assert(has(juryServer, "deletedAt: null"), "jury queries exclude deleted nominations");
@@ -229,10 +229,17 @@ assert(!has(juryServer, "city: true"), "jury queries do not select applicant cit
 assert(!has(juryServer, "country: true"), "jury queries do not select applicant country");
 assert(!has(juryServer, "storageKey: true"), "jury queries do not select storage keys");
 
-const juryDetail = read("features/jury/components/dashboard/JuryApplicationDetailPage.tsx");
-assert(has(juryDetail, "/api/jury/nomination-files/"), "jury detail loads files through protected route");
+const juryDetail = read("features/account/components/jury/JuryNominationReviewPage.tsx");
+assert(has(juryDetail, "/api/account/jury/nomination-files/"), "jury detail loads files through account-scoped route");
 assert(!has(juryDetail, "fileUrl"), "jury detail does not render direct blob URLs");
 assert(!has(juryDetail, "storageKey"), "jury detail does not render storage keys");
+
+const juryScorecard = read("features/account/components/jury/JuryReviewScorecard.tsx");
+assert(has(juryScorecard, "/api/account/jury/nominations/"), "jury scorecard uses account-scoped review API");
+assert(has(juryScorecard, "presentScoreCount !== criteria.length"), "jury scorecard blocks incomplete final reviews");
+
+assert(!existsSync(join(ROOT, "app/jury/dashboard/page.tsx")), "legacy jury dashboard route is removed");
+assert(!existsSync(join(ROOT, "app/api/jury/scoring/route.ts")), "legacy jury scoring API is removed");
 
 const juryCommands = read("features/jury/server/commands.ts");
 const accountServer = read("features/account/server/accounts.ts");
@@ -250,7 +257,7 @@ assert(has(juryAdminDetail, "resendJuryRegistrationLinkAction"), "jury admin pag
 assert(has(juryAdminDetail, "isRegistered"), "jury admin resend detects already registered accounts");
 assert(has(juryAdminDetail, "juryRegistrationAlreadyComplete"), "jury admin page explains completed registration");
 
-const juryFileRoute = read("app/api/jury/nomination-files/[fileId]/route.ts");
+const juryFileRoute = read("app/api/account/jury/nomination-files/[fileId]/route.ts");
 assert(has(juryFileRoute, "requireJuryAuth"), "jury file route requires jury auth");
 assert(has(juryFileRoute, 'paymentStatus !== "PAID"'), "jury file route rejects unpaid nominations");
 assert(has(juryFileRoute, "closedIncompleteAt"), "jury file route rejects incomplete closed nominations");

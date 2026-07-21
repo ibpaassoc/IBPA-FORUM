@@ -60,7 +60,8 @@ console.log("/apply/jury closed");
 const juryPageSrc = read("app/(public)/apply/jury/page.tsx");
 assert(juryPageSrc.includes('from "next/navigation"'), "imports next/navigation");
 assert(/notFound\(\)/.test(juryPageSrc), "calls notFound()");
-assert(!juryPageSrc.includes("JuryApplicationForm"), "no longer renders the jury application form");
+assert(juryPageSrc.includes("isValidJuryApplyAccessToken"), "jury apply requires a valid invitation token");
+assert(juryPageSrc.includes("JuryApplicationFormLoader"), "valid invitations can render the jury form");
 
 // ── Public links/CTAs no longer point to /apply/jury (scenarios 4, 5, 6) ──────
 console.log("no /apply/jury links in public UI");
@@ -83,9 +84,9 @@ assert(juryMenu.includes('href: "/account/login"'), "header still offers shared 
 // ── Backend rejects new jury submissions (scenario 8) ────────────────────────
 console.log("jury submission backend closed");
 const apiSrc = read("app/api/jury/route.ts");
-assert(/status:\s*410/.test(apiSrc), "POST /api/jury returns 410 Gone");
-assert(!/submitJuryApplication\s*\(/.test(apiSrc), "no longer calls submitJuryApplication()");
-assert(!apiSrc.includes('jury/server/commands"'), "no longer imports the jury submit command");
+assert(/status:\s*403/.test(apiSrc), "POST /api/jury rejects invalid invitation tokens");
+assert(apiSrc.includes("isValidJuryApplyAccessToken"), "POST /api/jury validates jury invitation access");
+assert(/submitJuryApplication\s*\(/.test(apiSrc), "valid invitations submit through the jury workflow");
 
 // ── SEO / sitemap (scenario 7) ───────────────────────────────────────────────
 console.log("sitemap / discovery");
@@ -98,7 +99,9 @@ assert(sitemapWithJury.length === 0, "no sitemap lists /apply/jury");
 // ── Existing jury/participant surfaces untouched (scenarios 9, 10, 11) ────────
 console.log("existing flows preserved");
 assert(existsSync(join(ROOT, "app/admin/jury-applications")), "admin jury applications route still present");
-assert(existsSync(join(ROOT, "app/jury/dashboard/page.tsx")), "jury dashboard still present");
+assert(existsSync(join(ROOT, "app/account/jury/page.tsx")), "jury account overview is present");
+assert(existsSync(join(ROOT, "app/account/jury/nominations/page.tsx")), "jury nomination queue is present");
+assert(!existsSync(join(ROOT, "app/jury/dashboard/page.tsx")), "legacy jury dashboard is removed");
 assert(existsSync(join(ROOT, "app/(public)/jury/login/page.tsx")), "jury login still present");
 const juryRegister = read("app/(public)/jury/register/page.tsx");
 assert(juryRegister.includes("searchParams"), "jury register alias reads search params");
@@ -110,7 +113,7 @@ assert(
 // Other /api/jury/* routes (existing-member flows) remain intact.
 for (const p of [
   "app/api/jury/upload/route.ts",
-  "app/api/jury/scoring/route.ts",
+  "app/api/account/jury/nominations/route.ts",
   "app/api/jury/additional-info/[token]/route.ts",
 ]) {
   assert(existsSync(join(ROOT, p)), `${p} still present`);
