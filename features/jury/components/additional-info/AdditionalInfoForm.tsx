@@ -113,7 +113,11 @@ export default function AdditionalInfoForm({
         const result = await upload(
           `jury/${uploadSessionId}/profilePhoto-1-${sanitizeBlobName(profilePhotoFile.name)}`,
           profilePhotoFile,
-          { access: "public", handleUploadUrl: "/api/jury/upload", multipart: true }
+          {
+            access: "public",
+            handleUploadUrl: `/api/jury/upload?infoToken=${encodeURIComponent(token)}`,
+            multipart: true,
+          }
         );
         profilePhotoBlob = {
           fileName: profilePhotoFile.name,
@@ -128,7 +132,11 @@ export default function AdditionalInfoForm({
         const result = await upload(
           `jury/${uploadSessionId}/certifications-${i + 1}-${sanitizeBlobName(file.name)}`,
           file,
-          { access: "private", handleUploadUrl: "/api/jury/upload", multipart: true }
+          {
+            access: "private",
+            handleUploadUrl: `/api/jury/upload?infoToken=${encodeURIComponent(token)}`,
+            multipart: true,
+          }
         );
         certBlobs.push({
           fileName: file.name,

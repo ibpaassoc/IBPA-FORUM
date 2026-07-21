@@ -7,6 +7,10 @@ const JuryApplicationForm = dynamic(() => import("./JuryApplicationForm"), {
   loading: () => <ApplicationFormSkeleton />,
 });
 
-export default function JuryApplicationFormLoader() {
-  return <JuryApplicationForm />;
+export default function JuryApplicationFormLoader({
+  accessToken,
+}: {
+  accessToken: string;
+}) {
+  return <JuryApplicationForm accessToken={accessToken} />;
 }

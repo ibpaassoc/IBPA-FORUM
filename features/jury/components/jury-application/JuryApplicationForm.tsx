@@ -72,7 +72,7 @@ function isValidUrl(value: string) {
   }
 }
 
-export default function JuryApplicationForm() {
+export default function JuryApplicationForm({ accessToken }: { accessToken: string }) {
   const { language } = useLanguage();
   const formRef = useRef<HTMLFormElement>(null);
   const [step, setStep] = useState(0);
@@ -382,7 +382,11 @@ export default function JuryApplicationForm() {
             upload(
               `jury/${uploadSessionId}/profilePhoto-1-${sanitizeBlobName(profilePhotoFile.name)}`,
               profilePhotoFile,
-              { access: "public", handleUploadUrl: "/api/jury/upload", multipart: true }
+              {
+                access: "public",
+                handleUploadUrl: `/api/jury/upload?token=${encodeURIComponent(accessToken)}`,
+                multipart: true,
+              }
             )
           : null,
         // Certifications stay private and are only viewable by admins.
@@ -390,7 +394,11 @@ export default function JuryApplicationForm() {
           upload(
             `jury/${uploadSessionId}/certifications-${i + 1}-${sanitizeBlobName(file.name)}`,
             file,
-            { access: "private", handleUploadUrl: "/api/jury/upload", multipart: true }
+            {
+              access: "private",
+              handleUploadUrl: `/api/jury/upload?token=${encodeURIComponent(accessToken)}`,
+              multipart: true,
+            }
           )
         ),
       ]);
@@ -408,6 +416,7 @@ export default function JuryApplicationForm() {
         }
         formData.append(key, String(raw));
       }
+      formData.append("accessToken", accessToken);
 
       if (profilePhotoResult && profilePhotoFile) {
         formData.append(
