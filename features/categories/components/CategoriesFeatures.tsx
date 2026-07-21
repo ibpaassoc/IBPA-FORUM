@@ -5,6 +5,8 @@ import { useMemo, useState } from "react";
 import NominationCategoryAccordion from "@/features/applications/components/nomination-selection/NominationCategoryAccordion";
 import { presentNominationCategories } from "@/features/applications/components/nomination-selection/nomination-presentation";
 import type { CategoryOption } from "@/features/applications/types/application.types";
+import type { RegulationButtonCopy } from "@/features/regulations/components/RegulationButton";
+import type { PublicRegulations } from "@/features/regulations/types";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { translations } from "@/lib/i18n/translations";
 
@@ -14,7 +16,46 @@ const continueCopy = {
   ua: "Перейти до заявки",
 } as const;
 
-export default function CategoriesFeatures({ categories }: { categories: CategoryOption[] }) {
+const regulationCopy: Record<"en" | "ru" | "ua", RegulationButtonCopy> = {
+  en: {
+    regulations: "Regulations",
+    view: "View",
+    download: "Download",
+    noAvailable: "No regulations available yet.",
+    loading: "Loading PDF…",
+    error: "The PDF could not be loaded. Please try again.",
+    close: "Close",
+    russianFallback: "The Russian version is shown because this language is not available yet.",
+  },
+  ru: {
+    regulations: "Положения",
+    view: "Просмотреть",
+    download: "Скачать",
+    noAvailable: "Положения пока недоступны.",
+    loading: "Загрузка PDF…",
+    error: "Не удалось загрузить PDF. Попробуйте ещё раз.",
+    close: "Закрыть",
+    russianFallback: "Показана русская версия, потому что документ на выбранном языке пока недоступен.",
+  },
+  ua: {
+    regulations: "Положення",
+    view: "Переглянути",
+    download: "Завантажити",
+    noAvailable: "Положення поки недоступні.",
+    loading: "Завантаження PDF…",
+    error: "Не вдалося завантажити PDF. Спробуйте ще раз.",
+    close: "Закрити",
+    russianFallback: "Показано російську версію, оскільки документ обраною мовою поки недоступний.",
+  },
+};
+
+export default function CategoriesFeatures({
+  categories,
+  regulations,
+}: {
+  categories: CategoryOption[];
+  regulations: PublicRegulations;
+}) {
   const { language, t } = useLanguage();
   const [openCategoryId, setOpenCategoryId] = useState<string | null>(null);
   const presentedCategories = useMemo(
@@ -38,6 +79,9 @@ export default function CategoriesFeatures({ categories }: { categories: Categor
           categories={presentedCategories}
           openCategoryId={openCategoryId}
           onOpenCategoryChange={setOpenCategoryId}
+          regulationsByCategory={regulations.categories}
+          regulationLanguage={language}
+          regulationCopy={regulationCopy[language]}
           getAwardHref={(awardId) => `/apply?nomination=${encodeURIComponent(awardId)}`}
           copy={{
             nominationSingular: t.categoriesPage.copy.nominationSingular,

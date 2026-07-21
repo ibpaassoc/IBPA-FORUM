@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import ApplicationFormLoader from "@/features/applications/components/application-form/ApplicationFormLoader";
 import ApplicationFormSkeleton from "@/features/applications/components/application-form/ApplicationFormSkeleton";
-import ApplyHero from "@/features/applications/components/pages/ApplyHero";
 import { LandingPageShell, PageSection } from "@/shared/components/public";
 
 export const metadata: Metadata = {
@@ -19,7 +18,7 @@ export const dynamic = "force-dynamic";
 export default function ApplyPage() {
   return (
     <LandingPageShell>
-      <PageSection id="apply-form" className="landing-section py-16">
+      <PageSection id="apply-form" className="landing-section pb-16 pt-10 sm:pt-12">
         <Suspense fallback={<ApplicationFormSkeleton />}>
           <ApplicationFormLoader />
         </Suspense>

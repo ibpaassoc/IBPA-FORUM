@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, type CSSProperties } from "react";
+import { useEffect, useRef } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowUpRight,
@@ -10,6 +10,7 @@ import {
   Brush,
   Camera,
   Check,
+  ChevronDown,
   Gem,
   GraduationCap,
   HeartHandshake,
@@ -102,15 +103,12 @@ export default function NominationCategoryAccordion({
     return () => window.cancelAnimationFrame(frame);
   }, [focusAwardId, openCategoryId, reducedMotion]);
 
-  const layoutTransition = reducedMotion
+  const surfaceTransition = reducedMotion
     ? { duration: 0 }
     : { duration: PUBLIC_MOTION_DURATION.slow, ease: PUBLIC_MOTION_EASE };
-  const contentTransition = reducedMotion
+  const itemTransition = reducedMotion
     ? { duration: 0 }
     : { duration: PUBLIC_MOTION_DURATION.base, ease: PUBLIC_MOTION_EASE };
-  const openCategoryIndex = categories.findIndex(
-    (category) => category.id === openCategoryId,
-  );
 
   return (
     <motion.div
@@ -118,244 +116,186 @@ export default function NominationCategoryAccordion({
       animate="visible"
       variants={{
         hidden: {},
-        visible: {
-          transition: { staggerChildren: reducedMotion ? 0 : 0.045 },
-        },
+        visible: { transition: { staggerChildren: reducedMotion ? 0 : 0.045 } },
       }}
-      className={`grid items-start gap-4 lg:grid-cols-2 lg:gap-5 ${className}`}
+      className={`flex flex-col gap-2.5 ${className}`}
     >
-      {categories.map((category, categoryIndex) => {
+      {categories.map((category) => {
         const isOpen = openCategoryId === category.id;
-        const isRightColumn = categoryIndex % 2 === 1;
-        const categoryOrder =
-          openCategoryIndex > 0 && openCategoryIndex % 2 === 1
-            ? categoryIndex === openCategoryIndex
-              ? openCategoryIndex
-              : categoryIndex === openCategoryIndex - 1
-                ? openCategoryIndex + 1
-                : categoryIndex + 1
-            : categoryIndex + 1;
         const selectedInCategory = category.awards.filter((award) =>
           selectedAwards.has(award.id),
         ).length;
         const Icon = categoryIconBySlug[category.slug] ?? Award;
         const contentId = `nomination-category-${category.id}`;
+        const toggleCategory = () =>
+          onOpenCategoryChange(isOpen ? null : category.id);
 
         return (
           <motion.article
-            layout={reducedMotion ? false : true}
+            layout={reducedMotion ? false : "position"}
             key={category.id}
             variants={{
-              hidden: { opacity: 0, y: 14 },
+              hidden: { opacity: 0, y: 12 },
               visible: { opacity: 1, y: 0 },
             }}
-            transition={{ ...contentTransition, layout: layoutTransition }}
-            whileHover={
-              reducedMotion || isOpen
-                ? undefined
-                : {
-                    y: -4,
-                    scale: 1.006,
-                    transition: {
-                      duration: PUBLIC_MOTION_DURATION.fast,
-                      ease: PUBLIC_MOTION_EASE,
-                    },
-                  }
-            }
-            style={{ "--category-order": categoryOrder } as CSSProperties}
-            className={`relative self-start overflow-hidden rounded-[2rem] border bg-white/78 p-px backdrop-blur-2xl motion-reduce:transform-none lg:[order:var(--category-order)] ${
+            transition={{ ...itemTransition, layout: surfaceTransition }}
+            className={`relative overflow-hidden rounded-[24px] border backdrop-blur-2xl transition-[border-color,box-shadow,background-color] duration-500 ${
               isOpen
-                ? "border-[rgba(114,160,193,0.56)] shadow-[0_28px_76px_rgba(114,160,193,0.2)] lg:col-span-2"
-                : "border-white/90 shadow-[0_18px_52px_rgba(79,115,139,0.09)] transition-[border-color,box-shadow] duration-300 hover:border-[rgba(114,160,193,0.42)] hover:shadow-[0_24px_60px_rgba(114,160,193,0.16)] motion-reduce:transition-none"
+                ? "border-[rgba(114,160,193,0.52)] bg-white/84 shadow-[0_22px_64px_rgba(87,137,173,0.18)]"
+                : "border-white/90 bg-white/66 shadow-[0_12px_34px_rgba(55,92,118,0.07)] hover:border-[rgba(114,160,193,0.34)] hover:bg-white/78 hover:shadow-[0_18px_46px_rgba(87,137,173,0.12)]"
             }`}
           >
-            <div
-              className={`pointer-events-none absolute top-4 size-28 rounded-full bg-[rgba(185,217,235,0.18)] blur-2xl ${
-                isRightColumn ? "right-5 lg:left-5 lg:right-auto" : "right-5"
-              }`}
-            />
-            <div className="relative rounded-[calc(2rem-1px)] border border-[rgba(114,160,193,0.1)] bg-white/72 backdrop-blur-xl">
-              <h3 className="flex items-stretch">
-                <button
-                  type="button"
-                  aria-expanded={isOpen}
-                  aria-controls={contentId}
-                  onClick={() =>
-                    onOpenCategoryChange(isOpen ? null : category.id)
-                  }
-                  className={`block min-h-[142px] min-w-0 flex-1 cursor-pointer rounded-[calc(2rem-1px)] px-4 py-5 text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-[rgba(114,160,193,0.3)] sm:px-6 ${
-                    isRightColumn ? "lg:text-right" : ""
-                  }`}
-                >
-                  <div
-                    className={`flex min-h-[100px] items-stretch justify-between gap-4 ${
-                      isRightColumn ? "lg:flex-row-reverse" : ""
-                    }`}
-                  >
-                    <motion.span
-                      layout={reducedMotion ? false : "position"}
-                      transition={{ layout: layoutTransition }}
-                      className={`flex min-w-0 items-start gap-4 ${
-                        isRightColumn ? "lg:flex-row-reverse" : ""
-                      }`}
-                    >
-                      <span className="flex size-11 shrink-0 items-center justify-center rounded-[16px] border border-[rgba(114,160,193,0.2)] bg-white/86 text-[#5689ad] shadow-[0_12px_28px_rgba(114,160,193,0.12)]">
-                        <Icon aria-hidden className="size-[17px]" />
-                      </span>
-                      <span
-                        className={`flex min-w-0 flex-col justify-center ${
-                          isRightColumn ? "lg:items-end lg:text-right" : ""
-                        }`}
-                      >
-                        <span className="block max-w-xl break-words font-[var(--font-title-family)] text-[clamp(1.28rem,2.3vw,1.85rem)] font-light leading-[1.04] tracking-[-0.035em] text-[var(--color-ink)]">
-                          {category.displayName}
-                        </span>
-                        <span className="mt-2 block text-[0.76rem] text-[var(--color-ink-soft)]">
-                          {category.awards.length}{" "}
-                          {category.awards.length === 1
-                            ? copy.nominationSingular
-                            : copy.nominationPlural}
-                          {selectedInCategory > 0 ? (
-                            <span className="ml-2 font-semibold text-[#5689ad]">
-                              · {selectedInCategory} {copy.selected}
-                            </span>
-                          ) : null}
-                        </span>
-                      </span>
-                    </motion.span>
+            <div className="pointer-events-none absolute inset-x-12 -top-14 h-24 rounded-full bg-[rgba(185,217,235,0.22)] blur-3xl" />
 
+            <h3 className="relative grid min-h-[82px] grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-3 py-2 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:gap-3 sm:px-4">
+              <button
+                type="button"
+                aria-expanded={isOpen}
+                aria-controls={contentId}
+                onClick={toggleCategory}
+                className="group flex min-w-0 items-center gap-3 rounded-[18px] px-1 py-2 text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.24)] sm:gap-4 sm:px-2"
+              >
+                <span className={`flex size-12 shrink-0 items-center justify-center rounded-full border bg-white/76 text-[#5689ad] shadow-[0_10px_28px_rgba(114,160,193,0.11)] transition duration-500 group-hover:scale-[1.04] ${isOpen ? "border-[rgba(114,160,193,0.38)]" : "border-[rgba(114,160,193,0.18)]"}`}>
+                  <Icon aria-hidden className="size-[18px]" strokeWidth={1.65} />
+                </span>
+                <span className="min-w-0">
+                  <span className="block break-words font-[var(--font-title-family)] text-[clamp(1.2rem,2vw,1.55rem)] font-light leading-[1.08] tracking-[-0.025em] text-[var(--color-ink)]">
+                    {category.displayName}
+                  </span>
+                  <span className="mt-1 block text-[0.74rem] leading-none text-[var(--color-ink-soft)]">
+                    {category.awards.length}{" "}
+                    {category.awards.length === 1
+                      ? copy.nominationSingular
+                      : copy.nominationPlural}
                     {selectedInCategory > 0 ? (
-                      <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-full border border-[rgba(114,160,193,0.24)] bg-[#edf6fb] text-[0.68rem] font-bold text-[#477b9f]">
-                        {selectedInCategory}
+                      <span className="ml-2 font-semibold text-[#5689ad]">
+                        · {selectedInCategory} {copy.selected}
                       </span>
                     ) : null}
-                  </div>
-                </button>
-                {regulationLanguage && regulationCopy ? (
-                  <div className="flex shrink-0 items-center pr-3 sm:pr-5">
-                    <RegulationButton
-                      regulationKey={`category:${category.id}`}
-                      availability={regulationsByCategory?.[category.id] ?? noRegulations}
-                      language={regulationLanguage}
-                      title={`${regulationCopy.regulations}: ${category.displayName}`}
-                      copy={regulationCopy}
-                      className="min-w-[96px] px-3 sm:min-w-[122px] sm:px-4"
-                    />
-                  </div>
-                ) : null}
-              </h3>
+                  </span>
+                </span>
+              </button>
 
-              <AnimatePresence initial={false} mode="popLayout">
-                {isOpen ? (
+              {regulationLanguage && regulationCopy ? (
+                <RegulationButton
+                  regulationKey={`category:${category.id}`}
+                  availability={regulationsByCategory?.[category.id] ?? noRegulations}
+                  language={regulationLanguage}
+                  title={`${regulationCopy.regulations}: ${category.displayName}`}
+                  copy={regulationCopy}
+                  className="col-start-1 row-start-2 ml-[3.75rem] justify-self-start sm:col-start-2 sm:row-start-1 sm:ml-0"
+                />
+              ) : null}
+
+              <button
+                type="button"
+                aria-expanded={isOpen}
+                aria-controls={contentId}
+                onClick={toggleCategory}
+                className="col-start-2 row-start-1 flex size-10 items-center justify-center justify-self-end rounded-full border border-[rgba(114,160,193,0.16)] bg-white/72 text-[var(--color-ink)] shadow-[0_8px_22px_rgba(79,115,139,0.07)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.24)] sm:col-start-3"
+              >
+                <motion.span
+                  animate={{ rotate: isOpen ? 180 : 0 }}
+                  transition={surfaceTransition}
+                  className="flex"
+                >
+                  <ChevronDown aria-hidden size={17} strokeWidth={1.8} />
+                </motion.span>
+                <span className="sr-only">{category.displayName}</span>
+              </button>
+            </h3>
+
+            <AnimatePresence initial={false}>
+              {isOpen ? (
+                <motion.div
+                  id={contentId}
+                  key="nomination-content"
+                  initial={reducedMotion ? false : { height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={surfaceTransition}
+                  className="overflow-hidden"
+                >
                   <motion.div
-                    id={contentId}
-                    key="nomination-content"
-                    initial={reducedMotion ? false : { opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 6 }}
-                    transition={contentTransition}
-                    className="px-5 pb-5 sm:px-6 sm:pb-6"
+                    initial={reducedMotion ? false : "hidden"}
+                    animate="visible"
+                    variants={{
+                      hidden: {},
+                      visible: {
+                        transition: { staggerChildren: reducedMotion ? 0 : 0.045 },
+                      },
+                    }}
+                    className="mx-4 grid grid-cols-1 gap-3 border-t border-[rgba(114,160,193,0.15)] pb-5 pt-4 sm:mx-5 sm:grid-cols-2 sm:pb-6 sm:pt-5 lg:grid-cols-3 xl:grid-cols-4"
                   >
-                    <motion.div
-                      initial={reducedMotion ? false : "hidden"}
-                      animate="visible"
-                      variants={{
-                        hidden: {},
-                        visible: {
-                          transition: {
-                            staggerChildren: reducedMotion ? 0 : 0.045,
-                          },
-                        },
-                      }}
-                      className="grid grid-cols-1 gap-3 border-t border-[rgba(114,160,193,0.16)] pt-5 md:grid-cols-2 xl:grid-cols-3"
-                    >
-                      {category.awards.map((award, awardIndex) => {
-                        const selected = selectedAwards.has(award.id);
-                        const commonClassName = `group/nomination flex h-full min-h-[94px] w-full items-start justify-between gap-3 rounded-[20px] border p-4 text-left backdrop-blur-xl focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.28)] ${
-                          selected
-                            ? "border-[rgba(114,160,193,0.6)] bg-[#edf6fb] text-[var(--color-ink)] shadow-[0_14px_36px_rgba(114,160,193,0.18)]"
-                            : "border-[rgba(114,160,193,0.2)] bg-white/82 text-[var(--color-ink-soft)] shadow-[0_10px_28px_rgba(79,115,139,0.06)] hover:border-[rgba(114,160,193,0.44)] hover:bg-[#f5fafc] hover:text-[var(--color-ink)]"
-                        }`;
-                        const label = (
-                          <>
-                            <span className="flex min-w-0 flex-1 flex-col self-stretch justify-between gap-3">
-                              <span className="break-words text-sm leading-snug">
-                                {award.displayName}
+                    {category.awards.map((award) => {
+                      const selected = selectedAwards.has(award.id);
+                      const commonClassName = `group/nomination flex h-full min-h-[92px] w-full items-start justify-between gap-3 rounded-[18px] border p-4 text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.24)] ${
+                        selected
+                          ? "border-[rgba(114,160,193,0.62)] bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(216,236,248,0.62))] text-[var(--color-ink)] shadow-[0_13px_30px_rgba(114,160,193,0.16)]"
+                          : "border-[rgba(114,160,193,0.18)] bg-white/62 text-[var(--color-ink-soft)] shadow-[0_8px_22px_rgba(79,115,139,0.05)] hover:-translate-y-0.5 hover:border-[rgba(114,160,193,0.42)] hover:bg-white/88 hover:text-[var(--color-ink)]"
+                      }`;
+                      const label = (
+                        <>
+                          <span className="flex min-w-0 flex-1 flex-col self-stretch justify-between gap-3">
+                            <span className="break-words text-[0.84rem] leading-snug">
+                              {award.displayName}
+                            </span>
+                            {getAwardHref && copy.continueToApplication ? (
+                              <span className="inline-flex items-center gap-1 text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-[#6391b1]">
+                                {copy.continueToApplication}
+                                <ArrowUpRight aria-hidden size={11} />
                               </span>
-                              {getAwardHref && copy.continueToApplication ? (
-                                <span className="inline-flex items-center gap-1 text-[0.65rem] font-semibold uppercase tracking-[0.11em] text-[#6391b1]">
-                                  {copy.continueToApplication}
-                                  <ArrowUpRight aria-hidden size={12} />
-                                </span>
-                              ) : null}
-                            </span>
-                            <span
-                              aria-hidden
-                              className={`flex size-6 shrink-0 items-center justify-center rounded-full border ${
-                                selected
-                                  ? "border-[rgba(114,160,193,0.5)] bg-white text-[#477b9f]"
-                                  : "border-[rgba(114,160,193,0.28)] bg-white/90 text-transparent"
-                              }`}
-                            >
-                              {getAwardHref ? (
-                                <ArrowUpRight size={13} />
-                              ) : (
-                                <Check size={13} strokeWidth={3} />
-                              )}
-                            </span>
-                          </>
-                        );
+                            ) : null}
+                          </span>
+                          <span aria-hidden className={`flex size-6 shrink-0 items-center justify-center rounded-full border bg-white/84 transition ${selected ? "border-[rgba(114,160,193,0.55)] text-[#477b9f]" : "border-[rgba(114,160,193,0.28)] text-transparent group-hover/nomination:text-[#76a0be]"}`}>
+                            {getAwardHref ? <ArrowUpRight size={12} /> : <Check size={12} strokeWidth={3} />}
+                          </span>
+                        </>
+                      );
 
-                        return (
-                          <motion.div
-                            key={award.id}
-                            layout={reducedMotion ? false : "position"}
-                            variants={{
-                              hidden: { opacity: 0, y: 10 },
-                              visible: { opacity: 1, y: 0 },
-                            }}
-                            transition={{
-                              ...contentTransition,
-                              delay: reducedMotion ? 0 : awardIndex * 0.005,
-                            }}
-                            className="h-full"
-                          >
-                            {getAwardHref ? (
-                              <Link
-                                ref={(node) => {
-                                  if (node)
-                                    nominationRefs.current.set(award.id, node);
-                                  else nominationRefs.current.delete(award.id);
-                                }}
-                                href={getAwardHref(award.id)}
-                                aria-label={`${award.displayName}. ${copy.continueToApplication ?? ""}`.trim()}
-                                className={commonClassName}
-                              >
-                                {label}
-                              </Link>
-                            ) : (
-                              <button
-                                ref={(node) => {
-                                  if (node)
-                                    nominationRefs.current.set(award.id, node);
-                                  else nominationRefs.current.delete(award.id);
-                                }}
-                                type="button"
-                                aria-pressed={selected}
-                                onClick={() => onAwardToggle?.(award.id)}
-                                className={commonClassName}
-                              >
-                                {label}
-                              </button>
-                            )}
-                          </motion.div>
-                        );
-                      })}
-                    </motion.div>
+                      return (
+                        <motion.div
+                          key={award.id}
+                          variants={{
+                            hidden: { opacity: 0, y: 8, scale: 0.985 },
+                            visible: { opacity: 1, y: 0, scale: 1 },
+                          }}
+                          transition={itemTransition}
+                          className="h-full"
+                        >
+                          {getAwardHref ? (
+                            <Link
+                              ref={(node) => {
+                                if (node) nominationRefs.current.set(award.id, node);
+                                else nominationRefs.current.delete(award.id);
+                              }}
+                              href={getAwardHref(award.id)}
+                              aria-label={`${award.displayName}. ${copy.continueToApplication ?? ""}`.trim()}
+                              className={commonClassName}
+                            >
+                              {label}
+                            </Link>
+                          ) : (
+                            <button
+                              ref={(node) => {
+                                if (node) nominationRefs.current.set(award.id, node);
+                                else nominationRefs.current.delete(award.id);
+                              }}
+                              type="button"
+                              aria-pressed={selected}
+                              onClick={() => onAwardToggle?.(award.id)}
+                              className={commonClassName}
+                            >
+                              {label}
+                            </button>
+                          )}
+                        </motion.div>
+                      );
+                    })}
                   </motion.div>
-                ) : null}
-              </AnimatePresence>
-            </div>
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
           </motion.article>
         );
       })}
