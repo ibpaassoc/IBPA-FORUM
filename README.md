@@ -74,7 +74,7 @@ prisma/
 | --- | --- |
 | `/` | Homepage |
 | `/jury` | Public jury information page |
-| `/apply/jury` | Public jury application form |
+| `/apply/jury?token=...` | Invite-only jury application form |
 | `/categories` | Categories page |
 | `/grand-prix` | Grand Prix page |
 | `/admin` | Internal admin login page |
