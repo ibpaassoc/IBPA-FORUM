@@ -137,8 +137,8 @@ assert(
 
 const webhookWorkflow = read("features/applications/server/webhook.workflow.ts");
 assert(
-  has(webhookWorkflow, /metadata\??\.flowType === APPLICANT_NOMINATION_PURCHASE_FLOW/),
-  "webhook routes applicant purchases by flowType"
+  has(webhookWorkflow, "return handleApplicantNominationCheckoutCompleted(event)"),
+  "competitor webhook completion uses the nomination purchase handler"
 );
 assert(has(webhookWorkflow, "amountTotal !== payment.amount"), "webhook validates Stripe amount");
 assert(has(webhookWorkflow, "tx.nominationApplication.upsert"), "webhook fulfills by upserting nominations");

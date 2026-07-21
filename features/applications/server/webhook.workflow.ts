@@ -2,9 +2,6 @@ import { Prisma, type StripeWebhookEvent } from "@prisma/client";
 import type Stripe from "stripe";
 import { sendCompetitorApplicationConfirmedEmail } from "@/features/email/server/competitor-email.workflow";
 import { sendPaymentAdminNotificationEmail } from "@/features/email/server/payment-email.workflow";
-import {
-  upsertApplicantAccountForApplication,
-} from "@/features/account/server/accounts";
 import { issueApplicantRegistrationLink } from "@/features/account/server/applicant-registration";
 import { allocateApplicantNominationAmounts } from "@/features/applications/lib/pricing";
 import {
@@ -58,16 +55,6 @@ function getPaymentIntentId(value: string | Stripe.PaymentIntent | null) {
   return typeof value === "string" ? value : value.id;
 }
 
-function getCompetitorApplicationId(
-  metadata: Record<string, string> | null | undefined
-) {
-  if (!metadata || metadata.flowType !== "competitor") {
-    return null;
-  }
-
-  return metadata.applicationId ?? null;
-}
-
 function getApplicantPurchasePaymentId(metadata: Record<string, string> | null | undefined) {
   if (!metadata || metadata.flowType !== APPLICANT_NOMINATION_PURCHASE_FLOW) {
     return null;
@@ -76,30 +63,14 @@ function getApplicantPurchasePaymentId(metadata: Record<string, string> | null |
   return metadata.paymentId ?? null;
 }
 
-function isApplicantPurchaseEvent(event: Stripe.Event) {
-  const object = event.data.object as {
-    metadata?: Record<string, string> | null;
-  };
-  return object.metadata?.flowType === APPLICANT_NOMINATION_PURCHASE_FLOW;
-}
-
 export async function handleCompetitorStripeEvent(event: Stripe.Event) {
   switch (event.type) {
     case "checkout.session.completed":
-      if (isApplicantPurchaseEvent(event)) {
-        return handleApplicantNominationCheckoutCompleted(event);
-      }
-      return handleCompetitorCheckoutCompleted(event);
+      return handleApplicantNominationCheckoutCompleted(event);
     case "checkout.session.expired":
-      if (isApplicantPurchaseEvent(event)) {
-        return handleApplicantNominationCheckoutExpired(event);
-      }
-      return handleCompetitorCheckoutExpired(event);
+      return handleApplicantNominationCheckoutExpired(event);
     case "payment_intent.payment_failed":
-      if (isApplicantPurchaseEvent(event)) {
-        return handleApplicantNominationPaymentFailed(event);
-      }
-      return handleCompetitorPaymentFailed(event);
+      return handleApplicantNominationPaymentFailed(event);
     default:
       return false;
   }
@@ -185,6 +156,8 @@ async function handleApplicantNominationCheckoutCompleted(event: Stripe.Event) {
 
   const paymentIntentId = getPaymentIntentId(session.payment_intent);
   const setupAccountIds: string[] = [];
+  let fulfilledProfileId: string | null = null;
+  let emailPayload: CompetitorPaymentEmailPayload | null = null;
 
   try {
     await prisma.$transaction(async (tx) => {
@@ -219,6 +192,7 @@ async function handleApplicantNominationCheckoutCompleted(event: Stripe.Event) {
 
       const paidAt = new Date();
       const { account, profile } = await upsertApplicantAccountForPurchase(tx, manifest);
+      fulfilledProfileId = profile.id;
       const amountAllocations = allocateApplicantNominationAmounts(
         payment.amount,
         manifest.selectedAwards.length
@@ -270,6 +244,19 @@ async function handleApplicantNominationCheckoutCompleted(event: Stripe.Event) {
       if (!account.passwordHash && account.status !== "ACTIVE" && !account.lastSetupEmailSentAt) {
         setupAccountIds.push(account.id);
       }
+
+      const firstNomination = manifest.selectedAwards[0];
+      emailPayload = {
+        to: manifest.personalInfo.email,
+        fullName: manifest.personalInfo.fullName,
+        categoryName: firstNomination?.categoryName ?? "IBPA Beauty Award",
+        awardName:
+          manifest.selectedAwards.length === 1
+            ? firstNomination?.awardName ?? "Nomination"
+            : `${manifest.selectedAwards.length} nominations`,
+        amount: payment.amount,
+        currency: payment.currency,
+      };
     });
   } catch (error) {
     if (isDuplicateStripeEventError(error)) {
@@ -284,12 +271,43 @@ async function handleApplicantNominationCheckoutCompleted(event: Stripe.Event) {
     await issueApplicantRegistrationLink({ accountId: setupAccountId });
   }
 
+  if (fulfilledProfileId) {
+    syncApplicationOnChange(fulfilledProfileId);
+  }
+
+  if (emailPayload) {
+    const confirmed = emailPayload as CompetitorPaymentEmailPayload;
+    try {
+      await sendCompetitorApplicationConfirmedEmail(confirmed);
+    } catch (error) {
+      console.error("Failed to send competitor payment confirmation email", error);
+    }
+
+    try {
+      await sendPaymentAdminNotificationEmail({
+        flowLabel: "Competitor nominations",
+        applicantName: confirmed.fullName,
+        applicantEmail: confirmed.to,
+        amount: confirmed.amount,
+        currency: confirmed.currency,
+        stripeSessionId: session.id,
+        stripePaymentIntentId: paymentIntentId,
+      });
+    } catch (error) {
+      console.error("Failed to send competitor payment admin notification email", error);
+    }
+  }
+
   return true;
 }
-
 async function handleApplicantNominationCheckoutExpired(event: Stripe.Event) {
   const session = event.data.object as Stripe.Checkout.Session;
-  const paymentId = getApplicantPurchasePaymentId(session.metadata);
+  const paymentId =
+    getApplicantPurchasePaymentId(session.metadata) ??
+    (await prisma.payment.findFirst({
+      where: { stripeSessionId: session.id, source: "COMPETITOR" },
+      select: { id: true },
+    }).then((payment) => payment?.id ?? null));
 
   if (!paymentId) {
     return false;
@@ -320,10 +338,20 @@ async function handleApplicantNominationCheckoutExpired(event: Stripe.Event) {
 
   return true;
 }
-
 async function handleApplicantNominationPaymentFailed(event: Stripe.Event) {
   const paymentIntent = event.data.object as Stripe.PaymentIntent;
-  const paymentId = getApplicantPurchasePaymentId(paymentIntent.metadata);
+  const legacyApplicationId = paymentIntent.metadata?.applicationId;
+  const paymentId =
+    getApplicantPurchasePaymentId(paymentIntent.metadata) ??
+    (legacyApplicationId
+      ? await prisma.payment.findFirst({
+          where: {
+            source: "COMPETITOR",
+            purchaseManifest: { path: ["legacyApplicationId"], equals: legacyApplicationId },
+          },
+          select: { id: true },
+        }).then((payment) => payment?.id ?? null)
+      : null);
 
   if (!paymentId) {
     return false;
@@ -351,300 +379,6 @@ async function handleApplicantNominationPaymentFailed(event: Stripe.Event) {
 
     throw error;
   }
-
-  return true;
-}
-
-async function handleCompetitorCheckoutCompleted(event: Stripe.Event) {
-  const session = event.data.object as Stripe.Checkout.Session;
-  const applicationId =
-    getCompetitorApplicationId(session.metadata) ??
-    (await prisma.application
-      .findFirst({
-        where: {
-          stripeCheckoutSessionId: session.id,
-        },
-        select: {
-          id: true,
-        },
-      })
-      .then((application) => application?.id ?? null));
-
-  if (!applicationId) {
-    return false;
-  }
-
-  const paymentIntentId = getPaymentIntentId(session.payment_intent);
-  let emailPayload: CompetitorPaymentEmailPayload | null = null;
-  let setupAccountId: string | null = null;
-
-  try {
-    await prisma.$transaction(async (tx) => {
-      await recordStripeEvent(tx, event);
-
-      const application = await tx.application.findUnique({
-        where: {
-          id: applicationId,
-        },
-        select: {
-          id: true,
-          email: true,
-          fullName: true,
-          amount: true,
-          currency: true,
-          paymentStatus: true,
-          submittedAt: true,
-          phone: true,
-          country: true,
-          stateProvince: true,
-          city: true,
-          professionalTitle: true,
-          yearsExperience: true,
-          membershipNumber: true,
-          membershipLevel: true,
-          websiteUrl: true,
-          socialUrl: true,
-          reviewsUrl: true,
-          category: {
-            select: {
-              name: true,
-            },
-          },
-          award: {
-            select: {
-              name: true,
-            },
-          },
-        },
-      });
-
-      if (!application || application.paymentStatus === "PAID") {
-        return;
-      }
-
-      const paidAt = new Date();
-      const { account, profile } = await upsertApplicantAccountForApplication(tx, application);
-
-      await tx.application.update({
-        where: {
-          id: application.id,
-        },
-        data: {
-          status: "SUBMITTED",
-          paymentStatus: "PAID",
-          paidAt,
-          submittedAt: application.submittedAt ?? paidAt,
-          stripeCheckoutSessionId: session.id,
-          stripePaymentIntentId: paymentIntentId,
-        },
-      });
-
-      await tx.nominationApplication.updateMany({
-        where: { applicationId: application.id },
-        data: {
-          applicantProfileId: profile.id,
-          status: "SUBMITTED",
-          paymentStatus: "PAID",
-          paidAt,
-          submittedAt: application.submittedAt ?? paidAt,
-          stripeCheckoutSessionId: session.id,
-          stripePaymentIntentId: paymentIntentId,
-        },
-      });
-
-      await tx.payment.updateMany({
-        where: {
-          stripeSessionId: session.id,
-        },
-        data: {
-          status: "PAID",
-          stripePaymentIntentId: paymentIntentId,
-          paidAt,
-        },
-      });
-
-      emailPayload = {
-        to: application.email,
-        fullName: application.fullName,
-        categoryName: application.category.name,
-        awardName: application.award.name,
-        amount: application.amount,
-        currency: application.currency,
-      };
-      if (account.status !== "ACTIVE" || !account.passwordHash) {
-        setupAccountId = account.id;
-      }
-    });
-  } catch (error) {
-    if (isDuplicateStripeEventError(error)) {
-      return true;
-    }
-
-    throw error;
-  }
-
-  // Payment status / application status changed — mirror into Google Sheets.
-  syncApplicationOnChange(applicationId);
-
-  if (!emailPayload) {
-    return true;
-  }
-
-  if (setupAccountId) {
-    try {
-      await issueApplicantRegistrationLink({ accountId: setupAccountId });
-    } catch (error) {
-      console.error("Failed to send applicant account setup email", error);
-    }
-  }
-
-  const confirmedEmailPayload =
-    emailPayload as CompetitorPaymentEmailPayload;
-
-  try {
-    await sendCompetitorApplicationConfirmedEmail({
-      to: confirmedEmailPayload.to,
-      fullName: confirmedEmailPayload.fullName,
-      categoryName: confirmedEmailPayload.categoryName,
-      awardName: confirmedEmailPayload.awardName,
-      amount: confirmedEmailPayload.amount,
-      currency: confirmedEmailPayload.currency,
-    });
-  } catch (error) {
-    console.error("Failed to send competitor payment confirmation email", error);
-  }
-
-  try {
-    await sendPaymentAdminNotificationEmail({
-      flowLabel: "Competitor application",
-      applicantName: confirmedEmailPayload.fullName,
-      applicantEmail: confirmedEmailPayload.to,
-      amount: confirmedEmailPayload.amount,
-      currency: confirmedEmailPayload.currency,
-      stripeSessionId: session.id,
-      stripePaymentIntentId: paymentIntentId,
-    });
-  } catch (error) {
-    console.error("Failed to send competitor payment admin notification email", error);
-  }
-
-  return true;
-}
-
-async function handleCompetitorCheckoutExpired(event: Stripe.Event) {
-  const session = event.data.object as Stripe.Checkout.Session;
-  const applicationId = getCompetitorApplicationId(session.metadata);
-
-  if (!applicationId) {
-    return false;
-  }
-
-  try {
-    await prisma.$transaction(async (tx) => {
-      await recordStripeEvent(tx, event);
-
-      const application = await tx.application.findUnique({
-        where: {
-          id: applicationId,
-        },
-        select: {
-          stripeCheckoutSessionId: true,
-          paymentStatus: true,
-        },
-      });
-
-      if (!application || application.paymentStatus === "PAID") {
-        return;
-      }
-
-      if (application.stripeCheckoutSessionId === session.id) {
-        await tx.application.update({
-          where: {
-            id: applicationId,
-          },
-          data: {
-            paymentStatus: "EXPIRED",
-          },
-        });
-      }
-
-      await tx.payment.updateMany({
-        where: {
-          stripeSessionId: session.id,
-        },
-        data: {
-          status: "EXPIRED",
-        },
-      });
-    });
-  } catch (error) {
-    if (isDuplicateStripeEventError(error)) {
-      return true;
-    }
-
-    throw error;
-  }
-
-  syncApplicationOnChange(applicationId);
-
-  return true;
-}
-
-async function handleCompetitorPaymentFailed(event: Stripe.Event) {
-  const paymentIntent = event.data.object as Stripe.PaymentIntent;
-  const applicationId = getCompetitorApplicationId(paymentIntent.metadata);
-
-  if (!applicationId) {
-    return false;
-  }
-
-  try {
-    await prisma.$transaction(async (tx) => {
-      await recordStripeEvent(tx, event);
-
-      const application = await tx.application.findUnique({
-        where: {
-          id: applicationId,
-        },
-        select: {
-          paymentStatus: true,
-        },
-      });
-
-      if (!application || application.paymentStatus === "PAID") {
-        return;
-      }
-
-      await tx.application.update({
-        where: {
-          id: applicationId,
-        },
-        data: {
-          paymentStatus: "FAILED",
-          stripePaymentIntentId: paymentIntent.id,
-        },
-      });
-
-      await tx.payment.updateMany({
-        where: {
-          applicationId,
-          status: "PENDING",
-        },
-        data: {
-          status: "FAILED",
-          stripePaymentIntentId: paymentIntent.id,
-        },
-      });
-    });
-  } catch (error) {
-    if (isDuplicateStripeEventError(error)) {
-      return true;
-    }
-
-    throw error;
-  }
-
-  syncApplicationOnChange(applicationId);
 
   return true;
 }

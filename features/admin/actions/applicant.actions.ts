@@ -12,6 +12,7 @@ import { processApplicantDeadlineClosure } from "@/features/applications/server/
 import { requireAdmin } from "@/shared/lib/admin-auth";
 import { prisma } from "@/shared/lib/prisma";
 import { adminT } from "@/lib/i18n/admin";
+import { syncApplicationOnChange } from "@/features/google-sheets";
 
 function adminApplicationsPath(params?: Record<string, string>) {
   const query = new URLSearchParams(params).toString();
@@ -102,6 +103,7 @@ export async function updateApplicantProfileAction(formData: FormData) {
 
   revalidatePath("/admin/applications");
   revalidatePath(`/admin/applications/${profileId}`);
+  syncApplicationOnChange(profileId);
   redirect(adminApplicantPath(profileId, { notice: adminT.actions.applicantUpdated }));
 }
 
@@ -301,6 +303,7 @@ export async function addManualApplicantNominationAction(formData: FormData) {
 
   revalidatePath("/admin/applications");
   revalidatePath(`/admin/applications/${profileId}`);
+  syncApplicationOnChange(profileId);
   redirect(adminApplicantPath(profileId, { notice: adminT.actions.manualNominationAdded }));
 }
 

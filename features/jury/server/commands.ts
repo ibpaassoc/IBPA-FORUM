@@ -23,7 +23,7 @@ import {
 import { readEnv } from "@/lib/env";
 import { prisma } from "@/shared/lib/prisma";
 import { revalidatePublicJuryMembers } from "@/features/jury/server/queries";
-import { syncApplicationOnChange, syncJuryOnChange } from "@/features/google-sheets";
+import { syncJuryOnChange } from "@/features/google-sheets";
 
 function getAppUrl() {
   return readEnv(["APP_URL", "FRONTEND_URL", "NEXT_PUBLIC_APP_URL"]).replace(/\/+$/, "");
@@ -853,37 +853,4 @@ export async function editJuryApplicationFields(
   syncJuryOnChange(id);
   // Name / title / bio changes are surfaced on the public /jury listing.
   revalidatePublicJuryMembers();
-}
-
-export async function editParticipantApplicationFields(
-  id: string,
-  data: {
-    fullName: string;
-    email: string;
-    phone: string;
-    country: string;
-    stateProvince: string | null;
-    city: string;
-    professionalTitle: string;
-    yearsExperience: number;
-    membershipNumber: string | null;
-    membershipLevel: string | null;
-    websiteUrl: string | null;
-    socialUrl: string | null;
-    reviewsUrl: string | null;
-    heardAbout: string | null;
-  },
-) {
-  const application = await prisma.application.findUnique({
-    where: { id },
-    select: { id: true },
-  });
-  if (!application) throw new Error("Application not found.");
-
-  await prisma.application.update({
-    where: { id },
-    data: { ...data, email: data.email.trim().toLowerCase() },
-  });
-
-  syncApplicationOnChange(id);
 }

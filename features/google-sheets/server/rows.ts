@@ -35,56 +35,49 @@ const NUMBER_OF_SCORE_CRITERIA = 5;
 
 // ── Applications ─────────────────────────────────────────────────────────────
 
-const applicationSelect = {
+const applicantSelect = {
   id: true,
   fullName: true,
-  email: true,
   phone: true,
   socialUrl: true,
   membershipLevel: true,
   membershipNumber: true,
-  amount: true,
-  paymentStatus: true,
-  status: true,
-  submittedAt: true,
   updatedAt: true,
-  category: { select: { name: true } },
-  award: { select: { name: true } },
-  nominationApplications: {
+  account: { select: { email: true } },
+  nominations: {
+    where: { paymentStatus: "PAID" as const, deletedAt: null },
     select: {
+      amount: true,
+      submittedAt: true,
+      updatedAt: true,
       award: { select: { name: true } },
       category: { select: { name: true } },
+      judgeScores: {
+        where: { status: "SUBMITTED" as const },
+        select: { totalScore: true },
+      },
     },
     orderBy: { createdAt: "asc" },
   },
-  payments: { select: { amount: true, status: true } },
-  judgeScores: {
-    where: { status: "SUBMITTED" as const },
-    select: { totalScore: true },
+  payments: {
+    where: { status: "PAID" as const, source: "COMPETITOR" as const },
+    select: { amount: true },
   },
-} satisfies Prisma.ApplicationSelect;
+} satisfies Prisma.ApplicantProfileSelect;
 
-type ApplicationRecord = Prisma.ApplicationGetPayload<{ select: typeof applicationSelect }>;
-
-/** Only paid applications ever reach the sheet — no drafts, pending, failed… */
-function isApplicationPaid(app: Pick<ApplicationRecord, "paymentStatus">): boolean {
-  return app.paymentStatus === "PAID";
-}
+type ApplicationRecord = Prisma.ApplicantProfileGetPayload<{ select: typeof applicantSelect }>;
 
 function isApplicationMember(app: ApplicationRecord): boolean {
   return Boolean(app.membershipLevel) || Boolean(app.membershipNumber);
 }
 
-/** Every category an application belongs to: its primary plus each nomination's. */
 function applicationCategories(app: ApplicationRecord): string[] {
-  return orderCategories([
-    app.category.name,
-    ...app.nominationApplications.map((nom) => nom.category.name),
-  ]);
+  return orderCategories(app.nominations.map((nomination) => nomination.category.name));
 }
 
 function applicationScoreSummary(app: ApplicationRecord): string {
-  const totals = app.judgeScores
+  const totals = app.nominations
+    .flatMap((nomination) => nomination.judgeScores)
     .map((score) => score.totalScore)
     .filter((value): value is number => value != null);
   if (totals.length === 0) return "";
@@ -93,50 +86,55 @@ function applicationScoreSummary(app: ApplicationRecord): string {
 }
 
 function applicationAmountPaidCents(app: ApplicationRecord): number {
-  const paid = app.payments
-    .filter((payment) => payment.status === "PAID")
-    .reduce((sum, payment) => sum + payment.amount, 0);
-  if (paid > 0) return paid;
-  return app.paymentStatus === "PAID" ? app.amount : 0;
+  const paid = app.payments.reduce((sum, payment) => sum + payment.amount, 0);
+  return paid > 0
+    ? paid
+    : app.nominations.reduce((sum, nomination) => sum + nomination.amount, 0);
 }
 
 function mapApplicationCategorized(app: ApplicationRecord): CategorizedRow {
-  const nominations = app.nominationApplications.map((nom) => nom.award.name);
-  const nominationLabel =
-    nominations.length > 0 ? joinList(nominations) : app.award.name;
+  const nominationLabel = joinList(app.nominations.map((nomination) => nomination.award.name));
   const member = isApplicationMember(app);
   const categories = applicationCategories(app);
+  const submittedAt = app.nominations
+    .map((nomination) => nomination.submittedAt)
+    .filter((value): value is Date => value !== null)
+    .sort((left, right) => left.getTime() - right.getTime())[0] ?? null;
+  const updatedAt = app.nominations.reduce(
+    (latest, nomination) => nomination.updatedAt > latest ? nomination.updatedAt : latest,
+    app.updatedAt
+  );
 
   return {
     categories,
     values: [
       app.id,
       app.fullName,
-      app.email,
-      app.phone,
+      app.account.email,
+      app.phone ?? "",
       app.socialUrl ?? "",
       categories.join(CATEGORY_SEPARATOR),
       nominationLabel,
       yesNo(member),
       app.membershipNumber ?? "",
       formatUsd(applicationAmountPaidCents(app)),
-      formatDateTime(app.submittedAt),
-      formatDateTime(app.updatedAt),
+      formatDateTime(submittedAt),
+      formatDateTime(updatedAt),
       applicationScoreSummary(app),
     ],
   };
 }
 
 export async function fetchApplicationRow(id: string): Promise<CategorizedRow | null> {
-  const app = await prisma.application.findUnique({ where: { id }, select: applicationSelect });
-  if (!app || !isApplicationPaid(app)) return null;
+  const app = await prisma.applicantProfile.findUnique({ where: { id }, select: applicantSelect });
+  if (!app || app.nominations.length === 0) return null;
   return mapApplicationCategorized(app);
 }
 
 export async function fetchAllApplicationRows(): Promise<CategorizedRow[]> {
-  const apps = await prisma.application.findMany({
-    where: { paymentStatus: "PAID" },
-    select: applicationSelect,
+  const apps = await prisma.applicantProfile.findMany({
+    where: { deletedAt: null, nominations: { some: { paymentStatus: "PAID", deletedAt: null } } },
+    select: applicantSelect,
     orderBy: { createdAt: "asc" },
   });
   return apps.map(mapApplicationCategorized);
@@ -235,7 +233,6 @@ export async function fetchAllJuryRows(): Promise<CategorizedRow[]> {
 
 const scoreSelect = {
   id: true,
-  applicationId: true,
   nominationApplicationId: true,
   judgeId: true,
   technical: true,
@@ -249,8 +246,12 @@ const scoreSelect = {
   submittedAt: true,
   updatedAt: true,
   judge: { select: { fullName: true } },
-  application: { select: { fullName: true } },
-  nominationApplication: { select: { category: { select: { name: true } } } },
+  nominationApplication: {
+    select: {
+      applicantProfile: { select: { fullName: true } },
+      category: { select: { name: true } },
+    },
+  },
 } satisfies Prisma.JudgeScoreSelect;
 
 type ScoreRecord = Prisma.JudgeScoreGetPayload<{ select: typeof scoreSelect }>;
@@ -267,11 +268,10 @@ function averageScore(total: number | null): number | string {
 export function mapScoreRow(score: ScoreRecord): SheetValues[number] {
   return [
     score.id,
-    score.applicationId,
     score.nominationApplicationId ?? "",
     score.judgeId,
     score.judge.fullName,
-    score.application?.fullName ?? "",
+    score.nominationApplication?.applicantProfile?.fullName ?? "",
     score.nominationApplication?.category.name ?? "",
     criteria(score.technical),
     criteria(score.aesthetic),

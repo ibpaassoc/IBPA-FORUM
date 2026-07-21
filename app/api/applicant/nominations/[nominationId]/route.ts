@@ -5,6 +5,7 @@ import { validateNominationBlockB } from "@/features/applications/schemas/catego
 import type { ApplicationValues } from "@/features/applications/types/application.types";
 import { requireEditableNomination } from "@/features/account/server/nomination-guards";
 import { prisma } from "@/shared/lib/prisma";
+import { syncApplicationOnChange } from "@/features/google-sheets";
 
 type RequestBody = {
   action?: "draft" | "submit";
@@ -176,6 +177,10 @@ export async function POST(
       });
     }
   });
+
+  if (nomination.applicantProfileId) {
+    syncApplicationOnChange(nomination.applicantProfileId);
+  }
 
   return NextResponse.json({
     ok: true,

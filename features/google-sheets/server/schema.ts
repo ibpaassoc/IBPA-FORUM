@@ -155,7 +155,6 @@ export const SCORES_SHEET: SheetDefinition = {
   idColumnIndex: 0,
   columns: [
     { header: "ID оценки", width: 130, wrap: "CLIP" },
-    { header: "ID заявки", width: 130, wrap: "CLIP" },
     { header: "ID номинации", width: 130, wrap: "CLIP" },
     { header: "ID члена жюри", width: 130, wrap: "CLIP" },
     { header: "Член жюри", width: 170, wrap: "WRAP" },
