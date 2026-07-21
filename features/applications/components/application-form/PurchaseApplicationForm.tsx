@@ -30,6 +30,8 @@ import StepBar from "@/features/applications/components/application-form/StepBar
 import { computeApplicantNominationPrice } from "@/features/applications/lib/pricing";
 import { countryOptions } from "@/features/applications/config/countries";
 import type { CategoryOption } from "@/features/applications/types/application.types";
+import RegulationButton from "@/features/regulations/components/RegulationButton";
+import type { PublicRegulations } from "@/features/regulations/types";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { translations } from "@/lib/i18n/translations";
 import { legalContent } from "@/shared/components/layout/legal-content";
@@ -189,6 +191,17 @@ const copy = {
     selectedWord: "selected",
     details: "View details",
     close: "Close",
+    generalRegulations: "General regulations",
+    regulationCopy: {
+      regulations: "Regulations",
+      view: "View",
+      download: "Download",
+      noAvailable: "No regulations available yet.",
+      loading: "Loading PDF…",
+      error: "The PDF could not be loaded. Please try again.",
+      close: "Close",
+      russianFallback: "The Russian version is shown because this language is not available yet.",
+    },
     agreementsCopy: {
       rules: {
         label: "Competition rules",
@@ -283,6 +296,17 @@ const copy = {
     selectedWord: "выбрано",
     details: "Подробнее",
     close: "Закрыть",
+    generalRegulations: "Общий регламент",
+    regulationCopy: {
+      regulations: "Регламент",
+      view: "Просмотреть",
+      download: "Скачать",
+      noAvailable: "Регламент пока недоступен.",
+      loading: "Загрузка PDF…",
+      error: "Не удалось загрузить PDF. Попробуйте ещё раз.",
+      close: "Закрыть",
+      russianFallback: "Показана русская версия, потому что документ на выбранном языке пока недоступен.",
+    },
     agreementsCopy: {
       rules: {
         label: "Правила конкурса",
@@ -377,6 +401,17 @@ const copy = {
     selectedWord: "обрано",
     details: "Докладніше",
     close: "Закрити",
+    generalRegulations: "Загальний регламент",
+    regulationCopy: {
+      regulations: "Реглмент",
+      view: "Переглянути",
+      download: "Завантажити",
+      noAvailable: "Регламент поки недоступний.",
+      loading: "Завантаження PDF…",
+      error: "Не вдалося завантажити PDF. Спробуйте ще раз.",
+      close: "Закрити",
+      russianFallback: "Показано російську версію, оскільки документ обраною мовою поки недоступний.",
+    },
     agreementsCopy: {
       rules: {
         label: "Правила конкурсу",
@@ -468,7 +503,13 @@ function findRequestedNomination(categories: CategoryOption[], nominationId: str
  * the same shared helper as the server, and the final amount is always
  * recalculated server-side at checkout creation.
  */
-export default function PurchaseApplicationForm({ categories }: { categories: CategoryOption[] }) {
+export default function PurchaseApplicationForm({
+  categories,
+  regulations,
+}: {
+  categories: CategoryOption[];
+  regulations: PublicRegulations;
+}) {
   const { language, t: sharedT } = useLanguage();
   const searchParams = useSearchParams();
   const t = copy[language] ?? copy.en;
@@ -871,14 +912,13 @@ export default function PurchaseApplicationForm({ categories }: { categories: Ca
     "inline-flex min-h-9 items-center gap-1.5 rounded-full border border-[rgba(114,160,193,0.24)] bg-white/78 px-3.5 py-1.5 text-[0.66rem] font-semibold uppercase tracking-[0.1em] text-[var(--color-ink-soft)] transition hover:-translate-y-0.5 hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-wash)] hover:text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.25)]";
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto flex max-w-6xl flex-col gap-6">
-      <section className="premium-glass relative overflow-hidden px-5 py-8 text-center sm:px-10 sm:py-11">
-        <div className="pointer-events-none absolute -left-16 -top-20 size-56 rounded-full bg-[var(--color-blue-light)]/30 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-24 -right-16 size-64 rounded-full bg-[var(--color-blue-wash)]/80 blur-3xl" />
-        <div className="relative">
+    <form onSubmit={handleSubmit} className="mx-auto flex max-w-6xl flex-col gap-5">
+      <section className="relative px-2 pb-3 pt-1 text-center sm:pb-5">
+        <div className="pointer-events-none absolute left-1/2 top-0 size-72 -translate-x-1/2 rounded-full bg-[var(--color-blue-light)]/24 blur-3xl" />
+        <div className="relative mx-auto max-w-4xl">
           <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-blue)]">{t.eyebrow}</p>
-          <h2 className="mx-auto mt-4 max-w-3xl font-[var(--font-title-family)] text-[clamp(2.25rem,5vw,4rem)] font-medium leading-[0.96] tracking-[-0.05em] text-[var(--color-ink)]">{t.title}</h2>
-          <p className="mx-auto mt-6 max-w-3xl text-[0.95rem] leading-7 text-[var(--color-ink-soft)] sm:text-base">
+          <h2 className="mx-auto mt-3 max-w-3xl font-[var(--font-title-family)] text-[clamp(2rem,4.5vw,3.4rem)] font-medium leading-[0.98] tracking-[-0.045em] text-[var(--color-ink)]">{t.title}</h2>
+          <p className="mx-auto mt-4 max-w-3xl text-[0.88rem] leading-6 text-[var(--color-ink-soft)] sm:text-[0.95rem]">
             <strong className="font-semibold text-[var(--color-ink)]">{t.introLead}</strong>{t.introRest}
             <br className="hidden sm:block" />{" "}
             <strong className="font-semibold text-[var(--color-ink)]">{t.introAfter}</strong>
@@ -901,6 +941,15 @@ export default function PurchaseApplicationForm({ categories }: { categories: Ca
             </p>
           ) : null}
 
+          <RegulationButton
+            regulationKey="general"
+            availability={regulations.general}
+            language={language}
+            title={t.generalRegulations}
+            variant="general"
+            copy={{ ...t.regulationCopy, regulations: t.generalRegulations }}
+          />
+
           <NominationCategoryAccordion
             categories={presentedCategories}
             openCategoryId={openCategoryId}
@@ -908,6 +957,9 @@ export default function PurchaseApplicationForm({ categories }: { categories: Ca
             selectedAwardIds={selectedAwardIds}
             onAwardToggle={toggleAward}
             focusAwardId={focusAwardId}
+            regulationsByCategory={regulations.categories}
+            regulationLanguage={language}
+            regulationCopy={t.regulationCopy}
             copy={{
               nominationSingular: t.nominationWord,
               nominationPlural: t.nominationsWord,
