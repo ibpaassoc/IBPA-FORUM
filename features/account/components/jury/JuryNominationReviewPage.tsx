@@ -1,8 +1,16 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { ArrowLeft, ArrowRight, ExternalLink, FileText, FolderOpen, Globe2, Layers3, UserRound } from "lucide-react";
-import type { JuryNominationReviewRecord } from "@/features/jury/server/reviews";
+import type {
+  JuryNominationListItem,
+  JuryNominationReviewRecord,
+} from "@/features/jury/server/reviews";
+import JuryMobileReviewSections from "@/features/account/components/jury/JuryMobileReviewSections";
 import JuryReviewScorecard, { type JuryReviewValue } from "@/features/account/components/jury/JuryReviewScorecard";
+import {
+  type MobileNominationItem,
+  type MobileSectionItem,
+} from "@/features/account/components/mobile/MobileLayeredNominationNavigation";
 import type { NominationScoringDefinition } from "@/features/jury/scoring/category-scoring";
 import FilePreviewGallery from "@/shared/components/files/FilePreviewGallery";
 
@@ -29,16 +37,24 @@ function ReviewStatusDot({ status }: { status: JuryNominationReviewRecord["peerN
   return <span aria-label={complete ? "Completed" : status === "IN_PROGRESS" ? "In progress" : "Not started"} title={complete ? "Completed" : status === "IN_PROGRESS" ? "In progress" : "Not started"} className={`size-2.5 shrink-0 rounded-full ${complete ? "bg-emerald-500" : status === "IN_PROGRESS" ? "bg-amber-400" : "bg-[rgba(37,42,45,0.24)]"}`} />;
 }
 
+function reviewStatusLabel(status: JuryNominationListItem["reviewStatus"]) {
+  if (status === "COMPLETED" || status === "LOCKED") return "Completed";
+  if (status === "IN_PROGRESS") return "In progress";
+  return "Not started";
+}
+
 export default function JuryNominationReviewPage({
   nomination,
   categoryFields,
   scoringDefinition,
   review,
+  nominations,
 }: {
   nomination: JuryNominationReviewRecord;
   categoryFields: Array<{ key: string; label: string; type: string; description?: string }>;
   scoringDefinition: NominationScoringDefinition;
   review: JuryReviewValue | null;
+  nominations: JuryNominationListItem[];
 }) {
   const answerMap = new Map(nomination.answers.map((answer) => [answer.fieldKey, answer]));
   const filesByField = new Map<string, typeof nomination.files>();
@@ -49,10 +65,67 @@ export default function JuryNominationReviewPage({
   }
   const answerFields = categoryFields.filter((field) => field.type !== "file");
   const fileFields = categoryFields.filter((field) => field.type === "file");
+  const reviewStatus = review?.status ?? "NOT_STARTED";
+  const scoredCount = scoringDefinition.criteria.filter(
+    (criterion) => typeof review?.scores[criterion.key] === "number",
+  ).length;
+  const reviewProgress = scoringDefinition.criteria.length === 0
+    ? 100
+    : Math.round((scoredCount / scoringDefinition.criteria.length) * 100);
+  const mobileNominations: MobileNominationItem[] = nominations.map((item) => {
+    const current = item.id === nomination.id;
+    const status = current ? reviewStatus : item.reviewStatus;
+    return {
+      id: item.id,
+      href: `/account/jury/nominations/${item.id}`,
+      title: item.award.name,
+      eyebrow: `${item.category.name} · ${item.applicantName}`,
+      statusLabel: reviewStatusLabel(status),
+      statusTone:
+        status === "COMPLETED" || status === "LOCKED"
+          ? "green"
+          : status === "IN_PROGRESS"
+            ? "amber"
+            : "neutral",
+      progress: current ? reviewProgress : status === "COMPLETED" || status === "LOCKED" ? 100 : null,
+      progressLabel: "Reviewed",
+      missingCount: current ? Math.max(scoringDefinition.criteria.length - scoredCount, 0) : null,
+      missingLabel: "unscored",
+    };
+  });
+  const mobileSections: MobileSectionItem[] = [
+    {
+      id: "submission",
+      label: "Submission",
+      targetId: "jury-submission",
+      state: nomination.answers.length > 0 ? "complete" : "missing",
+    },
+    {
+      id: "files",
+      label: "Files",
+      targetId: "jury-files",
+      state:
+        fileFields.length === 0
+          ? "none"
+          : fileFields.every((field) => (filesByField.get(field.key) ?? []).length > 0)
+            ? "complete"
+            : "missing",
+    },
+    {
+      id: "scorecard",
+      label: "Scorecard",
+      targetId: "jury-review-scorecard",
+      state: reviewProgress === 100 ? "complete" : "missing",
+    },
+  ];
 
   return (
-    <div className="flex flex-col gap-5">
-      <header className="rounded-[30px] border border-[rgba(114,160,193,0.2)] bg-white/78 p-5 shadow-[0_22px_68px_rgba(37,42,45,0.075)] backdrop-blur-2xl sm:p-7">
+    <JuryMobileReviewSections
+      nominations={mobileNominations}
+      nominationId={nomination.id}
+      sections={mobileSections}
+    >
+      <header className="hidden rounded-[30px] border border-[rgba(114,160,193,0.2)] bg-white/78 p-5 shadow-[0_22px_68px_rgba(37,42,45,0.075)] backdrop-blur-2xl sm:p-7 lg:block">
         <Link href="/account/jury/nominations" className="inline-flex min-h-10 items-center gap-2 rounded-full px-2 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-[var(--color-blue)] transition hover:bg-[var(--color-blue-wash)]"><ArrowLeft aria-hidden size={14} />All nominations</Link>
         <div className="mt-3 flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
           <div className="min-w-0">
@@ -72,9 +145,9 @@ export default function JuryNominationReviewPage({
         </div>
       </header>
 
-      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_420px]">
-        <div className="flex min-w-0 flex-col gap-5">
-          <section aria-labelledby="submission-heading" className="overflow-hidden rounded-[30px] border border-[rgba(37,42,45,0.08)] bg-white/72 shadow-[0_20px_62px_rgba(37,42,45,0.06)] backdrop-blur-xl">
+      <div id="jury-review-sections" className="grid scroll-mt-3 items-start gap-5 xl:grid-cols-[minmax(0,1fr)_420px]">
+        <div className="hidden min-w-0 flex-col gap-5 group-data-[jury-section=files]/jury:flex group-data-[jury-section=submission]/jury:flex lg:flex">
+          <section id="jury-submission" role="tabpanel" aria-labelledby="submission-heading" className="hidden overflow-hidden rounded-[30px] border border-[rgba(37,42,45,0.08)] bg-white/72 shadow-[0_20px_62px_rgba(37,42,45,0.06)] backdrop-blur-xl group-data-[jury-section=submission]/jury:block lg:block">
             <div className="border-b border-[rgba(37,42,45,0.08)] p-5 sm:p-6">
               <div className="flex items-center gap-3">
                 <span className="flex size-9 items-center justify-center rounded-full bg-[var(--color-blue-wash)] text-[var(--color-blue)]"><FileText aria-hidden size={16} /></span>
@@ -101,7 +174,7 @@ export default function JuryNominationReviewPage({
             </div>
           </section>
 
-          <section aria-labelledby="files-heading" className="rounded-[30px] border border-[rgba(37,42,45,0.08)] bg-white/72 p-5 shadow-[0_20px_62px_rgba(37,42,45,0.06)] backdrop-blur-xl sm:p-6">
+          <section id="jury-files" role="tabpanel" aria-labelledby="files-heading" className="hidden rounded-[30px] border border-[rgba(37,42,45,0.08)] bg-white/72 p-5 shadow-[0_20px_62px_rgba(37,42,45,0.06)] backdrop-blur-xl group-data-[jury-section=files]/jury:block sm:p-6 lg:block">
             <div className="flex items-center gap-3">
               <span className="flex size-9 items-center justify-center rounded-full bg-[var(--color-blue-wash)] text-[var(--color-blue)]"><FolderOpen aria-hidden size={16} /></span>
               <div>
@@ -137,21 +210,21 @@ export default function JuryNominationReviewPage({
           </section>
 
           {nomination.applicant.website ? (
-            <a href={nomination.applicant.website} target="_blank" rel="noreferrer" className="flex items-center justify-between gap-4 rounded-[26px] border border-[rgba(114,160,193,0.2)] bg-[var(--color-blue-wash)] p-5 text-[var(--color-ink)] transition hover:border-[var(--color-blue)]">
+            <a href={nomination.applicant.website} target="_blank" rel="noreferrer" className="hidden items-center justify-between gap-4 rounded-[26px] border border-[rgba(114,160,193,0.2)] bg-[var(--color-blue-wash)] p-5 text-[var(--color-ink)] transition hover:border-[var(--color-blue)] group-data-[jury-section=submission]/jury:flex lg:flex">
               <span className="flex min-w-0 items-center gap-3"><Globe2 aria-hidden size={18} className="shrink-0 text-[var(--color-blue)]" /><span className="min-w-0"><span className="block text-[0.6rem] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">Professional link</span><span className="mt-1 block truncate text-sm font-medium">{nomination.applicant.website}</span></span></span>
               <ExternalLink aria-hidden size={15} className="shrink-0 text-[var(--color-blue)]" />
             </a>
           ) : null}
         </div>
 
-        <aside className="order-first flex flex-col gap-4 xl:order-none xl:sticky xl:top-5">
+        <aside className="order-first hidden flex-col gap-4 group-data-[jury-section=scorecard]/jury:flex lg:flex xl:order-none xl:sticky xl:top-5">
           <JuryReviewScorecard
             nominationId={nomination.id}
             scoringDefinition={scoringDefinition}
             initialReview={review}
           />
           {nomination.peerNominations.length > 1 ? (
-            <section className="rounded-[28px] border border-[rgba(37,42,45,0.08)] bg-white/76 p-4 shadow-[0_18px_55px_rgba(37,42,45,0.055)] backdrop-blur-xl">
+            <section className="hidden rounded-[28px] border border-[rgba(37,42,45,0.08)] bg-white/76 p-4 shadow-[0_18px_55px_rgba(37,42,45,0.055)] backdrop-blur-xl lg:block">
               <div className="flex items-center gap-2 text-[var(--color-blue)]"><Layers3 aria-hidden size={15} /><h2 className="text-[0.64rem] font-semibold uppercase tracking-[0.15em]">More from this nominee</h2></div>
               <div className="mt-3 grid gap-2">
                 {nomination.peerNominations.map((peer) => {
@@ -167,6 +240,6 @@ export default function JuryNominationReviewPage({
           ) : null}
         </aside>
       </div>
-    </div>
+    </JuryMobileReviewSections>
   );
 }

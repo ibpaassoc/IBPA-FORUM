@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Briefcase, PenLine, UploadCloud } from "lucide-react";
+import { AlertTriangle, Briefcase, Loader2, PenLine, Save, Send, UploadCloud } from "lucide-react";
 import { nominationTone, type NominationTone } from "@/features/account/components/nomination-presentation";
 import { computeNominationProgress } from "@/features/account/lib/nomination-progress";
 import {
@@ -19,8 +19,17 @@ import type {
   ApplyFieldConfig,
 } from "@/features/applications/types/application.types";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { SectionNav, type SectionNavItem } from "@/shared/components/account/AccountUI";
+import {
+  NoticePanel,
+  SectionNav,
+  type SectionNavItem,
+} from "@/shared/components/account/AccountUI";
 import { PUBLIC_MOTION_EASE } from "@/shared/components/public/motion-tokens";
+import {
+  MobileActionDock,
+  MobileLayeredNominationNavigation,
+  type MobileNominationItem,
+} from "@/features/account/components/mobile/MobileLayeredNominationNavigation";
 import NominationFieldControl from "./NominationFieldControl";
 import NominationFormSection from "./NominationFormSection";
 import NominationRequirementsSidebar from "./NominationRequirementsSidebar";
@@ -67,6 +76,7 @@ export default function NominationReviewForm({
   updatedAtIso,
   scoreVisible,
   averageScore,
+  nominations,
 }: {
   nominationId: string;
   fields: ApplyFieldConfig[];
@@ -80,6 +90,15 @@ export default function NominationReviewForm({
   updatedAtIso: string | null;
   scoreVisible: boolean;
   averageScore: number | null;
+  nominations: Array<{
+    id: string;
+    status: string;
+    locked: boolean;
+    categoryName: string;
+    awardName: string;
+    completionPercentage: number;
+    missingRequiredCount: number;
+  }>;
 }) {
   const router = useRouter();
   const shouldReduceMotion = useReducedMotion();
@@ -186,6 +205,16 @@ export default function NominationReviewForm({
 
   function goToSection(id: string) {
     setActiveSection(id);
+  }
+
+  function goToMobileSection(id: string) {
+    setActiveSection(id);
+    requestAnimationFrame(() => {
+      document.getElementById("applicant-nomination-section")?.scrollIntoView({
+        behavior: shouldReduceMotion ? "auto" : "smooth",
+        block: "start",
+      });
+    });
   }
 
   function jumpToField(field: ApplyFieldConfig) {
@@ -333,24 +362,75 @@ export default function NominationReviewForm({
       };
 
   const active = sections.find((section) => section.id === currentSection);
+  const mobileNavigation = editor.mobileNavigation;
+  const mobileNominations: MobileNominationItem[] = nominations.map((item) => {
+    const isCurrent = item.id === nominationId;
+    const itemStatus = isCurrent ? status : item.status;
+    const itemLocked = isCurrent ? locked : item.locked;
+    const itemProgress = isCurrent ? progress.percentage : item.completionPercentage;
+    const itemMissing = isCurrent
+      ? progress.missingRequired.length
+      : item.missingRequiredCount;
+    return {
+      id: item.id,
+      href: `/account/applicant/nominations/${item.id}`,
+      title: item.awardName,
+      eyebrow: item.categoryName,
+      statusLabel: itemLocked
+        ? t.account.badges.locked
+        : t.account.statuses[itemStatus] ?? itemStatus.toLowerCase().replaceAll("_", " "),
+      statusTone: toneToBadge[nominationTone({ status: itemStatus, locked: itemLocked })],
+      progress: itemProgress,
+      progressLabel: editor.completion,
+      missingCount: itemMissing,
+      missingLabel: mobileNavigation.missing,
+    };
+  });
 
   return (
     <div className="flex flex-col gap-5">
-      <NominationReviewHeader
-        categoryName={categoryName}
-        awardName={awardName}
-        statusLabel={statusLabel}
-        statusTone={statusToneValue}
-        paidLabel={paymentPaid ? t.account.badges.paid : t.account.badges.paymentPending}
-        paidTone={paymentPaid ? "green" : "amber"}
-        backHref="/account/applicant/nominations"
-        backLabel={editor.backToNominations}
-        description={headerDescription}
+      <MobileLayeredNominationNavigation
+        nominations={mobileNominations}
+        activeNominationId={nominationId}
+        sections={navItems}
+        activeSectionId={currentSection}
+        onSectionSelect={goToMobileSection}
+        labels={{
+          backLabel: editor.backToNominations,
+          backHref: "/account/applicant/nominations",
+          selectorLabel: mobileNavigation.selectorLabel,
+          drawerTitle: mobileNavigation.drawerTitle,
+          drawerDescription: mobileNavigation.drawerDescription,
+          sectionLabel: editor.sectionNavLabel,
+          closeLabel: mobileNavigation.close,
+          selectedLabel: mobileNavigation.selected,
+        }}
       />
 
+      <div className="hidden lg:block">
+        <NominationReviewHeader
+          categoryName={categoryName}
+          awardName={awardName}
+          statusLabel={statusLabel}
+          statusTone={statusToneValue}
+          paidLabel={paymentPaid ? t.account.badges.paid : t.account.badges.paymentPending}
+          paidTone={paymentPaid ? "green" : "amber"}
+          backHref="/account/applicant/nominations"
+          backLabel={editor.backToNominations}
+          description={headerDescription}
+        />
+      </div>
+
+      <div className="grid gap-2 lg:hidden">
+        {notice ? <NoticePanel tone="success" role="status">{notice}</NoticePanel> : null}
+        {error ? <NoticePanel tone="error" role="alert">{error}</NoticePanel> : null}
+        {locked ? <NoticePanel tone="info">{editor.lockedNotice}</NoticePanel> : null}
+        {!locked && !paymentPaid ? <NoticePanel tone="warning">{editor.paymentPendingNotice}</NoticePanel> : null}
+      </div>
+
       <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
-        <div className="flex min-w-0 flex-col gap-4">
-          <div className="sticky top-2 z-20">
+        <div id="applicant-nomination-section" className="flex min-w-0 scroll-mt-3 flex-col gap-4">
+          <div className="sticky top-2 z-20 hidden lg:block">
             <SectionNav
               items={navItems}
               activeId={currentSection}
@@ -413,7 +493,7 @@ export default function NominationReviewForm({
           </AnimatePresence>
         </div>
 
-        <aside className="order-first min-w-0 lg:order-none lg:sticky lg:top-6">
+        <aside className="hidden min-w-0 lg:order-none lg:sticky lg:top-6 lg:block">
           <NominationRequirementsSidebar
             progress={progress}
             locked={locked}
@@ -430,6 +510,66 @@ export default function NominationReviewForm({
           />
         </aside>
       </div>
+
+      {!locked && paymentPaid ? (
+        <MobileActionDock
+          label={mobileNavigation.actions}
+          title={mobileNavigation.quickActions}
+          badgeCount={progress.missingRequired.length}
+        >
+          {(close) => (
+            <>
+              {progress.missingRequired.length > 0 ? (
+                <div className="rounded-[20px] border border-amber-200/80 bg-amber-50/82 p-2">
+                  <p className="px-2 pb-1 text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-amber-800">
+                    {mobileNavigation.viewMissing} ({progress.missingRequired.length})
+                  </p>
+                  <div className="max-h-36 space-y-0.5 overflow-y-auto">
+                    {progress.missingRequired.slice(0, 8).map((field) => (
+                      <button
+                        key={field.key}
+                        type="button"
+                        onClick={() => {
+                          close();
+                          jumpToField(field);
+                        }}
+                        className="flex min-h-11 w-full items-center gap-2 rounded-[14px] px-2 text-left text-xs leading-snug text-amber-900 transition hover:bg-amber-100/75 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-amber-300/50"
+                      >
+                        <AlertTriangle aria-hidden size={14} className="shrink-0" />
+                        <span>{field.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+              <button
+                type="button"
+                disabled={busyLabel !== null}
+                onClick={() => {
+                  close();
+                  void save("draft");
+                }}
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[rgba(114,160,193,0.24)] bg-white/82 px-5 text-[0.7rem] font-semibold uppercase tracking-[0.1em] text-[var(--color-ink)] transition hover:bg-[var(--color-blue-wash)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.3)] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {busyLabel ? <Loader2 aria-hidden size={15} className="animate-spin" /> : <Save aria-hidden size={15} />}
+                {editor.saveDraft}
+              </button>
+              <button
+                type="button"
+                disabled={busyLabel !== null}
+                onClick={() => {
+                  close();
+                  void save("submit");
+                }}
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--color-blue)] px-5 text-[0.7rem] font-semibold uppercase tracking-[0.1em] text-white shadow-[0_14px_30px_rgba(114,160,193,0.24)] transition hover:bg-[#5f91b6] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.35)] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {busyLabel ? <Loader2 aria-hidden size={15} className="animate-spin" /> : <Send aria-hidden size={15} />}
+                {busyLabel ?? (submitted ? editor.updateSubmission : editor.submit)}
+              </button>
+            </>
+          )}
+        </MobileActionDock>
+      ) : null}
     </div>
   );
 }

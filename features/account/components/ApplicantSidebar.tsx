@@ -20,7 +20,6 @@ import {
   Drawer,
   FloatingActionButton,
   IconButton,
-  MobileBottomNavigation,
 } from "@/shared/components/admin/DashboardUI";
 
 const navItemDefs = [
@@ -73,13 +72,6 @@ export default function ApplicantSidebar({
     href: item.href,
     label: nav[item.key],
     icon: item.icon,
-  }));
-
-  const mobileItems = navItemDefs.slice(0, 4).map((item) => ({
-    href: item.href,
-    label: nav[item.shortKey],
-    icon: item.icon,
-    active: isActive(pathname, item.href),
   }));
 
   return (
@@ -161,15 +153,12 @@ export default function ApplicantSidebar({
         </div>
       </aside>
 
-      <MobileBottomNavigation
-        items={mobileItems}
-        className="max-w-sm sm:left-1/2 sm:right-auto sm:w-full sm:-translate-x-1/2"
-      />
       <FloatingActionButton
         label={nav.openMenu}
         icon={MoreHorizontal}
         onClick={() => setDrawerOpen(true)}
         className="lg:hidden"
+        side="left"
       />
 
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} title={nav.drawerTitle}>
