@@ -1,8 +1,8 @@
-import type { ApplicationAnswer, ApplicationFile } from "@prisma/client";
 import type { AdminScoringApplicationRecord } from "@/features/admin/server/admin";
 import { ArrowLeft, Download, MessageSquareText } from "lucide-react";
 import { adminT } from "@/lib/i18n/admin";
 import AdminReopenScoreButton from "@/features/admin/components/scoring/AdminReopenScoreButton";
+import type { NominationScoringDefinition } from "@/features/jury/scoring/category-scoring";
 import {
   DashboardAccentBlock,
   DashboardBadge,
@@ -13,10 +13,7 @@ import {
   DashboardSecondaryBtn,
 } from "@/shared/components/admin/DashboardUI";
 
-type ParticipantApplicationDetail = AdminScoringApplicationRecord & {
-  answers: ApplicationAnswer[];
-  files: ApplicationFile[];
-};
+type ParticipantApplicationDetail = AdminScoringApplicationRecord;
 
 function scoringBadge(status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETE") {
   switch (status) {
@@ -76,6 +73,7 @@ function scoreRowBadge(status: string) {
 export default function AdminScoringDetailPage({
   application,
   summary,
+  scoringDefinition,
   judgeRows,
 }: {
   application: ParticipantApplicationDetail;
@@ -87,16 +85,13 @@ export default function AdminScoringDetailPage({
     status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETE";
     rank: number | null;
   };
+  scoringDefinition: NominationScoringDefinition;
   judgeRows: Array<{
     judgeId: string;
     judgeName: string;
     judgeEmail: string;
     scoreId: string | null;
-    technical: number | null;
-    aesthetic: number | null;
-    creativity: number | null;
-    impact: number | null;
-    presentation: number | null;
+    scores: Record<string, number | null>;
     totalScore: number | null;
     comment: string | null;
     scoreStatus: "NOT_STARTED" | "DRAFT" | "SUBMITTED" | "REOPENED";
@@ -176,12 +171,14 @@ export default function AdminScoringDetailPage({
                   ) : null}
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
-                  <ScoreStat label={adminT.scoring.criteria.technical} value={row.technical} />
-                  <ScoreStat label={adminT.scoring.criteria.aesthetic} value={row.aesthetic} />
-                  <ScoreStat label={adminT.scoring.criteria.creativity} value={row.creativity} />
-                  <ScoreStat label={adminT.scoring.criteria.impact} value={row.impact} />
-                  <ScoreStat label={adminT.scoring.criteria.presentation} value={row.presentation} />
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                  {scoringDefinition.criteria.map((criterion) => (
+                    <ScoreStat
+                      key={criterion.key}
+                      label={`${criterion.label} /${criterion.maxScore}`}
+                      value={row.scores[criterion.key]}
+                    />
+                  ))}
                   <ScoreStat label={adminT.scoring.criteria.total} value={row.totalScore} highlight />
                 </div>
 

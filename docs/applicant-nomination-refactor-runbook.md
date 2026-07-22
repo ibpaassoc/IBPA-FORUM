@@ -1,209 +1,99 @@
-# Applicant Nomination Refactor Runbook
+# Applicant Nomination Migration Runbook
 
-This runbook covers the staged rollout for the applicant account, multi-nomination
-checkout, webhook fulfillment, nomination editor, jury-safe projections, and ticket
-QR changes.
+This runbook covers the final migration from the legacy competitor application
+tables to account-owned nominations and jury-profile-owned reviews.
 
-## Scope
+## Final data model
 
-The first release is additive:
+- `Account` and `ApplicantProfile` own participant identity and profile data.
+- `Payment.purchaseManifest` owns pending checkout details.
+- `NominationApplication`, `NominationAnswer`, and `NominationFile` own entries.
+- `JuryNominationReview` owns jury scoring through `JuryProfile`.
+- `ApplicantCheckInCredential` preserves participant QR tokens independently of
+  nomination records.
+- `JuryApplication` remains the active jury onboarding and approval aggregate.
 
-- Legacy `Application`, `ApplicationAnswer`, and `ApplicationFile` tables remain in
-  place for verification and rollback.
-- New applicant purchases write through `Account`, `ApplicantProfile`,
-  `Payment`, `NominationApplication`, `NominationAnswer`, and `NominationFile`.
-- Public `/apply` creates only a pending payment and Stripe Checkout session.
-- Stripe webhook fulfillment creates applicant accounts and purchased nominations.
-- Admin `/admin/applications` reads applicant profiles and nominations.
-- Jury pages receive only submitted/locked/reviewable paid nomination DTOs.
+The legacy `Application`, `ApplicationAnswer`, `ApplicationFile`, and
+`JudgeScore` tables are removed by migration
+`20260721120000_remove_legacy_applications_and_scores`.
 
-Do not run a legacy cleanup/drop migration until production validation has been
-reviewed and approved.
+## What the cleanup migration preserves
 
-## Environment Variables
+Before dropping a legacy table, the migration:
 
-Existing variables still apply:
+1. Creates or reuses an applicant account and profile for every legacy email.
+2. Creates a fallback nomination for any application missing one.
+3. Links all nominations and competitor payments to the applicant profile.
+4. Copies lifecycle, payment, Stripe, answer, file, and check-in data.
+5. Stores a valid purchase manifest on legacy competitor payments so outstanding
+   Stripe sessions can still complete through the nomination purchase handler.
+6. Preserves every old participant QR token as an applicant check-in credential.
+7. Copies the latest `JudgeScore` state into `JuryNominationReview`.
+8. Soft-deletes duplicate applicant/award entries while retaining their data.
 
-| Variable | Purpose |
-| --- | --- |
-| `DATABASE_URL` | PostgreSQL connection for Prisma |
-| `STRIPE_SECRET_KEY` | Server-side Stripe Checkout and webhook operations |
-| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signature verification |
-| `APP_URL` or `FRONTEND_URL` or `NEXT_PUBLIC_APP_URL` | Absolute account setup and checkout URLs |
-| `RESEND_API_KEY` | Registration and account email delivery |
-| `ADMIN_PASSWORD` | Admin dashboard authentication |
-| `BLOB_READ_WRITE_TOKEN` | Private Vercel Blob upload/download |
-| `CRON_SECRET` | Optional bearer token for protected deadline cron |
+The migration raises an exception before destructive cleanup if any nomination
+lacks an applicant profile, any jury score lacks a corresponding review, or a
+legacy applicant email collides with a non-applicant account. The last guard is
+required because the current account model has one role per account; resolve the
+email ownership before retrying instead of silently changing a jury/admin role.
 
-No new required environment variable is introduced by this refactor.
+## Pre-deployment checks
 
-## Upload Limits
+1. Back up the target database and record the backup identifier.
+2. Deploy the application release containing the new migration and runtime code
+   together; do not deploy the schema cleanup separately from its consumers.
+3. Run:
 
-The current upload path uses direct private Vercel Blob uploads before nomination
-save. Server-side nomination save stores only file references and metadata.
+   ```bash
+   npm install
+   npx prisma validate
+   npm run typecheck
+   npm run lint
+   npm run test:applicant-flow
+   npm run test:tickets
+   ```
 
-Current practical limits:
+4. Review normalized duplicate account emails, applicant emails owned by a
+   jury/admin account, and applicant/award duplicates on a restored staging copy.
+   Duplicate historical nominations are retained but only the newest paid entry
+   remains active. The migration stops before changing data when it finds an
+   account-role collision or ambiguous normalized accounts.
 
-- Browser upload route validates supported MIME types before issuing Blob upload
-  access.
-- Supported image formats may be compressed client-side before upload.
-- PDFs and other non-image documents are preserved rather than generically
-  recompressed.
-- Large bodies are not sent through `/api/applications`; the purchase endpoint
-  rejects raw `File` payloads.
+## Staging rehearsal
 
-Do not advertise unlimited uploads. If limits are changed, update the upload route,
-client validation copy, and this runbook together.
-
-## Local Verification
-
-```bash
-npm install
-npx prisma generate
-npx prisma validate
-npm run typecheck
-npm run lint
-npm run test:applicant-flow
-npm run test:tickets
-npm run test:jury-closure
-```
-
-For a local database migration rehearsal:
+Use a restored, disposable copy of production data:
 
 ```bash
 npx prisma migrate deploy
-npm run backfill:applicant-nominations:dry-run
 npm run verify:account-migration
 ```
 
-Only run the real backfill against a disposable or backed-up database first:
+Then smoke test:
 
-```bash
-npm run backfill:applicant-nominations
-npm run verify:account-migration
-```
+- Public checkout and an outstanding pre-migration Stripe checkout.
+- Applicant setup, nomination draft/save/submit, and add-nomination checkout.
+- Admin applicant list/detail, manual nominations, and scoring overview/detail.
+- Jury list/detail, score draft, final submission, and admin reopen.
+- Participant legacy QR check-in and ticket/jury check-in.
+- Full Google Sheets rebuild.
 
-## Staging Deployment
+Do not continue if the verifier reports ownerless nominations, orphan reviews,
+orphan files, ownerless payments, duplicate active applicant/award pairs, or
+paid Stripe payments without a session.
 
-1. Back up the staging database.
-2. Deploy the additive migration:
+## Production deployment
 
-   ```bash
-   npx prisma migrate deploy
-   npx prisma generate
-   ```
-
-3. Run the dry-run backfill:
-
-   ```bash
-   npm run backfill:applicant-nominations:dry-run
-   ```
-
-4. Review counts for paid applications, unpaid applications, unique emails,
-   duplicates, orphan records, and missing Stripe identifiers.
-5. Run the real backfill:
-
-   ```bash
-   npm run backfill:applicant-nominations
-   ```
-
-6. Validate:
-
-   ```bash
-   npm run verify:account-migration
-   ```
-
-7. Deploy application code.
-8. Verify staging manually:
-   - `/apply` creates Stripe Checkout without legacy application rows.
-   - Stripe webhook creates account, payment, and purchased nominations.
-   - Registration email is delivered or failure is visible in admin.
-   - Applicant can register, save draft, and submit.
-   - Jury sees only submitted paid nomination DTOs.
-   - Ticket QR fullscreen and PNG download still scan.
-
-## Production Deployment
-
-1. Create a database backup and keep the backup identifier in the release notes.
-2. Confirm Stripe webhook endpoint points to the deployed production app and uses
-   the current `STRIPE_WEBHOOK_SECRET`.
-3. Deploy additive schema migration:
-
-   ```bash
-   npx prisma migrate deploy
-   npx prisma generate
-   ```
-
-4. Run dry-run backfill:
-
-   ```bash
-   npm run backfill:applicant-nominations:dry-run
-   ```
-
-5. Review the dry-run report with product/ops. Do not continue if duplicate
-   applicant-award pairs, orphan files, orphan payments, or missing category/award
-   references are unexplained.
-6. Run the real backfill:
-
-   ```bash
-   npm run backfill:applicant-nominations
-   ```
-
-7. Run post-backfill validation:
-
-   ```bash
-   npm run verify:account-migration
-   ```
-
-8. Deploy the application code.
-9. Smoke test:
-   - Public checkout for multiple nominations.
-   - Stripe webhook retry idempotency.
-   - Applicant registration setup link.
-   - Admin resend registration link.
-   - Admin manual paid nomination.
-   - Admin close-all action on a controlled staging-like record first.
-   - Jury file route authorization.
-   - Ticket QR PNG download.
-
-## Deadline Cron
-
-Configure a protected scheduled request after deployment:
-
-```text
-GET /api/cron/applicant-deadline
-Authorization: Bearer <CRON_SECRET>
-```
-
-The route is idempotent. It processes only after the configured applicant deadline
-has passed and records the closure timestamp.
+1. Confirm the backup is restorable.
+2. Put application writes behind the normal deployment maintenance window.
+3. Run `npx prisma migrate deploy`.
+4. Deploy/restart the application using the generated Prisma client.
+5. Run `npm run verify:account-migration`.
+6. Complete the staging smoke-test list against controlled production records.
+7. Run the Google Sheets full sync so removed legacy score/application columns
+   are rebuilt from profiles, nominations, and reviews.
 
 ## Rollback
 
-The first release keeps legacy tables. If application rollback is required:
-
-1. Re-deploy the previous application bundle.
-2. Keep the additive migration in place unless a database restore is chosen.
-3. Disable the applicant deadline cron temporarily.
-4. Verify Stripe webhook routing. Pending payments created by the new code should
-   be reviewed before retrying webhook events against old code.
-
-If data rollback is required, restore from the pre-release backup. Do not manually
-delete partially migrated applicant accounts or nominations without an export.
-
-## Legacy Cleanup Later
-
-After production has run successfully and validation reports are clean:
-
-1. Export legacy `Application`, `ApplicationAnswer`, and `ApplicationFile` tables.
-2. Confirm no active routes, admin pages, webhooks, or scripts write to legacy
-   applicant application tables.
-3. Prepare a separate cleanup migration that drops legacy applicant tables only.
-4. Review and deploy that cleanup migration as its own release.
-
-## Known Manual Checks
-
-- Confirm email templates/copy with stakeholders in English, Russian, and Ukrainian.
-- Confirm file upload limits and allowed MIME types against current Vercel plan.
-- Confirm result-release policy before exposing applicant-facing final results.
-- Confirm production Stripe test event delivery before announcing the new `/apply`.
+This migration drops legacy tables and enums. Code rollback alone is not enough.
+If rollback is required, restore the pre-deployment database backup and deploy
+the previous application release together.

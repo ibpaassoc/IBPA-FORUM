@@ -30,7 +30,6 @@ export default async function ApplicantTicketsPage() {
       <DashboardPageHeader
         label={t.account.nav.brand}
         title={tk.title}
-        description={tk.description}
       />
 
       {data.tickets.length === 0 ? (

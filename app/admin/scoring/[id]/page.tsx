@@ -21,6 +21,7 @@ export default async function AdminScoringDetailRoute({
     <AdminScoringDetailPage
       application={detail.application}
       summary={detail.summary}
+      scoringDefinition={detail.scoringDefinition}
       judgeRows={detail.judgeRows}
     />
   );

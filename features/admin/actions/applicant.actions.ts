@@ -12,6 +12,8 @@ import { processApplicantDeadlineClosure } from "@/features/applications/server/
 import { requireAdmin } from "@/shared/lib/admin-auth";
 import { prisma } from "@/shared/lib/prisma";
 import { adminT } from "@/lib/i18n/admin";
+import { syncApplicationOnChange } from "@/features/google-sheets";
+import { getCategoryScoringDefinition } from "@/features/jury/scoring/category-scoring";
 
 function adminApplicationsPath(params?: Record<string, string>) {
   const query = new URLSearchParams(params).toString();
@@ -102,6 +104,7 @@ export async function updateApplicantProfileAction(formData: FormData) {
 
   revalidatePath("/admin/applications");
   revalidatePath(`/admin/applications/${profileId}`);
+  syncApplicationOnChange(profileId);
   redirect(adminApplicantPath(profileId, { notice: adminT.actions.applicantUpdated }));
 }
 
@@ -285,6 +288,9 @@ export async function addManualApplicantNominationAction(formData: FormData) {
           awardId: award.id,
           categoryId: award.categoryId,
           status: "PURCHASED",
+          scoringSchema: getCategoryScoringDefinition(
+            award.category.slug
+          ) as Prisma.InputJsonValue,
           paymentStatus: "PAID",
           amount: 0,
           currency: "usd",
@@ -301,6 +307,7 @@ export async function addManualApplicantNominationAction(formData: FormData) {
 
   revalidatePath("/admin/applications");
   revalidatePath(`/admin/applications/${profileId}`);
+  syncApplicationOnChange(profileId);
   redirect(adminApplicantPath(profileId, { notice: adminT.actions.manualNominationAdded }));
 }
 

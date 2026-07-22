@@ -12,9 +12,10 @@ export default async function ApplicantNominationPage({
   const locked = nomination.lockedAt !== null || nomination.status === "LOCKED";
   const scoreVisible = nomination.scoresReleasedAt !== null;
   const categoryFields = categoryFieldConfigs[nomination.category.slug] ?? [];
-  const submittedScores = nomination.judgeScores
+  const submittedScores = nomination.reviews
     .map((score) => score.totalScore)
-    .filter((value): value is number => typeof value === "number");
+    .filter((value) => value !== null)
+    .map(Number);
   const averageScore =
     submittedScores.length > 0
       ? submittedScores.reduce((sum, value) => sum + value, 0) / submittedScores.length

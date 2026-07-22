@@ -50,9 +50,9 @@ export default function ApplicantSettingsContent({
 
   return (
     <div className="flex flex-col gap-5">
-      <DashboardPageHeader label={s.label} title={s.title} description={s.description} />
+      <DashboardPageHeader label={s.label} title={s.title}/>
 
-      <div className="grid items-start gap-5 xl:grid-cols-2">
+      <div className="grid items-start gap-5 mt-5 xl:grid-cols-2">
         <div className="flex flex-col gap-5">
           <GlassCard className="p-5">
             <div className="flex items-start justify-between gap-3">

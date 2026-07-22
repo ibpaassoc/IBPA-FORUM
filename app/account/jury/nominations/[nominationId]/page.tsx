@@ -1,26 +1,24 @@
-import JuryApplicationDetailPage from "@/features/jury/components/dashboard/JuryApplicationDetailPage";
-import { getAuthenticatedJudgeScoringContext } from "@/features/admin/server/jury";
-import { getJuryDashboardApplicationDetail } from "@/features/jury/server/dashboard-queries";
+import JuryNominationReviewPage from "@/features/account/components/jury/JuryNominationReviewPage";
+import { getAuthenticatedJuryContext, getJuryNominationReviewDetail } from "@/features/jury/server/reviews";
 
 export default async function AccountJuryNominationPage({
   params,
 }: {
   params: Promise<{ nominationId: string }>;
 }) {
-  const judge = await getAuthenticatedJudgeScoringContext();
+  const judge = await getAuthenticatedJuryContext();
   const { nominationId } = await params;
-  const data = await getJuryDashboardApplicationDetail({
+  const data = await getJuryNominationReviewDetail({
     judge,
-    nominationApplicationId: nominationId,
+    nominationId,
   });
 
   return (
-    <div className="mx-auto w-full max-w-[1520px] px-3 pb-28 pt-4 sm:px-5 md:px-6 lg:px-7 lg:py-6">
-      <JuryApplicationDetailPage
-        nomination={data.nomination}
-        categoryFields={data.categoryFields}
-        score={data.score}
-      />
-    </div>
+    <JuryNominationReviewPage
+      nomination={data.nomination}
+      categoryFields={data.categoryFields}
+      scoringDefinition={data.scoringDefinition}
+      review={data.review}
+    />
   );
 }

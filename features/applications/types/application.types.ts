@@ -77,12 +77,14 @@ export type MembershipValidationResult = {
  * The applicant flow uploads files directly to Blob before the final submit,
  * so the POST /api/applications payload only carries these lightweight
  * references instead of the raw bytes (avoids Vercel's request-body limit).
- * `fileUrl` holds the private Blob pathname (stored on ApplicationFile.fileUrl).
+ * `fileUrl` holds the private Blob pathname (stored on NominationFile.fileUrl).
  */
 export type ApplicationFileRef = {
   fieldKey: string;
   fileName: string;
   fileUrl: string;
+  /** Authenticated browser URL for an already-saved private file. */
+  previewUrl?: string;
   mimeType: string;
   fileSize: number;
 };

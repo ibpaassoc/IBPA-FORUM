@@ -14,10 +14,11 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import QRCode from "qrcode";
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import { normalizeSslMode } from "@/shared/lib/db-url";
+import { getCategoryScoringDefinition } from "@/features/jury/scoring/category-scoring";
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
@@ -53,28 +54,48 @@ async function main() {
     },
   });
 
-  // ── Participant application ──────────────────────────────────────────────────
+  // ── Participant nomination account ───────────────────────────────────────────
   const category = await prisma.category.findFirst({ include: { awards: true } });
   const award = category?.awards[0];
   if (!category || !award) {
     throw new Error("No category/award found — run `prisma db seed` first.");
   }
-  await prisma.application.deleteMany({ where: { email: PARTICIPANT_EMAIL } });
-  const application = await prisma.application.create({
+  await prisma.account.deleteMany({ where: { email: PARTICIPANT_EMAIL } });
+  const participantAccount = await prisma.account.create({
     data: {
-      fullName: "Sample Participant",
       email: PARTICIPANT_EMAIL,
-      phone: "+1 555 0202",
-      country: "Canada",
-      city: "Toronto",
-      professionalTitle: "Makeup Artist",
-      yearsExperience: 6,
+      role: "APPLICANT",
+      status: "ACTIVE",
+      applicantProfile: {
+        create: {
+          fullName: "Sample Participant",
+          phone: "+1 555 0202",
+          country: "Canada",
+          city: "Toronto",
+          professionalTitle: "Makeup Artist",
+          yearsExperience: 6,
+        },
+      },
+    },
+    include: { applicantProfile: true },
+  });
+  const participantProfile = participantAccount.applicantProfile!;
+  await prisma.nominationApplication.create({
+    data: {
+      applicantProfileId: participantProfile.id,
       categoryId: category.id,
       awardId: award.id,
       status: "SUBMITTED",
+      scoringSchema: getCategoryScoringDefinition(category.slug) as Prisma.InputJsonValue,
       paymentStatus: "PAID",
       paidAt: new Date(),
       submittedAt: new Date(),
+    },
+  });
+  const participantCredential = await prisma.applicantCheckInCredential.create({
+    data: {
+      token: crypto.randomUUID(),
+      applicantProfileId: participantProfile.id,
     },
   });
 
@@ -103,7 +124,7 @@ async function main() {
 
   const samples = [
     { label: "Forum + Gala ticket", payload: buildPayload("TICKET", ticket.secureToken) },
-    { label: "Participant", payload: buildPayload("PARTICIPANT", application.id) },
+    { label: "Participant", payload: buildPayload("PARTICIPANT", participantCredential.token) },
     { label: "Jury", payload: buildPayload("JURY", jury.id) },
   ];
 

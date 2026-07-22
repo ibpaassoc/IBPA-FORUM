@@ -1,5 +1,5 @@
 import "server-only";
-import type { ScoreStatus, TicketType } from "@prisma/client";
+import type { JuryReviewStatus, TicketType } from "@prisma/client";
 
 /**
  * Russian labels for the system-generated enum values that surface in the
@@ -13,10 +13,11 @@ import type { ScoreStatus, TicketType } from "@prisma/client";
  * show paid records), so their status labels were removed.
  */
 
-const SCORE_STATUS_RU: Record<ScoreStatus, string> = {
-  DRAFT: "Черновик",
-  SUBMITTED: "Отправлена",
-  REOPENED: "Возвращена",
+const SCORE_STATUS_RU: Record<JuryReviewStatus, string> = {
+  NOT_STARTED: "Не начата",
+  IN_PROGRESS: "Черновик",
+  COMPLETED: "Отправлена",
+  LOCKED: "Заблокирована",
 };
 
 // Ticket-type labels are duplicated (in Russian) here rather than reusing the
@@ -27,7 +28,7 @@ const TICKET_TYPE_RU: Record<TicketType, string> = {
   TWO_DAYS: "Форум — 2 дня",
 };
 
-export function scoreStatusLabel(status: ScoreStatus): string {
+export function scoreStatusLabel(status: JuryReviewStatus): string {
   return SCORE_STATUS_RU[status] ?? String(status);
 }
 

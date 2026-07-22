@@ -102,12 +102,14 @@ function increment(map: Map<string, number>, key: string): void {
 
 export async function computeStatsLayout(): Promise<StatsLayout> {
   const [paidApplications, paidJury, tickets, paidRevenue] = await Promise.all([
-    prisma.application.findMany({
-      where: { paymentStatus: "PAID" },
+    prisma.applicantProfile.findMany({
+      where: {
+        deletedAt: null,
+        nominations: { some: { paymentStatus: "PAID", deletedAt: null } },
+      },
       select: {
-        category: { select: { name: true } },
-        award: { select: { name: true } },
-        nominationApplications: {
+        nominations: {
+          where: { paymentStatus: "PAID", deletedAt: null },
           select: {
             category: { select: { name: true } },
             award: { select: { name: true } },
@@ -146,16 +148,10 @@ export async function computeStatsLayout(): Promise<StatsLayout> {
   const appCategoryCounts = new Map<string, number>();
   const nominationCounts = new Map<string, number>();
   for (const app of paidApplications) {
-    const categories = orderCategories([
-      app.category.name,
-      ...app.nominationApplications.map((nom) => nom.category.name),
-    ]);
+    const categories = orderCategories(app.nominations.map((nom) => nom.category.name));
     for (const category of categories) increment(appCategoryCounts, category);
 
-    const nominations =
-      app.nominationApplications.length > 0
-        ? app.nominationApplications.map((nom) => nom.award.name)
-        : [app.award.name];
+    const nominations = app.nominations.map((nom) => nom.award.name);
     for (const nomination of nominations) increment(nominationCounts, nomination);
   }
 

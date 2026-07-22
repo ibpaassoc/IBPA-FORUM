@@ -8,7 +8,7 @@
  *
  *   npm run test:applicant-flow
  */
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   allocateApplicantNominationAmounts,
@@ -137,11 +137,11 @@ assert(
 
 const webhookWorkflow = read("features/applications/server/webhook.workflow.ts");
 assert(
-  has(webhookWorkflow, /metadata\??\.flowType === APPLICANT_NOMINATION_PURCHASE_FLOW/),
-  "webhook routes applicant purchases by flowType"
+  has(webhookWorkflow, "return handleApplicantNominationCheckoutCompleted(event)"),
+  "competitor webhook completion uses the nomination purchase handler"
 );
 assert(has(webhookWorkflow, "amountTotal !== payment.amount"), "webhook validates Stripe amount");
-assert(has(webhookWorkflow, "tx.nominationApplication.upsert"), "webhook fulfills by upserting nominations");
+assert(has(webhookWorkflow, "existingNomination"), "webhook fulfills nominations idempotently");
 assert(has(webhookWorkflow, 'status: "PURCHASED"'), "new paid nominations start in PURCHASED state");
 assert(has(webhookWorkflow, "purchasePaymentId"), "nominations are linked to the purchase payment");
 assert(has(webhookWorkflow, "fulfilledAt: paidAt"), "payment fulfillment is marked idempotently");
@@ -212,6 +212,27 @@ assert(has(saveNominationRoute, "requireEditableNomination"), "nomination editor
 assert(has(saveNominationRoute, "validateNominationBlockB"), "nomination submit validates category requirements");
 assert(has(saveNominationRoute, "deletedAt"), "file replacement uses soft-delete metadata");
 
+const applicantFileRoute = read("app/api/account/applicant/nomination-files/[fileId]/route.ts");
+assert(has(applicantFileRoute, "getAppSession"), "saved applicant files require account auth");
+assert(
+  has(applicantFileRoute, "applicantProfileId: session.user.applicantProfileId"),
+  "saved applicant files enforce nomination ownership"
+);
+assert(has(applicantFileRoute, "access: \"private\""), "saved applicant files are streamed from private Blob storage");
+
+const editorValues = read("features/account/components/nomination-review/editor-values.ts");
+assert(
+  has(editorValues, "/api/account/applicant/nomination-files/${file.id}"),
+  "saved draft values expose an authenticated preview URL"
+);
+const applicantUploadField = read(
+  "features/applications/components/application-form/fields/UploadField.tsx"
+);
+assert(
+  has(applicantUploadField, "item.previewUrl ?? item.fileUrl"),
+  "applicant upload cards prefer authenticated saved-file previews"
+);
+
 const closure = read("features/applications/server/closure.ts");
 assert(has(closure, "validateNominationBlockB"), "deadline closure validates draft completeness");
 assert(has(closure, 'status: "LOCKED"'), "deadline closure locks incomplete nominations");
@@ -220,7 +241,7 @@ assert(!has(closure, "instanceof File"), "deadline closure does not reference br
 
 // -- Jury privacy and file access ---------------------------------------------
 console.log("jury privacy");
-const juryServer = read("features/admin/server/jury.ts");
+const juryServer = read("features/jury/server/reviews.ts");
 assert(has(juryServer, 'paymentStatus: "PAID"'), "jury queries only expose paid nominations");
 assert(has(juryServer, "closedIncompleteAt: null"), "jury queries exclude closed incomplete nominations");
 assert(has(juryServer, "deletedAt: null"), "jury queries exclude deleted nominations");
@@ -229,10 +250,20 @@ assert(!has(juryServer, "city: true"), "jury queries do not select applicant cit
 assert(!has(juryServer, "country: true"), "jury queries do not select applicant country");
 assert(!has(juryServer, "storageKey: true"), "jury queries do not select storage keys");
 
-const juryDetail = read("features/jury/components/dashboard/JuryApplicationDetailPage.tsx");
-assert(has(juryDetail, "/api/jury/nomination-files/"), "jury detail loads files through protected route");
+const juryDetail = read("features/account/components/jury/JuryNominationReviewPage.tsx");
+assert(has(juryDetail, "/api/account/jury/nomination-files/"), "jury detail loads files through account-scoped route");
 assert(!has(juryDetail, "fileUrl"), "jury detail does not render direct blob URLs");
 assert(!has(juryDetail, "storageKey"), "jury detail does not render storage keys");
+
+const juryScorecard = read("features/account/components/jury/JuryReviewScorecard.tsx");
+assert(has(juryScorecard, "/api/account/jury/nominations/"), "jury scorecard uses account-scoped review API");
+assert(
+  has(juryScorecard, "presentScoreCount !== scoringDefinition.criteria.length"),
+  "jury scorecard blocks incomplete regulation reviews"
+);
+
+assert(!existsSync(join(ROOT, "app/jury/dashboard/page.tsx")), "legacy jury dashboard route is removed");
+assert(!existsSync(join(ROOT, "app/api/jury/scoring/route.ts")), "legacy jury scoring API is removed");
 
 const juryCommands = read("features/jury/server/commands.ts");
 const accountServer = read("features/account/server/accounts.ts");
@@ -250,7 +281,7 @@ assert(has(juryAdminDetail, "resendJuryRegistrationLinkAction"), "jury admin pag
 assert(has(juryAdminDetail, "isRegistered"), "jury admin resend detects already registered accounts");
 assert(has(juryAdminDetail, "juryRegistrationAlreadyComplete"), "jury admin page explains completed registration");
 
-const juryFileRoute = read("app/api/jury/nomination-files/[fileId]/route.ts");
+const juryFileRoute = read("app/api/account/jury/nomination-files/[fileId]/route.ts");
 assert(has(juryFileRoute, "requireJuryAuth"), "jury file route requires jury auth");
 assert(has(juryFileRoute, 'paymentStatus !== "PAID"'), "jury file route rejects unpaid nominations");
 assert(has(juryFileRoute, "closedIncompleteAt"), "jury file route rejects incomplete closed nominations");
@@ -281,6 +312,29 @@ assert(has(verifyMigration, "duplicateApplicantAwards"), "migration verifier che
 assert(has(verifyMigration, "nominationFilesWithoutNomination"), "migration verifier checks orphan nomination files");
 assert(has(verifyMigration, "paymentsWithoutOwner"), "migration verifier checks orphan payments");
 assert(has(verifyMigration, "paidStripePaymentsMissingSession"), "migration verifier checks paid Stripe session linkage");
+
+const prismaSchema = read("prisma/schema.prisma");
+assert(!has(prismaSchema, /^model Application \{/m), "legacy Application model is removed");
+assert(!has(prismaSchema, /^model JudgeScore \{/m), "legacy JudgeScore model is removed");
+assert(has(prismaSchema, /^model JuryNominationReview \{/m), "jury scoring uses nomination reviews");
+
+const cleanupMigration = read(
+  "prisma/migrations/20260721120000_remove_legacy_applications_and_scores/migration.sql"
+);
+assert(
+  cleanupMigration.indexOf('INSERT INTO "ApplicantProfile"') < cleanupMigration.indexOf('DROP TABLE "Application"'),
+  "cleanup migration creates applicant profiles before dropping applications"
+);
+assert(
+  cleanupMigration.indexOf('INSERT INTO "JuryNominationReview"') < cleanupMigration.indexOf('DROP TABLE "JudgeScore"'),
+  "cleanup migration creates nomination reviews before dropping judge scores"
+);
+assert(has(cleanupMigration, "Legacy cleanup aborted"), "cleanup migration aborts on unmigrated owners");
+assert(
+  has(cleanupMigration, "applicant emails conflict with non-applicant accounts"),
+  "cleanup migration rejects single-role account conflicts"
+);
+assert(has(cleanupMigration, 'CREATE TABLE "ApplicantCheckInCredential"'), "legacy participant QR tokens are preserved");
 
 console.log(`\n${passed} passed, ${failed} failed`);
 if (failed > 0) process.exitCode = 1;

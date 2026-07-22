@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import FormFieldShell from "@/features/applications/components/application-form/fields/FormFieldShell";
 import { isApplicationFileRef } from "@/features/applications/lib/file-ref";
 import type { ApplicationFileRef } from "@/features/applications/types/application.types";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { ImageIcon, FileText, X, Loader2, RefreshCw, Lock, UploadCloud } from "lucide-react";
+import FilePreviewGallery from "@/shared/components/files/FilePreviewGallery";
+import { ImageIcon, FileText, Loader2, RefreshCw, Lock, UploadCloud } from "lucide-react";
 
 const COMPRESS_QUALITY = 0.78;
 const COMPRESS_MAX_DIM = 2400;
@@ -15,10 +16,6 @@ const COMPRESS_MAX_DIM = 2400;
  * (not yet uploaded) or a reference to a file already stored in Vercel Blob.
  */
 export type UploadFieldItem = File | ApplicationFileRef;
-
-function formatFileSize(size: number) {
-  return `${(size / 1024 / 1024).toFixed(2)} MB`;
-}
 
 function itemName(item: UploadFieldItem) {
   return item instanceof File ? item.name : item.fileName;
@@ -160,6 +157,19 @@ export function ApplicantUploadField({
   const atLimit = multiple && maxFiles !== undefined && items.length >= maxFiles;
   const hasFiles = items.length > 0;
   const zoneDisabled = disabled || atLimit;
+  const previewItems = useMemo(
+    () =>
+      items.map((item, index) => ({
+        id: isApplicationFileRef(item)
+          ? `stored-${item.fileUrl}-${index}`
+          : `local-${item.name}-${item.size}-${item.lastModified}-${index}`,
+        name: itemName(item),
+        size: itemSize(item),
+        mimeType: itemMimeType(item),
+        source: isApplicationFileRef(item) ? item.previewUrl ?? item.fileUrl : item,
+      })),
+    [items],
+  );
 
   async function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const raw = Array.from(event.target.files ?? []);
@@ -256,7 +266,7 @@ export function ApplicantUploadField({
           ) : null}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col items-center gap-1 sm:flex-row sm:gap-2">
           <p className="text-[0.72rem] text-[var(--color-ink)]/40">{copy.hint}</p>
           {multiple && maxFiles !== undefined && hasFiles ? (
             <p className="text-[0.72rem] font-medium text-[var(--color-ink)]/50">
@@ -277,41 +287,11 @@ export function ApplicantUploadField({
       </label>
 
       {hasFiles ? (
-        <ul className="mt-2 space-y-1.5">
-          {items.map((item, index) => (
-            <li
-              key={`${itemName(item)}-${itemSize(item)}-${index}`}
-              className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-blue)]/12 bg-white/80 px-4 py-3 text-sm shadow-[0_10px_30px_rgba(42,66,82,0.04)] backdrop-blur-xl transition hover:border-[var(--color-blue)]/30 hover:bg-[var(--color-blue-wash)]/30"
-            >
-              <div className="flex min-w-0 items-center gap-2">
-                {IMAGE_TYPES.includes(itemMimeType(item)) ? (
-                  <ImageIcon size={14} className="shrink-0 text-[var(--color-hover-accent)]" strokeWidth={1.5} />
-                ) : (
-                  <FileText size={14} className="shrink-0 text-[var(--color-ink-soft)]" strokeWidth={1.5} />
-                )}
-                <span className="truncate text-[var(--color-ink)]">{itemName(item)}</span>
-                {isApplicationFileRef(item) ? (
-                  <span className="shrink-0 rounded-full border border-[rgba(114,160,193,0.28)] bg-[var(--color-blue-wash)] px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-[0.08em] text-[#356f98]">
-                    {copy.uploaded}
-                  </span>
-                ) : null}
-              </div>
-              <div className="flex shrink-0 items-center gap-2">
-                <span className="text-xs text-[var(--color-ink-soft)]">{formatFileSize(itemSize(item))}</span>
-                {!disabled ? (
-                  <button
-                    type="button"
-                    onClick={() => removeItem(index)}
-                    aria-label={`${copy.remove} ${itemName(item)}`}
-                    className="rounded p-0.5 text-[var(--color-ink-soft)] transition hover:text-[var(--color-ink)]"
-                  >
-                    <X size={13} />
-                  </button>
-                ) : null}
-              </div>
-            </li>
-          ))}
-        </ul>
+        <FilePreviewGallery
+          items={previewItems}
+          onRemove={disabled ? undefined : (id) => removeItem(previewItems.findIndex((item) => item.id === id))}
+          className="mt-3"
+        />
       ) : null}
     </FormFieldShell>
   );

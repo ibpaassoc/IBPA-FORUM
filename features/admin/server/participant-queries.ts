@@ -105,7 +105,7 @@ export async function getParticipantApplications(status?: string) {
   const profiles = await prisma.applicantProfile.findMany({
     where: {
       deletedAt: null,
-      account: { role: "APPLICANT", deletedAt: null },
+      account: { deletedAt: null },
     },
     orderBy: { createdAt: "desc" },
     include: {
@@ -204,12 +204,12 @@ export async function getParticipantApplicationDetail(id: string) {
               orderBy: { createdAt: "asc" },
             },
             purchasePayment: true,
-            judgeScores: {
+            reviews: {
               select: {
                 id: true,
                 status: true,
                 totalScore: true,
-                submittedAt: true,
+                completedAt: true,
               },
             },
           },

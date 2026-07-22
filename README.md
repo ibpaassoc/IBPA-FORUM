@@ -84,23 +84,28 @@ prisma/
 | Route | Method | Purpose |
 | --- | --- | --- |
 | `/api/jury` | `POST` | Validate and store jury applications |
-| `/api/applications` | `GET`, `POST` | Participant application test API |
+| `/api/applications` | `GET`, `POST` | Admin applicant listing and public nomination checkout |
 | `/api/categories` | `GET` | Return all categories |
 | `/api/categories/[id]/awards` | `GET` | Return awards for one category |
 | `/api/admin/jury-files/[fileId]` | `GET` | Securely stream a stored jury file for admins |
 
 ## Database Model
 
-### Existing production-ish models
+### Core models
 
 - `Category`
 - `Award`
-- `Application`
-- `ApplicationAnswer`
-- `ApplicationFile`
+- `Account`
+- `ApplicantProfile`
+- `NominationApplication`
+- `NominationAnswer`
+- `NominationFile`
 - `Payment`
 - `JuryApplication`
 - `JuryApplicationFile`
+- `JuryProfile`
+- `JuryNominationReview`
+- `Ticket`
 
 ### Jury-specific data
 

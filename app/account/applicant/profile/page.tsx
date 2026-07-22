@@ -47,10 +47,9 @@ export default async function ApplicantProfilePage() {
       <DashboardPageHeader
         label={t.account.nav.brand}
         title={pr.title}
-        description={pr.description}
       />
 
-      <GlassCard className="p-5 sm:p-6">
+      <GlassCard className="mt-5 p-5 sm:p-6">
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex size-16 shrink-0 items-center justify-center rounded-full bg-[var(--color-blue-wash)] font-[var(--font-title-family)] text-2xl text-[var(--color-blue)] shadow-sm">
             {applicantProfile.fullName.slice(0, 1).toUpperCase()}
