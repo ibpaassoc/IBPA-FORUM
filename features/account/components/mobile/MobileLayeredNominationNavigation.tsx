@@ -345,6 +345,7 @@ export function MobileLayeredNominationNavigation({
               type="button"
               role="tab"
               aria-selected={active}
+              aria-controls={item.targetId}
               tabIndex={active ? 0 : -1}
               onClick={() => selectSection(item)}
               onKeyDown={(event) => handleSectionKeys(event, index)}

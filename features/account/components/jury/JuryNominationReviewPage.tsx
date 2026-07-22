@@ -5,9 +5,9 @@ import type {
   JuryNominationListItem,
   JuryNominationReviewRecord,
 } from "@/features/jury/server/reviews";
+import JuryMobileReviewSections from "@/features/account/components/jury/JuryMobileReviewSections";
 import JuryReviewScorecard, { type JuryReviewValue } from "@/features/account/components/jury/JuryReviewScorecard";
 import {
-  MobileLayeredNominationNavigation,
   type MobileNominationItem,
   type MobileSectionItem,
 } from "@/features/account/components/mobile/MobileLayeredNominationNavigation";
@@ -120,24 +120,11 @@ export default function JuryNominationReviewPage({
   ];
 
   return (
-    <div className="flex flex-col gap-5">
-      <MobileLayeredNominationNavigation
-        nominations={mobileNominations}
-        activeNominationId={nomination.id}
-        sections={mobileSections}
-        progressEventName={`ibpa:jury-review-progress:${nomination.id}`}
-        labels={{
-          backLabel: "All nominations",
-          backHref: "/account/jury/nominations",
-          selectorLabel: "Choose a nomination to review",
-          drawerTitle: "Assigned nominations",
-          drawerDescription: "Switch between nominations in your review queue.",
-          sectionLabel: "Review sections",
-          closeLabel: "Close nominations",
-          selectedLabel: "Selected nomination",
-        }}
-      />
-
+    <JuryMobileReviewSections
+      nominations={mobileNominations}
+      nominationId={nomination.id}
+      sections={mobileSections}
+    >
       <header className="hidden rounded-[30px] border border-[rgba(114,160,193,0.2)] bg-white/78 p-5 shadow-[0_22px_68px_rgba(37,42,45,0.075)] backdrop-blur-2xl sm:p-7 lg:block">
         <Link href="/account/jury/nominations" className="inline-flex min-h-10 items-center gap-2 rounded-full px-2 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-[var(--color-blue)] transition hover:bg-[var(--color-blue-wash)]"><ArrowLeft aria-hidden size={14} />All nominations</Link>
         <div className="mt-3 flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
@@ -158,9 +145,9 @@ export default function JuryNominationReviewPage({
         </div>
       </header>
 
-      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_420px]">
-        <div className="flex min-w-0 flex-col gap-5">
-          <section id="jury-submission" aria-labelledby="submission-heading" className="scroll-mt-3 overflow-hidden rounded-[30px] border border-[rgba(37,42,45,0.08)] bg-white/72 shadow-[0_20px_62px_rgba(37,42,45,0.06)] backdrop-blur-xl">
+      <div id="jury-review-sections" className="grid scroll-mt-3 items-start gap-5 xl:grid-cols-[minmax(0,1fr)_420px]">
+        <div className="hidden min-w-0 flex-col gap-5 group-data-[jury-section=files]/jury:flex group-data-[jury-section=submission]/jury:flex lg:flex">
+          <section id="jury-submission" role="tabpanel" aria-labelledby="submission-heading" className="hidden overflow-hidden rounded-[30px] border border-[rgba(37,42,45,0.08)] bg-white/72 shadow-[0_20px_62px_rgba(37,42,45,0.06)] backdrop-blur-xl group-data-[jury-section=submission]/jury:block lg:block">
             <div className="border-b border-[rgba(37,42,45,0.08)] p-5 sm:p-6">
               <div className="flex items-center gap-3">
                 <span className="flex size-9 items-center justify-center rounded-full bg-[var(--color-blue-wash)] text-[var(--color-blue)]"><FileText aria-hidden size={16} /></span>
@@ -187,7 +174,7 @@ export default function JuryNominationReviewPage({
             </div>
           </section>
 
-          <section id="jury-files" aria-labelledby="files-heading" className="scroll-mt-3 rounded-[30px] border border-[rgba(37,42,45,0.08)] bg-white/72 p-5 shadow-[0_20px_62px_rgba(37,42,45,0.06)] backdrop-blur-xl sm:p-6">
+          <section id="jury-files" role="tabpanel" aria-labelledby="files-heading" className="hidden rounded-[30px] border border-[rgba(37,42,45,0.08)] bg-white/72 p-5 shadow-[0_20px_62px_rgba(37,42,45,0.06)] backdrop-blur-xl group-data-[jury-section=files]/jury:block sm:p-6 lg:block">
             <div className="flex items-center gap-3">
               <span className="flex size-9 items-center justify-center rounded-full bg-[var(--color-blue-wash)] text-[var(--color-blue)]"><FolderOpen aria-hidden size={16} /></span>
               <div>
@@ -223,14 +210,14 @@ export default function JuryNominationReviewPage({
           </section>
 
           {nomination.applicant.website ? (
-            <a href={nomination.applicant.website} target="_blank" rel="noreferrer" className="flex items-center justify-between gap-4 rounded-[26px] border border-[rgba(114,160,193,0.2)] bg-[var(--color-blue-wash)] p-5 text-[var(--color-ink)] transition hover:border-[var(--color-blue)]">
+            <a href={nomination.applicant.website} target="_blank" rel="noreferrer" className="hidden items-center justify-between gap-4 rounded-[26px] border border-[rgba(114,160,193,0.2)] bg-[var(--color-blue-wash)] p-5 text-[var(--color-ink)] transition hover:border-[var(--color-blue)] group-data-[jury-section=submission]/jury:flex lg:flex">
               <span className="flex min-w-0 items-center gap-3"><Globe2 aria-hidden size={18} className="shrink-0 text-[var(--color-blue)]" /><span className="min-w-0"><span className="block text-[0.6rem] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">Professional link</span><span className="mt-1 block truncate text-sm font-medium">{nomination.applicant.website}</span></span></span>
               <ExternalLink aria-hidden size={15} className="shrink-0 text-[var(--color-blue)]" />
             </a>
           ) : null}
         </div>
 
-        <aside className="order-first flex flex-col gap-4 xl:order-none xl:sticky xl:top-5">
+        <aside className="order-first hidden flex-col gap-4 group-data-[jury-section=scorecard]/jury:flex lg:flex xl:order-none xl:sticky xl:top-5">
           <JuryReviewScorecard
             nominationId={nomination.id}
             scoringDefinition={scoringDefinition}
@@ -253,6 +240,6 @@ export default function JuryNominationReviewPage({
           ) : null}
         </aside>
       </div>
-    </div>
+    </JuryMobileReviewSections>
   );
 }
