@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, ExternalLink, FileText, FolderOpen, Globe2, Laye
 import type { JuryNominationReviewRecord } from "@/features/jury/server/reviews";
 import JuryReviewScorecard, { type JuryReviewValue } from "@/features/account/components/jury/JuryReviewScorecard";
 import type { NominationScoringDefinition } from "@/features/jury/scoring/category-scoring";
+import FilePreviewGallery from "@/shared/components/files/FilePreviewGallery";
 
 function formatAnswerValue(answer: {
   valueText: string | null;
@@ -115,13 +116,17 @@ export default function JuryNominationReviewPage({
                   <div key={field.key} className="rounded-[24px] border border-[rgba(37,42,45,0.08)] bg-white/68 p-4">
                     <p className="text-sm font-semibold text-[var(--color-ink)]">{field.label}</p>
                     {field.description ? <p className="mt-1 text-xs leading-5 text-[var(--color-ink-soft)]">{field.description}</p> : null}
-                    <div className="mt-3 grid gap-2">
-                      {files.map((file) => (
-                        <a key={file.id} href={`/api/account/jury/nomination-files/${file.id}`} target="_blank" rel="noreferrer" className="group flex min-h-12 items-center justify-between gap-3 rounded-[18px] border border-[rgba(114,160,193,0.18)] bg-white px-3 text-sm text-[var(--color-ink)] transition hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-wash)]">
-                          <span className="min-w-0"><span className="block truncate font-medium">{file.displayFileName || file.fileName}</span><span className="text-[0.68rem] text-[var(--color-ink-soft)]">{(file.fileSize / 1024 / 1024).toFixed(2)} MB</span></span>
-                          <ExternalLink aria-hidden size={14} className="shrink-0 text-[var(--color-blue)]" />
-                        </a>
-                      ))}
+                    <div className="mt-3">
+                      <FilePreviewGallery
+                        items={files.map((file) => ({
+                          id: file.id,
+                          name: file.displayFileName || file.fileName,
+                          size: file.fileSize,
+                          mimeType: file.mimeType,
+                          source: `/api/account/jury/nomination-files/${file.id}`,
+                        }))}
+                        className="sm:grid-cols-2 xl:grid-cols-2"
+                      />
                       {files.length === 0 ? <EmptyValue>No files uploaded.</EmptyValue> : null}
                     </div>
                   </div>

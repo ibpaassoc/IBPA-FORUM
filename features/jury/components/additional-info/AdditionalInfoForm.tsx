@@ -2,8 +2,9 @@
 
 import { useRef, useState } from "react";
 import { upload } from "@vercel/blob/client";
-import { CheckCircle2, FileUp, Loader2, Upload, X } from "lucide-react";
+import { CheckCircle2, FileUp, Loader2, Upload } from "lucide-react";
 import type { BlobFileInfo } from "@/features/jury/server/uploads";
+import FilePreviewGallery from "@/shared/components/files/FilePreviewGallery";
 
 type FieldProps = {
   label: string;
@@ -279,20 +280,9 @@ export default function AdditionalInfoForm({
           <Field label="Replace Profile Photo" hint="JPG or PNG, max 3 MB.">
             <label className="group flex cursor-pointer flex-col items-center gap-2 rounded-[24px] border-2 border-dashed border-[rgba(37,42,45,0.12)] bg-white/72 px-4 py-5 text-center transition hover:border-[rgba(114,160,193,0.56)] hover:bg-[var(--color-blue-wash)]">
               <Upload size={20} className="text-[var(--color-ink-muted)] transition group-hover:text-[var(--color-blue)]" />
-              {profilePhotoFile ? (
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium text-[var(--color-ink)]">{profilePhotoFile.name}</span>
-                  <button
-                    type="button"
-                    onClick={(e) => { e.preventDefault(); setProfilePhotoFile(null); if (photoInputRef.current) photoInputRef.current.value = ""; }}
-                    className="text-[var(--color-ink-muted)] hover:text-red-600"
-                  >
-                    <X size={13} />
-                  </button>
-                </div>
-              ) : (
-                <span className="text-xs text-[var(--color-ink-soft)]">Click to upload photo</span>
-              )}
+              <span className="text-xs text-[var(--color-ink-soft)]">
+                {profilePhotoFile ? "Click to replace photo" : "Click to upload photo"}
+              </span>
               <input
                 ref={photoInputRef}
                 type="file"
@@ -305,25 +295,30 @@ export default function AdditionalInfoForm({
                 }}
               />
             </label>
+            {profilePhotoFile ? (
+              <FilePreviewGallery
+                items={[{
+                  id: `profile-${profilePhotoFile.name}-${profilePhotoFile.size}-${profilePhotoFile.lastModified}`,
+                  name: profilePhotoFile.name,
+                  size: profilePhotoFile.size,
+                  mimeType: profilePhotoFile.type,
+                  source: profilePhotoFile,
+                }]}
+                onRemove={() => {
+                  setProfilePhotoFile(null);
+                  if (photoInputRef.current) photoInputRef.current.value = "";
+                }}
+                className="mt-2 sm:grid-cols-1 xl:grid-cols-1"
+              />
+            ) : null}
           </Field>
 
           <Field label="Additional Certifications" hint="JPG, PNG, or PDF. Up to 5 files, max 3 MB each.">
             <label className="group flex cursor-pointer flex-col items-center gap-2 rounded-[24px] border-2 border-dashed border-[rgba(37,42,45,0.12)] bg-white/72 px-4 py-5 text-center transition hover:border-[rgba(114,160,193,0.56)] hover:bg-[var(--color-blue-wash)]">
               <FileUp size={20} className="text-[var(--color-ink-muted)] transition group-hover:text-[var(--color-blue)]" />
-              {certFiles.length > 0 ? (
-                <div className="flex flex-col items-center gap-1">
-                  <span className="text-xs font-medium text-[var(--color-ink)]">{certFiles.length} file{certFiles.length > 1 ? "s" : ""} selected</span>
-                  <button
-                    type="button"
-                    onClick={(e) => { e.preventDefault(); setCertFiles([]); if (certInputRef.current) certInputRef.current.value = ""; }}
-                    className="text-xs text-[var(--color-ink-muted)] hover:text-red-600"
-                  >
-                    Clear
-                  </button>
-                </div>
-              ) : (
-                <span className="text-xs text-[var(--color-ink-soft)]">Click to upload certifications</span>
-              )}
+              <span className="text-xs text-[var(--color-ink-soft)]">
+                {certFiles.length > 0 ? "Click to replace certifications" : "Click to upload certifications"}
+              </span>
               <input
                 ref={certInputRef}
                 type="file"
@@ -337,6 +332,21 @@ export default function AdditionalInfoForm({
                 }}
               />
             </label>
+            {certFiles.length > 0 ? (
+              <FilePreviewGallery
+                items={certFiles.map((file, index) => ({
+                  id: `cert-${file.name}-${file.size}-${file.lastModified}-${index}`,
+                  name: file.name,
+                  size: file.size,
+                  mimeType: file.type,
+                  source: file,
+                }))}
+                onRemove={(id) => {
+                  setCertFiles((current) => current.filter((file, index) => `cert-${file.name}-${file.size}-${file.lastModified}-${index}` !== id));
+                }}
+                className="mt-2"
+              />
+            ) : null}
           </Field>
         </div>
       </div>
