@@ -266,7 +266,7 @@ export function ApplicantUploadField({
           ) : null}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col items-center gap-1 sm:flex-row sm:gap-2">
           <p className="text-[0.72rem] text-[var(--color-ink)]/40">{copy.hint}</p>
           {multiple && maxFiles !== undefined && hasFiles ? (
             <p className="text-[0.72rem] font-medium text-[var(--color-ink)]/50">

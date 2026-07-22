@@ -308,7 +308,8 @@ export default function AdditionalInfoForm({
                   setProfilePhotoFile(null);
                   if (photoInputRef.current) photoInputRef.current.value = "";
                 }}
-                className="mt-2 sm:grid-cols-1 xl:grid-cols-1"
+                columns="single"
+                className="mt-2"
               />
             ) : null}
           </Field>

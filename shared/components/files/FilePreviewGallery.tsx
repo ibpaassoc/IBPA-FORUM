@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 import {
   ChevronLeft,
@@ -65,29 +66,24 @@ function isPdf(asset: FilePreviewAsset) {
   return asset.mimeType === "application/pdf" || /\.pdf$/i.test(asset.name);
 }
 
-function useResolvedAssets(items: FilePreviewAsset[]) {
-  const [objectUrls, setObjectUrls] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    const created: Record<string, string> = {};
-    for (const item of items) {
-      if (item.source instanceof File) created[item.id] = URL.createObjectURL(item.source);
-    }
-    setObjectUrls(created);
-    return () => Object.values(created).forEach((url) => URL.revokeObjectURL(url));
-  }, [items]);
-
-  return useMemo(
-    () =>
-      items.map((item) => ({
-        ...item,
-        url: typeof item.source === "string" ? item.source : objectUrls[item.id] ?? "",
-      })),
-    [items, objectUrls],
-  );
+function assetKey(item: FilePreviewAsset) {
+  return item.source instanceof File
+    ? `${item.id}-${item.source.name}-${item.source.size}-${item.source.lastModified}`
+    : `${item.id}-${item.source}`;
 }
 
-type ResolvedAsset = FilePreviewAsset & { url: string };
+function AssetUrl({ asset, children }: { asset: FilePreviewAsset; children: (url: string) => ReactNode }) {
+  const [url] = useState(() =>
+    typeof asset.source === "string" ? asset.source : URL.createObjectURL(asset.source),
+  );
+
+  useEffect(() => {
+    if (typeof asset.source === "string") return;
+    return () => URL.revokeObjectURL(url);
+  }, [asset.source, url]);
+
+  return children(url);
+}
 
 function PreviewDialog({
   items,
@@ -95,13 +91,14 @@ function PreviewDialog({
   locale,
   onClose,
 }: {
-  items: ResolvedAsset[];
+  items: FilePreviewAsset[];
   initialIndex: number;
   locale: PreviewLocale;
   onClose: () => void;
 }) {
   const [index, setIndex] = useState(initialIndex);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
   const pointerStart = useRef<{ x: number; y: number; id: number } | null>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const openerRef = useRef<HTMLElement | null>(null);
@@ -141,6 +138,7 @@ function PreviewDialog({
   function handlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
     if (event.pointerType === "mouse") return;
     pointerStart.current = { x: event.clientX, y: event.clientY, id: event.pointerId };
+    setIsDragging(true);
     event.currentTarget.setPointerCapture(event.pointerId);
   }
 
@@ -156,6 +154,7 @@ function PreviewDialog({
     const dx = event.clientX - start.x;
     const dy = event.clientY - start.y;
     pointerStart.current = null;
+    setIsDragging(false);
     setDragOffset({ x: 0, y: 0 });
 
     if (dy > 88 && Math.abs(dy) > Math.abs(dx) * 1.15) {
@@ -169,7 +168,8 @@ function PreviewDialog({
   }
 
   return createPortal(
-    <div
+    <AssetUrl key={assetKey(item)} asset={item}>
+      {(url) => <div
       className="fixed inset-0 z-[100] flex items-end justify-center bg-[rgba(75,104,125,0.24)] p-2 backdrop-blur-[12px] sm:items-center sm:p-6"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
@@ -183,7 +183,7 @@ function PreviewDialog({
         style={{
           transform: `translate3d(${dragOffset.x * 0.18}px, ${dragOffset.y}px, 0)`,
           opacity: dragOffset.y ? Math.max(0.62, 1 - dragOffset.y / 500) : 1,
-          transition: pointerStart.current ? "none" : "transform 180ms ease, opacity 180ms ease",
+          transition: isDragging ? "none" : "transform 180ms ease, opacity 180ms ease",
         }}
       >
         <div className="mx-auto mt-2 h-1.5 w-14 shrink-0 rounded-full bg-[#abc2d2]/55 sm:hidden" />
@@ -202,7 +202,7 @@ function PreviewDialog({
             </span>
           ) : null}
           <a
-            href={item.url}
+            href={url}
             download={item.name}
             target="_blank"
             rel="noreferrer"
@@ -234,16 +234,16 @@ function PreviewDialog({
             // static sizing contract. The bounded viewer prevents layout shift.
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              key={item.url}
-              src={item.url}
+              key={url}
+              src={url}
               alt={item.name}
               draggable={false}
               className="max-h-[calc(88dvh-9.5rem)] max-w-full select-none rounded-[22px] object-contain shadow-[0_18px_55px_rgba(56,91,116,0.13)] sm:max-h-[calc(86vh-8.5rem)]"
             />
           ) : isPdf(item) ? (
             <iframe
-              key={item.url}
-              src={item.url}
+              key={url}
+              src={url}
               title={`${copy.document}: ${item.name}`}
               className="h-[min(66dvh,760px)] w-full rounded-[20px] border border-[rgba(114,160,193,0.18)] bg-white shadow-[0_18px_55px_rgba(56,91,116,0.1)]"
             />
@@ -254,7 +254,7 @@ function PreviewDialog({
               </span>
               <p className="mt-4 max-w-full truncate text-sm font-medium text-[var(--color-ink)]">{item.name}</p>
               <a
-                href={item.url}
+                href={url}
                 download={item.name}
                 target="_blank"
                 rel="noreferrer"
@@ -300,13 +300,14 @@ function PreviewDialog({
               </button>
             </>
           ) : null}
-          <a href={item.url} download={item.name} target="_blank" rel="noreferrer" className="ml-auto flex min-h-10 items-center justify-center gap-2 rounded-full border border-[rgba(114,160,193,0.22)] bg-white/80 px-4 text-xs font-semibold text-[var(--color-blue)]">
+          <a href={url} download={item.name} target="_blank" rel="noreferrer" className="ml-auto flex min-h-10 items-center justify-center gap-2 rounded-full border border-[rgba(114,160,193,0.22)] bg-white/80 px-4 text-xs font-semibold text-[var(--color-blue)]">
             <Download aria-hidden size={15} />
             {copy.download}
           </a>
         </footer>
       </section>
-    </div>,
+    </div>}
+    </AssetUrl>,
     document.body,
   );
 }
@@ -317,31 +318,33 @@ export default function FilePreviewGallery({
   isRemovable,
   locale,
   className,
+  columns = "responsive",
 }: {
   items: FilePreviewAsset[];
   onRemove?: (id: string) => void;
   isRemovable?: (id: string) => boolean;
   locale?: PreviewLocale;
   className?: string;
+  columns?: "responsive" | "compact" | "single";
 }) {
   const { language } = useLanguage();
-  const resolved = useResolvedAssets(items);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const activeLocale = locale ?? language;
   const copy = previewCopy[activeLocale];
 
-  useEffect(() => {
-    if (openIndex !== null && openIndex >= resolved.length) {
-      setOpenIndex(resolved.length ? resolved.length - 1 : null);
-    }
-  }, [openIndex, resolved.length]);
-
   if (!items.length) return null;
+
+  const columnsClass =
+    columns === "single"
+      ? "grid-cols-1"
+      : columns === "compact"
+        ? "grid-cols-2"
+        : "grid-cols-2 sm:grid-cols-3 xl:grid-cols-4";
 
   return (
     <>
-      <ul className={`grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-4 ${className ?? ""}`}>
-        {resolved.map((item, index) => {
+      <ul className={`grid gap-2.5 ${columnsClass} ${className ?? ""}`}>
+        {items.map((item, index) => {
           const tone = index % 3;
           const toneClass =
             tone === 0
@@ -350,8 +353,8 @@ export default function FilePreviewGallery({
                 ? "bg-[linear-gradient(145deg,rgba(255,255,255,0.94),rgba(231,242,249,0.66))]"
                 : "bg-[linear-gradient(145deg,rgba(236,247,252,0.9),rgba(255,255,255,0.78))]";
           return (
-            <li
-              key={item.id}
+            <AssetUrl key={assetKey(item)} asset={item}>
+              {(url) => <li
               className={`group relative min-w-0 overflow-hidden rounded-[20px] border border-white/80 ${toneClass} shadow-[0_12px_32px_rgba(55,91,117,0.09),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-xl transition hover:-translate-y-0.5 hover:shadow-[0_16px_38px_rgba(55,91,117,0.14)]`}
             >
               <button
@@ -361,10 +364,10 @@ export default function FilePreviewGallery({
                 className="block w-full text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-[rgba(114,160,193,0.25)]"
               >
                 <span className="relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden bg-white/48">
-                  {isImage(item) && item.url ? (
+                  {isImage(item) ? (
                     // Dynamic previews include object URLs and authenticated API paths.
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={item.url} alt="" className="size-full object-cover transition duration-300 group-hover:scale-[1.025]" />
+                    <img src={url} alt="" className="size-full object-cover transition duration-300 group-hover:scale-[1.025]" />
                   ) : (
                     <span className="flex size-14 items-center justify-center rounded-[20px] border border-white/80 bg-white/72 text-[var(--color-blue)] shadow-[0_10px_28px_rgba(55,91,117,0.1)]">
                       {isPdf(item) ? <FileText aria-hidden size={24} strokeWidth={1.5} /> : <ImageIcon aria-hidden size={24} strokeWidth={1.5} />}
@@ -387,14 +390,15 @@ export default function FilePreviewGallery({
                   <X aria-hidden size={13} />
                 </button>
               ) : null}
-            </li>
+            </li>}
+            </AssetUrl>
           );
         })}
       </ul>
 
-      {openIndex !== null && resolved[openIndex]?.url ? (
+      {openIndex !== null && items[openIndex] ? (
         <PreviewDialog
-          items={resolved}
+          items={items}
           initialIndex={openIndex}
           locale={activeLocale}
           onClose={() => setOpenIndex(null)}

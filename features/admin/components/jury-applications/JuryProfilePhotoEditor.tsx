@@ -163,7 +163,7 @@ export default function JuryProfilePhotoEditor({
               items={previewItems}
               onRemove={clearSelection}
               isRemovable={(id) => id === "selected-photo"}
-              className="sm:grid-cols-2 xl:grid-cols-2"
+              columns="compact"
             />
           ) : (
             <div className="flex aspect-square items-center justify-center rounded-[22px] border border-dashed border-[rgba(37,42,45,0.14)] bg-white/62 text-sm text-[var(--color-ink-soft)] sm:col-span-2">

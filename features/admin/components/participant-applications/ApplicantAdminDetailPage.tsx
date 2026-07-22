@@ -192,7 +192,7 @@ function NominationContent({ nomination }: { nomination: Nomination }) {
                           mimeType: file.mimeType,
                           source: `/api/admin/nomination-files/${file.id}`,
                         }))}
-                        className="sm:grid-cols-2 xl:grid-cols-2"
+                        columns="compact"
                       />
                       {files.length === 0 ? (
                         <p className="text-sm text-[var(--color-ink-soft)]">{adminT.applicantAccount.noFiles}</p>

@@ -125,7 +125,7 @@ export default function JuryNominationReviewPage({
                           mimeType: file.mimeType,
                           source: `/api/account/jury/nomination-files/${file.id}`,
                         }))}
-                        className="sm:grid-cols-2 xl:grid-cols-2"
+                        columns="compact"
                       />
                       {files.length === 0 ? <EmptyValue>No files uploaded.</EmptyValue> : null}
                     </div>

@@ -181,7 +181,7 @@ export default function JuryApplicationDetailPage({
                 mimeType: profilePhoto.mimeType,
                 source: `/api/admin/jury-files/${profilePhoto.id}`,
               }]}
-              className="sm:grid-cols-1 xl:grid-cols-1"
+              columns="single"
             />
           ) : (
             <div className="flex aspect-square items-center justify-center text-sm text-[var(--color-ink-muted)]">
