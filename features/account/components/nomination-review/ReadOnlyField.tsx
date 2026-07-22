@@ -1,14 +1,10 @@
 "use client";
 
-import { FileText, ImageIcon } from "lucide-react";
 import { isApplicationFileRef } from "@/features/applications/lib/file-ref";
 import type { ApplyFieldConfig } from "@/features/applications/types/application.types";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import FilePreviewGallery from "@/shared/components/files/FilePreviewGallery";
 import { getFileValues, getStringArray, type EditorValue } from "./editor-values";
-
-function formatFileSize(size: number) {
-  return `${(size / 1024 / 1024).toFixed(2)} MB`;
-}
 
 function optionLabel(field: ApplyFieldConfig, value: string) {
   return field.options?.find((option) => option.value === value)?.label ?? value;
@@ -37,47 +33,19 @@ export default function ReadOnlyField({
       files.length === 0 ? (
         <p className="text-sm italic text-[var(--color-ink-muted)]">{editor.noFilesUploaded}</p>
       ) : (
-        <ul className="grid gap-1.5">
-          {files.map((item, index) => {
+        <FilePreviewGallery
+          items={files.map((item, index) => {
             const ref = isApplicationFileRef(item) ? item : null;
-            const name = ref ? ref.fileName : (item as File).name;
-            const size = ref ? ref.fileSize : (item as File).size;
-            const mime = ref ? ref.mimeType : (item as File).type;
-            const row = (
-              <span className="flex min-w-0 items-center justify-between gap-3">
-                <span className="flex min-w-0 items-center gap-2">
-                  {mime.startsWith("image/") ? (
-                    <ImageIcon aria-hidden size={14} className="shrink-0 text-[var(--color-blue)]" />
-                  ) : (
-                    <FileText aria-hidden size={14} className="shrink-0 text-[var(--color-ink-soft)]" />
-                  )}
-                  <span className="truncate text-sm text-[var(--color-ink)]">{name}</span>
-                </span>
-                <span className="shrink-0 text-xs text-[var(--color-ink-soft)]">
-                  {formatFileSize(size)}
-                </span>
-              </span>
-            );
-            const rowClass =
-              "block rounded-[16px] border border-[rgba(114,160,193,0.16)] bg-white/78 px-3.5 py-2.5 backdrop-blur-xl";
-            return (
-              <li key={`${name}-${index}`}>
-                {ref ? (
-                  <a
-                    href={ref.fileUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={`${rowClass} transition hover:border-[var(--color-blue)]/45 hover:bg-[var(--color-blue-wash)]/60 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.25)]`}
-                  >
-                    {row}
-                  </a>
-                ) : (
-                  <span className={rowClass}>{row}</span>
-                )}
-              </li>
-            );
+            const file = item as File;
+            return {
+              id: ref ? `stored-${ref.fileUrl}-${index}` : `local-${file.name}-${file.size}-${file.lastModified}-${index}`,
+              name: ref ? ref.fileName : file.name,
+              size: ref ? ref.fileSize : file.size,
+              mimeType: ref ? ref.mimeType : file.type,
+              source: ref ? ref.fileUrl : file,
+            };
           })}
-        </ul>
+        />
       );
   } else if (field.type === "checkbox-group") {
     const selected = getStringArray(value);
