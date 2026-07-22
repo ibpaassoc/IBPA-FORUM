@@ -74,6 +74,17 @@ const en = {
       draftDescription:
         "Complete the required fields and uploads below, save your progress at any time, then submit to the jury.",
       sectionNavLabel: "Application sections",
+      mobileNavigation: {
+        selectorLabel: "Choose a nomination",
+        drawerTitle: "Your nominations",
+        drawerDescription: "Choose a nomination to continue.",
+        close: "Close nominations",
+        selected: "Selected nomination",
+        actions: "Actions",
+        quickActions: "Quick actions",
+        viewMissing: "View missing fields",
+        missing: "missing",
+      },
       sections: {
         details: "Work Details",
         detailsDescription: "Key facts about you and your professional work.",
@@ -2220,6 +2231,17 @@ const ru: typeof en = {
       draftDescription:
         "Заполните обязательные поля и загрузки, сохраняйте прогресс в любой момент, затем отправьте жюри.",
       sectionNavLabel: "Разделы заявки",
+      mobileNavigation: {
+        selectorLabel: "Выбрать номинацию",
+        drawerTitle: "Ваши номинации",
+        drawerDescription: "Выберите номинацию, чтобы продолжить.",
+        close: "Закрыть список номинаций",
+        selected: "Выбранная номинация",
+        actions: "Действия",
+        quickActions: "Быстрые действия",
+        viewMissing: "Показать пропущенные поля",
+        missing: "не заполнено",
+      },
       sections: {
         details: "О работе",
         detailsDescription: "Ключевые факты о вас и вашей профессиональной работе.",
@@ -4372,6 +4394,17 @@ const ua: typeof en = {
       draftDescription:
         "Заповніть обов'язкові поля та завантаження, зберігайте прогрес будь-коли, а потім надішліть журі.",
       sectionNavLabel: "Розділи заявки",
+      mobileNavigation: {
+        selectorLabel: "Обрати номінацію",
+        drawerTitle: "Ваші номінації",
+        drawerDescription: "Оберіть номінацію, щоб продовжити.",
+        close: "Закрити список номінацій",
+        selected: "Обрана номінація",
+        actions: "Дії",
+        quickActions: "Швидкі дії",
+        viewMissing: "Показати пропущені поля",
+        missing: "не заповнено",
+      },
       sections: {
         details: "Про роботу",
         detailsDescription: "Ключові факти про вас і вашу професійну роботу.",

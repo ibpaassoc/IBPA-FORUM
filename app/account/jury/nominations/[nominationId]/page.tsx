@@ -1,5 +1,9 @@
 import JuryNominationReviewPage from "@/features/account/components/jury/JuryNominationReviewPage";
-import { getAuthenticatedJuryContext, getJuryNominationReviewDetail } from "@/features/jury/server/reviews";
+import {
+  getAuthenticatedJuryContext,
+  getJuryNominationReviewDetail,
+  getJuryNominationWorkspace,
+} from "@/features/jury/server/reviews";
 
 export default async function AccountJuryNominationPage({
   params,
@@ -8,10 +12,10 @@ export default async function AccountJuryNominationPage({
 }) {
   const judge = await getAuthenticatedJuryContext();
   const { nominationId } = await params;
-  const data = await getJuryNominationReviewDetail({
-    judge,
-    nominationId,
-  });
+  const [data, workspace] = await Promise.all([
+    getJuryNominationReviewDetail({ judge, nominationId }),
+    getJuryNominationWorkspace({ judge }),
+  ]);
 
   return (
     <JuryNominationReviewPage
@@ -19,6 +23,7 @@ export default async function AccountJuryNominationPage({
       categoryFields={data.categoryFields}
       scoringDefinition={data.scoringDefinition}
       review={data.review}
+      nominations={workspace.allNominations}
     />
   );
 }

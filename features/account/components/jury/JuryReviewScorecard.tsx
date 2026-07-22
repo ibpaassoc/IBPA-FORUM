@@ -1,10 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
-import { Minus, Plus, Save, ShieldCheck } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
+import { AlertCircle, Minus, Plus, Save, ShieldCheck } from "lucide-react";
 import { NoticePanel } from "@/shared/components/account/AccountUI";
 import type { NominationScoringDefinition } from "@/features/jury/scoring/category-scoring";
+import { MobileActionDock } from "@/features/account/components/mobile/MobileLayeredNominationNavigation";
 
 type ReviewStatus = "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | "LOCKED";
 type ScoreValue = "" | `${number}`;
@@ -60,6 +61,20 @@ export default function JuryReviewScorecard({
     0
   );
 
+  useEffect(() => {
+    window.dispatchEvent(
+      new CustomEvent(`ibpa:jury-review-progress:${nominationId}`, {
+        detail: {
+          progress:
+            scoringDefinition.criteria.length === 0
+              ? 100
+              : Math.round((presentScoreCount / scoringDefinition.criteria.length) * 100),
+          missingCount: scoringDefinition.criteria.length - presentScoreCount,
+        },
+      }),
+    );
+  }, [nominationId, presentScoreCount, scoringDefinition.criteria.length]);
+
   function setScore(key: string, next: number | "") {
     if (next === "") {
       setValues((current) => ({ ...current, [key]: "" }));
@@ -104,8 +119,18 @@ export default function JuryReviewScorecard({
     startTransition(() => router.refresh());
   }
 
+  function focusFirstUnscored() {
+    const criterion = scoringDefinition.criteria.find(
+      (item) => values[item.key] === "",
+    );
+    if (!criterion) return;
+    const input = document.getElementById(`score-${criterion.key}`);
+    input?.scrollIntoView({ behavior: "smooth", block: "center" });
+    input?.focus({ preventScroll: true });
+  }
+
   return (
-    <section aria-labelledby="scorecard-heading" className="overflow-hidden rounded-[30px] border border-[rgba(114,160,193,0.2)] bg-white/82 shadow-[0_26px_80px_rgba(37,42,45,0.09)] backdrop-blur-2xl">
+    <section id="jury-review-scorecard" aria-labelledby="scorecard-heading" className="scroll-mt-3 overflow-hidden rounded-[30px] border border-[rgba(114,160,193,0.2)] bg-white/82 shadow-[0_26px_80px_rgba(37,42,45,0.09)] backdrop-blur-2xl">
       <div className="border-b border-[rgba(37,42,45,0.08)] p-5 sm:p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -152,12 +177,60 @@ export default function JuryReviewScorecard({
         {notice ? <NoticePanel tone="success" role="status">{notice}</NoticePanel> : null}
 
         {isComplete ? null : (
-          <div className="grid gap-2 pt-1 sm:grid-cols-2">
+          <div className="hidden gap-2 pt-1 lg:grid lg:grid-cols-2">
             <button type="button" disabled={isPending} onClick={() => void sendReview("draft")} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[rgba(114,160,193,0.28)] bg-white/82 px-5 text-[0.7rem] font-semibold uppercase tracking-[0.11em] text-[var(--color-ink)] transition hover:bg-[var(--color-blue-wash)] disabled:cursor-wait disabled:opacity-55"><Save aria-hidden size={15} />Save draft</button>
             <button type="button" disabled={isPending || presentScoreCount !== scoringDefinition.criteria.length} onClick={() => void sendReview("submit")} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--color-blue)] px-5 text-[0.7rem] font-semibold uppercase tracking-[0.11em] text-white shadow-[0_14px_30px_rgba(114,160,193,0.24)] transition hover:bg-[#5f91b6] disabled:cursor-not-allowed disabled:opacity-45"><ShieldCheck aria-hidden size={15} />Complete review</button>
           </div>
         )}
       </div>
+
+      {isComplete ? null : (
+        <MobileActionDock
+          label="Actions"
+          title="Review actions"
+          badgeCount={scoringDefinition.criteria.length - presentScoreCount}
+        >
+          {(close) => (
+            <>
+              {presentScoreCount !== scoringDefinition.criteria.length ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    close();
+                    requestAnimationFrame(focusFirstUnscored);
+                  }}
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-amber-200/80 bg-amber-50/85 px-5 text-[0.7rem] font-semibold uppercase tracking-[0.1em] text-amber-800 transition hover:bg-amber-100 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-amber-300/50"
+                >
+                  <AlertCircle aria-hidden size={15} />
+                  Review unscored criteria
+                </button>
+              ) : null}
+              <button
+                type="button"
+                disabled={isPending}
+                onClick={() => {
+                  close();
+                  void sendReview("draft");
+                }}
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[rgba(114,160,193,0.28)] bg-white/82 px-5 text-[0.7rem] font-semibold uppercase tracking-[0.11em] text-[var(--color-ink)] transition hover:bg-[var(--color-blue-wash)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.3)] disabled:cursor-wait disabled:opacity-55"
+              >
+                <Save aria-hidden size={15} />Save draft
+              </button>
+              <button
+                type="button"
+                disabled={isPending || presentScoreCount !== scoringDefinition.criteria.length}
+                onClick={() => {
+                  close();
+                  void sendReview("submit");
+                }}
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--color-blue)] px-5 text-[0.7rem] font-semibold uppercase tracking-[0.11em] text-white shadow-[0_14px_30px_rgba(114,160,193,0.24)] transition hover:bg-[#5f91b6] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.35)] disabled:cursor-not-allowed disabled:opacity-45"
+              >
+                <ShieldCheck aria-hidden size={15} />Complete review
+              </button>
+            </>
+          )}
+        </MobileActionDock>
+      )}
     </section>
   );
 }

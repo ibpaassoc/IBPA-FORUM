@@ -1,5 +1,8 @@
 import NominationReviewForm from "@/features/account/components/nomination-review/NominationReviewForm";
-import { requireOwnedNomination } from "@/features/account/server/nomination-guards";
+import {
+  getApplicantNominationNavigation,
+  requireOwnedNomination,
+} from "@/features/account/server/nomination-guards";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 
 export default async function ApplicantNominationPage({
@@ -8,7 +11,8 @@ export default async function ApplicantNominationPage({
   params: Promise<{ nominationId: string }>;
 }) {
   const { nominationId } = await params;
-  const { nomination } = await requireOwnedNomination(nominationId);
+  const { nomination, applicantProfile } = await requireOwnedNomination(nominationId);
+  const nominationNavigation = await getApplicantNominationNavigation(applicantProfile.id);
   const locked = nomination.lockedAt !== null || nomination.status === "LOCKED";
   const scoreVisible = nomination.scoresReleasedAt !== null;
   const categoryFields = categoryFieldConfigs[nomination.category.slug] ?? [];
@@ -36,6 +40,7 @@ export default async function ApplicantNominationPage({
         updatedAtIso={nomination.updatedAt ? nomination.updatedAt.toISOString() : null}
         scoreVisible={scoreVisible}
         averageScore={averageScore}
+        nominations={nominationNavigation}
       />
     </div>
   );

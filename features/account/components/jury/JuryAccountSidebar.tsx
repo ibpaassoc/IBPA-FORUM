@@ -17,7 +17,6 @@ import {
   Drawer,
   FloatingActionButton,
   IconButton,
-  MobileBottomNavigation,
 } from "@/shared/components/admin/DashboardUI";
 
 const navItems = [
@@ -60,13 +59,6 @@ export default function JuryAccountSidebar({
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const initial = juryName.slice(0, 1).toUpperCase();
-
-  const mobileItems = navItems.map((item) => ({
-    href: item.href,
-    label: item.shortLabel,
-    icon: item.icon,
-    active: isActive(pathname, item.href),
-  }));
 
   return (
     <>
@@ -124,8 +116,7 @@ export default function JuryAccountSidebar({
         </div>
       </aside>
 
-      <MobileBottomNavigation items={mobileItems} className="max-w-sm sm:left-1/2 sm:right-auto sm:w-full sm:-translate-x-1/2" />
-      <FloatingActionButton label="Open jury menu" icon={MoreHorizontal} onClick={() => setDrawerOpen(true)} className="lg:hidden" />
+      <FloatingActionButton label="Open jury menu" icon={MoreHorizontal} onClick={() => setDrawerOpen(true)} className="lg:hidden" side="left" />
 
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} title="Jury account">
         <div className="space-y-4">
