@@ -78,8 +78,12 @@ export default function JuryApplicationEditPage({
         <div className="flex flex-col gap-5">
           <JuryProfilePhotoEditor
             applicationId={application.id}
-            currentPhotoFileId={profilePhoto?.id ?? null}
-            fullName={application.fullName}
+            currentPhoto={profilePhoto ? {
+              id: profilePhoto.id,
+              name: profilePhoto.fileName,
+              size: profilePhoto.fileSize,
+              mimeType: profilePhoto.mimeType,
+            } : null}
           />
 
           <DashboardCard className="p-0">

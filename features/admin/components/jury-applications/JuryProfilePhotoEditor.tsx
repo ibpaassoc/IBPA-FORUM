@@ -1,7 +1,6 @@
 "use client";
 
-import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { upload } from "@vercel/blob/client";
 import { CheckCircle2, ImageUp, Loader2, UploadCloud, X } from "lucide-react";
@@ -15,6 +14,7 @@ import {
   DashboardPrimaryBtn,
   DashboardSecondaryBtn,
 } from "@/shared/components/admin/DashboardUI";
+import FilePreviewGallery, { type FilePreviewAsset } from "@/shared/components/files/FilePreviewGallery";
 
 function sanitizeBlobName(name: string) {
   return name.replace(/[^a-zA-Z0-9._-]/g, "_");
@@ -27,70 +27,22 @@ type Status =
   | { type: "success" }
   | { type: "error"; message: string };
 
-function PreviewTile({
-  caption,
-  src,
-  alt,
-  highlight,
-}: {
-  caption: string;
-  src: string;
-  alt: string;
-  highlight?: boolean;
-}) {
-  return (
-    <div className="flex flex-col gap-2">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-soft)]">
-        {caption}
-      </p>
-      <div
-        className={`overflow-hidden rounded-[22px] border bg-white/62 ${
-          highlight
-            ? "border-[rgba(114,160,193,0.5)] ring-2 ring-[rgba(114,160,193,0.28)]"
-            : "border-[rgba(37,42,45,0.08)]"
-        }`}
-      >
-        <Image
-          src={src}
-          alt={alt}
-          width={480}
-          height={480}
-          unoptimized
-          className="aspect-square w-full object-cover"
-        />
-      </div>
-    </div>
-  );
-}
-
 export default function JuryProfilePhotoEditor({
   applicationId,
-  currentPhotoFileId,
-  fullName,
+  currentPhoto,
 }: {
   applicationId: string;
-  currentPhotoFileId: string | null;
-  fullName: string;
+  currentPhoto: { id: string; name: string; size: number; mimeType: string } | null;
 }) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [status, setStatus] = useState<Status>({ type: "idle" });
-
-  // Revoke the object URL whenever it changes or the component unmounts.
-  useEffect(() => {
-    return () => {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
-    };
-  }, [previewUrl]);
 
   const isBusy = status.type === "uploading" || status.type === "saving";
 
   function clearSelection() {
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
     setSelectedFile(null);
-    setPreviewUrl(null);
     if (inputRef.current) inputRef.current.value = "";
   }
 
@@ -112,9 +64,7 @@ export default function JuryProfilePhotoEditor({
       return;
     }
 
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
     setSelectedFile(file);
-    setPreviewUrl(URL.createObjectURL(file));
     setStatus({ type: "idle" });
   }
 
@@ -166,8 +116,30 @@ export default function JuryProfilePhotoEditor({
     }
   }
 
-  const hasCurrent = Boolean(currentPhotoFileId);
-  const hasSelection = Boolean(selectedFile && previewUrl);
+  const hasCurrent = Boolean(currentPhoto);
+  const hasSelection = Boolean(selectedFile);
+  const previewItems = useMemo(() => {
+    const items: FilePreviewAsset[] = [];
+    if (currentPhoto) {
+      items.push({
+        id: `current-${currentPhoto.id}`,
+        name: currentPhoto.name,
+        size: currentPhoto.size,
+        mimeType: currentPhoto.mimeType,
+        source: `/api/admin/jury-files/${currentPhoto.id}`,
+      });
+    }
+    if (selectedFile) {
+      items.push({
+        id: "selected-photo",
+        name: selectedFile.name,
+        size: selectedFile.size,
+        mimeType: selectedFile.type,
+        source: selectedFile,
+      });
+    }
+    return items;
+  }, [currentPhoto, selectedFile]);
 
   return (
     <div className="rounded-[28px] border border-[rgba(114,160,193,0.18)] bg-white/76 shadow-[0_22px_70px_rgba(37,42,45,0.075)] backdrop-blur-2xl">
@@ -184,27 +156,20 @@ export default function JuryProfilePhotoEditor({
       </div>
 
       <div className="flex flex-col gap-4 p-4 md:p-5">
-        <div className="grid gap-4 sm:grid-cols-2">
-          {hasCurrent ? (
-            <PreviewTile
-              caption={adminT.edit.currentPhoto}
-              src={`/api/admin/jury-files/${currentPhotoFileId}`}
-              alt={fullName}
+        <div>
+          {hasCurrent || hasSelection ? (
+            <FilePreviewGallery
+              locale="ru"
+              items={previewItems}
+              onRemove={clearSelection}
+              isRemovable={(id) => id === "selected-photo"}
+              className="sm:grid-cols-2 xl:grid-cols-2"
             />
-          ) : !hasSelection ? (
+          ) : (
             <div className="flex aspect-square items-center justify-center rounded-[22px] border border-dashed border-[rgba(37,42,45,0.14)] bg-white/62 text-sm text-[var(--color-ink-soft)] sm:col-span-2">
               {adminT.edit.noPhotoYet}
             </div>
-          ) : null}
-
-          {hasSelection && previewUrl ? (
-            <PreviewTile
-              caption={adminT.edit.newPhoto}
-              src={previewUrl}
-              alt={selectedFile?.name ?? adminT.edit.newPhoto}
-              highlight
-            />
-          ) : null}
+          )}
         </div>
 
         {status.type === "error" ? (

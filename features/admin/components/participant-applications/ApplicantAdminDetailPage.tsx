@@ -5,7 +5,6 @@ import {
   CalendarClock,
   CheckCircle2,
   CreditCard,
-  FileText,
   Layers3,
   Mail,
   MailPlus,
@@ -49,6 +48,7 @@ import {
   dashboardInputClass,
   dashboardSelectClass,
 } from "@/shared/components/admin/DashboardUI";
+import FilePreviewGallery from "@/shared/components/files/FilePreviewGallery";
 
 type ApplicantAdminDetail = NonNullable<Awaited<ReturnType<typeof getParticipantApplicationDetail>>>;
 type Nomination = ApplicantAdminDetail["profile"]["nominations"][number];
@@ -182,19 +182,18 @@ function NominationContent({ nomination }: { nomination: Nomination }) {
                     <p className="text-xs font-semibold text-[var(--color-ink)]">
                       {fieldLabel(field.key, field.label)}
                     </p>
-                    <div className="mt-3 grid gap-2">
-                      {files.map((file) => (
-                        <a
-                          key={file.id}
-                          href={`/api/admin/nomination-files/${file.id}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex min-h-10 items-center gap-2 rounded-[16px] border border-[rgba(114,160,193,0.2)] bg-white px-3 text-sm text-[var(--color-ink-soft)] transition hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-wash)] hover:text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.2)]"
-                        >
-                          <FileText aria-hidden size={15} className="shrink-0 text-[var(--color-blue)]" />
-                          <span className="min-w-0 flex-1 truncate">{file.displayFileName || file.originalFileName || file.fileName}</span>
-                        </a>
-                      ))}
+                    <div className="mt-3">
+                      <FilePreviewGallery
+                        locale="ru"
+                        items={files.map((file) => ({
+                          id: file.id,
+                          name: file.displayFileName || file.originalFileName || file.fileName,
+                          size: file.fileSize,
+                          mimeType: file.mimeType,
+                          source: `/api/admin/nomination-files/${file.id}`,
+                        }))}
+                        className="sm:grid-cols-2 xl:grid-cols-2"
+                      />
                       {files.length === 0 ? (
                         <p className="text-sm text-[var(--color-ink-soft)]">{adminT.applicantAccount.noFiles}</p>
                       ) : null}

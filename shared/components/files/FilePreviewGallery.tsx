@@ -314,11 +314,13 @@ function PreviewDialog({
 export default function FilePreviewGallery({
   items,
   onRemove,
+  isRemovable,
   locale,
   className,
 }: {
   items: FilePreviewAsset[];
   onRemove?: (id: string) => void;
+  isRemovable?: (id: string) => boolean;
   locale?: PreviewLocale;
   className?: string;
 }) {
@@ -375,7 +377,7 @@ export default function FilePreviewGallery({
                 </span>
               </button>
 
-              {onRemove ? (
+              {onRemove && (isRemovable?.(item.id) ?? true) ? (
                 <button
                   type="button"
                   onClick={() => onRemove(item.id)}

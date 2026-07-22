@@ -1,4 +1,3 @@
-import Image from "next/image";
 import type { JuryApplication, JuryApplicationFile } from "@prisma/client";
 import type { ReactNode } from "react";
 import {
@@ -6,9 +5,7 @@ import {
   BriefcaseBusiness,
   CalendarClock,
   CheckCircle2,
-  ExternalLink,
   FileText,
-  Files,
   Mail,
   MailPlus,
   MapPin,
@@ -47,6 +44,7 @@ import {
   dashboardTextareaClass,
 } from "@/shared/components/admin/DashboardUI";
 import IbpaDropdown from "@/shared/components/admin/IbpaDropdown";
+import FilePreviewGallery from "@/shared/components/files/FilePreviewGallery";
 
 type JuryApplicationDetail = JuryApplication & {
   files: JuryApplicationFile[];
@@ -61,32 +59,6 @@ type JuryApplicationDetail = JuryApplication & {
   infoRequestedAt?: Date | null;
   infoResubmittedAt?: Date | null;
 };
-
-function FileLink({ href, name, sizeBytes }: { href: string; name: string; sizeBytes: number }) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noreferrer"
-      className="group flex items-center justify-between gap-3 rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white px-3 py-3 text-sm text-[var(--color-ink)] transition hover:border-[rgba(114,160,193,0.34)] hover:bg-[var(--color-blue-wash)]/60"
-    >
-      <div className="flex min-w-0 items-center gap-3">
-        <div className="flex size-9 shrink-0 items-center justify-center rounded-[18px] bg-[var(--color-blue-wash)] text-[var(--color-blue)]">
-          <Files aria-hidden size={15} />
-        </div>
-        <div className="min-w-0">
-          <p className="truncate font-semibold text-[var(--color-ink)]">{name}</p>
-          <p className="text-xs text-[var(--color-ink-muted)]">{(sizeBytes / 1024 / 1024).toFixed(2)} MB</p>
-        </div>
-      </div>
-      <ExternalLink
-        aria-hidden
-        size={15}
-        className="shrink-0 text-[var(--color-ink-muted)] transition group-hover:text-[var(--color-blue)]"
-      />
-    </a>
-  );
-}
 
 function AlertMessage({ tone, children }: { tone: "error" | "notice"; children: string }) {
   const className =
@@ -198,15 +170,18 @@ export default function JuryApplicationDetailPage({
     <div className="grid gap-4 lg:grid-cols-[minmax(220px,0.6fr)_minmax(0,1fr)]">
       <DashboardCard>
         <p className="text-sm font-medium text-[var(--color-ink)]">{adminT.detail.profilePhoto}</p>
-        <div className="mt-3 overflow-hidden rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white/62">
+        <div className="mt-3">
           {profilePhoto ? (
-            <Image
-              src={`/api/admin/jury-files/${profilePhoto.id}`}
-              alt={application.fullName}
-              width={960}
-              height={960}
-              unoptimized
-              className="aspect-square w-full object-cover"
+            <FilePreviewGallery
+              locale="ru"
+              items={[{
+                id: profilePhoto.id,
+                name: profilePhoto.fileName,
+                size: profilePhoto.fileSize,
+                mimeType: profilePhoto.mimeType,
+                source: `/api/admin/jury-files/${profilePhoto.id}`,
+              }]}
+              className="sm:grid-cols-1 xl:grid-cols-1"
             />
           ) : (
             <div className="flex aspect-square items-center justify-center text-sm text-[var(--color-ink-muted)]">
@@ -218,15 +193,17 @@ export default function JuryApplicationDetailPage({
 
       <DashboardCard>
         <p className="text-sm font-medium text-[var(--color-ink)]">{adminT.detail.certifications}</p>
-        <div className="mt-3 flex flex-col gap-2">
-          {certifications.map((file) => (
-            <FileLink
-              key={file.id}
-              href={`/api/admin/jury-files/${file.id}`}
-              name={file.fileName}
-              sizeBytes={file.fileSize}
-            />
-          ))}
+        <div className="mt-3">
+          <FilePreviewGallery
+            locale="ru"
+            items={certifications.map((file) => ({
+              id: file.id,
+              name: file.fileName,
+              size: file.fileSize,
+              mimeType: file.mimeType,
+              source: `/api/admin/jury-files/${file.id}`,
+            }))}
+          />
           {certifications.length === 0 ? <EmptyInline>{adminT.detail.noCertifications}</EmptyInline> : null}
         </div>
       </DashboardCard>
