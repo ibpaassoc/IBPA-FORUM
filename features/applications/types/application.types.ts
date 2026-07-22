@@ -83,6 +83,8 @@ export type ApplicationFileRef = {
   fieldKey: string;
   fileName: string;
   fileUrl: string;
+  /** Authenticated browser URL for an already-saved private file. */
+  previewUrl?: string;
   mimeType: string;
   fileSize: number;
 };

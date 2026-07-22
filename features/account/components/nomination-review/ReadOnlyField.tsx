@@ -42,7 +42,7 @@ export default function ReadOnlyField({
               name: ref ? ref.fileName : file.name,
               size: ref ? ref.fileSize : file.size,
               mimeType: ref ? ref.mimeType : file.type,
-              source: ref ? ref.fileUrl : file,
+              source: ref ? ref.previewUrl ?? ref.fileUrl : file,
             };
           })}
         />

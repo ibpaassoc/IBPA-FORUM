@@ -212,6 +212,27 @@ assert(has(saveNominationRoute, "requireEditableNomination"), "nomination editor
 assert(has(saveNominationRoute, "validateNominationBlockB"), "nomination submit validates category requirements");
 assert(has(saveNominationRoute, "deletedAt"), "file replacement uses soft-delete metadata");
 
+const applicantFileRoute = read("app/api/account/applicant/nomination-files/[fileId]/route.ts");
+assert(has(applicantFileRoute, "getAppSession"), "saved applicant files require account auth");
+assert(
+  has(applicantFileRoute, "applicantProfileId: session.user.applicantProfileId"),
+  "saved applicant files enforce nomination ownership"
+);
+assert(has(applicantFileRoute, "access: \"private\""), "saved applicant files are streamed from private Blob storage");
+
+const editorValues = read("features/account/components/nomination-review/editor-values.ts");
+assert(
+  has(editorValues, "/api/account/applicant/nomination-files/${file.id}"),
+  "saved draft values expose an authenticated preview URL"
+);
+const applicantUploadField = read(
+  "features/applications/components/application-form/fields/UploadField.tsx"
+);
+assert(
+  has(applicantUploadField, "item.previewUrl ?? item.fileUrl"),
+  "applicant upload cards prefer authenticated saved-file previews"
+);
+
 const closure = read("features/applications/server/closure.ts");
 assert(has(closure, "validateNominationBlockB"), "deadline closure validates draft completeness");
 assert(has(closure, 'status: "LOCKED"'), "deadline closure locks incomplete nominations");

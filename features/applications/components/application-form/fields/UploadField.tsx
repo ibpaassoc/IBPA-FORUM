@@ -166,7 +166,7 @@ export function ApplicantUploadField({
         name: itemName(item),
         size: itemSize(item),
         mimeType: itemMimeType(item),
-        source: isApplicationFileRef(item) ? item.fileUrl : item,
+        source: isApplicationFileRef(item) ? item.previewUrl ?? item.fileUrl : item,
       })),
     [items],
   );
