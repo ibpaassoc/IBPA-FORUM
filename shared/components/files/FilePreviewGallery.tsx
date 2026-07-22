@@ -85,14 +85,29 @@ function AssetUrl({ asset, children }: { asset: FilePreviewAsset; children: (url
   return children(url);
 }
 
+function PreviewAssetUrl({
+  asset,
+  preferredUrl,
+  children,
+}: {
+  asset: FilePreviewAsset;
+  preferredUrl?: string;
+  children: (url: string) => ReactNode;
+}) {
+  if (preferredUrl) return children(preferredUrl);
+  return <AssetUrl asset={asset}>{children}</AssetUrl>;
+}
+
 function PreviewDialog({
   items,
   initialIndex,
+  initialUrl,
   locale,
   onClose,
 }: {
   items: FilePreviewAsset[];
   initialIndex: number;
+  initialUrl: string;
   locale: PreviewLocale;
   onClose: () => void;
 }) {
@@ -168,7 +183,11 @@ function PreviewDialog({
   }
 
   return createPortal(
-    <AssetUrl key={assetKey(item)} asset={item}>
+    <PreviewAssetUrl
+      key={assetKey(item)}
+      asset={item}
+      preferredUrl={index === initialIndex ? initialUrl : undefined}
+    >
       {(url) => <div
       className="fixed inset-0 z-[100] flex items-end justify-center bg-[rgba(75,104,125,0.24)] p-2 backdrop-blur-[12px] sm:items-center sm:p-6"
       onMouseDown={(event) => {
@@ -223,23 +242,29 @@ function PreviewDialog({
         </header>
 
         <div
-          className="relative flex min-h-0 flex-1 touch-none items-center justify-center overflow-hidden bg-[linear-gradient(145deg,rgba(225,240,249,0.58),rgba(255,255,255,0.88))] p-3 sm:p-5"
+          className="relative flex min-h-[min(52dvh,520px)] flex-1 touch-none items-center justify-center overflow-hidden bg-[linear-gradient(145deg,rgba(225,240,249,0.58),rgba(255,255,255,0.88))] p-3 sm:min-h-[420px] sm:p-5"
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerEnd}
           onPointerCancel={handlePointerEnd}
         >
           {isImage(item) ? (
-            // Blob/object URLs are dynamic user content and cannot use Next Image's
-            // static sizing contract. The bounded viewer prevents layout shift.
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={url}
-              src={url}
-              alt={item.name}
-              draggable={false}
-              className="max-h-[calc(88dvh-9.5rem)] max-w-full select-none rounded-[22px] object-contain shadow-[0_18px_55px_rgba(56,91,116,0.13)] sm:max-h-[calc(86vh-8.5rem)]"
-            />
+            <>
+              <span className="absolute flex size-16 items-center justify-center rounded-[22px] bg-white/72 text-[var(--color-blue)] shadow-[0_12px_34px_rgba(56,91,116,0.1)]">
+                <ImageIcon aria-hidden size={28} strokeWidth={1.4} />
+              </span>
+              {/* Blob/object URLs are dynamic user content and cannot use Next Image's static sizing contract. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                key={url}
+                src={url}
+                alt={item.name}
+                draggable={false}
+                loading="eager"
+                fetchPriority="high"
+                className="relative max-h-[calc(88dvh-9.5rem)] max-w-full select-none rounded-[22px] object-contain shadow-[0_18px_55px_rgba(56,91,116,0.13)] sm:max-h-[calc(86vh-8.5rem)]"
+              />
+            </>
           ) : isPdf(item) ? (
             <iframe
               key={url}
@@ -307,7 +332,7 @@ function PreviewDialog({
         </footer>
       </section>
     </div>}
-    </AssetUrl>,
+    </PreviewAssetUrl>,
     document.body,
   );
 }
@@ -328,9 +353,19 @@ export default function FilePreviewGallery({
   columns?: "responsive" | "compact" | "single";
 }) {
   const { language } = useLanguage();
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [openPreview, setOpenPreview] = useState<{ index: number; url: string } | null>(null);
   const activeLocale = locale ?? language;
   const copy = previewCopy[activeLocale];
+
+  async function openFilePreview(index: number, url: string, image: HTMLImageElement | null) {
+    if (image && !image.complete) {
+      await Promise.race([
+        image.decode().catch(() => undefined),
+        new Promise<void>((resolve) => window.setTimeout(resolve, 1800)),
+      ]);
+    }
+    setOpenPreview({ index, url });
+  }
 
   if (!items.length) return null;
 
@@ -359,7 +394,9 @@ export default function FilePreviewGallery({
             >
               <button
                 type="button"
-                onClick={() => setOpenIndex(index)}
+                onClick={(event) => {
+                  void openFilePreview(index, url, event.currentTarget.querySelector("img"));
+                }}
                 aria-label={`${copy.open}: ${item.name}`}
                 className="block w-full text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-[rgba(114,160,193,0.25)]"
               >
@@ -396,12 +433,13 @@ export default function FilePreviewGallery({
         })}
       </ul>
 
-      {openIndex !== null && items[openIndex] ? (
+      {openPreview && items[openPreview.index] ? (
         <PreviewDialog
           items={items}
-          initialIndex={openIndex}
+          initialIndex={openPreview.index}
+          initialUrl={openPreview.url}
           locale={activeLocale}
-          onClose={() => setOpenIndex(null)}
+          onClose={() => setOpenPreview(null)}
         />
       ) : null}
     </>
