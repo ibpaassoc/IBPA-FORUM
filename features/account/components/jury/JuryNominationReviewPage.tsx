@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { ArrowLeft, ArrowRight, ExternalLink, FileText, FolderOpen, Globe2, Layers3, UserRound } from "lucide-react";
 import type { JuryNominationReviewRecord } from "@/features/jury/server/reviews";
 import JuryReviewScorecard, { type JuryReviewValue } from "@/features/account/components/jury/JuryReviewScorecard";
+import type { NominationScoringDefinition } from "@/features/jury/scoring/category-scoring";
 
 function formatAnswerValue(answer: {
   valueText: string | null;
@@ -30,10 +31,12 @@ function ReviewStatusDot({ status }: { status: JuryNominationReviewRecord["peerN
 export default function JuryNominationReviewPage({
   nomination,
   categoryFields,
+  scoringDefinition,
   review,
 }: {
   nomination: JuryNominationReviewRecord;
   categoryFields: Array<{ key: string; label: string; type: string; description?: string }>;
+  scoringDefinition: NominationScoringDefinition;
   review: JuryReviewValue | null;
 }) {
   const answerMap = new Map(nomination.answers.map((answer) => [answer.fieldKey, answer]));
@@ -137,7 +140,11 @@ export default function JuryNominationReviewPage({
         </div>
 
         <aside className="order-first flex flex-col gap-4 xl:order-none xl:sticky xl:top-5">
-          <JuryReviewScorecard nominationId={nomination.id} initialReview={review} />
+          <JuryReviewScorecard
+            nominationId={nomination.id}
+            scoringDefinition={scoringDefinition}
+            initialReview={review}
+          />
           {nomination.peerNominations.length > 1 ? (
             <section className="rounded-[28px] border border-[rgba(37,42,45,0.08)] bg-white/76 p-4 shadow-[0_18px_55px_rgba(37,42,45,0.055)] backdrop-blur-xl">
               <div className="flex items-center gap-2 text-[var(--color-blue)]"><Layers3 aria-hidden size={15} /><h2 className="text-[0.64rem] font-semibold uppercase tracking-[0.15em]">More from this nominee</h2></div>

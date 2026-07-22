@@ -40,7 +40,7 @@ export default function JuryOverview({
           <div>
             <p className="text-[0.66rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-ink-soft)]">Jury workspace</p>
             <h1 className="mt-2 max-w-3xl font-[var(--font-title-family)] text-[clamp(2.15rem,5vw,3.75rem)] font-light leading-[1.02] tracking-[-0.035em] text-[var(--color-ink)]">Welcome back, {juryName.split(" ")[0]}.</h1>
-            <p className="mt-4 max-w-2xl text-[0.95rem] leading-7 text-[var(--color-ink-soft)]">Review each nomination independently, save your work as you go, and submit only when all five criteria are complete.</p>
+            <p className="mt-4 max-w-2xl text-[0.95rem] leading-7 text-[var(--color-ink-soft)]">Review each nomination independently, save your work as you go, and submit only when every regulation criterion is complete.</p>
             <div className="mt-5 flex flex-wrap gap-2">
               {expertiseAreas.map((area) => <span key={area} className="rounded-full border border-[rgba(114,160,193,0.22)] bg-[var(--color-blue-wash)] px-3 py-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.1em] text-[#356f98]">{area}</span>)}
             </div>

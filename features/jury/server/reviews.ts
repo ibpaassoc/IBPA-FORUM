@@ -9,14 +9,21 @@ import type { DraftReviewInput, SubmitReviewInput } from "@/features/jury/schema
 import { prisma } from "@/shared/lib/prisma";
 import { syncScoreOnChange } from "@/features/google-sheets";
 import {
-  calculateTotalScore,
   getJuryReviewListStatus,
   isEligibleScoringJudge,
   requireActiveJuryJudge,
   ScoringHttpError,
-  serializeScoreValues,
   type ActiveJudgeContext,
 } from "@/features/jury/server/scoring-shared";
+import {
+  buildReviewScoreData,
+  calculateReviewTotal,
+  readReviewScores,
+  resolveNominationScoringDefinition,
+  validateReviewScores,
+  type NominationScoringDefinition,
+  type ReviewScores,
+} from "@/features/jury/scoring/category-scoring";
 
 export type JuryNominationFilter = "all" | "pending" | "in-progress" | "completed";
 
@@ -31,6 +38,7 @@ export type JuryNominationListItem = {
   reviewStatus: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | "LOCKED";
   reviewId: string | null;
   totalScore: number | null;
+  maximumScore: number;
   reviewUpdatedAt: Date | null;
 };
 
@@ -76,21 +84,6 @@ const REVIEW_DETAIL_SELECT = {
   updatedAt: true,
 } as const;
 
-function getReviewScoreValues(scoreData: Prisma.JsonValue | null) {
-  const values = typeof scoreData === "object" && scoreData !== null && !Array.isArray(scoreData)
-    ? scoreData as Record<string, Prisma.JsonValue>
-    : {};
-  const numberOrNull = (key: string) => typeof values[key] === "number" ? values[key] : null;
-
-  return {
-    technical: numberOrNull("technical"),
-    aesthetic: numberOrNull("aesthetic"),
-    creativity: numberOrNull("creativity"),
-    impact: numberOrNull("impact"),
-    presentation: numberOrNull("presentation"),
-  };
-}
-
 function toReviewResponse(review: {
   id: string;
   scoreData: Prisma.JsonValue | null;
@@ -99,9 +92,9 @@ function toReviewResponse(review: {
   status: string;
   completedAt: Date | null;
   updatedAt: Date;
-}) {
+}, definition: NominationScoringDefinition) {
   return {
-    ...serializeScoreValues(getReviewScoreValues(review.scoreData)),
+    scores: readReviewScores(review.scoreData, definition),
     id: review.id,
     totalScore: review.totalScore === null ? null : Number(review.totalScore),
     comment: review.notes,
@@ -129,6 +122,7 @@ async function getAccessibleNominationForJury({
     },
     select: {
       id: true,
+      scoringSchema: true,
       category: { select: { slug: true, name: true } },
     },
   });
@@ -171,7 +165,8 @@ export async function getJuryNominationWorkspace({
       },
       createdAt: true,
       submittedAt: true,
-      category: { select: { name: true } },
+      scoringSchema: true,
+      category: { select: { name: true, slug: true } },
       award: { select: { name: true } },
       reviews: {
         where: { juryProfileId: judge.juryProfileId },
@@ -187,6 +182,10 @@ export async function getJuryNominationWorkspace({
 
   const allNominations: JuryNominationListItem[] = nominations.map((nomination) => {
     const review = nomination.reviews[0] ?? null;
+    const scoringDefinition = resolveNominationScoringDefinition(
+      nomination.scoringSchema,
+      nomination.category.slug
+    );
     return {
       id: nomination.id,
       applicantName: nomination.applicantProfile?.fullName ?? "Applicant",
@@ -200,6 +199,7 @@ export async function getJuryNominationWorkspace({
       totalScore: review?.totalScore === null || review?.totalScore === undefined
         ? null
         : Number(review.totalScore),
+      maximumScore: scoringDefinition.maximumTotal,
       reviewUpdatedAt: review?.updatedAt ?? null,
     };
   });
@@ -267,6 +267,7 @@ export async function getJuryNominationReviewDetail({
     select: {
       id: true,
       applicantProfileId: true,
+      scoringSchema: true,
       applicantProfile: {
         select: {
           fullName: true,
@@ -300,6 +301,10 @@ export async function getJuryNominationReviewDetail({
   }
 
   const review = nomination.reviews[0] ?? null;
+  const scoringDefinition = resolveNominationScoringDefinition(
+    nomination.scoringSchema,
+    nomination.category.slug
+  );
   const peerNominations = nomination.applicantProfileId
     ? await prisma.nominationApplication.findMany({
         where: {
@@ -342,7 +347,8 @@ export async function getJuryNominationReviewDetail({
       })),
     } satisfies JuryNominationReviewRecord,
     categoryFields: categoryFieldConfigs[nomination.category.slug] ?? [],
-    review: review === null ? null : toReviewResponse(review),
+    scoringDefinition,
+    review: review === null ? null : toReviewResponse(review, scoringDefinition),
   };
 }
 
@@ -355,7 +361,11 @@ export async function saveJuryReviewDraft({
   nominationId: string;
   input: DraftReviewInput;
 }) {
-  await getAccessibleNominationForJury({ nominationId, judge });
+  const nomination = await getAccessibleNominationForJury({ nominationId, judge });
+  const scoringDefinition = resolveNominationScoringDefinition(
+    nomination.scoringSchema,
+    nomination.category.slug
+  );
 
   const existingReview = await prisma.juryNominationReview.findUnique({
     where: {
@@ -371,16 +381,19 @@ export async function saveJuryReviewDraft({
     throw new ScoringHttpError(409, "Completed reviews are locked until an admin reopens them.");
   }
 
-  const totalScore = calculateTotalScore(input);
-  const scoreValues = {
-    technical: input.technical ?? null,
-    aesthetic: input.aesthetic ?? null,
-    creativity: input.creativity ?? null,
-    impact: input.impact ?? null,
-    presentation: input.presentation ?? null,
-  };
+  let scoreValues: ReviewScores;
+  try {
+    scoreValues = validateReviewScores({
+      scores: input.scores,
+      definition: scoringDefinition,
+      requireComplete: false,
+    });
+  } catch (error) {
+    throw new ScoringHttpError(400, error instanceof Error ? error.message : "Invalid scores.");
+  }
+  const totalScore = calculateReviewTotal(scoreValues);
   const reviewData = {
-    scoreData: scoreValues,
+    scoreData: buildReviewScoreData(scoringDefinition, scoreValues) as Prisma.InputJsonValue,
     totalScore,
     notes: input.comment ?? null,
     status: "IN_PROGRESS" as const,
@@ -415,7 +428,7 @@ export async function saveJuryReviewDraft({
 
   syncScoreOnChange(review.id);
 
-  return toReviewResponse(review);
+  return toReviewResponse(review, scoringDefinition);
 }
 
 export async function submitJuryReview({
@@ -427,7 +440,11 @@ export async function submitJuryReview({
   nominationId: string;
   input: SubmitReviewInput;
 }) {
-  await getAccessibleNominationForJury({ nominationId, judge });
+  const nomination = await getAccessibleNominationForJury({ nominationId, judge });
+  const scoringDefinition = resolveNominationScoringDefinition(
+    nomination.scoringSchema,
+    nomination.category.slug
+  );
 
   const existingReview = await prisma.juryNominationReview.findUnique({
     where: {
@@ -443,22 +460,25 @@ export async function submitJuryReview({
     throw new ScoringHttpError(409, "You have already completed this nomination review.");
   }
 
-  const totalScore = calculateTotalScore(input);
+  let scoreValues: ReviewScores;
+  try {
+    scoreValues = validateReviewScores({
+      scores: input.scores,
+      definition: scoringDefinition,
+      requireComplete: true,
+    });
+  } catch (error) {
+    throw new ScoringHttpError(400, error instanceof Error ? error.message : "Invalid scores.");
+  }
+  const totalScore = calculateReviewTotal(scoreValues);
 
   if (totalScore === null) {
-    throw new ScoringHttpError(400, "All five scores are required for final submission.");
+    throw new ScoringHttpError(400, "Every regulation criterion is required for final submission.");
   }
 
   const submittedAt = new Date();
-  const scoreValues = {
-    technical: input.technical,
-    aesthetic: input.aesthetic,
-    creativity: input.creativity,
-    impact: input.impact,
-    presentation: input.presentation,
-  };
   const reviewData = {
-    scoreData: scoreValues,
+    scoreData: buildReviewScoreData(scoringDefinition, scoreValues) as Prisma.InputJsonValue,
     totalScore,
     notes: input.comment ?? null,
     status: "COMPLETED" as const,
@@ -493,7 +513,7 @@ export async function submitJuryReview({
 
   syncScoreOnChange(review.id, { refreshStats: true });
 
-  return toReviewResponse(review);
+  return toReviewResponse(review, scoringDefinition);
 }
 
 export const getAuthenticatedJuryContext = cache(requireActiveJuryJudge);

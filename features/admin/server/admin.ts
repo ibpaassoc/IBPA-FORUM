@@ -1,7 +1,6 @@
 import "server-only";
 
 import { revalidatePath } from "next/cache";
-import type { Prisma } from "@prisma/client";
 import { prisma } from "@/shared/lib/prisma";
 import { syncScoreOnChange } from "@/features/google-sheets";
 import { adminT } from "@/lib/i18n/admin";
@@ -14,6 +13,10 @@ import {
   getSubmittedJudgeCount,
   ScoringHttpError,
 } from "@/features/jury/server/scoring-shared";
+import {
+  readReviewScores,
+  resolveNominationScoringDefinition,
+} from "@/features/jury/scoring/category-scoring";
 
 export type AdminScoringSort = "averageScore" | "category" | "status";
 export type AdminScoringFilterStatus = "NOT_STARTED" | "IN_PROGRESS" | "COMPLETE";
@@ -24,15 +27,6 @@ export type AdminScoringApplicationRecord = {
   category: { id: string; name: string; slug: string };
   award: { id: string; name: string; categoryId: string; createdAt: Date };
 };
-
-function readReviewScore(scoreData: Prisma.JsonValue | null | undefined, key: string) {
-  if (typeof scoreData !== "object" || scoreData === null || Array.isArray(scoreData)) {
-    return null;
-  }
-
-  const value = (scoreData as Record<string, Prisma.JsonValue>)[key];
-  return typeof value === "number" ? value : null;
-}
 
 function getSafeStatusFilter(status?: string): AdminScoringFilterStatus | undefined {
   if (status === "NOT_STARTED" || status === "IN_PROGRESS" || status === "COMPLETE") {
@@ -312,6 +306,10 @@ export async function getAdminApplicationScoringDetail(nominationId: string) {
   const assignedJudges = judges.filter((judge) =>
     judge.expertiseAreas.includes(application.category.name)
   );
+  const scoringDefinition = resolveNominationScoringDefinition(
+    application.scoringSchema,
+    application.category.slug
+  );
 
   const scoreByJudgeId = new Map(application.reviews.map((score) => [score.juryProfileId, score]));
   const submittedJudgeCount = getSubmittedJudgeCount(application.reviews);
@@ -370,6 +368,7 @@ export async function getAdminApplicationScoringDetail(nominationId: string) {
       }),
       rank: rankingMap.get(application.id) ?? null,
     },
+    scoringDefinition,
     judgeRows: assignedJudges.map((judge) => {
       const score = scoreByJudgeId.get(judge.id);
 
@@ -378,11 +377,7 @@ export async function getAdminApplicationScoringDetail(nominationId: string) {
         judgeName: judge.fullName,
         judgeEmail: judge.account.email,
         scoreId: score?.id ?? null,
-        technical: readReviewScore(score?.scoreData, "technical"),
-        aesthetic: readReviewScore(score?.scoreData, "aesthetic"),
-        creativity: readReviewScore(score?.scoreData, "creativity"),
-        impact: readReviewScore(score?.scoreData, "impact"),
-        presentation: readReviewScore(score?.scoreData, "presentation"),
+        scores: readReviewScores(score?.scoreData, scoringDefinition),
         totalScore: score?.totalScore === null || score?.totalScore === undefined
           ? null
           : Number(score.totalScore),
@@ -453,7 +448,13 @@ export async function exportApplicationScoresCsv(nominationId: string) {
     throw new ScoringHttpError(404, adminT.api.participantApplicationNotFound);
   }
 
-  const headers = [...adminT.scoring.exportHeaders];
+  const headers = [
+    ...adminT.scoring.exportHeaders.slice(0, 6),
+    ...detail.scoringDefinition.criteria.map(
+      (criterion) => `${criterion.label} (0-${criterion.maxScore})`
+    ),
+    ...adminT.scoring.exportHeaders.slice(-3),
+  ];
 
   const rows = detail.judgeRows.map((row) => [
     detail.application.fullName,
@@ -462,11 +463,9 @@ export async function exportApplicationScoresCsv(nominationId: string) {
     row.judgeName,
     row.judgeEmail,
     row.scoreStatus,
-    row.technical ?? "",
-    row.aesthetic ?? "",
-    row.creativity ?? "",
-    row.impact ?? "",
-    row.presentation ?? "",
+    ...detail.scoringDefinition.criteria.map(
+      (criterion) => row.scores[criterion.key] ?? ""
+    ),
     row.totalScore ?? "",
     row.comment ?? "",
     row.submittedAt?.toISOString() ?? "",

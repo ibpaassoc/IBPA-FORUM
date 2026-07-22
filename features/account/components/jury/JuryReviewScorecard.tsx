@@ -4,32 +4,20 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Minus, Plus, Save, ShieldCheck } from "lucide-react";
 import { NoticePanel } from "@/shared/components/account/AccountUI";
+import type { NominationScoringDefinition } from "@/features/jury/scoring/category-scoring";
 
 type ReviewStatus = "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | "LOCKED";
-type ScoreKey = "technical" | "aesthetic" | "creativity" | "impact" | "presentation";
 type ScoreValue = "" | `${number}`;
 
 export type JuryReviewValue = {
   id: string;
-  technical: number | null;
-  aesthetic: number | null;
-  creativity: number | null;
-  impact: number | null;
-  presentation: number | null;
+  scores: Record<string, number | null>;
   totalScore: number | null;
   comment: string | null;
   status: ReviewStatus;
   completedAt: Date | null;
   updatedAt: Date;
 };
-
-const criteria: Array<{ key: ScoreKey; label: string; description: string }> = [
-  { key: "technical", label: "Technical mastery", description: "Precision, execution, and professional control." },
-  { key: "aesthetic", label: "Aesthetic quality", description: "Harmony, finish, and visual sophistication." },
-  { key: "creativity", label: "Creativity", description: "Originality and strength of the concept." },
-  { key: "impact", label: "Overall impact", description: "Memorability and emotional presence." },
-  { key: "presentation", label: "Presentation", description: "Clarity and quality of submitted materials." },
-];
 
 function toValue(value: number | null | undefined): ScoreValue {
   return typeof value === "number" ? `${value}` : "";
@@ -39,31 +27,46 @@ function parseScore(value: ScoreValue) {
   return value === "" ? null : Number(value);
 }
 
-export default function JuryReviewScorecard({ nominationId, initialReview }: { nominationId: string; initialReview: JuryReviewValue | null }) {
+export default function JuryReviewScorecard({
+  nominationId,
+  scoringDefinition,
+  initialReview,
+}: {
+  nominationId: string;
+  scoringDefinition: NominationScoringDefinition;
+  initialReview: JuryReviewValue | null;
+}) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [status, setStatus] = useState<ReviewStatus>(initialReview?.status ?? "NOT_STARTED");
-  const [values, setValues] = useState<Record<ScoreKey, ScoreValue>>({
-    technical: toValue(initialReview?.technical),
-    aesthetic: toValue(initialReview?.aesthetic),
-    creativity: toValue(initialReview?.creativity),
-    impact: toValue(initialReview?.impact),
-    presentation: toValue(initialReview?.presentation),
-  });
+  const [values, setValues] = useState<Record<string, ScoreValue>>(() =>
+    Object.fromEntries(
+      scoringDefinition.criteria.map((criterion) => [
+        criterion.key,
+        toValue(initialReview?.scores[criterion.key]),
+      ])
+    )
+  );
   const [comment, setComment] = useState(initialReview?.comment ?? "");
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
   const isComplete = status === "COMPLETED" || status === "LOCKED";
-  const presentScoreCount = Object.values(values).filter((value) => value !== "").length;
-  const total = Object.values(values).reduce<number>((sum, value) => sum + (parseScore(value) ?? 0), 0);
+  const presentScoreCount = scoringDefinition.criteria.filter(
+    (criterion) => values[criterion.key] !== ""
+  ).length;
+  const total = scoringDefinition.criteria.reduce<number>(
+    (sum, criterion) => sum + (parseScore(values[criterion.key] ?? "") ?? 0),
+    0
+  );
 
-  function setScore(key: ScoreKey, next: number | "") {
+  function setScore(key: string, next: number | "") {
     if (next === "") {
       setValues((current) => ({ ...current, [key]: "" }));
       return;
     }
-    const safe = Math.max(0, Math.min(10, Math.round(next)));
+    const maxScore = scoringDefinition.criteria.find((criterion) => criterion.key === key)?.maxScore ?? 0;
+    const safe = Math.max(0, Math.min(maxScore, Math.round(next)));
     setValues((current) => ({ ...current, [key]: `${safe}` as ScoreValue }));
   }
 
@@ -71,8 +74,8 @@ export default function JuryReviewScorecard({ nominationId, initialReview }: { n
     setError(null);
     setNotice(null);
 
-    if (mode === "submit" && presentScoreCount !== criteria.length) {
-      setError("Score all five criteria before completing this review.");
+    if (mode === "submit" && presentScoreCount !== scoringDefinition.criteria.length) {
+      setError("Score every regulation criterion before completing this review.");
       return;
     }
 
@@ -80,11 +83,12 @@ export default function JuryReviewScorecard({ nominationId, initialReview }: { n
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        technical: parseScore(values.technical),
-        aesthetic: parseScore(values.aesthetic),
-        creativity: parseScore(values.creativity),
-        impact: parseScore(values.impact),
-        presentation: parseScore(values.presentation),
+        scores: Object.fromEntries(
+          scoringDefinition.criteria.map((criterion) => [
+            criterion.key,
+            parseScore(values[criterion.key] ?? ""),
+          ])
+        ),
         comment,
       }),
     });
@@ -107,31 +111,33 @@ export default function JuryReviewScorecard({ nominationId, initialReview }: { n
           <div>
             <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-soft)]">Your decision</p>
             <h2 id="scorecard-heading" className="mt-1 font-[var(--font-title-family)] text-2xl font-light tracking-[-0.025em] text-[var(--color-ink)]">Jury scorecard</h2>
+            <p className="mt-1 text-[0.68rem] leading-5 text-[var(--color-ink-soft)]">2026 {scoringDefinition.categoryName} regulation · {scoringDefinition.sourceDocument}</p>
           </div>
           <div className="rounded-[20px] border border-[rgba(114,160,193,0.2)] bg-[var(--color-blue-wash)] px-4 py-3 text-right">
-            <p className="font-[var(--font-title-family)] text-3xl font-light leading-none text-[var(--color-ink)]">{total}<span className="text-base text-[var(--color-ink-soft)]"> / 50</span></p>
-            <p className="mt-1 text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-soft)]">{presentScoreCount} of 5 scored</p>
+            <p className="font-[var(--font-title-family)] text-3xl font-light leading-none text-[var(--color-ink)]">{total}<span className="text-base text-[var(--color-ink-soft)]"> / {scoringDefinition.maximumTotal}</span></p>
+            <p className="mt-1 text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-soft)]">{presentScoreCount} of {scoringDefinition.criteria.length} scored</p>
           </div>
         </div>
         <div className="mt-4 h-2 overflow-hidden rounded-full bg-[rgba(114,160,193,0.14)]">
-          <div className="h-full rounded-full bg-[var(--color-blue)] transition-[width] duration-300" style={{ width: `${(presentScoreCount / criteria.length) * 100}%` }} />
+          <div className="h-full rounded-full bg-[var(--color-blue)] transition-[width] duration-300" style={{ width: `${(presentScoreCount / scoringDefinition.criteria.length) * 100}%` }} />
         </div>
       </div>
 
       <div className="flex flex-col gap-3 p-4 sm:p-5">
         {isComplete ? <NoticePanel tone="success" title="Review complete">Your final scores are read-only. An administrator can reopen this review if a correction is required.</NoticePanel> : null}
 
-        {criteria.map((criterion) => (
+        {scoringDefinition.criteria.map((criterion) => (
           <div key={criterion.key} className="rounded-[24px] border border-[rgba(37,42,45,0.08)] bg-white/68 p-3">
             <div className="flex items-start justify-between gap-3">
               <label htmlFor={`score-${criterion.key}`} className="min-w-0 pt-1">
                 <span className="block font-[var(--font-title-family)] text-[1.05rem] font-light leading-tight text-[var(--color-ink)]">{criterion.label}</span>
                 <span className="mt-1 block text-[0.72rem] leading-5 text-[var(--color-ink-soft)]">{criterion.description}</span>
+                <span className="mt-1.5 block text-[0.58rem] font-semibold uppercase tracking-[0.11em] text-[var(--color-blue)]">0-{criterion.maxScore} points</span>
               </label>
               <div className="grid shrink-0 grid-cols-[38px_52px_38px] items-center rounded-full border border-[rgba(114,160,193,0.22)] bg-white/90 p-1 shadow-sm">
-                <button type="button" disabled={isComplete || isPending} onClick={() => setScore(criterion.key, (parseScore(values[criterion.key]) ?? 0) - 1)} aria-label={`Decrease ${criterion.label}`} className="flex size-[38px] items-center justify-center rounded-full text-[var(--color-blue)] transition hover:bg-[var(--color-blue-wash)] disabled:cursor-not-allowed disabled:opacity-40"><Minus aria-hidden size={14} /></button>
-                <input id={`score-${criterion.key}`} type="number" min={0} max={10} step={1} inputMode="numeric" value={values[criterion.key]} disabled={isComplete || isPending} onChange={(event) => setScore(criterion.key, event.target.value === "" ? "" : Number(event.target.value))} aria-label={`${criterion.label}, zero to ten`} className="h-[38px] w-full border-0 bg-transparent text-center font-[var(--font-title-family)] text-2xl font-light text-[var(--color-ink)] outline-none disabled:cursor-not-allowed" />
-                <button type="button" disabled={isComplete || isPending} onClick={() => setScore(criterion.key, (parseScore(values[criterion.key]) ?? 0) + 1)} aria-label={`Increase ${criterion.label}`} className="flex size-[38px] items-center justify-center rounded-full bg-[var(--color-blue-wash)] text-[var(--color-blue)] transition hover:bg-[var(--color-blue-light)] disabled:cursor-not-allowed disabled:opacity-40"><Plus aria-hidden size={14} /></button>
+                <button type="button" disabled={isComplete || isPending} onClick={() => setScore(criterion.key, (parseScore(values[criterion.key] ?? "") ?? 0) - 1)} aria-label={`Decrease ${criterion.label}`} className="flex size-[38px] items-center justify-center rounded-full text-[var(--color-blue)] transition hover:bg-[var(--color-blue-wash)] disabled:cursor-not-allowed disabled:opacity-40"><Minus aria-hidden size={14} /></button>
+                <input id={`score-${criterion.key}`} type="number" min={0} max={criterion.maxScore} step={1} inputMode="numeric" value={values[criterion.key] ?? ""} disabled={isComplete || isPending} onChange={(event) => setScore(criterion.key, event.target.value === "" ? "" : Number(event.target.value))} aria-label={`${criterion.label}, zero to ${criterion.maxScore}`} className="h-[38px] w-full border-0 bg-transparent text-center font-[var(--font-title-family)] text-2xl font-light text-[var(--color-ink)] outline-none disabled:cursor-not-allowed" />
+                <button type="button" disabled={isComplete || isPending} onClick={() => setScore(criterion.key, (parseScore(values[criterion.key] ?? "") ?? 0) + 1)} aria-label={`Increase ${criterion.label}`} className="flex size-[38px] items-center justify-center rounded-full bg-[var(--color-blue-wash)] text-[var(--color-blue)] transition hover:bg-[var(--color-blue-light)] disabled:cursor-not-allowed disabled:opacity-40"><Plus aria-hidden size={14} /></button>
               </div>
             </div>
           </div>
@@ -148,7 +154,7 @@ export default function JuryReviewScorecard({ nominationId, initialReview }: { n
         {isComplete ? null : (
           <div className="grid gap-2 pt-1 sm:grid-cols-2">
             <button type="button" disabled={isPending} onClick={() => void sendReview("draft")} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[rgba(114,160,193,0.28)] bg-white/82 px-5 text-[0.7rem] font-semibold uppercase tracking-[0.11em] text-[var(--color-ink)] transition hover:bg-[var(--color-blue-wash)] disabled:cursor-wait disabled:opacity-55"><Save aria-hidden size={15} />Save draft</button>
-            <button type="button" disabled={isPending || presentScoreCount !== criteria.length} onClick={() => void sendReview("submit")} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--color-blue)] px-5 text-[0.7rem] font-semibold uppercase tracking-[0.11em] text-white shadow-[0_14px_30px_rgba(114,160,193,0.24)] transition hover:bg-[#5f91b6] disabled:cursor-not-allowed disabled:opacity-45"><ShieldCheck aria-hidden size={15} />Complete review</button>
+            <button type="button" disabled={isPending || presentScoreCount !== scoringDefinition.criteria.length} onClick={() => void sendReview("submit")} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--color-blue)] px-5 text-[0.7rem] font-semibold uppercase tracking-[0.11em] text-white shadow-[0_14px_30px_rgba(114,160,193,0.24)] transition hover:bg-[#5f91b6] disabled:cursor-not-allowed disabled:opacity-45"><ShieldCheck aria-hidden size={15} />Complete review</button>
           </div>
         )}
       </div>

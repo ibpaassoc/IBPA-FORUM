@@ -14,10 +14,11 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import QRCode from "qrcode";
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import { normalizeSslMode } from "@/shared/lib/db-url";
+import { getCategoryScoringDefinition } from "@/features/jury/scoring/category-scoring";
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
@@ -85,6 +86,7 @@ async function main() {
       categoryId: category.id,
       awardId: award.id,
       status: "SUBMITTED",
+      scoringSchema: getCategoryScoringDefinition(category.slug) as Prisma.InputJsonValue,
       paymentStatus: "PAID",
       paidAt: new Date(),
       submittedAt: new Date(),

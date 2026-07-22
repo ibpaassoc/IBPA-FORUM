@@ -13,5 +13,12 @@ export default async function AccountJuryNominationPage({
     nominationId,
   });
 
-  return <JuryNominationReviewPage nomination={data.nomination} categoryFields={data.categoryFields} review={data.review} />;
+  return (
+    <JuryNominationReviewPage
+      nomination={data.nomination}
+      categoryFields={data.categoryFields}
+      scoringDefinition={data.scoringDefinition}
+      review={data.review}
+    />
+  );
 }

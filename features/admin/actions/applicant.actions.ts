@@ -13,6 +13,7 @@ import { requireAdmin } from "@/shared/lib/admin-auth";
 import { prisma } from "@/shared/lib/prisma";
 import { adminT } from "@/lib/i18n/admin";
 import { syncApplicationOnChange } from "@/features/google-sheets";
+import { getCategoryScoringDefinition } from "@/features/jury/scoring/category-scoring";
 
 function adminApplicationsPath(params?: Record<string, string>) {
   const query = new URLSearchParams(params).toString();
@@ -287,6 +288,9 @@ export async function addManualApplicantNominationAction(formData: FormData) {
           awardId: award.id,
           categoryId: award.categoryId,
           status: "PURCHASED",
+          scoringSchema: getCategoryScoringDefinition(
+            award.category.slug
+          ) as Prisma.InputJsonValue,
           paymentStatus: "PAID",
           amount: 0,
           currency: "usd",

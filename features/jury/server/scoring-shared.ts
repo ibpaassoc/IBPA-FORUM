@@ -17,14 +17,6 @@ export const SCOREABLE_NOMINATION_STATUSES = [
 export type JuryReviewListStatus = "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | "LOCKED";
 export type AdminScoringStatus = "NOT_STARTED" | "IN_PROGRESS" | "COMPLETE";
 
-export type ScoreValues = {
-  technical: number | null;
-  aesthetic: number | null;
-  creativity: number | null;
-  impact: number | null;
-  presentation: number | null;
-};
-
 export type ActiveJudgeContext = {
   accountId: string;
   email: string;
@@ -60,26 +52,6 @@ export function getScoreableNominationsWhere() {
     closedIncompleteAt: null,
     deletedAt: null,
   } satisfies Prisma.NominationApplicationWhereInput;
-}
-
-export function calculateTotalScore(values: Partial<ScoreValues>) {
-  const scoreValues = [
-    values.technical,
-    values.aesthetic,
-    values.creativity,
-    values.impact,
-    values.presentation,
-  ];
-
-  const presentValues = scoreValues.filter(
-    (value): value is number => typeof value === "number"
-  );
-
-  if (presentValues.length === 0) {
-    return null;
-  }
-
-  return presentValues.reduce((sum, value) => sum + value, 0);
 }
 
 export function getJuryReviewListStatus(
@@ -273,12 +245,3 @@ export function buildCategoryRanks<T extends {
   return ranks;
 }
 
-export function serializeScoreValues(score: Partial<ScoreValues>) {
-  return {
-    technical: score.technical ?? null,
-    aesthetic: score.aesthetic ?? null,
-    creativity: score.creativity ?? null,
-    impact: score.impact ?? null,
-    presentation: score.presentation ?? null,
-  } satisfies ScoreValues;
-}

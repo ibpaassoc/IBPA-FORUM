@@ -57,7 +57,7 @@ export default function JuryNominationCard({ nomination }: { nomination: JuryNom
           </div>
           <p className="mt-2 truncate font-[var(--font-title-family)] text-[1.08rem] font-light text-[var(--color-ink)]">{nomination.applicantName}</p>
           {complete && nomination.totalScore !== null ? (
-            <p className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-emerald-700">Score {nomination.totalScore} / 50</p>
+            <p className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-emerald-700">Score {nomination.totalScore} / {nomination.maximumScore}</p>
           ) : (
             <p className="mt-1 text-xs text-[var(--color-ink-soft)]">One nomination · one review</p>
           )}

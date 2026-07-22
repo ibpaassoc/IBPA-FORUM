@@ -245,6 +245,7 @@ model NominationApplication {
   lockedAt                DateTime?
   closedIncompleteAt      DateTime?
   scoresReleasedAt        DateTime?
+  scoringSchema           Json
   stripeCheckoutSessionId String?
   stripePaymentIntentId   String?
   deletedAt               DateTime?

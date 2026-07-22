@@ -9,6 +9,10 @@ import {
   ticketPaymentLabel,
   ticketTypeLabelRu,
 } from "./labels";
+import {
+  readReviewScores,
+  resolveNominationScoringDefinition,
+} from "@/features/jury/scoring/category-scoring";
 
 /**
  * Database → spreadsheet row mappers. Each builder fetches exactly the columns
@@ -30,8 +34,6 @@ export type CategorizedRow = {
   values: SheetValues[number];
   categories: string[];
 };
-
-const NUMBER_OF_SCORE_CRITERIA = 5;
 
 // ── Applications ─────────────────────────────────────────────────────────────
 
@@ -245,30 +247,31 @@ const scoreSelect = {
   juryProfile: { select: { fullName: true } },
   nomination: {
     select: {
+      scoringSchema: true,
       applicantProfile: { select: { fullName: true } },
-      category: { select: { name: true } },
+      category: { select: { name: true, slug: true } },
     },
   },
 } satisfies Prisma.JuryNominationReviewSelect;
 
 type ScoreRecord = Prisma.JuryNominationReviewGetPayload<{ select: typeof scoreSelect }>;
 
-function reviewCriterion(scoreData: Prisma.JsonValue | null, key: string): number | null {
-  if (typeof scoreData !== "object" || scoreData === null || Array.isArray(scoreData)) return null;
-  const value = (scoreData as Record<string, Prisma.JsonValue>)[key];
-  return typeof value === "number" ? value : null;
-}
-
 function criteria(value: number | null): number | string {
   return value == null ? "" : value;
 }
 
-function averageScore(total: Prisma.Decimal | null): number | string {
+function averageScore(total: Prisma.Decimal | null, maximumTotal: number): number | string {
   if (total == null) return "";
-  return Math.round((Number(total) / NUMBER_OF_SCORE_CRITERIA) * 10) / 10;
+  return Math.round((Number(total) / maximumTotal) * 100) / 10;
 }
 
 export function mapScoreRow(score: ScoreRecord): SheetValues[number] {
+  const scoringDefinition = resolveNominationScoringDefinition(
+    score.nomination.scoringSchema,
+    score.nomination.category.slug
+  );
+  const scores = readReviewScores(score.scoreData, scoringDefinition);
+
   return [
     score.id,
     score.nominationId,
@@ -276,13 +279,9 @@ export function mapScoreRow(score: ScoreRecord): SheetValues[number] {
     score.juryProfile.fullName,
     score.nomination.applicantProfile?.fullName ?? "",
     score.nomination.category.name,
-    criteria(reviewCriterion(score.scoreData, "technical")),
-    criteria(reviewCriterion(score.scoreData, "aesthetic")),
-    criteria(reviewCriterion(score.scoreData, "creativity")),
-    criteria(reviewCriterion(score.scoreData, "impact")),
-    criteria(reviewCriterion(score.scoreData, "presentation")),
+    ...scoringDefinition.criteria.map((criterion) => criteria(scores[criterion.key])),
     score.totalScore === null ? "" : Number(score.totalScore),
-    averageScore(score.totalScore),
+    averageScore(score.totalScore, scoringDefinition.maximumTotal),
     scoreStatusLabel(score.status),
     score.notes ?? "",
     formatDateTime(score.completedAt),

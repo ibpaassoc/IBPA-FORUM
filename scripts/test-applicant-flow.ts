@@ -236,7 +236,10 @@ assert(!has(juryDetail, "storageKey"), "jury detail does not render storage keys
 
 const juryScorecard = read("features/account/components/jury/JuryReviewScorecard.tsx");
 assert(has(juryScorecard, "/api/account/jury/nominations/"), "jury scorecard uses account-scoped review API");
-assert(has(juryScorecard, "presentScoreCount !== criteria.length"), "jury scorecard blocks incomplete final reviews");
+assert(
+  has(juryScorecard, "presentScoreCount !== scoringDefinition.criteria.length"),
+  "jury scorecard blocks incomplete regulation reviews"
+);
 
 assert(!existsSync(join(ROOT, "app/jury/dashboard/page.tsx")), "legacy jury dashboard route is removed");
 assert(!existsSync(join(ROOT, "app/api/jury/scoring/route.ts")), "legacy jury scoring API is removed");

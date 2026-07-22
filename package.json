@@ -14,8 +14,10 @@
     "test:promo-codes": "tsx scripts/test-promo-codes.ts",
     "test:regulations": "tsx scripts/test-regulations.ts",
     "test:jury-closure": "tsx scripts/test-jury-closure.ts",
+    "test:category-scoring": "tsx scripts/test-category-scoring.ts",
     "verify:account-migration": "tsx scripts/verify-account-migration.ts",
     "seed:checkin-samples": "tsx scripts/seed-checkin-samples.ts",
+    "seed:scoring-samples": "tsx scripts/seed-scoring-review-samples.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

@@ -10,6 +10,7 @@ import {
   type ApplicantPurchaseManifest,
 } from "@/features/applications/server/purchase-workflow";
 import { syncApplicationOnChange } from "@/features/google-sheets";
+import { getCategoryScoringDefinition } from "@/features/jury/scoring/category-scoring";
 import { prisma } from "@/shared/lib/prisma";
 
 type CompetitorPaymentEmailPayload = {
@@ -227,6 +228,9 @@ async function handleApplicantNominationCheckoutCompleted(event: Stripe.Event) {
               awardId: selectedAward.awardId,
               categoryId: selectedAward.categoryId,
               status: "PURCHASED",
+              scoringSchema: getCategoryScoringDefinition(
+                selectedAward.categorySlug
+              ) as Prisma.InputJsonValue,
               amount: amountAllocations[index] ?? 0,
               currency: payment.currency,
               ...nominationData,

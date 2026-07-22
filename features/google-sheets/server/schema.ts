@@ -160,11 +160,13 @@ export const SCORES_SHEET: SheetDefinition = {
     { header: "Член жюри", width: 170, wrap: "WRAP" },
     { header: "Участник", width: 170, wrap: "WRAP" },
     { header: "Категория", width: 160, wrap: "WRAP" },
-    { header: "Техника", width: 90, wrap: "CLIP" },
-    { header: "Эстетика", width: 90, wrap: "CLIP" },
-    { header: "Креативность", width: 100, wrap: "CLIP" },
-    { header: "Воздействие", width: 100, wrap: "CLIP" },
-    { header: "Презентация", width: 100, wrap: "CLIP" },
+    { header: "Professional qualification", width: 150, wrap: "WRAP" },
+    { header: "Achievements and recognition", width: 150, wrap: "WRAP" },
+    { header: "Portfolio and materials", width: 150, wrap: "WRAP" },
+    { header: "Professional development", width: 150, wrap: "WRAP" },
+    { header: "Industry contribution", width: 150, wrap: "WRAP" },
+    { header: "Professional standards", width: 150, wrap: "WRAP" },
+    { header: "IBPA level alignment", width: 150, wrap: "WRAP" },
     { header: "Итоговый балл", width: 100, wrap: "CLIP" },
     { header: "Средний балл", width: 110, wrap: "CLIP" },
     { header: "Статус", width: 110, wrap: "CLIP" },
@@ -172,11 +174,11 @@ export const SCORES_SHEET: SheetDefinition = {
     { header: "Дата подачи", width: 150, wrap: "CLIP" },
     { header: "Дата обновления", width: 150, wrap: "CLIP" },
   ],
-  // Статус is column index 14.
+  // Status is column index 15 after the seven regulation criteria.
   conditionalRules: [
-    { columnIndex: 14, equals: "Отправлена", color: COLORS.green },
-    { columnIndex: 14, equals: "Возвращена", color: COLORS.yellow },
-    { columnIndex: 14, equals: "Черновик", color: COLORS.gray },
+    { columnIndex: 15, equals: "Отправлена", color: COLORS.green },
+    { columnIndex: 15, equals: "Возвращена", color: COLORS.yellow },
+    { columnIndex: 15, equals: "Черновик", color: COLORS.gray },
   ],
 };
 
