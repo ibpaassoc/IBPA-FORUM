@@ -73,16 +73,27 @@ function assetKey(item: FilePreviewAsset) {
 }
 
 function AssetUrl({ asset, children }: { asset: FilePreviewAsset; children: (url: string) => ReactNode }) {
-  const [url] = useState(() =>
-    typeof asset.source === "string" ? asset.source : URL.createObjectURL(asset.source),
+  // Create AND revoke the object URL in the same effect so the two are always
+  // paired. Creating it in a useState initializer instead leaves the URL
+  // revoked-but-not-recreated whenever the cleanup runs without the initializer
+  // re-running — which happens on React Strict Mode's dev remount and on any
+  // source change — producing a broken (revoked) <img src>.
+  const [url, setUrl] = useState<string | null>(() =>
+    typeof asset.source === "string" ? asset.source : null,
   );
 
   useEffect(() => {
-    if (typeof asset.source === "string") return;
-    return () => URL.revokeObjectURL(url);
-  }, [asset.source, url]);
+    if (typeof asset.source === "string") {
+      setUrl(asset.source);
+      return;
+    }
+    const objectUrl = URL.createObjectURL(asset.source);
+    setUrl(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [asset.source]);
 
-  return children(url);
+  if (url === null) return null;
+  return <>{children(url)}</>;
 }
 
 function PreviewAssetUrl({
