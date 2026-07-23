@@ -302,6 +302,7 @@ const en = {
   },
   common: {
     applyNow: "Apply",
+    account: "Account",
     applyAsParticipant: "Apply as Participant",
     applyAsJury: "Apply as Judge",
     browseCategories: "Browse Categories",
@@ -2459,6 +2460,7 @@ const ru: typeof en = {
   },
   common: {
     applyNow: "Подать заявку",
+    account: "Аккаунт",
     applyAsParticipant: "Подать заявку участника",
     applyAsJury: "Подать заявку судьи",
     browseCategories: "Смотреть категории",
@@ -4622,6 +4624,7 @@ const ua: typeof en = {
   },
   common: {
     applyNow: "Подати заявку",
+    account: "Акаунт",
     applyAsParticipant: "Подати заявку учасника",
     applyAsJury: "Подати заявку судді",
     browseCategories: "Дивитись Категорії",

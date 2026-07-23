@@ -46,8 +46,8 @@ export default function JuryMenu({
   }, [mobile, open]);
 
   const menuItems = [
-    { href: "/apply", label: t.common.applyAsParticipant },
-    { href: "/account/login", label: t.common.juryAccount },
+    { href: "/apply", label: t.common.applyNow },
+    { href: "/account/login", label: t.common.account },
   ];
 
   if (mobile) {

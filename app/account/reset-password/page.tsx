@@ -1,4 +1,7 @@
+import { redirect } from "next/navigation";
 import ResetPasswordContent from "@/features/auth/components/ResetPasswordContent";
+import { getAppSession } from "@/auth";
+import { getDashboardPathForRole } from "@/features/account/server/accounts";
 import { validateAccountToken } from "@/features/account/server/tokens";
 
 export default async function AccountResetPasswordPage({
@@ -6,6 +9,12 @@ export default async function AccountResetPasswordPage({
 }: {
   searchParams: Promise<{ token?: string }>;
 }) {
+  const session = await getAppSession();
+
+  if (session?.user?.role) {
+    redirect(getDashboardPathForRole(session.user.role));
+  }
+
   const { token } = await searchParams;
 
   if (!token) {
