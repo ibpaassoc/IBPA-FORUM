@@ -77,11 +77,11 @@ export default function HomeHero() {
 
                 <div className="flex flex-wrap items-center justify-center gap-3">
                   <HeroSecondaryButton href="/apply">
-                    {t.common.applyAsParticipant}
+                    {t.common.applyNow}
                   </HeroSecondaryButton>
 
-                  <HeroSecondaryButton href="/jury">
-                    {t.common.applyAsJury}
+                  <HeroSecondaryButton href="/account/login">
+                    {t.common.account}
                   </HeroSecondaryButton>
                 </div>
               </div>
@@ -121,11 +121,11 @@ export default function HomeHero() {
 
                 <div className="flex flex-wrap items-center justify-center gap-3">
                   <HeroSecondaryButton href="/apply">
-                    {t.common.applyAsParticipant}
+                    {t.common.applyNow}
                   </HeroSecondaryButton>
 
-                  <HeroSecondaryButton href="/jury">
-                    {t.common.applyAsJury}
+                  <HeroSecondaryButton href="/account/login">
+                    {t.common.account}
                   </HeroSecondaryButton>
                 </div>
               </motion.div>
