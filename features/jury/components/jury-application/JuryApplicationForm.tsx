@@ -377,13 +377,15 @@ export default function JuryApplicationForm({ accessToken }: { accessToken: stri
 
       const [profilePhotoResult, ...certResults] = await Promise.all([
         profilePhotoFile
-          ? // Profile photo is published on the public jury page, so it is stored
-            // as a public blob and its URL is served directly (no proxy).
+          ? // The Blob store is configured for private access only, so the
+            // profile photo is uploaded as a private blob (like certifications)
+            // and served on the public jury page through the
+            // /api/jury/profile-photo/[fileId] proxy.
             upload(
               `jury/${uploadSessionId}/profilePhoto-1-${sanitizeBlobName(profilePhotoFile.name)}`,
               profilePhotoFile,
               {
-                access: "public",
+                access: "private",
                 handleUploadUrl: `/api/jury/upload?token=${encodeURIComponent(accessToken)}`,
                 multipart: true,
               }
@@ -425,8 +427,9 @@ export default function JuryApplicationForm({ accessToken }: { accessToken: stri
             fileName: profilePhotoFile.name,
             mimeType: profilePhotoFile.type || "image/jpeg",
             fileSize: profilePhotoFile.size,
-            // Public blob URL, rendered directly on the jury page.
-            storageKey: profilePhotoResult.url,
+            // Private blob pathname; resolveJuryPhotoSrc routes it through the
+            // profile-photo proxy for display.
+            storageKey: profilePhotoResult.pathname,
           })
         );
       }

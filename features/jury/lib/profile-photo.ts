@@ -1,13 +1,13 @@
 /**
  * Centralized resolution for jury profile photos.
  *
- * Jury profile photos are stored as **public** Vercel Blobs, and the public blob
- * `url` is persisted in `JuryApplicationFile.storageKey`. Older records were
- * stored as **private** blobs, where `storageKey` holds only the blob pathname.
+ * Jury profile photos are stored as **private** Vercel Blobs (the store only
+ * allows private access), where `storageKey` holds the blob pathname. Some early
+ * records may instead hold a fully-qualified public blob `url`.
  *
  * `resolveJuryPhotoSrc` normalizes both shapes into a single `<Image>` src:
- *  - public URL  -> used directly (served straight from Blob CDN)
- *  - legacy path -> served through the `/api/jury/profile-photo/[fileId]` proxy
+ *  - public URL   -> used directly (served straight from Blob CDN)
+ *  - private path -> served through the `/api/jury/profile-photo/[fileId]` proxy
  *
  * Keeping this logic in one place means the public grid, the active-members
  * carousel, and the proxy route all agree on how a photo is located.
