@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { resetPasswordAction } from "@/features/auth/server/reset-password.actions";
 
@@ -13,7 +14,19 @@ const labelClass =
 
 export default function ResetPasswordForm({ token }: { token: string }) {
   const { t } = useLanguage();
+  const router = useRouter();
   const [state, formAction, isPending] = useActionState(resetPasswordAction, undefined);
+
+  useEffect(() => {
+    if (!state?.success) return;
+
+    const timer = setTimeout(() => {
+      router.replace("/account/login");
+      router.refresh();
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [router, state]);
 
   if (state?.success) {
     return (
