@@ -110,12 +110,13 @@ export default function AdditionalInfoForm({
       const certBlobs: BlobFileInfo[] = [];
 
       if (profilePhotoFile) {
-        // Public blob: shown on the public jury page once approved (served by URL).
+        // Private blob (the store only allows private access); shown on the public
+        // jury page once approved via the /api/jury/profile-photo/[fileId] proxy.
         const result = await upload(
           `jury/${uploadSessionId}/profilePhoto-1-${sanitizeBlobName(profilePhotoFile.name)}`,
           profilePhotoFile,
           {
-            access: "public",
+            access: "private",
             handleUploadUrl: `/api/jury/upload?infoToken=${encodeURIComponent(token)}`,
             multipart: true,
           }
@@ -124,7 +125,7 @@ export default function AdditionalInfoForm({
           fileName: profilePhotoFile.name,
           mimeType: profilePhotoFile.type || "image/jpeg",
           fileSize: profilePhotoFile.size,
-          storageKey: result.url,
+          storageKey: result.pathname,
         };
       }
 

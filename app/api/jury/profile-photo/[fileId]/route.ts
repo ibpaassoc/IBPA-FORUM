@@ -5,9 +5,10 @@ import { isPublicBlobUrl } from "@/features/jury/lib/profile-photo";
 /**
  * Serves an approved jury member's profile photo.
  *
- * New photos are stored as public blobs; `storageKey` holds the public URL and
- * we simply redirect to it. Legacy photos are private blobs (`storageKey` holds
- * a pathname) and are streamed through this route using the read/write token.
+ * Photos are stored as private blobs (`storageKey` holds a pathname) and are
+ * streamed through this route using the read/write token. Some early records may
+ * instead hold a public blob URL, which `resolveJuryPhotoSrc` serves directly so
+ * those never reach this route.
  *
  * The route never throws and never returns an empty/`null` body: any failure
  * (missing record, missing token, blob 403/404, unexpected error) resolves to a
