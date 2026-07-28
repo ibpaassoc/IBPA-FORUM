@@ -8,6 +8,7 @@ import {
   computeTicketAmountCents,
   type TicketAmountBreakdown,
 } from "@/features/tickets/lib/pricing";
+import { getActiveTicketDiscount } from "@/features/tickets/server/ticket-discount";
 
 const schema = z.discriminatedUnion("paymentFlow", [
   z.object({
@@ -40,11 +41,15 @@ export async function POST(request: Request) {
     let eligibleAmountCents: number;
 
     if (parsed.data.paymentFlow === "TICKETS") {
+      const activeTicketDiscount = await getActiveTicketDiscount();
       ticketAmounts = computeTicketAmountCents({
         type: parsed.data.ticketType,
         isIbpaMember: parsed.data.isIbpaMember,
         galaDinner: parsed.data.galaDinner,
-        earlyBirdDiscount: null,
+        ticketDiscount:
+          activeTicketDiscount?.kind === "permanent30"
+            ? activeTicketDiscount.discount
+            : null,
       });
       eligibleAmountCents = ticketAmounts.ticketCents;
     } else {

@@ -6,8 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
 import { Zap } from "lucide-react";
 import { PRICING } from "@/data/pricing";
-import { applyDiscountToPrice } from "@/features/tickets/types";
-import { useEarlyBird } from "@/features/tickets/useEarlyBird";
+import { applyDiscountToCents, applyDiscountToPrice } from "@/features/tickets/types";
+import { useTicketDiscount } from "@/features/tickets/useEarlyBird";
 import { validateInstagramInput } from "@/features/tickets/lib/instagram";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
@@ -164,7 +164,7 @@ export default function TicketForm() {
   const [promoPending, setPromoPending] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { discount } = useEarlyBird();
+  const { ticketDiscount, discount } = useTicketDiscount();
 
   const {
     register,
@@ -243,8 +243,12 @@ export default function TicketForm() {
   const galaPrice = PRICING.forumTickets.ibpaMembers.galaDinner;
   const rawTicketCents = rawTicketPriceStr ? Math.round(priceStrToNum(rawTicketPriceStr) * 100) : 0;
   const rawGalaCents = galaDinner ? Math.round(priceStrToNum(galaPrice) * 100) : 0;
+  const automaticDiscountStacks = ticketDiscount.kind === "permanent30";
+  const automaticTicketCents = discount && automaticDiscountStacks
+    ? applyDiscountToCents(rawTicketCents, discount)
+    : rawTicketCents;
   const activePromoPreview = promoPreview &&
-    promoPreview.originalAmountCents === rawTicketCents &&
+    promoPreview.originalAmountCents === automaticTicketCents &&
     promoPreview.galaDinnerAmountCents === rawGalaCents
       ? promoPreview
       : null;
@@ -259,6 +263,8 @@ export default function TicketForm() {
   const total = activePromoPreview
     ? activePromoPreview.finalAmountCents / 100
     : Math.round((ticketNum + galaNum) * 100) / 100;
+  const discountName = ticketDiscount.kind === "permanent30" ? "Permanent 30" : "Early Bird";
+  const discountNote = ticketDiscount.kind === "permanent30" ? "Available now." : "Limited time.";
 
   const promoMessage = useCallback((errorCode?: string) => {
     if (errorCode === "DISABLED") return promoText.promoCodeDisabled;
@@ -387,16 +393,16 @@ export default function TicketForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
 
-      {/* Early bird notice */}
+      {/* Active automatic ticket discount */}
       {discount && (
         <div className="flex items-center gap-2.5 rounded-[12px] border border-[var(--color-blue-soft)] bg-[var(--color-blue-wash)] px-4 py-3">
           <Zap size={15} className="shrink-0 text-[var(--color-blue)]" strokeWidth={2} />
           <div>
-            <p className="text-[0.82rem] font-semibold text-[var(--color-ink)]">Early Bird Pricing</p>
+            <p className="text-[0.82rem] font-semibold text-[var(--color-ink)]">{discountName} Pricing</p>
             <p className="text-[0.75rem] text-[var(--color-ink-soft)]">
               {discount.type === "percent"
-                ? `${discount.value}% off all forum passes. Gala dinner excluded. Limited time.`
-                : `$${(discount.value / 100).toFixed(0)} off all forum passes. Gala dinner excluded. Limited time.`}
+                ? `${discount.value}% off all forum passes. Gala dinner excluded. ${discountNote}`
+                : `$${(discount.value / 100).toFixed(0)} off all forum passes. Gala dinner excluded. ${discountNote}`}
             </p>
           </div>
         </div>
@@ -675,7 +681,7 @@ export default function TicketForm() {
                       )}
                       {discount && !activePromoPreview && (
                         <span className="ml-2 inline-flex items-center gap-0.5 rounded-full bg-[var(--color-blue-wash)] px-2 py-0.5 text-[0.68rem] font-semibold uppercase tracking-wide text-[var(--color-blue)]">
-                          <Zap size={8} strokeWidth={2.5} /> Early Bird
+                          <Zap size={8} strokeWidth={2.5} /> {discountName}
                         </span>
                       )}
                     </span>
@@ -693,6 +699,22 @@ export default function TicketForm() {
                 )}
                 {activePromoPreview ? (
                   <>
+                    {discount && automaticDiscountStacks ? (
+                      <>
+                        <div className="flex justify-between text-[0.88rem] text-[var(--color-blue)]">
+                          <span>{discountName} ticket discount</span>
+                          <span className="font-semibold">
+                            -{centsToMoney(rawTicketCents - automaticTicketCents)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-[0.88rem]">
+                          <span className="text-[var(--color-ink-soft)]">Ticket subtotal after {discountName}</span>
+                          <span className="font-semibold text-[var(--color-ink)]">
+                            {centsToMoney(automaticTicketCents)}
+                          </span>
+                        </div>
+                      </>
+                    ) : null}
                     <div className="flex justify-between text-[0.88rem] text-emerald-700">
                       <span>Ticket discount {activePromoPreview.discountPercent}%</span>
                       <span className="font-semibold">
@@ -719,7 +741,7 @@ export default function TicketForm() {
                 </div>
                 {discount && !activePromoPreview && (
                   <p className="text-[0.72rem] text-[var(--color-blue)]">
-                    Early Bird discount applied to forum pass only.
+                    {discountName} discount applied to forum pass only.
                   </p>
                 )}
               </div>

@@ -9,6 +9,7 @@ import {
   DashboardPageHeader,
 } from "@/shared/components/admin/DashboardUI";
 import { adminT } from "@/lib/i18n/admin";
+import { getSiteSettingBool } from "@/features/settings/server/site-settings";
 
 export default async function AdminDiscountsPage() {
   await requireAdmin();
@@ -34,5 +35,16 @@ export default async function AdminDiscountsPage() {
     throw error;
   }
 
-  return <DiscountManagementPage promos={promos} />;
+  const [initialEarlyBirdEnabled, initialPermanent30Enabled] = await Promise.all([
+    getSiteSettingBool("earlyBirdEnabled"),
+    getSiteSettingBool("permanentTickets30Enabled"),
+  ]);
+
+  return (
+    <DiscountManagementPage
+      promos={promos}
+      initialEarlyBirdEnabled={initialEarlyBirdEnabled}
+      initialPermanent30Enabled={initialPermanent30Enabled}
+    />
+  );
 }

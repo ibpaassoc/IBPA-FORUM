@@ -1,14 +1,24 @@
-export type EarlyBirdDiscount =
+export type TicketDiscount =
   | { type: "percent"; value: number }
   | { type: "amount"; value: number; currency: string }
   | null;
 
-export type EarlyBirdStatus = {
+export type TicketDiscountKind = "earlyBird" | "permanent30";
+
+export type TicketDiscountStatus = {
   enabled: boolean;
-  discount: EarlyBirdDiscount;
+  kind: TicketDiscountKind | null;
+  discount: TicketDiscount;
 };
 
-export function applyDiscountToPrice(priceStr: string, discount: EarlyBirdDiscount): string | null {
+// Kept for the legacy Early Bird endpoint and older non-interactive sections.
+export type EarlyBirdDiscount = TicketDiscount;
+export type EarlyBirdStatus = {
+  enabled: boolean;
+  discount: TicketDiscount;
+};
+
+export function applyDiscountToPrice(priceStr: string, discount: TicketDiscount): string | null {
   if (!discount) return null;
   const dollars = parseInt(priceStr.replace("$", ""), 10);
   let discounted: number;
@@ -20,7 +30,7 @@ export function applyDiscountToPrice(priceStr: string, discount: EarlyBirdDiscou
   return `$${discounted % 1 === 0 ? discounted.toFixed(0) : discounted.toFixed(2)}`;
 }
 
-export function applyDiscountToCents(amountCents: number, discount: EarlyBirdDiscount): number {
+export function applyDiscountToCents(amountCents: number, discount: TicketDiscount): number {
   if (!discount) return amountCents;
   if (discount.type === "percent") {
     return Math.round(amountCents * (1 - discount.value / 100));

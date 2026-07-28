@@ -4,14 +4,11 @@ import { prisma } from "@/shared/lib/prisma";
 import { reserveTicketForCheckout } from "./ticket-repository";
 import { createTicketCheckoutSession } from "./ticket-checkout";
 import { verifyIbpaMembership } from "./ibpa-membership";
-import { getEarlyBirdDiscount } from "./early-bird";
+import { getActiveTicketDiscount } from "./ticket-discount";
 import { normalizeInstagramHandle } from "@/features/tickets/lib/instagram";
 import { normalizeTicketEmail } from "@/features/tickets/lib/normalize-email";
 import { computeTicketAmountCents } from "@/features/tickets/lib/pricing";
-import {
-  getStripePromoDiscountId,
-  validatePromoCodeForFlow,
-} from "@/features/promos/server/promo-service";
+import { validatePromoCodeForFlow } from "@/features/promos/server/promo-service";
 import { syncTicketOnChange } from "@/features/google-sheets";
 import type { Language } from "@/lib/i18n/translations";
 
@@ -82,30 +79,31 @@ export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput)
 
   const ticketId = reservation.ticketId;
 
+  const activeTicketDiscount = await getActiveTicketDiscount();
+  const automaticDiscountStacks = activeTicketDiscount?.kind === "permanent30";
   const promoBaseAmounts = computeTicketAmountCents({
     type: input.type,
     isIbpaMember: input.isIbpaMember,
     galaDinner: input.galaDinner,
-    earlyBirdDiscount: null,
+    ticketDiscount: automaticDiscountStacks ? activeTicketDiscount?.discount ?? null : null,
   });
   const appliedPromo = await validatePromoCodeForFlow({
     keyword: input.promoCode,
     paymentFlow: "TICKETS",
     amountCents: promoBaseAmounts.ticketCents,
   });
-  const earlyBirdDiscount = appliedPromo ? null : await getEarlyBirdDiscount();
-  const amounts = appliedPromo
-    ? promoBaseAmounts
-    : computeTicketAmountCents({
+  const automaticDiscountApplies = Boolean(activeTicketDiscount) && (!appliedPromo || automaticDiscountStacks);
+  const amounts = automaticDiscountApplies
+    ? computeTicketAmountCents({
         type: input.type,
         isIbpaMember: input.isIbpaMember,
         galaDinner: input.galaDinner,
-        earlyBirdDiscount,
-      });
+        ticketDiscount: activeTicketDiscount?.discount ?? null,
+      })
+    : promoBaseAmounts;
   const paymentAmountCents = appliedPromo
-    ? appliedPromo.finalAmountCents + promoBaseAmounts.galaCents
+    ? appliedPromo.finalAmountCents + amounts.galaCents
     : amounts.totalCents;
-  const promoDiscountId = appliedPromo ? getStripePromoDiscountId(appliedPromo.key) : null;
 
   const session = await createTicketCheckoutSession({
     ticketId,
@@ -113,9 +111,10 @@ export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput)
     type: input.type,
     galaDinner: input.galaDinner,
     isIbpaMember: input.isIbpaMember,
-    earlyBirdDiscountedAmountCents: amounts.discountedTicketCents,
+    ticketAmountCents:
+      automaticDiscountApplies || appliedPromo ? appliedPromo?.finalAmountCents ?? amounts.ticketCents : null,
+    ticketDiscountLabel: automaticDiscountApplies ? activeTicketDiscount?.kind ?? null : null,
     locale: input.locale,
-    promoDiscountId,
   });
 
   if (session.amountTotalCents !== paymentAmountCents) {

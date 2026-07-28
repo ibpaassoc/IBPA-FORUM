@@ -22,9 +22,14 @@ function getGalaDinnerPriceId(): string {
   return requireEnv(["GALA_DINNER"]);
 }
 
-function ticketLabel(type: TicketType, earlyBird: boolean): string {
+function ticketLabel(
+  type: TicketType,
+  discountKind: "earlyBird" | "permanent30" | null
+): string {
   const base = type === "ONE_DAY" ? "1-Day Forum Pass" : "2-Day Forum Pass";
-  return earlyBird ? `${base} — Early Bird` : base;
+  if (discountKind === "earlyBird") return `${base} — Early Bird`;
+  if (discountKind === "permanent30") return `${base} — Permanent 30`;
+  return base;
 }
 
 export async function createTicketCheckoutSession({
@@ -33,29 +38,29 @@ export async function createTicketCheckoutSession({
   type,
   galaDinner,
   isIbpaMember,
-  earlyBirdDiscountedAmountCents,
+  ticketAmountCents,
+  ticketDiscountLabel,
   locale,
-  promoDiscountId,
 }: {
   ticketId: string;
   email: string;
   type: TicketType;
   galaDinner: boolean;
   isIbpaMember: boolean;
-  earlyBirdDiscountedAmountCents: number | null;
+  ticketAmountCents: number | null;
+  ticketDiscountLabel: "earlyBird" | "permanent30" | null;
   locale: Language;
-  promoDiscountId?: string | null;
 }) {
   const stripe = getStripe();
   const appUrl = getAppUrl();
-  const isEarlyBird = earlyBirdDiscountedAmountCents !== null;
+  const hasCustomTicketAmount = ticketAmountCents !== null;
 
-  const forumPassLineItem = isEarlyBird
+  const forumPassLineItem = hasCustomTicketAmount
     ? {
         price_data: {
           currency: "usd",
-          unit_amount: earlyBirdDiscountedAmountCents,
-          product_data: { name: ticketLabel(type, true) },
+          unit_amount: ticketAmountCents,
+          product_data: { name: ticketLabel(type, ticketDiscountLabel) },
         },
         quantity: 1,
       }
@@ -87,7 +92,6 @@ export async function createTicketCheckoutSession({
     metadata,
     payment_intent_data: { metadata },
     line_items: lineItems,
-    ...(promoDiscountId ? { discounts: [{ coupon: promoDiscountId }] } : {}),
   });
 
   if (!session.url) {

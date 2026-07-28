@@ -155,7 +155,7 @@ for (const scenario of ticketScenarios) {
     type: scenario.type,
     isIbpaMember: false,
     galaDinner: scenario.galaDinner,
-    earlyBirdDiscount: null,
+    ticketDiscount: null,
   });
   const expectedDiscount = Math.round(amounts.ticketCents * 0.3);
   const expectedTicketSubtotal = amounts.ticketCents - expectedDiscount;
@@ -219,10 +219,11 @@ assert(checkoutSessions.includes("discounts: [{ coupon: promoDiscountId }]"), "a
 assert(checkoutSessions.includes("originalAmountCents"), "application line item uses original amount");
 
 const ticketService = read("features/tickets/server/ticket-service.ts");
-assert(ticketService.includes("earlyBirdDiscount = appliedPromo ? null"), "ticket promo prevents early-bird stacking");
+assert(ticketService.includes("getActiveTicketDiscount"), "ticket checkout resolves the active automatic discount server-side");
 assert(!ticketService.includes("frontendTotal"), "ticket checkout does not accept frontend totals");
-assert(ticketService.includes("amountCents: promoBaseAmounts.ticketCents"), "ticket promo validates the forum pass only");
-assert(ticketService.includes("appliedPromo.finalAmountCents + promoBaseAmounts.galaCents"), "ticket payment adds full Gala price after discount");
+assert(ticketService.includes("amountCents: promoBaseAmounts.ticketCents"), "ticket promo validates the server-calculated eligible forum pass only");
+assert(ticketService.includes("appliedPromo.finalAmountCents + amounts.galaCents"), "ticket payment adds full Gala price after stacked discounts");
+assert(ticketService.includes("ticketAmountCents"), "ticket checkout uses the final server-calculated ticket amount");
 assert(ticketService.includes("session.amountTotalCents !== paymentAmountCents"), "server rejects a Stripe total that differs from the modal quote");
 
 const purchaseWorkflow = read("features/applications/server/purchase-workflow.ts");

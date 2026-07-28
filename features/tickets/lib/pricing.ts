@@ -1,5 +1,5 @@
 import type { TicketType } from "@prisma/client";
-import { applyDiscountToCents, type EarlyBirdDiscount } from "@/features/tickets/types";
+import { applyDiscountToCents, type TicketDiscount } from "@/features/tickets/types";
 
 /**
  * Canonical server-side ticket pricing (in cents).
@@ -17,7 +17,7 @@ export const TICKET_AMOUNTS_CENTS: Record<TicketType, { ibpa: number; standard: 
 export const GALA_DINNER_CENTS = 15000;
 
 export type TicketAmountBreakdown = {
-  /** Forum pass price after any early-bird discount. */
+  /** Forum pass price after any active ticket discount. */
   ticketCents: number;
   /** Gala dinner add-on, or 0 when not selected. Never discounted. */
   galaCents: number;
@@ -29,25 +29,25 @@ export type TicketAmountBreakdown = {
 
 /**
  * Compute the amount owed for a ticket from its selection and the canonical
- * price table. The early-bird discount (when active) applies to the forum pass
+ * price table. The active ticket discount (when present) applies to the forum pass
  * only — never to the gala dinner — matching the public checkout summary.
  */
 export function computeTicketAmountCents({
   type,
   isIbpaMember,
   galaDinner,
-  earlyBirdDiscount,
+  ticketDiscount,
 }: {
   type: TicketType;
   isIbpaMember: boolean;
   galaDinner: boolean;
-  earlyBirdDiscount: EarlyBirdDiscount;
+  ticketDiscount: TicketDiscount;
 }): TicketAmountBreakdown {
   const memberKey = isIbpaMember ? "ibpa" : "standard";
   const baseTicketCents = TICKET_AMOUNTS_CENTS[type][memberKey];
 
-  const discountedTicketCents = earlyBirdDiscount
-    ? applyDiscountToCents(baseTicketCents, earlyBirdDiscount)
+  const discountedTicketCents = ticketDiscount
+    ? applyDiscountToCents(baseTicketCents, ticketDiscount)
     : null;
 
   const ticketCents = discountedTicketCents ?? baseTicketCents;

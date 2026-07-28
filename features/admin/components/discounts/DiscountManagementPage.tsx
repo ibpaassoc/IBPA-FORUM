@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { BadgePercent, Save } from "lucide-react";
+import { BadgePercent, Save, Tag } from "lucide-react";
 import type { PromoCode } from "@prisma/client";
 import {
   DashboardBadge,
@@ -19,6 +19,91 @@ function flowLabel(flow: PromoCode["paymentFlow"]) {
   return flow === "APPLICATIONS"
     ? adminT.discounts.flows.applications
     : adminT.discounts.flows.tickets;
+}
+
+function AutomaticTicketDiscounts({
+  initialEarlyBirdEnabled,
+  initialPermanent30Enabled,
+}: {
+  initialEarlyBirdEnabled: boolean;
+  initialPermanent30Enabled: boolean;
+}) {
+  const [enabled, setEnabled] = useState({
+    earlyBird: initialEarlyBirdEnabled,
+    permanent30: initialPermanent30Enabled,
+  });
+  const [saving, setSaving] = useState<"earlyBird" | "permanent30" | null>(null);
+  const t = adminT.discounts;
+
+  async function toggle(kind: "earlyBird" | "permanent30") {
+    if (saving) return;
+    setSaving(kind);
+    try {
+      const response = await fetch("/api/admin/settings/ticket-discount", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ kind, enabled: !enabled[kind] }),
+      });
+      if (!response.ok) return;
+      const data = await response.json() as {
+        earlyBirdEnabled: boolean;
+        permanent30Enabled: boolean;
+      };
+      setEnabled({
+        earlyBird: data.earlyBirdEnabled,
+        permanent30: data.permanent30Enabled,
+      });
+    } finally {
+      setSaving(null);
+    }
+  }
+
+  return (
+    <DashboardCard className="p-5">
+      <div className="flex items-start gap-3">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-[18px] bg-[rgba(114,160,193,0.1)] text-[var(--color-blue)]">
+          <Tag aria-hidden size={18} strokeWidth={1.5} />
+        </div>
+        <div>
+          <h2 className="font-[var(--font-title-family)] text-[1.7rem] font-light leading-tight text-[var(--color-ink)]">
+            {t.automaticTitle}
+          </h2>
+          <p className="mt-1 max-w-2xl text-sm leading-6 text-[var(--color-ink-soft)]">{t.automaticDescription}</p>
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        {(["earlyBird", "permanent30"] as const).map((kind) => {
+          const active = enabled[kind];
+          const label = kind === "earlyBird" ? t.earlyBird : t.permanent30;
+          return (
+            <div key={kind} className="flex items-center justify-between gap-3 rounded-[18px] border border-[rgba(114,160,193,0.18)] bg-white/62 px-4 py-3">
+              <div>
+                <p className="text-sm font-semibold text-[var(--color-ink)]">{label}</p>
+                <p className="mt-0.5 text-[0.74rem] text-[var(--color-ink-soft)]">
+                  {active ? t.automaticOn : t.automaticOff}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => void toggle(kind)}
+                disabled={saving !== null}
+                aria-label={`${active ? t.disable : t.enable}: ${label}`}
+                aria-pressed={active}
+                className="relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none disabled:opacity-50"
+                style={{ backgroundColor: active ? "var(--color-blue)" : "rgba(37,42,45,0.16)" }}
+              >
+                <span
+                  className="inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-200"
+                  style={{ transform: active ? "translateX(20px)" : "translateX(2px)" }}
+                />
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    </DashboardCard>
+  );
 }
 
 function PromoCard({ promo }: { promo: PromoCode }) {
@@ -116,7 +201,15 @@ function PromoCard({ promo }: { promo: PromoCode }) {
   );
 }
 
-export default function DiscountManagementPage({ promos }: { promos: PromoCode[] }) {
+export default function DiscountManagementPage({
+  promos,
+  initialEarlyBirdEnabled,
+  initialPermanent30Enabled,
+}: {
+  promos: PromoCode[];
+  initialEarlyBirdEnabled: boolean;
+  initialPermanent30Enabled: boolean;
+}) {
   const t = adminT.discounts;
 
   return (
@@ -124,6 +217,11 @@ export default function DiscountManagementPage({ promos }: { promos: PromoCode[]
       <DashboardPageHeader
         label={t.label}
         title={t.title}
+      />
+
+      <AutomaticTicketDiscounts
+        initialEarlyBirdEnabled={initialEarlyBirdEnabled}
+        initialPermanent30Enabled={initialPermanent30Enabled}
       />
 
       <div className="grid gap-4 xl:grid-cols-2">
