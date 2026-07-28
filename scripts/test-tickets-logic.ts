@@ -94,28 +94,24 @@ eq(
 );
 eq(
   decideTicketReplacement([{ id: "paid1", status: "PAID" }]),
-  { kind: "blocked-paid", paidTicketId: "paid1" },
-  "paid → blocked"
+  { kind: "create", deleteIds: [] },
+  "paid does not block another ticket purchase"
 );
 eq(
   decideTicketReplacement([{ id: "checked", status: "CHECKED_TWO_DAY" }]),
-  { kind: "blocked-paid", paidTicketId: "checked" },
-  "checked-in → blocked (treated as paid)"
+  { kind: "create", deleteIds: [] },
+  "checked-in ticket does not block another ticket purchase"
 );
 {
-  // Paid + unpaid for same email → blocked, and the paid id is NEVER in deleteIds.
+  // Paid + unpaid for same email -> reuse the unpaid row and never touch the paid one.
   const decision = decideTicketReplacement([
     { id: "pending", status: "PENDING" },
     { id: "paid", status: "PAID" },
   ]);
-  eq(decision.kind, "blocked-paid", "mixed paid+unpaid → blocked");
-  assert(
-    decision.kind === "blocked-paid" && decision.paidTicketId === "paid",
-    "mixed → identifies the paid ticket"
-  );
-  assert(
-    !("deleteIds" in decision),
-    "blocked decision deletes nothing (paid ticket protected)"
+  eq(
+    decision,
+    { kind: "reuse", reuseId: "pending", deleteIds: [] },
+    "mixed paid+unpaid reuses unpaid checkout"
   );
 }
 

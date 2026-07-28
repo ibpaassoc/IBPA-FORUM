@@ -12,13 +12,6 @@ import { validatePromoCodeForFlow } from "@/features/promos/server/promo-service
 import { syncTicketOnChange } from "@/features/google-sheets";
 import type { Language } from "@/lib/i18n/translations";
 
-export class TicketConflictError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "TicketConflictError";
-  }
-}
-
 export class InvalidCertError extends Error {
   constructor(message: string) {
     super(message);
@@ -57,8 +50,8 @@ export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput)
     }
   }
 
-  // Reserve the single active ticket for this email. If a paid ticket already
-  // exists we refuse here; if an unpaid one exists it is safely replaced.
+  // Reserve the reusable unpaid checkout for this email. Paid tickets are left
+  // intact, so the same email can buy another ticket.
   const reservation = await reserveTicketForCheckout({
     fullName,
     email,
@@ -69,13 +62,6 @@ export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput)
     isIbpaMember: input.isIbpaMember,
     ibpaCertNumber: input.ibpaCertNumber?.trim() || null,
   });
-
-  if (!reservation.ok) {
-    // Message is overridden with a localized string at the API boundary.
-    throw new TicketConflictError(
-      "A ticket has already been purchased for this email address."
-    );
-  }
 
   const ticketId = reservation.ticketId;
 

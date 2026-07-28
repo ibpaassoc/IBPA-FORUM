@@ -34,27 +34,25 @@ export async function createTicket(input: CreateTicketInput) {
   });
 }
 
-export type ReserveTicketResult =
-  | { ok: true; ticketId: string }
-  | { ok: false; reason: "already_paid" };
+export type ReserveTicketResult = { ok: true; ticketId: string };
 
 /**
- * Atomically reserve the single active ticket for a (normalized) email.
+ * Atomically reserve the single unpaid checkout ticket for a normalized email.
  *
  * Everything runs inside one transaction guarded by a Postgres transaction-level
- * advisory lock keyed on the email, so two near-simultaneous submissions for the
- * same address are serialized and can never produce two active tickets:
+ * advisory lock keyed on the email, so two near-simultaneous unpaid submissions
+ * for the same address are serialized:
  *
- *   • If a confirmed-paid ticket exists → nothing is touched; returns already_paid.
  *   • If unpaid ticket(s) exist → the newest is refreshed in place with the new
  *     details (fresh token, Stripe references cleared, old pending payments
  *     removed) and any older unpaid duplicates are deleted. Reusing the row keeps
  *     the Google Sheets sync updating the same line instead of orphaning it.
- *   • Otherwise a brand-new ticket is created.
+ *   • Otherwise a brand-new ticket is created. Confirmed tickets for the same
+ *     email are left intact and do not block another purchase.
  *
  * Deleting a ticket cascades to its Payment rows (see schema onDelete: Cascade),
- * so no orphaned payment/session references are left behind. A paid ticket is
- * never deleted.
+ * so no orphaned payment/session references are left behind. Paid tickets are
+ * never deleted or modified by this reservation step.
  */
 export async function reserveTicketForCheckout(
   input: CreateTicketInput
@@ -73,10 +71,6 @@ export async function reserveTicketForCheckout(
     });
 
     const decision = decideTicketReplacement(existing);
-
-    if (decision.kind === "blocked-paid") {
-      return { ok: false, reason: "already_paid" };
-    }
 
     if (decision.deleteIds.length > 0) {
       await tx.ticket.deleteMany({ where: { id: { in: decision.deleteIds } } });

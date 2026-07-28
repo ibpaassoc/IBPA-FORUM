@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ticketApiSchema } from "@/features/tickets/schemas/ticket-form-schema";
-import { initiateTicketPurchase, TicketConflictError, InvalidCertError } from "@/features/tickets/server/ticket-service";
+import { initiateTicketPurchase, InvalidCertError } from "@/features/tickets/server/ticket-service";
 import { isProduction, validateProductionEnv } from "@/lib/env";
 import { getServerLanguage } from "@/lib/i18n/server";
-import { translations } from "@/lib/i18n/translations";
 import { PromoCodeError } from "@/features/promos/server/promo-service";
 
 function getErrorMessage(error: unknown) {
@@ -37,14 +36,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ checkoutUrl: result.checkoutUrl }, { status: 201 });
   } catch (error) {
-    if (error instanceof TicketConflictError) {
-      // A paid ticket already exists for this email — localized, per site language.
-      return NextResponse.json(
-        { message: translations[locale].ticketFlow.alreadyPurchased },
-        { status: 409 }
-      );
-    }
-
     if (error instanceof InvalidCertError) {
       return NextResponse.json({ message: error.message }, { status: 422 });
     }
