@@ -1,27 +1,27 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { EarlyBirdStatus } from "@/features/tickets/types";
+import type { TicketDiscountStatus } from "@/features/tickets/types";
 
 /**
- * Fetches the current Early Bird status from `/api/early-bird` and exposes the
- * active discount (or `null` when disabled). Shared by every client surface that
- * displays Early Bird pricing so the fetch logic lives in exactly one place.
+ * Fetches the active automatic ticket discount and exposes it in one place for
+ * all ticket-pricing surfaces.
  */
-export function useEarlyBird() {
-  const [earlyBird, setEarlyBird] = useState<EarlyBirdStatus>({
+export function useTicketDiscount() {
+  const [ticketDiscount, setTicketDiscount] = useState<TicketDiscountStatus>({
     enabled: false,
+    kind: null,
     discount: null,
   });
 
   useEffect(() => {
-    fetch("/api/early-bird")
+    fetch("/api/ticket-discount", { cache: "no-store" })
       .then((r) => r.json())
-      .then((data: EarlyBirdStatus) => setEarlyBird(data))
+      .then((data: TicketDiscountStatus) => setTicketDiscount(data))
       .catch(() => {});
   }, []);
 
-  const discount = earlyBird.enabled ? earlyBird.discount : null;
+  const discount = ticketDiscount.enabled ? ticketDiscount.discount : null;
 
-  return { earlyBird, discount };
+  return { ticketDiscount, discount };
 }

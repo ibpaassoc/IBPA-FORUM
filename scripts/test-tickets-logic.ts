@@ -17,6 +17,7 @@ import {
   TICKET_AMOUNTS_CENTS,
   GALA_DINNER_CENTS,
 } from "@/features/tickets/lib/pricing";
+import { calculatePromoDiscount } from "@/features/promos/lib/promo-codes";
 import { decideTicketReplacement } from "@/features/tickets/lib/replacement";
 import {
   buildTicketCheckoutMetadata,
@@ -93,28 +94,24 @@ eq(
 );
 eq(
   decideTicketReplacement([{ id: "paid1", status: "PAID" }]),
-  { kind: "blocked-paid", paidTicketId: "paid1" },
-  "paid → blocked"
+  { kind: "create", deleteIds: [] },
+  "paid does not block another ticket purchase"
 );
 eq(
   decideTicketReplacement([{ id: "checked", status: "CHECKED_TWO_DAY" }]),
-  { kind: "blocked-paid", paidTicketId: "checked" },
-  "checked-in → blocked (treated as paid)"
+  { kind: "create", deleteIds: [] },
+  "checked-in ticket does not block another ticket purchase"
 );
 {
-  // Paid + unpaid for same email → blocked, and the paid id is NEVER in deleteIds.
+  // Paid + unpaid for same email -> reuse the unpaid row and never touch the paid one.
   const decision = decideTicketReplacement([
     { id: "pending", status: "PENDING" },
     { id: "paid", status: "PAID" },
   ]);
-  eq(decision.kind, "blocked-paid", "mixed paid+unpaid → blocked");
-  assert(
-    decision.kind === "blocked-paid" && decision.paidTicketId === "paid",
-    "mixed → identifies the paid ticket"
-  );
-  assert(
-    !("deleteIds" in decision),
-    "blocked decision deletes nothing (paid ticket protected)"
+  eq(
+    decision,
+    { kind: "reuse", reuseId: "pending", deleteIds: [] },
+    "mixed paid+unpaid reuses unpaid checkout"
   );
 }
 
@@ -125,7 +122,7 @@ eq(
     type: "ONE_DAY",
     isIbpaMember: false,
     galaDinner: false,
-    earlyBirdDiscount: null,
+    ticketDiscount: null,
   }).totalCents,
   TICKET_AMOUNTS_CENTS.ONE_DAY.standard,
   "one-day standard, no gala"
@@ -135,7 +132,7 @@ eq(
     type: "ONE_DAY",
     isIbpaMember: true,
     galaDinner: false,
-    earlyBirdDiscount: null,
+    ticketDiscount: null,
   }).totalCents,
   TICKET_AMOUNTS_CENTS.ONE_DAY.ibpa,
   "one-day member price"
@@ -145,7 +142,7 @@ eq(
     type: "TWO_DAYS",
     isIbpaMember: false,
     galaDinner: true,
-    earlyBirdDiscount: null,
+    ticketDiscount: null,
   }).totalCents,
   TICKET_AMOUNTS_CENTS.TWO_DAYS.standard + GALA_DINNER_CENTS,
   "two-day + gala add-on"
@@ -156,11 +153,23 @@ eq(
     type: "ONE_DAY",
     isIbpaMember: false,
     galaDinner: true,
-    earlyBirdDiscount: { type: "percent", value: 20 },
+    ticketDiscount: { type: "percent", value: 20 },
   });
   eq(amounts.ticketCents, Math.round(39500 * 0.8), "forum pass discounted 20%");
   eq(amounts.galaCents, GALA_DINNER_CENTS, "gala not discounted");
-  eq(amounts.totalCents, Math.round(39500 * 0.8) + GALA_DINNER_CENTS, "total = discounted pass + gala");
+eq(amounts.totalCents, Math.round(39500 * 0.8) + GALA_DINNER_CENTS, "total = discounted pass + gala");
+}
+{
+  // Automatic ticket discounts and promo codes stack on the forum pass only.
+  const amounts = computeTicketAmountCents({
+    type: "ONE_DAY",
+    isIbpaMember: false,
+    galaDinner: true,
+    ticketDiscount: { type: "percent", value: 30 },
+  });
+  const promo = calculatePromoDiscount(amounts.ticketCents, 30);
+  eq(amounts.ticketCents, 27650, "automatic 30% applies before the ticket promo");
+  eq(promo.finalAmountCents + amounts.galaCents, 34355, "stacked promo never discounts Gala Dinner");
 }
 
 // ── Checkout metadata (scenario 10 + webhook-routing safety) ─────────────────

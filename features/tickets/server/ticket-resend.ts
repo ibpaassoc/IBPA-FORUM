@@ -4,7 +4,7 @@ import { prisma } from "@/shared/lib/prisma";
 import { getStripe } from "@/features/payments/server/stripe-client";
 import { findTicketById } from "./ticket-repository";
 import { createTicketCheckoutSession } from "./ticket-checkout";
-import { getEarlyBirdDiscount } from "./early-bird";
+import { getActiveTicketDiscount } from "./ticket-discount";
 import { sendTicketPaymentLinkEmail } from "./ticket-email.workflow";
 import { computeTicketAmountCents } from "@/features/tickets/lib/pricing";
 import { isTicketPaymentConfirmed } from "@/features/tickets/lib/ticket-status";
@@ -76,12 +76,12 @@ export async function resendTicketPaymentLink(
     return { ok: false, reason: "not_found" };
   }
 
-  const earlyBirdDiscount = await getEarlyBirdDiscount();
+  const activeTicketDiscount = await getActiveTicketDiscount();
   const amounts = computeTicketAmountCents({
     type: ticket.type,
     isIbpaMember: ticket.isIbpaMember,
     galaDinner: ticket.galaDinner,
-    earlyBirdDiscount,
+    ticketDiscount: activeTicketDiscount?.discount ?? null,
   });
 
   const stripe = getStripe();
@@ -107,7 +107,8 @@ export async function resendTicketPaymentLink(
       type: ticket.type,
       galaDinner: ticket.galaDinner,
       isIbpaMember: ticket.isIbpaMember,
-      earlyBirdDiscountedAmountCents: amounts.discountedTicketCents,
+      ticketAmountCents: activeTicketDiscount ? amounts.ticketCents : null,
+      ticketDiscountLabel: activeTicketDiscount?.kind ?? null,
       locale,
     });
 

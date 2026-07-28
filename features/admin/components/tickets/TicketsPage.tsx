@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Ticket, Camera, X, Tag, ChevronDown, Send, Pencil, QrCode, RefreshCw, Mail, Loader2, Save } from "lucide-react";
+import { Ticket, Camera, X, ChevronDown, Send, Pencil, QrCode, RefreshCw, Mail, Loader2, Save } from "lucide-react";
 import {
   DashboardAccentBlock,
   DashboardCard,
@@ -838,60 +838,6 @@ function TicketRow({
   );
 }
 
-function EarlyBirdToggle({ initialEnabled }: { initialEnabled: boolean }) {
-  const [enabled, setEnabled] = useState(initialEnabled);
-  const [saving, setSaving] = useState(false);
-
-  async function toggle() {
-    setSaving(true);
-    try {
-      const res = await fetch("/api/admin/settings/early-bird", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ enabled: !enabled }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setEnabled(data.enabled);
-      }
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  return (
-    <DashboardCard>
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className={`flex size-10 shrink-0 items-center justify-center rounded-[18px] ${enabled ? "bg-[rgba(114,160,193,0.1)] text-[var(--color-blue)]" : "bg-white/62 text-[var(--color-ink-muted)]"}`}>
-            <Tag size={18} strokeWidth={1.5} />
-          </div>
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-blue)]">{adminT.tickets.earlyBird}</p>
-            <p className="mt-0.5 text-sm font-medium text-[var(--color-ink)]">
-              {enabled ? adminT.tickets.earlyBirdOn : adminT.tickets.earlyBirdOff}
-            </p>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          onClick={toggle}
-          disabled={saving}
-          aria-label={enabled ? adminT.tickets.earlyBirdDisable : adminT.tickets.earlyBirdEnable}
-          className="relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none disabled:opacity-50"
-          style={{ backgroundColor: enabled ? "var(--color-blue)" : "rgba(37,42,45,0.16)" }}
-        >
-          <span
-            className="inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-200"
-            style={{ transform: enabled ? "translateX(20px)" : "translateX(2px)" }}
-          />
-        </button>
-      </div>
-    </DashboardCard>
-  );
-}
-
 function ScannerDialog({ onClose, onCheckIn }: { onClose: () => void; onCheckIn: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-[rgba(3,2,19,0.28)] p-0 backdrop-blur-sm sm:items-center sm:p-4">
@@ -908,10 +854,8 @@ function ScannerDialog({ onClose, onCheckIn }: { onClose: () => void; onCheckIn:
 
 export default function TicketsPage({
   tickets,
-  initialEarlyBirdEnabled,
 }: {
   tickets: TicketRecord[];
-  initialEarlyBirdEnabled: boolean;
 }) {
   const router = useRouter();
   const reduceMotion = useReducedMotion() ?? false;
@@ -951,8 +895,6 @@ export default function TicketsPage({
           </DashboardPrimaryBtn>
         }
       />
-
-      <EarlyBirdToggle initialEnabled={initialEarlyBirdEnabled} />
 
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-[1.1fr_repeat(3,minmax(0,0.75fr))]">
         <DashboardAccentBlock>

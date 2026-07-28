@@ -18,8 +18,8 @@ import {
 
 import { PRICING } from "@/data/pricing";
 import { applyDiscountToPrice } from "@/features/tickets/types";
-import type { EarlyBirdDiscount } from "@/features/tickets/types";
-import { useEarlyBird } from "@/features/tickets/useEarlyBird";
+import type { TicketDiscount } from "@/features/tickets/types";
+import { useTicketDiscount } from "@/features/tickets/useEarlyBird";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import {
   LandingSecondaryButton,
@@ -32,7 +32,7 @@ export default function HomeRegistrationSection() {
   const { t } = useLanguage();
   const c = t.home.registrationSection;
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
-  const { discount } = useEarlyBird();
+  const { ticketDiscount, discount } = useTicketDiscount();
 
   const topInfoCards = [
     { icon: Calendar, eyebrow: c.registrationInfo.eyebrow, value: c.registrationInfo.value },
@@ -114,7 +114,7 @@ export default function HomeRegistrationSection() {
                 eyebrow={c.pricing.forum.eyebrow}
                 title={c.pricing.forum.title}
                 icon={<Sparkles size={16} />}
-                badge={discount ? <EarlyBirdBadge discount={discount} /> : null}
+                badge={discount ? <TicketDiscountBadge discount={discount} kind={ticketDiscount.kind} /> : null}
                 footer={
                   <LandingSecondaryButton type="button" onClick={() => setIsTicketModalOpen(true)}>
                     {c.tickets.cta}
@@ -251,7 +251,13 @@ function PricingCard({
   );
 }
 
-function EarlyBirdBadge({ discount }: { discount: EarlyBirdDiscount }) {
+function TicketDiscountBadge({
+  discount,
+  kind,
+}: {
+  discount: TicketDiscount;
+  kind: "earlyBird" | "permanent30" | null;
+}) {
   if (!discount) return null;
 
   const offLabel = discount.type === "percent" ? `${discount.value}% off` : `$${(discount.value / 100).toFixed(0)} off`;
@@ -259,11 +265,11 @@ function EarlyBirdBadge({ discount }: { discount: EarlyBirdDiscount }) {
 
   return (
     <span
-      title={`Early Bird — ${offLabel}`}
+      title={`${kind === "permanent30" ? "Permanent 30" : "Early Bird"} — ${offLabel}`}
       className="inline-flex w-fit items-center gap-1 whitespace-nowrap rounded-full border border-[#b9d9eb]/80 bg-white/85 px-3 py-1 text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[#72a0c1] shadow-[0_10px_28px_rgba(114,160,193,0.14)] backdrop-blur-xl"
     >
       <Zap size={11} strokeWidth={2} />
-      Early Bird · {shortLabel}
+      {kind === "permanent30" ? "Permanent 30" : "Early Bird"} · {shortLabel}
     </span>
   );
 }
@@ -285,7 +291,7 @@ function ComparisonTable({
   optionLabel: string;
   memberLabel: string;
   standardLabel: string;
-  discount?: EarlyBirdDiscount | null;
+  discount?: TicketDiscount | null;
 }) {
   return (
     <div className="overflow-hidden rounded-[1.35rem] border border-[#cfe8f6] bg-white/64">
@@ -328,7 +334,7 @@ function PriceCell({
   featured = false,
 }: {
   price: string;
-  discount?: EarlyBirdDiscount | null;
+  discount?: TicketDiscount | null;
   featured?: boolean;
 }) {
   const discounted = applyDiscountToPrice(price, discount ?? null);
