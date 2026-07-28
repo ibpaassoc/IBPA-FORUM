@@ -52,12 +52,21 @@ export function validateUploadFile(
 export async function uploadApplicationBlob(
   file: File,
   pathname: string,
-  fieldKey: string
+  fieldKey: string,
+  nominationId: string,
+  onUploadProgress?: (progress: {
+    loaded: number;
+    total: number;
+    percentage: number;
+  }) => void,
 ): Promise<ApplicationFileRef> {
   const result = await upload(pathname, file, {
     access: "private",
     handleUploadUrl: UPLOAD_ENDPOINT,
+    clientPayload: JSON.stringify({ nominationId, fieldKey }),
+    contentType: file.type,
     multipart: true,
+    onUploadProgress,
   });
 
   return {

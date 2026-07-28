@@ -320,6 +320,7 @@ model NominationFile {
   createdAt               DateTime              @default(now())
   nominationApplication   NominationApplication @relation(fields: [nominationApplicationId], references: [id], onDelete: Cascade)
 
+  @@unique([nominationApplicationId, fileUrl])
   @@index([nominationApplicationId])
   @@index([fieldKey])
   @@index([deletedAt])

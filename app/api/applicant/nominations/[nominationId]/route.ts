@@ -1,9 +1,14 @@
 import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
+import { head } from "@vercel/blob";
 import { isApplicationFileRef } from "@/features/applications/lib/file-ref";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import { validateNominationBlockB } from "@/features/applications/schemas/category-field-validation";
-import type { ApplicationValues } from "@/features/applications/types/application.types";
+import type {
+  ApplicationFileRef,
+  ApplicationValues,
+  ApplyFieldConfig,
+} from "@/features/applications/types/application.types";
 import { requireEditableNomination } from "@/features/account/server/nomination-guards";
 import { prisma } from "@/shared/lib/prisma";
 import { syncApplicationOnChange } from "@/features/google-sheets";
@@ -50,7 +55,14 @@ function toAnswerRecord(fieldKey: string, value: ApplicationValues[string]) {
 }
 
 function getFileRefs(value: ApplicationValues[string]) {
-  return Array.isArray(value) ? value.filter(isApplicationFileRef) : [];
+  if (!Array.isArray(value)) return [];
+  return Array.from(
+    new Map(
+      value
+        .filter(isApplicationFileRef)
+        .map((ref) => [ref.fileUrl, ref] as const),
+    ).values(),
+  );
 }
 
 function sanitizeDisplayFilename(name: string) {
@@ -60,6 +72,109 @@ function sanitizeDisplayFilename(name: string) {
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, 120) || "file";
+}
+
+function isPathForField(
+  pathname: string,
+  nominationId: string,
+  fieldKey: string,
+) {
+  const prefix = `applications/${nominationId}/${fieldKey}/`;
+  const filename = pathname.slice(prefix.length);
+  return (
+    pathname.startsWith(prefix) &&
+    filename.length > 0 &&
+    !filename.includes("/") &&
+    filename !== "." &&
+    filename !== ".."
+  );
+}
+
+async function validateUploadedFiles({
+  nominationId,
+  fields,
+  values,
+  existingFiles,
+}: {
+  nominationId: string;
+  fields: ApplyFieldConfig[];
+  values: ApplicationValues;
+  existingFiles: Array<{
+    fieldKey: string;
+    fileName: string;
+    fileUrl: string;
+    mimeType: string;
+    fileSize: number;
+  }>;
+}) {
+  const existingByPath = new Map(
+    existingFiles.map((file) => [file.fileUrl, file]),
+  );
+  const normalized = { ...values };
+  const errors: Record<string, string> = {};
+
+  await Promise.all(
+    fields
+      .filter(
+        (field) =>
+          field.type === "file" && Object.hasOwn(values, field.key),
+      )
+      .map(async (field) => {
+        const refs = getFileRefs(values[field.key]);
+        if (field.maxFiles !== undefined && refs.length > field.maxFiles) {
+          errors[field.key] = `${field.label} accepts up to ${field.maxFiles} files.`;
+          return;
+        }
+
+        const checked = await Promise.all(
+          refs.map(async (ref): Promise<ApplicationFileRef | null> => {
+            const existing = existingByPath.get(ref.fileUrl);
+            if (existing?.fieldKey === field.key) {
+              return {
+                fieldKey: existing.fieldKey,
+                fileName: existing.fileName,
+                fileUrl: existing.fileUrl,
+                mimeType: existing.mimeType,
+                fileSize: existing.fileSize,
+              };
+            }
+
+            if (
+              ref.fieldKey !== field.key ||
+              !isPathForField(ref.fileUrl, nominationId, field.key) ||
+              !field.accept?.includes(ref.mimeType) ||
+              ref.fileSize > (field.maxFileSizeMb ?? 5) * 1024 * 1024
+            ) {
+              errors[field.key] = `${ref.fileName} is not a valid upload for ${field.label}.`;
+              return null;
+            }
+
+            try {
+              const blob = await head(ref.fileUrl);
+              if (
+                blob.pathname !== ref.fileUrl ||
+                blob.size !== ref.fileSize ||
+                blob.contentType !== ref.mimeType
+              ) {
+                errors[field.key] = `${ref.fileName} upload metadata could not be verified.`;
+                return null;
+              }
+            } catch {
+              errors[field.key] = `${ref.fileName} could not be found in secure file storage. Please retry the upload.`;
+              return null;
+            }
+
+            return ref;
+          }),
+        );
+
+        normalized[field.key] = checked.filter(
+          (ref): ref is ApplicationFileRef => ref !== null,
+        );
+      }),
+  );
+
+  return { values: normalized, errors };
 }
 
 export async function POST(
@@ -78,11 +193,28 @@ export async function POST(
 
   const body = (await request.json().catch(() => ({}))) as RequestBody;
   const action = body.action === "submit" ? "submit" : "draft";
-  const values = Object.fromEntries(
+  const rawValues = Object.fromEntries(
     Object.entries(body.values ?? {}).map(([key, value]) => [key, normalizeValue(value)])
   ) as ApplicationValues;
 
   const categorySlug = nomination.category.slug;
+  const categoryFields = categoryFieldConfigs[categorySlug] ?? [];
+  const verifiedFiles = await validateUploadedFiles({
+    nominationId: nomination.id,
+    fields: categoryFields,
+    values: rawValues,
+    existingFiles: nomination.files,
+  });
+  if (Object.keys(verifiedFiles.errors).length > 0) {
+    return NextResponse.json(
+      {
+        message: "One or more uploaded files could not be verified.",
+        fieldErrors: verifiedFiles.errors,
+      },
+      { status: 400 },
+    );
+  }
+  const values = verifiedFiles.values;
   const validation = validateNominationBlockB(categorySlug, values);
 
   if (action === "submit" && Object.keys(validation).length > 0) {
@@ -109,7 +241,7 @@ export async function POST(
   // applicant can remove every uploaded video (or other file) and have its
   // previous records correctly soft-deleted.
   const fileFieldKeys = new Set(
-    (categoryFieldConfigs[categorySlug] ?? [])
+    categoryFields
       .filter((field) => field.type === "file")
       .map((field) => field.key)
       .filter((key) => Object.hasOwn(values, key)),
@@ -144,26 +276,47 @@ export async function POST(
           nominationApplicationId: nomination.id,
           fieldKey,
           deletedAt: null,
+          ...(refs.length > 0
+            ? { fileUrl: { notIn: refs.map((ref) => ref.fileUrl) } }
+            : {}),
         },
         data: { deletedAt: now },
       });
 
-      if (refs.length > 0) {
-        await tx.nominationFile.createMany({
-          data: refs.map((ref) => ({
+      for (const ref of refs) {
+        const fileData = {
+          fieldKey,
+          fileName: sanitizeDisplayFilename(ref.fileName),
+          fileUrl: ref.fileUrl,
+          originalFileName: ref.fileName,
+          displayFileName: sanitizeDisplayFilename(ref.fileName),
+          mimeType: ref.mimeType || "application/octet-stream",
+          fileSize: ref.fileSize,
+          originalFileSize: ref.fileSize,
+          compressedFileSize: ref.fileSize,
+          storageKey: ref.fileUrl,
+          deletedAt: null,
+        };
+        const existingFile = await tx.nominationFile.findFirst({
+          where: {
             nominationApplicationId: nomination.id,
-            fieldKey,
-            fileName: sanitizeDisplayFilename(ref.fileName),
             fileUrl: ref.fileUrl,
-            originalFileName: ref.fileName,
-            displayFileName: sanitizeDisplayFilename(ref.fileName),
-            mimeType: ref.mimeType || "application/octet-stream",
-            fileSize: ref.fileSize,
-            originalFileSize: ref.fileSize,
-            compressedFileSize: ref.fileSize,
-            storageKey: ref.fileUrl,
-          })),
+          },
+          select: { id: true },
         });
+        if (existingFile) {
+          await tx.nominationFile.update({
+            where: { id: existingFile.id },
+            data: fileData,
+          });
+        } else {
+          await tx.nominationFile.create({
+            data: {
+              nominationApplicationId: nomination.id,
+              ...fileData,
+            },
+          });
+        }
       }
     }
 

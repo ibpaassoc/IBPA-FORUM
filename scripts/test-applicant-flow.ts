@@ -240,9 +240,13 @@ assert(has(categoryFields, 'key: "portfolioVideoFiles"'), "nominations support u
 assert(has(categoryFields, "maxFiles: 3"), "portfolio video uploads are capped at three files");
 
 const applicationUploadRoute = read("app/api/applications/upload/route.ts");
-assert(has(applicationUploadRoute, '"video/mp4"'), "application uploads allow MP4 portfolio videos");
-assert(has(applicationUploadRoute, '"video/webm"'), "application uploads allow WebM portfolio videos");
-assert(has(applicationUploadRoute, '"video/quicktime"'), "application uploads allow MOV portfolio videos");
+const commonCategoryFields = read(
+  "features/applications/config/category-field-configs/common.ts",
+);
+assert(has(applicationUploadRoute, "field.accept"), "application upload tokens use field-specific content types");
+assert(has(commonCategoryFields, '"video/mp4"'), "application uploads allow MP4 portfolio videos");
+assert(has(commonCategoryFields, '"video/webm"'), "application uploads allow WebM portfolio videos");
+assert(has(commonCategoryFields, '"video/quicktime"'), "application uploads allow MOV portfolio videos");
 
 const filePreviewGallery = read("shared/components/files/FilePreviewGallery.tsx");
 assert(has(filePreviewGallery, "function isVideo"), "file previews recognize video assets");
