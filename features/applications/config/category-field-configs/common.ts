@@ -3,6 +3,7 @@ import type { ApplyFieldConfig } from "@/features/applications/types/application
 export const imageAndPdf = ["image/jpeg", "image/png", "application/pdf"];
 export const imageOnly = ["image/jpeg", "image/png"];
 export const pdfOnly = ["application/pdf"];
+export const videoOnly = ["video/mp4", "video/webm", "video/quicktime"];
 
 export function pressFields(prefix = "press") {
   return [

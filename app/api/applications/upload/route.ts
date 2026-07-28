@@ -21,8 +21,11 @@ export async function POST(request: Request) {
             "image/png",
             "image/webp",
             "application/pdf",
+            "video/mp4",
+            "video/webm",
+            "video/quicktime",
           ],
-          maximumSizeInBytes: 25 * 1024 * 1024,
+          maximumSizeInBytes: 100 * 1024 * 1024,
           addRandomSuffix: true,
         };
       },

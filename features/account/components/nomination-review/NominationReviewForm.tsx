@@ -267,7 +267,11 @@ export default function NominationReviewForm({
           continue;
         }
 
-        const validationMessage = validateUploadFile(item);
+        const validationMessage = validateUploadFile(
+          item,
+          field.accept,
+          field.maxFileSizeMb ?? 5,
+        );
         if (validationMessage) {
           throw new Error(validationMessage);
         }

@@ -9,6 +9,7 @@ import {
   Download,
   FileText,
   ImageIcon,
+  Video,
   X,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
@@ -64,6 +65,10 @@ function isImage(asset: FilePreviewAsset) {
 
 function isPdf(asset: FilePreviewAsset) {
   return asset.mimeType === "application/pdf" || /\.pdf$/i.test(asset.name);
+}
+
+function isVideo(asset: FilePreviewAsset) {
+  return asset.mimeType.startsWith("video/") || /\.(mp4|mov|webm|og[gv])$/i.test(asset.name);
 }
 
 function assetKey(item: FilePreviewAsset) {
@@ -276,6 +281,16 @@ function PreviewDialog({
                 className="relative max-h-[calc(88dvh-9.5rem)] max-w-full select-none rounded-[22px] object-contain shadow-[0_18px_55px_rgba(56,91,116,0.13)] sm:max-h-[calc(86vh-8.5rem)]"
               />
             </>
+          ) : isVideo(item) ? (
+            <video
+              key={url}
+              controls
+              preload="metadata"
+              className="max-h-[calc(88dvh-9.5rem)] max-w-full rounded-[22px] bg-black shadow-[0_18px_55px_rgba(56,91,116,0.13)] sm:max-h-[calc(86vh-8.5rem)]"
+            >
+              <source src={url} type={item.mimeType} />
+              Your browser does not support video playback.
+            </video>
           ) : isPdf(item) ? (
             <iframe
               key={url}
@@ -416,9 +431,16 @@ export default function FilePreviewGallery({
                     // Dynamic previews include object URLs and authenticated API paths.
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={url} alt="" className="size-full object-cover transition duration-300 group-hover:scale-[1.025]" />
+                  ) : isVideo(item) ? (
+                    <video
+                      src={url}
+                      muted
+                      preload="metadata"
+                      className="size-full object-cover"
+                    />
                   ) : (
                     <span className="flex size-14 items-center justify-center rounded-[20px] border border-white/80 bg-white/72 text-[var(--color-blue)] shadow-[0_10px_28px_rgba(55,91,117,0.1)]">
-                      {isPdf(item) ? <FileText aria-hidden size={24} strokeWidth={1.5} /> : <ImageIcon aria-hidden size={24} strokeWidth={1.5} />}
+                      {isPdf(item) ? <FileText aria-hidden size={24} strokeWidth={1.5} /> : <Video aria-hidden size={24} strokeWidth={1.5} />}
                     </span>
                   )}
                 </span>

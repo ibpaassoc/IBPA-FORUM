@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { isApplicationFileRef } from "@/features/applications/lib/file-ref";
+import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import { validateNominationBlockB } from "@/features/applications/schemas/category-field-validation";
 import type { ApplicationValues } from "@/features/applications/types/application.types";
 import { requireEditableNomination } from "@/features/account/server/nomination-guards";
@@ -104,10 +105,14 @@ export async function POST(
     );
   }
 
+  // Use the category configuration rather than only non-empty refs so an
+  // applicant can remove every uploaded video (or other file) and have its
+  // previous records correctly soft-deleted.
   const fileFieldKeys = new Set(
-    Object.entries(values)
-      .filter(([, value]) => getFileRefs(value).length > 0)
-      .map(([key]) => key)
+    (categoryFieldConfigs[categorySlug] ?? [])
+      .filter((field) => field.type === "file")
+      .map((field) => field.key)
+      .filter((key) => Object.hasOwn(values, key)),
   );
   const answerRecords = Object.entries(values)
     .filter(([key]) => !fileFieldKeys.has(key))

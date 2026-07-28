@@ -157,6 +157,8 @@ export function ApplicantUploadField({
   const atLimit = multiple && maxFiles !== undefined && items.length >= maxFiles;
   const hasFiles = items.length > 0;
   const zoneDisabled = disabled || atLimit;
+  const acceptsVideo = accept?.some((type) => type.startsWith("video/"));
+  const acceptedFileHint = acceptsVideo ? "MP4, WebM, or MOV video" : copy.hint;
   const previewItems = useMemo(
     () =>
       items.map((item, index) => ({
@@ -267,7 +269,7 @@ export function ApplicantUploadField({
         </div>
 
         <div className="flex flex-col items-center gap-1 sm:flex-row sm:gap-2">
-          <p className="text-[0.72rem] text-[var(--color-ink)]/40">{copy.hint}</p>
+          <p className="text-[0.72rem] text-[var(--color-ink)]/40">{acceptedFileHint}</p>
           {multiple && maxFiles !== undefined && hasFiles ? (
             <p className="text-[0.72rem] font-medium text-[var(--color-ink)]/50">
               {items.length} {copy.of} {maxFiles}
