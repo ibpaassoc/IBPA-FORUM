@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "test:application-submission": "tsx scripts/test-application-submission.ts",
     "test:applicant-flow": "tsx scripts/test-applicant-flow.ts",
+    "test:nomination-upload": "tsx scripts/test-nomination-upload.ts",
     "test:tickets": "tsx scripts/test-tickets-logic.ts",
     "test:promo-codes": "tsx scripts/test-promo-codes.ts",
     "test:regulations": "tsx scripts/test-regulations.ts",

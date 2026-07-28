@@ -24,6 +24,7 @@ export default function NominationRequirementsSidebar({
   lastSavedLabel,
   scoreText,
   busyLabel,
+  submitDisabled,
   notice,
   error,
   onMissingItem,
@@ -37,6 +38,7 @@ export default function NominationRequirementsSidebar({
   lastSavedLabel: string | null;
   scoreText: string;
   busyLabel: string | null;
+  submitDisabled: boolean;
   notice: string;
   error: string;
   onMissingItem: (field: ApplyFieldConfig) => void;
@@ -161,7 +163,7 @@ export default function NominationRequirementsSidebar({
                 </button>
                 <button
                   type="button"
-                  disabled={busy}
+                  disabled={busy || submitDisabled}
                   onClick={onSubmit}
                   className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[rgba(255,255,255,0.35)] bg-[var(--color-blue)]/92 px-5 py-3 text-[0.72rem] font-semibold uppercase leading-none tracking-[0.12em] text-white shadow-[0_16px_38px_rgba(114,160,193,0.34)] backdrop-blur-xl transition hover:-translate-y-0.5 hover:bg-[#4d86ad] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.35)] disabled:cursor-not-allowed disabled:opacity-50"
                 >

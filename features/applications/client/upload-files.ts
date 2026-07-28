@@ -12,6 +12,9 @@ export const ACCEPTED_UPLOAD_TYPES = [
   "image/png",
   "image/webp",
   "application/pdf",
+  "video/mp4",
+  "video/webm",
+  "video/quicktime",
 ] as const;
 
 export const MAX_UPLOAD_SIZE_MB = 15;
@@ -26,13 +29,17 @@ export function sanitizeBlobName(name: string) {
  * Returns a human-readable problem string if the file fails client-side
  * checks, or `null` when it is acceptable to upload.
  */
-export function validateUploadFile(file: File): string | null {
-  if (!ACCEPTED_UPLOAD_TYPES.includes(file.type as (typeof ACCEPTED_UPLOAD_TYPES)[number])) {
-    return `"${file.name}" is an unsupported file type. Please upload JPG, PNG, or PDF.`;
+export function validateUploadFile(
+  file: File,
+  acceptedTypes: readonly string[] = ACCEPTED_UPLOAD_TYPES,
+  maxFileSizeMb = MAX_UPLOAD_SIZE_MB,
+): string | null {
+  if (!acceptedTypes.includes(file.type)) {
+    return `"${file.name}" is an unsupported file type for this field.`;
   }
 
-  if (file.size > MAX_UPLOAD_SIZE_MB * 1024 * 1024) {
-    return `"${file.name}" is too large. Maximum size is ${MAX_UPLOAD_SIZE_MB} MB.`;
+  if (file.size > maxFileSizeMb * 1024 * 1024) {
+    return `"${file.name}" is too large. Maximum size is ${maxFileSizeMb} MB.`;
   }
 
   return null;
@@ -45,12 +52,21 @@ export function validateUploadFile(file: File): string | null {
 export async function uploadApplicationBlob(
   file: File,
   pathname: string,
-  fieldKey: string
+  fieldKey: string,
+  nominationId: string,
+  onUploadProgress?: (progress: {
+    loaded: number;
+    total: number;
+    percentage: number;
+  }) => void,
 ): Promise<ApplicationFileRef> {
   const result = await upload(pathname, file, {
     access: "private",
     handleUploadUrl: UPLOAD_ENDPOINT,
+    clientPayload: JSON.stringify({ nominationId, fieldKey }),
+    contentType: file.type,
     multipart: true,
+    onUploadProgress,
   });
 
   return {

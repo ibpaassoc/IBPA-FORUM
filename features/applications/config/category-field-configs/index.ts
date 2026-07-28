@@ -5,6 +5,7 @@ import {
   optionalCertificates,
   pdfOnly,
   pressFields,
+  videoOnly,
 } from "@/features/applications/config/category-field-configs/common";
 import type { ApplyFieldConfig } from "@/features/applications/types/application.types";
 
@@ -69,9 +70,20 @@ const practitionerBlockBFields: ApplyFieldConfig[] = [
   },
   {
     key: "portfolioVideo",
-    label: "Portfolio Video",
+    // Keep this key so historical nominations that saved a portfolio link
+    // continue to render for applicants, jury members, and admins.
+    label: "Portfolio Video Link",
     type: "url",
-    description: "Optional video link.",
+    description: "Optional. Paste a link to your portfolio video.",
+  },
+  {
+    key: "portfolioVideoFiles",
+    label: "Portfolio Video Files",
+    type: "file",
+    description: "Optional. Upload up to 3 MP4, WebM, or MOV portfolio videos (100 MB each).",
+    accept: videoOnly,
+    maxFiles: 3,
+    maxFileSizeMb: 100,
   },
   statementOfAchievementsField,
   signatureTechniqueField,

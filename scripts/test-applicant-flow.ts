@@ -211,6 +211,7 @@ const saveNominationRoute = read("app/api/applicant/nominations/[nominationId]/r
 assert(has(saveNominationRoute, "requireEditableNomination"), "nomination editor enforces account ownership");
 assert(has(saveNominationRoute, "validateNominationBlockB"), "nomination submit validates category requirements");
 assert(has(saveNominationRoute, "deletedAt"), "file replacement uses soft-delete metadata");
+assert(has(saveNominationRoute, "categoryFieldConfigs"), "empty video selections also replace stored nomination files");
 
 const applicantFileRoute = read("app/api/account/applicant/nomination-files/[fileId]/route.ts");
 assert(has(applicantFileRoute, "getAppSession"), "saved applicant files require account auth");
@@ -233,6 +234,24 @@ assert(
   "applicant upload cards prefer authenticated saved-file previews"
 );
 
+const categoryFields = read("features/applications/config/category-field-configs/index.ts");
+assert(has(categoryFields, 'key: "portfolioVideo"'), "legacy portfolio video link field remains available");
+assert(has(categoryFields, 'key: "portfolioVideoFiles"'), "nominations support uploaded portfolio videos");
+assert(has(categoryFields, "maxFiles: 3"), "portfolio video uploads are capped at three files");
+
+const applicationUploadRoute = read("app/api/applications/upload/route.ts");
+const commonCategoryFields = read(
+  "features/applications/config/category-field-configs/common.ts",
+);
+assert(has(applicationUploadRoute, "field.accept"), "application upload tokens use field-specific content types");
+assert(has(commonCategoryFields, '"video/mp4"'), "application uploads allow MP4 portfolio videos");
+assert(has(commonCategoryFields, '"video/webm"'), "application uploads allow WebM portfolio videos");
+assert(has(commonCategoryFields, '"video/quicktime"'), "application uploads allow MOV portfolio videos");
+
+const filePreviewGallery = read("shared/components/files/FilePreviewGallery.tsx");
+assert(has(filePreviewGallery, "function isVideo"), "file previews recognize video assets");
+assert(has(filePreviewGallery, "<video"), "file previews render playable videos");
+
 const closure = read("features/applications/server/closure.ts");
 assert(has(closure, "validateNominationBlockB"), "deadline closure validates draft completeness");
 assert(has(closure, 'status: "LOCKED"'), "deadline closure locks incomplete nominations");
@@ -254,6 +273,7 @@ const juryDetail = read("features/account/components/jury/JuryNominationReviewPa
 assert(has(juryDetail, "/api/account/jury/nomination-files/"), "jury detail loads files through account-scoped route");
 assert(!has(juryDetail, "fileUrl"), "jury detail does not render direct blob URLs");
 assert(!has(juryDetail, "storageKey"), "jury detail does not render storage keys");
+assert(has(juryDetail, "FilePreviewGallery"), "jury detail uses the shared playable file preview gallery");
 
 const juryScorecard = read("features/account/components/jury/JuryReviewScorecard.tsx");
 assert(has(juryScorecard, "/api/account/jury/nominations/"), "jury scorecard uses account-scoped review API");

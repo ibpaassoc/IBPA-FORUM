@@ -12,8 +12,16 @@ export function isApplicationFileRef(value: unknown): value is ApplicationFileRe
 
   const candidate = value as Partial<ApplicationFileRef>;
   return (
+    typeof candidate.fieldKey === "string" &&
+    candidate.fieldKey.length > 0 &&
+    typeof candidate.fileName === "string" &&
+    candidate.fileName.length > 0 &&
     typeof candidate.fileUrl === "string" &&
+    candidate.fileUrl.length > 0 &&
     typeof candidate.mimeType === "string" &&
-    typeof candidate.fileSize === "number"
+    candidate.mimeType.length > 0 &&
+    typeof candidate.fileSize === "number" &&
+    Number.isSafeInteger(candidate.fileSize) &&
+    candidate.fileSize >= 0
   );
 }
