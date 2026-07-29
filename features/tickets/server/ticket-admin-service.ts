@@ -58,6 +58,8 @@ export async function getAdminTicketById(ticketId: string) {
       paidAt: true,
       lastCheckIn: true,
       forumCheckInAt: true,
+      dayOneCheckInAt: true,
+      dayTwoCheckInAt: true,
       galaCheckInAt: true,
       createdAt: true,
       updatedAt: true,

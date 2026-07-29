@@ -2,22 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
 import { performCheckIn } from "@/features/check-in/server/check-in-service";
-import { SCAN_MODES } from "@/features/check-in/types";
+import { CHECK_IN_SCOPES } from "@/features/check-in/types";
 import { adminT } from "@/lib/i18n/admin";
 
 const checkInSchema = z.object({
   ticketKind: z.enum(["TICKET", "PARTICIPANT", "JURY"]),
   sourceRecordId: z.string().min(1).max(128),
-  scope: z.enum(["FORUM", "GALA", "ATTENDANCE"]),
-  mode: z.enum(SCAN_MODES).optional(),
+  scope: z.enum(CHECK_IN_SCOPES),
 });
 
 /**
  * POST /api/admin/check-in
  *
  * Unified check-in. Marks attendance on the correct source table based on the
- * resolved ticket kind. Forum tickets support two independent scopes (FORUM and
- * GALA); participant and jury records use ATTENDANCE.
+ * resolved ticket kind. Forum tickets support independent Day 1, Day 2, and
+ * Gala Dinner scopes; participant and jury records use ATTENDANCE.
  *
  * Returns 409 with `code: "ALREADY_CHECKED_IN"` when the scope was already used,
  * so the client can show a clear "Already checked in" state.

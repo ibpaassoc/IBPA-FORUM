@@ -2,12 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
 import { resolveScan } from "@/features/check-in/server/check-in-service";
-import { SCAN_MODES } from "@/features/check-in/types";
 import { adminT } from "@/lib/i18n/admin";
 
 const verifySchema = z.object({
   code: z.string().min(1).max(256),
-  mode: z.enum(SCAN_MODES).optional(),
 });
 
 /**
@@ -37,7 +35,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: adminT.api.scannedCodeRequired }, { status: 400 });
   }
 
-  const result = await resolveScan(parsed.data.code, parsed.data.mode);
+  const result = await resolveScan(parsed.data.code);
   if (!result.ok) {
     return NextResponse.json(
       { message: result.message, code: result.code },

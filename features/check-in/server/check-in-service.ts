@@ -4,13 +4,11 @@ import { Prisma, type JuryApplication, type Ticket } from "@prisma/client";
 import { syncCheckInOnChange } from "@/features/google-sheets";
 import { adminT } from "@/lib/i18n/admin";
 import { parseScanCode, buildScanPayload } from "./scan-code";
-import { scanModeScope, ticketAccessTypes } from "../scan-mode";
 import type {
   CheckInScope,
   CheckInScopeState,
   NormalizedTicket,
   PaymentStatusValue,
-  ScanMode,
   TicketKind,
 } from "../types";
 
@@ -26,24 +24,11 @@ export type CheckInError =
   | { ok: false; code: "QR_REPLACED"; status: 410; message: string }
   | { ok: false; code: "NOT_PAID"; status: 422; message: string }
   | { ok: false; code: "ALREADY_CHECKED_IN"; status: 409; message: string; checkedInAt: string }
-  | { ok: false; code: "MODE_MISMATCH"; status: 422; message: string }
   | { ok: false; code: "BAD_SCOPE"; status: 400; message: string };
 
 export type ResolveResult =
   | { ok: true; ticket: NormalizedTicket }
-  | Extract<CheckInError, { code: "INVALID_CODE" | "NOT_FOUND" | "QR_REPLACED" | "MODE_MISMATCH" }>;
-
-/** Clear, mode-specific rejection message ("Билет не действует для …"). */
-function modeMismatchError(
-  mode: ScanMode,
-): Extract<CheckInError, { code: "MODE_MISMATCH" }> {
-  return {
-    ok: false,
-    code: "MODE_MISMATCH",
-    status: 422,
-    message: adminT.scanner.modeMismatch[mode] ?? adminT.scanner.checkInFailed,
-  };
-}
+  | Extract<CheckInError, { code: "INVALID_CODE" | "NOT_FOUND" | "QR_REPLACED" }>;
 
 export type CheckInResult =
   | { ok: true; ticket: NormalizedTicket }
@@ -56,20 +41,34 @@ function ticketEligible(status: string) {
 }
 
 function normalizeTicket(ticket: Ticket): NormalizedTicket {
+  const dayOneCheckedInAt = ticket.dayOneCheckInAt ?? ticket.forumCheckInAt;
+  const dayTwoCheckedInAt = ticket.dayTwoCheckInAt;
+  const isOneDayPass = ticket.type === "ONE_DAY";
+  const dayOneAvailable = !isOneDayPass || !dayTwoCheckedInAt;
+  const dayTwoAvailable = !isOneDayPass || !dayOneCheckedInAt;
   const scopes: CheckInScopeState[] = [
     {
-      scope: "FORUM",
-      label: TICKET_TYPE_LABELS[ticket.type] ?? "Форум",
-      checkedInAt: ticket.forumCheckInAt?.toISOString() ?? null,
+      scope: "DAY_ONE",
+      label: adminT.scanner.dayOne,
+      checkedInAt: dayOneCheckedInAt?.toISOString() ?? null,
+      available: dayOneAvailable,
+      unavailableReason: dayOneAvailable ? null : adminT.scanner.oneDayPassUsed,
+    },
+    {
+      scope: "DAY_TWO",
+      label: adminT.scanner.dayTwo,
+      checkedInAt: dayTwoCheckedInAt?.toISOString() ?? null,
+      available: dayTwoAvailable,
+      unavailableReason: dayTwoAvailable ? null : adminT.scanner.oneDayPassUsed,
+    },
+    {
+      scope: "GALA",
+      label: adminT.scanner.galaDinner,
+      checkedInAt: ticket.galaCheckInAt?.toISOString() ?? null,
+      available: ticket.galaDinner,
+      unavailableReason: ticket.galaDinner ? null : adminT.scanner.notIncluded,
     },
   ];
-  if (ticket.galaDinner) {
-    scopes.push({
-      scope: "GALA",
-      label: "Гала-ужин",
-      checkedInAt: ticket.galaCheckInAt?.toISOString() ?? null,
-    });
-  }
 
   const checkedIn = scopes.some((s) => s.checkedInAt !== null);
 
@@ -83,7 +82,7 @@ function normalizeTicket(ticket: Ticket): NormalizedTicket {
     paymentStatus: ticketEligible(ticket.status) ? "PAID" : "PENDING",
     checkInStatus: checkedIn ? "CHECKED_IN" : "NOT_CHECKED_IN",
     scopes,
-    accessTypes: ticketAccessTypes(ticket.type, ticket.galaDinner),
+    galaDinnerIncluded: ticket.galaDinner,
     eligibleForCheckIn: ticketEligible(ticket.status),
     sourceRecordId: ticket.id,
     code: buildScanPayload("TICKET", ticket.secureToken),
@@ -125,9 +124,11 @@ function normalizeApplication(app: ApplicantCheckInRecord, token: string): Norma
         scope: "ATTENDANCE",
         label: "Посещение мероприятия",
         checkedInAt: app.checkedInAt?.toISOString() ?? null,
+        available: true,
+        unavailableReason: null,
       },
     ],
-    accessTypes: [],
+    galaDinnerIncluded: null,
     eligibleForCheckIn: paid,
     sourceRecordId: app.id,
     code: buildScanPayload("PARTICIPANT", token),
@@ -150,9 +151,11 @@ function normalizeJury(jury: JuryApplication): NormalizedTicket {
         scope: "ATTENDANCE",
         label: "Посещение мероприятия",
         checkedInAt: jury.checkedInAt?.toISOString() ?? null,
+        available: true,
+        unavailableReason: null,
       },
     ],
-    accessTypes: [],
+    galaDinnerIncluded: null,
     eligibleForCheckIn: paid,
     sourceRecordId: jury.id,
     code: buildScanPayload("JURY", jury.id),
@@ -206,15 +209,11 @@ async function findByKind(
  * ticket-like source. When the kind is unknown (bare token) each source is
  * tried in turn.
  *
- * When a scanner `mode` is supplied it gates forum tickets: a resolved TICKET
- * that does not qualify for the selected mode is rejected with a clear,
- * mode-specific message so the ticket is never marked checked in. Participant
- * and jury records are not day-typed, so the mode does not apply to them.
+ * Verification is deliberately independent of an entrance or event mode. The
+ * normalized result contains every available check-in action so the operator
+ * can choose Day 1, Day 2, or Gala Dinner after scanning.
  */
-export async function resolveScan(
-  rawCode: unknown,
-  mode?: ScanMode,
-): Promise<ResolveResult> {
+export async function resolveScan(rawCode: unknown): Promise<ResolveResult> {
   const parsed = parseScanCode(rawCode);
   if (!parsed) {
     return {
@@ -263,10 +262,6 @@ export async function resolveScan(
     };
   }
 
-  if (mode && resolved.ticketKind === "TICKET" && !resolved.accessTypes.includes(mode)) {
-    return modeMismatchError(mode);
-  }
-
   return { ok: true, ticket: resolved };
 }
 
@@ -275,7 +270,6 @@ export async function resolveScan(
 async function checkInTicketRecord(
   recordId: string,
   scope: CheckInScope,
-  mode?: ScanMode,
 ): Promise<CheckInResult> {
   const ticket = await prisma.ticket.findUnique({ where: { id: recordId } });
   if (!ticket) {
@@ -289,16 +283,7 @@ async function checkInTicketRecord(
       message: "Билет не оплачен — чек-ин невозможен.",
     };
   }
-  // When a scanner mode is selected it is authoritative: the ticket must
-  // qualify for it, and the effective scope is derived from it (defence in
-  // depth — the verify step already rejected mismatches on the client).
-  if (mode) {
-    if (!ticketAccessTypes(ticket.type, ticket.galaDinner).includes(mode)) {
-      return modeMismatchError(mode);
-    }
-    scope = scanModeScope(mode);
-  }
-  if (scope !== "FORUM" && scope !== "GALA") {
+  if (scope !== "DAY_ONE" && scope !== "DAY_TWO" && scope !== "GALA") {
     return { ok: false, code: "BAD_SCOPE", status: 400, message: "Недопустимый тип чек-ина для этого билета." };
   }
   if (scope === "GALA" && !ticket.galaDinner) {
@@ -310,14 +295,32 @@ async function checkInTicketRecord(
     };
   }
 
-  const existing = scope === "GALA" ? ticket.galaCheckInAt : ticket.forumCheckInAt;
+  const existing =
+    scope === "GALA"
+      ? ticket.galaCheckInAt
+      : scope === "DAY_TWO"
+        ? ticket.dayTwoCheckInAt
+        : ticket.dayOneCheckInAt ?? ticket.forumCheckInAt;
   if (existing) {
     return {
       ok: false,
       code: "ALREADY_CHECKED_IN",
       status: 409,
-      message: `Гость уже отмечен ${scope === "GALA" ? "на гала-ужине" : "на форуме"}.`,
+      message: `Гость уже отмечен ${
+        scope === "GALA" ? "на гала-ужине" : scope === "DAY_TWO" ? "во второй день" : "в первый день"
+      }.`,
       checkedInAt: existing.toISOString(),
+    };
+  }
+
+  const oppositeDayCheckIn =
+    scope === "DAY_ONE" ? ticket.dayTwoCheckInAt : scope === "DAY_TWO" ? ticket.dayOneCheckInAt ?? ticket.forumCheckInAt : null;
+  if (ticket.type === "ONE_DAY" && oppositeDayCheckIn) {
+    return {
+      ok: false,
+      code: "BAD_SCOPE",
+      status: 400,
+      message: adminT.scanner.oneDayPassUsed,
     };
   }
 
@@ -326,18 +329,63 @@ async function checkInTicketRecord(
   const legacyStatus =
     scope === "GALA"
       ? "CHECKED_GALA_DINNER"
-      : ticket.type === "TWO_DAYS"
+      : scope === "DAY_TWO"
         ? "CHECKED_TWO_DAY"
         : "CHECKED_ONE_DAY";
 
-  const updated = await prisma.ticket.update({
-    where: { id: ticket.id },
-    data: {
-      ...(scope === "GALA" ? { galaCheckInAt: now } : { forumCheckInAt: now }),
-      status: legacyStatus,
-      lastCheckIn: now,
-    },
+  const where: Prisma.TicketWhereInput = {
+    id: ticket.id,
+    ...(scope === "GALA"
+      ? { galaCheckInAt: null }
+      : scope === "DAY_TWO"
+        ? {
+            dayTwoCheckInAt: null,
+            ...(ticket.type === "ONE_DAY"
+              ? { dayOneCheckInAt: null, forumCheckInAt: null }
+              : {}),
+          }
+        : {
+            dayOneCheckInAt: null,
+            forumCheckInAt: null,
+            ...(ticket.type === "ONE_DAY" ? { dayTwoCheckInAt: null } : {}),
+          }),
+  };
+  const data: Prisma.TicketUpdateManyMutationInput = {
+    ...(scope === "GALA"
+      ? { galaCheckInAt: now }
+      : scope === "DAY_TWO"
+        ? { dayTwoCheckInAt: now }
+        : { dayOneCheckInAt: now, forumCheckInAt: now }),
+    status: legacyStatus,
+    lastCheckIn: now,
+  };
+  const claimed = await prisma.ticket.updateMany({
+    where,
+    data,
   });
+
+  const updated = await prisma.ticket.findUnique({ where: { id: ticket.id } });
+  if (!updated) {
+    return { ok: false, code: "NOT_FOUND", status: 404, message: "Билет не найден." };
+  }
+  if (claimed.count === 0) {
+    const checkedInAt =
+      scope === "GALA"
+        ? updated.galaCheckInAt
+        : scope === "DAY_TWO"
+          ? updated.dayTwoCheckInAt
+          : updated.dayOneCheckInAt ?? updated.forumCheckInAt;
+    if (checkedInAt) {
+      return {
+        ok: false,
+        code: "ALREADY_CHECKED_IN",
+        status: 409,
+        message: adminT.scanner.alreadyCheckedIn,
+        checkedInAt: checkedInAt.toISOString(),
+      };
+    }
+    return { ok: false, code: "BAD_SCOPE", status: 400, message: adminT.scanner.oneDayPassUsed };
+  }
 
   return { ok: true, ticket: normalizeTicket(updated) };
 }
@@ -408,7 +456,6 @@ export async function performCheckIn(input: {
   ticketKind: TicketKind;
   sourceRecordId: string;
   scope: CheckInScope;
-  mode?: ScanMode;
 }): Promise<CheckInResult> {
   const result = await runCheckIn(input);
 
@@ -424,11 +471,10 @@ function runCheckIn(input: {
   ticketKind: TicketKind;
   sourceRecordId: string;
   scope: CheckInScope;
-  mode?: ScanMode;
 }): Promise<CheckInResult> {
   switch (input.ticketKind) {
     case "TICKET":
-      return checkInTicketRecord(input.sourceRecordId, input.scope, input.mode);
+      return checkInTicketRecord(input.sourceRecordId, input.scope);
     case "PARTICIPANT":
       return checkInApplicationRecord(input.sourceRecordId);
     case "JURY":

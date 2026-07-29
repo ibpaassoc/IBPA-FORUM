@@ -19,7 +19,6 @@ import {
 } from "@/shared/components/admin/DashboardUI";
 import { instagramProfileUrl } from "@/features/tickets/lib/instagram";
 import { adminT } from "@/lib/i18n/admin";
-import { ticketAccessTypes, scanModeScope } from "@/features/check-in/scan-mode";
 import UnifiedScanner from "@/features/check-in/components/UnifiedScanner";
 
 type TicketPayment = {
@@ -53,6 +52,8 @@ type TicketRecord = {
   paidAt: Date | string | null;
   lastCheckIn: Date | string | null;
   forumCheckInAt: Date | string | null;
+  dayOneCheckInAt: Date | string | null;
+  dayTwoCheckInAt: Date | string | null;
   galaCheckInAt: Date | string | null;
   createdAt: Date | string;
   updatedAt: Date | string;
@@ -202,22 +203,35 @@ function DetailItem({ label, value }: { label: string; value: React.ReactNode })
 }
 
 function AccessCheckIn({ ticket }: { ticket: TicketRecord }) {
-  const accessTypes = ticketAccessTypes(ticket.type, ticket.galaDinner);
-  if (accessTypes.length === 0) {
-    return <span className="text-[var(--color-ink-muted)]">—</span>;
-  }
+  const checkIns = [
+    {
+      key: "day-one",
+      label: adminT.scanner.dayOne,
+      checkedAt: ticket.dayOneCheckInAt ?? ticket.forumCheckInAt,
+    },
+    {
+      key: "day-two",
+      label: adminT.scanner.dayTwo,
+      checkedAt: ticket.dayTwoCheckInAt,
+    },
+    ...(ticket.galaDinner
+      ? [{
+          key: "gala",
+          label: adminT.scanner.galaDinner,
+          checkedAt: ticket.galaCheckInAt,
+        }]
+      : []),
+  ];
   return (
     <div className="flex flex-col gap-1.5">
-      {accessTypes.map((mode) => {
-        const checkedAt =
-          scanModeScope(mode) === "GALA" ? ticket.galaCheckInAt : ticket.forumCheckInAt;
+      {checkIns.map((checkIn) => {
         return (
-          <div key={mode} className="flex items-center justify-between gap-2">
+          <div key={checkIn.key} className="flex items-center justify-between gap-2">
             <span className="font-medium text-[var(--color-ink)]">
-              {adminT.scanner.modes[mode]}
+              {checkIn.label}
             </span>
-            {checkedAt ? (
-              <DashboardBadge tone="green">{formatDate(checkedAt)}</DashboardBadge>
+            {checkIn.checkedAt ? (
+              <DashboardBadge tone="green">{formatDate(checkIn.checkedAt)}</DashboardBadge>
             ) : (
               <span className="text-[0.78rem] text-[var(--color-ink-muted)]">
                 {adminT.tickets.notCheckedIn}

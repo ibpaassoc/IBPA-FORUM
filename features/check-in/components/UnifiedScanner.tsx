@@ -5,17 +5,16 @@ import type { ReactNode } from "react";
 import jsQR from "jsqr";
 import {
   AlertTriangle,
-  CalendarDays,
   Camera,
   CheckCircle2,
+  CircleMinus,
+  Clock3,
   Keyboard,
   RefreshCw,
   ScanLine,
-  Sun,
   Ticket,
   UserCheck,
   Users,
-  UtensilsCrossed,
   XCircle,
 } from "lucide-react";
 import { adminT } from "@/lib/i18n/admin";
@@ -25,13 +24,10 @@ import {
   DashboardSecondaryBtn,
   dashboardInputClass,
 } from "@/shared/components/admin/DashboardUI";
-import { scanModeScope } from "../scan-mode";
-import { SCAN_MODES } from "../types";
 import type {
   CheckInScope,
   CheckInScopeState,
   NormalizedTicket,
-  ScanMode,
   TicketKind,
 } from "../types";
 
@@ -49,12 +45,6 @@ const KIND_META: Record<TicketKind, { label: string; icon: typeof Ticket }> = {
   JURY: { label: adminT.scanner.kindJury, icon: Users },
 };
 
-const MODE_META: Record<ScanMode, { label: string; icon: typeof Ticket }> = {
-  one_day: { label: adminT.scanner.modes.one_day, icon: Sun },
-  two_day: { label: adminT.scanner.modes.two_day, icon: CalendarDays },
-  gala_dinner: { label: adminT.scanner.modes.gala_dinner, icon: UtensilsCrossed },
-};
-
 function formatDateTime(value: string | null) {
   if (!value) return "—";
   return new Intl.DateTimeFormat("ru-RU", {
@@ -65,7 +55,7 @@ function formatDateTime(value: string | null) {
   }).format(new Date(value));
 }
 
-function paymentTone(status: string) {
+function paymentTone(status: string): "green" | "amber" | "red" {
   return status === "PAID" ? "green" : status === "PENDING" ? "amber" : "red";
 }
 
@@ -82,13 +72,6 @@ export default function UnifiedScanner({
   const [state, setState] = useState<ScanState>({ phase: "idle" });
   const [manualCode, setManualCode] = useState("");
   const [busyScope, setBusyScope] = useState<CheckInScope | null>(null);
-  // Selected access mode; set once at the entrance and kept across scans.
-  const [mode, setMode] = useState<ScanMode>("one_day");
-  // Latest mode for the scan loop / async callbacks without re-creating them.
-  const modeRef = useRef<ScanMode>(mode);
-  useEffect(() => {
-    modeRef.current = mode;
-  }, [mode]);
 
   const stopCamera = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -102,7 +85,7 @@ export default function UnifiedScanner({
       const res = await fetch("/api/admin/check-in/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code, mode: modeRef.current }),
+        body: JSON.stringify({ code }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -183,7 +166,11 @@ export default function UnifiedScanner({
     setState({ phase: "scanning" });
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" },
+        video: {
+          facingMode: { ideal: "environment" },
+          width: { ideal: 1280 },
+          height: { ideal: 1280 },
+        },
       });
       streamRef.current = stream;
       if (videoRef.current) {
@@ -216,9 +203,6 @@ export default function UnifiedScanner({
           ticketKind: ticket.ticketKind,
           sourceRecordId: ticket.sourceRecordId,
           scope,
-          // Forum tickets carry the selected mode so the server re-validates
-          // and records the correct scope; participant/jury are not gated.
-          ...(ticket.ticketKind === "TICKET" ? { mode } : {}),
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -259,9 +243,7 @@ export default function UnifiedScanner({
   // ─── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="mx-auto w-full max-w-md">
-      <ModeSelector mode={mode} onChange={setMode} />
-
+    <div className="mx-auto w-full max-w-xl">
       {state.phase === "idle" && (
         <div className="space-y-4">
           <div className="rounded-[24px] border border-dashed border-[rgba(114,160,193,0.3)] bg-white/62 p-8 text-center backdrop-blur-xl">
@@ -275,12 +257,12 @@ export default function UnifiedScanner({
               {adminT.scanner.idleText}
             </p>
           </div>
-          <DashboardPrimaryBtn onClick={startCamera} className="w-full justify-center">
+          <DashboardPrimaryBtn onClick={startCamera} className="min-h-12 w-full justify-center">
             <Camera size={16} /> {adminT.scanner.startCamera}
           </DashboardPrimaryBtn>
           <DashboardSecondaryBtn
             onClick={() => setState({ phase: "manual" })}
-            className="w-full justify-center"
+            className="min-h-12 w-full justify-center"
           >
             <Keyboard size={16} /> {adminT.scanner.enterManually}
           </DashboardSecondaryBtn>
@@ -305,13 +287,13 @@ export default function UnifiedScanner({
               value={manualCode}
               onChange={(event) => setManualCode(event.target.value)}
               placeholder={adminT.scanner.codePlaceholder}
-              className={dashboardInputClass}
+              className={`${dashboardInputClass} min-h-12 text-base`}
             />
           </label>
-          <DashboardPrimaryBtn type="submit" className="w-full justify-center">
+          <DashboardPrimaryBtn type="submit" className="min-h-12 w-full justify-center">
             <ScanLine size={16} /> {adminT.scanner.verifyTicket}
           </DashboardPrimaryBtn>
-          <DashboardSecondaryBtn onClick={reset} className="w-full justify-center">
+          <DashboardSecondaryBtn onClick={reset} className="min-h-12 w-full justify-center">
             {adminT.common.cancel}
           </DashboardSecondaryBtn>
         </form>
@@ -319,7 +301,7 @@ export default function UnifiedScanner({
 
       {state.phase === "scanning" && (
         <div className="space-y-4">
-          <div className="relative aspect-square w-full overflow-hidden rounded-[24px] bg-[var(--color-ink)]">
+          <div className="relative aspect-[4/5] max-h-[68svh] w-full overflow-hidden rounded-[24px] bg-[var(--color-ink)] sm:aspect-square">
             <video ref={videoRef} className="h-full w-full object-cover" playsInline muted />
             <canvas ref={canvasRef} className="hidden" />
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
@@ -334,7 +316,7 @@ export default function UnifiedScanner({
           <p className="text-center text-sm text-[var(--color-ink-soft)]">
             {adminT.scanner.pointCamera}
           </p>
-          <DashboardSecondaryBtn onClick={reset} className="w-full justify-center">
+          <DashboardSecondaryBtn onClick={reset} className="min-h-12 w-full justify-center">
             {adminT.common.cancel}
           </DashboardSecondaryBtn>
         </div>
@@ -350,7 +332,6 @@ export default function UnifiedScanner({
       {state.phase === "result" && (
         <ResultView
           ticket={state.ticket}
-          mode={mode}
           notice={state.notice}
           busyScope={busyScope}
           onCheckIn={confirmCheckIn}
@@ -364,7 +345,7 @@ export default function UnifiedScanner({
             <XCircle size={38} className="text-red-500" />
             <p className="text-sm font-semibold text-red-800">{state.message}</p>
           </div>
-          <DashboardPrimaryBtn onClick={reset} className="w-full justify-center">
+          <DashboardPrimaryBtn onClick={reset} className="min-h-12 w-full justify-center">
             {adminT.common.tryAgain}
           </DashboardPrimaryBtn>
         </div>
@@ -375,14 +356,12 @@ export default function UnifiedScanner({
 
 function ResultView({
   ticket,
-  mode,
   notice,
   busyScope,
   onCheckIn,
   onReset,
 }: {
   ticket: NormalizedTicket;
-  mode: ScanMode;
   notice?: string;
   busyScope: CheckInScope | null;
   onCheckIn: (ticket: NormalizedTicket, scope: CheckInScope) => void;
@@ -390,14 +369,6 @@ function ResultView({
 }) {
   const KindIcon = KIND_META[ticket.ticketKind].icon;
   const justChecked = notice === adminT.scanner.checkedInNotice;
-
-  // Forum tickets are gated by the selected mode, so only surface the check-in
-  // action for that mode's scope. Participant/jury records aren't day-typed —
-  // show their single attendance scope unchanged.
-  const actionableScopes =
-    ticket.ticketKind === "TICKET"
-      ? ticket.scopes.filter((s) => s.scope === scanModeScope(mode))
-      : ticket.scopes;
 
   return (
     <div className="space-y-4">
@@ -414,8 +385,8 @@ function ResultView({
         </div>
       )}
 
-      <div className="rounded-[24px] border border-[rgba(37,42,45,0.08)] bg-white/72 p-5 backdrop-blur-xl">
-        <div className="flex items-start justify-between gap-3">
+      <div className="rounded-[24px] border border-[rgba(37,42,45,0.08)] bg-white/72 p-4 backdrop-blur-xl sm:p-5">
+        <div className="flex flex-col gap-3 min-[390px]:flex-row min-[390px]:items-start min-[390px]:justify-between">
           <div className="min-w-0">
             <p className="text-base font-semibold text-[var(--color-ink)]">{ticket.ownerName}</p>
             <p className="mt-0.5 truncate text-sm text-[var(--color-ink-soft)]">{ticket.email}</p>
@@ -423,13 +394,25 @@ function ResultView({
               <p className="mt-0.5 text-xs text-[var(--color-ink-muted)]">{ticket.phone}</p>
             )}
           </div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--color-blue-wash)] px-3 py-1.5 text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-[#356f98]">
+          <span className="inline-flex w-fit shrink-0 items-center gap-1.5 rounded-full bg-[var(--color-blue-wash)] px-3 py-1.5 text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-[#356f98]">
             <KindIcon size={13} /> {KIND_META[ticket.ticketKind].label}
           </span>
         </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-3 border-t border-[rgba(37,42,45,0.08)] pt-4">
+        <div className="mt-4 grid grid-cols-1 gap-3 border-t border-[rgba(37,42,45,0.08)] pt-4 min-[390px]:grid-cols-2">
           <Field label={adminT.scanner.ticketType} value={ticket.ticketType} />
+          {ticket.galaDinnerIncluded !== null && (
+            <Field
+              label={adminT.scanner.galaDinner}
+              value={
+                <DashboardBadge tone={ticket.galaDinnerIncluded ? "green" : "neutral"}>
+                  {ticket.galaDinnerIncluded
+                    ? adminT.scanner.included
+                    : adminT.scanner.notIncluded}
+                </DashboardBadge>
+              }
+            />
+          )}
           <Field
             label={adminT.scanner.payment}
             value={
@@ -447,20 +430,25 @@ function ResultView({
           {adminT.scanner.notEligible}
         </div>
       ) : (
-        <div className="space-y-2.5">
-          {actionableScopes.map((scope) => (
-            <ScopeRow
-              key={scope.scope}
-              scope={scope}
-              busy={busyScope === scope.scope}
-              disabled={busyScope !== null}
-              onCheckIn={() => onCheckIn(ticket, scope.scope)}
-            />
-          ))}
+        <div>
+          <p className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-blue)]">
+            {adminT.scanner.checkInOptions}
+          </p>
+          <div className="space-y-2.5">
+            {ticket.scopes.map((scope) => (
+              <ScopeRow
+                key={scope.scope}
+                scope={scope}
+                busy={busyScope === scope.scope}
+                disabled={busyScope !== null}
+                onCheckIn={() => onCheckIn(ticket, scope.scope)}
+              />
+            ))}
+          </div>
         </div>
       )}
 
-      <DashboardPrimaryBtn onClick={onReset} className="w-full justify-center">
+      <DashboardPrimaryBtn onClick={onReset} className="min-h-12 w-full justify-center">
         <ScanLine size={16} /> {adminT.scanner.scanNext}
       </DashboardPrimaryBtn>
     </div>
@@ -480,67 +468,42 @@ function ScopeRow({
 }) {
   if (scope.checkedInAt) {
     return (
-      <div className="flex items-center justify-between gap-3 rounded-[18px] border border-emerald-200 bg-emerald-50 px-4 py-3">
+      <div className="flex min-h-[72px] items-center justify-between gap-3 rounded-[18px] border border-emerald-200 bg-emerald-50 px-4 py-3">
         <div className="min-w-0">
           <p className="text-sm font-semibold text-emerald-800">{scope.label}</p>
-          <p className="text-xs text-emerald-700">{adminT.scanner.checkedInAt} {formatDateTime(scope.checkedInAt)}</p>
+          <p className="mt-1 flex items-center gap-1 text-xs text-emerald-700">
+            <Clock3 size={12} />
+            {formatDateTime(scope.checkedInAt)}
+          </p>
         </div>
-        <CheckCircle2 size={20} className="shrink-0 text-emerald-600" />
+        <DashboardBadge tone="green">
+          <CheckCircle2 size={13} /> {adminT.scanner.checkedInBadge}
+        </DashboardBadge>
+      </div>
+    );
+  }
+
+  if (!scope.available) {
+    return (
+      <div className="flex min-h-[72px] items-center justify-between gap-3 rounded-[18px] border border-[rgba(37,42,45,0.08)] bg-[rgba(37,42,45,0.025)] px-4 py-3">
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-[var(--color-ink-soft)]">{scope.label}</p>
+          <p className="mt-0.5 text-xs text-[var(--color-ink-muted)]">
+            {scope.unavailableReason}
+          </p>
+        </div>
+        <CircleMinus size={20} className="shrink-0 text-[var(--color-ink-muted)]" />
       </div>
     );
   }
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-[18px] border border-[rgba(37,42,45,0.08)] bg-white/62 px-4 py-3">
+    <div className="flex min-h-[72px] items-center justify-between gap-3 rounded-[18px] border border-[rgba(37,42,45,0.08)] bg-white/62 px-4 py-3">
       <p className="text-sm font-medium text-[var(--color-ink)]">{scope.label}</p>
-      <DashboardPrimaryBtn onClick={onCheckIn} disabled={disabled} className="shrink-0">
+      <DashboardPrimaryBtn onClick={onCheckIn} disabled={disabled} className="min-h-11 shrink-0">
         {busy ? <RefreshCw size={15} className="animate-spin" /> : <CheckCircle2 size={15} />}
         {adminT.scanner.checkInButton}
       </DashboardPrimaryBtn>
-    </div>
-  );
-}
-
-function ModeSelector({
-  mode,
-  onChange,
-}: {
-  mode: ScanMode;
-  onChange: (mode: ScanMode) => void;
-}) {
-  return (
-    <div className="mb-5">
-      <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-blue)]">
-        {adminT.scanner.modeSelectLabel}
-      </p>
-      <div
-        role="radiogroup"
-        aria-label={adminT.scanner.modeSelectLabel}
-        className="grid grid-cols-3 gap-2 rounded-[20px] border border-[rgba(114,160,193,0.24)] bg-white/62 p-1.5 backdrop-blur-xl"
-      >
-        {SCAN_MODES.map((value) => {
-          const meta = MODE_META[value];
-          const Icon = meta.icon;
-          const active = value === mode;
-          return (
-            <button
-              key={value}
-              type="button"
-              role="radio"
-              aria-checked={active}
-              onClick={() => onChange(value)}
-              className={`flex min-h-[68px] flex-col items-center justify-center gap-1.5 rounded-[15px] px-2 py-2.5 text-center transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(114,160,193,0.55)] ${
-                active
-                  ? "bg-[var(--color-blue)] text-white shadow-[0_10px_24px_rgba(114,160,193,0.35)]"
-                  : "text-[var(--color-ink-soft)] hover:bg-[var(--color-blue-wash)]/70 active:bg-[var(--color-blue-wash)]"
-              }`}
-            >
-              <Icon size={20} strokeWidth={active ? 2 : 1.6} />
-              <span className="text-[0.78rem] font-semibold leading-tight">{meta.label}</span>
-            </button>
-          );
-        })}
-      </div>
     </div>
   );
 }

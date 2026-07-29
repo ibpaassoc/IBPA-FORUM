@@ -407,6 +407,8 @@ model Ticket {
   paidAt                DateTime?
   lastCheckIn           DateTime?
   forumCheckInAt        DateTime?
+  dayOneCheckInAt       DateTime?
+  dayTwoCheckInAt       DateTime?
   galaCheckInAt         DateTime?
   createdAt             DateTime             @default(now())
   updatedAt             DateTime             @updatedAt
