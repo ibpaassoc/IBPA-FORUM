@@ -136,7 +136,7 @@ export async function getAdminScoringOverview({
     return {
       id: application.id,
       fullName: application.applicantProfile?.fullName ?? adminT.system.notSet,
-      email: application.applicantProfile?.account.email ?? "",
+      email: application.applicantProfile?.account?.email ?? "",
       createdAt: application.createdAt,
       submittedAt: application.submittedAt,
       categoryName: application.category.name,
@@ -353,7 +353,7 @@ export async function getAdminApplicationScoringDetail(nominationId: string) {
     application: {
       id: application.id,
       fullName: application.applicantProfile?.fullName ?? adminT.system.notSet,
-      email: application.applicantProfile?.account.email ?? "",
+      email: application.applicantProfile?.account?.email ?? "",
       category: application.category,
       award: application.award,
     } satisfies AdminScoringApplicationRecord,

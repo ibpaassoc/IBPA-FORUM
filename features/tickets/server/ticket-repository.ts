@@ -106,6 +106,8 @@ export async function reserveTicketForCheckout(
           paidAt: null,
           lastCheckIn: null,
           forumCheckInAt: null,
+          dayOneCheckInAt: null,
+          dayTwoCheckInAt: null,
           galaCheckInAt: null,
         },
       });
@@ -166,9 +168,18 @@ export async function checkInTicket(
   ticketId: string,
   status: Extract<TicketStatus, "CHECKED_ONE_DAY" | "CHECKED_TWO_DAY" | "CHECKED_GALA_DINNER">
 ) {
+  const checkedInAt = new Date();
   return prisma.ticket.update({
     where: { id: ticketId },
-    data: { status, lastCheckIn: new Date() },
+    data: {
+      status,
+      lastCheckIn: checkedInAt,
+      ...(status === "CHECKED_GALA_DINNER"
+        ? { galaCheckInAt: checkedInAt }
+        : status === "CHECKED_TWO_DAY"
+          ? { dayTwoCheckInAt: checkedInAt }
+          : { dayOneCheckInAt: checkedInAt, forumCheckInAt: checkedInAt }),
+    },
   });
 }
 
@@ -188,6 +199,8 @@ export async function getAllTickets() {
       paidAt: true,
       lastCheckIn: true,
       forumCheckInAt: true,
+      dayOneCheckInAt: true,
+      dayTwoCheckInAt: true,
       galaCheckInAt: true,
       createdAt: true,
       updatedAt: true,

@@ -314,6 +314,8 @@ const ticketSelect = {
   secureToken: true,
   status: true,
   forumCheckInAt: true,
+  dayOneCheckInAt: true,
+  dayTwoCheckInAt: true,
   galaCheckInAt: true,
   createdAt: true,
   updatedAt: true,
@@ -330,7 +332,11 @@ type TicketRecord = Prisma.TicketGetPayload<{ select: typeof ticketSelect }>;
 export function mapTicketRow(ticket: TicketRecord): SheetValues[number] {
   const payment = ticket.payments[0] ?? null;
   const totalPaidCents = payment?.amount ?? 0;
-  const checkInAt = ticket.forumCheckInAt ?? ticket.galaCheckInAt;
+  const checkInAt =
+    ticket.dayOneCheckInAt ??
+    ticket.dayTwoCheckInAt ??
+    ticket.forumCheckInAt ??
+    ticket.galaCheckInAt;
 
   return [
     ticket.id,
