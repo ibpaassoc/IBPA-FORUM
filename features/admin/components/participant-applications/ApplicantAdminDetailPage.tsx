@@ -291,6 +291,7 @@ export default function ApplicantAdminDetailPage({
           <DashboardDetailCard label={adminT.applicantAccount.fullName} value={profile.fullName} />
           <DashboardDetailCard label={adminT.applicantAccount.email} value={profile.account.email} />
           <DashboardDetailCard label={adminT.applicantAccount.phone} value={profile.phone || adminT.common.notProvided} />
+          <DashboardDetailCard label={adminT.applicantAccount.instagram} value={profile.websiteUrl || adminT.common.notProvided} />
           <DashboardDetailCard label={adminT.detail.location} value={[profile.city, profile.stateProvince, profile.country].filter(Boolean).join(", ") || adminT.common.notProvided} />
         </div>
       </DashboardCard>
