@@ -32,7 +32,7 @@ export default function JuryNominationCollection({
   eyebrow,
   description,
   nominations,
-  expertiseAreas,
+  approvedCategories,
   activeCategory,
   activeStatus,
   basePath = "/account/jury/nominations",
@@ -42,7 +42,7 @@ export default function JuryNominationCollection({
   eyebrow: string;
   description: string;
   nominations: JuryNominationListItem[];
-  expertiseAreas: string[];
+  approvedCategories: string[];
   activeCategory?: string;
   activeStatus: JuryNominationFilter;
   basePath?: string;
@@ -76,16 +76,16 @@ export default function JuryNominationCollection({
           </div>
         ) : null}
 
-        {expertiseAreas.length > 1 ? (
+        {approvedCategories.length > 1 ? (
           <div className={`${showStatusFilters ? "mt-3 border-t border-[rgba(37,42,45,0.08)] pt-3" : ""} flex gap-2 overflow-x-auto no-scrollbar`}>
-            <Link href={buildHref({ basePath, status: activeStatus })} aria-current={!activeCategory ? "page" : undefined} className={`inline-flex min-h-9 shrink-0 items-center rounded-full px-3.5 text-[0.66rem] font-semibold transition ${!activeCategory ? "bg-[var(--color-blue-wash)] text-[#356f98]" : "text-[var(--color-ink-soft)] hover:bg-white"}`}>All expertise</Link>
-            {expertiseAreas.map((area) => <Link key={area} href={buildHref({ basePath, category: area, status: activeStatus })} aria-current={activeCategory === area ? "page" : undefined} className={`inline-flex min-h-9 shrink-0 items-center rounded-full px-3.5 text-[0.66rem] font-semibold transition ${activeCategory === area ? "bg-[var(--color-blue-wash)] text-[#356f98]" : "text-[var(--color-ink-soft)] hover:bg-white"}`}>{area}</Link>)}
+            <Link href={buildHref({ basePath, status: activeStatus })} aria-current={!activeCategory ? "page" : undefined} className={`inline-flex min-h-9 shrink-0 items-center rounded-full px-3.5 text-[0.66rem] font-semibold transition ${!activeCategory ? "bg-[var(--color-blue-wash)] text-[#356f98]" : "text-[var(--color-ink-soft)] hover:bg-white"}`}>All approved</Link>
+            {approvedCategories.map((category) => <Link key={category} href={buildHref({ basePath, category, status: activeStatus })} aria-current={activeCategory === category ? "page" : undefined} className={`inline-flex min-h-9 shrink-0 items-center rounded-full px-3.5 text-[0.66rem] font-semibold transition ${activeCategory === category ? "bg-[var(--color-blue-wash)] text-[#356f98]" : "text-[var(--color-ink-soft)] hover:bg-white"}`}>{category}</Link>)}
           </div>
         ) : null}
       </section>
 
       {nominations.length === 0 ? (
-        <EmptyState icon={activeStatus === "completed" ? <CheckCircle2 size={20} /> : <ClipboardList size={20} />} title="No nominations in this view" description="Try another status or expertise filter." />
+        <EmptyState icon={activeStatus === "completed" ? <CheckCircle2 size={20} /> : <ClipboardList size={20} />} title="No nominations in this view" description="Try another status or approved-category filter." />
       ) : (
         <div className="grid gap-3">{nominations.map((nomination) => <JuryNominationCard key={nomination.id} nomination={nomination} />)}</div>
       )}

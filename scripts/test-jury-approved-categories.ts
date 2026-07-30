@@ -72,4 +72,56 @@ assert.match(adminPicker, /updateJuryApprovedCategoriesAction/);
 assert.match(adminPicker, /Select at least one approved category/);
 assert.match(adminPicker, /checked=\{checked\}/);
 
+const juryReviews = readFileSync(
+  join(process.cwd(), "features/jury/server/reviews.ts"),
+  "utf8",
+);
+assert.doesNotMatch(
+  juryReviews,
+  /judge\.expertiseAreas/,
+  "review authorization must not use the applicant's original expertise answer",
+);
+assert.match(
+  juryReviews,
+  /category: \{ name: \{ in: judge\.approvedCategories \} \}/,
+  "review queries are scoped to approved categories",
+);
+
+const nominationFilesRoute = readFileSync(
+  join(
+    process.cwd(),
+    "app/api/account/jury/nomination-files/[fileId]/route.ts",
+  ),
+  "utf8",
+);
+assert.match(
+  nominationFilesRoute,
+  /juryUser\.approvedCategories\.includes/,
+  "nomination file downloads use the same approved-category authorization",
+);
+
+const juryOverview = readFileSync(
+  join(process.cwd(), "features/account/components/jury/JuryOverview.tsx"),
+  "utf8",
+);
+assert.match(juryOverview, /Jury profile/);
+assert.match(juryOverview, /Approved categories/);
+
+const adminScoring = readFileSync(
+  join(process.cwd(), "features/admin/server/admin.ts"),
+  "utf8",
+);
+assert.doesNotMatch(adminScoring, /judge\.expertiseAreas/);
+assert.match(adminScoring, /judge\.approvedCategories/);
+
+const jurySheetRows = readFileSync(
+  join(process.cwd(), "features/google-sheets/server/rows.ts"),
+  "utf8",
+);
+assert.match(
+  jurySheetRows,
+  /orderCategories\(jury\.approvedCategories\)/,
+  "approved category changes flow into the paid-jury sheet",
+);
+
 console.log("Jury approved-category checks passed.");

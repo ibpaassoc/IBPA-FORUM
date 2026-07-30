@@ -11,13 +11,13 @@ import {
 export default function JuryOverview({
   juryName,
   professionalTitle,
-  expertiseAreas,
+  approvedCategories,
   nominations,
   totals,
 }: {
   juryName: string;
   professionalTitle: string;
-  expertiseAreas: string[];
+  approvedCategories: string[];
   nominations: JuryNominationListItem[];
   totals: {
     assigned: number;
@@ -41,8 +41,20 @@ export default function JuryOverview({
             <p className="text-[0.66rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-ink-soft)]">Jury workspace</p>
             <h1 className="mt-2 max-w-3xl font-[var(--font-title-family)] text-[clamp(2.15rem,5vw,3.75rem)] font-light leading-[1.02] tracking-[-0.035em] text-[var(--color-ink)]">Welcome back, {juryName.split(" ")[0]}.</h1>
             <p className="mt-4 max-w-2xl text-[0.95rem] leading-7 text-[var(--color-ink-soft)]">Review each nomination independently, save your work as you go, and submit only when every regulation criterion is complete.</p>
-            <div className="mt-5 flex flex-wrap gap-2">
-              {expertiseAreas.map((area) => <span key={area} className="rounded-full border border-[rgba(114,160,193,0.22)] bg-[var(--color-blue-wash)] px-3 py-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.1em] text-[#356f98]">{area}</span>)}
+            <div className="mt-5 rounded-[24px] border border-[rgba(114,160,193,0.2)] bg-white/64 p-4">
+              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-soft)]">
+                Jury profile
+              </p>
+              <div className="mt-3 grid gap-2 sm:grid-cols-[150px_minmax(0,1fr)] sm:items-start">
+                <p className="text-sm font-medium text-[var(--color-ink)]">Approved categories</p>
+                <div className="flex flex-wrap gap-2">
+                  {approvedCategories.map((category) => (
+                    <span key={category} className="rounded-full border border-[rgba(114,160,193,0.22)] bg-[var(--color-blue-wash)] px-3 py-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.1em] text-[#356f98]">
+                      {category}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -74,7 +86,7 @@ export default function JuryOverview({
         </div>
 
         {nextNominations.length === 0 ? (
-          <EmptyState icon={<CheckCircle2 size={20} />} title={totals.assigned === 0 ? "No nominations assigned" : "All reviews complete"} description={totals.assigned === 0 ? "Eligible submitted nominations will appear here." : "You have completed every nomination in your expertise areas."} action={totals.completed > 0 ? <PremiumButton href="/account/jury/completed">View completed reviews</PremiumButton> : undefined} />
+          <EmptyState icon={<CheckCircle2 size={20} />} title={totals.assigned === 0 ? "No nominations assigned" : "All reviews complete"} description={totals.assigned === 0 ? "Eligible submitted nominations in your approved categories will appear here." : "You have completed every nomination in your approved categories."} action={totals.completed > 0 ? <PremiumButton href="/account/jury/completed">View completed reviews</PremiumButton> : undefined} />
         ) : (
           <div className="grid gap-3">{nextNominations.map((nomination) => <JuryNominationCard key={nomination.id} nomination={nomination} />)}</div>
         )}

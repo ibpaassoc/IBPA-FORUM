@@ -119,7 +119,7 @@ export async function computeStatsLayout(): Promise<StatsLayout> {
     }),
     prisma.juryApplication.findMany({
       where: { status: "PAID" },
-      select: { expertiseAreas: true },
+      select: { approvedCategories: true },
     }),
     prisma.ticket.findMany({
       select: { type: true, status: true },
@@ -157,8 +157,8 @@ export async function computeStatsLayout(): Promise<StatsLayout> {
 
   const juryCategoryCounts = new Map<string, number>();
   for (const jury of paidJury) {
-    for (const area of orderCategories(jury.expertiseAreas)) {
-      increment(juryCategoryCounts, area);
+    for (const category of orderCategories(jury.approvedCategories)) {
+      increment(juryCategoryCounts, category);
     }
   }
 
