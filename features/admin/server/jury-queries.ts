@@ -13,6 +13,7 @@ export async function getJuryApplications() {
       country: true,
       professionalTitle: true,
       expertiseAreas: true,
+      approvedCategories: true,
       ibpaNumber: true,
       status: true,
       paymentStatus: true,

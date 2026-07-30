@@ -51,4 +51,25 @@ assert.match(migration, /ALTER TABLE "JuryApplication"/);
 assert.match(migration, /ALTER TABLE "JuryProfile"/);
 assert.match(migration, /SET "approvedCategories" = "expertiseAreas"/);
 
+const publicJuryQuery = readFileSync(
+  join(process.cwd(), "features/jury/server/queries.ts"),
+  "utf8",
+);
+assert.match(
+  publicJuryQuery,
+  /expertise: member\.approvedCategories/,
+  "the approved-judges section publishes only admin-approved categories",
+);
+
+const adminPicker = readFileSync(
+  join(
+    process.cwd(),
+    "features/admin/components/jury-applications/ApprovedCategoriesPicker.tsx",
+  ),
+  "utf8",
+);
+assert.match(adminPicker, /updateJuryApprovedCategoriesAction/);
+assert.match(adminPicker, /Select at least one approved category/);
+assert.match(adminPicker, /checked=\{checked\}/);
+
 console.log("Jury approved-category checks passed.");

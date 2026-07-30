@@ -5,13 +5,13 @@ import Link from "next/link";
 import { ArrowRight, MapPin, Users } from "lucide-react";
 import { adminT, formatAdminDate } from "@/lib/i18n/admin";
 import ApplicationStatusBadge from "@/features/admin/components/badges/ApplicationStatusBadge";
+import ApprovedCategoriesPicker from "@/features/admin/components/jury-applications/ApprovedCategoriesPicker";
 import ApplicationFilters, {
   type FilterSelect,
 } from "@/features/admin/components/review/ApplicationFilters";
 import {
   DashboardAccentBlock,
   DashboardCard,
-  DashboardChip,
   DashboardEmptyState,
   DashboardMetricTile,
   DashboardPageHeader,
@@ -29,6 +29,7 @@ type JuryRow = {
   country: string;
   professionalTitle: string;
   expertiseAreas: string[];
+  approvedCategories: string[];
   ibpaNumber: string | null;
   status: JuryStatus;
   paymentStatus: PaymentStatus;
@@ -177,16 +178,18 @@ export default function JuryApplicationListPage({
       ) : (
         <div className="flex flex-col gap-3">
           {filtered.map((app) => (
-            <Link key={app.id} href={`/admin/jury-applications/${app.id}`} className="group block">
-              <DashboardCard className="p-0 transition hover:border-[rgba(114,160,193,0.34)] hover:shadow-[0_24px_64px_rgba(114,160,193,0.16)]">
+            <div key={app.id} className="group block">
+              <DashboardCard className="!overflow-visible p-0 transition hover:border-[rgba(114,160,193,0.34)] hover:shadow-[0_24px_64px_rgba(114,160,193,0.16)]">
                 <div className="grid gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.8fr)_170px] lg:items-center">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <ApplicationStatusBadge status={app.status} />
                     </div>
-                    <h2 className="mt-3 font-[var(--font-title-family)] text-[1.55rem] font-light tracking-[-0.025em] text-[var(--color-ink)]">
-                      {app.fullName}
-                    </h2>
+                    <Link href={`/admin/jury-applications/${app.id}`} className="block">
+                      <h2 className="mt-3 font-[var(--font-title-family)] text-[1.55rem] font-light tracking-[-0.025em] text-[var(--color-ink)] transition hover:text-[var(--color-blue)]">
+                        {app.fullName}
+                      </h2>
+                    </Link>
                     <p className="mt-1 truncate text-sm text-[var(--color-ink-soft)]">{app.email}</p>
                     <p className="mt-3 inline-flex items-center gap-2 rounded-[18px] border border-[rgba(37,42,45,0.08)] bg-white/62 px-2.5 py-1 text-xs text-[var(--color-ink-soft)]">
                       <MapPin aria-hidden size={13} />
@@ -194,19 +197,17 @@ export default function JuryApplicationListPage({
                     </p>
                   </div>
 
-                  <DashboardPanel>
+                  <DashboardPanel className="overflow-visible">
                     <p className="text-sm font-medium text-[var(--color-ink)]">{app.professionalTitle}</p>
-                    <div className="mt-3 flex flex-wrap gap-1.5">
-                      {app.expertiseAreas.slice(0, 4).map((expertiseArea) => (
-                        <DashboardChip key={expertiseArea}>{expertiseArea}</DashboardChip>
-                      ))}
-                      {app.expertiseAreas.length > 4 ? (
-                        <DashboardChip>+{app.expertiseAreas.length - 4}</DashboardChip>
-                      ) : null}
-                    </div>
+                    <ApprovedCategoriesPicker
+                      applicationId={app.id}
+                      expertiseAreas={app.expertiseAreas}
+                      approvedCategories={app.approvedCategories}
+                      className="mt-3"
+                    />
                   </DashboardPanel>
 
-                  <div className="flex items-center justify-between gap-3 rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white p-4 lg:flex-col lg:items-start">
+                  <Link href={`/admin/jury-applications/${app.id}`} className="flex items-center justify-between gap-3 rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white p-4 transition hover:border-[rgba(114,160,193,0.34)] lg:flex-col lg:items-start">
                     <div>
                       <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
                         {adminT.jury.lastActivity}
@@ -220,10 +221,10 @@ export default function JuryApplicationListPage({
                       size={17}
                       className="text-[var(--color-ink-muted)] transition group-hover:translate-x-0.5 group-hover:text-[var(--color-blue)]"
                     />
-                  </div>
+                  </Link>
                 </div>
               </DashboardCard>
-            </Link>
+            </div>
           ))}
         </div>
       )}
