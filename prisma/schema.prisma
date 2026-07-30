@@ -107,6 +107,7 @@ model JuryProfile {
   yearsExperience     Int?
   employerAffiliation String?
   expertiseAreas      String[]
+  approvedCategories  String[]               @default([])
   professionalBio     String?
   professionalWebsite String?
   approvalStatus      JuryApplicationStatus?
@@ -150,6 +151,7 @@ model JuryApplication {
   pastWinner                       Boolean               @default(false)
   pastWinnerYear                   Int?
   expertiseAreas                   String[]
+  approvedCategories               String[]               @default([])
   professionalBio                  String
   professionalWebsite              String?
   conflictDisclosure               String

@@ -114,6 +114,7 @@ async function handleCheckoutCompleted(event: Stripe.Event): Promise<boolean> {
           yearsExperience: true,
           employerAffiliation: true,
           expertiseAreas: true,
+          approvedCategories: true,
           professionalBio: true,
           professionalWebsite: true,
           status: true,

@@ -120,6 +120,7 @@ export async function upsertJuryAccountForApplication(
     yearsExperience?: number | null;
     employerAffiliation?: string | null;
     expertiseAreas: string[];
+    approvedCategories: string[];
     professionalBio?: string | null;
     professionalWebsite?: string | null;
     status: "SUBMITTED" | "ADDITIONAL_INFO_REQUIRED" | "APPROVED" | "REJECTED" | "PAID";
@@ -161,6 +162,7 @@ export async function upsertJuryAccountForApplication(
         yearsExperience: application.yearsExperience,
         employerAffiliation: application.employerAffiliation,
         expertiseAreas: application.expertiseAreas,
+        approvedCategories: application.approvedCategories,
         professionalBio: application.professionalBio,
         professionalWebsite: application.professionalWebsite,
         approvalStatus: application.status,
@@ -193,6 +195,7 @@ export async function upsertJuryAccountForApplication(
       yearsExperience: application.yearsExperience,
       employerAffiliation: application.employerAffiliation,
       expertiseAreas: application.expertiseAreas,
+      approvedCategories: application.approvedCategories,
       professionalBio: application.professionalBio,
       professionalWebsite: application.professionalWebsite,
       approvalStatus: application.status,
@@ -207,6 +210,7 @@ export async function upsertJuryAccountForApplication(
       yearsExperience: application.yearsExperience,
       employerAffiliation: application.employerAffiliation,
       expertiseAreas: application.expertiseAreas,
+      approvedCategories: application.approvedCategories,
       professionalBio: application.professionalBio,
       professionalWebsite: application.professionalWebsite,
       approvalStatus: application.status,
