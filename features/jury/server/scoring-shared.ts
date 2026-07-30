@@ -137,15 +137,11 @@ export async function requireActiveJuryJudge() {
   });
 
   if (!juryProfile?.juryApplicationId) {
-    redirect("/account/login");
+    redirect("/");
   }
 
   if (!juryProfile.approvalStatus || !isEligibleScoringJudge(juryProfile.approvalStatus)) {
-    redirect("/account/login");
-  }
-
-  if (juryProfile.approvedCategories.length === 0) {
-    redirect("/account/login");
+    redirect("/");
   }
 
   return {

@@ -99,6 +99,21 @@ assert.match(
   "review queries are scoped to approved categories",
 );
 
+const scoringShared = readFileSync(
+  join(process.cwd(), "features/jury/server/scoring-shared.ts"),
+  "utf8",
+);
+assert.doesNotMatch(
+  scoringShared,
+  /juryProfile\.approvedCategories\.length === 0/,
+  "a signed-in judge with no category assignments sees an empty workspace instead of a login loop",
+);
+assert.doesNotMatch(
+  scoringShared,
+  /redirect\("\/account\/login"\)/,
+  "authenticated jury authorization failures do not redirect back to the login page",
+);
+
 const nominationFilesRoute = readFileSync(
   join(
     process.cwd(),
