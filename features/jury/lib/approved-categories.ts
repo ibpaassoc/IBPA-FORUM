@@ -25,7 +25,7 @@ export function requireApprovedCategories(
   const normalized = normalizeApprovedCategories(approvedCategories, expertiseAreas);
 
   if (normalized.length === 0) {
-    throw new ApprovedCategoriesError("Select at least one approved category.");
+    throw new ApprovedCategoriesError("Выберите хотя бы одну одобренную категорию.");
   }
 
   return normalized;
@@ -34,4 +34,3 @@ export function requireApprovedCategories(
 export function getInitialApprovedCategories(expertiseAreas: readonly string[]) {
   return requireApprovedCategories(expertiseAreas, expertiseAreas);
 }
-

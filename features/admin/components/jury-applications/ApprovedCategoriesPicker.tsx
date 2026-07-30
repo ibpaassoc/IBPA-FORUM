@@ -1,8 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
+import { createPortal } from "react-dom";
 import { Check, ChevronDown, Loader2 } from "lucide-react";
 import { updateJuryApprovedCategoriesAction } from "@/features/admin/actions/jury.actions";
+
+type PopupPosition = {
+  top: number;
+  left: number;
+  width: number;
+};
 
 export default function ApprovedCategoriesPicker({
   applicationId,
@@ -16,7 +23,9 @@ export default function ApprovedCategoriesPicker({
   className?: string;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
+  const [popupPosition, setPopupPosition] = useState<PopupPosition | null>(null);
   const [savedCategories, setSavedCategories] = useState(approvedCategories);
   const [draftCategories, setDraftCategories] = useState(approvedCategories);
   const [error, setError] = useState<string | null>(null);
@@ -25,8 +34,30 @@ export default function ApprovedCategoriesPicker({
   useEffect(() => {
     if (!open) return;
 
+    function updatePopupPosition() {
+      const rect = rootRef.current?.getBoundingClientRect();
+      if (!rect) return;
+
+      const viewportPadding = 12;
+      const width = Math.min(400, window.innerWidth - viewportPadding * 2);
+      const left = Math.min(
+        Math.max(rect.left, viewportPadding),
+        window.innerWidth - width - viewportPadding,
+      );
+
+      setPopupPosition({
+        top: rect.bottom + 8,
+        left,
+        width,
+      });
+    }
+
     function handlePointerDown(event: PointerEvent) {
-      if (!rootRef.current?.contains(event.target as Node)) {
+      const target = event.target as Node;
+      if (
+        !rootRef.current?.contains(target) &&
+        !popupRef.current?.contains(target)
+      ) {
         setOpen(false);
         setDraftCategories(savedCategories);
         setError(null);
@@ -41,12 +72,17 @@ export default function ApprovedCategoriesPicker({
       }
     }
 
+    updatePopupPosition();
     document.addEventListener("pointerdown", handlePointerDown);
     document.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("resize", updatePopupPosition);
+    window.addEventListener("scroll", updatePopupPosition, true);
 
     return () => {
       document.removeEventListener("pointerdown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("resize", updatePopupPosition);
+      window.removeEventListener("scroll", updatePopupPosition, true);
     };
   }, [open, savedCategories]);
 
@@ -61,7 +97,7 @@ export default function ApprovedCategoriesPicker({
 
   function save() {
     if (draftCategories.length === 0) {
-      setError("Select at least one approved category.");
+      setError("Выберите хотя бы одну одобренную категорию.");
       return;
     }
 
@@ -84,7 +120,12 @@ export default function ApprovedCategoriesPicker({
   }
 
   return (
-    <div ref={rootRef} className={`relative ${className}`}>
+    <div
+      ref={rootRef}
+      className={`relative ${className}`}
+      onClick={(event) => event.stopPropagation()}
+      onKeyDown={(event) => event.stopPropagation()}
+    >
       <button
         type="button"
         aria-expanded={open}
@@ -98,7 +139,7 @@ export default function ApprovedCategoriesPicker({
       >
         <span className="flex items-center justify-between gap-3">
           <span className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">
-            Approved categories
+            Одобренные категории
           </span>
           <ChevronDown
             aria-hidden
@@ -118,7 +159,11 @@ export default function ApprovedCategoriesPicker({
                     : "border-[rgba(37,42,45,0.1)] bg-white/72 text-[var(--color-ink-muted)] opacity-60"
                 }`}
               >
-                {checked ? <Check aria-hidden size={11} strokeWidth={2.5} /> : null}
+                {checked ? (
+                  <span className="flex size-4 shrink-0 items-center justify-center rounded-full border border-[var(--color-blue)] bg-white text-[var(--color-blue)]">
+                    <Check aria-hidden size={10} strokeWidth={2} />
+                  </span>
+                ) : null}
                 {category}
               </span>
             );
@@ -126,75 +171,87 @@ export default function ApprovedCategoriesPicker({
         </span>
       </button>
 
-      {open ? (
-        <div
-          role="dialog"
-          aria-label="Choose approved judge categories"
-          className="absolute left-0 top-[calc(100%+0.5rem)] z-50 w-[min(25rem,calc(100vw-2.5rem))] rounded-[24px] border border-[rgba(114,160,193,0.24)] bg-white/96 p-4 shadow-[0_24px_70px_rgba(37,42,45,0.18)] backdrop-blur-2xl"
-        >
-          <p className="font-[var(--font-title-family)] text-xl font-light text-[var(--color-ink)]">
-            Judge category access
-          </p>
-          <p className="mt-1 text-xs leading-5 text-[var(--color-ink-soft)]">
-            Checked categories will be visible in this judge&apos;s account. Keep at least one checked.
-          </p>
+      {open && popupPosition && typeof document !== "undefined"
+        ? createPortal(
+            <div
+              ref={popupRef}
+              role="dialog"
+              aria-label="Выберите одобренные категории судьи"
+              className="fixed z-[250] rounded-[24px] border border-[rgba(114,160,193,0.24)] bg-white/96 p-4 shadow-[0_24px_70px_rgba(37,42,45,0.18)] backdrop-blur-2xl"
+              style={popupPosition}
+            >
+              <p className="font-[var(--font-title-family)] text-xl font-light text-[var(--color-ink)]">
+                Категории для судейства
+              </p>
 
-          <div className="mt-4 grid gap-2">
-            {expertiseAreas.map((category) => {
-              const checked = draftCategories.includes(category);
-              return (
-                <label
-                  key={category}
-                  className={`flex cursor-pointer items-center gap-3 rounded-[16px] border px-3 py-2.5 text-sm transition ${
-                    checked
-                      ? "border-[rgba(114,160,193,0.36)] bg-[var(--color-blue-wash)] text-[var(--color-ink)]"
-                      : "border-[rgba(37,42,45,0.08)] bg-white text-[var(--color-ink-soft)]"
-                  }`}
+              <div className="mt-4 grid gap-2">
+                {expertiseAreas.map((category) => {
+                  const checked = draftCategories.includes(category);
+                  return (
+                    <label
+                      key={category}
+                      className={`group flex cursor-pointer items-center gap-3 rounded-[16px] border px-3 py-2.5 text-sm transition ${
+                        checked
+                          ? "border-[rgba(114,160,193,0.36)] bg-[var(--color-blue-wash)] text-[var(--color-ink)]"
+                          : "border-[rgba(37,42,45,0.08)] bg-white text-[var(--color-ink-soft)]"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggleCategory(category)}
+                        className="sr-only"
+                      />
+                      <span
+                        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition ${
+                          checked
+                            ? "border-[var(--color-blue)] bg-white text-[var(--color-blue)]"
+                            : "border-[var(--border-soft)] bg-[var(--surface-tint)] text-transparent group-hover:border-[var(--color-blue)]/40"
+                        }`}
+                      >
+                        <Check aria-hidden size={13} strokeWidth={2} />
+                      </span>
+                      <span className="flex-1">{category}</span>
+                    </label>
+                  );
+                })}
+              </div>
+
+              {error ? (
+                <p role="alert" className="mt-3 text-xs font-medium text-red-700">
+                  {error}
+                </p>
+              ) : null}
+
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  disabled={pending}
+                  onClick={() => {
+                    setOpen(false);
+                    setDraftCategories(savedCategories);
+                    setError(null);
+                  }}
+                  className="min-h-10 rounded-full border border-[rgba(114,160,193,0.22)] bg-white px-4 text-xs font-semibold uppercase tracking-[0.1em] text-[var(--color-ink-soft)] transition hover:bg-[var(--color-blue-wash)] disabled:opacity-50"
                 >
-                  <input
-                    type="checkbox"
-                    checked={checked}
-                    onChange={() => toggleCategory(category)}
-                    className="size-4 accent-[var(--color-blue)]"
-                  />
-                  <span className="flex-1">{category}</span>
-                  {checked ? <Check aria-hidden size={15} className="text-[var(--color-blue)]" /> : null}
-                </label>
-              );
-            })}
-          </div>
-
-          {error ? (
-            <p role="alert" className="mt-3 text-xs font-medium text-red-700">
-              {error}
-            </p>
-          ) : null}
-
-          <div className="mt-4 grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              disabled={pending}
-              onClick={() => {
-                setOpen(false);
-                setDraftCategories(savedCategories);
-                setError(null);
-              }}
-              className="min-h-10 rounded-full border border-[rgba(114,160,193,0.22)] bg-white px-4 text-xs font-semibold uppercase tracking-[0.1em] text-[var(--color-ink-soft)] transition hover:bg-[var(--color-blue-wash)] disabled:opacity-50"
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              disabled={pending}
-              onClick={save}
-              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-[var(--color-blue)] px-4 text-xs font-semibold uppercase tracking-[0.1em] text-white transition hover:bg-[#4d86ad] disabled:opacity-50"
-            >
-              {pending ? <Loader2 aria-hidden size={14} className="animate-spin" /> : null}
-              Save
-            </button>
-          </div>
-        </div>
-      ) : null}
+                  Отмена
+                </button>
+                <button
+                  type="button"
+                  disabled={pending}
+                  onClick={save}
+                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-[var(--color-blue)] px-4 text-xs font-semibold uppercase tracking-[0.1em] text-white transition hover:bg-[#4d86ad] disabled:opacity-50"
+                >
+                  {pending ? (
+                    <Loader2 aria-hidden size={14} className="animate-spin" />
+                  ) : null}
+                  Сохранить
+                </button>
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }

@@ -29,7 +29,7 @@ assert.throws(
   () => requireApprovedCategories([], expertiseAreas),
   (error) =>
     error instanceof ApprovedCategoriesError &&
-    error.message === "Select at least one approved category.",
+    error.message === "Выберите хотя бы одну одобренную категорию.",
   "a judge must always retain at least one approved category",
 );
 
@@ -69,8 +69,20 @@ const adminPicker = readFileSync(
   "utf8",
 );
 assert.match(adminPicker, /updateJuryApprovedCategoriesAction/);
-assert.match(adminPicker, /Select at least one approved category/);
+assert.match(adminPicker, /Выберите хотя бы одну одобренную категорию/);
 assert.match(adminPicker, /checked=\{checked\}/);
+assert.match(adminPicker, /createPortal/);
+assert.match(adminPicker, /z-\[250\]/);
+
+const juryApplicationList = readFileSync(
+  join(
+    process.cwd(),
+    "features/admin/components/jury-applications/JuryApplicationListPage.tsx",
+  ),
+  "utf8",
+);
+assert.match(juryApplicationList, /role="link"/);
+assert.match(juryApplicationList, /router\.push\(`\/admin\/jury-applications\/\$\{app\.id\}`\)/);
 
 const juryReviews = readFileSync(
   join(process.cwd(), "features/jury/server/reviews.ts"),

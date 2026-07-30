@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import Link from "next/link";
+import { useMemo, useState, type KeyboardEvent } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowRight, MapPin, Users } from "lucide-react";
 import { adminT, formatAdminDate } from "@/lib/i18n/admin";
 import ApplicationStatusBadge from "@/features/admin/components/badges/ApplicationStatusBadge";
@@ -51,6 +51,7 @@ export default function JuryApplicationListPage({
   approvedCount: number;
   activeJudgeCount: number;
 }) {
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const [area, setArea] = useState("");
@@ -178,18 +179,32 @@ export default function JuryApplicationListPage({
       ) : (
         <div className="flex flex-col gap-3">
           {filtered.map((app) => (
-            <div key={app.id} className="group block">
+            <article
+              key={app.id}
+              role="link"
+              tabIndex={0}
+              aria-label={`Открыть заявку ${app.fullName}`}
+              onClick={() => router.push(`/admin/jury-applications/${app.id}`)}
+              onKeyDown={(event: KeyboardEvent<HTMLElement>) => {
+                if (
+                  event.target === event.currentTarget &&
+                  (event.key === "Enter" || event.key === " ")
+                ) {
+                  event.preventDefault();
+                  router.push(`/admin/jury-applications/${app.id}`);
+                }
+              }}
+              className="group block cursor-pointer rounded-[28px] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.24)]"
+            >
               <DashboardCard className="!overflow-visible p-0 transition hover:border-[rgba(114,160,193,0.34)] hover:shadow-[0_24px_64px_rgba(114,160,193,0.16)]">
                 <div className="grid gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.8fr)_170px] lg:items-center">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <ApplicationStatusBadge status={app.status} />
                     </div>
-                    <Link href={`/admin/jury-applications/${app.id}`} className="block">
-                      <h2 className="mt-3 font-[var(--font-title-family)] text-[1.55rem] font-light tracking-[-0.025em] text-[var(--color-ink)] transition hover:text-[var(--color-blue)]">
-                        {app.fullName}
-                      </h2>
-                    </Link>
+                    <h2 className="mt-3 font-[var(--font-title-family)] text-[1.55rem] font-light tracking-[-0.025em] text-[var(--color-ink)] transition group-hover:text-[var(--color-blue)]">
+                      {app.fullName}
+                    </h2>
                     <p className="mt-1 truncate text-sm text-[var(--color-ink-soft)]">{app.email}</p>
                     <p className="mt-3 inline-flex items-center gap-2 rounded-[18px] border border-[rgba(37,42,45,0.08)] bg-white/62 px-2.5 py-1 text-xs text-[var(--color-ink-soft)]">
                       <MapPin aria-hidden size={13} />
@@ -207,7 +222,7 @@ export default function JuryApplicationListPage({
                     />
                   </DashboardPanel>
 
-                  <Link href={`/admin/jury-applications/${app.id}`} className="flex items-center justify-between gap-3 rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white p-4 transition hover:border-[rgba(114,160,193,0.34)] lg:flex-col lg:items-start">
+                  <div className="flex items-center justify-between gap-3 rounded-[22px] border border-[rgba(37,42,45,0.08)] bg-white p-4 transition group-hover:border-[rgba(114,160,193,0.34)] lg:flex-col lg:items-start">
                     <div>
                       <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
                         {adminT.jury.lastActivity}
@@ -221,10 +236,10 @@ export default function JuryApplicationListPage({
                       size={17}
                       className="text-[var(--color-ink-muted)] transition group-hover:translate-x-0.5 group-hover:text-[var(--color-blue)]"
                     />
-                  </Link>
+                  </div>
                 </div>
               </DashboardCard>
-            </div>
+            </article>
           ))}
         </div>
       )}
