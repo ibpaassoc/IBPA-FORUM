@@ -26,6 +26,7 @@ import {
   saveJuryApplicationNotesAction,
 } from "@/features/admin/actions/jury.actions";
 import DeleteJuryApplicationButton from "@/features/admin/components/jury-applications/DeleteJuryApplicationButton";
+import ApprovedCategoriesPicker from "@/features/admin/components/jury-applications/ApprovedCategoriesPicker";
 import RequestAdditionalInfoPanel from "@/features/admin/components/jury-applications/RequestAdditionalInfoPanel";
 import ReviewWorkspace, { type ReviewTab } from "@/features/admin/components/review/ReviewWorkspace";
 import {
@@ -131,7 +132,7 @@ export default function JuryApplicationDetailPage({
 
   const submission = (
     <div className="flex flex-col gap-4">
-      <DashboardCard className="flex flex-col gap-4">
+      <DashboardCard className="!overflow-visible flex flex-col gap-4">
         <DashboardDetailCard
           label={adminT.detail.previousJudging}
           value={
@@ -152,6 +153,13 @@ export default function JuryApplicationDetailPage({
             </div>
           </DashboardPanel>
         ) : null}
+        <DashboardPanel className="overflow-visible">
+          <ApprovedCategoriesPicker
+            applicationId={application.id}
+            expertiseAreas={application.expertiseAreas}
+            approvedCategories={application.approvedCategories}
+          />
+        </DashboardPanel>
       </DashboardCard>
 
       <DashboardCard className="grid gap-3">

@@ -305,7 +305,10 @@ const juryFileRoute = read("app/api/account/jury/nomination-files/[fileId]/route
 assert(has(juryFileRoute, "requireJuryAuth"), "jury file route requires jury auth");
 assert(has(juryFileRoute, 'paymentStatus !== "PAID"'), "jury file route rejects unpaid nominations");
 assert(has(juryFileRoute, "closedIncompleteAt"), "jury file route rejects incomplete closed nominations");
-assert(has(juryFileRoute, "expertiseAreas.includes"), "jury file route enforces category expertise");
+assert(
+  has(juryFileRoute, "approvedCategories.includes"),
+  "jury file route enforces approved category access",
+);
 assert(has(juryFileRoute, "displayFileName || fileRecord.fileName"), "jury file route uses display-safe filenames");
 
 // -- Ticket QR ownership -------------------------------------------------------

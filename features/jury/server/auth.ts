@@ -15,7 +15,7 @@ export type JuryAuthUser = {
   email: string;
   juryProfileId: string;
   juryApplicationId: string;
-  expertiseAreas: string[];
+  approvedCategories: string[];
   approvalStatus: "SUBMITTED" | "ADDITIONAL_INFO_REQUIRED" | "APPROVED" | "REJECTED" | "PAID" | null;
 };
 
@@ -31,7 +31,7 @@ export async function findJuryAccountByEmail(email: string) {
         select: {
           id: true,
           juryApplicationId: true,
-          expertiseAreas: true,
+          approvedCategories: true,
           approvalStatus: true,
         },
       },
@@ -51,6 +51,7 @@ export async function getPaidJuryApplicationByEmail(email: string) {
       paymentStatus: true,
       status: true,
       expertiseAreas: true,
+      approvedCategories: true,
     },
   });
 }
@@ -67,6 +68,7 @@ export async function getJuryApplicationByEmail(email: string) {
       paymentStatus: true,
       status: true,
       expertiseAreas: true,
+      approvedCategories: true,
     },
   });
 }
@@ -93,7 +95,7 @@ export async function requireJuryAuth() {
         select: {
           id: true,
           juryApplicationId: true,
-          expertiseAreas: true,
+          approvedCategories: true,
           approvalStatus: true,
         },
       },
@@ -109,7 +111,7 @@ export async function requireJuryAuth() {
     email: account.email,
     juryProfileId: account.juryProfile.id,
     juryApplicationId: account.juryProfile.juryApplicationId,
-    expertiseAreas: account.juryProfile.expertiseAreas,
+    approvedCategories: account.juryProfile.approvedCategories,
     approvalStatus: account.juryProfile.approvalStatus,
   } satisfies JuryAuthUser;
 }

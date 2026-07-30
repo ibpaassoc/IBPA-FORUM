@@ -13,7 +13,7 @@ export default async function JuryAccountLayout({ children }: { children: ReactN
         <div className="absolute right-[-8rem] top-[-7rem] size-[28rem] rounded-full bg-[rgba(114,160,193,0.15)] blur-3xl" />
       </div>
       <div className="relative mx-auto flex w-full max-w-[1520px] items-start gap-5 px-3 pb-28 pt-4 sm:px-5 md:px-6 lg:px-7 lg:py-6">
-        <JuryAccountSidebar juryName={jury.fullName} email={jury.email} expertiseAreas={jury.expertiseAreas} />
+        <JuryAccountSidebar juryName={jury.fullName} email={jury.email} approvedCategories={jury.approvedCategories} />
         <main className="min-w-0 flex-1">{children}</main>
       </div>
     </DashboardShell>

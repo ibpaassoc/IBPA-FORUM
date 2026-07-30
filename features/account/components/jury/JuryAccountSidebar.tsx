@@ -49,11 +49,11 @@ function SignOutButton({ compact = false }: { compact?: boolean }) {
 export default function JuryAccountSidebar({
   juryName,
   email,
-  expertiseAreas,
+  approvedCategories,
 }: {
   juryName: string;
   email: string;
-  expertiseAreas: string[];
+  approvedCategories: string[];
 }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
@@ -128,9 +128,14 @@ export default function JuryAccountSidebar({
                 <p className="truncate text-xs text-[var(--color-ink-soft)]">{email}</p>
               </div>
             </div>
-            {expertiseAreas.length > 0 ? (
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {expertiseAreas.map((area) => <span key={area} className="rounded-full border border-[rgba(114,160,193,0.22)] bg-white/72 px-2.5 py-1 text-[0.62rem] font-semibold text-[var(--color-ink-soft)]">{area}</span>)}
+            {approvedCategories.length > 0 ? (
+              <div className="mt-3">
+                <p className="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">
+                  Approved categories
+                </p>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {approvedCategories.map((category) => <span key={category} className="rounded-full border border-[rgba(114,160,193,0.22)] bg-white/72 px-2.5 py-1 text-[0.62rem] font-semibold text-[var(--color-ink-soft)]">{category}</span>)}
+                </div>
               </div>
             ) : null}
           </div>

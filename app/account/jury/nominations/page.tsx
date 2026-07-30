@@ -26,7 +26,7 @@ export default async function JuryNominationsPage({
       title="Nominations"
       description="Every card is an independent nomination. Open one to inspect the submitted materials, save a draft, or complete the final scorecard."
       nominations={data.nominations}
-      expertiseAreas={data.judge.expertiseAreas}
+      approvedCategories={data.judge.approvedCategories}
       activeCategory={data.activeCategory}
       activeStatus={data.activeStatus}
     />

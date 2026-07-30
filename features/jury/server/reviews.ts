@@ -118,7 +118,7 @@ async function getAccessibleNominationForJury({
       status: { in: ["SUBMITTED", "UNDER_REVIEW", "LOCKED", "SCORED"] },
       closedIncompleteAt: null,
       deletedAt: null,
-      category: { name: { in: judge.expertiseAreas } },
+      category: { name: { in: judge.approvedCategories } },
     },
     select: {
       id: true,
@@ -144,7 +144,7 @@ export async function getJuryNominationWorkspace({
   status?: JuryNominationFilter;
 }) {
   const activeCategory =
-    category && judge.expertiseAreas.includes(category) ? category : undefined;
+    category && judge.approvedCategories.includes(category) ? category : undefined;
 
   const nominations = await prisma.nominationApplication.findMany({
     where: {
@@ -152,7 +152,7 @@ export async function getJuryNominationWorkspace({
       status: { in: ["SUBMITTED", "UNDER_REVIEW", "LOCKED", "SCORED"] },
       closedIncompleteAt: null,
       deletedAt: null,
-      category: { name: { in: judge.expertiseAreas } },
+      category: { name: { in: judge.approvedCategories } },
     },
     orderBy: [{ submittedAt: "asc" }, { createdAt: "asc" }],
     select: {
@@ -228,7 +228,7 @@ export async function getJuryNominationWorkspace({
     judge: {
       fullName: judge.fullName,
       professionalTitle: judge.professionalTitle,
-      expertiseAreas: judge.expertiseAreas,
+      approvedCategories: judge.approvedCategories,
     },
     activeCategory,
     activeStatus: status,
@@ -243,7 +243,7 @@ export async function getJuryNominationWorkspace({
       completionPercentage: allNominations.length === 0
         ? 0
         : Math.round((completedCount / allNominations.length) * 100),
-      categories: judge.expertiseAreas.length,
+      categories: judge.approvedCategories.length,
     },
   };
 }
@@ -262,7 +262,7 @@ export async function getJuryNominationReviewDetail({
       status: { in: ["SUBMITTED", "UNDER_REVIEW", "LOCKED", "SCORED"] },
       closedIncompleteAt: null,
       deletedAt: null,
-      category: { name: { in: judge.expertiseAreas } },
+      category: { name: { in: judge.approvedCategories } },
     },
     select: {
       id: true,
@@ -313,7 +313,7 @@ export async function getJuryNominationReviewDetail({
           status: { in: ["SUBMITTED", "UNDER_REVIEW", "LOCKED", "SCORED"] },
           closedIncompleteAt: null,
           deletedAt: null,
-          category: { name: { in: judge.expertiseAreas } },
+          category: { name: { in: judge.approvedCategories } },
         },
         select: {
           id: true,
@@ -534,7 +534,7 @@ export async function getAuthenticatedJuryApiContext(): Promise<ActiveJudgeConte
           juryApplicationId: true,
           fullName: true,
           professionalTitle: true,
-          expertiseAreas: true,
+          approvedCategories: true,
           approvalStatus: true,
         },
       },
@@ -552,6 +552,10 @@ export async function getAuthenticatedJuryApiContext(): Promise<ActiveJudgeConte
     );
   }
 
+  if (account.juryProfile.approvedCategories.length === 0) {
+    throw new ScoringHttpError(403, "At least one approved category is required.");
+  }
+
   return {
     accountId: account.id,
     email: account.email,
@@ -559,6 +563,6 @@ export async function getAuthenticatedJuryApiContext(): Promise<ActiveJudgeConte
     juryApplicationId: account.juryProfile.juryApplicationId,
     fullName: account.juryProfile.fullName,
     professionalTitle: account.juryProfile.professionalTitle ?? "",
-    expertiseAreas: account.juryProfile.expertiseAreas,
+    approvedCategories: account.juryProfile.approvedCategories,
   };
 }

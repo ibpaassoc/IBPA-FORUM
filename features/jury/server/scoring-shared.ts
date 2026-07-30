@@ -24,7 +24,7 @@ export type ActiveJudgeContext = {
   juryApplicationId: string;
   fullName: string;
   professionalTitle: string;
-  expertiseAreas: string[];
+  approvedCategories: string[];
 };
 
 export function isEligibleScoringJudge(status: string) {
@@ -131,17 +131,17 @@ export async function requireActiveJuryJudge() {
       juryApplicationId: true,
       fullName: true,
       professionalTitle: true,
-      expertiseAreas: true,
+      approvedCategories: true,
       approvalStatus: true,
     },
   });
 
   if (!juryProfile?.juryApplicationId) {
-    redirect("/account/login");
+    redirect("/");
   }
 
   if (!juryProfile.approvalStatus || !isEligibleScoringJudge(juryProfile.approvalStatus)) {
-    redirect("/account/login");
+    redirect("/");
   }
 
   return {
@@ -151,16 +151,16 @@ export async function requireActiveJuryJudge() {
     juryApplicationId: juryProfile.juryApplicationId,
     fullName: juryProfile.fullName,
     professionalTitle: juryProfile.professionalTitle ?? "",
-    expertiseAreas: juryProfile.expertiseAreas,
+    approvedCategories: juryProfile.approvedCategories,
   } satisfies ActiveJudgeContext;
 }
 
 export async function getScoringNominationOrNotFound({
   nominationId,
-  expertiseAreas,
+  approvedCategories,
 }: {
   nominationId: string;
-  expertiseAreas: string[];
+  approvedCategories: string[];
 }) {
   const nomination = await prisma.nominationApplication.findFirst({
     where: {
@@ -168,7 +168,7 @@ export async function getScoringNominationOrNotFound({
       ...getScoreableNominationsWhere(),
       category: {
         name: {
-          in: expertiseAreas,
+          in: approvedCategories,
         },
       },
     },

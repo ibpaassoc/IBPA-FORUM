@@ -154,7 +154,7 @@ const jurySelect = {
   city: true,
   professionalTitle: true,
   yearsExperience: true,
-  expertiseAreas: true,
+  approvedCategories: true,
   ibpaAssociationMember: true,
   ibpaNumber: true,
   status: true,
@@ -189,7 +189,7 @@ function juryPriceCents(jury: JuryRecord): number {
 function mapJuryCategorized(jury: JuryRecord): CategorizedRow {
   // Areas of expertise are the jury member's categories (shared vocabulary with
   // the Applications tab), so they colour-code and route into tabs identically.
-  const categories = orderCategories(jury.expertiseAreas);
+  const categories = orderCategories(jury.approvedCategories);
 
   return {
     categories,

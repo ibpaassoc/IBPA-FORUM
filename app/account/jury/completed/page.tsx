@@ -16,7 +16,7 @@ export default async function JuryCompletedReviewsPage({
       title="Completed reviews"
       description="Your final scorecards are preserved here as read-only records. Contact an administrator if a review must be reopened."
       nominations={data.nominations}
-      expertiseAreas={data.judge.expertiseAreas}
+      approvedCategories={data.judge.approvedCategories}
       activeCategory={data.activeCategory}
       activeStatus="completed"
       basePath="/account/jury/completed"

@@ -13,6 +13,7 @@ import {
   resendJuryRegistrationLink,
   saveJuryApplicationNotes,
   setJuryApplicationStatusDirectly,
+  updateJuryApprovedCategories,
   updateJuryApplicationStatus,
 } from "@/features/jury/server/commands";
 import { adminT } from "@/lib/i18n/admin";
@@ -39,6 +40,41 @@ function getActionErrorMessage(error: unknown) {
   }
 
   return adminT.actions.genericError;
+}
+
+export async function updateJuryApprovedCategoriesAction(
+  id: string,
+  approvedCategories: string[],
+) {
+  await requireAdmin();
+
+  if (!id) {
+    return {
+      ok: false as const,
+      error: adminT.actions.missingJuryApplicationId,
+    };
+  }
+
+  try {
+    const savedCategories = await updateJuryApprovedCategories(id, approvedCategories);
+
+    revalidatePath("/admin");
+    revalidatePath("/admin/jury-applications");
+    revalidatePath(`/admin/jury-applications/${id}`);
+    revalidatePath("/account/jury");
+    revalidatePath("/account/jury/nominations");
+    revalidatePath("/account/jury/completed");
+
+    return {
+      ok: true as const,
+      approvedCategories: savedCategories,
+    };
+  } catch (error) {
+    return {
+      ok: false as const,
+      error: getActionErrorMessage(error),
+    };
+  }
 }
 
 export async function saveJuryApplicationNotesAction(formData: FormData) {

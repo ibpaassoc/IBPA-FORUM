@@ -55,7 +55,7 @@ async function getActiveJudgeAssignments() {
       id: true,
       fullName: true,
       account: { select: { email: true } },
-      expertiseAreas: true,
+      approvedCategories: true,
     },
     orderBy: {
       fullName: "asc",
@@ -65,8 +65,8 @@ async function getActiveJudgeAssignments() {
   const countByCategory = new Map<string, number>();
 
   for (const judge of judges) {
-    for (const area of judge.expertiseAreas) {
-      countByCategory.set(area, (countByCategory.get(area) ?? 0) + 1);
+    for (const category of judge.approvedCategories) {
+      countByCategory.set(category, (countByCategory.get(category) ?? 0) + 1);
     }
   }
 
@@ -304,7 +304,7 @@ export async function getAdminApplicationScoringDetail(nominationId: string) {
   }
 
   const assignedJudges = judges.filter((judge) =>
-    judge.expertiseAreas.includes(application.category.name)
+    judge.approvedCategories.includes(application.category.name)
   );
   const scoringDefinition = resolveNominationScoringDefinition(
     application.scoringSchema,

@@ -35,6 +35,7 @@ async function readPublicJuryMembersFromDb() {
         city: true,
         country: true,
         expertiseAreas: true,
+        approvedCategories: true,
         professionalBio: true,
         files: {
           where: {
@@ -57,7 +58,7 @@ async function readPublicJuryMembersFromDb() {
         professionalTitle: member.professionalTitle,
         city: member.city,
         country: member.country,
-        expertise: member.expertiseAreas,
+        expertise: member.approvedCategories,
         bio: member.professionalBio,
         profilePhotoSrc: resolveJuryPhotoSrc(photo?.id, photo?.storageKey),
       };

@@ -33,7 +33,7 @@ export async function GET(
     fileRecord.nominationApplication.closedIncompleteAt ||
     fileRecord.nominationApplication.paymentStatus !== "PAID" ||
     !["SUBMITTED", "UNDER_REVIEW", "LOCKED", "SCORED"].includes(fileRecord.nominationApplication.status) ||
-    !juryUser.expertiseAreas.includes(fileRecord.nominationApplication.category.name)
+    !juryUser.approvedCategories.includes(fileRecord.nominationApplication.category.name)
   ) {
     return new Response("Not found", { status: 404 });
   }

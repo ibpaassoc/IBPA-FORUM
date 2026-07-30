@@ -24,6 +24,11 @@ import { readEnv } from "@/lib/env";
 import { prisma } from "@/shared/lib/prisma";
 import { revalidatePublicJuryMembers } from "@/features/jury/server/queries";
 import { syncJuryOnChange } from "@/features/google-sheets";
+import {
+  getInitialApprovedCategories,
+  normalizeApprovedCategories,
+  requireApprovedCategories,
+} from "@/features/jury/lib/approved-categories";
 
 function getAppUrl() {
   return readEnv(["APP_URL", "FRONTEND_URL", "NEXT_PUBLIC_APP_URL"]).replace(/\/+$/, "");
@@ -119,6 +124,7 @@ export async function submitJuryApplication(formData: FormData) {
       previousJudgingExperience: previousJudgingExperience === "yes",
       previousJudgingDetails: toOptionalText(previousJudgingDetails),
       expertiseAreas: expertise,
+      approvedCategories: getInitialApprovedCategories(expertise),
       professionalBio,
       professionalWebsite: toOptionalText(professionalWebsite),
       conflictDisclosure,
@@ -268,6 +274,8 @@ export async function approveJuryApplication(id: string, isIbpaMemberOverride?: 
       email: true,
       status: true,
       ibpaAssociationMember: true,
+      expertiseAreas: true,
+      approvedCategories: true,
     },
   });
 
@@ -278,6 +286,8 @@ export async function approveJuryApplication(id: string, isIbpaMemberOverride?: 
   if (application.status === "PAID") {
     throw new Error("Paid jury applications cannot be approved again.");
   }
+
+  requireApprovedCategories(application.approvedCategories, application.expertiseAreas);
 
   const isIbpaMember = isIbpaMemberOverride ?? application.ibpaAssociationMember;
 
@@ -688,6 +698,7 @@ export async function approveJuryApplicationWithoutPayment(id: string) {
       yearsExperience: true,
       employerAffiliation: true,
       expertiseAreas: true,
+      approvedCategories: true,
       professionalBio: true,
       professionalWebsite: true,
       status: true,
@@ -697,6 +708,8 @@ export async function approveJuryApplicationWithoutPayment(id: string) {
 
   if (!application) throw new Error("Jury application not found.");
   if (application.status === "PAID") throw new Error("Application is already marked as paid.");
+
+  requireApprovedCategories(application.approvedCategories, application.expertiseAreas);
 
   const now = new Date();
   let setupAccountId: string | null = null;
@@ -754,6 +767,7 @@ export async function resendJuryRegistrationLink(id: string) {
       yearsExperience: true,
       employerAffiliation: true,
       expertiseAreas: true,
+      approvedCategories: true,
       professionalBio: true,
       professionalWebsite: true,
       status: true,
@@ -799,9 +813,16 @@ export async function setJuryApplicationStatusDirectly(
 ) {
   const application = await prisma.juryApplication.findUnique({
     where: { id },
-    select: { id: true },
+    select: {
+      id: true,
+      expertiseAreas: true,
+      approvedCategories: true,
+    },
   });
   if (!application) throw new Error("Jury application not found.");
+  if (status === "APPROVED" || status === "PAID") {
+    requireApprovedCategories(application.approvedCategories, application.expertiseAreas);
+  }
   await prisma.juryApplication.update({ where: { id }, data: { status } });
 
   syncJuryOnChange(id);
@@ -834,7 +855,11 @@ export async function editJuryApplicationFields(
 ) {
   const application = await prisma.juryApplication.findUnique({
     where: { id },
-    select: { id: true },
+    select: {
+      id: true,
+      approvedCategories: true,
+      profile: { select: { id: true } },
+    },
   });
   if (!application) throw new Error("Jury application not found.");
 
@@ -845,12 +870,81 @@ export async function editJuryApplicationFields(
   });
   if (conflict) throw new Error("This email is already registered with another application.");
 
-  await prisma.juryApplication.update({
-    where: { id },
-    data: { ...data, email: normalizedEmail },
+  const retainedApprovedCategories = normalizeApprovedCategories(
+    application.approvedCategories,
+    data.expertiseAreas,
+  );
+  const approvedCategories =
+    retainedApprovedCategories.length > 0
+      ? retainedApprovedCategories
+      : getInitialApprovedCategories(data.expertiseAreas);
+
+  await prisma.$transaction(async (tx) => {
+    await tx.juryApplication.update({
+      where: { id },
+      data: {
+        ...data,
+        email: normalizedEmail,
+        approvedCategories: {
+          set: approvedCategories,
+        },
+      },
+    });
+
+    if (application.profile) {
+      await tx.juryProfile.update({
+        where: { id: application.profile.id },
+        data: {
+          expertiseAreas: { set: data.expertiseAreas },
+          approvedCategories: { set: approvedCategories },
+        },
+      });
+    }
   });
 
   syncJuryOnChange(id);
   // Name / title / bio changes are surfaced on the public /jury listing.
   revalidatePublicJuryMembers();
+}
+
+export async function updateJuryApprovedCategories(
+  id: string,
+  approvedCategories: string[],
+) {
+  const application = await prisma.juryApplication.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      expertiseAreas: true,
+      profile: { select: { id: true } },
+    },
+  });
+
+  if (!application) {
+    throw new Error("Jury application not found.");
+  }
+
+  const normalized = requireApprovedCategories(
+    approvedCategories,
+    application.expertiseAreas,
+  );
+
+  await prisma.$transaction(async (tx) => {
+    await tx.juryApplication.update({
+      where: { id },
+      data: { approvedCategories: { set: normalized } },
+    });
+
+    if (application.profile) {
+      await tx.juryProfile.update({
+        where: { id: application.profile.id },
+        data: { approvedCategories: { set: normalized } },
+      });
+    }
+  });
+
+  syncJuryOnChange(id);
+  revalidatePublicJuryMembers();
+
+  return normalized;
 }
