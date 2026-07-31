@@ -297,9 +297,16 @@ export async function requireAccount() {
 
 export async function requireApplicantAccount() {
   const account = await requireAccount();
-  if (account.role !== "APPLICANT" || !account.applicantProfile) {
+  if (account.role !== "APPLICANT") {
     redirect(getDashboardPathForRole(account.role));
   }
+
+  // An incomplete account migration used to redirect this route back to itself,
+  // leaving the applicant dashboard permanently loading in the browser.
+  if (!account.applicantProfile) {
+    redirect("/account/profile-unavailable");
+  }
+
   return { account, applicantProfile: account.applicantProfile };
 }
 
