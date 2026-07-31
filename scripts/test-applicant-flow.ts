@@ -45,6 +45,20 @@ function has(source: string, pattern: string | RegExp) {
   return typeof pattern === "string" ? source.includes(pattern) : pattern.test(source);
 }
 
+// -- Account navigation --------------------------------------------------------
+console.log("account navigation");
+const accountGuards = read("features/account/server/accounts.ts");
+const accountLoginForm = read("features/auth/components/LoginForm.tsx");
+assert(
+  has(accountGuards, 'redirect("/account/profile-unavailable")'),
+  "applicant accounts without a profile are sent to a recovery page instead of looping"
+);
+assert(
+  has(accountLoginForm, 'window.location.assign("/account")'),
+  "successful login uses a document navigation so the new session is available to role routing"
+);
+assert(has(accountLoginForm, "} catch {"), "login returns to an actionable state when authentication requests fail");
+
 // -- Pricing and allocation ----------------------------------------------------
 console.log("applicant pricing");
 eq(

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
@@ -15,7 +14,6 @@ const labelClass =
 export default function LoginForm() {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const router = useRouter();
   const { t } = useLanguage();
 
   async function handleSubmit(formData: FormData) {
@@ -25,21 +23,27 @@ export default function LoginForm() {
     const email = String(formData.get("email") ?? "").trim();
     const password = String(formData.get("password") ?? "");
 
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-      callbackUrl: "/account",
-    });
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+        callbackUrl: "/account",
+      });
 
-    if (!result || result.error) {
+      if (!result || result.error) {
+        setError(t.auth.form.invalidCredentials);
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Use a document navigation so the new NextAuth session cookie is always
+      // available to the server-side role redirect on the next request.
+      window.location.assign("/account");
+    } catch {
       setError(t.auth.form.invalidCredentials);
       setIsSubmitting(false);
-      return;
     }
-
-    router.replace("/account");
-    router.refresh();
   }
 
   return (
