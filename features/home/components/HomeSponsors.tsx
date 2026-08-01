@@ -58,12 +58,6 @@ function SponsorCard({
       />
 
       {/* Oversized outlined index — decorative, sits behind the panels. */}
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute -bottom-8 left-0 select-none font-(--font-display) text-[8rem] leading-none text-transparent [-webkit-text-stroke:1px_rgba(114,160,193,0.4)] sm:-bottom-12 sm:text-[12rem] lg:-bottom-16 lg:text-[16rem]"
-      >
-        {marker}
-      </span>
 
       <div className="relative grid gap-6 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:items-center lg:gap-0">
         {/* ── Logo panel: pale-blue glass over two staggered white layers ── */}
@@ -90,18 +84,6 @@ function SponsorCard({
 
         {/* ── Information panel: tucked under the logo panel on desktop ── */}
         <div className="relative z-10 rounded-[2rem] border border-[#b9d9eb]/55 bg-white/64 p-5 shadow-[0_14px_40px_rgba(114,160,193,0.1)] backdrop-blur-xl sm:p-7 lg:-ml-20 lg:py-10 lg:pl-32 lg:pr-10">
-          <p className="flex flex-wrap items-center gap-3 font-(--font-ui-family) text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#2f6f9f]">
-            <span>
-              {marker} / {copy.markerLabel}
-            </span>
-
-            {sponsor.label ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-[#b9d9eb]/70 bg-white/72 px-3 py-1.5">
-                <Handshake className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-                {sponsor.label}
-              </span>
-            ) : null}
-          </p>
 
           <h3 className="mt-4 font-(--font-display) text-[clamp(1.9rem,3.4vw,3rem)] leading-[1.05] tracking-[-0.04em] text-[#10182a]">
             {sponsor.name}
@@ -164,24 +146,6 @@ function SponsorCard({
               </div>
             ) : null}
           </dl>
-
-          {sponsor.website ? (
-            <a
-              href={sponsor.website}
-              target="_blank"
-              rel="noreferrer noopener"
-              aria-label={`${copy.visitWebsite} — ${sponsor.name}`}
-              className={`${LANDING_PRIMARY_BTN_CLASS} ${FOCUS_RING} mt-7`}
-            >
-              <ButtonLayers />
-              <span className="relative z-10">{copy.visitWebsite}</span>
-              <ArrowRight
-                size={16}
-                aria-hidden="true"
-                className="relative z-10 text-[#72a0c1] transition-all duration-500 group-hover:translate-x-1.5 group-hover:scale-110"
-              />
-            </a>
-          ) : null}
         </div>
       </div>
     </article>
@@ -279,7 +243,6 @@ export default function SponsorsSection() {
                 {copy.title}
               </h2>
 
-              <p className="page-copy mt-5 max-w-2xl">{copy.description}</p>
             </div>
 
             {isSlider ? (
