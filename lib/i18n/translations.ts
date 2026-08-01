@@ -784,6 +784,42 @@ const en = {
         { name: "Partner", text: "One sentence about the partner.", href: "#" },
       ],
     },
+    sponsorsSection: {
+      eyebrow: "Official Partners",
+      title: "Supported by industry leaders.",
+      description:
+        "Meet the organizations helping bring the IBPA Beauty Championship and Forum to life.",
+
+      markerLabel: "Partner",
+      metaLocation: "Location",
+      metaWebsite: "Website",
+      metaInstagram: "Instagram",
+      metaEmail: "Email",
+      visitWebsite: "Visit website",
+
+      sliderLabel: "Official partners",
+      prevLabel: "Previous sponsor",
+      nextLabel: "Next sponsor",
+      goToLabel: "Go to sponsor",
+
+      sponsors: [
+        {
+          id: "formula-beauty-club",
+          name: "FORMULA Beauty Club",
+          label: "Featured Sponsor",
+          logo: "/images/sponsors/formula/formula-beauty-club.svg",
+          logoAlt: "FORMULA Beauty Club",
+          location: "Dallas, Texas",
+          description:
+            "FORMULA Beauty Club is a Dallas-based company bringing professional European beauty brands to the United States. We supply licensed beauty professionals and salons with authentic, salon-grade products sourced directly from Europe and delivered quickly across the country.",
+          website: "https://formulabeauty.club",
+          websiteLabel: "formulabeauty.club",
+          instagram: "https://instagram.com/formulabeautyclub",
+          instagramLabel: "@formulabeautyclub",
+          email: "care@formulabeauty.club",
+        },
+      ],
+    },
     contactUs: {
       eyebrow: "Contact Us",
       title: "Let's create something exceptional together",
@@ -2956,6 +2992,42 @@ const ru: typeof en = {
         { name: "Партнёр", text: "Одно предложение о партнёре.", href: "#" },
         { name: "Партнёр", text: "Одно предложение о партнёре.", href: "#" },
         { name: "Партнёр", text: "Одно предложение о партнёре.", href: "#" },
+      ],
+    },
+    sponsorsSection: {
+      eyebrow: "Официальные партнёры",
+      title: "При поддержке лидеров индустрии",
+      description:
+        "Знакомьтесь с компаниями, которые помогают воплотить IBPA Beauty Championship и форум в жизнь.",
+
+      markerLabel: "Партнёр",
+      metaLocation: "Локация",
+      metaWebsite: "Сайт",
+      metaInstagram: "Instagram",
+      metaEmail: "Email",
+      visitWebsite: "Перейти на сайт",
+
+      sliderLabel: "Официальные партнёры",
+      prevLabel: "Предыдущий партнёр",
+      nextLabel: "Следующий партнёр",
+      goToLabel: "Перейти к партнёру",
+
+      sponsors: [
+        {
+          id: "formula-beauty-club",
+          name: "FORMULA Beauty Club",
+          label: "Главный спонсор",
+          logo: "/images/sponsors/formula/formula-beauty-club.svg",
+          logoAlt: "FORMULA Beauty Club",
+          location: "Даллас, Техас",
+          description:
+            "FORMULA Beauty Club — компания из Далласа, которая представляет профессиональные европейские beauty-бренды в США. Мы обеспечиваем лицензированных мастеров и салоны оригинальной профессиональной продукцией, которая поставляется напрямую из Европы и быстро доставляется по всей стране.",
+          website: "https://formulabeauty.club",
+          websiteLabel: "formulabeauty.club",
+          instagram: "https://instagram.com/formulabeautyclub",
+          instagramLabel: "@formulabeautyclub",
+          email: "care@formulabeauty.club",
+        },
       ],
     },
     contactUs: {
@@ -5131,6 +5203,42 @@ const ua: typeof en = {
         { name: "Партнер", text: "Одне речення про партнера.", href: "#" },
         { name: "Партнер", text: "Одне речення про партнера.", href: "#" },
         { name: "Партнер", text: "Одне речення про партнера.", href: "#" },
+      ],
+    },
+    sponsorsSection: {
+      eyebrow: "Офіційні партнери",
+      title: "За підтримки лідерів індустрії",
+      description:
+        "Знайомтеся з компаніями, які допомагають втілити IBPA Beauty Championship і форум у життя.",
+
+      markerLabel: "Партнер",
+      metaLocation: "Локація",
+      metaWebsite: "Сайт",
+      metaInstagram: "Instagram",
+      metaEmail: "Email",
+      visitWebsite: "Перейти на сайт",
+
+      sliderLabel: "Офіційні партнери",
+      prevLabel: "Попередній партнер",
+      nextLabel: "Наступний партнер",
+      goToLabel: "Перейти до партнера",
+
+      sponsors: [
+        {
+          id: "formula-beauty-club",
+          name: "FORMULA Beauty Club",
+          label: "Головний спонсор",
+          logo: "/images/sponsors/formula/formula-beauty-club.svg",
+          logoAlt: "FORMULA Beauty Club",
+          location: "Даллас, Техас",
+          description:
+            "FORMULA Beauty Club — компанія з Далласа, яка представляє професійні європейські beauty-бренди у США. Ми забезпечуємо ліцензованих майстрів і салони оригінальною професійною продукцією, що постачається напряму з Європи та швидко доставляється по всій країні.",
+          website: "https://formulabeauty.club",
+          websiteLabel: "formulabeauty.club",
+          instagram: "https://instagram.com/formulabeautyclub",
+          instagramLabel: "@formulabeautyclub",
+          email: "care@formulabeauty.club",
+        },
       ],
     },
     contactUs: {
