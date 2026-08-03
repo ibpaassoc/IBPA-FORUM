@@ -303,6 +303,7 @@ model NominationAnswer {
   nominationApplication   NominationApplication @relation(fields: [nominationApplicationId], references: [id], onDelete: Cascade)
 
   @@index([nominationApplicationId])
+  @@unique([nominationApplicationId, fieldKey])
 }
 
 model NominationFile {

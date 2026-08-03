@@ -177,14 +177,13 @@ export function ApplicantUploadField({
     const raw = Array.from(event.target.files ?? []);
     if (!raw.length) return;
     setCompressing(true);
-    const processed = await Promise.all(
-      raw.map(async (file) => {
-        if (IMAGE_TYPES.includes(file.type)) {
-          return compressImage(file);
-        }
-        return file;
-      })
-    );
+    // Decoding several full-resolution iPhone photos at once can exhaust
+    // mobile Safari's memory. Compress one image at a time; the upload queue
+    // will still transfer the resulting files with bounded concurrency.
+    const processed: File[] = [];
+    for (const file of raw) {
+      processed.push(IMAGE_TYPES.includes(file.type) ? await compressImage(file) : file);
+    }
     setCompressing(false);
 
     if (!multiple) {
