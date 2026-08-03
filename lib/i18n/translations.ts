@@ -604,19 +604,6 @@ const en = {
           website: "https://www.vaulabs.com"
         },
         {
-          name: "Gulnara Chekoeva",
-          photo: "/images/speakers/gulnara-chekoeva.jpg",
-          role:
-            "International-class hairstylist, hair designer, international judge and championship trainer. Asia Champion 2025, One Shot Hair Awards (USA) winner, and founder of one of the world's largest online hair education academies.",
-          city: "United States",
-          topic:
-            "Building a World-Class Beauty Career Through Education, Championships, and Leadership",
-          description:
-            "Gulnara will share her journey of building an international career in the beauty industry, creating a strong personal brand, and educating professionals worldwide. She will explain how to develop successful educational programs, train beauty educators, and organize international championships based on her experience of teaching more than 100,000 professionals and delivering educational programs in over 20 countries.",
-          instagram: "https://www.instagram.com/gulnarachekoeva?igsh=NTc4MTIwNjQ2YQ==",
-          website: ""
-        },
-        {
           name: "Eleonora Bediukh",
           photo: "/images/speakers/eleonora-bediukh.jpg",
           role:
@@ -2824,19 +2811,6 @@ const ru: typeof en = {
             "На выступлении Натали представит пошаговую систему создания собственного beauty-продукта — от проверки идеи и разработки формулы до выбора упаковки, производства и подготовки к выходу на рынок. Участники узнают, как избежать распространённых ошибок, принимать правильные решения на каждом этапе и создавать продукты, готовые к масштабированию. Доклад основан на реальных кейсах запуска beauty-продуктов в США.",
           instagram: "https://www.instagram.com/natalievaulin",
           website: "https://www.vaulabs.com"
-        },
-        {
-          name: "Гульнара Чекоева",
-          photo: "/images/speakers/gulnara-chekoeva.jpg",
-          role:
-            "Мастер международного класса, художник-модельер по прическам, международный судья и тренер чемпионатов. Чемпионка Азии 2025 года, победитель премии One Shot Hair Awards (USA), основатель международной онлайн-академии парикмахерского искусства.",
-          city: "США",
-          topic:
-            "Путь мастера мирового уровня: образование, чемпионаты и построение международной карьеры",
-          description:
-            "Гульнара поделится своим опытом развития международной карьеры в индустрии красоты, расскажет, как создать сильный личный бренд, выйти на мировой уровень и обучать профессионалов по всему миру. Она раскроет принципы создания успешных образовательных программ, подготовки преподавателей нового поколения и организации международных чемпионатов, основанные на опыте обучения более 100 000 мастеров и проведения авторских программ более чем в 20 странах.",
-          instagram: "https://www.instagram.com/gulnarachekoeva?igsh=NTc4MTIwNjQ2YQ==",
-          website: ""
         },
         {
           name: "Eleonora Bediukh",
@@ -5047,19 +5021,6 @@ const ua: typeof en = {
             "На виступі Наталі представить покрокову систему створення власного beauty-продукту — від перевірки ідеї та розробки формули до вибору пакування, виробництва та підготовки до виходу на ринок. Учасники дізнаються, як уникнути найпоширеніших помилок, приймати правильні рішення на кожному етапі та створювати продукти, готові до масштабування. Виступ базується на реальних кейсах запуску beauty-продуктів у США.",
           instagram: "https://www.instagram.com/natalievaulin",
           website: "https://www.vaulabs.com"
-        },
-        {
-          name: "Гульнара Чекоєва",
-          photo: "/images/speakers/gulnara-chekoeva.jpg",
-          role:
-            "Майстер міжнародного класу, художник-модельєр зачісок, міжнародний суддя та тренер чемпіонатів. Чемпіонка Азії 2025 року, переможниця One Shot Hair Awards (USA), засновниця однієї з найбільших міжнародних онлайн-академій перукарського мистецтва.",
-          city: "США",
-          topic:
-            "Шлях майстра світового рівня: освіта, чемпіонати та побудова міжнародної кар'єри",
-          description:
-            "Гульнара поділиться досвідом розвитку міжнародної кар'єри у beauty-індустрії, розповість, як створити сильний особистий бренд, вийти на світовий рівень та навчати професіоналів по всьому світу. Вона розкриє принципи створення успішних освітніх програм, підготовки викладачів нового покоління та організації міжнародних чемпіонатів, спираючись на досвід навчання понад 100 000 майстрів і проведення авторських програм у більш ніж 20 країнах.",
-          instagram: "https://www.instagram.com/gulnarachekoeva?igsh=NTc4MTIwNjQ2YQ==",
-          website: ""
         },
         {
           name: "Eleonora Bediukh",
