@@ -8,19 +8,10 @@ import { FaInstagram } from "react-icons/fa6";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import type { Translations } from "@/lib/i18n/translations";
-import {
-  ButtonLayers,
-  LANDING_PRIMARY_BTN_CLASS,
-  Reveal,
-} from "@/shared/components/public";
+import { Reveal } from "@/shared/components/public";
 
 type SponsorsCopy = Translations["home"]["sponsorsSection"];
 type Sponsor = SponsorsCopy["sponsors"][number];
-
-// Intrinsic size of the supplied FORMULA artboard — passed to <Image> so the
-// logo reserves its box before the SVG loads.
-const LOGO_WIDTH = 3010;
-const LOGO_HEIGHT = 1158;
 
 const FOCUS_RING =
   "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(47,111,159,0.45)]";
@@ -41,15 +32,11 @@ const pad = (value: number) => String(value).padStart(2, "0");
 
 function SponsorCard({
   sponsor,
-  index,
   copy,
 }: {
   sponsor: Sponsor;
-  index: number;
   copy: SponsorsCopy;
 }) {
-  const marker = pad(index + 1);
-
   return (
     <article className="relative h-full overflow-hidden rounded-[2.4rem] border border-[#b9d9eb]/60 bg-white/62 p-5 shadow-[0_24px_70px_rgba(114,160,193,0.14)] backdrop-blur-xl transition duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:border-[#72a0c1]/55 hover:shadow-[0_32px_88px_rgba(114,160,193,0.22)] sm:p-8 lg:p-10">
       <span
@@ -72,13 +59,15 @@ function SponsorCard({
           />
 
           <div className="relative flex items-center justify-center rounded-[2rem] border border-[#b9d9eb]/70 bg-[linear-gradient(150deg,rgba(216,236,248,0.92),rgba(255,255,255,0.72))] px-8 py-12 shadow-[0_18px_46px_rgba(114,160,193,0.18),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-xl sm:px-10 sm:py-14">
-            <Image
-              src={sponsor.logo}
-              alt={sponsor.logoAlt}
-              width={LOGO_WIDTH}
-              height={LOGO_HEIGHT}
-              className="h-auto w-full max-w-[17rem]"
-            />
+            <div className="relative h-24 w-full max-w-[18rem] sm:h-28">
+              <Image
+                src={sponsor.logo}
+                alt={sponsor.logoAlt}
+                fill
+                sizes="(min-width: 1024px) 18rem, 70vw"
+                className="object-contain"
+              />
+            </div>
           </div>
         </div>
 
@@ -212,8 +201,8 @@ export default function SponsorsSection() {
     }
   };
 
-  const cards = sponsors.map((sponsor, index) => (
-    <SponsorCard key={sponsor.id} sponsor={sponsor} index={index} copy={copy} />
+  const cards = sponsors.map((sponsor) => (
+    <SponsorCard key={sponsor.id} sponsor={sponsor} copy={copy} />
   ));
 
   return (
