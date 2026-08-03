@@ -58,15 +58,26 @@ const ticketPromo: PromoRecordForValidation = {
   enabled: true,
 };
 
+const ticket40Promo: PromoRecordForValidation = {
+  key: "TICKETS40",
+  keyword: "TICKETS40",
+  paymentFlow: "TICKETS",
+  discountPercent: 40,
+  enabled: true,
+};
+
 console.log("promo definitions");
 eq(PROMO_DEFINITIONS.APPLICATION20.discountPercent, 20, "APPLICATION20 is fixed at 20%");
 eq(PROMO_DEFINITIONS.TICKETS30.discountPercent, 30, "TICKETS30 is fixed at 30%");
+eq(PROMO_DEFINITIONS.TICKETS40.discountPercent, 40, "TICKETS40 is fixed at 40%");
 eq(PROMO_DEFINITIONS.APPLICATION20.envName, "STRIPE_APPLICATION20_DISCOUNT_ID", "application env name");
 eq(PROMO_DEFINITIONS.TICKETS30.envName, "STRIPE_TICKETS30_DISCOUNT_ID", "ticket env name");
+eq(PROMO_DEFINITIONS.TICKETS40.envName, "STRIPE_PERM_TICKETS40_DISCOUNT_ID", "40% ticket env name");
 
 console.log("normalization");
 eq(normalizePromoKeyword(" application20 "), "APPLICATION20", "trims and uppercases application code");
 eq(normalizePromoKeyword(" tickets30 "), "TICKETS30", "trims and uppercases ticket code");
+eq(normalizePromoKeyword(" tickets40 "), "TICKETS40", "trims and uppercases 40% ticket code");
 
 console.log("validation");
 {
@@ -95,6 +106,20 @@ console.log("validation");
     eq(result.promo.discountPercent, 30, "TICKETS30 returns 30%");
     eq(result.promo.discountAmountCents, 11850, "TICKETS30 discounts the ticket price only");
     eq(result.promo.finalAmountCents, 27650, "TICKETS30 discounted ticket subtotal is correct");
+  }
+}
+{
+  const result = evaluatePromoRecordForFlow({
+    inputKeyword: "tickets40",
+    promo: ticket40Promo,
+    paymentFlow: "TICKETS",
+    amountCents: 39500,
+  });
+  assert(result.ok, "valid TICKETS40 is accepted for tickets");
+  if (result.ok) {
+    eq(result.promo.discountPercent, 40, "TICKETS40 returns 40%");
+    eq(result.promo.discountAmountCents, 15800, "TICKETS40 discounts the ticket price only");
+    eq(result.promo.finalAmountCents, 23700, "TICKETS40 discounted ticket subtotal is correct");
   }
 }
 eq(
@@ -129,18 +154,19 @@ eq(
 );
 eq(
   evaluatePromoRecordForFlow({
-    inputKeyword: "TICKETS30",
-    promo: ticketPromo,
+    inputKeyword: "TICKETS40",
+    promo: ticket40Promo,
     paymentFlow: "APPLICATIONS",
     amountCents: 10000,
   }),
   { ok: false, code: "WRONG_FLOW" },
-  "ticket code cannot be used for applications"
+  "40% ticket code cannot be used for applications"
 );
 
 console.log("calculation and protections");
 eq(calculatePromoDiscount(9999, 20).discountAmountCents, 2000, "20% rounds to cents");
 eq(calculatePromoDiscount(10000, 30).finalAmountCents, 7000, "30% final total is enforced");
+eq(calculatePromoDiscount(10000, 40).finalAmountCents, 6000, "40% final total is enforced");
 
 console.log("ticket promo state and price matrix");
 const ticketScenarios = [
@@ -160,6 +186,9 @@ for (const scenario of ticketScenarios) {
   const expectedDiscount = Math.round(amounts.ticketCents * 0.3);
   const expectedTicketSubtotal = amounts.ticketCents - expectedDiscount;
   const expectedTotal = expectedTicketSubtotal + amounts.galaCents;
+  const expected40Discount = Math.round(amounts.ticketCents * 0.4);
+  const expected40TicketSubtotal = amounts.ticketCents - expected40Discount;
+  const expected40Total = expected40TicketSubtotal + amounts.galaCents;
 
   const enabled = evaluatePromoRecordForFlow({
     inputKeyword: "TICKETS30",
@@ -173,6 +202,20 @@ for (const scenario of ticketScenarios) {
     eq(enabled.promo.discountAmountCents, expectedDiscount, `${scenario.label}: ticket-only discount`);
     eq(enabled.promo.finalAmountCents, expectedTicketSubtotal, `${scenario.label}: discounted ticket subtotal`);
     eq(enabled.promo.finalAmountCents + amounts.galaCents, expectedTotal, `${scenario.label}: final total`);
+  }
+
+  const enabled40 = evaluatePromoRecordForFlow({
+    inputKeyword: "TICKETS40",
+    promo: ticket40Promo,
+    paymentFlow: "TICKETS",
+    amountCents: amounts.ticketCents,
+  });
+  assert(enabled40.ok, `${scenario.label}: 40% code is accepted`);
+  if (enabled40.ok) {
+    eq(enabled40.promo.originalAmountCents, amounts.ticketCents, `${scenario.label}: 40% original ticket price`);
+    eq(enabled40.promo.discountAmountCents, expected40Discount, `${scenario.label}: 40% ticket-only discount`);
+    eq(enabled40.promo.finalAmountCents, expected40TicketSubtotal, `${scenario.label}: 40% discounted ticket subtotal`);
+    eq(enabled40.promo.finalAmountCents + amounts.galaCents, expected40Total, `${scenario.label}: 40% final total`);
   }
 
   eq(
