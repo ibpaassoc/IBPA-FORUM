@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type MouseEvent,
+  type PointerEvent,
+} from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Globe, Handshake, Mail, MapPin } from "lucide-react";
@@ -127,6 +134,13 @@ export default function SponsorsSection() {
   const reducedMotion = useReducedMotion();
   const transitionTimerRef = useRef<number | null>(null);
   const sponsorButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const touchState = useRef({
+    pointerId: -1,
+    startX: 0,
+    startY: 0,
+    horizontal: false,
+    didSwipe: false,
+  });
   const [activeIndexState, setActiveIndex] = useState(0);
   const [direction, setDirection] = useState<Direction>(1);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -166,6 +180,83 @@ export default function SponsorsSection() {
     const nextIndex = (index + offset + sponsors.length) % sponsors.length;
     sponsorButtonRefs.current[nextIndex]?.focus();
     selectSponsor(nextIndex);
+  };
+
+  const handleContentPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (
+      event.pointerType !== "touch" ||
+      !window.matchMedia("(max-width: 767px)").matches ||
+      !isSwitcher ||
+      isTransitioning
+    ) {
+      return;
+    }
+
+    touchState.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      horizontal: false,
+      didSwipe: false,
+    };
+  };
+
+  const handleContentPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    const touch = touchState.current;
+    if (touch.pointerId !== event.pointerId) return;
+
+    const distanceX = event.clientX - touch.startX;
+    const distanceY = event.clientY - touch.startY;
+
+    if (!touch.horizontal) {
+      if (Math.abs(distanceY) > Math.abs(distanceX) && Math.abs(distanceY) > 8) {
+        touchState.current.pointerId = -1;
+        return;
+      }
+      if (Math.abs(distanceX) < 8) return;
+
+      touch.horizontal = true;
+      event.currentTarget.setPointerCapture(event.pointerId);
+    }
+
+    event.preventDefault();
+    touch.didSwipe = true;
+  };
+
+  const handleContentPointerEnd = (event: PointerEvent<HTMLDivElement>) => {
+    const touch = touchState.current;
+    if (touch.pointerId !== event.pointerId) return;
+
+    const distanceX = event.clientX - touch.startX;
+    const shouldSwitch = touch.horizontal && Math.abs(distanceX) >= 48;
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+
+    touchState.current.pointerId = -1;
+    if (shouldSwitch) {
+      const nextIndex = Math.max(
+        0,
+        Math.min(
+          sponsors.length - 1,
+          activeIndex + (distanceX < 0 ? 1 : -1),
+        ),
+      );
+      selectSponsor(nextIndex);
+    }
+
+    if (touch.didSwipe) {
+      window.setTimeout(() => {
+        touchState.current.didSwipe = false;
+      }, 120);
+    }
+  };
+
+  const suppressSwipedLink = (event: MouseEvent<HTMLDivElement>) => {
+    if (!touchState.current.didSwipe) return;
+    event.preventDefault();
+    event.stopPropagation();
   };
 
   const storyVariants = {
@@ -210,7 +301,12 @@ export default function SponsorsSection() {
             role="region"
             aria-label={copy.sliderLabel}
             aria-live="polite"
-            className="relative grid min-h-[46rem] overflow-hidden sm:min-h-[41rem] md:min-h-[31rem]"
+            onPointerDown={handleContentPointerDown}
+            onPointerMove={handleContentPointerMove}
+            onPointerUp={handleContentPointerEnd}
+            onPointerCancel={handleContentPointerEnd}
+            onClickCapture={suppressSwipedLink}
+            className="relative grid min-h-[46rem] overflow-hidden [touch-action:pan-y] sm:min-h-[41rem] md:min-h-[31rem]"
           >
             <AnimatePresence initial={false} mode="wait" custom={direction}>
               <motion.div
