@@ -25,13 +25,17 @@ export default function NominationFieldControl({
   value,
   error,
   disabled,
+  uploadsInProgress,
   onChange,
+  onBlur,
 }: {
   field: ApplyFieldConfig;
   value: EditorValue;
   error?: string;
   disabled: boolean;
+  uploadsInProgress: boolean;
   onChange: (key: string, value: EditorValue) => void;
+  onBlur: () => void;
 }) {
   const { t } = useLanguage();
   const controlId = useId();
@@ -53,7 +57,7 @@ export default function NominationFieldControl({
           multiple={(field.maxFiles ?? 1) > 1}
           maxFiles={field.maxFiles}
           accept={field.accept}
-          disabled={disabled}
+          disabled={disabled || uploadsInProgress}
           tone="glass"
           onChange={(name, items) => onChange(name, items)}
         />
@@ -93,6 +97,7 @@ export default function NominationFieldControl({
           placeholder={field.placeholder}
           value={text}
           onChange={(event) => onChange(field.key, event.target.value)}
+          onBlur={onBlur}
           className={`${dashboardTextareaClass} min-h-36 resize-y`}
         />
         {field.maxWords ? (
@@ -137,6 +142,7 @@ export default function NominationFieldControl({
                       : selectedValues.filter((item) => item !== option.value),
                   );
                 }}
+                onBlur={onBlur}
                 className="size-4 accent-[var(--color-blue)]"
               />
               {option.label}
@@ -155,6 +161,7 @@ export default function NominationFieldControl({
         aria-describedby={describedBy}
         value={String(value ?? "")}
         onChange={(event) => onChange(field.key, event.target.value)}
+        onBlur={onBlur}
         className={dashboardSelectClass}
       >
         <option value="">{t.account.editor.select}</option>
@@ -179,6 +186,7 @@ export default function NominationFieldControl({
         placeholder={field.placeholder}
         value={String(value ?? "")}
         onChange={(event) => onChange(field.key, event.target.value)}
+        onBlur={onBlur}
         className={dashboardInputClass}
       />
     );

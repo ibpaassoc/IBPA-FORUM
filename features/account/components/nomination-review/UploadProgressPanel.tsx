@@ -9,7 +9,7 @@ export type UploadProgressItem = {
   fieldKey: string;
   loaded: number;
   total: number;
-  status: "pending" | "uploading" | "success" | "failed";
+  status: "pending" | "retrying" | "uploading" | "success" | "failed";
   error?: string;
   retryable?: boolean;
 };
@@ -17,11 +17,11 @@ export type UploadProgressItem = {
 export default function UploadProgressPanel({
   items,
   busy,
-  onRetry,
+  onRetryItem,
 }: {
   items: UploadProgressItem[];
   busy: boolean;
-  onRetry: () => void;
+  onRetryItem: (id: string) => void;
 }) {
   const { t } = useLanguage();
   const copy = t.account.editor.uploadProgress;
@@ -34,7 +34,8 @@ export default function UploadProgressPanel({
   const percentage =
     totalBytes > 0 ? Math.round((loadedBytes / totalBytes) * 100) : 0;
   const completed = items.filter((item) => item.status === "success").length;
-  const uploading = items.filter((item) => item.status === "uploading");
+  const uploading = items.filter((item) => item.status === "pending" || item.status === "retrying" || item.status === "uploading");
+  const uploaded = items.filter((item) => item.status === "success");
   const failed = items.filter((item) => item.status === "failed");
   const canRetry = failed.some((item) => item.retryable !== false);
 
@@ -111,21 +112,32 @@ export default function UploadProgressPanel({
             ))}
           </ul>
           {canRetry ? (
-            <button
-              type="button"
-              disabled={busy}
-              onClick={onRetry}
-              className="mt-3 inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-red-300 bg-white px-4 text-[0.68rem] font-semibold uppercase tracking-[0.08em] text-red-800 transition hover:bg-red-100 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-red-200 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <RefreshCw aria-hidden size={13} />
-              {copy.retry}
-            </button>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {failed.filter((item) => item.retryable !== false).map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  disabled={busy}
+                  onClick={() => onRetryItem(item.id)}
+                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-red-300 bg-white px-4 text-[0.68rem] font-semibold uppercase tracking-[0.08em] text-red-800 transition hover:bg-red-100 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-red-200 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <RefreshCw aria-hidden size={13} />
+                  {copy.retry}
+                </button>
+              ))}
+            </div>
           ) : null}
         </div>
       ) : completed === items.length && items.length > 0 ? (
         <p className="mt-3 flex items-center gap-2 text-xs font-medium text-emerald-700">
           <CheckCircle2 aria-hidden size={14} />
           {copy.complete}
+        </p>
+      ) : null}
+
+      {uploaded.length > 0 ? (
+        <p className="mt-3 text-xs text-emerald-700">
+          {uploaded.length} {copy.uploaded}
         </p>
       ) : null}
     </section>

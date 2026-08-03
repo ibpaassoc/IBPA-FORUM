@@ -116,6 +116,7 @@ const en = {
         uploadingNow: "Currently uploading",
         failed: "Files that need attention",
         retry: "Retry failed uploads",
+        uploaded: "uploaded",
         complete: "All files uploaded. Finishing your submission…",
         failureSummary:
           "Some files could not be uploaded. Review each error and retry; successful files will not be uploaded again.",
@@ -124,6 +125,17 @@ const en = {
       uploadingFiles: "Uploading files…",
       saving: "Saving…",
       submitting: "Submitting…",
+      waitForUploads: "Files are still uploading. Please wait before submitting.",
+      autosave: {
+        saving: "Saving…",
+        saved: "Saved",
+        failed: "Couldn’t save — retry",
+      },
+      saveErrors: {
+        authentication: "Your session has ended. Please sign in again.",
+        timeout: "The save timed out. Please retry.",
+        validation: "Please review the highlighted fields and retry.",
+      },
       draftSaved: "Draft saved.",
       submittedNotice: "Nomination submitted to the jury.",
       saveError: "Could not save this nomination.",
@@ -2322,6 +2334,7 @@ const ru: typeof en = {
         uploadingNow: "Сейчас загружаются",
         failed: "Файлы, требующие внимания",
         retry: "Повторить неудачные загрузки",
+        uploaded: "загружено",
         complete: "Все файлы загружены. Завершаем отправку…",
         failureSummary:
           "Некоторые файлы не удалось загрузить. Проверьте ошибки и повторите попытку; успешно загруженные файлы не будут отправлены снова.",
@@ -2330,6 +2343,17 @@ const ru: typeof en = {
       uploadingFiles: "Загружаем файлы…",
       saving: "Сохраняем…",
       submitting: "Отправляем…",
+      waitForUploads: "Файлы ещё загружаются. Дождитесь завершения перед отправкой.",
+      autosave: {
+        saving: "Сохраняем…",
+        saved: "Сохранено",
+        failed: "Не удалось сохранить — повторите попытку",
+      },
+      saveErrors: {
+        authentication: "Сеанс завершён. Войдите снова.",
+        timeout: "Время сохранения истекло. Повторите попытку.",
+        validation: "Проверьте выделенные поля и повторите попытку.",
+      },
       draftSaved: "Черновик сохранён.",
       submittedNotice: "Номинация отправлена жюри.",
       saveError: "Не удалось сохранить номинацию.",
@@ -4534,6 +4558,7 @@ const ua: typeof en = {
         uploadingNow: "Зараз завантажуються",
         failed: "Файли, що потребують уваги",
         retry: "Повторити невдалі завантаження",
+        uploaded: "завантажено",
         complete: "Усі файли завантажено. Завершуємо надсилання…",
         failureSummary:
           "Деякі файли не вдалося завантажити. Перевірте помилки та повторіть спробу; успішно завантажені файли не надсилатимуться знову.",
@@ -4542,6 +4567,17 @@ const ua: typeof en = {
       uploadingFiles: "Завантажуємо файли…",
       saving: "Зберігаємо…",
       submitting: "Надсилаємо…",
+      waitForUploads: "Файли ще завантажуються. Дочекайтеся завершення перед надсиланням.",
+      autosave: {
+        saving: "Зберігаємо…",
+        saved: "Збережено",
+        failed: "Не вдалося зберегти — повторіть спробу",
+      },
+      saveErrors: {
+        authentication: "Сеанс завершено. Увійдіть знову.",
+        timeout: "Час збереження минув. Повторіть спробу.",
+        validation: "Перевірте виділені поля та повторіть спробу.",
+      },
       draftSaved: "Чернетку збережено.",
       submittedNotice: "Номінацію надіслано журі.",
       saveError: "Не вдалося зберегти номінацію.",

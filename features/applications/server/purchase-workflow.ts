@@ -12,7 +12,6 @@ import { getApplicationCategories } from "@/features/applications/server/queries
 import type { CategoryOption } from "@/features/applications/types/application.types";
 import { createApplicantNominationCheckoutSession } from "@/features/payments/server/checkout-sessions";
 import {
-  getStripePromoDiscountId,
   PromoCodeError,
   validatePromoCodeForFlow,
 } from "@/features/promos/server/promo-service";
@@ -330,7 +329,6 @@ export async function createPublicApplicantNominationCheckout(formData: FormData
   });
   const appliedPromo = await resolveApplicationPromo(input.promoCode, pricing.amountCents);
   const finalAmountCents = appliedPromo?.finalAmountCents ?? pricing.amountCents;
-  const promoDiscountId = appliedPromo ? getStripePromoDiscountId(appliedPromo.key) : null;
 
   const manifest: ApplicantPurchaseManifest = {
     version: APPLICANT_PURCHASE_MANIFEST_VERSION,
@@ -395,11 +393,9 @@ export async function createPublicApplicantNominationCheckout(formData: FormData
   const checkoutSession = await createApplicantNominationCheckoutSession({
     paymentId: payment.id,
     email,
-    originalAmountCents: pricing.amountCents,
     finalAmountCents,
     currency: pricing.currency,
     nominationCount: selectedAwards.length,
-    promoDiscountId,
   });
 
   await prisma.payment.update({
@@ -457,7 +453,6 @@ export async function createAccountApplicantNominationCheckout({
   });
   const appliedPromo = await resolveApplicationPromo(promoCode, pricing.amountCents);
   const finalAmountCents = appliedPromo?.finalAmountCents ?? pricing.amountCents;
-  const promoDiscountId = appliedPromo ? getStripePromoDiscountId(appliedPromo.key) : null;
 
   const manifest: ApplicantPurchaseManifest = {
     version: APPLICANT_PURCHASE_MANIFEST_VERSION,
@@ -522,11 +517,9 @@ export async function createAccountApplicantNominationCheckout({
   const checkoutSession = await createApplicantNominationCheckoutSession({
     paymentId: payment.id,
     email: profile.account.email,
-    originalAmountCents: pricing.amountCents,
     finalAmountCents,
     currency: pricing.currency,
     nominationCount: selectedAwards.length,
-    promoDiscountId,
   });
 
   await prisma.payment.update({

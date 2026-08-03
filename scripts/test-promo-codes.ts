@@ -215,8 +215,8 @@ for (const scenario of ticketScenarios) {
 }
 
 const checkoutSessions = read("features/payments/server/checkout-sessions.ts");
-assert(checkoutSessions.includes("discounts: [{ coupon: promoDiscountId }]"), "application Stripe discount is server-side only");
-assert(checkoutSessions.includes("originalAmountCents"), "application line item uses original amount");
+assert(checkoutSessions.includes("unit_amount: finalAmountCents"), "application Stripe line item uses the server-calculated discounted total");
+assert(!checkoutSessions.includes("discounts: [{ coupon:"), "application checkout does not depend on Stripe coupon product eligibility");
 
 const ticketService = read("features/tickets/server/ticket-service.ts");
 assert(ticketService.includes("getActiveTicketDiscount"), "ticket checkout resolves the active automatic discount server-side");

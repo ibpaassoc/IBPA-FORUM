@@ -25,6 +25,7 @@ export default function NominationRequirementsSidebar({
   scoreText,
   busyLabel,
   submitDisabled,
+  saveState,
   notice,
   error,
   onMissingItem,
@@ -39,6 +40,7 @@ export default function NominationRequirementsSidebar({
   scoreText: string;
   busyLabel: string | null;
   submitDisabled: boolean;
+  saveState: "idle" | "saving" | "saved" | "error";
   notice: string;
   error: string;
   onMissingItem: (field: ApplyFieldConfig) => void;
@@ -49,6 +51,14 @@ export default function NominationRequirementsSidebar({
   const { t } = useLanguage();
   const editor = t.account.editor;
   const busy = busyLabel !== null;
+  const saveStateLabel =
+    saveState === "saving"
+      ? editor.autosave.saving
+      : saveState === "saved"
+        ? editor.autosave.saved
+        : saveState === "error"
+          ? editor.autosave.failed
+          : null;
   const complete = progress.missingRequired.length === 0;
   const listedMissing = progress.missingRequired.slice(0, MAX_MISSING_LISTED);
   const extraMissing = progress.missingRequired.length - listedMissing.length;
@@ -88,6 +98,12 @@ export default function NominationRequirementsSidebar({
         <GlassProgressBar value={progress.percentage} label={editor.completion} />
 
         <div className="mt-4 space-y-2 text-[0.82rem] leading-relaxed text-[var(--color-ink-soft)]">
+          {saveStateLabel ? (
+            <p className="flex items-center gap-2" role="status">
+              {saveState === "saving" ? <Loader2 aria-hidden size={14} className="shrink-0 animate-spin text-[var(--color-blue)]" /> : <Save aria-hidden size={14} className="shrink-0 text-[var(--color-blue)]" />}
+              {saveStateLabel}
+            </p>
+          ) : null}
           <p className="flex items-center gap-2">
             <FileCheck2 aria-hidden size={14} className="shrink-0 text-[var(--color-blue)]" />
             {editor.filesAttached}: {progress.uploadedFileCount}

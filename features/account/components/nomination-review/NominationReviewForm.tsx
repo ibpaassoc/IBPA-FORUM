@@ -59,14 +59,8 @@ const toneToBadge: Record<NominationTone, BadgeTone> = {
 };
 
 const REVIEW_SECTION_ID = "review";
-const UPLOAD_CONCURRENCY = 3;
-
-class UploadBatchError extends Error {
-  constructor() {
-    super("One or more files could not be uploaded.");
-    this.name = "UploadBatchError";
-  }
-}
+const UPLOAD_CONCURRENCY = 2;
+const AUTOSAVE_DELAY_MS = 650;
 
 /**
  * Continue Application workspace: the nomination name is the page context,
@@ -125,18 +119,24 @@ export default function NominationReviewForm({
   const [error, setError] = useState("");
   const [status, setStatus] = useState(initialStatus);
   const [savedJustNow, setSavedJustNow] = useState(false);
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [submitting, setSubmitting] = useState(false);
   const [busyLabel, setBusyLabel] = useState<string | null>(null);
   const [uploadItems, setUploadItems] = useState<UploadProgressItem[]>([]);
   const [activeSection, setActiveSection] = useState<string>("");
   const pendingFocusKey = useRef<string | null>(null);
   const fileIds = useRef(new WeakMap<File, string>());
   const nextFileId = useRef(0);
+  const valuesRef = useRef(values);
   const saveInFlight = useRef(false);
-  const lastAction = useRef<"draft" | "submit">("draft");
+  const saveQueued = useRef(false);
+  const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const submitted = status === "SUBMITTED";
-  const disabled = locked || busyLabel !== null;
+  const disabled = locked || submitting;
   const hasFailedUploads = uploadItems.some((item) => item.status === "failed");
+  const hasActiveUploads = uploadItems.some((item) => item.status === "pending" || item.status === "retrying" || item.status === "uploading");
+  const hasPendingFiles = Object.values(values).some((value) => getFileValues(value).some((item) => item instanceof File));
   const progress = useMemo(
     () => computeNominationProgress(fields, values as unknown as ApplicationValues),
     [fields, values],
@@ -260,11 +260,19 @@ export default function NominationReviewForm({
   }
 
   function setField(key: string, value: EditorValue) {
-    setValues((current) => ({ ...current, [key]: value }));
+    const previous = valuesRef.current;
+    const next = { ...previous, [key]: value };
+    valuesRef.current = next;
+    setValues(next);
     setFieldErrors((current) => ({ ...current, [key]: "" }));
-    if (fields.some((field) => field.key === key && field.type === "file")) {
-      setUploadItems([]);
+
+    const field = fields.find((item) => item.key === key);
+    if (field?.type === "file") {
+      const previousFiles = new Set(getFileValues(previous[key]).filter((item): item is File => item instanceof File));
+      const newFiles = getFileValues(value).filter((item): item is File => item instanceof File && !previousFiles.has(item));
+      if (newFiles.length > 0) void uploadFiles(field, newFiles, false);
     }
+    scheduleDraftSave();
   }
 
   function getFileId(file: File) {
@@ -285,216 +293,189 @@ export default function NominationReviewForm({
     );
   }
 
-  // Uploads freshly selected Files directly to Blob through a three-worker
-  // queue. Successful files are swapped into local state immediately so a
-  // failed batch can retry only the remaining File objects.
-  async function preparePayload() {
-    const prepared: Record<string, unknown> = {};
-    const pending: Array<{
-      id: string;
-      fieldKey: string;
-      file: File;
-      pathname: string;
-    }> = [];
-    const validationFailures: UploadProgressItem[] = [];
-
+  function buildDraftPayload(snapshot: EditorValues) {
+    const payload: Record<string, unknown> = {};
     for (const field of fields) {
-      const value = values[field.key];
+      const value = snapshot[field.key];
       if (field.type !== "file") {
-        prepared[field.key] = value ?? "";
+        payload[field.key] = value ?? "";
         continue;
       }
-
-      for (const item of getFileValues(value)) {
-        if (isApplicationFileRef(item)) {
-          continue;
-        }
-
-        const validationMessage = validateUploadFile(
-          item,
-          field.accept,
-          field.maxFileSizeMb ?? 5,
-        );
-        if (validationMessage) {
-          validationFailures.push({
-            id: getFileId(item),
-            fieldKey: field.key,
-            fileName: item.name,
-            loaded: 0,
-            total: item.size,
-            status: "failed",
-            error: validationMessage,
-            retryable: false,
-          });
-          continue;
-        }
-
-        const id = getFileId(item);
-        pending.push({
-          id,
-          fieldKey: field.key,
-          file: item,
-          pathname: `applications/${nominationId}/${field.key}/${Date.now()}-${id}-${sanitizeBlobName(item.name)}`,
-        });
+      const fileValues = getFileValues(value);
+      // Do not turn a still-uploading replacement into a deletion of the
+      // previous saved file. The field is persisted only once it contains refs.
+      if (!fileValues.some((item) => item instanceof File)) {
+        payload[field.key] = fileValues.filter(isApplicationFileRef);
       }
     }
-
-    if (validationFailures.length > 0) {
-      setUploadItems(validationFailures);
-      throw new UploadBatchError();
-    }
-
-    if (pending.length === 0) {
-      for (const field of fields) {
-        if (field.type === "file") {
-          prepared[field.key] = getFileValues(values[field.key]).filter(
-            isApplicationFileRef,
-          );
-        }
-      }
-      setUploadItems([]);
-      return prepared;
-    }
-
-    setUploadItems((current) => {
-      const retrying = current.some((item) => item.status === "failed");
-      const retained = retrying
-        ? current.filter((item) => item.status === "success")
-        : [];
-      return [
-        ...retained,
-        ...pending.map(({ id, fieldKey, file }) => ({
-          id,
-          fieldKey,
-          fileName: file.name,
-          loaded: 0,
-          total: file.size,
-          status: "pending" as const,
-          retryable: true,
-        })),
-      ];
-    });
-
-    const pendingById = new Map(pending.map((item) => [item.id, item]));
-    const result = await runUploadQueue<ApplicationFileRef>(
-      pending.map((item) => ({
-        id: item.id,
-        upload: (onProgress) =>
-          uploadApplicationBlob(
-            item.file,
-            item.pathname,
-            item.fieldKey,
-            nominationId,
-            onProgress,
-          ),
-      })),
-      {
-        concurrency: UPLOAD_CONCURRENCY,
-        onStart: (id) => {
-          updateUploadItem(id, (item) => ({
-            ...item,
-            status: "uploading",
-            error: undefined,
-          }));
-        },
-        onProgress: (id, progressValue) => {
-          updateUploadItem(id, (item) => ({
-            ...item,
-            loaded: progressValue.loaded,
-            total: progressValue.total || item.total,
-          }));
-        },
-        onComplete: (id, ref) => {
-          const pendingItem = pendingById.get(id);
-          if (!pendingItem) return;
-          updateUploadItem(id, (item) => ({
-            ...item,
-            loaded: item.total,
-            status: "success",
-            error: undefined,
-          }));
-          setValues((current) => ({
-            ...current,
-            [pendingItem.fieldKey]: getFileValues(
-              current[pendingItem.fieldKey],
-            ).map((item) => (item === pendingItem.file ? ref : item)),
-          }));
-        },
-        onError: (id, uploadError) => {
-          updateUploadItem(id, (item) => ({
-            ...item,
-            status: "failed",
-            error: uploadError.message || editor.uploadProgress.unknownError,
-            retryable: true,
-          }));
-        },
-      },
-    );
-
-    if (result.failed.length > 0) {
-      throw new UploadBatchError();
-    }
-
-    for (const field of fields) {
-      if (field.type !== "file") continue;
-      prepared[field.key] = getFileValues(values[field.key]).map((item) => {
-        if (isApplicationFileRef(item)) return item;
-        const uploaded = result.completed.get(getFileId(item));
-        if (!uploaded) throw new UploadBatchError();
-        return uploaded;
-      });
-    }
-
-    return prepared;
+    return payload;
   }
 
-  async function save(action: "draft" | "submit") {
-    if (saveInFlight.current || busyLabel !== null) return;
-    saveInFlight.current = true;
-    lastAction.current = action;
-    setError("");
-    setNotice("");
-    setFieldErrors({});
-
+  async function readResponse(response: Response) {
+    const text = await response.text();
     try {
-      setBusyLabel(editor.uploadingFiles);
-      const payload = await preparePayload();
-      setBusyLabel(action === "submit" ? editor.submitting : editor.saving);
+      return JSON.parse(text) as { message?: string; errorCode?: string; status?: string; fieldErrors?: Record<string, string> };
+    } catch {
+      return {};
+    }
+  }
 
-      const response = await fetch(`/api/applicant/nominations/${nominationId}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action, values: payload }),
-      });
-      const body = (await response.json().catch(() => ({}))) as {
-        message?: string;
-        status?: string;
-        fieldErrors?: Record<string, string>;
-      };
+  function errorMessage(code?: string) {
+    if (code === "AUTHENTICATION") return editor.saveErrors.authentication;
+    if (code === "TIMEOUT") return editor.saveErrors.timeout;
+    if (code === "UPLOAD") return editor.uploadProgress.failureSummary;
+    if (code === "VALIDATION") return editor.saveErrors.validation;
+    return editor.saveError;
+  }
 
-      if (!response.ok) {
-        setFieldErrors(body.fieldErrors ?? {});
-        setError(body.message ?? editor.saveError);
-        return;
-      }
+  async function persist(action: "draft" | "submit", snapshot: EditorValues) {
+    const response = await fetch(`/api/applicant/nominations/${nominationId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Request-Id": crypto.randomUUID() },
+      body: JSON.stringify({ action, values: buildDraftPayload(snapshot) }),
+    });
+    const body = await readResponse(response);
+    if (!response.ok) {
+      setFieldErrors(body.fieldErrors ?? {});
+      setError(errorMessage(body.errorCode));
+      setSaveState("error");
+      return false;
+    }
+    if (body.status) setStatus(body.status);
+    setSavedJustNow(true);
+    setSaveState("saved");
+    return true;
+  }
 
-      if (body.status) setStatus(body.status);
-      setSavedJustNow(true);
-      setNotice(action === "submit" ? editor.submittedNotice : editor.draftSaved);
-      startTransition(() => router.refresh());
-    } catch (saveError) {
-      setError(
-        saveError instanceof UploadBatchError
-          ? editor.uploadProgress.failureSummary
-          : saveError instanceof Error
-            ? saveError.message
-            : editor.saveError,
-      );
+  async function saveDraft({ manual = false, allowDuringSubmit = false } = {}) {
+    if (locked || (submitting && !allowDuringSubmit)) return false;
+    if (saveInFlight.current) {
+      saveQueued.current = true;
+      return true;
+    }
+    if (autosaveTimer.current) {
+      clearTimeout(autosaveTimer.current);
+      autosaveTimer.current = null;
+    }
+    saveInFlight.current = true;
+    setSaveState("saving");
+    if (manual) {
+      setError("");
+      setNotice("");
+    }
+    const snapshot = valuesRef.current;
+    try {
+      const saved = await persist("draft", snapshot);
+      if (saved && manual) setNotice(editor.draftSaved);
+      return saved;
+    } catch {
+      setError(editor.saveError);
+      setSaveState("error");
+      return false;
     } finally {
       saveInFlight.current = false;
+      if (saveQueued.current) {
+        saveQueued.current = false;
+        void saveDraft();
+      }
+    }
+  }
+
+  function scheduleDraftSave() {
+    if (locked || submitting) return;
+    if (saveInFlight.current) {
+      saveQueued.current = true;
+      return;
+    }
+    if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
+    setSaveState("saving");
+    autosaveTimer.current = setTimeout(() => {
+      autosaveTimer.current = null;
+      void saveDraft();
+    }, AUTOSAVE_DELAY_MS);
+  }
+
+  async function uploadFiles(field: ApplyFieldConfig, files: File[], retrying: boolean) {
+    const tasks = files.flatMap((file) => {
+      const validationMessage = validateUploadFile(file, field.accept, field.maxFileSizeMb ?? 5);
+      const id = getFileId(file);
+      if (validationMessage) {
+        setUploadItems((current) => [...current.filter((item) => item.id !== id), { id, fieldKey: field.key, fileName: file.name, loaded: 0, total: file.size, status: "failed", error: validationMessage, retryable: false }]);
+        return [];
+      }
+      return [{ id, fieldKey: field.key, file, pathname: `applications/${nominationId}/${field.key}/${Date.now()}-${id}-${sanitizeBlobName(file.name)}` }];
+    });
+    if (!tasks.length) return;
+    setUploadItems((current) => [
+      ...current.filter((item) => !tasks.some((task) => task.id === item.id)),
+      ...tasks.map((task) => ({ id: task.id, fieldKey: task.fieldKey, fileName: task.file.name, loaded: 0, total: task.file.size, status: retrying ? "retrying" as const : "pending" as const, retryable: true })),
+    ]);
+    const byId = new Map(tasks.map((task) => [task.id, task]));
+    await runUploadQueue<ApplicationFileRef>(tasks.map((task) => ({
+      id: task.id,
+      upload: (onProgress) => uploadApplicationBlob(task.file, task.pathname, task.fieldKey, nominationId, onProgress),
+    })), {
+      concurrency: UPLOAD_CONCURRENCY,
+      onStart: (id) => updateUploadItem(id, (item) => ({ ...item, status: "uploading", error: undefined })),
+      onProgress: (id, progressValue) => updateUploadItem(id, (item) => ({ ...item, loaded: progressValue.loaded, total: progressValue.total || item.total })),
+      onComplete: (id, ref) => {
+        const task = byId.get(id);
+        if (!task) return;
+        updateUploadItem(id, (item) => ({ ...item, loaded: item.total, status: "success", error: undefined }));
+        const next = {
+          ...valuesRef.current,
+          [task.fieldKey]: getFileValues(valuesRef.current[task.fieldKey]).map((item) => item === task.file ? ref : item),
+        };
+        valuesRef.current = next;
+        setValues(next);
+        void saveDraft();
+      },
+      onError: (id, uploadError) => updateUploadItem(id, (item) => ({ ...item, status: "failed", error: uploadError.message || editor.uploadProgress.unknownError, retryable: true })),
+    });
+  }
+
+  function retryUpload(id: string) {
+    for (const field of fields.filter((item) => item.type === "file")) {
+      const file = getFileValues(valuesRef.current[field.key]).find((item): item is File => item instanceof File && getFileId(item) === id);
+      if (file) {
+        void uploadFiles(field, [file], true);
+        return;
+      }
+    }
+  }
+
+  async function submit() {
+    if (submitting) return;
+    if (hasActiveUploads || hasFailedUploads || hasPendingFiles) {
+      setError(hasFailedUploads ? editor.uploadProgress.failureSummary : editor.waitForUploads);
+      return;
+    }
+    if (autosaveTimer.current) {
+      clearTimeout(autosaveTimer.current);
+      autosaveTimer.current = null;
+    }
+    setSubmitting(true);
+    setBusyLabel(editor.submitting);
+    setError("");
+    setNotice("");
+    try {
+      if (!(await saveDraft({ allowDuringSubmit: true }))) return;
+      const submittedNow = await persist("submit", valuesRef.current);
+      if (submittedNow) {
+        setNotice(editor.submittedNotice);
+        startTransition(() => router.refresh());
+      }
+    } catch {
+      setError(editor.saveError);
+    } finally {
+      setSubmitting(false);
       setBusyLabel(null);
     }
   }
+
+  useEffect(() => () => {
+    if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
+  }, []);
 
   const statusLabel = locked
     ? t.account.badges.locked
@@ -596,11 +577,11 @@ export default function NominationReviewForm({
       </div>
 
       {uploadItems.length > 0 &&
-      (busyLabel !== null || hasFailedUploads) ? (
+      (hasActiveUploads || hasFailedUploads) ? (
         <UploadProgressPanel
           items={uploadItems}
-          busy={busyLabel !== null}
-          onRetry={() => void save(lastAction.current)}
+          busy={submitting}
+          onRetryItem={retryUpload}
         />
       ) : null}
 
@@ -660,7 +641,9 @@ export default function NominationReviewForm({
                           value={values[field.key]}
                           error={fieldErrors[field.key] || undefined}
                           disabled={disabled}
+                          uploadsInProgress={hasActiveUploads}
                           onChange={setField}
+                          onBlur={() => void saveDraft()}
                         />
                       ))}
                 </NominationFormSection>
@@ -678,12 +661,13 @@ export default function NominationReviewForm({
             lastSavedLabel={lastSavedLabel}
             scoreText={scoreText}
             busyLabel={busyLabel}
-            submitDisabled={hasFailedUploads}
+            submitDisabled={hasActiveUploads || hasFailedUploads || hasPendingFiles}
+            saveState={saveState}
             notice={notice}
             error={error}
             onMissingItem={jumpToField}
-            onSaveDraft={() => void save("draft")}
-            onSubmit={() => void save("submit")}
+            onSaveDraft={() => void saveDraft({ manual: true })}
+            onSubmit={() => void submit()}
           />
         </aside>
       </div>
@@ -721,10 +705,10 @@ export default function NominationReviewForm({
               ) : null}
               <button
                 type="button"
-                disabled={busyLabel !== null}
+                disabled={submitting}
                 onClick={() => {
                   close();
-                  void save("draft");
+                  void saveDraft({ manual: true });
                 }}
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[rgba(114,160,193,0.24)] bg-white/82 px-5 text-[0.7rem] font-semibold uppercase tracking-[0.1em] text-[var(--color-ink)] transition hover:bg-[var(--color-blue-wash)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.3)] disabled:cursor-not-allowed disabled:opacity-50"
               >
@@ -733,10 +717,10 @@ export default function NominationReviewForm({
               </button>
               <button
                 type="button"
-                disabled={busyLabel !== null || hasFailedUploads}
+                disabled={submitting || hasActiveUploads || hasFailedUploads || hasPendingFiles}
                 onClick={() => {
                   close();
-                  void save("submit");
+                  void submit();
                 }}
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--color-blue)] px-5 text-[0.7rem] font-semibold uppercase tracking-[0.1em] text-white shadow-[0_14px_30px_rgba(114,160,193,0.24)] transition hover:bg-[#5f91b6] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.35)] disabled:cursor-not-allowed disabled:opacity-50"
               >

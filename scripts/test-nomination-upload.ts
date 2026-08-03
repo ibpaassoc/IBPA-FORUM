@@ -102,9 +102,10 @@ function testServerSafeguards() {
     "app/api/applicant/nominations/[nominationId]/route.ts",
   );
   assert.match(nominationRoute, /await head\(ref\.fileUrl\)/);
-  assert.match(nominationRoute, /nominationFile\.findFirst/);
-  assert.match(nominationRoute, /nominationFile\.update/);
-  assert.match(nominationRoute, /nominationFile\.create/);
+  assert.match(nominationRoute, /nominationFile\.upsert/);
+  assert.match(nominationRoute, /nominationAnswer\.upsert/);
+  assert.match(nominationRoute, /errorCode: "UPLOAD"/);
+  assert.match(nominationRoute, /requestId/);
   assert.doesNotMatch(nominationRoute, /nominationFile\.createMany/);
 
   const schema = read("prisma/schema.prisma");
@@ -112,6 +113,17 @@ function testServerSafeguards() {
     schema,
     /@@unique\(\[nominationApplicationId, fileUrl\]\)/,
   );
+
+  const editor = read("features/account/components/nomination-review/NominationReviewForm.tsx");
+  assert.match(editor, /const AUTOSAVE_DELAY_MS = 650/);
+  assert.match(editor, /void uploadFiles\(field, newFiles, false\)/);
+  assert.match(editor, /void saveDraft\(\)/);
+  assert.match(editor, /await saveDraft\(\{ allowDuringSubmit: true \}\)/);
+  assert.match(editor, /hasActiveUploads \|\| hasFailedUploads \|\| hasPendingFiles/);
+  assert.doesNotMatch(editor, /preparePayload/);
+
+  const migration = read("prisma/migrations/20260803103000_make_nomination_answer_upserts_idempotent/migration.sql");
+  assert.match(migration, /CREATE UNIQUE INDEX "NominationAnswer_nominationApplicationId_fieldKey_key"/);
 
   const publicRoute = read("app/api/applications/route.ts");
   assert.match(publicRoute, /RAW_FILE_REJECTED/);

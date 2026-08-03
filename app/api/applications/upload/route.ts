@@ -48,6 +48,8 @@ function assertUploadPath(
 // the nomination save endpoint, keeping that request well under Vercel's body
 // limit.
 export async function POST(request: Request) {
+  const requestId = request.headers.get("x-request-id") || crypto.randomUUID();
+  let nominationId: string | undefined;
   try {
     const body = (await request.json()) as HandleUploadBody;
     const jsonResponse = await handleUpload({
@@ -55,6 +57,7 @@ export async function POST(request: Request) {
       request,
       onBeforeGenerateToken: async (pathname, clientPayload) => {
         const uploadRequest = parseClientPayload(clientPayload);
+        nominationId = uploadRequest.nominationId;
         assertUploadPath(pathname, uploadRequest);
 
         let nominationContext;
@@ -97,9 +100,15 @@ export async function POST(request: Request) {
 
     return NextResponse.json(jsonResponse);
   } catch (error) {
+    console.error("Applicant nomination upload authorization failed", {
+      nominationId: nominationId ?? "unknown",
+      requestId,
+      code: error instanceof Response && error.status === 401 ? "AUTHENTICATION" : "UPLOAD",
+      errorName: error instanceof Error ? error.name : "UnknownError",
+    });
     return NextResponse.json(
-      { error: (error as Error).message },
-      { status: 400 }
+      { errorCode: "UPLOAD", requestId, error: "Unable to start this upload. Please retry." },
+      { status: 400, headers: { "X-Request-Id": requestId } }
     );
   }
 }
