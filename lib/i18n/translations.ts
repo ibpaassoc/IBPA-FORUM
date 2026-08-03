@@ -604,19 +604,6 @@ const en = {
           website: "https://www.vaulabs.com"
         },
         {
-          name: "Gulnara Chekoeva",
-          photo: "/images/speakers/gulnara-chekoeva.jpg",
-          role:
-            "International-class hairstylist, hair designer, international judge and championship trainer. Asia Champion 2025, One Shot Hair Awards (USA) winner, and founder of one of the world's largest online hair education academies.",
-          city: "United States",
-          topic:
-            "Building a World-Class Beauty Career Through Education, Championships, and Leadership",
-          description:
-            "Gulnara will share her journey of building an international career in the beauty industry, creating a strong personal brand, and educating professionals worldwide. She will explain how to develop successful educational programs, train beauty educators, and organize international championships based on her experience of teaching more than 100,000 professionals and delivering educational programs in over 20 countries.",
-          instagram: "https://www.instagram.com/gulnarachekoeva?igsh=NTc4MTIwNjQ2YQ==",
-          website: ""
-        },
-        {
           name: "Eleonora Bediukh",
           photo: "/images/speakers/eleonora-bediukh.jpg",
           role:
@@ -829,6 +816,19 @@ const en = {
           instagram: "https://instagram.com/formulabeautyclub",
           instagramLabel: "@formulabeautyclub",
           email: "care@formulabeauty.club",
+        },
+        {
+          id: "platinum-by-chetvertinovskaya-liubov",
+          name: "PLATINUM by Chetvertinovskaya Liubov",
+          label: "Featured Sponsor",
+          logo: "/images/sponsors/platinum/platinum-navy.png",
+          logoAlt: "PLATINUM by Chetvertinovskaya Liubov",
+          location: "Miami, Florida",
+          description:
+            "PLATINUM by Chetvertinovskaya Liubov is an international lash and brow brand with more than nine years of premium product development. The brand offers 1,000+ materials for lashmakers, lash lamination artists and brow specialists, partnering with leading global manufacturers and testing every product to deliver stable results, fair pricing and professional quality trusted by artists worldwide. Presented by Lu Lash Salon LLC.",
+          instagram: "https://instagram.com/lu.salon.maiami",
+          instagramLabel: "@lu.salon.maiami",
+          email: "Lu.lash.salon@gmail.com",
         },
       ],
     },
@@ -2826,19 +2826,6 @@ const ru: typeof en = {
           website: "https://www.vaulabs.com"
         },
         {
-          name: "Гульнара Чекоева",
-          photo: "/images/speakers/gulnara-chekoeva.jpg",
-          role:
-            "Мастер международного класса, художник-модельер по прическам, международный судья и тренер чемпионатов. Чемпионка Азии 2025 года, победитель премии One Shot Hair Awards (USA), основатель международной онлайн-академии парикмахерского искусства.",
-          city: "США",
-          topic:
-            "Путь мастера мирового уровня: образование, чемпионаты и построение международной карьеры",
-          description:
-            "Гульнара поделится своим опытом развития международной карьеры в индустрии красоты, расскажет, как создать сильный личный бренд, выйти на мировой уровень и обучать профессионалов по всему миру. Она раскроет принципы создания успешных образовательных программ, подготовки преподавателей нового поколения и организации международных чемпионатов, основанные на опыте обучения более 100 000 мастеров и проведения авторских программ более чем в 20 странах.",
-          instagram: "https://www.instagram.com/gulnarachekoeva?igsh=NTc4MTIwNjQ2YQ==",
-          website: ""
-        },
-        {
           name: "Eleonora Bediukh",
           photo: "/images/speakers/eleonora-bediukh.jpg",
           role:
@@ -3051,6 +3038,19 @@ const ru: typeof en = {
           instagram: "https://instagram.com/formulabeautyclub",
           instagramLabel: "@formulabeautyclub",
           email: "care@formulabeauty.club",
+        },
+        {
+          id: "platinum-by-chetvertinovskaya-liubov",
+          name: "PLATINUM by Chetvertinovskaya Liubov",
+          label: "Главный спонсор",
+          logo: "/images/sponsors/platinum/platinum-navy.png",
+          logoAlt: "PLATINUM by Chetvertinovskaya Liubov",
+          location: "Майами, Флорида",
+          description:
+            "PLATINUM by Chetvertinovskaya Liubov — международный бренд для lash & brow индустрии, который более 9 лет создаёт премиальное качество. В ассортименте более 1000 материалов для лешмейкеров, лами-мейкеров и бровистов. Бренд сотрудничает с ведущими мировыми производителями, разрабатывает, тестирует и совершенствует каждый продукт, предлагая выгодное сочетание цены и качества, стабильный результат и доверие мастеров по всему миру. Представлено Lu Lash Salon LLC.",
+          instagram: "https://instagram.com/lu.salon.maiami",
+          instagramLabel: "@lu.salon.maiami",
+          email: "Lu.lash.salon@gmail.com",
         },
       ],
     },
@@ -5049,19 +5049,6 @@ const ua: typeof en = {
           website: "https://www.vaulabs.com"
         },
         {
-          name: "Гульнара Чекоєва",
-          photo: "/images/speakers/gulnara-chekoeva.jpg",
-          role:
-            "Майстер міжнародного класу, художник-модельєр зачісок, міжнародний суддя та тренер чемпіонатів. Чемпіонка Азії 2025 року, переможниця One Shot Hair Awards (USA), засновниця однієї з найбільших міжнародних онлайн-академій перукарського мистецтва.",
-          city: "США",
-          topic:
-            "Шлях майстра світового рівня: освіта, чемпіонати та побудова міжнародної кар'єри",
-          description:
-            "Гульнара поділиться досвідом розвитку міжнародної кар'єри у beauty-індустрії, розповість, як створити сильний особистий бренд, вийти на світовий рівень та навчати професіоналів по всьому світу. Вона розкриє принципи створення успішних освітніх програм, підготовки викладачів нового покоління та організації міжнародних чемпіонатів, спираючись на досвід навчання понад 100 000 майстрів і проведення авторських програм у більш ніж 20 країнах.",
-          instagram: "https://www.instagram.com/gulnarachekoeva?igsh=NTc4MTIwNjQ2YQ==",
-          website: ""
-        },
-        {
           name: "Eleonora Bediukh",
           photo: "/images/speakers/eleonora-bediukh.jpg",
           role:
@@ -5274,6 +5261,19 @@ const ua: typeof en = {
           instagram: "https://instagram.com/formulabeautyclub",
           instagramLabel: "@formulabeautyclub",
           email: "care@formulabeauty.club",
+        },
+        {
+          id: "platinum-by-chetvertinovskaya-liubov",
+          name: "PLATINUM by Chetvertinovskaya Liubov",
+          label: "Головний спонсор",
+          logo: "/images/sponsors/platinum/platinum-navy.png",
+          logoAlt: "PLATINUM by Chetvertinovskaya Liubov",
+          location: "Маямі, Флорида",
+          description:
+            "PLATINUM by Chetvertinovskaya Liubov — міжнародний бренд для lash & brow індустрії, який понад 9 років створює преміальну якість. В асортименті понад 1000 матеріалів для лешмейкерів, ламі-мейкерів і бровістів. Бренд співпрацює з провідними світовими виробниками, розробляє, тестує та вдосконалює кожен продукт, пропонуючи вигідне поєднання ціни й якості, стабільний результат і довіру майстрів у всьому світі. Представлено Lu Lash Salon LLC.",
+          instagram: "https://instagram.com/lu.salon.maiami",
+          instagramLabel: "@lu.salon.maiami",
+          email: "Lu.lash.salon@gmail.com",
         },
       ],
     },
