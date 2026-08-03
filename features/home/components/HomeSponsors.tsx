@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Globe, Handshake, Mail, MapPin } from "lucide-react";
@@ -126,6 +126,7 @@ export default function SponsorsSection() {
   const sponsors = copy.sponsors;
   const reducedMotion = useReducedMotion();
   const transitionTimerRef = useRef<number | null>(null);
+  const sponsorButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const [activeIndexState, setActiveIndex] = useState(0);
   const [direction, setDirection] = useState<Direction>(1);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -152,6 +153,19 @@ export default function SponsorsSection() {
       () => setIsTransitioning(false),
       reducedMotion ? 0 : 580,
     );
+  };
+
+  const handleSponsorKeyDown = (
+    event: KeyboardEvent<HTMLButtonElement>,
+    index: number,
+  ) => {
+    if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
+
+    event.preventDefault();
+    const offset = event.key === "ArrowRight" ? 1 : -1;
+    const nextIndex = (index + offset + sponsors.length) % sponsors.length;
+    sponsorButtonRefs.current[nextIndex]?.focus();
+    selectSponsor(nextIndex);
   };
 
   const storyVariants = {
@@ -216,30 +230,48 @@ export default function SponsorsSection() {
         </Reveal>
 
         {isSwitcher ? (
-          <div className="mt-7 overflow-x-auto pb-2 [scrollbar-width:none] sm:mt-9 [&::-webkit-scrollbar]:hidden">
-            <div className="flex w-max min-w-full gap-2 sm:gap-3">
+          <div
+            role="tablist"
+            aria-label={copy.sliderLabel}
+            className="mt-7 min-w-0 overflow-x-auto [scrollbar-width:none] sm:mt-9 [&::-webkit-scrollbar]:hidden"
+          >
+            <div className="flex w-max min-w-full border-b border-[#b9d9eb]/65">
               {sponsors.map((sponsor, index) => {
                 const isActive = activeIndex === index;
 
                 return (
                   <button
                     key={sponsor.id}
+                    ref={(element) => {
+                      sponsorButtonRefs.current[index] = element;
+                    }}
                     type="button"
-                    aria-pressed={isActive}
+                    role="tab"
+                    tabIndex={isActive ? 0 : -1}
+                    aria-selected={isActive}
                     aria-controls="sponsor-content"
                     disabled={isTransitioning}
                     onClick={() => selectSponsor(index)}
-                    className={`relative isolate shrink-0 rounded-full px-4 py-2.5 font-(--font-ui-family) text-sm font-semibold transition-colors sm:px-5 ${FOCUS_RING} ${
+                    onKeyDown={(event) => handleSponsorKeyDown(event, index)}
+                    className={`relative isolate shrink-0 px-4 pb-3 pt-1 font-(--font-ui-family) text-sm font-semibold transition-colors sm:px-5 ${FOCUS_RING} ${
                       isActive
                         ? "cursor-default text-[#17374d]"
-                        : "text-[#3c6179] hover:text-[#17374d] disabled:cursor-wait"
+                        : "text-[#7890a2] hover:text-[#385d76] disabled:cursor-wait"
                     }`}
                   >
                     {isActive ? (
                       <motion.span
-                        layoutId="active-sponsor-pill"
+                        layoutId="active-sponsor-underline"
                         aria-hidden="true"
-                        className="absolute inset-0 z-[-1] rounded-full border border-[#a9d2e8]/72 bg-[#dceef8]/72 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_6px_16px_rgba(83,145,184,0.1)] backdrop-blur-xl"
+                        className="pointer-events-none absolute inset-x-3 bottom-[-1px] z-10 h-0.5 rounded-full bg-[#5c9fc6] sm:inset-x-4"
+                        transition={{ duration: reducedMotion ? 0.16 : 0.45, ease: EASING }}
+                      />
+                    ) : null}
+                    {isActive ? (
+                      <motion.span
+                        layoutId="active-sponsor-indicator"
+                        aria-hidden="true"
+                        className="pointer-events-none absolute bottom-[-3px] left-1/2 z-10 size-1.5 -translate-x-1/2 rounded-full bg-[#2f6f9f]"
                         transition={{ duration: reducedMotion ? 0.16 : 0.45, ease: EASING }}
                       />
                     ) : null}
