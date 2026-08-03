@@ -1,9 +1,16 @@
 "use client";
 
-import { useRef, useState, type KeyboardEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type MouseEvent,
+  type PointerEvent,
+} from "react";
 import Image from "next/image";
-import { useReducedMotion } from "framer-motion";
-import { ArrowLeft, ArrowRight, Globe, Handshake, Mail, MapPin } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import { Globe, Handshake, Mail, MapPin } from "lucide-react";
 import { FaInstagram } from "react-icons/fa6";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
@@ -14,147 +21,175 @@ type SponsorsCopy = Translations["home"]["sponsorsSection"];
 type Sponsor = SponsorsCopy["sponsors"][number];
 
 const FOCUS_RING =
-  "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(47,111,159,0.45)]";
+  "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(47,111,159,0.42)]";
 
 const META_LABEL_CLASS =
   "font-(--font-ui-family) text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-[#2f6f9f]";
 
-const META_LINK_CLASS = `inline-flex min-h-11 max-w-full items-center gap-2 break-all rounded-full border border-[#b9d9eb]/65 bg-white/72 px-4 py-2 text-sm font-medium text-[#24394b] underline-offset-4 backdrop-blur-xl transition hover:border-[#72a0c1]/60 hover:bg-white hover:text-[#2f6f9f] hover:underline ${FOCUS_RING}`;
-
-const NAV_BUTTON_CLASS = `flex size-12 items-center justify-center rounded-full border border-[#b9d9eb]/70 bg-white/70 text-[#10182a] backdrop-blur-xl transition hover:border-[#72a0c1]/50 hover:bg-white disabled:cursor-not-allowed disabled:border-[#b9d9eb]/30 disabled:bg-white/35 disabled:text-[#10182a]/28 disabled:hover:border-[#b9d9eb]/30 disabled:hover:bg-white/35 ${FOCUS_RING}`;
+const META_LINK_CLASS = `inline-flex min-h-11 max-w-full items-center gap-2 break-all rounded-full border border-[#b9d9eb]/65 bg-white/64 px-4 py-2 text-sm font-medium text-[#24394b] underline-offset-4 backdrop-blur-xl transition-colors hover:border-[#72a0c1]/65 hover:bg-white hover:text-[#2f6f9f] hover:underline ${FOCUS_RING}`;
 
 const pad = (value: number) => String(value).padStart(2, "0");
 
-// ─── SponsorCard ──────────────────────────────────────────────────────────────
-// One reusable card for every sponsor. The editorial marker and the oversized
-// outlined numeral are derived from the index, so adding a sponsor needs only
-// translated data plus a logo.
-
-function SponsorCard({
+function SponsorStory({
   sponsor,
   copy,
+  isActive,
+  shouldAnimate,
 }: {
   sponsor: Sponsor;
   copy: SponsorsCopy;
+  isActive: boolean;
+  shouldAnimate: boolean;
 }) {
+  const transition = {
+    duration: shouldAnimate ? 0.56 : 0.01,
+    ease: [0.22, 1, 0.36, 1] as const,
+  };
+
   return (
-    <article className="relative h-full overflow-hidden rounded-[2.4rem] border border-[#b9d9eb]/60 bg-white/62 p-5 shadow-[0_24px_70px_rgba(114,160,193,0.14)] backdrop-blur-xl transition duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:border-[#72a0c1]/55 hover:shadow-[0_32px_88px_rgba(114,160,193,0.22)] sm:p-8 lg:p-10">
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-16 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent"
-      />
-
-      {/* Oversized outlined index — decorative, sits behind the panels. */}
-
-      <div className="relative grid gap-6 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:items-center lg:gap-0">
-        {/* ── Logo panel: pale-blue glass over two staggered white layers ── */}
-        <div className="relative z-20">
+    <article
+      aria-label={sponsor.name}
+      className="relative grid min-h-[31rem] grid-rows-[auto_1fr] gap-9 py-3 sm:min-h-[30rem] sm:gap-10 md:grid-cols-[minmax(17rem,0.82fr)_minmax(0,1.35fr)] md:grid-rows-1 md:items-center md:gap-12 lg:min-h-[27rem] lg:grid-cols-[minmax(19rem,0.9fr)_minmax(0,1.45fr)] lg:gap-16"
+    >
+      <motion.div
+        animate={{
+          opacity: isActive ? 1 : 0.25,
+          scale: isActive ? 1 : 0.93,
+          x: isActive ? 0 : 16,
+          filter: isActive ? "blur(0px)" : "blur(1.5px)",
+        }}
+        transition={transition}
+        className="relative z-10 origin-left"
+      >
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -translate-x-2 -translate-y-2 rounded-[2rem] border border-[#b9d9eb]/45 bg-white/34 sm:-translate-x-3 sm:-translate-y-3"
+        />
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 translate-x-2 translate-y-2 rounded-[2rem] border border-[#b9d9eb]/38 bg-white/28 sm:translate-x-3 sm:translate-y-3"
+        />
+        <div className="relative flex min-h-56 items-center justify-center rounded-[2rem] border border-[#a9d2e8]/75 bg-white/58 px-7 py-10 shadow-[0_20px_48px_rgba(114,160,193,0.14),inset_0_1px_0_rgba(255,255,255,0.95)] backdrop-blur-2xl sm:min-h-64 sm:px-10 sm:py-12">
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 -translate-x-2 -translate-y-2 rounded-[2rem] border border-[#b9d9eb]/45 bg-white/45 sm:-translate-x-3 sm:-translate-y-3"
+            className="pointer-events-none absolute inset-x-8 top-px h-px bg-white/90"
           />
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 translate-x-2 translate-y-2 rounded-[2rem] border border-[#b9d9eb]/35 bg-white/30 sm:translate-x-3 sm:translate-y-3"
-          />
-
-          <div className="relative flex items-center justify-center rounded-[2rem] border border-[#b9d9eb]/70 bg-[linear-gradient(150deg,rgba(216,236,248,0.92),rgba(255,255,255,0.72))] px-8 py-12 shadow-[0_18px_46px_rgba(114,160,193,0.18),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-xl sm:px-10 sm:py-14">
-            <div className="relative h-24 w-full max-w-[18rem] sm:h-28">
-              <Image
-                src={sponsor.logo}
-                alt={sponsor.logoAlt}
-                fill
-                sizes="(min-width: 1024px) 18rem, 70vw"
-                className="object-contain"
-              />
-            </div>
+          <div className="relative h-24 w-full max-w-[18rem] sm:h-28">
+            <Image
+              src={sponsor.logo}
+              alt={sponsor.logoAlt}
+              fill
+              sizes="(min-width: 1024px) 19rem, (min-width: 640px) 18rem, calc(100vw - 9rem)"
+              className="object-contain"
+            />
           </div>
         </div>
+      </motion.div>
 
-        {/* ── Information panel: tucked under the logo panel on desktop ── */}
-        <div className="relative z-10 rounded-[2rem] border border-[#b9d9eb]/55 bg-white/64 p-5 shadow-[0_14px_40px_rgba(114,160,193,0.1)] backdrop-blur-xl sm:p-7 lg:-ml-20 lg:py-10 lg:pl-32 lg:pr-10">
+      <motion.div
+        animate={{
+          opacity: isActive ? 1 : 0,
+          y: isActive ? 0 : 18,
+          x: isActive ? 0 : 8,
+        }}
+        transition={{
+          ...transition,
+          delay: isActive && shouldAnimate ? 0.05 : 0,
+        }}
+        className="min-w-0 py-1 md:py-5"
+      >
+        <h3 className="font-(--font-display) text-[clamp(2rem,3.25vw,3.35rem)] leading-[1.02] tracking-[-0.045em] text-[#10182a]">
+          {sponsor.name}
+        </h3>
 
-          <h3 className="mt-4 font-(--font-display) text-[clamp(1.9rem,3.4vw,3rem)] leading-[1.05] tracking-[-0.04em] text-[#10182a]">
-            {sponsor.name}
-          </h3>
+        <p className="page-copy mt-4 max-w-2xl text-pretty">{sponsor.description}</p>
 
-          <p className="page-copy mt-4 max-w-2xl">{sponsor.description}</p>
+        <dl className="mt-7 grid gap-x-7 gap-y-5 sm:grid-cols-2">
+          <div>
+            <dt className={META_LABEL_CLASS}>{copy.metaLocation}</dt>
+            <dd className="mt-2 inline-flex min-h-11 max-w-full items-center gap-2 break-words text-sm font-medium text-[#24394b]">
+              <MapPin className="h-4 w-4 shrink-0 text-[#72a0c1]" aria-hidden="true" />
+              {sponsor.location}
+            </dd>
+          </div>
 
-          <dl className="mt-6 grid gap-x-6 gap-y-4 sm:grid-cols-2">
+          {sponsor.website ? (
             <div>
-              <dt className={META_LABEL_CLASS}>{copy.metaLocation}</dt>
-              <dd className="mt-2 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-[#24394b]">
-                <MapPin className="h-4 w-4 shrink-0 text-[#72a0c1]" aria-hidden="true" />
-                {sponsor.location}
+              <dt className={META_LABEL_CLASS}>{copy.metaWebsite}</dt>
+              <dd className="mt-2">
+                <a
+                  href={sponsor.website}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className={META_LINK_CLASS}
+                >
+                  <Globe className="h-4 w-4 shrink-0 text-[#72a0c1]" aria-hidden="true" />
+                  {sponsor.websiteLabel}
+                </a>
               </dd>
             </div>
+          ) : null}
 
-            {sponsor.website ? (
-              <div>
-                <dt className={META_LABEL_CLASS}>{copy.metaWebsite}</dt>
-                <dd className="mt-2">
-                  <a
-                    href={sponsor.website}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className={META_LINK_CLASS}
-                  >
-                    <Globe className="h-4 w-4 shrink-0 text-[#72a0c1]" aria-hidden="true" />
-                    {sponsor.websiteLabel}
-                  </a>
-                </dd>
-              </div>
-            ) : null}
+          {sponsor.instagram ? (
+            <div>
+              <dt className={META_LABEL_CLASS}>{copy.metaInstagram}</dt>
+              <dd className="mt-2">
+                <a
+                  href={sponsor.instagram}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className={META_LINK_CLASS}
+                >
+                  <FaInstagram className="h-4 w-4 shrink-0 text-[#72a0c1]" aria-hidden="true" />
+                  {sponsor.instagramLabel}
+                </a>
+              </dd>
+            </div>
+          ) : null}
 
-            {sponsor.instagram ? (
-              <div>
-                <dt className={META_LABEL_CLASS}>{copy.metaInstagram}</dt>
-                <dd className="mt-2">
-                  <a
-                    href={sponsor.instagram}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className={META_LINK_CLASS}
-                  >
-                    <FaInstagram className="h-4 w-4 shrink-0 text-[#72a0c1]" aria-hidden="true" />
-                    {sponsor.instagramLabel}
-                  </a>
-                </dd>
-              </div>
-            ) : null}
-
-            {sponsor.email ? (
-              <div>
-                <dt className={META_LABEL_CLASS}>{copy.metaEmail}</dt>
-                <dd className="mt-2">
-                  <a href={`mailto:${sponsor.email}`} className={META_LINK_CLASS}>
-                    <Mail className="h-4 w-4 shrink-0 text-[#72a0c1]" aria-hidden="true" />
-                    {sponsor.email}
-                  </a>
-                </dd>
-              </div>
-            ) : null}
-          </dl>
-        </div>
-      </div>
+          {sponsor.email ? (
+            <div>
+              <dt className={META_LABEL_CLASS}>{copy.metaEmail}</dt>
+              <dd className="mt-2">
+                <a href={`mailto:${sponsor.email}`} className={META_LINK_CLASS}>
+                  <Mail className="h-4 w-4 shrink-0 text-[#72a0c1]" aria-hidden="true" />
+                  {sponsor.email}
+                </a>
+              </dd>
+            </div>
+          ) : null}
+        </dl>
+      </motion.div>
     </article>
   );
 }
-
-// ─── SponsorsSection ──────────────────────────────────────────────────────────
 
 export default function SponsorsSection() {
   const { t } = useLanguage();
   const copy = t.home.sponsorsSection;
   const sponsors = copy.sponsors;
-
   const reducedMotion = useReducedMotion();
   const sliderRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  // A single sponsor renders as a plain card — no controls, no dots and no
-  // misleading swipe affordance.
+  const dragState = useRef({
+    pointerId: -1,
+    startX: 0,
+    startY: 0,
+    startScrollLeft: 0,
+    didDrag: false,
+    horizontal: false,
+  });
+  const [activeIndexState, setActiveIndex] = useState(0);
+  const [isPageVisible, setIsPageVisible] = useState(true);
   const isSlider = sponsors.length > 1;
+  const shouldAnimate = !reducedMotion && isPageVisible;
+  const activeIndex = Math.max(0, Math.min(activeIndexState, sponsors.length - 1));
+
+  useEffect(() => {
+    const updateVisibility = () => setIsPageVisible(!document.hidden);
+    updateVisibility();
+    document.addEventListener("visibilitychange", updateVisibility);
+    return () => document.removeEventListener("visibilitychange", updateVisibility);
+  }, []);
 
   const getStep = () => {
     const slider = sliderRef.current;
@@ -173,7 +208,8 @@ export default function SponsorsSection() {
     const step = getStep();
     if (!slider || !step) return;
 
-    setActiveIndex(clampIndex(Math.round(slider.scrollLeft / step)));
+    const index = clampIndex(Math.round(slider.scrollLeft / step));
+    setActiveIndex((current) => (current === index ? current : index));
   };
 
   const scrollToIndex = (index: number) => {
@@ -183,13 +219,11 @@ export default function SponsorsSection() {
 
     slider.scrollTo({
       left: clampIndex(index) * step,
-      behavior: reducedMotion ? "auto" : "smooth",
+      behavior: shouldAnimate ? "smooth" : "auto",
     });
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    // Only when the track itself has focus — arrow keys inside a card's links
-    // must keep their default behaviour.
     if (event.target !== event.currentTarget) return;
 
     if (event.key === "ArrowRight") {
@@ -201,62 +235,93 @@ export default function SponsorsSection() {
     }
   };
 
-  const cards = sponsors.map((sponsor) => (
-    <SponsorCard key={sponsor.id} sponsor={sponsor} copy={copy} />
-  ));
+  const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (!isSlider || event.pointerType === "touch" && event.isPrimary === false) return;
+    const slider = sliderRef.current;
+    if (!slider) return;
+
+    dragState.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      startScrollLeft: slider.scrollLeft,
+      didDrag: false,
+      horizontal: false,
+    };
+  };
+
+  const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    const slider = sliderRef.current;
+    const drag = dragState.current;
+    if (!slider || drag.pointerId !== event.pointerId) return;
+
+    const distanceX = event.clientX - drag.startX;
+    const distanceY = event.clientY - drag.startY;
+    if (!drag.horizontal) {
+      if (Math.abs(distanceY) > Math.abs(distanceX) && Math.abs(distanceY) > 5) return;
+      if (Math.abs(distanceX) < 5) return;
+      drag.horizontal = true;
+      slider.setPointerCapture(event.pointerId);
+    }
+
+    event.preventDefault();
+    drag.didDrag = true;
+    slider.scrollLeft = drag.startScrollLeft - distanceX;
+  };
+
+  const handlePointerEnd = (event: PointerEvent<HTMLDivElement>) => {
+    const slider = sliderRef.current;
+    const drag = dragState.current;
+    if (!slider || drag.pointerId !== event.pointerId) return;
+
+    if (slider.hasPointerCapture(event.pointerId)) slider.releasePointerCapture(event.pointerId);
+    dragState.current.pointerId = -1;
+    window.setTimeout(() => {
+      dragState.current.didDrag = false;
+    }, 0);
+  };
+
+  const suppressDraggedLink = (event: MouseEvent<HTMLDivElement>) => {
+    if (!dragState.current.didDrag) return;
+    event.preventDefault();
+    event.stopPropagation();
+  };
+
+  const handleRailPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    const rail = event.currentTarget.getBoundingClientRect();
+    const position = Math.max(0, Math.min(1, (event.clientX - rail.left) / rail.width));
+    scrollToIndex(Math.round(position * (sponsors.length - 1)));
+  };
+
+  if (!sponsors.length) return null;
+
+  const progress = sponsors.length > 1 ? (activeIndex / (sponsors.length - 1)) * 100 : 0;
 
   return (
     <section
       id="sponsors"
       aria-labelledby="sponsors-heading"
-      className="relative overflow-hidden bg-[linear-gradient(190deg,#ffffff_0%,#f0f7fb_46%,#e7f1f8_100%)] py-20 md:py-28"
+      className="relative overflow-hidden bg-[linear-gradient(180deg,#ffffff_0%,#f5fafe_52%,#eef7fc_100%)] py-20 md:py-28"
     >
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <div className="absolute right-[-12%] top-[-16%] h-80 w-80 rounded-full bg-[#b9d9eb]/30 blur-3xl md:h-[460px] md:w-[460px]" />
-        <div className="absolute bottom-[-18%] left-[-12%] h-80 w-80 rounded-full bg-[#72a8d4]/12 blur-3xl md:h-[480px] md:w-[480px]" />
+        <div className="absolute left-[-12%] top-[18%] h-72 w-72 rounded-full bg-[#d5ecf8]/44 blur-3xl md:h-[30rem] md:w-[30rem]" />
+        <div className="absolute bottom-[-20%] right-[-10%] h-72 w-72 rounded-full bg-[#b9d9eb]/24 blur-3xl md:h-[32rem] md:w-[32rem]" />
       </div>
 
       <div className="page-section relative">
         <Reveal>
-          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-            <div className="max-w-3xl">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#b9d9eb]/60 bg-white/70 px-4 py-2 font-(--font-ui-family) text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#2f6f9f] backdrop-blur-xl">
-                <Handshake className="h-4 w-4" aria-hidden="true" />
-                {copy.eyebrow}
-              </div>
-
-              <h2
-                id="sponsors-heading"
-                className="text-balance font-(--font-display) text-[clamp(2.5rem,5vw,5.4rem)] leading-[0.95] tracking-[-0.05em] text-[#10182a]"
-              >
-                {copy.title}
-              </h2>
-
+          <div className="max-w-3xl">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#b9d9eb]/60 bg-white/70 px-4 py-2 font-(--font-ui-family) text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#2f6f9f] backdrop-blur-xl">
+              <Handshake className="h-4 w-4" aria-hidden="true" />
+              {copy.eyebrow}
             </div>
 
-            {isSlider ? (
-              <div className="hidden items-center gap-3 md:flex">
-                <button
-                  type="button"
-                  aria-label={copy.prevLabel}
-                  disabled={activeIndex === 0}
-                  onClick={() => scrollToIndex(activeIndex - 1)}
-                  className={NAV_BUTTON_CLASS}
-                >
-                  <ArrowLeft size={18} aria-hidden="true" />
-                </button>
-
-                <button
-                  type="button"
-                  aria-label={copy.nextLabel}
-                  disabled={activeIndex === sponsors.length - 1}
-                  onClick={() => scrollToIndex(activeIndex + 1)}
-                  className={NAV_BUTTON_CLASS}
-                >
-                  <ArrowRight size={18} aria-hidden="true" />
-                </button>
-              </div>
-            ) : null}
+            <h2
+              id="sponsors-heading"
+              className="text-balance font-(--font-display) text-[clamp(2.65rem,5.2vw,5.6rem)] leading-[0.94] tracking-[-0.055em] text-[#10182a]"
+            >
+              {copy.title}
+            </h2>
           </div>
         </Reveal>
 
@@ -264,52 +329,86 @@ export default function SponsorsSection() {
           {isSlider ? (
             <div
               ref={sliderRef}
-              role="group"
+              role="region"
               aria-label={copy.sliderLabel}
               tabIndex={0}
               onScroll={updateActiveIndex}
               onKeyDown={handleKeyDown}
-              className={`flex snap-x snap-mandatory gap-6 overflow-x-auto overscroll-x-contain scroll-smooth rounded-[2.4rem] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${FOCUS_RING}`}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerEnd}
+              onPointerCancel={handlePointerEnd}
+              onClickCapture={suppressDraggedLink}
+              className={`group flex snap-x snap-mandatory gap-5 overflow-x-auto overscroll-x-contain pr-[4.5rem] [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [touch-action:pan-y] md:gap-8 md:pr-40 [&::-webkit-scrollbar]:hidden ${FOCUS_RING}`}
             >
               {sponsors.map((sponsor, index) => (
                 <div
                   key={sponsor.id}
                   data-sponsor-slide
-                  className="w-full shrink-0 snap-start"
+                  aria-current={activeIndex === index ? "true" : undefined}
+                  className="w-[calc(100%-4.5rem)] shrink-0 snap-start md:w-[calc(100%-10rem)]"
                 >
-                  {cards[index]}
+                  <SponsorStory
+                    sponsor={sponsor}
+                    copy={copy}
+                    isActive={activeIndex === index}
+                    shouldAnimate={shouldAnimate}
+                  />
                 </div>
               ))}
             </div>
           ) : (
-            cards
+            <SponsorStory
+              sponsor={sponsors[0]}
+              copy={copy}
+              isActive
+              shouldAnimate={shouldAnimate}
+            />
           )}
         </Reveal>
 
         {isSlider ? (
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
-            <div className="flex items-center gap-3">
-              {sponsors.map((sponsor, index) => (
-                <button
-                  key={sponsor.id}
-                  type="button"
-                  aria-label={`${copy.goToLabel} ${index + 1}`}
-                  aria-current={activeIndex === index}
-                  onClick={() => scrollToIndex(index)}
-                  className={`h-3 rounded-full transition-all duration-300 ${FOCUS_RING} ${
-                    activeIndex === index
-                      ? "w-8 bg-[#2f6f9f]"
-                      : "w-3 bg-[#72a0c1]/35 hover:bg-[#72a0c1]/60"
-                  }`}
-                />
-              ))}
+          <div className="mt-9 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 sm:mt-11 sm:gap-6">
+            <p className="font-(--font-ui-family) text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#2f6f9f]">
+              {pad(activeIndex + 1)}
+            </p>
+
+            <div
+              onPointerDown={handleRailPointerDown}
+              className="relative h-11 rounded-full focus-within:ring-4 focus-within:ring-[rgba(47,111,159,0.42)]"
+            >
+              <div
+                aria-hidden="true"
+                className="absolute left-0 right-0 top-1/2 h-px -translate-y-1/2 bg-[#a9cee4]/65"
+              />
+              <div
+                aria-hidden="true"
+                className="absolute left-0 top-1/2 h-px -translate-y-1/2 bg-[#5c9fc6] transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+                style={{ width: `${progress}%` }}
+              />
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute top-1/2 size-5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#b9d9eb] bg-white/80 shadow-[0_4px_12px_rgba(75,136,176,0.18),inset_0_1px_0_white] backdrop-blur-xl transition-[left] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+                style={{ left: `${progress}%` }}
+              />
+              <input
+                type="range"
+                min="0"
+                max={sponsors.length - 1}
+                step="1"
+                value={activeIndex}
+                aria-label={copy.goToLabel}
+                onChange={(event) => scrollToIndex(Number(event.target.value))}
+                className={`absolute inset-0 z-10 h-11 w-full cursor-pointer appearance-none opacity-0 disabled:cursor-default ${FOCUS_RING}`}
+              />
             </div>
 
             <p
               aria-live="polite"
               className="font-(--font-ui-family) text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#2f6f9f]"
             >
-              {pad(activeIndex + 1)} / {pad(sponsors.length)}
+              {pad(sponsors.length)}
+              <span className="sr-only"> {sponsors[activeIndex]?.name}</span>
             </p>
           </div>
         ) : null}
