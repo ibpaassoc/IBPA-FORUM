@@ -8,6 +8,7 @@ import {
   syncStatsToSheet,
   syncTicketToSheet,
 } from "./sync";
+import { getDataScopeContext } from "@/features/test/server/data-scope";
 
 /**
  * Fire-and-forget sync hooks for existing application flows.
@@ -23,6 +24,7 @@ import {
  */
 
 function scheduleSheetSync(label: string, run: () => Promise<void>): void {
+  if (getDataScopeContext().dataScope === "TEST") return;
   if (!isGoogleSheetsConfigured()) return;
 
   const task = async () => {

@@ -43,6 +43,8 @@ model Account {
   deletedAt                    DateTime?
   createdAt                    DateTime            @default(now())
   updatedAt                    DateTime            @updatedAt
+  dataScope                    DataScope           @default(PRODUCTION)
+  testScenarioId               String?
   applicantProfile             ApplicantProfile?
   juryProfile                  JuryProfile?
   setupTokens                  AccountSetupToken[]
@@ -50,11 +52,13 @@ model Account {
 
   @@index([role, status])
   @@index([deletedAt])
+  @@index([dataScope, role, status])
+  @@index([testScenarioId])
 }
 
 model ApplicantProfile {
-  id                           String                  @id @default(cuid())
-  accountId                    String                  @unique
+  id                           String                       @id @default(cuid())
+  accountId                    String                       @unique
   fullName                     String
   phone                        String?
   country                      String?
@@ -66,16 +70,18 @@ model ApplicantProfile {
   membershipLevel              String?
   membershipVerifiedAt         DateTime?
   membershipVerificationSource String?
-  preferredLocale              String                  @default("en")
+  preferredLocale              String                       @default("en")
   websiteUrl                   String?
   socialUrl                    String?
   reviewsUrl                   String?
   deadlineOverrideAt           DateTime?
   checkedInAt                  DateTime?
   deletedAt                    DateTime?
-  createdAt                    DateTime                @default(now())
-  updatedAt                    DateTime                @updatedAt
-  account                      Account                 @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  createdAt                    DateTime                     @default(now())
+  updatedAt                    DateTime                     @updatedAt
+  dataScope                    DataScope                    @default(PRODUCTION)
+  testScenarioId               String?
+  account                      Account                      @relation(fields: [accountId], references: [id], onDelete: Cascade)
   nominations                  NominationApplication[]
   payments                     Payment[]
   tickets                      Ticket[]
@@ -84,15 +90,21 @@ model ApplicantProfile {
   @@index([fullName])
   @@index([deadlineOverrideAt])
   @@index([deletedAt])
+  @@index([dataScope, createdAt])
+  @@index([testScenarioId])
 }
 
 model ApplicantCheckInCredential {
   token              String           @id
   applicantProfileId String
   createdAt          DateTime         @default(now())
+  dataScope          DataScope        @default(PRODUCTION)
+  testScenarioId     String?
   applicantProfile   ApplicantProfile @relation(fields: [applicantProfileId], references: [id], onDelete: Cascade)
 
   @@index([applicantProfileId])
+  @@index([dataScope])
+  @@index([testScenarioId])
 }
 
 model JuryProfile {
@@ -113,25 +125,33 @@ model JuryProfile {
   approvalStatus      JuryApplicationStatus?
   createdAt           DateTime               @default(now())
   updatedAt           DateTime               @updatedAt
+  dataScope           DataScope              @default(PRODUCTION)
+  testScenarioId      String?
   account             Account                @relation(fields: [accountId], references: [id], onDelete: Cascade)
   juryApplication     JuryApplication?       @relation(fields: [juryApplicationId], references: [id], onDelete: SetNull)
   reviews             JuryNominationReview[]
 
   @@index([approvalStatus])
+  @@index([dataScope, approvalStatus])
+  @@index([testScenarioId])
 }
 
 model AccountSetupToken {
-  id        String                   @id @default(cuid())
-  accountId String
-  tokenHash String                   @unique
-  purpose   AccountSetupTokenPurpose @default(SETUP)
-  expiresAt DateTime
-  usedAt    DateTime?
-  createdAt DateTime                 @default(now())
-  account   Account                  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  id             String                   @id @default(cuid())
+  accountId      String
+  tokenHash      String                   @unique
+  purpose        AccountSetupTokenPurpose @default(SETUP)
+  expiresAt      DateTime
+  usedAt         DateTime?
+  createdAt      DateTime                 @default(now())
+  dataScope      DataScope                @default(PRODUCTION)
+  testScenarioId String?
+  account        Account                  @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
   @@index([accountId, purpose, usedAt])
   @@index([expiresAt])
+  @@index([dataScope])
+  @@index([testScenarioId])
 }
 
 model JuryApplication {
@@ -151,7 +171,7 @@ model JuryApplication {
   pastWinner                       Boolean               @default(false)
   pastWinnerYear                   Int?
   expertiseAreas                   String[]
-  approvedCategories               String[]               @default([])
+  approvedCategories               String[]              @default([])
   professionalBio                  String
   professionalWebsite              String?
   conflictDisclosure               String
@@ -174,9 +194,14 @@ model JuryApplication {
   infoRequestedAt                  DateTime?
   infoResubmittedAt                DateTime?
   checkedInAt                      DateTime?
+  dataScope                        DataScope             @default(PRODUCTION)
+  testScenarioId                   String?
   files                            JuryApplicationFile[]
   profile                          JuryProfile?
   payments                         Payment[]
+
+  @@index([dataScope, status, paymentStatus])
+  @@index([testScenarioId])
 }
 
 model JuryApplicationFile {
@@ -188,48 +213,62 @@ model JuryApplicationFile {
   fileSize          Int
   storageKey        String?
   createdAt         DateTime        @default(now())
+  dataScope         DataScope       @default(PRODUCTION)
+  testScenarioId    String?
   juryApplication   JuryApplication @relation(fields: [juryApplicationId], references: [id], onDelete: Cascade)
+
+  @@index([dataScope])
+  @@index([testScenarioId])
 }
 
 model Payment {
-  id                      String                  @id @default(cuid())
-  source                  PaymentSource
-  applicantProfileId      String?
-  juryApplicationId       String?
-  ticketId                String?
-  stripeSessionId         String?                 @unique
-  stripePaymentIntentId   String?                 @unique
-  provider                String                  @default("stripe")
-  applicantEmail          String?
-  purchaseManifest        Json?
-  amount                  Int
-  currency                String                  @default("usd")
-  promoCodeKey            String?
-  promoCodeKeyword        String?
-  promoDiscountPercent    Int?
-  promoDiscountAmount     Int?
-  status                  PaymentStatus           @default(PENDING)
-  paidAt                  DateTime?
-  fulfilledAt             DateTime?
-  createdAt               DateTime                @default(now())
-  applicantProfile        ApplicantProfile?       @relation(fields: [applicantProfileId], references: [id], onDelete: SetNull)
-  purchasedNominations    NominationApplication[] @relation("NominationPurchasePayment")
-  juryApplication         JuryApplication?        @relation(fields: [juryApplicationId], references: [id], onDelete: Cascade)
-  ticket                  Ticket?                 @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  id                    String                  @id @default(cuid())
+  source                PaymentSource
+  applicantProfileId    String?
+  juryApplicationId     String?
+  ticketId              String?
+  stripeSessionId       String?                 @unique
+  stripePaymentIntentId String?                 @unique
+  provider              String                  @default("stripe")
+  applicantEmail        String?
+  purchaseManifest      Json?
+  amount                Int
+  currency              String                  @default("usd")
+  promoCodeKey          String?
+  promoCodeKeyword      String?
+  promoDiscountPercent  Int?
+  promoDiscountAmount   Int?
+  status                PaymentStatus           @default(PENDING)
+  paidAt                DateTime?
+  fulfilledAt           DateTime?
+  createdAt             DateTime                @default(now())
+  dataScope             DataScope               @default(PRODUCTION)
+  testScenarioId        String?
+  applicantProfile      ApplicantProfile?       @relation(fields: [applicantProfileId], references: [id], onDelete: SetNull)
+  purchasedNominations  NominationApplication[] @relation("NominationPurchasePayment")
+  juryApplication       JuryApplication?        @relation(fields: [juryApplicationId], references: [id], onDelete: Cascade)
+  ticket                Ticket?                 @relation(fields: [ticketId], references: [id], onDelete: Cascade)
 
   @@index([applicantProfileId, status])
   @@index([applicantEmail])
   @@index([source, status])
   @@index([promoCodeKey])
+  @@index([dataScope, source, status])
+  @@index([testScenarioId])
 }
 
 model StripeWebhookEvent {
-  id            String   @id @default(cuid())
-  stripeEventId String   @unique
-  eventType     String
-  payloadJson   Json?
-  processedAt   DateTime @default(now())
-  createdAt     DateTime @default(now())
+  id             String    @id @default(cuid())
+  stripeEventId  String    @unique
+  eventType      String
+  payloadJson    Json?
+  processedAt    DateTime  @default(now())
+  createdAt      DateTime  @default(now())
+  dataScope      DataScope @default(PRODUCTION)
+  testScenarioId String?
+
+  @@index([dataScope, processedAt])
+  @@index([testScenarioId])
 }
 
 model NominationApplication {
@@ -253,6 +292,8 @@ model NominationApplication {
   deletedAt               DateTime?
   createdAt               DateTime               @default(now())
   updatedAt               DateTime               @updatedAt
+  dataScope               DataScope              @default(PRODUCTION)
+  testScenarioId          String?
   applicantProfile        ApplicantProfile       @relation(fields: [applicantProfileId], references: [id], onDelete: Cascade)
   purchasePayment         Payment?               @relation("NominationPurchasePayment", fields: [purchasePaymentId], references: [id], onDelete: SetNull)
   award                   Award                  @relation(fields: [awardId], references: [id])
@@ -269,26 +310,32 @@ model NominationApplication {
   @@index([categoryId])
   @@index([categoryId, status, paymentStatus])
   @@index([deletedAt])
+  @@index([dataScope, status, paymentStatus])
+  @@index([testScenarioId])
 }
 
 model JuryNominationReview {
-  id            String                @id @default(cuid())
-  nominationId  String
-  juryProfileId String
-  status        JuryReviewStatus      @default(NOT_STARTED)
-  scoreData     Json?
-  totalScore    Decimal?
-  notes         String?
-  startedAt     DateTime?
-  completedAt   DateTime?
-  createdAt     DateTime              @default(now())
-  updatedAt     DateTime              @updatedAt
-  nomination    NominationApplication @relation(fields: [nominationId], references: [id], onDelete: Cascade)
-  juryProfile   JuryProfile           @relation(fields: [juryProfileId], references: [id], onDelete: Cascade)
+  id             String                @id @default(cuid())
+  nominationId   String
+  juryProfileId  String
+  status         JuryReviewStatus      @default(NOT_STARTED)
+  scoreData      Json?
+  totalScore     Decimal?
+  notes          String?
+  startedAt      DateTime?
+  completedAt    DateTime?
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+  dataScope      DataScope             @default(PRODUCTION)
+  testScenarioId String?
+  nomination     NominationApplication @relation(fields: [nominationId], references: [id], onDelete: Cascade)
+  juryProfile    JuryProfile           @relation(fields: [juryProfileId], references: [id], onDelete: Cascade)
 
   @@unique([nominationId, juryProfileId])
   @@index([juryProfileId, status])
   @@index([nominationId])
+  @@index([dataScope, status])
+  @@index([testScenarioId])
 }
 
 model NominationAnswer {
@@ -300,10 +347,14 @@ model NominationAnswer {
   valueBoolean            Boolean?
   valueJson               Json?
   createdAt               DateTime              @default(now())
+  dataScope               DataScope             @default(PRODUCTION)
+  testScenarioId          String?
   nominationApplication   NominationApplication @relation(fields: [nominationApplicationId], references: [id], onDelete: Cascade)
 
-  @@index([nominationApplicationId])
   @@unique([nominationApplicationId, fieldKey])
+  @@index([nominationApplicationId])
+  @@index([dataScope])
+  @@index([testScenarioId])
 }
 
 model NominationFile {
@@ -321,12 +372,21 @@ model NominationFile {
   storageKey              String?
   deletedAt               DateTime?
   createdAt               DateTime              @default(now())
+  dataScope               DataScope             @default(PRODUCTION)
+  testScenarioId          String?
   nominationApplication   NominationApplication @relation(fields: [nominationApplicationId], references: [id], onDelete: Cascade)
 
   @@unique([nominationApplicationId, fileUrl])
   @@index([nominationApplicationId])
   @@index([fieldKey])
   @@index([deletedAt])
+  @@index([dataScope])
+  @@index([testScenarioId])
+}
+
+enum DataScope {
+  PRODUCTION
+  TEST
 }
 
 enum NominationStatus {
@@ -415,6 +475,8 @@ model Ticket {
   galaCheckInAt         DateTime?
   createdAt             DateTime             @default(now())
   updatedAt             DateTime             @updatedAt
+  dataScope             DataScope            @default(PRODUCTION)
+  testScenarioId        String?
   account               Account?             @relation(fields: [accountId], references: [id], onDelete: SetNull)
   applicantProfile      ApplicantProfile?    @relation(fields: [applicantProfileId], references: [id], onDelete: SetNull)
   payments              Payment[]
@@ -425,6 +487,8 @@ model Ticket {
   @@index([applicantProfileId])
   @@index([email])
   @@index([promoCodeKey])
+  @@index([dataScope, status, createdAt])
+  @@index([testScenarioId])
 }
 
 model PromoCode {
@@ -485,10 +549,14 @@ model TicketQrCredential {
   lastDeliveryStatus     String?
   lastDeliveryProviderId String?
   lastDeliveryError      String?
+  dataScope              DataScope      @default(PRODUCTION)
+  testScenarioId         String?
   ticket                 Ticket         @relation(fields: [ticketId], references: [id], onDelete: Cascade)
 
   @@index([ticketId, status])
   @@index([generatedAt])
+  @@index([dataScope, status])
+  @@index([testScenarioId])
 }
 
 model TicketActivity {
@@ -501,10 +569,50 @@ model TicketActivity {
   newValues      Json?
   emailDelivery  Json?
   createdAt      DateTime           @default(now())
+  dataScope      DataScope          @default(PRODUCTION)
+  testScenarioId String?
   ticket         Ticket             @relation(fields: [ticketId], references: [id], onDelete: Cascade)
 
   @@index([ticketId, createdAt])
   @@index([type])
+  @@index([dataScope, createdAt])
+  @@index([testScenarioId])
+}
+
+model TestScenario {
+  id          String   @id @default(cuid())
+  name        String
+  kind        String
+  description String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([kind, createdAt])
+}
+
+model EmailDeliveryLog {
+  id                String    @id @default(cuid())
+  dataScope         DataScope @default(PRODUCTION)
+  testScenarioId    String?
+  templateType      String
+  category          String
+  subject           String
+  recipient         String
+  intendedRecipient String
+  providerId        String?
+  delivered         Boolean   @default(false)
+  errorCode         String?
+  errorMessage      String?
+  providerResponse  Json?
+  relatedEntityType String?
+  relatedEntityId   String?
+  createdAt         DateTime  @default(now())
+
+  @@index([dataScope, createdAt])
+  @@index([testScenarioId])
+  @@index([templateType])
+  @@index([relatedEntityType, relatedEntityId])
 }
 
 model SiteSetting {
