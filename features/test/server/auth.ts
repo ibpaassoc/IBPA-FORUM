@@ -5,6 +5,7 @@ import { cookies, headers } from "next/headers";
 import { notFound } from "next/navigation";
 
 const TEST_SESSION_COOKIE = "ibpa-test-session";
+const TEST_ACTOR_COOKIE = "ibpa-test-actor";
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
 const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
 const RATE_LIMIT_MAX_ATTEMPTS = 5;
@@ -13,6 +14,12 @@ type TestSessionPayload = {
   issuedAt: number;
   expiresAt: number;
   nonce: string;
+};
+
+export type TestActor = {
+  accountId: string;
+  role: "APPLICANT" | "JURY";
+  expiresAt: number;
 };
 
 type RateLimitEntry = {
@@ -162,5 +169,65 @@ export async function destroyTestSession() {
     path: "/",
     maxAge: 0,
   });
+  (await cookies()).set(TEST_ACTOR_COOKIE, "", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+    path: "/",
+    maxAge: 0,
+  });
 }
 
+export async function createTestActor(actor: Omit<TestActor, "expiresAt">) {
+  await requireTestSession();
+  const password = configuredPassword();
+  if (!password) notFound();
+  const payload: TestActor = {
+    ...actor,
+    expiresAt: Date.now() + SESSION_TTL_SECONDS * 1000,
+  };
+  const encodedPayload = Buffer.from(JSON.stringify(payload)).toString("base64url");
+  const signature = signPayload(`actor:${encodedPayload}`, password);
+  (await cookies()).set(TEST_ACTOR_COOKIE, `${encodedPayload}.${signature}`, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+    path: "/",
+    maxAge: SESSION_TTL_SECONDS,
+  });
+}
+
+export async function getTestActor(): Promise<TestActor | null> {
+  const password = configuredPassword();
+  if (!password || !(await getTestSession())) return null;
+  const token = (await cookies()).get(TEST_ACTOR_COOKIE)?.value;
+  if (!token) return null;
+  const [encodedPayload, signature] = token.split(".");
+  if (!encodedPayload || !signature) return null;
+  if (!safeEqual(signature, signPayload(`actor:${encodedPayload}`, password))) return null;
+  try {
+    const actor = JSON.parse(
+      Buffer.from(encodedPayload, "base64url").toString("utf8"),
+    ) as TestActor;
+    if (
+      !actor.accountId ||
+      (actor.role !== "APPLICANT" && actor.role !== "JURY") ||
+      actor.expiresAt <= Date.now()
+    ) {
+      return null;
+    }
+    return actor;
+  } catch {
+    return null;
+  }
+}
+
+export async function destroyTestActor() {
+  (await cookies()).set(TEST_ACTOR_COOKIE, "", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+    path: "/",
+    maxAge: 0,
+  });
+}

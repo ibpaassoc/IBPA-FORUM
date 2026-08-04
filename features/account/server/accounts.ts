@@ -7,6 +7,8 @@ import { prisma } from "@/shared/lib/prisma";
 import { normalizeAccountEmail } from "@/features/account/server/password";
 import { createAccountSetupToken } from "@/features/account/server/tokens";
 import { sendAccountSetupEmail } from "@/features/account/server/emails";
+import { getTestActor } from "@/features/test/server/auth";
+import { activateRequestDataScope } from "@/features/test/server/data-scope";
 
 export class AccountRoleConflictError extends Error {
   constructor(email: string, existingRole: AccountRole, requestedRole: AccountRole) {
@@ -274,6 +276,19 @@ export function getDashboardPathForRole(role: AccountRole) {
 }
 
 export async function requireAccount() {
+  const testActor = await getTestActor();
+  if (testActor) {
+    activateRequestDataScope({ dataScope: "TEST" });
+    const account = await prisma.account.findUnique({
+      where: { id: testActor.accountId },
+      include: { applicantProfile: true, juryProfile: true },
+    });
+    if (!account || account.role !== testActor.role || account.status === "DISABLED") {
+      redirect("/test");
+    }
+    return account;
+  }
+
   const session = await getAppSession();
 
   if (!session?.user?.accountId) {

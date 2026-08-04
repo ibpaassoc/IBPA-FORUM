@@ -1,6 +1,6 @@
 import "server-only";
 import { redirect } from "next/navigation";
-import { getAppSession } from "@/auth";
+import { requireAccount } from "@/features/account/server/accounts";
 import {
   createPasswordHash,
   isStrongPassword,
@@ -82,14 +82,13 @@ export async function validatePasswordResetToken(token: string): Promise<{
 }
 
 export async function requireJuryAuth() {
-  const session = await getAppSession();
-
-  if (!session?.user?.accountId || session.user.role !== "JURY") {
+  const authenticatedAccount = await requireAccount();
+  if (authenticatedAccount.role !== "JURY") {
     redirect("/account/login");
   }
 
   const account = await prisma.account.findUnique({
-    where: { id: session.user.accountId },
+    where: { id: authenticatedAccount.id },
     include: {
       juryProfile: {
         select: {

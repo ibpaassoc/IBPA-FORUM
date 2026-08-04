@@ -4,6 +4,7 @@ import type { DataScope } from "@prisma/client";
 type DataScopeContext = {
   dataScope: DataScope;
   testScenarioId?: string;
+  testEmailRecipient?: string;
 };
 
 const globalForDataScope = globalThis as typeof globalThis & {

@@ -3,7 +3,6 @@ import "server-only";
 import { cache } from "react";
 import { revalidatePath } from "next/cache";
 import type { Prisma } from "@prisma/client";
-import { getAppSession } from "@/auth";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import type { DraftReviewInput, SubmitReviewInput } from "@/features/jury/schemas/review.schema";
 import { prisma } from "@/shared/lib/prisma";
@@ -15,6 +14,7 @@ import {
   ScoringHttpError,
   type ActiveJudgeContext,
 } from "@/features/jury/server/scoring-shared";
+import { requireJuryAuth } from "@/features/jury/server/auth";
 import {
   buildReviewScoreData,
   calculateReviewTotal,
@@ -519,14 +519,10 @@ export async function submitJuryReview({
 export const getAuthenticatedJuryContext = cache(requireActiveJuryJudge);
 
 export async function getAuthenticatedJuryApiContext(): Promise<ActiveJudgeContext> {
-  const session = await getAppSession();
-
-  if (!session?.user?.accountId || session.user.role !== "JURY") {
-    throw new ScoringHttpError(401, "Judge authentication is required.");
-  }
+  const juryUser = await requireJuryAuth();
 
   const account = await prisma.account.findUnique({
-    where: { id: session.user.accountId },
+    where: { id: juryUser.id },
     include: {
       juryProfile: {
         select: {

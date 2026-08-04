@@ -2,12 +2,14 @@ import type { ReactNode } from "react";
 import ApplicantSidebar from "@/features/account/components/ApplicantSidebar";
 import { requireApplicantAccount } from "@/features/account/server/accounts";
 import { DashboardShell } from "@/shared/components/admin/DashboardUI";
+import { TestActorBanner } from "@/features/test/components/TestActorBanner";
 
 export default async function ApplicantLayout({ children }: { children: ReactNode }) {
   const { account, applicantProfile } = await requireApplicantAccount();
 
   return (
     <DashboardShell className="font-[var(--font-ui-family)]">
+      <TestActorBanner />
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute -left-24 top-20 size-[22rem] rounded-full bg-[rgba(185,217,235,0.28)] blur-3xl" />
         <div className="absolute right-[-8rem] top-[-6rem] size-[26rem] rounded-full bg-[rgba(114,160,193,0.16)] blur-3xl" />
