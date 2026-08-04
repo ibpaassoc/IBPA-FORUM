@@ -1,4 +1,4 @@
-CREATE TABLE "TestAuditLog" (
+CREATE TABLE IF NOT EXISTS "TestAuditLog" (
   "id" TEXT NOT NULL,
   "action" TEXT NOT NULL,
   "targetType" TEXT NOT NULL,
@@ -8,5 +8,5 @@ CREATE TABLE "TestAuditLog" (
   CONSTRAINT "TestAuditLog_pkey" PRIMARY KEY ("id")
 );
 
-CREATE INDEX "TestAuditLog_createdAt_idx" ON "TestAuditLog"("createdAt");
-CREATE INDEX "TestAuditLog_action_targetType_idx" ON "TestAuditLog"("action", "targetType");
+CREATE INDEX IF NOT EXISTS "TestAuditLog_createdAt_idx" ON "TestAuditLog"("createdAt");
+CREATE INDEX IF NOT EXISTS "TestAuditLog_action_targetType_idx" ON "TestAuditLog"("action", "targetType");
