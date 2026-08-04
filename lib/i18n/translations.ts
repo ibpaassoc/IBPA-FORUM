@@ -834,7 +834,7 @@ const en = {
           id: "teora-beauty-shop",
           name: "TE'ORA Beauty Shop",
           label: "Featured Sponsor",
-          logo: "/images/sponsors/teora/teora-beauty-wordmark.jpg",
+          logo: "/images/sponsors/teora/teora-beauty-wordmark-transparent.png",
           logoAlt: "TE'ORA Beauty logo",
           location: "United States",
           description:
@@ -3070,7 +3070,7 @@ const ru: typeof en = {
           id: "teora-beauty-shop",
           name: "TE'ORA Beauty Shop",
           label: "Главный спонсор",
-          logo: "/images/sponsors/teora/teora-beauty-wordmark.jpg",
+          logo: "/images/sponsors/teora/teora-beauty-wordmark-transparent.png",
           logoAlt: "Логотип TE'ORA Beauty",
           location: "США",
           description:
@@ -5307,7 +5307,7 @@ const ua: typeof en = {
           id: "teora-beauty-shop",
           name: "TE'ORA Beauty Shop",
           label: "Головний спонсор",
-          logo: "/images/sponsors/teora/teora-beauty-wordmark.jpg",
+          logo: "/images/sponsors/teora/teora-beauty-wordmark-transparent.png",
           logoAlt: "Логотип TE'ORA Beauty",
           location: "США",
           description:
