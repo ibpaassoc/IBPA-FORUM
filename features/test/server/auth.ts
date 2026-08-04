@@ -2,7 +2,7 @@ import "server-only";
 
 import crypto from "node:crypto";
 import { cookies, headers } from "next/headers";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 const TEST_SESSION_COOKIE = "ibpa-test-session";
 const TEST_ACTOR_COOKIE = "ibpa-test-actor";
@@ -102,7 +102,7 @@ export async function getTestSession() {
 export async function requireTestSession() {
   if (!isTestSystemAvailable()) notFound();
   const session = await getTestSession();
-  if (!session) notFound();
+  if (!session) redirect("/test/login");
   return session;
 }
 

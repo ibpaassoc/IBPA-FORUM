@@ -1,24 +1,14 @@
-import { ClipboardList, Mail, Scale, Shapes, Sparkles, Ticket, UsersRound } from "lucide-react";
+import { TestDashboardMetrics } from "@/features/test/components/TestDashboardMetrics";
 import { getTestDashboardCounts } from "@/features/test/server/dashboard";
 import {
   DashboardHeader,
   DashboardSection,
   GlassCard,
-  MetricCard,
   SecondaryButton,
 } from "@/shared/components/admin/DashboardUI";
 
 export default async function TestDashboardPage() {
   const counts = await getTestDashboardCounts();
-  const metrics = [
-    ["Applicant accounts", counts.applicants, UsersRound],
-    ["Jury accounts", counts.jury, Scale],
-    ["Nominations", counts.nominations, ClipboardList],
-    ["Emails", counts.emails, Mail],
-    ["Tickets", counts.tickets, Ticket],
-    ["Reviews", counts.reviews, Shapes],
-    ["All test creations", counts.all, Sparkles],
-  ] as const;
 
   return (
     <div className="space-y-8">
@@ -27,11 +17,7 @@ export default async function TestDashboardPage() {
         title="Internal testing"
         description="Exercise production applicant, jury, email, payment, upload, and validation behavior with records that remain isolated from live operations."
       />
-      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {metrics.map(([label, value, Icon]) => (
-          <MetricCard key={label} label={label} value={value} icon={Icon} />
-        ))}
-      </section>
+      <TestDashboardMetrics counts={counts} />
       <DashboardSection title="Quick scenarios" eyebrow="End-to-end setup">
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {[

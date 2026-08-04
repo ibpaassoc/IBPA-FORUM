@@ -28,7 +28,14 @@ includes("features/test/server/auth.ts", "httpOnly: true", "test sessions are Ht
 includes("features/test/server/auth.ts", "secure: true", "test sessions are Secure");
 includes("features/test/server/auth.ts", 'sameSite: "strict"', "test sessions use strict SameSite policy");
 includes("features/test/server/auth.ts", "consumeLoginAttempt", "test login is rate limited");
+includes("features/test/server/auth.ts", 'redirect("/test/login")', "unauthenticated test pages return to the server-validated login flow");
 includes("app/api/test/route.ts", "await getTestSession()", "the existing test API is session protected");
+
+// Dashboard icons stay inside a client boundary instead of crossing the RSC payload as functions.
+includes("app/test/(protected)/page.tsx", "<TestDashboardMetrics counts={counts} />", "the server dashboard passes only serializable metric data");
+assert.ok(!read("app/test/(protected)/page.tsx").includes("lucide-react"), "the server dashboard does not pass Lucide component functions to a client component");
+includes("features/test/components/TestDashboardMetrics.tsx", '"use client"', "dashboard icon rendering lives inside a client component");
+includes("features/test/components/TestDashboardMetrics.tsx", "icon={Icon}", "the client metric grid renders the selected icon locally");
 
 for (const actionFile of filesUnder("app/test").filter((path) => path.endsWith("actions.ts") && !path.endsWith("login/actions.ts"))) {
   includes(actionFile, "requireTestSession", `${actionFile} authorizes every mutation on the server`);
