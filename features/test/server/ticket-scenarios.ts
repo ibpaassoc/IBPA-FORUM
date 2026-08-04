@@ -8,6 +8,7 @@ import { calculatePromoDiscount } from "@/features/promos/lib/promo-codes";
 import { handleTicketStripeEvent } from "@/features/tickets/server/ticket-webhook.workflow";
 import { prisma } from "@/shared/lib/prisma";
 import { runWithDataScope } from "@/features/test/server/data-scope";
+import { deleteTestScenario } from "@/features/test/server/cleanup";
 
 function paidTicketEvent(ticketId: string, sessionId: string, amount: number) {
   const eventId = `evt_test_ticket_${crypto.randomUUID()}`;
@@ -95,7 +96,7 @@ export async function createTestTicketScenario(input: {
       return { scenario, ticketId: reservation.ticketId };
     });
   } catch (error) {
-    await prisma.testScenario.delete({ where: { id: scenario.id } }).catch(() => undefined);
+    await deleteTestScenario(scenario.id).catch(() => undefined);
     throw error;
   }
 }

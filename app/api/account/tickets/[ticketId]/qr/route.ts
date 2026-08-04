@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAccount } from "@/features/account/server/accounts";
 import { generateTicketQRBuffer } from "@/features/tickets/server/ticket-qr";
 import { prisma } from "@/shared/lib/prisma";
+import { activateRequestDataScope } from "@/features/test/server/data-scope";
 
 function safeSlug(value: string) {
   return value
@@ -16,6 +17,7 @@ export async function GET(
   { params }: { params: Promise<{ ticketId: string }> }
 ) {
   const account = await requireAccount();
+  activateRequestDataScope({ dataScope: account.dataScope });
   const { ticketId } = await params;
   const ownershipFilters = [
     { accountId: account.id },

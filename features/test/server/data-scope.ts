@@ -17,23 +17,30 @@ const globalForDataScope = globalThis as typeof globalThis & {
 const storage =
   globalForDataScope.ibpaDataScopeStorage ?? new AsyncLocalStorage<DataScopeContext>();
 
-if (process.env.NODE_ENV !== "production") {
-  globalForDataScope.ibpaDataScopeStorage = storage;
-}
+// Next.js can evaluate the request helper and the Prisma extension from
+// different server bundles. Keep one process-wide store in every environment
+// so both bundles observe the same request scope.
+globalForDataScope.ibpaDataScopeStorage = storage;
 
 export function getDataScopeContext(): DataScopeContext {
   return storage.getStore() ?? { dataScope: "PRODUCTION" };
 }
 
 export function activateRequestDataScope(context: DataScopeContext) {
-  storage.enterWith(context);
+  // Request authentication may discover the actor's scope after a test
+  // scenario has already supplied metadata such as testScenarioId. Preserve
+  // that metadata while updating the authoritative data scope.
+  storage.enterWith({ ...getDataScopeContext(), ...context });
 }
 
-export function runWithDataScope<T>(
+export async function runWithDataScope<T>(
   context: DataScopeContext,
-  work: () => T,
-): T {
-  return storage.run(context, work);
+  work: () => T | PromiseLike<T>,
+): Promise<T> {
+  // Prisma promises are lazy. Awaiting inside storage.run is essential:
+  // returning the promise directly lets its query extension execute after the
+  // AsyncLocalStorage callback has exited and silently falls back to PRODUCTION.
+  return storage.run(context, async () => await work());
 }
 
 export function requireTestDataScope() {

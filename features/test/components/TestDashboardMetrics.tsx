@@ -1,7 +1,7 @@
 "use client";
 
 import { ClipboardList, Mail, Scale, Shapes, Sparkles, Ticket, UsersRound } from "lucide-react";
-import { MetricCard } from "@/shared/components/admin/DashboardUI";
+import { MetricCard } from "@/features/test/components/TestDashboardUI";
 
 type TestDashboardMetricsProps = {
   counts: {

@@ -1,12 +1,14 @@
 import { get } from "@vercel/blob";
 import { requireJuryAuth } from "@/features/jury/server/auth";
 import { prisma } from "@/shared/lib/prisma";
+import { activateRequestDataScope } from "@/features/test/server/data-scope";
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ fileId: string }> }
 ) {
   const juryUser = await requireJuryAuth();
+  activateRequestDataScope({ dataScope: juryUser.dataScope });
   const { fileId } = await params;
 
   const fileRecord = await prisma.nominationFile.findUnique({

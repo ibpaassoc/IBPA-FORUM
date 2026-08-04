@@ -18,6 +18,7 @@ import { getCategoryScoringDefinition } from "@/features/jury/scoring/category-s
 import { saveJuryReviewDraft, submitJuryReview } from "@/features/jury/server/reviews";
 import { prisma } from "@/shared/lib/prisma";
 import { runWithDataScope } from "@/features/test/server/data-scope";
+import { deleteTestScenario } from "@/features/test/server/cleanup";
 
 export type ApplicantScenarioKind =
   | "applicant-empty"
@@ -290,7 +291,7 @@ export async function createApplicantScenario(kind: ApplicantScenarioKind) {
   try {
     return { scenario, ...(await createApplicantInScenario({ scenarioId: scenario.id, kind })) };
   } catch (error) {
-    await prisma.testScenario.delete({ where: { id: scenario.id } }).catch(() => undefined);
+    await deleteTestScenario(scenario.id).catch(() => undefined);
     throw error;
   }
 }
@@ -357,6 +358,7 @@ async function createJuryInScenario({
           fullName: juryProfile.fullName,
           professionalTitle: juryProfile.professionalTitle ?? "",
           approvedCategories: juryProfile.approvedCategories,
+          dataScope: "TEST",
         },
         nominationId: nomination.id,
         input: { scores: { [first.key]: Math.min(5, first.maxScore) }, comment: "Partially completed test review" },
@@ -373,6 +375,7 @@ async function createJuryInScenario({
           fullName: juryProfile.fullName,
           professionalTitle: juryProfile.professionalTitle ?? "",
           approvedCategories: juryProfile.approvedCategories,
+          dataScope: "TEST",
         },
         nominationId: nomination.id,
         input: {
@@ -401,7 +404,7 @@ export async function createJuryScenario(kind: JuryScenarioKind) {
       ...(await createJuryInScenario({ scenarioId: scenario.id, kind, nominationId })),
     };
   } catch (error) {
-    await prisma.testScenario.delete({ where: { id: scenario.id } }).catch(() => undefined);
+    await deleteTestScenario(scenario.id).catch(() => undefined);
     throw error;
   }
 }
@@ -416,7 +419,7 @@ export async function createFullFlowScenario() {
     const jury = await createJuryInScenario({ scenarioId: scenario.id, kind: "jury-unreviewed", nominationId });
     return { scenario, applicant, jury, nominationId };
   } catch (error) {
-    await prisma.testScenario.delete({ where: { id: scenario.id } }).catch(() => undefined);
+    await deleteTestScenario(scenario.id).catch(() => undefined);
     throw error;
   }
 }

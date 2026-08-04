@@ -4,13 +4,15 @@ import { requireApplicantAccount } from "@/features/account/server/accounts";
 import { getApplicationCategories } from "@/features/applications/server/queries";
 import { getServerTranslations } from "@/lib/i18n/server";
 import { prisma } from "@/shared/lib/prisma";
+import { activateRequestDataScope } from "@/features/test/server/data-scope";
 import {
   DashboardPageHeader,
   SecondaryButton,
 } from "@/shared/components/admin/DashboardUI";
 
 export default async function AddNominationPage() {
-  const { applicantProfile } = await requireApplicantAccount();
+  const { account, applicantProfile } = await requireApplicantAccount();
+  activateRequestDataScope({ dataScope: account.dataScope });
   const [categories, ownedNominations, t] = await Promise.all([
     getApplicationCategories(),
     prisma.nominationApplication.findMany({

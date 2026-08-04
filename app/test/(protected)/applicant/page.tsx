@@ -14,7 +14,7 @@ import {
   PremiumButton,
   SecondaryButton,
   StatusBadge,
-} from "@/shared/components/admin/DashboardUI";
+} from "@/features/test/components/TestDashboardUI";
 
 const scenarios = [
   ["applicant-empty", "New applicant", "Account with no nominations", UserRoundPlus],
@@ -34,23 +34,22 @@ export default async function TestApplicantPage({
   return (
     <div className="space-y-8">
       <DashboardHeader
-        label="Production applicant experience"
-        title="Applicant testing"
-        description="Create isolated accounts and then open the real applicant dashboard to purchase, edit, upload, validate, submit, reopen, and resubmit nominations."
+        label="Accounts and nominations"
+        title="Applicants"
         actions={<form action={createFullFlowScenarioAction}><PremiumButton type="submit">Create full flow</PremiumButton></form>}
       />
       {created ? (
-        <div role="status" className="rounded-[22px] border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-900">
+        <div role="status" className="rounded-[18px] border border-emerald-400/20 bg-emerald-400/10 px-5 py-4 text-sm text-emerald-300">
           {full ? "Full applicant → submission → jury scenario created." : "Applicant scenario created successfully."}
         </div>
       ) : null}
-      <DashboardSection title="Create a scenario" eyebrow="Real account and payment handlers">
+      <DashboardSection title="Scenario builder" eyebrow="Create test data" className="scroll-mt-24" >
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {scenarios.map(([kind, title, description, Icon]) => (
             <GlassCard key={kind} className="p-5" hover>
-              <Icon aria-hidden size={20} className="text-[var(--color-blue)]" />
-              <h2 className="mt-4 font-[var(--font-title-family)] text-2xl font-light">{title}</h2>
-              <p className="mt-2 min-h-12 text-sm leading-6 text-[var(--color-ink-soft)]">{description}</p>
+              <Icon aria-hidden size={18} className="text-zinc-400" />
+              <h2 className="mt-4 font-sans text-lg font-semibold tracking-[-0.025em] text-white">{title}</h2>
+              <p className="mt-2 min-h-12 text-sm leading-6 text-zinc-500">{description}</p>
               <form action={createApplicantScenarioAction} className="mt-5">
                 <input type="hidden" name="kind" value={kind} />
                 <SecondaryButton type="submit">Create</SecondaryButton>
@@ -61,7 +60,7 @@ export default async function TestApplicantPage({
       </DashboardSection>
       <DashboardSection title="Test applicants" eyebrow={`${accounts.length} isolated account${accounts.length === 1 ? "" : "s"}`}>
         {accounts.length === 0 ? (
-          <EmptyState title="No test applicants yet" description="Create a scenario above. Production applicants never appear in this list." />
+          <EmptyState title="No test applicants" description="Create a scenario to begin." />
         ) : (
           <div className="grid gap-4">
             {accounts.map((account) => {
@@ -72,12 +71,12 @@ export default async function TestApplicantPage({
                   <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                     <div>
                       <div className="flex flex-wrap items-center gap-2">
-                        <h2 className="font-[var(--font-title-family)] text-2xl font-light">{profile?.fullName ?? account.email}</h2>
+                        <h2 className="font-sans text-xl font-semibold tracking-[-0.025em] text-white">{profile?.fullName ?? account.email}</h2>
                         <StatusBadge tone="blue">TEST</StatusBadge>
                         <StatusBadge tone={account.status === "ACTIVE" ? "green" : "amber"}>{account.status}</StatusBadge>
                       </div>
-                      <p className="mt-1 text-sm text-[var(--color-ink-soft)]">{account.email}</p>
-                      <p className="mt-3 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-soft)]">
+                      <p className="mt-1 text-sm text-zinc-500">{account.email}</p>
+                      <p className="mt-3 text-xs font-semibold uppercase tracking-[0.12em] text-zinc-500">
                         {nominations.length} nominations · {profile?.payments.length ?? 0} payments
                       </p>
                     </div>
@@ -89,19 +88,19 @@ export default async function TestApplicantPage({
                   {nominations.length > 0 ? (
                     <div className="mt-5 grid gap-2 md:grid-cols-2 xl:grid-cols-3">
                       {nominations.map((nomination) => (
-                        <div key={nomination.id} className="rounded-[20px] border border-[rgba(114,160,193,0.16)] bg-white/70 p-4">
+                        <div key={nomination.id} className="rounded-[18px] border border-white/[0.08] bg-black/20 p-4">
                           <div className="flex items-start justify-between gap-3">
                             <div>
                               <p className="text-sm font-semibold">{nomination.award.name}</p>
-                              <p className="mt-1 text-xs text-[var(--color-ink-soft)]">{nomination.category.name}</p>
+                              <p className="mt-1 text-xs text-zinc-500">{nomination.category.name}</p>
                             </div>
                             <StatusBadge tone={nomination.status === "SUBMITTED" ? "green" : "amber"}>{nomination.status}</StatusBadge>
                           </div>
-                          <p className="mt-3 text-xs text-[var(--color-ink-soft)]">{nomination.answers.length} answers · {nomination.files.length} files · {nomination.paymentStatus.toLowerCase()}</p>
+                          <p className="mt-3 text-xs text-zinc-500">{nomination.answers.length} answers · {nomination.files.length} files · {nomination.paymentStatus.toLowerCase()}</p>
                           {nomination.status === "SUBMITTED" || nomination.status === "LOCKED" ? (
                             <form action={reopenTestNominationAction} className="mt-3">
                               <input type="hidden" name="nominationId" value={nomination.id} />
-                              <button type="submit" className="text-xs font-semibold text-[var(--color-blue)] underline underline-offset-4">Return for changes</button>
+                              <button type="submit" className="text-xs font-semibold text-zinc-300 underline underline-offset-4 hover:text-white">Return for changes</button>
                             </form>
                           ) : null}
                         </div>

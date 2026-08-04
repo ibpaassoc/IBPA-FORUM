@@ -8,7 +8,7 @@ export function TestSubmitButton({ idle, pending = "Working…", danger = false 
     <button
       type="submit"
       disabled={status.pending}
-      className={`inline-flex min-h-10 items-center justify-center rounded-full px-4 text-xs font-semibold uppercase tracking-[0.1em] transition disabled:cursor-wait disabled:opacity-55 ${danger ? "border border-red-200 bg-red-50 text-red-800 hover:bg-red-100" : "bg-[var(--color-blue)] text-white hover:bg-[#4d86ad]"}`}
+      className={`inline-flex min-h-10 items-center justify-center rounded-full px-4 text-[0.7rem] font-semibold uppercase tracking-[0.11em] transition disabled:cursor-wait disabled:opacity-55 ${danger ? "border border-red-400/20 bg-red-400/10 text-red-300 hover:bg-red-400/15" : "border border-white bg-white text-zinc-950 shadow-[0_10px_28px_rgba(255,255,255,0.13)] hover:bg-zinc-200"}`}
     >
       {status.pending ? pending : idle}
     </button>

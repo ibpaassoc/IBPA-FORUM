@@ -15,6 +15,7 @@ import {
   type ActiveJudgeContext,
 } from "@/features/jury/server/scoring-shared";
 import { requireJuryAuth } from "@/features/jury/server/auth";
+import { activateRequestDataScope } from "@/features/test/server/data-scope";
 import {
   buildReviewScoreData,
   calculateReviewTotal,
@@ -143,6 +144,7 @@ export async function getJuryNominationWorkspace({
   category?: string;
   status?: JuryNominationFilter;
 }) {
+  activateRequestDataScope({ dataScope: judge.dataScope });
   const activeCategory =
     category && judge.approvedCategories.includes(category) ? category : undefined;
 
@@ -255,6 +257,7 @@ export async function getJuryNominationReviewDetail({
   judge: ActiveJudgeContext;
   nominationId: string;
 }) {
+  activateRequestDataScope({ dataScope: judge.dataScope });
   const nomination = await prisma.nominationApplication.findFirst({
     where: {
       id: nominationId,
@@ -361,6 +364,7 @@ export async function saveJuryReviewDraft({
   nominationId: string;
   input: DraftReviewInput;
 }) {
+  activateRequestDataScope({ dataScope: judge.dataScope });
   const nomination = await getAccessibleNominationForJury({ nominationId, judge });
   const scoringDefinition = resolveNominationScoringDefinition(
     nomination.scoringSchema,
@@ -440,6 +444,7 @@ export async function submitJuryReview({
   nominationId: string;
   input: SubmitReviewInput;
 }) {
+  activateRequestDataScope({ dataScope: judge.dataScope });
   const nomination = await getAccessibleNominationForJury({ nominationId, judge });
   const scoringDefinition = resolveNominationScoringDefinition(
     nomination.scoringSchema,
@@ -521,44 +526,25 @@ export const getAuthenticatedJuryContext = cache(requireActiveJuryJudge);
 export async function getAuthenticatedJuryApiContext(): Promise<ActiveJudgeContext> {
   const juryUser = await requireJuryAuth();
 
-  const account = await prisma.account.findUnique({
-    where: { id: juryUser.id },
-    include: {
-      juryProfile: {
-        select: {
-          id: true,
-          juryApplicationId: true,
-          fullName: true,
-          professionalTitle: true,
-          approvedCategories: true,
-          approvalStatus: true,
-        },
-      },
-    },
-  });
-
-  if (!account?.juryProfile?.juryApplicationId) {
-    throw new ScoringHttpError(401, "Judge authentication is required.");
-  }
-
-  if (!account.juryProfile.approvalStatus || !isEligibleScoringJudge(account.juryProfile.approvalStatus)) {
+  if (!juryUser.approvalStatus || !isEligibleScoringJudge(juryUser.approvalStatus)) {
     throw new ScoringHttpError(
       403,
       "Only approved judges can access the scoring workspace."
     );
   }
 
-  if (account.juryProfile.approvedCategories.length === 0) {
+  if (juryUser.approvedCategories.length === 0) {
     throw new ScoringHttpError(403, "At least one approved category is required.");
   }
 
   return {
-    accountId: account.id,
-    email: account.email,
-    juryProfileId: account.juryProfile.id,
-    juryApplicationId: account.juryProfile.juryApplicationId,
-    fullName: account.juryProfile.fullName,
-    professionalTitle: account.juryProfile.professionalTitle ?? "",
-    approvedCategories: account.juryProfile.approvedCategories,
+    accountId: juryUser.id,
+    email: juryUser.email,
+    juryProfileId: juryUser.juryProfileId,
+    juryApplicationId: juryUser.juryApplicationId,
+    fullName: juryUser.fullName,
+    professionalTitle: juryUser.professionalTitle,
+    approvedCategories: juryUser.approvedCategories,
+    dataScope: juryUser.dataScope,
   };
 }

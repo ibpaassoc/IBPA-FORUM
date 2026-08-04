@@ -5,7 +5,7 @@ import {
   DashboardSection,
   GlassCard,
   SecondaryButton,
-} from "@/shared/components/admin/DashboardUI";
+} from "@/features/test/components/TestDashboardUI";
 
 export default async function TestDashboardPage() {
   const counts = await getTestDashboardCounts();
@@ -13,25 +13,23 @@ export default async function TestDashboardPage() {
   return (
     <div className="space-y-8">
       <DashboardHeader
-        label="Safe rehearsal space"
-        title="Internal testing"
-        description="Exercise production applicant, jury, email, payment, upload, and validation behavior with records that remain isolated from live operations."
+        label="Overview"
+        title="Test console"
       />
       <TestDashboardMetrics counts={counts} />
-      <DashboardSection title="Quick scenarios" eyebrow="End-to-end setup">
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <DashboardSection title="Workspaces" eyebrow="Choose a flow">
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
           {[
-            ["Applicant scenarios", "No nominations, drafts, incomplete and submitted nominations.", "/test/applicant"],
-            ["Jury scenarios", "Empty queues, assignments, partial and completed reviews.", "/test/jury"],
-            ["Ticket scenarios", "Unpaid and paid tickets with isolated QR credentials.", "/test/tickets"],
-            ["Full flow", "Applicant purchase through nomination and jury review.", "/test/applicant?scenario=full-flow"],
-            ["Email catalog", "Preview or send every real transactional template.", "/test/emails"],
-            ["Cleanup", "Inspect relationships and remove a scenario safely.", "/test/creations"],
+            ["Applicants", "Create and enter applicant accounts.", "/test/applicant"],
+            ["Jury", "Create jurors and review assignments.", "/test/jury"],
+            ["Tickets", "Test payment and QR states.", "/test/tickets"],
+            ["Emails", "Preview transactional templates.", "/test/emails"],
+            ["Creations", "Inspect or remove test data.", "/test/creations"],
           ].map(([title, description, href]) => (
-            <GlassCard key={title} className="flex min-h-48 flex-col justify-between p-5" hover>
+            <GlassCard key={title} className="flex min-h-40 flex-col justify-between p-5" hover>
               <div>
-                <h2 className="font-[var(--font-title-family)] text-2xl font-light">{title}</h2>
-                <p className="mt-2 text-sm leading-6 text-[var(--color-ink-soft)]">{description}</p>
+                <h2 className="font-sans text-lg font-semibold tracking-[-0.025em] text-white">{title}</h2>
+                <p className="mt-2 text-sm leading-6 text-zinc-500">{description}</p>
               </div>
               <SecondaryButton href={href} className="mt-5 self-start">Open</SecondaryButton>
             </GlassCard>

@@ -43,6 +43,9 @@ for (const actionFile of filesUnder("app/test").filter((path) => path.endsWith("
 
 // Central production/test isolation and cross-scope access prevention.
 includes("features/test/server/data-scope.ts", 'storage.getStore() ?? { dataScope: "PRODUCTION" }', "production is the default data scope");
+includes("features/test/server/data-scope.ts", "globalForDataScope.ibpaDataScopeStorage = storage", "all Next.js server bundles share one data-scope store");
+includes("features/test/server/data-scope.ts", "storage.run(context, async () => await work())", "lazy Prisma promises execute before the scoped callback exits");
+includes("features/test/server/data-scope.ts", "{ ...getDataScopeContext(), ...context }", "late actor activation preserves scenario and delivery metadata");
 includes("shared/lib/prisma.ts", 'name: "data-scope-isolation"', "all normal Prisma access passes through the central scope extension");
 includes("shared/lib/prisma.ts", "args.where = scopedWhere(args.where)", "reads, updates, and deletes receive a scope predicate");
 includes("shared/lib/prisma.ts", "scopeNestedWrite", "nested writes automatically inherit scope");
@@ -50,7 +53,9 @@ includes("shared/lib/prisma.ts", "scopeNestedSelection", "nested list reads auto
 includes("features/account/server/accounts.ts", 'activateRequestDataScope({ dataScope: "TEST" })', "signed test actors activate TEST before account data is loaded");
 includes("features/jury/server/auth.ts", "requireAccount()", "jury authentication reuses actor-aware account authorization");
 includes("features/jury/server/reviews.ts", "requireJuryAuth()", "jury API mutations reuse actor-aware jury authorization");
+includes("features/jury/server/reviews.ts", "activateRequestDataScope({ dataScope: judge.dataScope })", "jury review reads and writes preserve a signed test actor's scope");
 includes("features/google-sheets/server/hooks.ts", 'getDataScopeContext().dataScope === "TEST"', "test changes never schedule Google Sheets sync");
+includes("app/test/(protected)/creations/page.tsx", "item.account?.email", "the registry renders orphaned test profiles without crashing");
 
 for (const productionQueryFile of [
   "features/admin/server/admin.ts",
