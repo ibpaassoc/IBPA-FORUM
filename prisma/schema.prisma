@@ -615,6 +615,18 @@ model EmailDeliveryLog {
   @@index([relatedEntityType, relatedEntityId])
 }
 
+model TestAuditLog {
+  id         String   @id @default(cuid())
+  action     String
+  targetType String
+  targetId   String?
+  summary    Json?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([action, targetType])
+}
+
 model SiteSetting {
   key       String   @id
   value     String

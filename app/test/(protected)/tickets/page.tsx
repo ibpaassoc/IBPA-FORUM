@@ -68,4 +68,3 @@ export default async function TestTicketsPage({ searchParams }: { searchParams: 
     </div>
   );
 }
-

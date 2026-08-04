@@ -37,7 +37,6 @@ export async function createApplicantScenarioAction(formData: FormData) {
   const result = await createApplicantScenario(kind);
   redirect(`/test/applicant?created=${result.scenario.id}`);
 }
-
 export async function createJuryScenarioAction(formData: FormData) {
   await requireTestSession();
   const kind = String(formData.get("kind") ?? "") as JuryScenarioKind;
@@ -82,7 +81,6 @@ export async function reassignTestJuryAction(formData: FormData) {
   });
   revalidatePath("/test/jury");
 }
-
 export async function reopenTestNominationAction(formData: FormData) {
   await requireTestSession();
   const nominationId = String(formData.get("nominationId") ?? "");
@@ -107,4 +105,3 @@ export async function reopenTestReviewAction(formData: FormData) {
   });
   revalidatePath("/test/jury");
 }
-

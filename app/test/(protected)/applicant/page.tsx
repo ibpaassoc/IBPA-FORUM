@@ -117,4 +117,3 @@ export default async function TestApplicantPage({
     </div>
   );
 }
-

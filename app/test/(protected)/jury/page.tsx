@@ -111,4 +111,3 @@ export default async function TestJuryPage({
     </div>
   );
 }
-

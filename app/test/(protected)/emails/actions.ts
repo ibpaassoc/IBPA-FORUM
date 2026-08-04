@@ -13,7 +13,6 @@ function parseInputs(value: FormDataEntryValue | null) {
     throw new Error("Template inputs must be a valid JSON object.");
   }
 }
-
 export async function sendTestEmailAction(formData: FormData) {
   await requireTestSession();
   const templateId = String(formData.get("templateId") ?? "");
@@ -35,4 +34,3 @@ export async function sendTestEmailSequenceAction(formData: FormData) {
   }
   redirect(`/test/emails?sequence=${entries.length}&delivered=${delivered}`);
 }
-

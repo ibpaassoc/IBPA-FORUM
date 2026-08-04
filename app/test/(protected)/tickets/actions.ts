@@ -25,7 +25,6 @@ export async function createTestTicketAction(formData: FormData) {
   });
   redirect(`/test/tickets?created=${result.ticketId}`);
 }
-
 export async function completeTestTicketPaymentAction(formData: FormData) {
   await requireTestSession();
   await completeTestTicketPayment(String(formData.get("ticketId") ?? ""));
@@ -47,7 +46,6 @@ export async function testTicketQrAction(formData: FormData) {
   });
   revalidatePath("/test/tickets");
 }
-
 export async function updateTestTicketAction(formData: FormData) {
   await requireTestSession();
   const ticketId = String(formData.get("ticketId") ?? "");
@@ -68,4 +66,3 @@ export async function updateTestTicketAction(formData: FormData) {
   });
   revalidatePath("/test/tickets");
 }
-

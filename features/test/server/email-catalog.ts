@@ -182,7 +182,6 @@ export const EMAIL_TEST_CATALOG: EmailCatalogEntry[] = [
 export function getEmailCatalogEntry(id: string) {
   return EMAIL_TEST_CATALOG.find((entry) => entry.id === id) ?? null;
 }
-
 export async function sendCatalogEmail({
   templateId,
   recipient,
@@ -207,4 +206,3 @@ export async function sendCatalogEmail({
     () => entry.send(inputs),
   );
 }
-

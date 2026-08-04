@@ -14,4 +14,3 @@ export function TestSubmitButton({ idle, pending = "Working…", danger = false 
     </button>
   );
 }
-

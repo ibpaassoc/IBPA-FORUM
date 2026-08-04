@@ -29,7 +29,6 @@ export function getTestApplicantRecords() {
     }),
   );
 }
-
 export function getTestJuryRecords() {
   return runWithDataScope({ dataScope: "TEST" }, async () => {
     const [accounts, nominations] = await Promise.all([
@@ -68,4 +67,3 @@ export function getTestJuryRecords() {
     return { accounts, nominations };
   });
 }
-

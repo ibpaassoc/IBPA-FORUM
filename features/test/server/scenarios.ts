@@ -36,7 +36,6 @@ export type JuryScenarioKind =
 function uniqueEmail(role: "applicant" | "jury") {
   return `test+${role}.${Date.now()}.${crypto.randomBytes(4).toString("hex")}@example.invalid`;
 }
-
 function fakeStripeEvent({
   eventId,
   sessionId,
@@ -295,7 +294,6 @@ export async function createApplicantScenario(kind: ApplicantScenarioKind) {
     throw error;
   }
 }
-
 async function createJuryInScenario({
   scenarioId,
   kind,
@@ -422,4 +420,3 @@ export async function createFullFlowScenario() {
     throw error;
   }
 }
-

@@ -27,4 +27,3 @@ export async function loginToTestSystem(formData: FormData) {
   await createTestSession();
   redirect("/test");
 }
-

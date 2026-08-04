@@ -30,4 +30,3 @@ export default async function ProtectedTestLayout({ children }: { children: Reac
     </DashboardShell>
   );
 }
-
