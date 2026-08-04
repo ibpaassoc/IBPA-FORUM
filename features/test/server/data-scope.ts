@@ -5,6 +5,9 @@ type DataScopeContext = {
   dataScope: DataScope;
   testScenarioId?: string;
   testEmailRecipient?: string;
+  testTemplateType?: string;
+  testEmailCategory?: string;
+  relatedEntity?: { type: string; id: string };
 };
 
 const globalForDataScope = globalThis as typeof globalThis & {

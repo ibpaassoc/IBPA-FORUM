@@ -8,7 +8,7 @@ function getAppUrl() {
   return readEnv(["APP_URL", "FRONTEND_URL", "NEXT_PUBLIC_APP_URL", "NEXTAUTH_URL"]).replace(/\/+$/, "");
 }
 
-function accountSetupTemplate({
+export function accountSetupTemplate({
   fullName,
   setupUrl,
 }: {
@@ -35,7 +35,7 @@ function accountSetupTemplate({
   };
 }
 
-function passwordResetTemplate({ resetUrl }: { resetUrl: string }) {
+export function passwordResetTemplate({ resetUrl }: { resetUrl: string }) {
   const paragraphs = [
     "We received a request to reset the password for your IBPA account.",
     "Click the button below to set a new password. This link is valid for 1 hour.",

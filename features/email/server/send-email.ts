@@ -229,6 +229,9 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
     ...input,
     to: testRecipient,
     subject: `[TEST] ${input.subject}`,
+    templateType: context.testTemplateType ?? input.templateType,
+    category: context.testEmailCategory ?? input.category,
+    relatedEntity: context.relatedEntity ?? input.relatedEntity,
   };
   const result = await sendEmailToProvider(testInput);
   await recordTestDelivery(testInput, intendedRecipient, result);

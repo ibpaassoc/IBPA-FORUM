@@ -19,27 +19,16 @@ export async function sendPaymentAdminNotificationEmail({
   stripeSessionId: string;
   stripePaymentIntentId: string | null;
 }) {
-  const normalizedCurrency = currency.toUpperCase();
-  const formattedAmount = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: normalizedCurrency,
-  }).format(amount / 100);
-  const paragraphs = [
-    `A ${flowLabel.toLowerCase()} payment has been confirmed.`,
-    `Applicant: ${applicantName}`,
-    `Email: ${applicantEmail}`,
-    `Amount: ${formattedAmount}`,
-    `Stripe checkout session: ${stripeSessionId}`,
-    `Stripe payment intent: ${stripePaymentIntentId ?? "Not provided"}`,
-  ];
-
-  const result = await sendEmail({
-    type: "payment",
-    to: EMAIL_PAYMENTS,
-    subject: `IBPA ${flowLabel} Payment Confirmed`,
-    html: wrapEmail(`${flowLabel} payment confirmed`, paragraphs),
-    text: buildTextBody(paragraphs),
+  const template = paymentAdminNotificationTemplate({
+    flowLabel,
+    applicantName,
+    applicantEmail,
+    amount,
+    currency,
+    stripeSessionId,
+    stripePaymentIntentId,
   });
+  const result = await sendEmail({ type: "payment", to: EMAIL_PAYMENTS, ...template });
 
   if (!result.delivered) {
     console.error("Payment admin notification email was not delivered", {
@@ -59,4 +48,42 @@ export async function sendPaymentAdminNotificationEmail({
   }
 
   return result;
+}
+
+export function paymentAdminNotificationTemplate({
+  flowLabel,
+  applicantName,
+  applicantEmail,
+  amount,
+  currency,
+  stripeSessionId,
+  stripePaymentIntentId,
+}: {
+  flowLabel: string;
+  applicantName: string;
+  applicantEmail: string;
+  amount: number;
+  currency: string;
+  stripeSessionId: string;
+  stripePaymentIntentId: string | null;
+}) {
+  const normalizedCurrency = currency.toUpperCase();
+  const formattedAmount = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: normalizedCurrency,
+  }).format(amount / 100);
+  const paragraphs = [
+    `A ${flowLabel.toLowerCase()} payment has been confirmed.`,
+    `Applicant: ${applicantName}`,
+    `Email: ${applicantEmail}`,
+    `Amount: ${formattedAmount}`,
+    `Stripe checkout session: ${stripeSessionId}`,
+    `Stripe payment intent: ${stripePaymentIntentId ?? "Not provided"}`,
+  ];
+
+  return {
+    subject: `IBPA ${flowLabel} Payment Confirmed`,
+    html: wrapEmail(`${flowLabel} payment confirmed`, paragraphs),
+    text: buildTextBody(paragraphs),
+  };
 }

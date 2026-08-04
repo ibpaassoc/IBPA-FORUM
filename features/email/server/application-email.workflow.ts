@@ -13,19 +13,17 @@ export async function sendApplicationReceivedNotificationEmail({
   applicantEmail: string;
   details?: string[];
 }) {
-  const paragraphs = [
-    `A new ${applicationType.toLowerCase()} application has been received.`,
-    `Applicant: ${applicantName}`,
-    `Email: ${applicantEmail}`,
-    ...details,
-  ];
+  const template = applicationReceivedNotificationTemplate({
+    applicationType,
+    applicantName,
+    applicantEmail,
+    details,
+  });
 
   const result = await sendEmail({
     type: "application",
     to: EMAIL_APPLICATIONS,
-    subject: `New IBPA ${applicationType} Application`,
-    html: wrapEmail(`New ${applicationType.toLowerCase()} application`, paragraphs),
-    text: buildTextBody(paragraphs),
+    ...template,
   });
 
   if (!result.delivered) {
@@ -38,4 +36,29 @@ export async function sendApplicationReceivedNotificationEmail({
   }
 
   return result;
+}
+
+export function applicationReceivedNotificationTemplate({
+  applicationType,
+  applicantName,
+  applicantEmail,
+  details = [],
+}: {
+  applicationType: string;
+  applicantName: string;
+  applicantEmail: string;
+  details?: string[];
+}) {
+  const paragraphs = [
+    `A new ${applicationType.toLowerCase()} application has been received.`,
+    `Applicant: ${applicantName}`,
+    `Email: ${applicantEmail}`,
+    ...details,
+  ];
+
+  return {
+    subject: `New IBPA ${applicationType} Application`,
+    html: wrapEmail(`New ${applicationType.toLowerCase()} application`, paragraphs),
+    text: buildTextBody(paragraphs),
+  };
 }
