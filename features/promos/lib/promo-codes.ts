@@ -15,6 +15,13 @@ export const PROMO_DEFINITIONS = {
     discountPercent: 30,
     envName: "STRIPE_TICKETS30_DISCOUNT_ID",
   },
+  TICKETS40: {
+    key: "TICKETS40",
+    defaultKeyword: "TICKETS40",
+    paymentFlow: "TICKETS" as const,
+    discountPercent: 40,
+    envName: "STRIPE_PERM_TICKETS40_DISCOUNT_ID",
+  },
 } as const;
 
 export type PromoCodeKey = keyof typeof PROMO_DEFINITIONS;

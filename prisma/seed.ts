@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import { categoryCatalog } from "@/lib/apply/catalog";
+import { PROMO_DEFINITIONS } from "@/features/promos/lib/promo-codes";
 import { normalizeSslMode } from "@/shared/lib/db-url";
 
 const connectionString = process.env.DATABASE_URL;
@@ -19,35 +20,22 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  await prisma.promoCode.upsert({
-    where: { key: "APPLICATION20" },
-    update: {
-      paymentFlow: "APPLICATIONS",
-      discountPercent: 20,
-    },
-    create: {
-      key: "APPLICATION20",
-      keyword: "APPLICATION20",
-      paymentFlow: "APPLICATIONS",
-      discountPercent: 20,
-      enabled: true,
-    },
-  });
-
-  await prisma.promoCode.upsert({
-    where: { key: "TICKETS30" },
-    update: {
-      paymentFlow: "TICKETS",
-      discountPercent: 30,
-    },
-    create: {
-      key: "TICKETS30",
-      keyword: "TICKETS30",
-      paymentFlow: "TICKETS",
-      discountPercent: 30,
-      enabled: true,
-    },
-  });
+  for (const definition of Object.values(PROMO_DEFINITIONS)) {
+    await prisma.promoCode.upsert({
+      where: { key: definition.key },
+      update: {
+        paymentFlow: definition.paymentFlow,
+        discountPercent: definition.discountPercent,
+      },
+      create: {
+        key: definition.key,
+        keyword: definition.defaultKeyword,
+        paymentFlow: definition.paymentFlow,
+        discountPercent: definition.discountPercent,
+        enabled: true,
+      },
+    });
+  }
 
   for (const definition of categoryCatalog) {
     const category = await prisma.category.upsert({

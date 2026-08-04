@@ -7,6 +7,7 @@ import {
   evaluatePromoRecordForFlow,
   getPromoDefinition,
   normalizePromoKeyword,
+  PROMO_DEFINITIONS,
   type AppliedPromo,
   type PromoValidationCode,
 } from "@/features/promos/lib/promo-codes";
@@ -87,11 +88,7 @@ export async function getPromoCodesForAdmin() {
 
 export async function ensureDefaultPromoCodes() {
   try {
-    for (const definition of Object.values({
-      APPLICATION20: getPromoDefinition("APPLICATION20"),
-      TICKETS30: getPromoDefinition("TICKETS30"),
-    })) {
-      if (!definition) continue;
+    for (const definition of Object.values(PROMO_DEFINITIONS)) {
       await prisma.promoCode.upsert({
         where: { key: definition.key },
         update: {
