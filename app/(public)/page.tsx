@@ -21,7 +21,7 @@ const HomePreviousWinners = dynamic(
 const HomeWhyAttend = dynamic(
   () => import("@/features/home/components/HomeWhyAttend")
 );
-const SponsorsSection = dynamic(
+const HomeSponsors = dynamic(
   () => import("@/features/home/components/HomeSponsors")
 );
 const HomeContactUs = dynamic(
@@ -38,9 +38,9 @@ export default function HomePagePremium() {
       <HomeConversionBlock />
       <HomeSpeakers />
       <HomeDressCode />
+      <HomeSponsors />
       <HomePreviousForum />
       <HomePreviousWinners />
-      <SponsorsSection />
       {/*<HomePartners />*/}
       {/*<HomeWhyAttend />*/}
       <HomeContactUs />

@@ -127,7 +127,7 @@ function SponsorStory({ sponsor, copy }: { sponsor: Sponsor; copy: SponsorsCopy 
   );
 }
 
-export default function SponsorsSection() {
+export default function HomeSponsors() {
   const { t } = useLanguage();
   const copy = t.home.sponsorsSection;
   const sponsors = copy.sponsors;
