@@ -6,6 +6,8 @@ import {
   resolveTo,
   type EmailFromType,
 } from "@/lib/email/config";
+import { getDataScopeContext } from "@/features/test/server/data-scope";
+import { prisma } from "@/shared/lib/prisma";
 
 export type EmailAttachment = {
   filename: string;
@@ -22,6 +24,9 @@ export type SendEmailInput = {
   text?: string;
   replyTo?: string;
   attachments?: EmailAttachment[];
+  templateType?: string;
+  category?: string;
+  relatedEntity?: { type: string; id: string };
 };
 
 export type SendEmailResult = {
@@ -60,7 +65,7 @@ function getNormalizedEmailPayload(input: SendEmailInput) {
   };
 }
 
-export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult> {
+async function sendEmailToProvider(input: SendEmailInput): Promise<SendEmailResult> {
   const payload = getNormalizedEmailPayload(input);
 
   if (!payload.from) {
@@ -159,4 +164,76 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
     recipient: payload.to,
     providerId: result.data.id,
   };
+}
+
+function inferredTemplateType(input: SendEmailInput) {
+  if (input.templateType) return input.templateType;
+  return input.subject
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, 100) || "transactional_email";
+}
+
+async function recordTestDelivery(
+  input: SendEmailInput,
+  intendedRecipient: string,
+  result: SendEmailResult,
+) {
+  try {
+    await prisma.emailDeliveryLog.create({
+      data: {
+        templateType: inferredTemplateType(input),
+        category: input.category ?? input.type,
+        subject: input.subject,
+        recipient: result.recipient ?? "",
+        intendedRecipient,
+        providerId: result.providerId,
+        delivered: result.delivered,
+        errorCode: result.reason,
+        errorMessage: result.error,
+        providerResponse: JSON.parse(JSON.stringify(result)),
+        relatedEntityType: input.relatedEntity?.type,
+        relatedEntityId: input.relatedEntity?.id,
+      },
+    });
+  } catch (error) {
+    console.error("Failed to record isolated test email delivery.", error);
+  }
+}
+
+export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult> {
+  const context = getDataScopeContext();
+  if (context.dataScope !== "TEST") {
+    return sendEmailToProvider(input);
+  }
+
+  const intendedRecipient = input.to;
+  const testRecipient =
+    context.testEmailRecipient?.trim() || process.env.TEST_EMAIL_RECIPIENT?.trim();
+  if (!testRecipient) {
+    const result: SendEmailResult = {
+      delivered: false,
+      reason: "email_test_missing",
+      error: "TEST_EMAIL_RECIPIENT is not configured for isolated test email delivery.",
+    };
+    await recordTestDelivery(
+      { ...input, subject: `[TEST] ${input.subject}` },
+      intendedRecipient,
+      result,
+    );
+    return result;
+  }
+
+  const testInput = {
+    ...input,
+    to: testRecipient,
+    subject: `[TEST] ${input.subject}`,
+    templateType: context.testTemplateType ?? input.templateType,
+    category: context.testEmailCategory ?? input.category,
+    relatedEntity: context.relatedEntity ?? input.relatedEntity,
+  };
+  const result = await sendEmailToProvider(testInput);
+  await recordTestDelivery(testInput, intendedRecipient, result);
+  return result;
 }

@@ -1,16 +1,14 @@
 import { get } from "@vercel/blob";
-import { getAppSession } from "@/auth";
+import { requireApplicantAccount } from "@/features/account/server/accounts";
+import { activateRequestDataScope } from "@/features/test/server/data-scope";
 import { prisma } from "@/shared/lib/prisma";
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ fileId: string }> },
 ) {
-  const session = await getAppSession();
-
-  if (session?.user.role !== "APPLICANT" || !session.user.applicantProfileId) {
-    return new Response("Unauthorized", { status: 401 });
-  }
+  const { account, applicantProfile } = await requireApplicantAccount();
+  activateRequestDataScope({ dataScope: account.dataScope });
 
   const { fileId } = await params;
   const fileRecord = await prisma.nominationFile.findFirst({
@@ -18,7 +16,7 @@ export async function GET(
       id: fileId,
       deletedAt: null,
       nominationApplication: {
-        applicantProfileId: session.user.applicantProfileId,
+        applicantProfileId: applicantProfile.id,
         deletedAt: null,
       },
     },

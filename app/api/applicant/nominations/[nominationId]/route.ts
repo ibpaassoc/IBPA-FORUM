@@ -12,6 +12,7 @@ import type {
 import { requireEditableNomination } from "@/features/account/server/nomination-guards";
 import { prisma } from "@/shared/lib/prisma";
 import { syncApplicationOnChange } from "@/features/google-sheets";
+import { activateRequestDataScope } from "@/features/test/server/data-scope";
 
 type RequestBody = {
   action?: "draft" | "submit";
@@ -149,6 +150,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ nom
 
   try {
     const { nomination } = await requireEditableNomination(nominationId);
+    activateRequestDataScope({ dataScope: nomination.dataScope });
     if (nomination.paymentStatus !== "PAID") {
       return NextResponse.json({ errorCode: "VALIDATION", message: "Only paid nominations can be edited.", requestId }, { status: 409, headers: { "X-Request-Id": requestId } });
     }

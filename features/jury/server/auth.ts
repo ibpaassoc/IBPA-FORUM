@@ -1,6 +1,7 @@
 import "server-only";
+import type { DataScope } from "@prisma/client";
 import { redirect } from "next/navigation";
-import { getAppSession } from "@/auth";
+import { requireAccount } from "@/features/account/server/accounts";
 import {
   createPasswordHash,
   isStrongPassword,
@@ -17,6 +18,9 @@ export type JuryAuthUser = {
   juryApplicationId: string;
   approvedCategories: string[];
   approvalStatus: "SUBMITTED" | "ADDITIONAL_INFO_REQUIRED" | "APPROVED" | "REJECTED" | "PAID" | null;
+  fullName: string;
+  professionalTitle: string;
+  dataScope: DataScope;
 };
 
 export function normalizeJuryEmail(email: string) {
@@ -82,37 +86,26 @@ export async function validatePasswordResetToken(token: string): Promise<{
 }
 
 export async function requireJuryAuth() {
-  const session = await getAppSession();
-
-  if (!session?.user?.accountId || session.user.role !== "JURY") {
+  const authenticatedAccount = await requireAccount();
+  if (authenticatedAccount.role !== "JURY") {
     redirect("/account/login");
   }
 
-  const account = await prisma.account.findUnique({
-    where: { id: session.user.accountId },
-    include: {
-      juryProfile: {
-        select: {
-          id: true,
-          juryApplicationId: true,
-          approvedCategories: true,
-          approvalStatus: true,
-        },
-      },
-    },
-  });
-
-  if (!account?.juryProfile?.juryApplicationId) {
+  const profile = authenticatedAccount.juryProfile;
+  if (!profile?.juryApplicationId) {
     redirect("/");
   }
 
   return {
-    id: account.id,
-    email: account.email,
-    juryProfileId: account.juryProfile.id,
-    juryApplicationId: account.juryProfile.juryApplicationId,
-    approvedCategories: account.juryProfile.approvedCategories,
-    approvalStatus: account.juryProfile.approvalStatus,
+    id: authenticatedAccount.id,
+    email: authenticatedAccount.email,
+    juryProfileId: profile.id,
+    juryApplicationId: profile.juryApplicationId,
+    approvedCategories: profile.approvedCategories,
+    approvalStatus: profile.approvalStatus,
+    fullName: profile.fullName,
+    professionalTitle: profile.professionalTitle ?? "",
+    dataScope: authenticatedAccount.dataScope,
   } satisfies JuryAuthUser;
 }
 

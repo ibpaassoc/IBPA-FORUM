@@ -4,9 +4,11 @@ import {
   ApplicantPurchaseError,
   createAccountApplicantNominationCheckout,
 } from "@/features/applications/server/purchase-workflow";
+import { activateRequestDataScope } from "@/features/test/server/data-scope";
 
 export async function POST(request: Request) {
-  const { applicantProfile } = await requireApplicantAccount();
+  const { account, applicantProfile } = await requireApplicantAccount();
+  activateRequestDataScope({ dataScope: account.dataScope });
   const body = (await request.json().catch(() => ({}))) as {
     awardIds?: unknown;
     promoCode?: unknown;

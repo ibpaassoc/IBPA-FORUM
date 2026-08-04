@@ -25,6 +25,7 @@ export type ActiveJudgeContext = {
   fullName: string;
   professionalTitle: string;
   approvedCategories: string[];
+  dataScope: "PRODUCTION" | "TEST";
 };
 
 export function isEligibleScoringJudge(status: string) {
@@ -124,34 +125,19 @@ export function formatAverageScore(value: number | null) {
 export async function requireActiveJuryJudge() {
   const juryUser = await requireJuryAuth();
 
-  const juryProfile = await prisma.juryProfile.findUnique({
-    where: { id: juryUser.juryProfileId },
-    select: {
-      id: true,
-      juryApplicationId: true,
-      fullName: true,
-      professionalTitle: true,
-      approvedCategories: true,
-      approvalStatus: true,
-    },
-  });
-
-  if (!juryProfile?.juryApplicationId) {
-    redirect("/");
-  }
-
-  if (!juryProfile.approvalStatus || !isEligibleScoringJudge(juryProfile.approvalStatus)) {
+  if (!juryUser.approvalStatus || !isEligibleScoringJudge(juryUser.approvalStatus)) {
     redirect("/");
   }
 
   return {
     accountId: juryUser.id,
     email: juryUser.email,
-    juryProfileId: juryProfile.id,
-    juryApplicationId: juryProfile.juryApplicationId,
-    fullName: juryProfile.fullName,
-    professionalTitle: juryProfile.professionalTitle ?? "",
-    approvedCategories: juryProfile.approvedCategories,
+    juryProfileId: juryUser.juryProfileId,
+    juryApplicationId: juryUser.juryApplicationId,
+    fullName: juryUser.fullName,
+    professionalTitle: juryUser.professionalTitle,
+    approvedCategories: juryUser.approvedCategories,
+    dataScope: juryUser.dataScope,
   } satisfies ActiveJudgeContext;
 }
 

@@ -2,6 +2,7 @@ import "server-only";
 
 import { notFound } from "next/navigation";
 import { requireApplicantAccount } from "@/features/account/server/accounts";
+import { activateRequestDataScope } from "@/features/test/server/data-scope";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import { prisma } from "@/shared/lib/prisma";
 
@@ -60,7 +61,8 @@ export async function getApplicantNominationNavigation(
 }
 
 export async function requireOwnedNomination(nominationId: string) {
-  const { applicantProfile } = await requireApplicantAccount();
+  const { account, applicantProfile } = await requireApplicantAccount();
+  activateRequestDataScope({ dataScope: account.dataScope });
 
   const nomination = await prisma.nominationApplication.findFirst({
     where: {

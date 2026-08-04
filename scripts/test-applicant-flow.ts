@@ -228,9 +228,9 @@ assert(has(saveNominationRoute, "deletedAt"), "file replacement uses soft-delete
 assert(has(saveNominationRoute, "categoryFieldConfigs"), "empty video selections also replace stored nomination files");
 
 const applicantFileRoute = read("app/api/account/applicant/nomination-files/[fileId]/route.ts");
-assert(has(applicantFileRoute, "getAppSession"), "saved applicant files require account auth");
+assert(has(applicantFileRoute, "requireApplicantAccount"), "saved applicant files require actor-aware applicant auth");
 assert(
-  has(applicantFileRoute, "applicantProfileId: session.user.applicantProfileId"),
+  has(applicantFileRoute, "applicantProfileId: applicantProfile.id"),
   "saved applicant files enforce nomination ownership"
 );
 assert(has(applicantFileRoute, "access: \"private\""), "saved applicant files are streamed from private Blob storage");

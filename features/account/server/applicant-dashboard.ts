@@ -8,9 +8,11 @@ import {
 } from "@/features/applications/server/deadlines";
 import { generateTicketQRDataUrl } from "@/features/tickets/server/ticket-qr";
 import { prisma } from "@/shared/lib/prisma";
+import { activateRequestDataScope } from "@/features/test/server/data-scope";
 
 export async function getApplicantDashboardData() {
   const { account, applicantProfile } = await requireApplicantAccount();
+  activateRequestDataScope({ dataScope: account.dataScope });
 
   const [nominations, tickets, deadline, closedAt] = await Promise.all([
     prisma.nominationApplication.findMany({

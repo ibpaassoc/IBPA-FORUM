@@ -4,6 +4,7 @@ import {
   requireOwnedNomination,
 } from "@/features/account/server/nomination-guards";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
+import { activateRequestDataScope } from "@/features/test/server/data-scope";
 
 export default async function ApplicantNominationPage({
   params,
@@ -12,6 +13,7 @@ export default async function ApplicantNominationPage({
 }) {
   const { nominationId } = await params;
   const { nomination, applicantProfile } = await requireOwnedNomination(nominationId);
+  activateRequestDataScope({ dataScope: nomination.dataScope });
   const nominationNavigation = await getApplicantNominationNavigation(applicantProfile.id);
   const locked = nomination.lockedAt !== null || nomination.status === "LOCKED";
   const scoreVisible = nomination.scoresReleasedAt !== null;
