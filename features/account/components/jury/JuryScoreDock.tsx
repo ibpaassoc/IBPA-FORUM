@@ -53,6 +53,7 @@ export default function JuryScoreDock({
   const sheetId = useId();
   const titleId = `${sheetId}-title`;
   const criterion = scoring.criteria[index] ?? scoring.criteria[0];
+  const confirmOpen = scoring.confirmOpen;
 
   useEffect(() => {
     if (!open) return;
@@ -64,6 +65,9 @@ export default function JuryScoreDock({
     });
 
     function onKeyDown(event: KeyboardEvent) {
+      // The submit confirmation opens above the sheet and runs its own focus
+      // handling; stay out of its way while it is up.
+      if (confirmOpen) return;
       if (event.key === "Escape") {
         event.preventDefault();
         onClose();
@@ -92,7 +96,7 @@ export default function JuryScoreDock({
       document.body.style.overflow = previousOverflow;
       restoreTarget?.focus({ preventScroll: true });
     };
-  }, [onClose, open]);
+  }, [confirmOpen, onClose, open]);
 
   if (!criterion) return null;
 

@@ -62,6 +62,7 @@ export default function JuryAccountSidebar({
   const { t } = useLanguage();
   const nav = t.account.jury.nav;
   const initial = juryName.slice(0, 1).toUpperCase();
+  const onReviewWorkspace = /^\/account\/jury\/nominations\/[^/]+$/.test(pathname);
 
   const navItems = navItemDefs.map((item) => ({
     href: item.href,
@@ -125,7 +126,19 @@ export default function JuryAccountSidebar({
         </div>
       </aside>
 
-      <FloatingActionButton label={nav.openMenu} icon={MoreHorizontal} onClick={() => setDrawerOpen(true)} className="lg:hidden" side="left" />
+      <FloatingActionButton
+        label={nav.openMenu}
+        icon={MoreHorizontal}
+        onClick={() => setDrawerOpen(true)}
+        // The review workspace pins a full-width score dock to the bottom of
+        // the screen on phones; lift the menu clear of it there.
+        className={
+          onReviewWorkspace
+            ? "bottom-[calc(6.75rem+env(safe-area-inset-bottom))] z-[72] lg:hidden lg:bottom-7"
+            : "lg:hidden"
+        }
+        side="left"
+      />
 
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} title={nav.drawerTitle}>
         <div className="space-y-4">
