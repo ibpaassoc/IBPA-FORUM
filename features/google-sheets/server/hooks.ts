@@ -24,7 +24,7 @@ import { getDataScopeContext } from "@/features/test/server/data-scope";
  */
 
 function scheduleSheetSync(label: string, run: () => Promise<void>): void {
-  if (getDataScopeContext().dataScope === "TEST") return;
+  if (getDataScopeContext().dataScope !== "PRODUCTION") return;
   if (!isGoogleSheetsConfigured()) return;
 
   const task = async () => {

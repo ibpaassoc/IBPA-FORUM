@@ -3,7 +3,7 @@ import "server-only";
 import type { AccountRole, Prisma } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { getAppSession } from "@/auth";
-import { prisma } from "@/shared/lib/prisma";
+import { prisma, unscopedPrisma } from "@/shared/lib/prisma";
 import { normalizeAccountEmail } from "@/features/account/server/password";
 import { createAccountSetupToken } from "@/features/account/server/tokens";
 import { sendAccountSetupEmail } from "@/features/account/server/emails";
@@ -33,6 +33,40 @@ export async function findAccountByEmail(email: string) {
       },
     },
   });
+}
+
+/**
+ * Credentials and password-reset requests begin before a request scope is
+ * known. Account email is globally unique, so this guarded lookup may discover
+ * PRODUCTION or DEV actors, while TEST actors remain accessible only through
+ * the signed test-console impersonation flow.
+ */
+export async function findAccountForPublicAuth(email: string) {
+  const account = await unscopedPrisma.account.findUnique({
+    where: { email: normalizeAccountEmail(email) },
+    include: {
+      applicantProfile: { select: { id: true, fullName: true } },
+      juryProfile: {
+        select: {
+          id: true,
+          juryApplicationId: true,
+          fullName: true,
+          expertiseAreas: true,
+          approvalStatus: true,
+        },
+      },
+    },
+  });
+
+  return account?.dataScope === "TEST" ? null : account;
+}
+
+export async function findAccountForPublicSession(accountId: string) {
+  const account = await unscopedPrisma.account.findUnique({
+    where: { id: accountId },
+    select: { id: true, role: true, status: true, deletedAt: true, dataScope: true },
+  });
+  return account?.dataScope === "TEST" ? null : account;
 }
 
 export async function upsertApplicantAccountForApplication(
@@ -294,6 +328,8 @@ export async function requireAccount() {
   if (!session?.user?.accountId) {
     redirect("/account/login");
   }
+
+  activateRequestDataScope({ dataScope: session.user.dataScope ?? "PRODUCTION" });
 
   const account = await prisma.account.findUnique({
     where: { id: session.user.accountId },

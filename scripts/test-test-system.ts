@@ -54,7 +54,7 @@ includes("features/account/server/accounts.ts", 'activateRequestDataScope({ data
 includes("features/jury/server/auth.ts", "requireAccount()", "jury authentication reuses actor-aware account authorization");
 includes("features/jury/server/reviews.ts", "requireJuryAuth()", "jury API mutations reuse actor-aware jury authorization");
 includes("features/jury/server/reviews.ts", "activateRequestDataScope({ dataScope: judge.dataScope })", "jury review reads and writes preserve a signed test actor's scope");
-includes("features/google-sheets/server/hooks.ts", 'getDataScopeContext().dataScope === "TEST"', "test changes never schedule Google Sheets sync");
+includes("features/google-sheets/server/hooks.ts", 'getDataScopeContext().dataScope !== "PRODUCTION"', "non-production changes never schedule Google Sheets sync");
 includes("app/test/(protected)/creations/page.tsx", "item.account?.email", "the registry renders orphaned test profiles without crashing");
 
 for (const productionQueryFile of [
@@ -80,9 +80,18 @@ const unscopedConsumers = filesUnder("features")
   .filter((path) => read(path).includes("unscopedPrisma"));
 assert.deepEqual(
   unscopedConsumers.sort(),
-  ["features/test/server/cleanup.ts", "features/test/server/registry.ts"],
-  "the unscoped database escape hatch is limited to guarded cleanup and the test-only registry",
+  [
+    "features/account/server/accounts.ts",
+    "features/account/server/tokens.ts",
+    "features/test/server/cleanup.ts",
+    "features/test/server/registry.ts",
+  ],
+  "the unscoped database escape hatch is limited to guarded scope discovery and isolated-data management",
 );
+includes("features/account/server/accounts.ts", 'account?.dataScope === "TEST" ? null : account', "public credentials never discover TEST actors");
+includes("app/account/login/page.tsx", "findAccountForPublicSession", "stale or test-only sessions cannot trap the public login route in a redirect loop");
+includes("features/account/server/accounts.ts", 'session.user.dataScope ?? "PRODUCTION"', "normal account sessions activate their authoritative data scope");
+includes("features/account/server/tokens.ts", "activateRequestDataScope({ dataScope: account.dataScope })", "setup links restore the owning account scope");
 
 // The production applicant and jury validation/state-transition services are actually reused.
 includes("features/test/server/scenarios.ts", "validateNominationBlockB", "scenario generation calls the production nomination validator");

@@ -1,8 +1,9 @@
+import type { DataScope } from "@prisma/client";
 import type { DefaultSession, NextAuthOptions } from "next-auth";
 import { getServerSession } from "next-auth";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { findAccountByEmail } from "@/features/account/server/accounts";
+import { findAccountForPublicAuth } from "@/features/account/server/accounts";
 import { normalizeAccountEmail, verifyPasswordHash } from "@/features/account/server/password";
 
 declare module "next-auth" {
@@ -11,6 +12,7 @@ declare module "next-auth" {
       accountId: string;
       email: string;
       role: "APPLICANT" | "JURY";
+      dataScope: DataScope;
       applicantProfileId?: string;
       juryProfileId?: string;
     };
@@ -21,6 +23,7 @@ declare module "next-auth" {
     accountId: string;
     email: string;
     role: "APPLICANT" | "JURY";
+    dataScope: DataScope;
     applicantProfileId?: string;
     juryProfileId?: string;
   }
@@ -31,6 +34,7 @@ declare module "next-auth/jwt" {
     accountId?: string;
     email?: string;
     role?: "APPLICANT" | "JURY";
+    dataScope?: DataScope;
     applicantProfileId?: string;
     juryProfileId?: string;
   }
@@ -68,7 +72,7 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const account = await findAccountByEmail(email);
+        const account = await findAccountForPublicAuth(email);
 
         if (
           !account ||
@@ -90,6 +94,7 @@ export const authOptions: NextAuthOptions = {
           accountId: account.id,
           email: account.email,
           role: account.role,
+          dataScope: account.dataScope,
           applicantProfileId: account.applicantProfile?.id,
           juryProfileId: account.juryProfile?.id,
         };
@@ -102,6 +107,7 @@ export const authOptions: NextAuthOptions = {
         token.accountId = user.accountId;
         token.email = user.email;
         token.role = user.role;
+        token.dataScope = user.dataScope;
         token.applicantProfileId = user.applicantProfileId;
         token.juryProfileId = user.juryProfileId;
       }
@@ -118,6 +124,7 @@ export const authOptions: NextAuthOptions = {
         accountId: token.accountId,
         email: token.email,
         role: token.role,
+        dataScope: token.dataScope ?? "PRODUCTION",
         applicantProfileId: token.applicantProfileId,
         juryProfileId: token.juryProfileId,
       };

@@ -2,6 +2,8 @@
 
 import { prisma } from "@/shared/lib/prisma";
 import { normalizeAccountEmail } from "@/features/account/server/password";
+import { findAccountForPublicAuth } from "@/features/account/server/accounts";
+import { activateRequestDataScope } from "@/features/test/server/data-scope";
 import { createPasswordResetToken } from "@/features/account/server/tokens";
 import { sendAccountPasswordResetEmail } from "@/features/account/server/emails";
 
@@ -20,12 +22,14 @@ export async function forgotPasswordAction(
     return { error: "Email is required." };
   }
 
-  const account = await prisma.account.findUnique({ where: { email } });
+  const account = await findAccountForPublicAuth(email);
 
   // Always return success to prevent email enumeration attacks.
   if (!account || account.status === "DISABLED") {
     return { sent: true };
   }
+
+  activateRequestDataScope({ dataScope: account.dataScope });
 
   const token = await createPasswordResetToken(account.id);
   const result = await sendAccountPasswordResetEmail({ to: account.email, token: token.token });
