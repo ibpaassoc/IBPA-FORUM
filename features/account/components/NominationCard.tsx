@@ -62,7 +62,7 @@ export function NominationProgressBar({
 
   return (
     <div className={clsx("min-w-0", className)}>
-      <div className="flex items-center justify-between text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">
+      <div className="flex items-center justify-between text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">
         <span>{t.account.card.progress}</span>
         <span className="text-[var(--color-ink)]">{clamped}%</span>
       </div>
@@ -71,7 +71,7 @@ export function NominationProgressBar({
         aria-valuenow={clamped}
         aria-valuemin={0}
         aria-valuemax={100}
-        aria-label={`${clamped}%`}
+        aria-label={`${t.account.card.progress}: ${clamped}%`}
         className="mt-2 h-2 overflow-hidden rounded-full bg-[rgba(3,2,19,0.08)]"
       >
         {shouldReduceMotion ? (
@@ -89,8 +89,12 @@ export function NominationProgressBar({
   );
 }
 
+/**
+ * Nomination summary card. The whole card is a single link so the row is
+ * comfortably tappable on phones, while the action pill keeps the desktop
+ * "Start / Continue / View" affordance visible.
+ */
 export default function NominationCard({ nomination }: { nomination: NominationCardData }) {
-  const shouldReduceMotion = useReducedMotion();
   const { t } = useLanguage();
   const card = t.account.card;
   const tone = nominationTone(nomination);
@@ -107,18 +111,20 @@ export default function NominationCard({ nomination }: { nomination: NominationC
         : card.continue;
 
   return (
-    <motion.article
-      className="relative overflow-hidden rounded-[28px] border border-[rgba(114,160,193,0.18)] bg-white/76 p-4 shadow-[0_22px_70px_rgba(37,42,45,0.075)] backdrop-blur-2xl md:p-5"
-      whileHover={shouldReduceMotion ? undefined : { y: -4, scale: 1.004 }}
-      transition={{ duration: 0.45, ease }}
+    <Link
+      href={`/account/applicant/nominations/${nomination.id}`}
+      className="group relative block overflow-hidden rounded-[26px] border border-[rgba(114,160,193,0.18)] bg-white/76 p-4 shadow-[0_18px_54px_rgba(37,42,45,0.06)] backdrop-blur-2xl transition duration-300 hover:-translate-y-1 hover:border-[var(--color-blue)] hover:shadow-[0_24px_66px_rgba(37,42,45,0.09)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.22)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:p-5"
     >
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0 flex-1 basis-60">
-          <h3 className="font-[var(--font-title-family)] text-[1.45rem] font-light leading-snug text-[var(--color-ink)]">
+      <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
+        <div className="min-w-0 flex-1 basis-52">
+          <p className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--color-blue)]">
+            {nomination.categoryName}
+          </p>
+          <h3 className="mt-1 font-[var(--font-title-family)] text-[1.3rem] font-light leading-snug text-[var(--color-ink)] sm:text-[1.5rem]">
             {nomination.awardName}
           </h3>
-          <p className="mt-1 text-sm text-[var(--color-ink-soft)]">
-            {nomination.categoryName} · {card.updated} {nomination.updatedAtLabel}
+          <p className="mt-1 text-[0.8rem] text-[var(--color-ink-soft)]">
+            {card.updated} {nomination.updatedAtLabel}
           </p>
         </div>
         <NominationStatusBadge tone={tone}>{statusLabel}</NominationStatusBadge>
@@ -128,20 +134,21 @@ export default function NominationCard({ nomination }: { nomination: NominationC
         <NominationProgressBar value={nomination.completionPercentage} tone={tone} />
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
         <p className="text-[0.78rem] leading-5 text-[var(--color-ink-soft)]">
           {nomination.missingRequiredCount === 0
             ? card.allComplete
             : `${card.missingLabel} ${nomination.missingRequiredCount}`}
         </p>
-        <Link
-          href={`/account/applicant/nominations/${nomination.id}`}
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[rgba(114,160,193,0.22)] bg-white/78 px-5 py-2.5 text-[0.72rem] font-semibold uppercase leading-none tracking-[0.12em] text-[var(--color-ink)] shadow-[0_12px_28px_rgba(37,42,45,0.055)] backdrop-blur-xl transition duration-300 hover:-translate-y-0.5 hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-wash)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.22)]"
-        >
+        <span className="inline-flex min-h-9 items-center justify-center gap-2 rounded-full border border-[rgba(114,160,193,0.22)] bg-white/78 px-4 text-[0.7rem] font-semibold uppercase leading-none tracking-[0.12em] text-[var(--color-ink)] shadow-[0_10px_24px_rgba(37,42,45,0.05)] transition duration-300 group-hover:border-[var(--color-blue)] group-hover:bg-[var(--color-blue-wash)]">
           {actionLabel}
-          <ArrowRight aria-hidden size={15} />
-        </Link>
+          <ArrowRight
+            aria-hidden
+            size={15}
+            className="transition duration-300 group-hover:translate-x-0.5 motion-reduce:transition-none"
+          />
+        </span>
       </div>
-    </motion.article>
+    </Link>
   );
 }
