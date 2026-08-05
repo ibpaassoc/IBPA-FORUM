@@ -25,7 +25,7 @@ export type ActiveJudgeContext = {
   fullName: string;
   professionalTitle: string;
   approvedCategories: string[];
-  dataScope: "PRODUCTION" | "TEST";
+  dataScope: "PRODUCTION" | "TEST" | "DEV";
 };
 
 export function isEligibleScoringJudge(status: string) {

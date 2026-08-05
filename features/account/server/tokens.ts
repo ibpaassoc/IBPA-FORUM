@@ -2,7 +2,8 @@ import "server-only";
 
 import { createHash, randomBytes } from "node:crypto";
 import type { AccountSetupTokenPurpose, Prisma } from "@prisma/client";
-import { prisma } from "@/shared/lib/prisma";
+import { prisma, unscopedPrisma } from "@/shared/lib/prisma";
+import { activateRequestDataScope } from "@/features/test/server/data-scope";
 
 export const SETUP_TOKEN_TTL_MS = 3 * 24 * 60 * 60 * 1000;
 export const PASSWORD_RESET_TOKEN_TTL_MS = 60 * 60 * 1000;
@@ -121,17 +122,19 @@ export async function validateAccountToken({
   const tokenHash = hashAccountToken(token);
 
   if (purpose === "SETUP") {
-    const account = await prisma.account.findUnique({
+    const account = await unscopedPrisma.account.findUnique({
       where: { setupTokenHash: tokenHash },
       select: {
         id: true,
         email: true,
+        dataScope: true,
         setupTokenExpiresAt: true,
         setupTokenUsedAt: true,
       },
     });
 
     if (account) {
+      activateRequestDataScope({ dataScope: account.dataScope });
       if (account.setupTokenUsedAt) {
         return { valid: false as const };
       }
@@ -155,9 +158,9 @@ export async function validateAccountToken({
     }
   }
 
-  const record = await prisma.accountSetupToken.findUnique({
+  const record = await unscopedPrisma.accountSetupToken.findUnique({
     where: { tokenHash },
-    include: { account: true },
+    include: { account: { select: { id: true, email: true, dataScope: true } } },
   });
 
   if (!record || record.purpose !== purpose || record.usedAt) {
@@ -167,6 +170,8 @@ export async function validateAccountToken({
   if (record.expiresAt < new Date()) {
     return { valid: false as const, expired: true as const };
   }
+
+  activateRequestDataScope({ dataScope: record.dataScope });
 
   return {
     valid: true as const,

@@ -387,6 +387,7 @@ model NominationFile {
 enum DataScope {
   PRODUCTION
   TEST
+  DEV
 }
 
 enum NominationStatus {

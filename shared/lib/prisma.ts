@@ -278,7 +278,7 @@ export const prisma = basePrisma.$extends({
   },
 }) as unknown as PrismaClient;
 
-// This escape hatch is intentionally not re-exported from lib/prisma. It exists
-// only for guarded test cleanup and isolation verification, where callers must
-// prove the target scope explicitly before mutating anything.
+// This escape hatch is intentionally not re-exported from lib/prisma. It is
+// reserved for guarded scope discovery before authentication, plus isolated
+// TEST/DEV management where callers prove the target scope explicitly.
 export const unscopedPrisma = basePrisma;
