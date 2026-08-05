@@ -613,6 +613,72 @@ textarea {
   scrollbar-width: none;
 }
 
+/* Jury scorecard range input — light track, blue fill, generous thumb so the
+   control stays usable on touch. */
+.jury-score-slider {
+  appearance: none;
+  -webkit-appearance: none;
+  height: 1.5rem;
+  background: transparent;
+  cursor: pointer;
+}
+
+.jury-score-slider:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.jury-score-slider::-webkit-slider-runnable-track {
+  height: 0.375rem;
+  border-radius: 999px;
+  background: rgba(114, 160, 193, 0.18);
+}
+
+.jury-score-slider::-moz-range-track {
+  height: 0.375rem;
+  border-radius: 999px;
+  background: rgba(114, 160, 193, 0.18);
+}
+
+.jury-score-slider::-moz-range-progress {
+  height: 0.375rem;
+  border-radius: 999px;
+  background: var(--color-blue);
+}
+
+.jury-score-slider::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  margin-top: -0.3125rem;
+  height: 1rem;
+  width: 1rem;
+  border-radius: 999px;
+  border: 2px solid #fff;
+  background: var(--color-blue);
+  box-shadow: 0 4px 12px rgba(114, 160, 193, 0.4);
+}
+
+.jury-score-slider::-moz-range-thumb {
+  height: 1rem;
+  width: 1rem;
+  border-radius: 999px;
+  border: 2px solid #fff;
+  background: var(--color-blue);
+  box-shadow: 0 4px 12px rgba(114, 160, 193, 0.4);
+}
+
+.jury-score-slider:focus-visible {
+  outline: none;
+}
+
+.jury-score-slider:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px rgba(114, 160, 193, 0.35);
+}
+
+.jury-score-slider:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 4px rgba(114, 160, 193, 0.35);
+}
+
 .full-bleed-image {
   object-position: var(--full-bleed-desktop-position, center);
 }
