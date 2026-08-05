@@ -84,6 +84,7 @@ assert.deepEqual(
     "features/account/server/accounts.ts",
     "features/account/server/tokens.ts",
     "features/test/server/cleanup.ts",
+    "features/test/server/dev-accounts.ts",
     "features/test/server/registry.ts",
   ],
   "the unscoped database escape hatch is limited to guarded scope discovery and isolated-data management",
@@ -92,6 +93,7 @@ includes("features/account/server/accounts.ts", 'account?.dataScope === "TEST" ?
 includes("app/account/login/page.tsx", "findAccountForPublicSession", "stale or test-only sessions cannot trap the public login route in a redirect loop");
 includes("features/account/server/accounts.ts", 'session.user.dataScope ?? "PRODUCTION"', "normal account sessions activate their authoritative data scope");
 includes("features/account/server/tokens.ts", "activateRequestDataScope({ dataScope: account.dataScope })", "setup links restore the owning account scope");
+includes("features/test/server/dev-accounts.ts", 'runWithDataScope({ dataScope: "DEV" }', "DEV account management is pinned to DEV scope");
 
 // The production applicant and jury validation/state-transition services are actually reused.
 includes("features/test/server/scenarios.ts", "validateNominationBlockB", "scenario generation calls the production nomination validator");

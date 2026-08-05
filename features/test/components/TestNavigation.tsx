@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Beaker, FileSearch, Mail, Scale, Ticket, UserRoundPlus } from "lucide-react";
+import { Beaker, Code2, FileSearch, Mail, Scale, Ticket, UserRoundPlus } from "lucide-react";
 import clsx from "clsx";
 
 const items = [
   { href: "/test", label: "Dashboard", icon: Beaker },
   { href: "/test/applicant", label: "Applicants", icon: UserRoundPlus },
   { href: "/test/jury", label: "Jury", icon: Scale },
+  { href: "/test/dev-accounts", label: "DEV accounts", icon: Code2 },
   { href: "/test/emails", label: "Emails", icon: Mail },
   { href: "/test/tickets", label: "Tickets", icon: Ticket },
   { href: "/test/creations", label: "Creations", icon: FileSearch },

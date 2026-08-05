@@ -8,6 +8,14 @@ function getAppUrl() {
   return readEnv(["APP_URL", "FRONTEND_URL", "NEXT_PUBLIC_APP_URL", "NEXTAUTH_URL"]).replace(/\/+$/, "");
 }
 
+export function getAccountSetupUrl(token: string) {
+  return `${getAppUrl()}/account/setup?token=${encodeURIComponent(token)}`;
+}
+
+export function getAccountPasswordResetUrl(token: string) {
+  return `${getAppUrl()}/account/reset-password?token=${encodeURIComponent(token)}`;
+}
+
 export function accountSetupTemplate({
   fullName,
   setupUrl,
@@ -64,7 +72,7 @@ export async function sendAccountSetupEmail({
   fullName?: string | null;
   token: string;
 }) {
-  const setupUrl = `${getAppUrl()}/account/setup?token=${encodeURIComponent(token)}`;
+  const setupUrl = getAccountSetupUrl(token);
   const email = accountSetupTemplate({ fullName, setupUrl });
 
   return sendEmail({
@@ -83,7 +91,7 @@ export async function sendAccountPasswordResetEmail({
   to: string;
   token: string;
 }) {
-  const resetUrl = `${getAppUrl()}/account/reset-password?token=${encodeURIComponent(token)}`;
+  const resetUrl = getAccountPasswordResetUrl(token);
   const email = passwordResetTemplate({ resetUrl });
 
   return sendEmail({
