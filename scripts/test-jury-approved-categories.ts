@@ -127,12 +127,25 @@ assert.match(
   "nomination file downloads use the same approved-category authorization",
 );
 
-const juryOverview = readFileSync(
-  join(process.cwd(), "features/account/components/jury/JuryOverview.tsx"),
+// The redesigned overview is a progress panel only. A judge's approved
+// categories are surfaced where they are actionable instead: in the account
+// sidebar, and as filters on the nominations queue.
+const jurySidebar = readFileSync(
+  join(process.cwd(), "features/account/components/jury/JuryAccountSidebar.tsx"),
   "utf8",
 );
-assert.match(juryOverview, /Jury profile/);
-assert.match(juryOverview, /Approved categories/);
+assert.match(jurySidebar, /approvedCategories/);
+assert.match(jurySidebar, /nav\.approvedCategories/);
+
+const juryCollection = readFileSync(
+  join(process.cwd(), "features/account/components/jury/JuryNominationCollection.tsx"),
+  "utf8",
+);
+assert.match(
+  juryCollection,
+  /approvedCategories\.map/,
+  "the nominations queue filters by the judge's approved categories",
+);
 
 const adminScoring = readFileSync(
   join(process.cwd(), "features/admin/server/admin.ts"),
