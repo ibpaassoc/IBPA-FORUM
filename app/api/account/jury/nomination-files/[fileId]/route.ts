@@ -1,5 +1,6 @@
 import { get } from "@vercel/blob";
 import { requireJuryAuth } from "@/features/jury/server/auth";
+import { contentDisposition } from "@/shared/lib/content-disposition";
 import { prisma } from "@/shared/lib/prisma";
 import { activateRequestDataScope } from "@/features/test/server/data-scope";
 
@@ -63,7 +64,9 @@ export async function GET(
     status: 200,
     headers: {
       "Content-Type": fileRecord.mimeType || result.blob.contentType,
-      "Content-Disposition": `inline; filename="${fileRecord.displayFileName || fileRecord.fileName}"`,
+      "Content-Disposition": contentDisposition(
+        fileRecord.displayFileName || fileRecord.fileName,
+      ),
       "X-Content-Type-Options": "nosniff",
       ETag: result.blob.etag,
       "Cache-Control": "private, no-cache",

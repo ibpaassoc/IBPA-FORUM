@@ -325,6 +325,39 @@ assert(
 );
 assert(has(juryFileRoute, "displayFileName || fileRecord.fileName"), "jury file route uses display-safe filenames");
 
+// -- File preview delivery -----------------------------------------------------
+// A raw non-ASCII filename in Content-Disposition makes the Response
+// constructor throw, so the route 500s and every preview renders broken.
+console.log("file preview delivery");
+const contentDispositionLib = read("shared/lib/content-disposition.ts");
+assert(
+  has(contentDispositionLib, "filename*=UTF-8''"),
+  "the shared header helper emits an RFC 5987 filename",
+);
+assert(
+  has(contentDispositionLib, "[^\\x20-\\x7E]"),
+  "the shared header helper strips non-ASCII from the fallback filename",
+);
+for (const routePath of [
+  "app/api/account/jury/nomination-files/[fileId]/route.ts",
+  "app/api/account/applicant/nomination-files/[fileId]/route.ts",
+  "app/api/admin/nomination-files/[fileId]/route.ts",
+]) {
+  const source = read(routePath);
+  assert(has(source, "contentDisposition("), `${routePath} builds its header with the shared helper`);
+  assert(
+    !has(source, 'inline; filename="${'),
+    `${routePath} does not interpolate a raw filename into a header`,
+  );
+}
+
+const gallery = read("shared/components/files/FilePreviewGallery.tsx");
+assert(has(gallery, 'status === "error"'), "file previews render an explicit error state");
+assert(has(gallery, "ThumbSkeleton"), "file previews render a loading placeholder");
+assert(has(gallery, 'pairing === "before-after"'), "file previews keep before/after images paired");
+assert(has(gallery, "MAX_ZOOM"), "the preview lightbox supports zoom");
+assert(!has(gallery, "formatFileSize"), "file previews do not surface raw file sizes");
+
 // -- Ticket QR ownership -------------------------------------------------------
 console.log("ticket QR");
 const qrRoute = read("app/api/account/tickets/[ticketId]/qr/route.ts");

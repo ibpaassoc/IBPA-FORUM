@@ -292,6 +292,10 @@ export function ApplicantUploadField({
           items={previewItems}
           onRemove={disabled ? undefined : (id) => removeItem(previewItems.findIndex((item) => item.id === id))}
           className="mt-3"
+          groupLabel={label}
+          // Before/after uploads are read as ordered couples, so preview them
+          // the same way the jury will see them.
+          pairing={name === "beforeAfterPhotos" ? "before-after" : undefined}
         />
       ) : null}
     </FormFieldShell>

@@ -1,6 +1,7 @@
 import { get } from "@vercel/blob";
 import { requireApplicantAccount } from "@/features/account/server/accounts";
 import { activateRequestDataScope } from "@/features/test/server/data-scope";
+import { contentDisposition } from "@/shared/lib/content-disposition";
 import { prisma } from "@/shared/lib/prisma";
 
 export async function GET(
@@ -51,17 +52,13 @@ export async function GET(
     });
   }
 
-  const fileName = fileRecord.displayFileName || fileRecord.fileName;
-  const encodedFileName = encodeURIComponent(fileName);
-  const asciiFallback = fileName
-    .replace(/[^\x20-\x7E]/g, "_")
-    .replace(/["\\]/g, "_");
-
   return new Response(result.stream, {
     status: 200,
     headers: {
       "Content-Type": fileRecord.mimeType || result.blob.contentType,
-      "Content-Disposition": `inline; filename="${asciiFallback}"; filename*=UTF-8''${encodedFileName}`,
+      "Content-Disposition": contentDisposition(
+        fileRecord.displayFileName || fileRecord.fileName,
+      ),
       "X-Content-Type-Options": "nosniff",
       ETag: result.blob.etag,
       "Cache-Control": "private, no-cache",

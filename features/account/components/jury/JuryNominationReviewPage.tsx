@@ -12,6 +12,9 @@ import FilePreviewGallery from "@/shared/components/files/FilePreviewGallery";
 
 const LONG_ANSWER_TYPES = new Set(["textarea"]);
 
+/** Uploads on this field are ordered before/after couples. */
+const BEFORE_AFTER_FIELD_KEY = "beforeAfterPhotos";
+
 function formatAnswerValue(
   answer: {
     valueText: string | null;
@@ -220,6 +223,10 @@ export default async function JuryNominationReviewPage({
                         mimeType: file.mimeType,
                         source: `/api/account/jury/nomination-files/${file.id}`,
                       }))}
+                      groupLabel={field.label}
+                      pairing={
+                        field.key === BEFORE_AFTER_FIELD_KEY ? "before-after" : undefined
+                      }
                     />
                   )}
                 </div>
