@@ -22,28 +22,24 @@ export default function ApplicantStats({
       <MetricCard
         label={stats.purchased}
         value={total}
-        detail={stats.purchasedDetail}
         icon={ShoppingBag}
         accent="blue"
       />
       <MetricCard
         label={stats.drafts}
         value={drafts}
-        detail={stats.draftsDetail}
         icon={PenLine}
         accent="amber"
       />
       <MetricCard
         label={stats.submitted}
         value={submitted}
-        detail={stats.submittedDetail}
         icon={Send}
         accent="green"
       />
       <MetricCard
         label={stats.completion}
         value={`${overallCompletion}%`}
-        detail={stats.completionDetail}
         icon={Gauge}
         accent="blue"
       />

@@ -224,7 +224,7 @@ const en = {
     overview: {
       eyebrow: "Applicant dashboard",
       closedTitle: "Applications are closed",
-      openTitle: "Complete your purchased nominations",
+      openTitle: "Overview",
       overallProgress: "Overall progress",
       allSubmitted: "All nominations submitted",
       remainingLabel: "Nominations remaining:",
@@ -2456,7 +2456,7 @@ const ru: typeof en = {
     overview: {
       eyebrow: "Кабинет участника",
       closedTitle: "Приём заявок закрыт",
-      openTitle: "Заполните купленные номинации",
+      openTitle: "Обзор",
       overallProgress: "Общий прогресс",
       allSubmitted: "Все номинации отправлены",
       remainingLabel: "Осталось номинаций:",
@@ -4694,7 +4694,7 @@ const ua: typeof en = {
     overview: {
       eyebrow: "Кабінет учасника",
       closedTitle: "Приймання заявок закрито",
-      openTitle: "Заповніть придбані номінації",
+      openTitle: "Огляд",
       overallProgress: "Загальний прогрес",
       allSubmitted: "Усі номінації надіслано",
       remainingLabel: "Залишилося номінацій:",
