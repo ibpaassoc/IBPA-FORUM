@@ -1,4 +1,4 @@
-import { CheckCircle2, Mail, Send, XCircle } from "lucide-react";
+import { CheckCircle2, ChevronDown, FileText, Mail, Send, XCircle } from "lucide-react";
 import { EMAIL_TEST_CATALOG } from "@/features/test/server/email-catalog";
 import { runWithDataScope } from "@/features/test/server/data-scope";
 import { prisma } from "@/shared/lib/prisma";
@@ -10,9 +10,8 @@ import {
   EmptyState,
   GlassCard,
   StatusBadge,
-  dashboardInputClass,
-  dashboardTextareaClass,
 } from "@/features/test/components/TestDashboardUI";
+import { dashboardInputClass, dashboardTextareaClass } from "@/features/test/components/test-console-styles";
 
 export default async function TestEmailsPage({
   searchParams,
@@ -58,23 +57,43 @@ export default async function TestEmailsPage({
               {entries.map((entry) => {
                 const preview = entry.preview(entry.defaultInputs);
                 return (
-                  <GlassCard key={entry.id} className="overflow-hidden p-0">
-                    <div className="p-5">
-                      <div className="flex flex-wrap items-center justify-between gap-2"><h2 className="font-sans text-lg font-semibold tracking-[-0.025em] text-white">{entry.name}</h2><StatusBadge tone="blue">{entry.id}</StatusBadge></div>
-                      <p className="mt-4 text-xs font-semibold uppercase tracking-[0.12em] text-zinc-500">Subject</p>
-                      <p className="mt-1 text-sm font-semibold">[TEST] {preview.subject}</p>
-                      <details className="mt-4 rounded-[16px] border border-white/[0.08] bg-black/20 p-4">
-                        <summary className="cursor-pointer text-xs font-semibold uppercase tracking-[0.1em] text-zinc-300">Inputs and preview</summary>
-                        <div className="mt-4 space-y-2">{entry.requiredInputs.map((field) => <p key={field.name} className="text-xs"><strong>{field.name}</strong> <span className="text-zinc-500">({field.type}) — {field.description}</span></p>)}</div>
-                        <iframe title={`${entry.name} preview`} srcDoc={preview.html} className="mt-4 h-96 w-full rounded-xl border bg-white" sandbox="" />
-                      </details>
-                      <form action={sendTestEmailAction} className="mt-5 space-y-3">
-                        <input type="hidden" name="templateId" value={entry.id} />
-                        <label className="block text-xs font-semibold uppercase tracking-[0.1em] text-zinc-500">Test recipient<input type="email" name="recipient" required defaultValue={defaultRecipient} className={`${dashboardInputClass} mt-2`} /></label>
-                        <label className="block text-xs font-semibold uppercase tracking-[0.1em] text-zinc-500">Inputs JSON<textarea name="inputs" required defaultValue={JSON.stringify(entry.defaultInputs, null, 2)} className={`${dashboardTextareaClass} mt-2 font-mono text-xs`} /></label>
-                        <TestSubmitButton idle="Send this email" pending="Sending…" />
-                      </form>
+                  <GlassCard key={entry.id} className="group flex h-full flex-col p-0" hover>
+                    <div className="border-b border-white/[0.08] p-5 sm:p-6">
+                      <div className="flex items-start gap-3">
+                        <span className="flex size-10 shrink-0 items-center justify-center rounded-[14px] border border-white/[0.1] bg-white/[0.06] text-zinc-300">
+                          <FileText aria-hidden size={17} strokeWidth={1.8} />
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-start justify-between gap-2">
+                            <h2 className="font-sans text-lg font-semibold tracking-[-0.025em] text-white">{entry.name}</h2>
+                            <StatusBadge tone="blue">{entry.id}</StatusBadge>
+                          </div>
+                          <p className="mt-1 text-xs text-zinc-500">{entry.requiredInputs.length} input{entry.requiredInputs.length === 1 ? "" : "s"} · ready to test</p>
+                        </div>
+                      </div>
+                      <div className="mt-5 rounded-[16px] border border-white/[0.08] bg-black/20 px-4 py-3">
+                        <p className="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-zinc-500">Subject</p>
+                        <p className="mt-1 break-words text-sm font-semibold leading-6 text-zinc-100">[TEST] {preview.subject}</p>
+                      </div>
                     </div>
+                    <details className="group/preview border-b border-white/[0.08]">
+                      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 text-xs font-semibold uppercase tracking-[0.1em] text-zinc-300 sm:px-6 [&::-webkit-details-marker]:hidden">
+                        <span className="flex items-center gap-2"><ChevronDown aria-hidden size={15} className="transition group-open/preview:rotate-180" /> Inputs and preview</span>
+                        <span className="text-[0.6rem] text-zinc-600">Open</span>
+                      </summary>
+                      <div className="space-y-4 px-5 pb-5 sm:px-6 sm:pb-6">
+                        <div className="space-y-2 rounded-[14px] border border-white/[0.07] bg-white/[0.025] p-3">{entry.requiredInputs.map((field) => <p key={field.name} className="text-xs leading-5"><strong className="text-zinc-300">{field.name}</strong> <span className="text-zinc-500">({field.type}) — {field.description}</span></p>)}</div>
+                        <iframe title={`${entry.name} preview`} srcDoc={preview.html} className="block h-80 w-full rounded-xl border border-white/[0.1] bg-white" sandbox="" />
+                      </div>
+                    </details>
+                    <form action={sendTestEmailAction} className="flex flex-1 flex-col gap-4 p-5 sm:p-6">
+                      <input type="hidden" name="templateId" value={entry.id} />
+                      <div className="grid gap-4 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+                        <label className="block min-w-0 text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-zinc-500">Test recipient<input type="email" name="recipient" required defaultValue={defaultRecipient} className={`${dashboardInputClass} mt-2`} /></label>
+                        <label className="block min-w-0 text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-zinc-500">Inputs JSON<textarea name="inputs" required defaultValue={JSON.stringify(entry.defaultInputs, null, 2)} className={`${dashboardTextareaClass} mt-2 min-h-32 resize-y font-mono text-xs leading-5`} /></label>
+                      </div>
+                      <div className="mt-auto flex justify-end pt-1"><TestSubmitButton idle="Send this email" pending="Sending…" /></div>
+                    </form>
                   </GlassCard>
                 );
               })}
