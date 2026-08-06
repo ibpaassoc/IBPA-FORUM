@@ -2,6 +2,7 @@ import "server-only";
 
 import crypto from "node:crypto";
 import { Prisma } from "@prisma/client";
+import { put } from "@vercel/blob";
 import type Stripe from "stripe";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import { validateNominationBlockB } from "@/features/applications/schemas/category-field-validation";
@@ -19,6 +20,7 @@ import { saveJuryReviewDraft, submitJuryReview } from "@/features/jury/server/re
 import { prisma } from "@/shared/lib/prisma";
 import { runWithDataScope } from "@/features/test/server/data-scope";
 import { deleteTestScenario } from "@/features/test/server/cleanup";
+import { buildSampleAsset } from "@/features/test/lib/sample-assets";
 
 export type ApplicantScenarioKind =
   | "applicant-empty"
@@ -76,14 +78,22 @@ function sampleValue(field: ApplyFieldConfig, index = 0): ApplicationValues[stri
   }
   if (field.type === "file") {
     const count = Math.max(field.minFiles ?? (field.required ? 1 : 0), 1);
-    const mimeType = field.accept?.[0] ?? "image/jpeg";
-    return Array.from({ length: count }, (_, fileIndex) => ({
-      fieldKey: field.key,
-      fileName: `${field.key}-${index}-${fileIndex + 1}.${mimeType === "application/pdf" ? "pdf" : "jpg"}`,
-      fileUrl: `test-uploads/${crypto.randomUUID()}/${field.key}-${fileIndex + 1}`,
-      mimeType,
-      fileSize: 1024,
-    } satisfies ApplicationFileRef));
+    return Array.from({ length: count }, (_, fileIndex) => {
+      const asset = buildSampleAsset({
+        accept: field.accept,
+        label: `${field.label} ${fileIndex + 1}`,
+        seed: index * 7 + fileIndex,
+      });
+      return {
+        fieldKey: field.key,
+        fileName: `${field.key}-${index}-${fileIndex + 1}.${asset.extension}`,
+        // Replaced with the real Blob pathname once the nomination exists and
+        // the bytes have been uploaded; see persistScenarioNominationValues.
+        fileUrl: `test-uploads/${crypto.randomUUID()}/${field.key}-${fileIndex + 1}`,
+        mimeType: asset.mimeType,
+        fileSize: asset.bytes.length,
+      } satisfies ApplicationFileRef;
+    });
   }
   return `Test value for ${field.label}`;
 }
@@ -104,6 +114,67 @@ function completeNominationValues(categorySlug: string) {
     throw new Error(`Real nomination validation rejected the generated test scenario: ${JSON.stringify(errors)}`);
   }
   return values;
+}
+
+/**
+ * One seeded file per nomination carries a Cyrillic display name. Uploaded
+ * files routinely have them, and a raw non-ASCII filename in a
+ * `Content-Disposition` header throws when the Response is constructed — the
+ * exact failure that used to 500 the file routes. Keeping one in every
+ * scenario means the preview path is tested against it.
+ */
+function displayNameForScenarioFile(fieldKey: string, fileIndex: number, fallback: string) {
+  if (fileIndex !== 0) return fallback;
+  const extension = fallback.slice(fallback.lastIndexOf(".") + 1);
+  return `портфолио-${fieldKey}.${extension}`;
+}
+
+async function uploadScenarioFile({
+  nominationId,
+  fieldKey,
+  accept,
+  label,
+  fileName,
+  seed,
+  upload,
+}: {
+  nominationId: string;
+  fieldKey: string;
+  accept?: string[];
+  label: string;
+  fileName: string;
+  seed: number;
+  upload: boolean;
+}) {
+  const asset = buildSampleAsset({ accept, label, seed });
+  const fallback = {
+    fileName,
+    fileUrl: `test-uploads/${crypto.randomUUID()}/${fieldKey}-${seed + 1}`,
+    mimeType: asset.mimeType,
+    fileSize: asset.bytes.length,
+  };
+
+  if (!upload || !process.env.BLOB_READ_WRITE_TOKEN) return fallback;
+
+  // Mirror the production layout: the cleanup routine only deletes blobs whose
+  // key starts with `applications/`, so anything written elsewhere would leak
+  // when the scenario is torn down.
+  const pathname = `applications/${nominationId}/${fieldKey}/${fileName}`;
+  try {
+    const blob = await put(pathname, asset.bytes, {
+      access: "private",
+      addRandomSuffix: true,
+      contentType: asset.mimeType,
+    });
+    return { ...fallback, fileUrl: blob.pathname };
+  } catch (error) {
+    console.error("Test scenario sample upload failed", {
+      nominationId,
+      fieldKey,
+      error: error instanceof Error ? error.message : "Unknown Blob error",
+    });
+    return fallback;
+  }
 }
 
 async function persistScenarioNominationValues(
@@ -135,20 +206,32 @@ async function persistScenarioNominationValues(
 
   for (const [fieldKey, value] of Object.entries(values)) {
     if (Array.isArray(value) && value.every((item) => typeof item === "object" && item !== null && "fileUrl" in item)) {
-      for (const item of value as ApplicationFileRef[]) {
+      const field = fields.find((candidate) => candidate.key === fieldKey);
+      for (const [fileIndex, item] of (value as ApplicationFileRef[]).entries()) {
+        const stored = await uploadScenarioFile({
+          nominationId: nomination.id,
+          fieldKey,
+          accept: field?.accept,
+          label: `${field?.label ?? fieldKey} ${fileIndex + 1}`,
+          fileName: item.fileName,
+          seed: fileIndex,
+          // The upload-failure scenario deliberately points at a blob that was
+          // never written, so leave its reference untouched.
+          upload: mode !== "upload-failure",
+        });
         await prisma.nominationFile.create({
           data: {
             nominationApplicationId: nomination.id,
             fieldKey,
-            fileName: item.fileName,
-            fileUrl: item.fileUrl,
-            displayFileName: item.fileName,
-            originalFileName: item.fileName,
-            mimeType: item.mimeType,
-            fileSize: item.fileSize,
-            originalFileSize: item.fileSize,
-            compressedFileSize: item.fileSize,
-            storageKey: item.fileUrl,
+            fileName: stored.fileName,
+            fileUrl: stored.fileUrl,
+            displayFileName: displayNameForScenarioFile(fieldKey, fileIndex, stored.fileName),
+            originalFileName: stored.fileName,
+            mimeType: stored.mimeType,
+            fileSize: stored.fileSize,
+            originalFileSize: stored.fileSize,
+            compressedFileSize: stored.fileSize,
+            storageKey: stored.fileUrl,
           },
         });
       }

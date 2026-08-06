@@ -5,5 +5,5 @@ export default async function AccountJuryPage() {
   const judge = await getAuthenticatedJuryContext();
   const data = await getJuryNominationWorkspace({ judge });
 
-  return <JuryOverview juryName={data.judge.fullName} professionalTitle={data.judge.professionalTitle} approvedCategories={data.judge.approvedCategories} nominations={data.allNominations} totals={data.totals} />;
+  return <JuryOverview nominations={data.allNominations} totals={data.totals} />;
 }

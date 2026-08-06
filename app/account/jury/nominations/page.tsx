@@ -22,9 +22,7 @@ export default async function JuryNominationsPage({
 
   return (
     <JuryNominationCollection
-      eyebrow="Jury review queue"
-      title="Nominations"
-      description="Every card is an independent nomination. Open one to inspect the submitted materials, save a draft, or complete the final scorecard."
+      variant="queue"
       nominations={data.nominations}
       approvedCategories={data.judge.approvedCategories}
       activeCategory={data.activeCategory}

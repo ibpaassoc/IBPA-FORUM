@@ -41,6 +41,11 @@ export type JuryNominationListItem = {
   totalScore: number | null;
   maximumScore: number;
   reviewUpdatedAt: Date | null;
+  /** Criteria this judge has already scored, and the definition's total. */
+  scoredCriteria: number;
+  totalCriteria: number;
+  /** Scored criteria as a percentage — the queue card's "Reviewed" bar. */
+  reviewProgress: number;
 };
 
 export type JuryNominationReviewRecord = {
@@ -175,6 +180,7 @@ export async function getJuryNominationWorkspace({
         select: {
           id: true,
           status: true,
+          scoreData: true,
           totalScore: true,
           updatedAt: true,
         },
@@ -188,6 +194,12 @@ export async function getJuryNominationWorkspace({
       nomination.scoringSchema,
       nomination.category.slug
     );
+    const totalCriteria = scoringDefinition.criteria.length;
+    const scoredCriteria = review
+      ? Object.values(readReviewScores(review.scoreData, scoringDefinition)).filter(
+          (value): value is number => typeof value === "number",
+        ).length
+      : 0;
     return {
       id: nomination.id,
       applicantName: nomination.applicantProfile?.fullName ?? "Applicant",
@@ -203,6 +215,10 @@ export async function getJuryNominationWorkspace({
         : Number(review.totalScore),
       maximumScore: scoringDefinition.maximumTotal,
       reviewUpdatedAt: review?.updatedAt ?? null,
+      scoredCriteria,
+      totalCriteria,
+      reviewProgress:
+        totalCriteria === 0 ? 0 : Math.round((scoredCriteria / totalCriteria) * 100),
     };
   });
 

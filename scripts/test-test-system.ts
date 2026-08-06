@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
+import { inflateSync } from "node:zlib";
 import { validateNominationBlockB } from "../features/applications/schemas/category-field-validation";
 import { getCategoryScoringDefinition, validateReviewScores } from "../features/jury/scoring/category-scoring";
+import { buildSampleAsset, createSamplePdf, createSamplePng } from "../features/test/lib/sample-assets";
 
 const root = process.cwd();
 const read = (path: string) => readFileSync(join(root, path), "utf8");
@@ -115,5 +117,51 @@ assert.throws(
 const completeScores = Object.fromEntries(scoring.criteria.map((criterion) => [criterion.key, criterion.maxScore]));
 const validatedScores = validateReviewScores({ scores: completeScores, definition: scoring, requireComplete: true });
 assert.equal(Object.values(validatedScores).filter((value) => value !== null).length, scoring.criteria.length, "the real jury validator accepts a complete valid review");
+
+// Seeded uploads must be real files. Scenarios used to record invented blob
+// paths, so every preview in the applicant and jury accounts resolved to a
+// missing blob and rendered broken.
+includes(
+  "features/test/server/scenarios.ts",
+  "await put(pathname, asset.bytes",
+  "test scenarios upload their sample files to Blob storage",
+);
+includes(
+  "features/test/server/scenarios.ts",
+  "`applications/${nominationId}/${fieldKey}/${fileName}`",
+  "seeded blobs use the production path prefix that cleanup deletes",
+);
+assert.ok(
+  read("features/test/server/cleanup.ts").includes('key.startsWith("applications/")'),
+  "scenario cleanup deletes blobs written under the applications prefix",
+);
+
+const samplePng = createSamplePng({ width: 640, height: 480, seed: 3 });
+assert.ok(
+  samplePng.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])),
+  "the sample image is a real PNG",
+);
+assert.equal(samplePng.readUInt32BE(16), 640, "the sample PNG records its width");
+assert.equal(samplePng.readUInt32BE(20), 480, "the sample PNG records its height");
+const pngIdatStart = samplePng.indexOf(Buffer.from("IDAT", "ascii"));
+const pngIdatLength = samplePng.readUInt32BE(pngIdatStart - 4);
+assert.equal(
+  inflateSync(samplePng.subarray(pngIdatStart + 4, pngIdatStart + 4 + pngIdatLength)).length,
+  480 * (640 * 3 + 1),
+  "the sample PNG's pixel data inflates to a full set of scanlines",
+);
+
+const samplePdf = createSamplePdf("Sample").toString("latin1");
+assert.ok(samplePdf.startsWith("%PDF-1."), "the sample document is a real PDF");
+const startxref = Number(samplePdf.slice(samplePdf.lastIndexOf("startxref") + 9).trim().split("\n")[0]);
+assert.equal(samplePdf.slice(startxref, startxref + 4), "xref", "the sample PDF's startxref points at its xref table");
+
+for (const accept of [["image/jpeg", "image/png"], ["image/jpeg", "image/png", "application/pdf"], ["application/pdf"]]) {
+  const asset = buildSampleAsset({ accept, label: "sample", seed: 1 });
+  assert.ok(
+    accept.includes(asset.mimeType),
+    `a seeded file for accept=[${accept.join(",")}] stays within the field's allowed types`,
+  );
+}
 
 console.log("Test-system security, isolation, cleanup, and real-validation checks passed.");

@@ -12,9 +12,7 @@ export default async function JuryCompletedReviewsPage({
 
   return (
     <JuryNominationCollection
-      eyebrow="Submitted by you"
-      title="Completed reviews"
-      description="Your final scorecards are preserved here as read-only records. Contact an administrator if a review must be reopened."
+      variant="completed"
       nominations={data.nominations}
       approvedCategories={data.judge.approvedCategories}
       activeCategory={data.activeCategory}

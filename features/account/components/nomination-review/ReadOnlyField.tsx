@@ -45,6 +45,8 @@ export default function ReadOnlyField({
               source: ref ? ref.previewUrl ?? ref.fileUrl : file,
             };
           })}
+          groupLabel={field.label}
+          pairing={field.key === "beforeAfterPhotos" ? "before-after" : undefined}
         />
       );
   } else if (field.type === "checkbox-group") {

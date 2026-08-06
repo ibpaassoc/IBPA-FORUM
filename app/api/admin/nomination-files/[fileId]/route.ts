@@ -1,5 +1,6 @@
 import { get } from "@vercel/blob";
 import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
+import { contentDisposition } from "@/shared/lib/content-disposition";
 import { prisma } from "@/shared/lib/prisma";
 import { adminT } from "@/lib/i18n/admin";
 
@@ -51,7 +52,7 @@ export async function GET(
     status: 200,
     headers: {
       "Content-Type": fileRecord.mimeType || result.blob.contentType,
-      "Content-Disposition": `inline; filename="${fileRecord.fileName}"`,
+      "Content-Disposition": contentDisposition(fileRecord.fileName),
       "X-Content-Type-Options": "nosniff",
       ETag: result.blob.etag,
       "Cache-Control": "private, no-cache",

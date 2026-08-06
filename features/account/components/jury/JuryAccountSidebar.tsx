@@ -13,16 +13,17 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import {
   Drawer,
   FloatingActionButton,
   IconButton,
 } from "@/shared/components/admin/DashboardUI";
 
-const navItems = [
-  { href: "/account/jury", label: "Overview", shortLabel: "Overview", icon: LayoutDashboard },
-  { href: "/account/jury/nominations", label: "Nominations", shortLabel: "Queue", icon: ClipboardList },
-  { href: "/account/jury/completed", label: "Completed", shortLabel: "Done", icon: CheckCircle2 },
+const navItemDefs = [
+  { href: "/account/jury", key: "overview", icon: LayoutDashboard },
+  { href: "/account/jury/nominations", key: "nominations", icon: ClipboardList },
+  { href: "/account/jury/completed", key: "completed", icon: CheckCircle2 },
 ] as const;
 
 function isActive(pathname: string, href: string) {
@@ -33,7 +34,7 @@ function isActive(pathname: string, href: string) {
   return pathname === href;
 }
 
-function SignOutButton({ compact = false }: { compact?: boolean }) {
+function SignOutButton({ compact = false, label }: { compact?: boolean; label: string }) {
   return (
     <button
       type="button"
@@ -41,7 +42,7 @@ function SignOutButton({ compact = false }: { compact?: boolean }) {
       className="flex min-h-11 w-full items-center justify-center gap-3 rounded-[18px] border border-transparent px-3 text-[0.76rem] font-semibold uppercase tracking-[0.1em] text-[var(--color-ink-soft)] transition hover:border-red-200 hover:bg-red-50 hover:text-red-700"
     >
       <LogOut aria-hidden size={16} strokeWidth={1.8} />
-      {compact ? null : <span>Sign out</span>}
+      {compact ? null : <span>{label}</span>}
     </button>
   );
 }
@@ -58,7 +59,16 @@ export default function JuryAccountSidebar({
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const { t } = useLanguage();
+  const nav = t.account.jury.nav;
   const initial = juryName.slice(0, 1).toUpperCase();
+  const onReviewWorkspace = /^\/account\/jury\/nominations\/[^/]+$/.test(pathname);
+
+  const navItems = navItemDefs.map((item) => ({
+    href: item.href,
+    label: nav[item.key],
+    icon: item.icon,
+  }));
 
   return (
     <>
@@ -68,18 +78,18 @@ export default function JuryAccountSidebar({
             {collapsed ? null : (
               <Link href="/account/jury" className="min-w-0">
                 <p className="font-[var(--font-title-family)] text-[1.85rem] font-light leading-none tracking-[-0.04em] text-[var(--color-ink)]">IBPA</p>
-                <p className="mt-1 text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-ink-soft)]">Jury account</p>
+                <p className="mt-1 text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-ink-soft)]">{nav.brand}</p>
               </Link>
             )}
             <IconButton
-              label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+              label={collapsed ? nav.expandSidebar : nav.collapseSidebar}
               icon={collapsed ? PanelLeftOpen : PanelLeftClose}
               onClick={() => setCollapsed((value) => !value)}
               className="size-9 shrink-0"
             />
           </div>
 
-          <nav className="mt-3 flex flex-col gap-1" aria-label="Jury account navigation">
+          <nav className="mt-3 flex flex-col gap-1" aria-label={nav.navAria}>
             {navItems.map(({ href, label, icon: Icon }) => {
               const active = isActive(pathname, href);
               return (
@@ -111,14 +121,26 @@ export default function JuryAccountSidebar({
                 </div>
               )}
             </div>
-            <SignOutButton compact={collapsed} />
+            <SignOutButton compact={collapsed} label={nav.signOut} />
           </div>
         </div>
       </aside>
 
-      <FloatingActionButton label="Open jury menu" icon={MoreHorizontal} onClick={() => setDrawerOpen(true)} className="lg:hidden" side="left" />
+      <FloatingActionButton
+        label={nav.openMenu}
+        icon={MoreHorizontal}
+        onClick={() => setDrawerOpen(true)}
+        // The review workspace pins a full-width score dock to the bottom of
+        // the screen on phones; lift the menu clear of it there.
+        className={
+          onReviewWorkspace
+            ? "bottom-[calc(6.75rem+env(safe-area-inset-bottom))] z-[72] lg:hidden lg:bottom-7"
+            : "lg:hidden"
+        }
+        side="left"
+      />
 
-      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} title="Jury account">
+      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} title={nav.drawerTitle}>
         <div className="space-y-4">
           <div className="rounded-[24px] border border-white/70 bg-[rgba(185,217,235,0.24)] p-4">
             <div className="flex items-center gap-3">
@@ -131,7 +153,7 @@ export default function JuryAccountSidebar({
             {approvedCategories.length > 0 ? (
               <div className="mt-3">
                 <p className="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">
-                  Approved categories
+                  {nav.approvedCategories}
                 </p>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {approvedCategories.map((category) => <span key={category} className="rounded-full border border-[rgba(114,160,193,0.22)] bg-white/72 px-2.5 py-1 text-[0.62rem] font-semibold text-[var(--color-ink-soft)]">{category}</span>)}
@@ -139,7 +161,7 @@ export default function JuryAccountSidebar({
               </div>
             ) : null}
           </div>
-          <nav className="grid gap-2" aria-label="Jury mobile navigation">
+          <nav className="grid gap-2" aria-label={nav.drawerAria}>
             {navItems.map(({ href, label, icon: Icon }) => {
               const active = isActive(pathname, href);
               return (
@@ -149,7 +171,7 @@ export default function JuryAccountSidebar({
               );
             })}
           </nav>
-          <SignOutButton />
+          <SignOutButton label={nav.signOut} />
         </div>
       </Drawer>
     </>
