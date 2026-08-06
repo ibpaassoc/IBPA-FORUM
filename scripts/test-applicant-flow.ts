@@ -225,6 +225,9 @@ assert(has(roleRedirects, "safeNextForRole"), "cross-role dashboard redirects ar
 assert(has(read("app/login/page.tsx"), "!roleParam"), "explicit role login can replace an existing opposite-role session");
 assert(has(read("features/account/components/AccountRoleSwitcher.tsx"), "Switch to"), "dual-role accounts expose a role switch action");
 assert(has(read("features/test/components/TestActorBanner.tsx"), "Open DEV panel"), "DEV accounts display a quick link to the DEV panel");
+assert(has(read("features/account/server/jury-applicant-onboarding.actions.ts"), 'FOR UPDATE'), "jury applicant onboarding serializes repeated requests");
+assert(has(read("features/account/server/jury-applicant-onboarding.actions.ts"), 'error.code === "P2002"'), "jury applicant onboarding handles a concurrent duplicate safely");
+assert(has(read("features/account/server/accounts.ts"), "findSiblingAccount"), "account switcher uses an explicit same-scope sibling lookup");
 assert(has(read("features/jury/server/auth.ts"), 'requireAccount("JURY")'), "jury-only routes return unauthenticated users to jury login");
 assert(has(read("features/account/components/ApplicantSidebar.tsx"), "/login?role=applicant"), "applicant logout returns to applicant login");
 assert(has(read("features/account/components/jury/JuryAccountSidebar.tsx"), "/login?role=jury"), "jury logout returns to jury login");

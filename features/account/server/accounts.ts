@@ -1,6 +1,6 @@
 import "server-only";
 
-import type { AccountRole, Prisma } from "@prisma/client";
+import type { AccountRole, DataScope, Prisma } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { getAppSession } from "@/auth";
 import { prisma, unscopedPrisma } from "@/shared/lib/prisma";
@@ -64,6 +64,28 @@ export async function findPublicAccountsByEmail(email: string) {
     select: { id: true, role: true, status: true, passwordHash: true, deletedAt: true },
   });
   return accounts;
+}
+
+/** Used only by an authenticated account to reveal its own other-role account. */
+export async function findSiblingAccount({
+  email,
+  role,
+  dataScope,
+}: {
+  email: string;
+  role: AccountRole;
+  dataScope: DataScope;
+}) {
+  return unscopedPrisma.account.findFirst({
+    where: {
+      normalizedEmail: normalizeAccountEmail(email),
+      role,
+      dataScope,
+      deletedAt: null,
+      status: { not: "DISABLED" },
+    },
+    select: { id: true },
+  });
 }
 
 export async function findAccountForPublicSession(accountId: string) {

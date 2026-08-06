@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
 import ApplicantSidebar from "@/features/account/components/ApplicantSidebar";
-import { findAccountByEmail, requireApplicantAccount } from "@/features/account/server/accounts";
+import { findSiblingAccount, requireApplicantAccount } from "@/features/account/server/accounts";
 import { DashboardShell } from "@/shared/components/admin/DashboardUI";
 import { TestActorBanner } from "@/features/test/components/TestActorBanner";
 
 export default async function ApplicantLayout({ children }: { children: ReactNode }) {
   const { account, applicantProfile } = await requireApplicantAccount();
-  const juryAccount = await findAccountByEmail(account.email, "JURY");
+  const juryAccount = await findSiblingAccount({ email: account.email, role: "JURY", dataScope: account.dataScope });
 
   return (
     <DashboardShell className="font-[var(--font-ui-family)]">
@@ -19,7 +19,7 @@ export default async function ApplicantLayout({ children }: { children: ReactNod
         <ApplicantSidebar
           applicantName={applicantProfile.fullName}
           email={account.email}
-          canSwitchAccount={Boolean(juryAccount && !juryAccount.deletedAt && juryAccount.status !== "DISABLED")}
+          canSwitchAccount={Boolean(juryAccount)}
         />
         <main className="min-w-0 flex-1">{children}</main>
       </div>
