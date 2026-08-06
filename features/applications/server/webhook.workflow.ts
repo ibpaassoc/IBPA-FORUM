@@ -12,6 +12,7 @@ import {
 import { syncApplicationOnChange } from "@/features/google-sheets";
 import { getCategoryScoringDefinition } from "@/features/jury/scoring/category-scoring";
 import { prisma } from "@/shared/lib/prisma";
+import { accountIdentity } from "@/features/account/server/accounts";
 
 type CompetitorPaymentEmailPayload = {
   to: string;
@@ -83,19 +84,16 @@ async function upsertApplicantAccountForPurchase(
 ) {
   const email = manifest.personalInfo.email;
   const existing = await tx.account.findUnique({
-    where: { email },
+    where: accountIdentity(email, "APPLICANT"),
     include: { applicantProfile: true },
   });
-
-  if (existing && existing.role !== "APPLICANT") {
-    throw new Error("Account role conflict for applicant purchase.");
-  }
 
   const account =
     existing ??
     (await tx.account.create({
       data: {
         email,
+        normalizedEmail: email,
         role: "APPLICANT",
         status: "INVITED",
       },

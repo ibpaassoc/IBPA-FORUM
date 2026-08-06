@@ -16,6 +16,7 @@ import {
   validatePromoCodeForFlow,
 } from "@/features/promos/server/promo-service";
 import { prisma } from "@/shared/lib/prisma";
+import { accountIdentity } from "@/features/account/server/accounts";
 
 export const APPLICANT_NOMINATION_PURCHASE_FLOW = "applicant_nomination_purchase";
 export const APPLICANT_PURCHASE_MANIFEST_VERSION = 1;
@@ -294,7 +295,7 @@ export async function createPublicApplicantNominationCheckout(formData: FormData
   const fullName = `${input.firstName.trim()} ${input.lastName.trim()}`.trim();
 
   const existingAccount = await prisma.account.findUnique({
-    where: { email },
+    where: accountIdentity(email, "APPLICANT"),
     select: {
       id: true,
       role: true,
@@ -303,14 +304,6 @@ export async function createPublicApplicantNominationCheckout(formData: FormData
       applicantProfile: { select: { id: true } },
     },
   });
-
-  if (existingAccount && existingAccount.role !== "APPLICANT") {
-    throw new ApplicantPurchaseError(
-      409,
-      "ACCOUNT_ROLE_CONFLICT",
-      "This email is already registered for a different account type."
-    );
-  }
 
   if (existingAccount?.applicantProfile?.id) {
     await assertNoOwnedDuplicateNominations({

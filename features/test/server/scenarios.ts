@@ -18,6 +18,7 @@ import { approveJuryApplicationWithoutPayment } from "@/features/jury/server/com
 import { getCategoryScoringDefinition } from "@/features/jury/scoring/category-scoring";
 import { saveJuryReviewDraft, submitJuryReview } from "@/features/jury/server/reviews";
 import { prisma } from "@/shared/lib/prisma";
+import { accountIdentity } from "@/features/account/server/accounts";
 import { runWithDataScope } from "@/features/test/server/data-scope";
 import { deleteTestScenario } from "@/features/test/server/cleanup";
 import { buildSampleAsset } from "@/features/test/lib/sample-assets";
@@ -337,7 +338,7 @@ async function createApplicantInScenario({
     );
 
     const account = await prisma.account.findUniqueOrThrow({
-      where: { email },
+      where: accountIdentity(email, "APPLICANT"),
       include: { applicantProfile: { include: { nominations: { include: { category: true } } } } },
     });
     await prisma.account.update({ where: { id: account.id }, data: { status: "ACTIVE" } });
@@ -422,7 +423,7 @@ async function createJuryInScenario({
     });
     await approveJuryApplicationWithoutPayment(juryApplication.id);
     const account = await prisma.account.findUniqueOrThrow({
-      where: { email },
+      where: accountIdentity(email, "JURY"),
       include: { juryProfile: true },
     });
     await prisma.account.update({ where: { id: account.id }, data: { status: "ACTIVE" } });

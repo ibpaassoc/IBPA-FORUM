@@ -10,16 +10,13 @@ import { sendAccountSetupEmail } from "@/features/account/server/emails";
 import { getTestActor } from "@/features/test/server/auth";
 import { activateRequestDataScope } from "@/features/test/server/data-scope";
 
-export class AccountRoleConflictError extends Error {
-  constructor(email: string, existingRole: AccountRole, requestedRole: AccountRole) {
-    super(`Account ${email} already has role ${existingRole}; cannot assign ${requestedRole}.`);
-    this.name = "AccountRoleConflictError";
-  }
+export function accountIdentity(email: string, role: AccountRole) {
+  return { normalizedEmail_role: { normalizedEmail: normalizeAccountEmail(email), role } };
 }
 
-export async function findAccountByEmail(email: string) {
+export async function findAccountByEmail(email: string, role: AccountRole) {
   return prisma.account.findUnique({
-    where: { email: normalizeAccountEmail(email) },
+    where: accountIdentity(email, role),
     include: {
       applicantProfile: { select: { id: true, fullName: true } },
       juryProfile: {
@@ -41,9 +38,9 @@ export async function findAccountByEmail(email: string) {
  * PRODUCTION or DEV actors, while TEST actors remain accessible only through
  * the signed test-console impersonation flow.
  */
-export async function findAccountForPublicAuth(email: string) {
+export async function findAccountForPublicAuth(email: string, role: AccountRole) {
   const account = await unscopedPrisma.account.findUnique({
-    where: { email: normalizeAccountEmail(email) },
+    where: accountIdentity(email, role),
     include: {
       applicantProfile: { select: { id: true, fullName: true } },
       juryProfile: {
@@ -59,6 +56,14 @@ export async function findAccountForPublicAuth(email: string) {
   });
 
   return account?.dataScope === "TEST" ? null : account;
+}
+
+export async function findPublicAccountsByEmail(email: string) {
+  const accounts = await unscopedPrisma.account.findMany({
+    where: { normalizedEmail: normalizeAccountEmail(email), dataScope: { not: "TEST" } },
+    select: { id: true, role: true, status: true, passwordHash: true, deletedAt: true },
+  });
+  return accounts;
 }
 
 export async function findAccountForPublicSession(accountId: string) {
@@ -89,19 +94,16 @@ export async function upsertApplicantAccountForApplication(
 ) {
   const email = normalizeAccountEmail(application.email);
   const existing = await tx.account.findUnique({
-    where: { email },
+    where: accountIdentity(email, "APPLICANT"),
     include: { applicantProfile: true },
   });
-
-  if (existing && existing.role !== "APPLICANT") {
-    throw new AccountRoleConflictError(email, existing.role, "APPLICANT");
-  }
 
   const account =
     existing ??
     (await tx.account.create({
       data: {
         email,
+        normalizedEmail: email,
         role: "APPLICANT",
         status: "INVITED",
       },
@@ -165,7 +167,7 @@ export async function upsertJuryAccountForApplication(
   const email = normalizeAccountEmail(application.email);
   const [existing, existingProfile] = await Promise.all([
     tx.account.findUnique({
-      where: { email },
+      where: accountIdentity(email, "JURY"),
       include: { juryProfile: true },
     }),
     tx.juryProfile.findUnique({
@@ -174,19 +176,7 @@ export async function upsertJuryAccountForApplication(
     }),
   ]);
 
-  if (existing && existing.role !== "JURY") {
-    throw new AccountRoleConflictError(email, existing.role, "JURY");
-  }
-
   if (existingProfile) {
-    if (existingProfile.account.role !== "JURY") {
-      throw new AccountRoleConflictError(
-        existingProfile.account.email,
-        existingProfile.account.role,
-        "JURY",
-      );
-    }
-
     const profile = await tx.juryProfile.update({
       where: { id: existingProfile.id },
       data: {
@@ -213,6 +203,7 @@ export async function upsertJuryAccountForApplication(
     (await tx.account.create({
       data: {
         email,
+        normalizedEmail: email,
         role: "JURY",
         status: "INVITED",
       },

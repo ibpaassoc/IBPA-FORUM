@@ -64,6 +64,7 @@ async function main() {
   const participantAccount = await prisma.account.create({
     data: {
       email: PARTICIPANT_EMAIL,
+      normalizedEmail: PARTICIPANT_EMAIL,
       role: "APPLICANT",
       status: "ACTIVE",
       applicantProfile: {
