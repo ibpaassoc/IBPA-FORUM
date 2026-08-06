@@ -135,6 +135,16 @@ function withReloadKey(url: string, reloadKey: number) {
 }
 
 /**
+ * React key for a media element. It has to carry `reloadKey` separately from the
+ * URL: an object URL cannot be cache-busted, so keying on the URL alone would
+ * leave a retry with nothing to remount — `status` would sit at "loading"
+ * forever, replacing the error tile with an endless skeleton.
+ */
+function mediaKey(url: string, reloadKey: number) {
+  return `${reloadKey}-${url}`;
+}
+
+/**
  * Resolve an asset to a displayable URL. Stored assets are already served from
  * an authenticated API path; locally-picked `File`s get an object URL created
  * and revoked inside the same effect so the two can never drift apart.
@@ -259,7 +269,7 @@ function PreviewThumb({
                   and cannot use Next Image's static sizing contract. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                key={sourceUrl}
+                key={mediaKey(sourceUrl, reloadKey)}
                 ref={(node) => markSettledImage(node, setStatus)}
                 src={sourceUrl}
                 alt=""
@@ -274,7 +284,7 @@ function PreviewThumb({
             <>
               {status === "loading" ? <ThumbSkeleton /> : null}
               <video
-                key={sourceUrl}
+                key={mediaKey(sourceUrl, reloadKey)}
                 src={sourceUrl}
                 muted
                 playsInline
@@ -572,7 +582,7 @@ function PreviewDialog({
                     ) : null}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      key={url}
+                      key={mediaKey(url, reloadKey)}
                       ref={(node) => markSettledImage(node, setStatus)}
                       src={url}
                       alt={title}
@@ -596,7 +606,7 @@ function PreviewDialog({
                 ) : isVideo(item) ? (
                   /* `src`, never a typed <source>: see the note on isVideo. */
                   <video
-                    key={url}
+                    key={mediaKey(url, reloadKey)}
                     src={url}
                     controls
                     playsInline
