@@ -38,7 +38,7 @@ function SignOutButton({ compact = false, label }: { compact?: boolean; label: s
   return (
     <button
       type="button"
-      onClick={() => void signOut({ callbackUrl: "/account/login" })}
+      onClick={() => void signOut({ callbackUrl: "/login?role=jury" })}
       className="flex min-h-11 w-full items-center justify-center gap-3 rounded-[18px] border border-transparent px-3 text-[0.76rem] font-semibold uppercase tracking-[0.1em] text-[var(--color-ink-soft)] transition hover:border-red-200 hover:bg-red-50 hover:text-red-700"
     >
       <LogOut aria-hidden size={16} strokeWidth={1.8} />
