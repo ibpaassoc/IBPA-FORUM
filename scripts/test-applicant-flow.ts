@@ -383,6 +383,27 @@ assert(has(gallery, "ThumbSkeleton"), "file previews render a loading placeholde
 assert(has(gallery, 'pairing === "before-after"'), "file previews keep before/after images paired");
 assert(has(gallery, "MAX_ZOOM"), "the preview lightbox supports zoom");
 assert(!has(gallery, "formatFileSize"), "file previews do not surface raw file sizes");
+// Chromium answers canPlayType("video/quicktime") with "", so a typed <source>
+// is discarded before a byte is fetched — and its error never reaches <video>.
+assert(
+  !has(gallery, "<source src="),
+  "the preview lightbox does not filter video through a typed <source>",
+);
+
+// A just-uploaded file has no database row yet, so its ref carries no
+// authenticated previewUrl and the gallery would fall back to the private Blob
+// pathname — a relative URL the browser resolves against the current page.
+const nominationEditor = read(
+  "features/account/components/nomination-review/NominationReviewForm.tsx",
+);
+assert(
+  has(nominationEditor, "createLocalPreview(task.file)"),
+  "a completed upload previews the bytes the browser already holds",
+);
+assert(
+  has(nominationEditor, "map(toStoredRef)"),
+  "persisted file refs drop their browser-only preview URL",
+);
 
 // -- Ticket QR ownership -------------------------------------------------------
 console.log("ticket QR");
