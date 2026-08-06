@@ -4,6 +4,7 @@ import type { JuryNominationListItem } from "@/features/jury/server/reviews";
 import AccountPageHeader from "@/features/account/components/AccountPageHeader";
 import JuryNominationCard from "@/features/account/components/jury/JuryNominationCard";
 import JuryReviewSummary from "@/features/account/components/jury/JuryReviewSummary";
+import ApplyAsApplicantButton from "@/features/account/components/jury/ApplyAsApplicantButton";
 import { getServerTranslations } from "@/lib/i18n/server";
 import {
   DashboardStagger,
@@ -59,6 +60,8 @@ export default async function JuryOverview({
         completed={totals.completed}
         remaining={totals.remaining}
       />
+
+      <ApplyAsApplicantButton />
 
       <section aria-labelledby="continue-reviewing-heading" className="mt-1">
         <div className="mb-4 flex items-center justify-between gap-3">
