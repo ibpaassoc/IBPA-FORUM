@@ -4,7 +4,7 @@ import AuthShell from "@/features/auth/components/AuthShell";
 import ForgotPasswordForm from "@/features/auth/components/ForgotPasswordForm";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
-export default function ForgotPasswordContent() {
+export default function ForgotPasswordContent({ role }: { role: "applicant" | "jury" }) {
   const { t } = useLanguage();
 
   return (
@@ -13,7 +13,7 @@ export default function ForgotPasswordContent() {
       title={t.auth.forgotPage.cardTitle}
       description={t.auth.forgotPage.cardText}
     >
-      <ForgotPasswordForm />
+      <ForgotPasswordForm role={role} />
     </AuthShell>
   );
 }

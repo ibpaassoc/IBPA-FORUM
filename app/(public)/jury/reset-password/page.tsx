@@ -6,5 +6,5 @@ export default async function ResetPasswordPage({
   searchParams: Promise<{ token?: string }>;
 }) {
   const { token } = await searchParams;
-  redirect(`/account/reset-password${token ? `?token=${encodeURIComponent(token)}` : ""}`);
+  redirect(`/account/reset-password?role=jury${token ? `&token=${encodeURIComponent(token)}` : ""}`);
 }

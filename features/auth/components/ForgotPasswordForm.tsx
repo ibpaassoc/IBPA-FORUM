@@ -8,7 +8,7 @@ import { forgotPasswordAction } from "@/features/auth/server/forgot-password.act
 const inputClass =
   "w-full rounded-[var(--radius-sm)] border-[1.5px] border-[var(--border-default)] bg-[var(--color-white)] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1.2vw,0.85rem)] text-[clamp(0.82rem,1.2vw,0.95rem)] text-[var(--color-ink)] outline-none transition placeholder:text-[rgba(74,96,128,0.4)] focus:border-[var(--color-hover-accent)] focus:shadow-[0_0_0_3px_rgba(114,160,193,0.16)]";
 
-export default function ForgotPasswordForm() {
+export default function ForgotPasswordForm({ role }: { role: "applicant" | "jury" }) {
   const { t } = useLanguage();
   const [state, formAction, isPending] = useActionState(forgotPasswordAction, undefined);
 
@@ -24,7 +24,7 @@ export default function ForgotPasswordForm() {
           </p>
         </div>
         <Link
-          href="/account/login"
+          href={`/login?role=${role}`}
           className="block text-sm text-[var(--color-hover-accent)] transition hover:text-[var(--color-blue)] hover:underline"
         >
           ← {t.auth.form.backToLogin}
@@ -35,6 +35,7 @@ export default function ForgotPasswordForm() {
 
   return (
     <form action={formAction} className="space-y-[var(--space-md)]">
+      <input type="hidden" name="role" value={role} />
       <div>
         <label
           htmlFor="email"
@@ -68,7 +69,7 @@ export default function ForgotPasswordForm() {
       </button>
 
       <Link
-        href="/account/login"
+        href={`/login?role=${role}`}
         className="block text-center text-sm text-[var(--color-ink-soft)] transition hover:text-[var(--color-hover-accent)]"
       >
         ← {t.auth.form.backToLogin}

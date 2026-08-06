@@ -4,11 +4,12 @@ import { getAppSession } from "@/auth";
 import { getDashboardPathForRole } from "@/features/account/server/accounts";
 import { validateAccountToken } from "@/features/account/server/tokens";
 import { prisma } from "@/shared/lib/prisma";
+import { parsePublicAccountRole } from "@/features/auth/lib/role";
 
 export default async function AccountSetupPage({
   searchParams,
 }: {
-  searchParams: Promise<{ token?: string }>;
+  searchParams: Promise<{ token?: string; role?: string }>;
 }) {
   const session = await getAppSession();
 
@@ -16,16 +17,17 @@ export default async function AccountSetupPage({
     redirect(getDashboardPathForRole(session.user.role));
   }
 
-  const { token } = await searchParams;
+  const { token, role: roleParam } = await searchParams;
+  const role = parsePublicAccountRole(roleParam);
 
   if (!token) {
-    return <AccountSetupContent token="" tokenState="missing" />;
+    return <AccountSetupContent token="" tokenState="missing" role={role} />;
   }
 
   const result = await validateAccountToken({ token, purpose: "SETUP" });
 
   if (!result.valid) {
-    return <AccountSetupContent token={token} tokenState={result.expired ? "expired" : "invalid"} />;
+    return <AccountSetupContent token={token} tokenState={result.expired ? "expired" : "invalid"} role={role} />;
   }
 
   // The account already completed setup through another path (register/reset/admin)
@@ -36,8 +38,8 @@ export default async function AccountSetupPage({
   });
 
   if (account?.passwordHash) {
-    redirect("/account/login");
+    redirect(`/login?role=${result.record.account.role === "JURY" ? "jury" : "applicant"}`);
   }
 
-  return <AccountSetupContent token={token} tokenState="valid" />;
+  return <AccountSetupContent token={token} tokenState="valid" role={result.record.account.role === "JURY" ? "jury" : "applicant"} />;
 }

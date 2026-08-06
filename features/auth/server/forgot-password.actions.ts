@@ -6,6 +6,7 @@ import { findAccountForPublicAuth } from "@/features/account/server/accounts";
 import { activateRequestDataScope } from "@/features/test/server/data-scope";
 import { createPasswordResetToken } from "@/features/account/server/tokens";
 import { sendAccountPasswordResetEmail } from "@/features/account/server/emails";
+import { parsePublicAccountRole, toAccountRole } from "@/features/auth/lib/role";
 
 export type ForgotPasswordState = {
   sent?: boolean;
@@ -17,12 +18,13 @@ export async function forgotPasswordAction(
   formData: FormData
 ): Promise<ForgotPasswordState> {
   const email = normalizeAccountEmail(String(formData.get("email") ?? ""));
+  const role = parsePublicAccountRole(String(formData.get("role") ?? ""));
 
   if (!email) {
     return { error: "Email is required." };
   }
 
-  const account = await findAccountForPublicAuth(email);
+  const account = await findAccountForPublicAuth(email, toAccountRole(role));
 
   // Always return success to prevent email enumeration attacks.
   if (!account || account.status === "DISABLED") {

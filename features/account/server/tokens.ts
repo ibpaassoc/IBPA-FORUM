@@ -109,6 +109,7 @@ type ValidAccountTokenRecord = {
   account: {
     id: string;
     email: string;
+    role: "APPLICANT" | "JURY";
   };
 };
 
@@ -127,6 +128,7 @@ export async function validateAccountToken({
       select: {
         id: true,
         email: true,
+        role: true,
         dataScope: true,
         setupTokenExpiresAt: true,
         setupTokenUsedAt: true,
@@ -152,6 +154,7 @@ export async function validateAccountToken({
           account: {
             id: account.id,
             email: account.email,
+            role: account.role,
           },
         } satisfies ValidAccountTokenRecord,
       };
@@ -160,7 +163,7 @@ export async function validateAccountToken({
 
   const record = await unscopedPrisma.accountSetupToken.findUnique({
     where: { tokenHash },
-    include: { account: { select: { id: true, email: true, dataScope: true } } },
+    include: { account: { select: { id: true, email: true, role: true, dataScope: true } } },
   });
 
   if (!record || record.purpose !== purpose || record.usedAt) {
@@ -182,6 +185,7 @@ export async function validateAccountToken({
       account: {
         id: record.account.id,
         email: record.account.email,
+        role: record.account.role,
       },
     } satisfies ValidAccountTokenRecord,
   };

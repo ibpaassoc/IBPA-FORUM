@@ -5,6 +5,7 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { findAccountForPublicAuth } from "@/features/account/server/accounts";
 import { normalizeAccountEmail, verifyPasswordHash } from "@/features/account/server/password";
+import { parsePublicAccountRole, toAccountRole } from "@/features/auth/lib/role";
 
 declare module "next-auth" {
   interface Session {
@@ -49,7 +50,7 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   pages: {
-    signIn: "/account/login",
+    signIn: "/login",
   },
   providers: [
     CredentialsProvider({
@@ -63,6 +64,10 @@ export const authOptions: NextAuthOptions = {
           label: "Password",
           type: "password",
         },
+        role: {
+          label: "Account type",
+          type: "text",
+        },
       },
       async authorize(credentials) {
         const email = normalizeAccountEmail(String(credentials?.email ?? ""));
@@ -72,7 +77,10 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const account = await findAccountForPublicAuth(email);
+        const account = await findAccountForPublicAuth(
+          email,
+          toAccountRole(parsePublicAccountRole(String(credentials?.role ?? ""))),
+        );
 
         if (
           !account ||

@@ -12,7 +12,7 @@ const inputClass =
 const labelClass =
   "mb-[var(--space-xs)] block text-[clamp(0.68rem,1vw,0.78rem)] font-medium uppercase tracking-[0.08em] text-[var(--color-ink)]";
 
-export default function ResetPasswordForm({ token }: { token: string }) {
+export default function ResetPasswordForm({ token, role }: { token: string; role: "applicant" | "jury" }) {
   const { t } = useLanguage();
   const router = useRouter();
   const [state, formAction, isPending] = useActionState(resetPasswordAction, undefined);
@@ -21,12 +21,12 @@ export default function ResetPasswordForm({ token }: { token: string }) {
     if (!state?.success) return;
 
     const timer = setTimeout(() => {
-      router.replace("/account/login");
+      router.replace(`/login?role=${role}`);
       router.refresh();
     }, 1500);
 
     return () => clearTimeout(timer);
-  }, [router, state]);
+  }, [role, router, state]);
 
   if (state?.success) {
     return (
@@ -40,7 +40,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
           </p>
         </div>
         <Link
-          href="/account/login"
+          href={`/login?role=${role}`}
           className="ibpa-button ibpa-button-primary inline-flex w-full"
         >
           {t.auth.form.backToLogin}
