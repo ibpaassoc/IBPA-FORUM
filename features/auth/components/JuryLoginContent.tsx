@@ -16,8 +16,8 @@ export default function JuryLoginContent({
   return (
     <AuthShell
       eyebrow={role === "jury" ? "Jury Login" : "Applicant Login"}
-      title={role === "jury" ? "Welcome back" : "Continue your application"}
-      description={role === "jury" ? t.auth.loginPage.cardText : "Sign in to manage your IBPA Beauty Award application."}
+      title={"Welcome back"}
+      description={""}
     >
       <LoginForm role={role} next={next} />
     </AuthShell>
