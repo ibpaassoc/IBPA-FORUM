@@ -225,9 +225,12 @@ assert(has(roleRedirects, "safeNextForRole"), "cross-role dashboard redirects ar
 assert(has(read("app/login/page.tsx"), "!roleParam"), "explicit role login can replace an existing opposite-role session");
 assert(has(read("features/account/components/AccountRoleSwitcher.tsx"), "Switch to"), "dual-role accounts expose a role switch action");
 assert(has(read("features/test/components/TestActorBanner.tsx"), "Open DEV panel"), "DEV accounts display a quick link to the DEV panel");
-assert(has(read("features/account/server/jury-applicant-onboarding.actions.ts"), 'FOR UPDATE'), "jury applicant onboarding serializes repeated requests");
-assert(has(read("features/account/server/jury-applicant-onboarding.actions.ts"), 'error.code === "P2002"'), "jury applicant onboarding handles a concurrent duplicate safely");
+assert(has(read("features/account/components/jury/ApplyAsApplicantButton.tsx"), 'href="/apply"'), "jury applicant action uses the standard public application route");
+assert(!has(read("features/account/components/jury/ApplyAsApplicantButton.tsx"), "startApplicantOnboardingFromJury"), "jury applicant action no longer creates an account from the dashboard");
 assert(has(read("features/account/server/accounts.ts"), "findSiblingAccount"), "account switcher uses an explicit same-scope sibling lookup");
+assert(has(accountAuth, 'id: "account-switch"'), "authenticated role switching has a dedicated credentials provider");
+assert(has(read("features/account/components/AccountRoleSwitcher.tsx"), 'signIn("account-switch"'), "the role switcher changes the session without returning to login");
+assert(has(read("features/account/components/jury/JuryOverview.tsx"), "!hasApplicantAccount"), "Jury onboarding is hidden when an Applicant identity already exists");
 assert(has(read("features/jury/server/auth.ts"), 'requireAccount("JURY")'), "jury-only routes return unauthenticated users to jury login");
 assert(has(read("features/account/components/ApplicantSidebar.tsx"), "/login?role=applicant"), "applicant logout returns to applicant login");
 assert(has(read("features/account/components/jury/JuryAccountSidebar.tsx"), "/login?role=jury"), "jury logout returns to jury login");

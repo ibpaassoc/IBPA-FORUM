@@ -76,13 +76,115 @@ export async function findSiblingAccount({
   role: AccountRole;
   dataScope: DataScope;
 }) {
-  return unscopedPrisma.account.findFirst({
+  const account = await unscopedPrisma.account.findFirst({
     where: {
       normalizedEmail: normalizeAccountEmail(email),
       role,
       dataScope,
       deletedAt: null,
-      status: { not: "DISABLED" },
+      // Account switching creates a new authenticated session for the other
+      // role, so only fully activated accounts are eligible.
+      status: "ACTIVE",
+    },
+    select: {
+      id: true,
+      applicantProfile: { select: { id: true } },
+      juryProfile: { select: { juryApplicationId: true } },
+    },
+  });
+
+  if (
+    !account ||
+    (role === "APPLICANT" && !account.applicantProfile) ||
+    (role === "JURY" && !account.juryProfile?.juryApplicationId)
+  ) {
+    return null;
+  }
+
+  return { id: account.id };
+}
+
+/**
+ * Finds an account of the other role for an authenticated, non-test session.
+ * The lookup is intentionally anchored on the current account ID rather than
+ * client-provided email so a session can only cross to its own matching role.
+ */
+export async function findAccountForSessionRoleSwitch({
+  accountId,
+  targetRole,
+}: {
+  accountId: string;
+  targetRole: AccountRole;
+}) {
+  const source = await unscopedPrisma.account.findUnique({
+    where: { id: accountId },
+    select: {
+      normalizedEmail: true,
+      role: true,
+      dataScope: true,
+      status: true,
+      deletedAt: true,
+    },
+  });
+
+  if (
+    !source ||
+    source.role === targetRole ||
+    source.dataScope === "TEST" ||
+    source.status !== "ACTIVE" ||
+    source.deletedAt
+  ) {
+    return null;
+  }
+
+  const account = await unscopedPrisma.account.findFirst({
+    where: {
+      normalizedEmail: source.normalizedEmail,
+      role: targetRole,
+      dataScope: source.dataScope,
+      status: "ACTIVE",
+      deletedAt: null,
+    },
+    include: {
+      applicantProfile: { select: { id: true, fullName: true } },
+      juryProfile: {
+        select: {
+          id: true,
+          juryApplicationId: true,
+          fullName: true,
+          expertiseAreas: true,
+          approvalStatus: true,
+        },
+      },
+    },
+  });
+
+  if (
+    !account ||
+    (targetRole === "APPLICANT" && !account.applicantProfile) ||
+    (targetRole === "JURY" && !account.juryProfile?.juryApplicationId)
+  ) {
+    return null;
+  }
+
+  return account;
+}
+
+/** A Jury account must not start onboarding if any Applicant identity exists. */
+export async function findSameScopeAccount({
+  email,
+  role,
+  dataScope,
+}: {
+  email: string;
+  role: AccountRole;
+  dataScope: DataScope;
+}) {
+  return unscopedPrisma.account.findFirst({
+    where: {
+      normalizedEmail: normalizeAccountEmail(email),
+      role,
+      dataScope,
     },
     select: { id: true },
   });

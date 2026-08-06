@@ -3,7 +3,10 @@ import type { DefaultSession, NextAuthOptions } from "next-auth";
 import { getServerSession } from "next-auth";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { findAccountForPublicAuth } from "@/features/account/server/accounts";
+import {
+  findAccountForPublicAuth,
+  findAccountForSessionRoleSwitch,
+} from "@/features/account/server/accounts";
 import { normalizeAccountEmail, verifyPasswordHash } from "@/features/account/server/password";
 import { parsePublicAccountRole, toAccountRole } from "@/features/auth/lib/role";
 
@@ -94,6 +97,43 @@ export const authOptions: NextAuthOptions = {
         const isValid = await verifyPasswordHash(password, account.passwordHash);
 
         if (!isValid) {
+          return null;
+        }
+
+        return {
+          id: account.id,
+          accountId: account.id,
+          email: account.email,
+          role: account.role,
+          dataScope: account.dataScope,
+          applicantProfileId: account.applicantProfile?.id,
+          juryProfileId: account.juryProfile?.id,
+        };
+      },
+    }),
+    CredentialsProvider({
+      id: "account-switch",
+      name: "Account switch",
+      credentials: {
+        role: {
+          label: "Account type",
+          type: "text",
+        },
+      },
+      async authorize(credentials) {
+        const session = await getServerSession(authOptions);
+        const accountId = session?.user?.accountId;
+
+        if (!accountId) {
+          return null;
+        }
+
+        const account = await findAccountForSessionRoleSwitch({
+          accountId,
+          targetRole: toAccountRole(parsePublicAccountRole(String(credentials?.role ?? ""))),
+        });
+
+        if (!account) {
           return null;
         }
 

@@ -24,6 +24,7 @@ const CONTINUE_LIMIT = 2;
 export default async function JuryOverview({
   nominations,
   totals,
+  hasApplicantAccount,
 }: {
   nominations: JuryNominationListItem[];
   totals: {
@@ -34,6 +35,7 @@ export default async function JuryOverview({
     remaining: number;
     completionPercentage: number;
   };
+  hasApplicantAccount: boolean;
 }) {
   const t = await getServerTranslations();
   const ov = t.account.jury.overview;
@@ -61,7 +63,7 @@ export default async function JuryOverview({
         remaining={totals.remaining}
       />
 
-      <ApplyAsApplicantButton />
+      {!hasApplicantAccount ? <ApplyAsApplicantButton /> : null}
 
       <section aria-labelledby="continue-reviewing-heading" className="mt-1">
         <div className="mb-4 flex items-center justify-between gap-3">
