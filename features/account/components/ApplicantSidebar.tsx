@@ -16,6 +16,7 @@ import {
 import { signOut } from "next-auth/react";
 import { useState } from "react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import AccountRoleSwitcher from "@/features/account/components/AccountRoleSwitcher";
 import {
   Drawer,
   FloatingActionButton,
@@ -58,9 +59,11 @@ function SignOutButton({ compact = false, label }: { compact?: boolean; label: s
 export default function ApplicantSidebar({
   applicantName,
   email,
+  canSwitchAccount,
 }: {
   applicantName: string;
   email: string;
+  canSwitchAccount: boolean;
 }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
@@ -128,6 +131,7 @@ export default function ApplicantSidebar({
                 );
               })}
             </nav>
+            {canSwitchAccount ? <AccountRoleSwitcher currentRole="APPLICANT" /> : null}
 
             <div className="mt-auto border-t border-[rgba(37,42,45,0.08)] pt-3">
               <div
@@ -196,6 +200,7 @@ export default function ApplicantSidebar({
               );
             })}
           </nav>
+          {canSwitchAccount ? <AccountRoleSwitcher currentRole="APPLICANT" mobile /> : null}
           <SignOutButton label={nav.signOut} />
         </div>
       </Drawer>

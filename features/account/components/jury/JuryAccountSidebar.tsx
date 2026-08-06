@@ -14,6 +14,7 @@ import {
   PanelLeftOpen,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import AccountRoleSwitcher from "@/features/account/components/AccountRoleSwitcher";
 import {
   Drawer,
   FloatingActionButton,
@@ -51,10 +52,12 @@ export default function JuryAccountSidebar({
   juryName,
   email,
   approvedCategories,
+  canSwitchAccount,
 }: {
   juryName: string;
   email: string;
   approvedCategories: string[];
+  canSwitchAccount: boolean;
 }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
@@ -110,6 +113,7 @@ export default function JuryAccountSidebar({
               );
             })}
           </nav>
+          {canSwitchAccount ? <AccountRoleSwitcher currentRole="JURY" /> : null}
 
           <div className="mt-auto border-t border-[rgba(37,42,45,0.08)] pt-3">
             <div className={`flex items-center gap-3 rounded-[20px] px-2 py-2 ${collapsed ? "justify-center" : ""}`}>
@@ -171,6 +175,7 @@ export default function JuryAccountSidebar({
               );
             })}
           </nav>
+          {canSwitchAccount ? <AccountRoleSwitcher currentRole="JURY" mobile /> : null}
           <SignOutButton label={nav.signOut} />
         </div>
       </Drawer>

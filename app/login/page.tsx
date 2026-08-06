@@ -7,7 +7,7 @@ import { parsePublicAccountRole, safeInternalNext } from "@/features/auth/lib/ro
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ role?: string; next?: string }>;
+  searchParams: Promise<{ role?: string; next?: string; switch?: string }>;
 }) {
   const [{ role: roleParam, next: nextParam }, session] = await Promise.all([searchParams, getAppSession()]);
   const role = parsePublicAccountRole(roleParam);
@@ -15,7 +15,7 @@ export default async function LoginPage({
 
   if (session?.user?.accountId && session.user.role) {
     const account = await findAccountForPublicSession(session.user.accountId);
-    if (account && !account.deletedAt && account.status !== "DISABLED") {
+    if (!roleParam && account && !account.deletedAt && account.status !== "DISABLED") {
       redirect(getDashboardPathForRole(account.role));
     }
   }
