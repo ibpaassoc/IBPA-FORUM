@@ -86,7 +86,7 @@ export async function validatePasswordResetToken(token: string): Promise<{
 }
 
 export async function requireJuryAuth() {
-  const authenticatedAccount = await requireAccount();
+  const authenticatedAccount = await requireAccount("JURY");
   if (authenticatedAccount.role !== "JURY") {
     redirect("/account/login");
   }

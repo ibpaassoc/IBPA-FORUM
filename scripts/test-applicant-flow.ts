@@ -222,6 +222,7 @@ assert(has(accountAuth, 'role: {'), "credentials authentication receives the sel
 assert(has(roleLogin, "No ${requestedRole} account was found"), "login reports a missing account for the selected role");
 assert(has(roleLogin, "switchRole"), "opposite-role accounts offer a role switch");
 assert(has(roleRedirects, "safeNextForRole"), "cross-role dashboard redirects are rejected");
+assert(has(read("features/jury/server/auth.ts"), 'requireAccount("JURY")'), "jury-only routes return unauthenticated users to jury login");
 assert(has(read("features/account/components/ApplicantSidebar.tsx"), "/login?role=applicant"), "applicant logout returns to applicant login");
 assert(has(read("features/account/components/jury/JuryAccountSidebar.tsx"), "/login?role=jury"), "jury logout returns to jury login");
 

@@ -300,7 +300,7 @@ export function getDashboardPathForRole(role: AccountRole) {
   return role === "JURY" ? "/account/jury" : "/account/applicant";
 }
 
-export async function requireAccount() {
+export async function requireAccount(loginRole?: AccountRole) {
   const testActor = await getTestActor();
   if (testActor) {
     activateRequestDataScope({ dataScope: "TEST" });
@@ -317,7 +317,7 @@ export async function requireAccount() {
   const session = await getAppSession();
 
   if (!session?.user?.accountId) {
-    redirect("/account/login");
+    redirect(`/login${loginRole === "JURY" ? "?role=jury" : ""}`);
   }
 
   activateRequestDataScope({ dataScope: session.user.dataScope ?? "PRODUCTION" });
@@ -331,14 +331,14 @@ export async function requireAccount() {
   });
 
   if (!account || account.status === "DISABLED") {
-    redirect("/account/login");
+    redirect(`/login${loginRole === "JURY" ? "?role=jury" : ""}`);
   }
 
   return account;
 }
 
 export async function requireApplicantAccount() {
-  const account = await requireAccount();
+  const account = await requireAccount("APPLICANT");
   if (account.role !== "APPLICANT") {
     redirect(getDashboardPathForRole(account.role));
   }
@@ -353,7 +353,7 @@ export async function requireApplicantAccount() {
 }
 
 export async function requireJuryAccount() {
-  const account = await requireAccount();
+  const account = await requireAccount("JURY");
   if (account.role !== "JURY" || !account.juryProfile) {
     redirect(getDashboardPathForRole(account.role));
   }
