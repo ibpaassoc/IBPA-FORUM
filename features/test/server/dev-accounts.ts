@@ -18,6 +18,7 @@ import {
   sendAccountPasswordResetEmail,
 } from "@/features/account/server/emails";
 import { sendSetupEmailForAccount } from "@/features/account/server/accounts";
+import { accountIdentity } from "@/features/account/server/accounts";
 import { getCategoryScoringDefinition } from "@/features/jury/scoring/category-scoring";
 
 export type DevAccountRole = "APPLICANT" | "JURY";
@@ -93,11 +94,11 @@ export async function createDevAccount(input: CreateDevAccountInput) {
   }
 
   const existing = await unscopedPrisma.account.findUnique({
-    where: { email },
+    where: accountIdentity(email, input.role),
     select: { dataScope: true },
   });
   if (existing) {
-    throw new Error(`That email already belongs to a ${existing.dataScope} account.`);
+    throw new Error(`That email already belongs to a ${input.role.toLowerCase()} ${existing.dataScope} account.`);
   }
 
   const passwordHash = password ? await createPasswordHash(password) : null;
@@ -126,6 +127,7 @@ export async function createDevAccount(input: CreateDevAccountInput) {
         const account = await tx.account.create({
           data: {
             email,
+            normalizedEmail: email,
             role: "APPLICANT",
             status: passwordHash ? "ACTIVE" : "INVITED",
             passwordHash,
@@ -194,6 +196,7 @@ export async function createDevAccount(input: CreateDevAccountInput) {
       return tx.account.create({
         data: {
           email,
+          normalizedEmail: email,
           role: "JURY",
           status: passwordHash ? "ACTIVE" : "INVITED",
           passwordHash,

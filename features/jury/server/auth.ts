@@ -1,7 +1,7 @@
 import "server-only";
 import type { DataScope } from "@prisma/client";
 import { redirect } from "next/navigation";
-import { requireAccount } from "@/features/account/server/accounts";
+import { accountIdentity, requireAccount } from "@/features/account/server/accounts";
 import {
   createPasswordHash,
   isStrongPassword,
@@ -28,8 +28,8 @@ export function normalizeJuryEmail(email: string) {
 }
 
 export async function findJuryAccountByEmail(email: string) {
-  return prisma.account.findFirst({
-    where: { email: normalizeJuryEmail(email), role: "JURY" },
+  return prisma.account.findUnique({
+    where: accountIdentity(email, "JURY"),
     include: {
       juryProfile: {
         select: {
@@ -86,7 +86,7 @@ export async function validatePasswordResetToken(token: string): Promise<{
 }
 
 export async function requireJuryAuth() {
-  const authenticatedAccount = await requireAccount();
+  const authenticatedAccount = await requireAccount("JURY");
   if (authenticatedAccount.role !== "JURY") {
     redirect("/account/login");
   }

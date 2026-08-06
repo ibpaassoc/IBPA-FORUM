@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useActionState } from "react";
@@ -15,28 +15,27 @@ const inputClass =
 export default function SetupPasswordForm({
   token,
   tokenState,
+  role,
 }: {
   token: string;
   tokenState: "missing" | "invalid" | "expired" | "valid";
+  role: "applicant" | "jury";
 }) {
   const router = useRouter();
-  const [redirecting, setRedirecting] = useState(false);
   const [state, action, pending] = useActionState<SetupPasswordState | undefined, FormData>(
     setupPasswordAction,
     undefined
   );
 
   useEffect(() => {
-    if (!state?.success || redirecting) return;
-
-    setRedirecting(true);
+    if (!state?.success) return;
     const timer = setTimeout(() => {
-      router.replace("/account/login");
+      router.replace(`/login?role=${role}`);
       router.refresh();
     }, 1500);
 
     return () => clearTimeout(timer);
-  }, [redirecting, router, state]);
+  }, [role, router, state?.success]);
 
   if (tokenState !== "valid") {
     const message =
@@ -51,14 +50,14 @@ export default function SetupPasswordForm({
         <p className="rounded-[var(--radius-sm)] border border-[var(--color-hover-accent)] bg-[rgba(185,217,235,0.26)] px-[var(--space-sm)] py-[var(--space-sm)] text-sm text-[var(--color-ink)]">
           {message}
         </p>
-        <Link href="/account/forgot-password" className="ibpa-button ibpa-button-primary w-full">
+        <Link href={`/account/forgot-password?role=${role}`} className="ibpa-button ibpa-button-primary w-full">
           Request a new link
         </Link>
       </div>
     );
   }
 
-  const done = Boolean(state?.success) || redirecting;
+  const done = Boolean(state?.success);
 
   return (
     <form action={action} className="space-y-[var(--space-md)]">

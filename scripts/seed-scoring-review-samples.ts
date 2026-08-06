@@ -93,9 +93,9 @@ async function seedCategories() {
 async function main() {
   const categories = await seedCategories();
   const applicantAccount = await prisma.account.upsert({
-    where: { email: APPLICANT_EMAIL },
+    where: { normalizedEmail_role: { normalizedEmail: APPLICANT_EMAIL, role: "APPLICANT" } },
     update: { role: "APPLICANT", status: "ACTIVE", deletedAt: null },
-    create: { email: APPLICANT_EMAIL, role: "APPLICANT", status: "ACTIVE" },
+    create: { email: APPLICANT_EMAIL, normalizedEmail: APPLICANT_EMAIL, role: "APPLICANT", status: "ACTIVE" },
   });
   const applicant = await prisma.applicantProfile.upsert({
     where: { accountId: applicantAccount.id },
@@ -200,7 +200,7 @@ async function main() {
     },
   });
   const juryAccount = await prisma.account.upsert({
-    where: { email: JURY_EMAIL },
+    where: { normalizedEmail_role: { normalizedEmail: JURY_EMAIL, role: "JURY" } },
     update: {
       passwordHash: await createPasswordHash(JURY_PASSWORD),
       role: "JURY",
@@ -209,6 +209,7 @@ async function main() {
     },
     create: {
       email: JURY_EMAIL,
+      normalizedEmail: JURY_EMAIL,
       passwordHash: await createPasswordHash(JURY_PASSWORD),
       role: "JURY",
       status: "ACTIVE",

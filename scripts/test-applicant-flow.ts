@@ -54,7 +54,7 @@ assert(
   "applicant accounts without a profile are sent to a recovery page instead of looping"
 );
 assert(
-  has(accountLoginForm, 'window.location.assign("/account")'),
+  has(accountLoginForm, "window.location.assign(destination)"),
   "successful login uses a document navigation so the new session is available to role routing"
 );
 assert(has(accountLoginForm, "} catch {"), "login returns to an actionable state when authentication requests fail");
@@ -216,8 +216,24 @@ assert(!has(loginForm, "Need a registration link"), "login page has no resend re
 assert(!has(loginForm, "unregistered applicant account"), "resend copy is not applicant-only");
 
 const accountAuth = read("auth.ts");
-assert(!has(accountAuth, "No account is registered with this email."), "login does not disclose missing accounts");
-assert(!has(accountAuth, "Account setup is required."), "login does not disclose setup state");
+const roleLogin = read("features/auth/server/login.actions.ts");
+const roleRedirects = read("features/auth/lib/role.ts");
+assert(has(accountAuth, 'role: {'), "credentials authentication receives the selected account role");
+assert(has(roleLogin, "No ${requestedRole} account was found"), "login reports a missing account for the selected role");
+assert(has(roleLogin, "switchRole"), "opposite-role accounts offer a role switch");
+assert(has(roleRedirects, "safeNextForRole"), "cross-role dashboard redirects are rejected");
+assert(has(read("app/login/page.tsx"), "!roleParam"), "explicit role login can replace an existing opposite-role session");
+assert(has(read("features/account/components/AccountRoleSwitcher.tsx"), "Switch to"), "dual-role accounts expose a role switch action");
+assert(has(read("features/test/components/TestActorBanner.tsx"), "Open DEV panel"), "DEV accounts display a quick link to the DEV panel");
+assert(has(read("features/account/components/jury/ApplyAsApplicantButton.tsx"), 'href="/apply"'), "jury applicant action uses the standard public application route");
+assert(!has(read("features/account/components/jury/ApplyAsApplicantButton.tsx"), "startApplicantOnboardingFromJury"), "jury applicant action no longer creates an account from the dashboard");
+assert(has(read("features/account/server/accounts.ts"), "findSiblingAccount"), "account switcher uses an explicit same-scope sibling lookup");
+assert(has(accountAuth, 'id: "account-switch"'), "authenticated role switching has a dedicated credentials provider");
+assert(has(read("features/account/components/AccountRoleSwitcher.tsx"), 'signIn("account-switch"'), "the role switcher changes the session without returning to login");
+assert(has(read("features/account/components/jury/JuryOverview.tsx"), "!hasApplicantAccount"), "Jury onboarding is hidden when an Applicant identity already exists");
+assert(has(read("features/jury/server/auth.ts"), 'requireAccount("JURY")'), "jury-only routes return unauthenticated users to jury login");
+assert(has(read("features/account/components/ApplicantSidebar.tsx"), "/login?role=applicant"), "applicant logout returns to applicant login");
+assert(has(read("features/account/components/jury/JuryAccountSidebar.tsx"), "/login?role=jury"), "jury logout returns to jury login");
 
 // -- Applicant account and deadline closure -----------------------------------
 console.log("applicant account editing and closure");

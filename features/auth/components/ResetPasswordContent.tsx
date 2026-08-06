@@ -10,9 +10,11 @@ type TokenState = "valid" | "invalid" | "expired" | "missing";
 export default function ResetPasswordContent({
   token,
   tokenState,
+  role,
 }: {
   token: string;
   tokenState: TokenState;
+  role: "applicant" | "jury";
 }) {
   const { t } = useLanguage();
 
@@ -23,7 +25,7 @@ export default function ResetPasswordContent({
       description={t.auth.resetPage.cardText}
     >
       {tokenState === "valid" ? (
-        <ResetPasswordForm token={token} />
+        <ResetPasswordForm token={token} role={role} />
       ) : (
         <div className="space-y-[var(--space-md)]">
           <div className="rounded-[var(--radius)] border border-[var(--border-default)] bg-[var(--surface-tint)] p-[var(--space-md)]">
@@ -34,13 +36,13 @@ export default function ResetPasswordContent({
             </p>
           </div>
           <Link
-            href="/account/forgot-password"
+            href={`/account/forgot-password?role=${role}`}
             className="ibpa-button ibpa-button-primary inline-flex w-full"
           >
             {t.auth.form.sendResetLink}
           </Link>
           <Link
-            href="/account/login"
+            href={`/login?role=${role}`}
             className="block text-center text-sm text-[var(--color-ink-soft)] transition hover:text-[var(--color-hover-accent)]"
           >
             ← {t.auth.form.backToLogin}

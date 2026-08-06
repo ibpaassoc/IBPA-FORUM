@@ -18,6 +18,7 @@
     "test:jury-closure": "tsx scripts/test-jury-closure.ts",
     "test:category-scoring": "tsx scripts/test-category-scoring.ts",
     "test:jury-approved-categories": "tsx scripts/test-jury-approved-categories.ts",
+    "test:role-auth": "tsx scripts/test-role-auth.ts",
     "verify:account-migration": "tsx scripts/verify-account-migration.ts",
     "repair:test-uploads": "tsx scripts/repair-test-uploads.ts",
     "seed:checkin-samples": "tsx scripts/seed-checkin-samples.ts",

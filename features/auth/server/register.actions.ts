@@ -2,6 +2,7 @@
 
 import { prisma } from "@/shared/lib/prisma";
 import { upsertJuryAccountForApplication } from "@/features/account/server/accounts";
+import { accountIdentity } from "@/features/account/server/accounts";
 import {
   createPasswordHash,
   getJuryApplicationByEmail,
@@ -61,14 +62,7 @@ export async function registerAccountAction(
 
   const passwordHash = await createPasswordHash(password);
 
-  const existingAccount = await prisma.account.findUnique({ where: { email } });
-
-  if (existingAccount?.role && existingAccount.role !== "JURY") {
-    return {
-      email,
-      error: "An account with this email already exists for another role. Please contact IBPA support.",
-    };
-  }
+  const existingAccount = await prisma.account.findUnique({ where: accountIdentity(email, "JURY") });
 
   if (existingAccount?.passwordHash && existingAccount.status === "ACTIVE") {
     return {

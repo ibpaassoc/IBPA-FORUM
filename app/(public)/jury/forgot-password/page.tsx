@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function ForgotPasswordPage() {
-  redirect("/account/forgot-password");
+  redirect("/account/forgot-password?role=jury");
 }

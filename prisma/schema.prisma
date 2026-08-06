@@ -29,7 +29,8 @@ model Award {
 
 model Account {
   id                           String              @id @default(cuid())
-  email                        String              @unique
+  email                        String
+  normalizedEmail              String
   passwordHash                 String?
   role                         AccountRole
   status                       AccountStatus       @default(INVITED)
@@ -51,6 +52,8 @@ model Account {
   tickets                      Ticket[]
 
   @@index([role, status])
+  @@unique([normalizedEmail, role])
+  @@index([normalizedEmail])
   @@index([deletedAt])
   @@index([dataScope, role, status])
   @@index([testScenarioId])

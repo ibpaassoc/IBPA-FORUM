@@ -2,18 +2,21 @@
 
 import AuthShell from "@/features/auth/components/AuthShell";
 import LoginForm from "@/features/auth/components/LoginForm";
-import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
-export default function JuryLoginContent() {
-  const { t } = useLanguage();
-
+export default function JuryLoginContent({
+  role,
+  next,
+}: {
+  role: "applicant" | "jury";
+  next: string;
+}) {
   return (
     <AuthShell
-      eyebrow={t.auth.loginPage.eyebrow}
-      title={t.auth.loginPage.cardTitle}
-      description={t.auth.loginPage.cardText}
+      eyebrow={role === "jury" ? "Jury Login" : "Applicant Login"}
+      title={"Welcome back"}
+      description={""}
     >
-      <LoginForm />
+      <LoginForm role={role} next={next} />
     </AuthShell>
   );
 }

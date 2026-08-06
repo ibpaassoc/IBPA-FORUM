@@ -3,6 +3,7 @@ import "server-only";
 import { createAccountSetupToken } from "@/features/account/server/tokens";
 import { sendAccountSetupEmail } from "@/features/account/server/emails";
 import { normalizeAccountEmail } from "@/features/account/server/password";
+import { accountIdentity } from "@/features/account/server/accounts";
 import { prisma } from "@/shared/lib/prisma";
 
 export const APPLICANT_REGISTRATION_RESEND_COOLDOWN_MS = 10 * 60 * 1000;
@@ -29,7 +30,7 @@ export async function issueApplicantRegistrationLink({
     const initial = "accountId" in selector
       ? await tx.account.findUnique({ where: { id: selector.accountId }, select: { id: true } })
       : normalizedEmail
-        ? await tx.account.findUnique({ where: { email: normalizedEmail }, select: { id: true } })
+        ? await tx.account.findUnique({ where: accountIdentity(normalizedEmail, "APPLICANT"), select: { id: true } })
         : null;
 
     if (!initial) return null;

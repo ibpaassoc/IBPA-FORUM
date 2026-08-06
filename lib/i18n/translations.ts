@@ -2216,7 +2216,7 @@ const en = {
     loginLink: "Login",
     registerLink: "Register",
     statement: "Every score should reflect both artistry and professional integrity.",
-    trustBadge: "Official Jury Portal · IBPA Beauty Award 2026",
+    trustBadge: "Official Portal · IBPA Beauty Award 2026",
     forgotPage: {
       eyebrow: "Password Recovery",
       title: "Restore your jury workspace access",
@@ -4565,7 +4565,7 @@ const ru: typeof en = {
     loginLink: "Войти",
     registerLink: "Регистрация",
     statement: "Каждая оценка должна отражать как мастерство, так и профессиональную честность.",
-    trustBadge: "Официальный портал жюри · IBPA Beauty Award 2026",
+    trustBadge: "Официальный портал · IBPA Beauty Award 2026",
     forgotPage: {
       eyebrow: "Восстановление пароля",
       title: "Восстановите доступ к кабинету жюри",
@@ -6914,7 +6914,7 @@ const ua: typeof en = {
     loginLink: "Увійти",
     registerLink: "Реєстрація",
     statement: "Кожна оцінка повинна відображати як майстерність, так і професійну чесність.",
-    trustBadge: "Офіційний портал журі · IBPA Beauty Award 2026",
+    trustBadge: "Офіційний портал · IBPA Beauty Award 2026",
     forgotPage: {
       eyebrow: "Відновлення пароля",
       title: "Відновіть доступ до кабінету журі",

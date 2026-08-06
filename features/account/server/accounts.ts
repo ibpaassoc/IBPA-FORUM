@@ -1,6 +1,6 @@
 import "server-only";
 
-import type { AccountRole, Prisma } from "@prisma/client";
+import type { AccountRole, DataScope, Prisma } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { getAppSession } from "@/auth";
 import { prisma, unscopedPrisma } from "@/shared/lib/prisma";
@@ -10,16 +10,13 @@ import { sendAccountSetupEmail } from "@/features/account/server/emails";
 import { getTestActor } from "@/features/test/server/auth";
 import { activateRequestDataScope } from "@/features/test/server/data-scope";
 
-export class AccountRoleConflictError extends Error {
-  constructor(email: string, existingRole: AccountRole, requestedRole: AccountRole) {
-    super(`Account ${email} already has role ${existingRole}; cannot assign ${requestedRole}.`);
-    this.name = "AccountRoleConflictError";
-  }
+export function accountIdentity(email: string, role: AccountRole) {
+  return { normalizedEmail_role: { normalizedEmail: normalizeAccountEmail(email), role } };
 }
 
-export async function findAccountByEmail(email: string) {
+export async function findAccountByEmail(email: string, role: AccountRole) {
   return prisma.account.findUnique({
-    where: { email: normalizeAccountEmail(email) },
+    where: accountIdentity(email, role),
     include: {
       applicantProfile: { select: { id: true, fullName: true } },
       juryProfile: {
@@ -41,9 +38,9 @@ export async function findAccountByEmail(email: string) {
  * PRODUCTION or DEV actors, while TEST actors remain accessible only through
  * the signed test-console impersonation flow.
  */
-export async function findAccountForPublicAuth(email: string) {
+export async function findAccountForPublicAuth(email: string, role: AccountRole) {
   const account = await unscopedPrisma.account.findUnique({
-    where: { email: normalizeAccountEmail(email) },
+    where: accountIdentity(email, role),
     include: {
       applicantProfile: { select: { id: true, fullName: true } },
       juryProfile: {
@@ -59,6 +56,138 @@ export async function findAccountForPublicAuth(email: string) {
   });
 
   return account?.dataScope === "TEST" ? null : account;
+}
+
+export async function findPublicAccountsByEmail(email: string) {
+  const accounts = await unscopedPrisma.account.findMany({
+    where: { normalizedEmail: normalizeAccountEmail(email), dataScope: { not: "TEST" } },
+    select: { id: true, role: true, status: true, passwordHash: true, deletedAt: true },
+  });
+  return accounts;
+}
+
+/** Used only by an authenticated account to reveal its own other-role account. */
+export async function findSiblingAccount({
+  email,
+  role,
+  dataScope,
+}: {
+  email: string;
+  role: AccountRole;
+  dataScope: DataScope;
+}) {
+  const account = await unscopedPrisma.account.findFirst({
+    where: {
+      normalizedEmail: normalizeAccountEmail(email),
+      role,
+      dataScope,
+      deletedAt: null,
+      // Account switching creates a new authenticated session for the other
+      // role, so only fully activated accounts are eligible.
+      status: "ACTIVE",
+    },
+    select: {
+      id: true,
+      applicantProfile: { select: { id: true } },
+      juryProfile: { select: { juryApplicationId: true } },
+    },
+  });
+
+  if (
+    !account ||
+    (role === "APPLICANT" && !account.applicantProfile) ||
+    (role === "JURY" && !account.juryProfile?.juryApplicationId)
+  ) {
+    return null;
+  }
+
+  return { id: account.id };
+}
+
+/**
+ * Finds an account of the other role for an authenticated, non-test session.
+ * The lookup is intentionally anchored on the current account ID rather than
+ * client-provided email so a session can only cross to its own matching role.
+ */
+export async function findAccountForSessionRoleSwitch({
+  accountId,
+  targetRole,
+}: {
+  accountId: string;
+  targetRole: AccountRole;
+}) {
+  const source = await unscopedPrisma.account.findUnique({
+    where: { id: accountId },
+    select: {
+      normalizedEmail: true,
+      role: true,
+      dataScope: true,
+      status: true,
+      deletedAt: true,
+    },
+  });
+
+  if (
+    !source ||
+    source.role === targetRole ||
+    source.dataScope === "TEST" ||
+    source.status !== "ACTIVE" ||
+    source.deletedAt
+  ) {
+    return null;
+  }
+
+  const account = await unscopedPrisma.account.findFirst({
+    where: {
+      normalizedEmail: source.normalizedEmail,
+      role: targetRole,
+      dataScope: source.dataScope,
+      status: "ACTIVE",
+      deletedAt: null,
+    },
+    include: {
+      applicantProfile: { select: { id: true, fullName: true } },
+      juryProfile: {
+        select: {
+          id: true,
+          juryApplicationId: true,
+          fullName: true,
+          expertiseAreas: true,
+          approvalStatus: true,
+        },
+      },
+    },
+  });
+
+  if (
+    !account ||
+    (targetRole === "APPLICANT" && !account.applicantProfile) ||
+    (targetRole === "JURY" && !account.juryProfile?.juryApplicationId)
+  ) {
+    return null;
+  }
+
+  return account;
+}
+
+/** A Jury account must not start onboarding if any Applicant identity exists. */
+export async function findSameScopeAccount({
+  email,
+  role,
+  dataScope,
+}: {
+  email: string;
+  role: AccountRole;
+  dataScope: DataScope;
+}) {
+  return unscopedPrisma.account.findFirst({
+    where: {
+      normalizedEmail: normalizeAccountEmail(email),
+      role,
+      dataScope,
+    },
+    select: { id: true },
+  });
 }
 
 export async function findAccountForPublicSession(accountId: string) {
@@ -89,19 +218,16 @@ export async function upsertApplicantAccountForApplication(
 ) {
   const email = normalizeAccountEmail(application.email);
   const existing = await tx.account.findUnique({
-    where: { email },
+    where: accountIdentity(email, "APPLICANT"),
     include: { applicantProfile: true },
   });
-
-  if (existing && existing.role !== "APPLICANT") {
-    throw new AccountRoleConflictError(email, existing.role, "APPLICANT");
-  }
 
   const account =
     existing ??
     (await tx.account.create({
       data: {
         email,
+        normalizedEmail: email,
         role: "APPLICANT",
         status: "INVITED",
       },
@@ -165,7 +291,7 @@ export async function upsertJuryAccountForApplication(
   const email = normalizeAccountEmail(application.email);
   const [existing, existingProfile] = await Promise.all([
     tx.account.findUnique({
-      where: { email },
+      where: accountIdentity(email, "JURY"),
       include: { juryProfile: true },
     }),
     tx.juryProfile.findUnique({
@@ -174,19 +300,7 @@ export async function upsertJuryAccountForApplication(
     }),
   ]);
 
-  if (existing && existing.role !== "JURY") {
-    throw new AccountRoleConflictError(email, existing.role, "JURY");
-  }
-
   if (existingProfile) {
-    if (existingProfile.account.role !== "JURY") {
-      throw new AccountRoleConflictError(
-        existingProfile.account.email,
-        existingProfile.account.role,
-        "JURY",
-      );
-    }
-
     const profile = await tx.juryProfile.update({
       where: { id: existingProfile.id },
       data: {
@@ -213,6 +327,7 @@ export async function upsertJuryAccountForApplication(
     (await tx.account.create({
       data: {
         email,
+        normalizedEmail: email,
         role: "JURY",
         status: "INVITED",
       },
@@ -309,7 +424,7 @@ export function getDashboardPathForRole(role: AccountRole) {
   return role === "JURY" ? "/account/jury" : "/account/applicant";
 }
 
-export async function requireAccount() {
+export async function requireAccount(loginRole?: AccountRole) {
   const testActor = await getTestActor();
   if (testActor) {
     activateRequestDataScope({ dataScope: "TEST" });
@@ -326,7 +441,7 @@ export async function requireAccount() {
   const session = await getAppSession();
 
   if (!session?.user?.accountId) {
-    redirect("/account/login");
+    redirect(`/login${loginRole === "JURY" ? "?role=jury" : ""}`);
   }
 
   activateRequestDataScope({ dataScope: session.user.dataScope ?? "PRODUCTION" });
@@ -340,14 +455,14 @@ export async function requireAccount() {
   });
 
   if (!account || account.status === "DISABLED") {
-    redirect("/account/login");
+    redirect(`/login${loginRole === "JURY" ? "?role=jury" : ""}`);
   }
 
   return account;
 }
 
 export async function requireApplicantAccount() {
-  const account = await requireAccount();
+  const account = await requireAccount("APPLICANT");
   if (account.role !== "APPLICANT") {
     redirect(getDashboardPathForRole(account.role));
   }
@@ -362,7 +477,7 @@ export async function requireApplicantAccount() {
 }
 
 export async function requireJuryAccount() {
-  const account = await requireAccount();
+  const account = await requireAccount("JURY");
   if (account.role !== "JURY" || !account.juryProfile) {
     redirect(getDashboardPathForRole(account.role));
   }
