@@ -233,7 +233,10 @@ assert(
   has(applicantFileRoute, "applicantProfileId: applicantProfile.id"),
   "saved applicant files enforce nomination ownership"
 );
-assert(has(applicantFileRoute, "access: \"private\""), "saved applicant files are streamed from private Blob storage");
+assert(
+  has(applicantFileRoute, "streamPrivateBlobFile"),
+  "saved applicant files are streamed through the shared private-Blob helper"
+);
 
 const editorValues = read("features/account/components/nomination-review/editor-values.ts");
 assert(
@@ -338,18 +341,41 @@ assert(
   has(contentDispositionLib, "[^\\x20-\\x7E]"),
   "the shared header helper strips non-ASCII from the fallback filename",
 );
+const blobFileResponse = read("shared/lib/blob-file-response.ts");
+assert(
+  has(blobFileResponse, "contentDisposition("),
+  "the shared streaming helper builds its header with the shared header helper",
+);
+assert(
+  has(blobFileResponse, 'access: "private"'),
+  "the shared streaming helper reads from private Blob storage",
+);
 for (const routePath of [
   "app/api/account/jury/nomination-files/[fileId]/route.ts",
   "app/api/account/applicant/nomination-files/[fileId]/route.ts",
   "app/api/admin/nomination-files/[fileId]/route.ts",
 ]) {
   const source = read(routePath);
-  assert(has(source, "contentDisposition("), `${routePath} builds its header with the shared helper`);
+  assert(
+    has(source, "streamPrivateBlobFile("),
+    `${routePath} streams through the shared helper`,
+  );
   assert(
     !has(source, 'inline; filename="${'),
     `${routePath} does not interpolate a raw filename into a header`,
   );
 }
+
+// Range support is the other half of a working video preview: WebKit's first
+// media request is a range request and it will not start without a 206.
+assert(
+  has(blobFileResponse, 'request.headers.get("range")'),
+  "the shared streaming helper forwards the client range header",
+);
+assert(
+  has(blobFileResponse, "contentRange ? 206 : 200"),
+  "the shared streaming helper answers 206 only when the store served a partial body",
+);
 
 const gallery = read("shared/components/files/FilePreviewGallery.tsx");
 assert(has(gallery, 'status === "error"'), "file previews render an explicit error state");
@@ -357,6 +383,27 @@ assert(has(gallery, "ThumbSkeleton"), "file previews render a loading placeholde
 assert(has(gallery, 'pairing === "before-after"'), "file previews keep before/after images paired");
 assert(has(gallery, "MAX_ZOOM"), "the preview lightbox supports zoom");
 assert(!has(gallery, "formatFileSize"), "file previews do not surface raw file sizes");
+// Chromium answers canPlayType("video/quicktime") with "", so a typed <source>
+// is discarded before a byte is fetched — and its error never reaches <video>.
+assert(
+  !has(gallery, "<source src="),
+  "the preview lightbox does not filter video through a typed <source>",
+);
+
+// A just-uploaded file has no database row yet, so its ref carries no
+// authenticated previewUrl and the gallery would fall back to the private Blob
+// pathname — a relative URL the browser resolves against the current page.
+const nominationEditor = read(
+  "features/account/components/nomination-review/NominationReviewForm.tsx",
+);
+assert(
+  has(nominationEditor, "createLocalPreview(task.file)"),
+  "a completed upload previews the bytes the browser already holds",
+);
+assert(
+  has(nominationEditor, "map(toStoredRef)"),
+  "persisted file refs drop their browser-only preview URL",
+);
 
 // -- Ticket QR ownership -------------------------------------------------------
 console.log("ticket QR");

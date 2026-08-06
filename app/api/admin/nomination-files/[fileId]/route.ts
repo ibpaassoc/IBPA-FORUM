@@ -1,6 +1,5 @@
-import { get } from "@vercel/blob";
 import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
-import { contentDisposition } from "@/shared/lib/content-disposition";
+import { streamPrivateBlobFile } from "@/shared/lib/blob-file-response";
 import { prisma } from "@/shared/lib/prisma";
 import { adminT } from "@/lib/i18n/admin";
 
@@ -29,33 +28,12 @@ export async function GET(
     return new Response(adminT.api.notFound, { status: 404 });
   }
 
-  const result = await get(fileRecord.fileUrl, {
-    access: "private",
-    ifNoneMatch: request.headers.get("if-none-match") ?? undefined,
+  const response = await streamPrivateBlobFile({
+    request,
+    pathname: fileRecord.fileUrl,
+    fileName: fileRecord.fileName,
+    mimeType: fileRecord.mimeType,
   });
 
-  if (!result) {
-    return new Response(adminT.api.notFound, { status: 404 });
-  }
-
-  if (result.statusCode === 304) {
-    return new Response(null, {
-      status: 304,
-      headers: {
-        ETag: result.blob.etag,
-        "Cache-Control": "private, no-cache",
-      },
-    });
-  }
-
-  return new Response(result.stream, {
-    status: 200,
-    headers: {
-      "Content-Type": fileRecord.mimeType || result.blob.contentType,
-      "Content-Disposition": contentDisposition(fileRecord.fileName),
-      "X-Content-Type-Options": "nosniff",
-      ETag: result.blob.etag,
-      "Cache-Control": "private, no-cache",
-    },
-  });
+  return response ?? new Response(adminT.api.notFound, { status: 404 });
 }
