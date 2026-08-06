@@ -96,6 +96,15 @@ function isPdf(asset: FilePreviewAsset) {
   return asset.mimeType === "application/pdf" || /\.pdf$/i.test(asset.name);
 }
 
+/**
+ * Never pass one of these mime types to a `<source type>`: the browser filters
+ * sources by `canPlayType`, and Chromium answers `""` for `video/quicktime` —
+ * the type every uploaded `.mov` is stored with — so it discards the source
+ * without fetching a byte. Worse, the resulting `error` fires on the `<source>`
+ * element and does not reach the `<video>`, so the player is left blank with
+ * nothing to report. Setting `src` on the `<video>` lets it sniff the container
+ * (the same `.mov` then decodes fine) and routes failures to `onError`.
+ */
 function isVideo(asset: FilePreviewAsset) {
   return asset.mimeType.startsWith("video/") || /\.(mp4|mov|webm|og[gv])$/i.test(asset.name);
 }
@@ -585,17 +594,17 @@ function PreviewDialog({
                     />
                   </>
                 ) : isVideo(item) ? (
+                  /* `src`, never a typed <source>: see the note on isVideo. */
                   <video
                     key={url}
+                    src={url}
                     controls
                     playsInline
                     preload="metadata"
                     onLoadedMetadata={() => setStatus("ready")}
                     onError={() => setStatus("error")}
                     className="max-h-[calc(88dvh-9.5rem)] max-w-full rounded-[18px] bg-black shadow-[0_18px_55px_rgba(56,91,116,0.13)] sm:max-h-[calc(86vh-8.5rem)]"
-                  >
-                    <source src={url} type={item.mimeType} />
-                  </video>
+                  />
                 ) : isPdf(item) ? (
                   <iframe
                     key={url}
