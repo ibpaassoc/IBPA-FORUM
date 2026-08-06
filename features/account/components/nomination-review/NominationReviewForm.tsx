@@ -63,6 +63,21 @@ const UPLOAD_CONCURRENCY = 2;
 const AUTOSAVE_DELAY_MS = 650;
 
 /**
+ * Drop `previewUrl` before persisting. It is a browser-only concern — either an
+ * authenticated API path or an object URL for a file uploaded in this session —
+ * and the endpoint derives its own preview links from the stored Blob pathname.
+ */
+function toStoredRef(ref: ApplicationFileRef): ApplicationFileRef {
+  return {
+    fieldKey: ref.fieldKey,
+    fileName: ref.fileName,
+    fileUrl: ref.fileUrl,
+    mimeType: ref.mimeType,
+    fileSize: ref.fileSize,
+  };
+}
+
+/**
  * Continue Application workspace: the nomination name is the page context,
  * the form is split into Work Details / Description / File Uploads / Review
  * behind a horizontal section navigation, and a sticky requirements panel
@@ -131,6 +146,8 @@ export default function NominationReviewForm({
   const saveInFlight = useRef(false);
   const saveQueued = useRef(false);
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Object URLs minted for files uploaded in this session — see createLocalPreview.
+  const localPreviews = useRef(new Set<string>());
 
   const submitted = status === "SUBMITTED";
   const disabled = locked || submitting;
@@ -259,6 +276,26 @@ export default function NominationReviewForm({
     }
   }
 
+  /**
+   * A just-uploaded file has no `NominationFile` row yet, so the ref that
+   * replaces the picked `File` carries no authenticated `previewUrl`. Without
+   * one the gallery falls back to `fileUrl` — the private Blob *pathname* — and
+   * the browser resolves that relative to the current page, so every thumbnail
+   * reads as "preview unavailable" until a reload re-renders the field from the
+   * database. Preview the bytes the browser already holds instead.
+   */
+  function createLocalPreview(file: File) {
+    const url = URL.createObjectURL(file);
+    localPreviews.current.add(url);
+    return url;
+  }
+
+  function releaseLocalPreview(url: string | undefined) {
+    if (!url || !localPreviews.current.has(url)) return;
+    URL.revokeObjectURL(url);
+    localPreviews.current.delete(url);
+  }
+
   function setField(key: string, value: EditorValue) {
     const previous = valuesRef.current;
     const next = { ...previous, [key]: value };
@@ -268,8 +305,12 @@ export default function NominationReviewForm({
 
     const field = fields.find((item) => item.key === key);
     if (field?.type === "file") {
+      const kept = getFileValues(value);
+      for (const item of getFileValues(previous[key])) {
+        if (isApplicationFileRef(item) && !kept.includes(item)) releaseLocalPreview(item.previewUrl);
+      }
       const previousFiles = new Set(getFileValues(previous[key]).filter((item): item is File => item instanceof File));
-      const newFiles = getFileValues(value).filter((item): item is File => item instanceof File && !previousFiles.has(item));
+      const newFiles = kept.filter((item): item is File => item instanceof File && !previousFiles.has(item));
       if (newFiles.length > 0) void uploadFiles(field, newFiles, false);
     }
     scheduleDraftSave();
@@ -305,7 +346,7 @@ export default function NominationReviewForm({
       // Do not turn a still-uploading replacement into a deletion of the
       // previous saved file. The field is persisted only once it contains refs.
       if (!fileValues.some((item) => item instanceof File)) {
-        payload[field.key] = fileValues.filter(isApplicationFileRef);
+        payload[field.key] = fileValues.filter(isApplicationFileRef).map(toStoredRef);
       }
     }
     return payload;
@@ -422,9 +463,15 @@ export default function NominationReviewForm({
         const task = byId.get(id);
         if (!task) return;
         updateUploadItem(id, (item) => ({ ...item, loaded: item.total, status: "success", error: undefined }));
+        const listed = getFileValues(valuesRef.current[task.fieldKey]);
+        // Only mint a preview URL while the file is still in the field; one
+        // removed mid-upload would leak it.
+        const stored = listed.includes(task.file)
+          ? { ...ref, previewUrl: createLocalPreview(task.file) }
+          : ref;
         const next = {
           ...valuesRef.current,
-          [task.fieldKey]: getFileValues(valuesRef.current[task.fieldKey]).map((item) => item === task.file ? ref : item),
+          [task.fieldKey]: listed.map((item) => (item === task.file ? stored : item)),
         };
         valuesRef.current = next;
         setValues(next);
@@ -475,6 +522,8 @@ export default function NominationReviewForm({
 
   useEffect(() => () => {
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
+    for (const url of localPreviews.current) URL.revokeObjectURL(url);
+    localPreviews.current.clear();
   }, []);
 
   const statusLabel = locked
