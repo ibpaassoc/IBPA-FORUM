@@ -54,7 +54,7 @@ assert(
   "applicant accounts without a profile are sent to a recovery page instead of looping"
 );
 assert(
-  has(accountLoginForm, 'window.location.assign("/account")'),
+  has(accountLoginForm, "window.location.assign(destination)"),
   "successful login uses a document navigation so the new session is available to role routing"
 );
 assert(has(accountLoginForm, "} catch {"), "login returns to an actionable state when authentication requests fail");
@@ -216,8 +216,12 @@ assert(!has(loginForm, "Need a registration link"), "login page has no resend re
 assert(!has(loginForm, "unregistered applicant account"), "resend copy is not applicant-only");
 
 const accountAuth = read("auth.ts");
-assert(!has(accountAuth, "No account is registered with this email."), "login does not disclose missing accounts");
-assert(!has(accountAuth, "Account setup is required."), "login does not disclose setup state");
+const roleLogin = read("features/auth/server/login.actions.ts");
+const roleRedirects = read("features/auth/lib/role.ts");
+assert(has(accountAuth, 'role: {'), "credentials authentication receives the selected account role");
+assert(has(roleLogin, "No ${requestedRole} account was found"), "login reports a missing account for the selected role");
+assert(has(roleLogin, "switchRole"), "opposite-role accounts offer a role switch");
+assert(has(roleRedirects, "safeNextForRole"), "cross-role dashboard redirects are rejected");
 
 // -- Applicant account and deadline closure -----------------------------------
 console.log("applicant account editing and closure");
