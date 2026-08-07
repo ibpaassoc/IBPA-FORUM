@@ -41,7 +41,7 @@ export default function HomeRegistrationSection() {
   const specialPacket = useSpecialPacket();
   const { pricing, loading: pricingLoading } = useStripePricing();
   const displayPrice = (amount: Parameters<typeof formatStripeAmount>[0]) =>
-    pricingLoading ? "…" : formatStripeAmount(amount, language);
+    pricingLoading ? "…" : formatStripeAmount(amount);
 
   const topInfoCards = [
     { icon: Calendar, eyebrow: c.registrationInfo.eyebrow, value: c.registrationInfo.value },
@@ -333,7 +333,7 @@ function SpecialPacketCard({
         </div>
 
         <LandingSecondaryButton type="button" onClick={onBuy} disabled={!enabled} className="w-full lg:w-auto">
-          {enabled ? copy.buySpecial : copy.comingSoon}
+          {enabled ? copy.buy : copy.comingSoon}
         </LandingSecondaryButton>
       </div>
     </article>

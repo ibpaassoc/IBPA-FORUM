@@ -815,6 +815,98 @@ textarea {
   }
 }
 
+/* ── Ticket modal reveals ─────────────────────────────────────────────────────
+   The ticket modal swaps a lot of content when the package changes. These two
+   rules animate a grid track rather than height/width, which means nothing has
+   to be measured in JS, padding never has to be animated separately, and the
+   hidden content is clipped at its natural size instead of being squashed —
+   the squash-and-pop is what made the old height:0 transitions look broken.
+   Timings mirror features/tickets/motion.ts. The prefers-reduced-motion block
+   at the end of this file neutralises both. */
+
+.ticket-reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  /* Spacing lives on the content inside, so a collapsed reveal leaves no gap
+     behind. Overrides any space-y-* margin from the parent. */
+  margin-block: 0;
+  transition: grid-template-rows 420ms var(--motion-editorial);
+}
+
+.ticket-reveal[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+
+.ticket-reveal > * {
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 200ms linear;
+}
+
+.ticket-reveal[data-open="true"] > * {
+  opacity: 1;
+}
+
+/* The Special Packet adds a second attendee panel. On wide screens the two
+   panels share a row, so the grid animates its columns and panel 1 shrinks in
+   step with panel 2 unfolding; below lg the second panel unrolls underneath
+   instead. Both tracks are always present so the transition has something to
+   animate between. */
+.ticket-attendee-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: 0;
+  transition: row-gap 420ms var(--motion-editorial);
+}
+
+.ticket-attendee-grid[data-second="true"] {
+  row-gap: 0.75rem;
+}
+
+/* Stacked: the slot collapses on its own single track. Making it a row of the
+   parent grid instead (auto 0fr → auto 1fr) makes panel 1 bulge and settle
+   back mid-transition, because the auto track absorbs the fr track's slack. */
+.ticket-attendee-slot {
+  display: grid;
+  grid-template-rows: 0fr;
+  min-width: 0;
+  transition: grid-template-rows 420ms var(--motion-editorial);
+}
+
+.ticket-attendee-grid[data-second="true"] .ticket-attendee-slot {
+  grid-template-rows: 1fr;
+}
+
+.ticket-attendee-slot > * {
+  min-height: 0;
+  overflow: hidden;
+}
+
+@media (width >= 64rem) {
+  /* Side by side: the columns carry the animation instead. Both tracks must
+     be the same function for it to interpolate — mixing `minmax()` with a
+     bare `0fr` makes the browser fall back to a discrete, snapping change. */
+  .ticket-attendee-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0fr);
+    column-gap: 0;
+    transition:
+      grid-template-columns 480ms var(--motion-editorial),
+      column-gap 480ms var(--motion-editorial);
+  }
+
+  .ticket-attendee-grid[data-second="true"] {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 0.75rem;
+  }
+
+  .ticket-attendee-slot {
+    display: block;
+    overflow: hidden;
+    transition: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

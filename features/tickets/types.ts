@@ -24,7 +24,9 @@ export type SpecialPacketStatus = {
 
 export function applyDiscountToPrice(priceStr: string, discount: TicketDiscount): string | null {
   if (!discount) return null;
-  const dollars = parseInt(priceStr.replace("$", ""), 10);
+  // priceStr is a formatted price ("$295", "—"); keep only the number in it.
+  const dollars = Number(priceStr.replace(/[^\d.]/g, ""));
+  if (!Number.isFinite(dollars) || priceStr.replace(/[^\d]/g, "") === "") return null;
   let discounted: number;
   if (discount.type === "percent") {
     discounted = Math.round(dollars * (1 - discount.value / 100) * 100) / 100;
