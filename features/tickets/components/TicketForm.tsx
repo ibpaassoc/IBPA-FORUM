@@ -71,9 +71,9 @@ const attendeeDefaults: AttendeeValues = {
 };
 
 const inputBase =
-  "w-full rounded-[18px] border border-[var(--border-default)] bg-white/72 px-4 py-3 text-[0.84rem] text-[var(--color-ink)] shadow-[inset_0_1px_0_rgba(255,255,255,0.85)] placeholder:text-[var(--color-ink)]/35 outline-none transition focus:border-[var(--color-blue)]/55 focus:bg-white/90 focus:ring-4 focus:ring-[var(--color-blue)]/10 disabled:cursor-not-allowed disabled:opacity-50";
+  "w-full rounded-[16px] border border-[var(--border-default)] bg-white/72 px-3.5 py-2.5 text-[0.82rem] text-[var(--color-ink)] shadow-[inset_0_1px_0_rgba(255,255,255,0.85)] placeholder:text-[var(--color-ink)]/35 outline-none transition focus:border-[var(--color-blue)]/55 focus:bg-white/90 focus:ring-4 focus:ring-[var(--color-blue)]/10 disabled:cursor-not-allowed disabled:opacity-50";
 const inputError = "border-red-300 bg-red-50/60 focus:border-red-400 focus:ring-red-100";
-const labelBase = "mb-1.5 block text-[0.66rem] font-semibold uppercase tracking-[0.13em] text-[#10182a]/55";
+const labelBase = "mb-1 block text-[0.64rem] font-semibold uppercase tracking-[0.13em] text-[#10182a]/55";
 const errorText = "mt-1 text-[0.7rem] text-red-600";
 
 function moneyFromCents(amountCents: number) {
@@ -124,9 +124,9 @@ async function requestTicketPromoPreview({
 
 function SectionTitle({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className="mb-3 flex items-center gap-2 text-[#10182a]">
+    <div className="mb-2 flex items-center gap-2 text-[#10182a]">
       <span className="text-[#72a0c1]">{icon}</span>
-      <h3 className="text-[0.7rem] font-semibold uppercase tracking-[0.17em]">{children}</h3>
+      <h3 className="text-[0.68rem] font-semibold uppercase tracking-[0.17em]">{children}</h3>
     </div>
   );
 }
@@ -367,7 +367,7 @@ export default function TicketForm() {
     <motion.form
       onSubmit={handleSubmit(onSubmit)}
       noValidate
-      className="space-y-4 font-[var(--font-ui-family)]"
+      className="space-y-3 font-[var(--font-ui-family)]"
       initial="hidden"
       animate="visible"
       variants={{
@@ -379,19 +379,24 @@ export default function TicketForm() {
       }}
     >
       {discount ? (
-        <motion.div variants={reducedMotion ? undefined : { hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className="flex items-center gap-3 rounded-[22px] border border-[var(--color-blue)]/35 bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(185,217,235,0.3))] px-4 py-3 shadow-[0_14px_34px_rgba(114,160,193,0.1)]">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-[#2773c8]">
-            <Tag size={17} />
+        <motion.div variants={reducedMotion ? undefined : { hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className="flex items-center gap-3 rounded-[18px] border border-[var(--color-blue)]/35 bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(185,217,235,0.3))] px-4 py-2 shadow-[0_14px_34px_rgba(114,160,193,0.1)]">
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-white text-[#2773c8]">
+            <Tag size={15} />
           </span>
-          <p className="text-[0.76rem] leading-5 text-[#10182a]/70">
+          <p className="text-[0.72rem] leading-[1.15rem] text-[#10182a]/70">
             <strong className="text-[#10182a]">{discountName} {copy.discount.pricing}</strong> — {discount.type === "percent" ? `${discount.value}%` : `$${discount.value / 100}`} {copy.discount.suffix}
           </p>
         </motion.div>
       ) : null}
 
+      {/* Two columns on large screens so the whole form fits without scrolling the modal:
+          what you are buying on the left, who is coming and what it costs on the right. */}
+      <motion.div className="grid gap-3 lg:grid-cols-12 lg:items-start">
+      <motion.div className="space-y-3 lg:col-span-7">
+
       <motion.section variants={reducedMotion ? undefined : { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}>
         <SectionTitle icon={<Sparkles size={15} />}>{copy.package.title}</SectionTitle>
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid gap-2.5 sm:grid-cols-3">
           {packages.map((option) => {
             const selected = type === option.value;
             const unavailable = !option.price;
@@ -402,7 +407,7 @@ export default function TicketForm() {
               <motion.label
                 key={option.value}
                 className={clsx(
-                  "relative flex min-h-[172px] flex-col rounded-[18px] border p-4 transition",
+                  "relative flex min-h-[132px] flex-col rounded-[18px] border p-3 transition",
                   disabled
                     ? "cursor-not-allowed border-[#d7dee4] bg-[#f1f3f5] text-[#10182a]/35 grayscale"
                     : selected
@@ -437,17 +442,17 @@ export default function TicketForm() {
                     }
                   }}
                 />
-                <span className="mb-3 flex size-10 items-center justify-center rounded-full bg-[#eaf4fb] text-[#2773c8]">
-                  <OptionIcon size={20} />
+                <span className="mb-2 flex size-8 items-center justify-center rounded-full bg-[#eaf4fb] text-[#2773c8]">
+                  <OptionIcon size={17} />
                 </span>
-                <span className="font-[var(--font-title-family)] text-[1.35rem] font-light leading-none text-[#10182a]">{option.title}</span>
-                <span className="mt-1 text-[0.72rem] text-[#10182a]/55">{option.subtitle}</span>
+                <span className="font-[var(--font-title-family)] text-[1.2rem] font-light leading-none text-[#10182a]">{option.title}</span>
+                <span className="mt-1 text-[0.7rem] leading-4 text-[#10182a]/55">{option.subtitle}</span>
                 {option.value === "SPECIAL_PACKET" ? (
-                  <span className="mt-1 text-[0.68rem] text-[#2773c8]">{copy.package.specialTickets}</span>
+                  <span className="mt-1 text-[0.66rem] leading-4 text-[#2773c8]">{copy.package.specialTickets}</span>
                 ) : null}
-                <span className="mt-auto pt-4 font-[var(--font-title-family)] text-[1.35rem] font-light text-[#10182a]">{pricingLoading ? "…" : formatStripeAmount(option.price ?? null)}</span>
+                <span className="mt-auto pt-2.5 font-[var(--font-title-family)] text-[1.25rem] font-light text-[#10182a]">{pricingLoading ? "…" : formatStripeAmount(option.price ?? null)}</span>
                 <span className={clsx(
-                  "absolute bottom-4 right-4 size-4 rounded-full border",
+                  "absolute bottom-3 right-3 size-4 rounded-full border",
                   selected ? "border-[#2773c8] bg-[#2773c8] shadow-[inset_0_0_0_3px_white]" : "border-[#8ca2b2]"
                 )} />
               </motion.label>
@@ -457,14 +462,14 @@ export default function TicketForm() {
         {errors.type ? <p className={errorText}>{errors.type.message}</p> : null}
       </motion.section>
 
-      <motion.section variants={reducedMotion ? undefined : { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }} className="premium-glass flex items-center justify-between gap-4 px-4 py-3">
+      <motion.section variants={reducedMotion ? undefined : { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }} className="premium-glass flex items-center justify-between gap-4 px-4 py-2.5">
         <div className="flex min-w-0 items-center gap-3">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#eaf4fb] text-[#2773c8]">
-            <Gift size={18} />
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#eaf4fb] text-[#2773c8]">
+            <Gift size={16} />
           </span>
-          <div>
-            <p className="text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-[#10182a]">{copy.gala.title}</p>
-            <p className="mt-0.5 text-[0.68rem] text-[#10182a]/50">{copy.gala.description} · {galaPrice} {copy.gala.perPerson}</p>
+          <div className="min-w-0">
+            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-[#10182a]">{copy.gala.title}</p>
+            <p className="mt-0.5 text-[0.66rem] leading-4 text-[#10182a]/50">{copy.gala.description} · {galaPrice} {copy.gala.perPerson}</p>
           </div>
         </div>
         {isSpecialPacket ? (
@@ -482,33 +487,17 @@ export default function TicketForm() {
         )}
       </motion.section>
 
-      <motion.div variants={reducedMotion ? undefined : { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }} className={clsx("grid gap-4", isSpecialPacket && "xl:grid-cols-2")}>
-        <AttendeePanel
-          number={isSpecialPacket ? 1 : undefined}
-          register={register}
-          errors={errors}
-          copy={copy}
-        />
-        <AnimatePresence initial={false}>
-          {isSpecialPacket ? (
-            <motion.div key="second-attendee" initial={reducedMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={reducedMotion ? undefined : { opacity: 0, y: -8 }}>
-              <SecondAttendeePanel register={register} errors={errors.secondAttendee} copy={copy} />
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
-      </motion.div>
-
-      <motion.div variants={reducedMotion ? undefined : { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }} className="grid gap-4 lg:grid-cols-2">
-        <section className="premium-glass p-4">
+      <motion.div variants={reducedMotion ? undefined : { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }} className="grid gap-3 sm:grid-cols-2">
+        <section className="premium-glass p-3.5">
           <SectionTitle icon={<UsersRound size={15} />}>{copy.membership.title}</SectionTitle>
-          <label className={clsx("flex cursor-pointer items-start gap-3 rounded-[22px] border p-4 transition", isIbpaMember ? "border-[var(--color-blue)]/45 bg-[linear-gradient(145deg,rgba(255,255,255,0.95),rgba(185,217,235,0.36))] shadow-[0_14px_34px_rgba(114,160,193,0.12)]" : "border-[var(--border-default)] bg-white/72")}>
+          <label className={clsx("flex cursor-pointer items-start gap-3 rounded-[18px] border p-3 transition", isIbpaMember ? "border-[var(--color-blue)]/45 bg-[linear-gradient(145deg,rgba(255,255,255,0.95),rgba(185,217,235,0.36))] shadow-[0_14px_34px_rgba(114,160,193,0.12)]" : "border-[var(--border-default)] bg-white/72")}>
             <input type="checkbox" className="peer sr-only" {...register("isIbpaMember")} />
             <span aria-hidden="true" className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full border border-[rgba(114,160,193,0.32)] bg-white/90 text-transparent transition peer-checked:border-[var(--color-blue)]/45 peer-checked:bg-[var(--color-blue-wash)] peer-checked:text-[#356f98] peer-focus-visible:ring-4 peer-focus-visible:ring-[var(--color-blue)]/20">
               <Check size={15} strokeWidth={3} />
             </span>
             <span>
-              <span className="block text-[0.8rem] font-semibold text-[#10182a]">{copy.membership.memberLabel}</span>
-              <span className="mt-0.5 block text-[0.7rem] text-[#10182a]/50">{copy.membership.memberHint}</span>
+              <span className="block text-[0.78rem] font-semibold text-[#10182a]">{copy.membership.memberLabel}</span>
+              <span className="mt-0.5 block text-[0.68rem] leading-4 text-[#10182a]/50">{copy.membership.memberHint}</span>
             </span>
           </label>
           <AnimatePresence initial={false}>
@@ -533,9 +522,10 @@ export default function TicketForm() {
           </AnimatePresence>
         </section>
 
-        <section className="premium-glass p-4">
+        <section className="premium-glass p-3.5">
           <SectionTitle icon={<Tag size={15} />}>{promoText.promoCode}</SectionTitle>
-          <div className="flex gap-2">
+          {/* Stacked: the column is too narrow for the input and the button side by side. */}
+          <div className="flex flex-col gap-2">
             <input
               value={promoInput}
               disabled={isSpecialPacket}
@@ -551,12 +541,12 @@ export default function TicketForm() {
             <LandingSecondaryButton
               disabled={isSpecialPacket || promoPending || !promoInput.trim() || !type}
               onClick={() => void applyPromoCode()}
-              className="min-h-0 shrink-0 px-4 py-2.5 text-[0.66rem]"
+              className="min-h-0 w-full shrink-0 px-4 py-2.5 text-[0.66rem]"
             >
               {promoPending ? promoText.applying : promoText.apply}
             </LandingSecondaryButton>
           </div>
-          <p className={clsx("mt-2 text-[0.7rem]", activePromoPreview ? "text-emerald-700" : promoError ? "text-red-600" : "text-[#10182a]/48")}>
+          <p className={clsx("mt-2 text-[0.68rem] leading-4", activePromoPreview ? "text-emerald-700" : promoError ? "text-red-600" : "text-[#10182a]/48")}>
             {isSpecialPacket
               ? copy.promo.fixed
               : activePromoPreview
@@ -566,11 +556,31 @@ export default function TicketForm() {
         </section>
       </motion.div>
 
+      </motion.div>
+      {/* Right column. */}
+      <motion.div className="space-y-3 lg:col-span-5">
+
+      <motion.div variants={reducedMotion ? undefined : { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }} className={clsx("grid gap-3", isSpecialPacket && "sm:grid-cols-2 lg:grid-cols-1")}>
+        <AttendeePanel
+          number={isSpecialPacket ? 1 : undefined}
+          register={register}
+          errors={errors}
+          copy={copy}
+        />
+        <AnimatePresence initial={false}>
+          {isSpecialPacket ? (
+            <motion.div key="second-attendee" initial={reducedMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={reducedMotion ? undefined : { opacity: 0, y: -8 }}>
+              <SecondAttendeePanel register={register} errors={errors.secondAttendee} copy={copy} />
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      </motion.div>
+
       <AnimatePresence initial={false}>
       {type ? (
-        <motion.section key="order-summary" initial={reducedMotion ? false : { opacity: 0, y: 12, height: 0 }} animate={{ opacity: 1, y: 0, height: "auto" }} exit={reducedMotion ? undefined : { opacity: 0, y: -8, height: 0 }} className="premium-glass overflow-hidden p-4">
+        <motion.section key="order-summary" initial={reducedMotion ? false : { opacity: 0, y: 12, height: 0 }} animate={{ opacity: 1, y: 0, height: "auto" }} exit={reducedMotion ? undefined : { opacity: 0, y: -8, height: 0 }} className="premium-glass overflow-hidden p-3.5">
           <SectionTitle icon={<ReceiptText size={15} />}>{copy.summary.title}</SectionTitle>
-          <div className="space-y-2 text-[0.78rem]">
+          <div className="space-y-1.5 text-[0.76rem]">
             <div className="flex items-start justify-between gap-4">
               <span className="text-[#10182a]/62">
                 {isSpecialPacket ? copy.summary.special : type === "ONE_DAY" ? copy.summary.oneDay : copy.summary.twoDays}
@@ -611,7 +621,10 @@ export default function TicketForm() {
       >
         {submitting ? copy.actions.creatingCheckout : visibleCertStatus === "checking" ? copy.actions.verifyingCertificate : copy.actions.continuePayment}
       </LandingPrimaryButton>
-      <p className="mt-2 flex items-center justify-center gap-1.5 text-[0.66rem] text-[#10182a]/42"><LockKeyhole size={11} /> {copy.actions.secureCheckout}</p>
+      <p className="mt-1.5 flex items-center justify-center gap-1.5 text-[0.64rem] text-[#10182a]/42"><LockKeyhole size={11} /> {copy.actions.secureCheckout}</p>
+      </motion.div>
+
+      </motion.div>
       </motion.div>
     </motion.form>
   );
@@ -631,9 +644,9 @@ function AttendeePanel({
   copy: TicketTranslation["form"];
 }) {
   return (
-    <section className="premium-glass p-4">
+    <section className="premium-glass p-3.5">
       <SectionTitle icon={<UserRound size={15} />}>{number ? `${copy.attendee.title} ${number}` : copy.attendee.information}</SectionTitle>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-2.5 sm:grid-cols-2">
         <Field label={copy.attendee.firstName} error={errors.firstName?.message}><input className={clsx(inputBase, errors.firstName && inputError)} autoComplete="given-name" {...register("firstName", { required: copy.attendee.firstNameRequired })} /></Field>
         <Field label={copy.attendee.lastName} error={errors.lastName?.message}><input className={clsx(inputBase, errors.lastName && inputError)} autoComplete="family-name" {...register("lastName", { required: copy.attendee.lastNameRequired })} /></Field>
         <Field label={copy.attendee.email} error={errors.email?.message}><input type="email" className={clsx(inputBase, errors.email && inputError)} autoComplete="email" {...register("email", { required: copy.attendee.emailRequired, pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: copy.attendee.emailInvalid } })} /></Field>
@@ -646,9 +659,9 @@ function AttendeePanel({
 
 function SecondAttendeePanel({ register, errors, copy }: { register: Register; errors: ReturnType<typeof useForm<FormValues>>["formState"]["errors"]["secondAttendee"]; copy: TicketTranslation["form"] }) {
   return (
-    <section className="premium-glass border-[var(--color-blue)]/45 bg-[linear-gradient(145deg,rgba(255,255,255,0.94),rgba(185,217,235,0.25))] p-4">
+    <section className="premium-glass border-[var(--color-blue)]/45 bg-[linear-gradient(145deg,rgba(255,255,255,0.94),rgba(185,217,235,0.25))] p-3.5">
       <SectionTitle icon={<UserRound size={15} />}>{copy.attendee.title} 2</SectionTitle>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-2.5 sm:grid-cols-2">
         <Field label={copy.attendee.firstName} error={errors?.firstName?.message}><input className={clsx(inputBase, errors?.firstName && inputError)} autoComplete="off" {...register("secondAttendee.firstName", { required: copy.attendee.firstNameRequired })} /></Field>
         <Field label={copy.attendee.lastName} error={errors?.lastName?.message}><input className={clsx(inputBase, errors?.lastName && inputError)} autoComplete="off" {...register("secondAttendee.lastName", { required: copy.attendee.lastNameRequired })} /></Field>
         <Field label={copy.attendee.email} error={errors?.email?.message}><input type="email" className={clsx(inputBase, errors?.email && inputError)} autoComplete="off" {...register("secondAttendee.email", { required: copy.attendee.emailRequired, pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: copy.attendee.emailInvalid } })} /></Field>

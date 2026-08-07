@@ -74,7 +74,7 @@ export default function TicketModal({ isOpen, onClose }: TicketModalProps) {
             <div className="pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-[linear-gradient(90deg,rgba(114,160,193,0.2)_0%,rgba(114,160,193,0.7)_45%,rgba(185,217,235,0.75)_100%)]" />
 
             <motion.div
-              className="flex items-start justify-between gap-5 px-5 pb-3 pt-5 sm:px-8 sm:pt-7"
+              className="flex items-start justify-between gap-5 px-5 pb-2.5 pt-4 sm:px-7 sm:pt-5"
               initial={{ opacity: 0, y: reducedMotion ? 0 : 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: reducedMotion ? 0 : 0.08, duration: reducedMotion ? 0 : 0.3 }}
@@ -86,7 +86,7 @@ export default function TicketModal({ isOpen, onClose }: TicketModalProps) {
 
                 <h2
                   id="ticket-modal-title"
-                  className="font-[var(--font-title-family)] text-[2rem] font-light leading-none tracking-[-0.04em] text-[#10182a] sm:text-[2.45rem]"
+                  className="font-[var(--font-title-family)] text-[1.75rem] font-light leading-none tracking-[-0.04em] text-[#10182a] sm:text-[2.1rem]"
                 >
                   {copy.title}
                 </h2>
@@ -106,7 +106,7 @@ export default function TicketModal({ isOpen, onClose }: TicketModalProps) {
             </motion.div>
 
             <motion.div
-              className="px-4 pb-5 sm:px-8 sm:pb-7"
+              className="px-4 pb-5 sm:px-7 sm:pb-6"
               initial={{ opacity: 0, y: reducedMotion ? 0 : 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: reducedMotion ? 0 : 0.12, duration: reducedMotion ? 0 : 0.38, ease: [0.22, 1, 0.36, 1] }}
