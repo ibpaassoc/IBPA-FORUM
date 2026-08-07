@@ -7,6 +7,7 @@ import {
   CreditCard,
   Crown,
   Globe2,
+  Gift,
   Info,
   Sparkles,
   Tag,
@@ -20,6 +21,7 @@ import { PRICING } from "@/data/pricing";
 import { applyDiscountToPrice } from "@/features/tickets/types";
 import type { TicketDiscount } from "@/features/tickets/types";
 import { useTicketDiscount } from "@/features/tickets/useEarlyBird";
+import { useSpecialPacket } from "@/features/tickets/useSpecialPacket";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import {
   LandingSecondaryButton,
@@ -33,6 +35,7 @@ export default function HomeRegistrationSection() {
   const c = t.home.registrationSection;
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const { ticketDiscount, discount } = useTicketDiscount();
+  const specialPacket = useSpecialPacket();
 
   const topInfoCards = [
     { icon: Calendar, eyebrow: c.registrationInfo.eyebrow, value: c.registrationInfo.value },
@@ -64,7 +67,7 @@ export default function HomeRegistrationSection() {
 
   return (
     <>
-      <section className="landing-section-strong relative overflow-hidden py-12 md:py-16 lg:py-20">
+      <section id="pricing" className="landing-section-strong relative overflow-hidden py-12 md:py-16 lg:py-20">
         <div className="pointer-events-none absolute left-[-10%] top-0 h-80 w-80 rounded-full bg-[#b9d9eb]/18 blur-2xl" />
 
         <div className="page-section relative">
@@ -154,6 +157,15 @@ export default function HomeRegistrationSection() {
                 </div>
               </PricingCard>
             </StaggerContainer>
+
+            <Reveal delay={0.12}>
+              <SpecialPacketCard
+                enabled={specialPacket.enabled}
+                memberPrice={specialPacket.memberPrice}
+                standardPrice={specialPacket.standardPrice}
+                onBuy={() => setIsTicketModalOpen(true)}
+              />
+            </Reveal>
           </div>
         </div>
       </section>
@@ -248,6 +260,101 @@ function PricingCard({
 
       <div className="mt-6 flex min-h-11 items-end justify-center">{footer}</div>
     </article>
+  );
+}
+
+function SpecialPacketCard({
+  enabled,
+  memberPrice,
+  standardPrice,
+  onBuy,
+}: {
+  enabled: boolean;
+  memberPrice: string;
+  standardPrice: string;
+  onBuy: () => void;
+}) {
+  return (
+    <article
+      className={[
+        "relative mt-4 overflow-hidden rounded-[2rem] border p-5 shadow-[0_20px_55px_rgba(114,160,193,0.09)] backdrop-blur-xl md:p-6",
+        enabled
+          ? "border-[#b9d9eb] bg-[linear-gradient(135deg,rgba(239,248,253,0.92),rgba(255,255,255,0.78))]"
+          : "border-[#d7dee4] bg-[#f2f4f5]/88 text-[#10182a]/55",
+      ].join(" ")}
+    >
+      <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
+
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-center lg:gap-8">
+        <div className="flex min-w-0 items-start gap-4">
+          <span
+            className={[
+              "flex size-11 shrink-0 items-center justify-center rounded-2xl border bg-white/80",
+              enabled ? "border-[#b9d9eb] text-[#72a0c1]" : "border-[#cfd5da] text-[#10182a]/35",
+            ].join(" ")}
+          >
+            <Gift size={19} />
+          </span>
+
+          <div>
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[#72a0c1]">Special Package</p>
+              <span
+                className={[
+                  "rounded-full px-2.5 py-1 text-[0.5rem] font-semibold uppercase tracking-[0.1em]",
+                  enabled ? "bg-[#72a0c1] text-white" : "bg-[#d3d7da] text-[#10182a]/55",
+                ].join(" ")}
+              >
+                {enabled ? "New" : "Coming Soon"}
+              </span>
+            </div>
+
+            <h4 className="mt-2 font-[var(--font-title-family)] text-[clamp(1.9rem,3vw,2.7rem)] font-light leading-none tracking-[-0.05em] text-[#10182a]">
+              Special Packet
+            </h4>
+            <p className="mt-2 max-w-xl text-sm leading-6 text-[#10182a]/58">
+              Two 2-day Forum passes and Gala Dinner for two people. Includes two separate tickets at a fixed price, unaffected by sales or coupons.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 sm:min-w-[300px]">
+          <SpecialPacketPrice label="IBPA Members" price={memberPrice} featured enabled={enabled} />
+          <SpecialPacketPrice label="Guests" price={standardPrice} enabled={enabled} />
+        </div>
+
+        <LandingSecondaryButton type="button" onClick={onBuy} disabled={!enabled} className="w-full lg:w-auto">
+          {enabled ? "Buy Special Packet" : "Coming Soon"}
+        </LandingSecondaryButton>
+      </div>
+    </article>
+  );
+}
+
+function SpecialPacketPrice({
+  label,
+  price,
+  featured = false,
+  enabled,
+}: {
+  label: string;
+  price: string;
+  featured?: boolean;
+  enabled: boolean;
+}) {
+  return (
+    <div className={[
+      "rounded-[1.25rem] border bg-white/62 px-3 py-3",
+      enabled ? "border-[#cfe8f6]" : "border-[#d7dde1] grayscale",
+    ].join(" ")}>
+      <p className="text-[0.55rem] font-semibold uppercase tracking-[0.12em] text-[#10182a]/42">{label}</p>
+      <p className={[
+        "mt-1 font-[var(--font-title-family)] text-[1.65rem] font-light leading-none tracking-[-0.045em]",
+        enabled && featured ? "text-[#72a0c1]" : "text-[#10182a]/65",
+      ].join(" ")}>
+        {price}
+      </p>
+    </div>
   );
 }
 
