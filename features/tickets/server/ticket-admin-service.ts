@@ -54,6 +54,8 @@ export async function getAdminTicketById(ticketId: string) {
       type: true,
       galaDinner: true,
       isIbpaMember: true,
+      specialPacketId: true,
+      specialPacketPosition: true,
       status: true,
       paidAt: true,
       lastCheckIn: true,
@@ -340,6 +342,7 @@ export async function sendCurrentTicketQr(
     secureToken: credential.token,
     instagram: ticket.instagram,
     accessUpdated: options.accessUpdated ?? false,
+    specialPacket: Boolean(ticket.specialPacketId),
   });
 
   await prisma.$transaction(async (tx) => {

@@ -51,8 +51,8 @@ model Account {
   setupTokens                  AccountSetupToken[]
   tickets                      Ticket[]
 
-  @@index([role, status])
   @@unique([normalizedEmail, role])
+  @@index([role, status])
   @@index([normalizedEmail])
   @@index([deletedAt])
   @@index([dataScope, role, status])
@@ -464,6 +464,8 @@ model Ticket {
   galaDinner            Boolean              @default(false)
   isIbpaMember          Boolean              @default(false)
   ibpaCertNumber        String?
+  specialPacketId       String?
+  specialPacketPosition Int?
   stripeSessionId       String?              @unique
   stripePaymentIntentId String?              @unique
   promoCodeKey          String?
@@ -491,6 +493,7 @@ model Ticket {
   @@index([applicantProfileId])
   @@index([email])
   @@index([promoCodeKey])
+  @@index([specialPacketId])
   @@index([dataScope, status, createdAt])
   @@index([testScenarioId])
 }

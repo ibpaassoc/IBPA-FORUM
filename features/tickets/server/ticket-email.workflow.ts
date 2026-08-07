@@ -15,6 +15,7 @@ export async function sendTicketConfirmationEmail({
   secureToken,
   instagram,
   accessUpdated = false,
+  specialPacket = false,
 }: {
   to: string;
   fullName: string;
@@ -23,6 +24,7 @@ export async function sendTicketConfirmationEmail({
   secureToken: string;
   instagram?: string | null;
   accessUpdated?: boolean;
+  specialPacket?: boolean;
 }) {
   const qrBuffer = await generateTicketQRBuffer(secureToken);
   const paymentUrl = `${getAppUrl()}/tickets/${secureToken}`;
@@ -33,6 +35,7 @@ export async function sendTicketConfirmationEmail({
     paymentUrl,
     instagram,
     accessUpdated,
+    specialPacket,
   });
 
   return sendEmail({

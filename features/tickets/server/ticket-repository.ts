@@ -15,6 +15,11 @@ export type CreateTicketInput = {
   ibpaCertNumber?: string | null;
 };
 
+export type SpecialPacketAttendeeInput = Omit<
+  CreateTicketInput,
+  "type" | "galaDinner"
+>;
+
 export async function createTicket(input: CreateTicketInput) {
   const secureToken = crypto.randomBytes(32).toString("hex");
 
@@ -64,6 +69,7 @@ export async function reserveTicketForCheckout(
     const existing = await tx.ticket.findMany({
       where: {
         email: { equals: input.email, mode: "insensitive" },
+        specialPacketId: null,
         status: { not: "CANCELED" },
       },
       select: { id: true, status: true },
@@ -121,6 +127,64 @@ export async function reserveTicketForCheckout(
   });
 }
 
+export async function reserveSpecialPacketForCheckout({
+  attendees,
+}: {
+  attendees: [SpecialPacketAttendeeInput, SpecialPacketAttendeeInput];
+}) {
+  return prisma.$transaction(async (tx) => {
+    const normalizedEmails = [...new Set(attendees.map((attendee) => attendee.email))].sort();
+    for (const email of normalizedEmails) {
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${email}))`;
+    }
+
+    const previous = await tx.ticket.findMany({
+      where: {
+        email: { in: normalizedEmails, mode: "insensitive" },
+        status: "PENDING",
+        specialPacketId: { not: null },
+      },
+      select: { specialPacketId: true },
+    });
+    const previousPacketIds = [
+      ...new Set(
+        previous.flatMap((ticket) =>
+          ticket.specialPacketId ? [ticket.specialPacketId] : []
+        )
+      ),
+    ];
+    if (previousPacketIds.length > 0) {
+      await tx.ticket.deleteMany({
+        where: { specialPacketId: { in: previousPacketIds }, status: "PENDING" },
+      });
+    }
+
+    const specialPacketId = crypto.randomUUID();
+    const tickets = await Promise.all(
+      attendees.map((attendee, index) =>
+        tx.ticket.create({
+          data: {
+            secureToken: crypto.randomBytes(32).toString("hex"),
+            fullName: attendee.fullName,
+            email: attendee.email,
+            phone: attendee.phone,
+            instagram: attendee.instagram ?? null,
+            type: "TWO_DAYS",
+            galaDinner: true,
+            isIbpaMember: attendee.isIbpaMember,
+            ibpaCertNumber: attendee.ibpaCertNumber ?? null,
+            specialPacketId,
+            specialPacketPosition: index + 1,
+            status: "PENDING",
+          },
+        })
+      )
+    );
+
+    return { specialPacketId, tickets };
+  });
+}
+
 export async function findTicketByStripeSessionId(stripeSessionId: string) {
   return prisma.ticket.findUnique({
     where: { stripeSessionId },
@@ -133,6 +197,20 @@ export async function findTicketById(id: string) {
   });
 }
 
+export async function findSpecialPacketTickets(specialPacketId: string) {
+  return prisma.ticket.findMany({
+    where: { specialPacketId },
+    orderBy: { specialPacketPosition: "asc" },
+  });
+}
+
+export async function findTicketsByIds(ids: string[]) {
+  return prisma.ticket.findMany({
+    where: { id: { in: ids } },
+    orderBy: { specialPacketPosition: "asc" },
+  });
+}
+
 export async function findTicketByToken(secureToken: string) {
   return prisma.ticket.findUnique({
     where: { secureToken },
@@ -140,7 +218,7 @@ export async function findTicketByToken(secureToken: string) {
 }
 
 export async function findTicketWithPaymentByToken(secureToken: string) {
-  return prisma.ticket.findUnique({
+  const ticket = await prisma.ticket.findUnique({
     where: { secureToken },
     include: {
       payments: {
@@ -150,6 +228,21 @@ export async function findTicketWithPaymentByToken(secureToken: string) {
       },
     },
   });
+
+  if (!ticket || ticket.payments.length > 0 || !ticket.specialPacketId) {
+    return ticket;
+  }
+
+  const packetPayment = await prisma.payment.findFirst({
+    where: {
+      source: "TICKET",
+      status: "PAID",
+      ticket: { specialPacketId: ticket.specialPacketId },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return { ...ticket, payments: packetPayment ? [packetPayment] : [] };
 }
 
 export async function findActiveTicketByEmail(email: string) {

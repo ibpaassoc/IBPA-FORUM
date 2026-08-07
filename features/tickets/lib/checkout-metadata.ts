@@ -13,6 +13,8 @@ export type TicketCheckoutMetadata = {
   flowType: typeof TICKET_FLOW_TYPE;
   /** The ticket the webhook must mark paid. Primary lookup key. */
   ticketId: string;
+  ticketIds?: string;
+  specialPacket?: "true";
   email: string;
   ticketType: TicketType;
   galaDinner: string;
@@ -52,6 +54,29 @@ export function buildTicketCheckoutMetadata({
     ticketType: type,
     galaDinner: galaDinner ? "true" : "false",
     quantity: "1",
+    locale,
+    checkoutType: "ticket",
+  } satisfies TicketCheckoutMetadata;
+}
+
+export function buildSpecialPacketCheckoutMetadata({
+  ticketIds,
+  email,
+  locale,
+}: {
+  ticketIds: [string, string];
+  email: string;
+  locale: Language;
+}): Record<string, string> {
+  return {
+    flowType: TICKET_FLOW_TYPE,
+    ticketId: ticketIds[0],
+    ticketIds: ticketIds.join(","),
+    specialPacket: "true",
+    email,
+    ticketType: "TWO_DAYS",
+    galaDinner: "true",
+    quantity: "2",
     locale,
     checkoutType: "ticket",
   } satisfies TicketCheckoutMetadata;

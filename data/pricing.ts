@@ -11,6 +11,10 @@ export const PRICING = {
       twoDays: "$595",
       galaDinner: "$150",
     },
+    specialPacket: {
+      ibpaMembers: "$1,090",
+      standard: "$1,290",
+    },
   },
   awardParticipation: {
     startingFrom: "$50+",

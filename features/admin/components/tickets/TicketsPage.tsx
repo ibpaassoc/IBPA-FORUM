@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Ticket, Camera, X, ChevronDown, Send, Pencil, QrCode, RefreshCw, Mail, Loader2, Save } from "lucide-react";
+import { Ticket, Camera, X, ChevronDown, Send, Pencil, QrCode, RefreshCw, Mail, Loader2, Save, PackageOpen } from "lucide-react";
 import {
   DashboardAccentBlock,
   DashboardCard,
@@ -868,8 +868,10 @@ function ScannerDialog({ onClose, onCheckIn }: { onClose: () => void; onCheckIn:
 
 export default function TicketsPage({
   tickets,
+  specialPacketEnabled,
 }: {
   tickets: TicketRecord[];
+  specialPacketEnabled: boolean;
 }) {
   const router = useRouter();
   const reduceMotion = useReducedMotion() ?? false;
@@ -877,11 +879,38 @@ export default function TicketsPage({
   const [search, setSearch] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [toast, setToast] = useState<ToastState>(null);
+  const [packetEnabled, setPacketEnabled] = useState(specialPacketEnabled);
+  const [packetPending, setPacketPending] = useState(false);
 
   function showToast(next: ToastState) {
     setToast(next);
     if (next) {
       window.setTimeout(() => setToast(null), 5200);
+    }
+  }
+
+  async function toggleSpecialPacket() {
+    if (packetPending) return;
+    const next = !packetEnabled;
+    setPacketPending(true);
+    try {
+      const response = await fetch("/api/admin/settings/special-packet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ enabled: next }),
+      });
+      if (!response.ok) throw new Error("Unable to update setting");
+      setPacketEnabled(next);
+      showToast({
+        tone: "success",
+        message: next
+          ? "Special Packet sales are now enabled."
+          : "Special Packet is disabled and shown as Coming Soon.",
+      });
+    } catch {
+      showToast({ tone: "error", message: "Could not update the Special Packet setting." });
+    } finally {
+      setPacketPending(false);
     }
   }
 
@@ -909,6 +938,42 @@ export default function TicketsPage({
           </DashboardPrimaryBtn>
         }
       />
+
+      <DashboardCard className="p-4 md:p-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-[16px] bg-[var(--color-blue-wash)] text-[var(--color-blue)]">
+              <PackageOpen size={18} />
+            </span>
+            <div>
+              <p className="text-sm font-semibold text-[var(--color-ink)]">Special Packet sales</p>
+              <p className="mt-1 max-w-2xl text-xs leading-5 text-[var(--color-ink-soft)]">
+                Enables the fixed-price package for two complete 2-day Forum tickets with Gala Dinner access.
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            role="switch"
+            aria-checked={packetEnabled}
+            aria-label="Enable Special Packet sales"
+            disabled={packetPending}
+            onClick={() => void toggleSpecialPacket()}
+            className={`relative inline-flex h-8 w-14 shrink-0 rounded-full border p-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.25)] disabled:cursor-wait disabled:opacity-60 ${
+              packetEnabled
+                ? "border-[var(--color-blue)] bg-[var(--color-blue)]"
+                : "border-[rgba(37,42,45,0.14)] bg-[rgba(37,42,45,0.08)]"
+            }`}
+          >
+            <span
+              className={`size-[22px] rounded-full bg-white shadow-sm transition-transform ${
+                packetEnabled ? "translate-x-6" : "translate-x-0"
+              }`}
+            />
+          </button>
+        </div>
+      </DashboardCard>
 
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-[1.1fr_repeat(3,minmax(0,0.75fr))]">
         <DashboardAccentBlock>

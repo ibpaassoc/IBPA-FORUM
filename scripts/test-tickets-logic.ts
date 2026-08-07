@@ -14,15 +14,16 @@ import {
 import { normalizeTicketEmail } from "@/features/tickets/lib/normalize-email";
 import {
   computeTicketAmountCents,
-  TICKET_AMOUNTS_CENTS,
-  GALA_DINNER_CENTS,
 } from "@/features/tickets/lib/pricing";
+import { TEST_TICKET_PRICING } from "@/features/test/fixtures/ticket-pricing";
 import { calculatePromoDiscount } from "@/features/promos/lib/promo-codes";
 import { decideTicketReplacement } from "@/features/tickets/lib/replacement";
 import {
   buildTicketCheckoutMetadata,
+  buildSpecialPacketCheckoutMetadata,
   TICKET_FLOW_TYPE,
 } from "@/features/tickets/lib/checkout-metadata";
+import { ticketApiSchema } from "@/features/tickets/schemas/ticket-form-schema";
 import {
   adminTicketUpdateSchema,
   compareEditableTicketChanges,
@@ -42,6 +43,57 @@ function assert(condition: boolean, label: string) {
     failed += 1;
     console.error(`  ✗ ${label}`);
   }
+}
+
+{
+  const meta = buildSpecialPacketCheckoutMetadata({
+    ticketIds: ["tk_first", "tk_second"],
+    email: "buyer@example.com",
+    locale: "en",
+  });
+  eq(meta.ticketId, "tk_first", "Special Packet metadata carries the primary ticket");
+  eq(meta.ticketIds, "tk_first,tk_second", "Special Packet metadata carries both ticket ids");
+  eq(meta.specialPacket, "true", "Special Packet metadata is explicitly marked");
+  eq(meta.quantity, "2", "Special Packet metadata records two tickets");
+}
+
+// ── Special Packet request validation ────────────────────────────────────────
+console.log("special packet validation");
+{
+  const attendee = {
+    firstName: "Jane",
+    lastName: "Client",
+    email: "jane@example.com",
+    phone: "+1 555 000 0000",
+    instagram: "@jane",
+  };
+  const valid = ticketApiSchema.safeParse({
+    ...attendee,
+    type: "SPECIAL_PACKET",
+    galaDinner: true,
+    isIbpaMember: false,
+    secondAttendee: { ...attendee, firstName: "Joan", email: "joan@example.com" },
+  });
+  assert(valid.success, "Special Packet requires and accepts two complete attendees");
+  assert(
+    !ticketApiSchema.safeParse({
+      ...attendee,
+      type: "SPECIAL_PACKET",
+      galaDinner: true,
+      isIbpaMember: false,
+    }).success,
+    "Special Packet rejects a missing second attendee"
+  );
+  assert(
+    !ticketApiSchema.safeParse({
+      ...attendee,
+      type: "SPECIAL_PACKET",
+      galaDinner: false,
+      isIbpaMember: false,
+      secondAttendee: attendee,
+    }).success,
+    "Special Packet always includes Gala Dinner"
+  );
 }
 
 function eq<T>(actual: T, expected: T, label: string) {
@@ -123,8 +175,9 @@ eq(
     isIbpaMember: false,
     galaDinner: false,
     ticketDiscount: null,
+    pricing: TEST_TICKET_PRICING,
   }).totalCents,
-  TICKET_AMOUNTS_CENTS.ONE_DAY.standard,
+  TEST_TICKET_PRICING.ticketAmountsCents.ONE_DAY.standard,
   "one-day standard, no gala"
 );
 eq(
@@ -133,8 +186,9 @@ eq(
     isIbpaMember: true,
     galaDinner: false,
     ticketDiscount: null,
+    pricing: TEST_TICKET_PRICING,
   }).totalCents,
-  TICKET_AMOUNTS_CENTS.ONE_DAY.ibpa,
+  TEST_TICKET_PRICING.ticketAmountsCents.ONE_DAY.ibpa,
   "one-day member price"
 );
 eq(
@@ -143,8 +197,9 @@ eq(
     isIbpaMember: false,
     galaDinner: true,
     ticketDiscount: null,
+    pricing: TEST_TICKET_PRICING,
   }).totalCents,
-  TICKET_AMOUNTS_CENTS.TWO_DAYS.standard + GALA_DINNER_CENTS,
+  TEST_TICKET_PRICING.ticketAmountsCents.TWO_DAYS.standard + TEST_TICKET_PRICING.galaDinnerCents,
   "two-day + gala add-on"
 );
 {
@@ -154,10 +209,11 @@ eq(
     isIbpaMember: false,
     galaDinner: true,
     ticketDiscount: { type: "percent", value: 20 },
+    pricing: TEST_TICKET_PRICING,
   });
   eq(amounts.ticketCents, Math.round(39500 * 0.8), "forum pass discounted 20%");
-  eq(amounts.galaCents, GALA_DINNER_CENTS, "gala not discounted");
-eq(amounts.totalCents, Math.round(39500 * 0.8) + GALA_DINNER_CENTS, "total = discounted pass + gala");
+  eq(amounts.galaCents, TEST_TICKET_PRICING.galaDinnerCents, "gala not discounted");
+eq(amounts.totalCents, Math.round(39500 * 0.8) + TEST_TICKET_PRICING.galaDinnerCents, "total = discounted pass + gala");
 }
 {
   // Automatic ticket discounts and promo codes stack on the forum pass only.
@@ -166,6 +222,7 @@ eq(amounts.totalCents, Math.round(39500 * 0.8) + GALA_DINNER_CENTS, "total = dis
     isIbpaMember: false,
     galaDinner: true,
     ticketDiscount: { type: "percent", value: 30 },
+    pricing: TEST_TICKET_PRICING,
   });
   const promo = calculatePromoDiscount(amounts.ticketCents, 30);
   eq(amounts.ticketCents, 27650, "automatic 30% applies before the ticket promo");

@@ -7,6 +7,7 @@ import {
   CreditCard,
   Crown,
   Globe2,
+  Gift,
   Info,
   Sparkles,
   Tag,
@@ -16,10 +17,13 @@ import {
   Zap,
 } from "lucide-react";
 
-import { PRICING } from "@/data/pricing";
+import { formatStripeAmount } from "@/features/pricing/types";
+import { useStripePricing } from "@/features/pricing/useStripePricing";
+import { ticketTranslations, type TicketTranslation } from "@/features/tickets/copy";
 import { applyDiscountToPrice } from "@/features/tickets/types";
 import type { TicketDiscount } from "@/features/tickets/types";
 import { useTicketDiscount } from "@/features/tickets/useEarlyBird";
+import { useSpecialPacket } from "@/features/tickets/useSpecialPacket";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import {
   LandingSecondaryButton,
@@ -29,10 +33,15 @@ import {
 import TicketModal from "@/features/tickets/components/TicketModal";
 
 export default function HomeRegistrationSection() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const c = t.home.registrationSection;
+  const ticketCopy = ticketTranslations[language];
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const { ticketDiscount, discount } = useTicketDiscount();
+  const specialPacket = useSpecialPacket();
+  const { pricing, loading: pricingLoading } = useStripePricing();
+  const displayPrice = (amount: Parameters<typeof formatStripeAmount>[0]) =>
+    pricingLoading ? "…" : formatStripeAmount(amount, language);
 
   const topInfoCards = [
     { icon: Calendar, eyebrow: c.registrationInfo.eyebrow, value: c.registrationInfo.value },
@@ -46,25 +55,25 @@ export default function HomeRegistrationSection() {
   ];
 
   const forumRows = [
-    { label: c.pricing.forum.oneDay, member: PRICING.forumTickets.ibpaMembers.oneDay, standard: PRICING.forumTickets.standard.oneDay, discountable: true },
-    { label: c.pricing.forum.twoDays, member: PRICING.forumTickets.ibpaMembers.twoDays, standard: PRICING.forumTickets.standard.twoDays, discountable: true },
-    { label: c.pricing.forum.galaDinner, member: PRICING.forumTickets.ibpaMembers.galaDinner, standard: PRICING.forumTickets.standard.galaDinner, discountable: false },
+    { label: c.pricing.forum.oneDay, member: displayPrice(pricing?.forumTickets.ibpaMembers.oneDay ?? null), standard: displayPrice(pricing?.forumTickets.standard.oneDay ?? null), discountable: true },
+    { label: c.pricing.forum.twoDays, member: displayPrice(pricing?.forumTickets.ibpaMembers.twoDays ?? null), standard: displayPrice(pricing?.forumTickets.standard.twoDays ?? null), discountable: true },
+    { label: c.pricing.forum.galaDinner, member: displayPrice(pricing?.forumTickets.galaDinner ?? null), standard: displayPrice(pricing?.forumTickets.galaDinner ?? null), discountable: false },
   ];
 
   const awardRows = [
-    { label: c.pricing.award.oneNomination, member: PRICING.awardParticipation.ibpaMembers.oneNomination, standard: PRICING.awardParticipation.nonMembers.oneNomination },
-    { label: c.pricing.award.threeNominations, member: PRICING.awardParticipation.ibpaMembers.threeNominations, standard: PRICING.awardParticipation.nonMembers.threeNominations },
-    { label: c.pricing.award.fiveNominations, member: PRICING.awardParticipation.ibpaMembers.fiveNominations, standard: PRICING.awardParticipation.nonMembers.fiveNominations, badge: c.pricing.mostPopular },
+    { label: c.pricing.award.oneNomination, member: displayPrice(pricing?.awardParticipation.ibpaMembers.oneNomination ?? null), standard: displayPrice(pricing?.awardParticipation.nonMembers.oneNomination ?? null) },
+    { label: c.pricing.award.threeNominations, member: displayPrice(pricing?.awardParticipation.ibpaMembers.threeNominations ?? null), standard: displayPrice(pricing?.awardParticipation.nonMembers.threeNominations ?? null) },
+    { label: c.pricing.award.fiveNominations, member: displayPrice(pricing?.awardParticipation.ibpaMembers.fiveNominations ?? null), standard: displayPrice(pricing?.awardParticipation.nonMembers.fiveNominations ?? null), badge: c.pricing.mostPopular },
   ];
 
   const juryRows = [
-    { label: c.pricing.jury.member, price: PRICING.judgeRegistration.ibpaMembers, icon: Crown, featured: true },
-    { label: c.pricing.jury.standard, price: PRICING.judgeRegistration.standard, icon: UserRound, featured: false },
+    { label: c.pricing.jury.member, price: displayPrice(pricing?.judgeRegistration.ibpaMembers ?? null), icon: Crown, featured: true },
+    { label: c.pricing.jury.standard, price: displayPrice(pricing?.judgeRegistration.standard ?? null), icon: UserRound, featured: false },
   ];
 
   return (
     <>
-      <section className="landing-section-strong relative overflow-hidden py-12 md:py-16 lg:py-20">
+      <section id="pricing" className="landing-section-strong relative overflow-hidden py-12 md:py-16 lg:py-20">
         <div className="pointer-events-none absolute left-[-10%] top-0 h-80 w-80 rounded-full bg-[#b9d9eb]/18 blur-2xl" />
 
         <div className="page-section relative">
@@ -114,7 +123,7 @@ export default function HomeRegistrationSection() {
                 eyebrow={c.pricing.forum.eyebrow}
                 title={c.pricing.forum.title}
                 icon={<Sparkles size={16} />}
-                badge={discount ? <TicketDiscountBadge discount={discount} kind={ticketDiscount.kind} /> : null}
+                badge={discount ? <TicketDiscountBadge discount={discount} kind={ticketDiscount.kind} copy={ticketCopy.pricing} /> : null}
                 footer={
                   <LandingSecondaryButton type="button" onClick={() => setIsTicketModalOpen(true)}>
                     {c.tickets.cta}
@@ -154,6 +163,16 @@ export default function HomeRegistrationSection() {
                 </div>
               </PricingCard>
             </StaggerContainer>
+
+            <Reveal delay={0.12}>
+              <SpecialPacketCard
+                enabled={specialPacket.enabled && Boolean(pricing?.forumTickets.specialPacket.ibpaMembers && pricing?.forumTickets.specialPacket.standard)}
+                memberPrice={displayPrice(pricing?.forumTickets.specialPacket.ibpaMembers ?? null)}
+                standardPrice={displayPrice(pricing?.forumTickets.specialPacket.standard ?? null)}
+                onBuy={() => setIsTicketModalOpen(true)}
+                copy={ticketCopy.pricing}
+              />
+            </Reveal>
           </div>
         </div>
       </section>
@@ -251,25 +270,125 @@ function PricingCard({
   );
 }
 
+function SpecialPacketCard({
+  enabled,
+  memberPrice,
+  standardPrice,
+  onBuy,
+  copy,
+}: {
+  enabled: boolean;
+  memberPrice: string;
+  standardPrice: string;
+  onBuy: () => void;
+  copy: TicketTranslation["pricing"];
+}) {
+  return (
+    <article
+      className={[
+        "relative mt-4 overflow-hidden rounded-[2rem] border p-5 shadow-[0_20px_55px_rgba(114,160,193,0.09)] backdrop-blur-xl md:p-6",
+        enabled
+          ? "border-[#b9d9eb] bg-[linear-gradient(135deg,rgba(239,248,253,0.92),rgba(255,255,255,0.78))]"
+          : "border-[#d7dee4] bg-[#f2f4f5]/88 text-[#10182a]/55",
+      ].join(" ")}
+    >
+      <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
+
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-center lg:gap-8">
+        <div className="flex min-w-0 items-start gap-4">
+          <span
+            className={[
+              "flex size-11 shrink-0 items-center justify-center rounded-2xl border bg-white/80",
+              enabled ? "border-[#b9d9eb] text-[#72a0c1]" : "border-[#cfd5da] text-[#10182a]/35",
+            ].join(" ")}
+          >
+            <Gift size={19} />
+          </span>
+
+          <div>
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[#72a0c1]">{copy.specialEyebrow}</p>
+              <span
+                className={[
+                  "rounded-full px-2.5 py-1 text-[0.5rem] font-semibold uppercase tracking-[0.1em]",
+                  enabled ? "bg-[#72a0c1] text-white" : "bg-[#d3d7da] text-[#10182a]/55",
+                ].join(" ")}
+              >
+                {enabled ? copy.new : copy.comingSoon}
+              </span>
+            </div>
+
+            <h4 className="mt-2 font-[var(--font-title-family)] text-[clamp(1.9rem,3vw,2.7rem)] font-light leading-none tracking-[-0.05em] text-[#10182a]">
+              {copy.specialTitle}
+            </h4>
+            <p className="mt-2 max-w-xl text-sm leading-6 text-[#10182a]/58">
+              {copy.specialDescription}
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 sm:min-w-[300px]">
+          <SpecialPacketPrice label={copy.members} price={memberPrice} featured enabled={enabled} />
+          <SpecialPacketPrice label={copy.guests} price={standardPrice} enabled={enabled} />
+        </div>
+
+        <LandingSecondaryButton type="button" onClick={onBuy} disabled={!enabled} className="w-full lg:w-auto">
+          {enabled ? copy.buySpecial : copy.comingSoon}
+        </LandingSecondaryButton>
+      </div>
+    </article>
+  );
+}
+
+function SpecialPacketPrice({
+  label,
+  price,
+  featured = false,
+  enabled,
+}: {
+  label: string;
+  price: string;
+  featured?: boolean;
+  enabled: boolean;
+}) {
+  return (
+    <div className={[
+      "rounded-[1.25rem] border bg-white/62 px-3 py-3",
+      enabled ? "border-[#cfe8f6]" : "border-[#d7dde1] grayscale",
+    ].join(" ")}>
+      <p className="text-[0.55rem] font-semibold uppercase tracking-[0.12em] text-[#10182a]/42">{label}</p>
+      <p className={[
+        "mt-1 font-[var(--font-title-family)] text-[1.65rem] font-light leading-none tracking-[-0.045em]",
+        enabled && featured ? "text-[#72a0c1]" : "text-[#10182a]/65",
+      ].join(" ")}>
+        {price}
+      </p>
+    </div>
+  );
+}
+
 function TicketDiscountBadge({
   discount,
   kind,
+  copy,
 }: {
   discount: TicketDiscount;
   kind: "earlyBird" | "permanent30" | null;
+  copy: TicketTranslation["pricing"];
 }) {
   if (!discount) return null;
 
-  const offLabel = discount.type === "percent" ? `${discount.value}% off` : `$${(discount.value / 100).toFixed(0)} off`;
+  const offLabel = discount.type === "percent" ? `${discount.value}% ${copy.off}` : `$${(discount.value / 100).toFixed(0)} ${copy.off}`;
   const shortLabel = discount.type === "percent" ? `${discount.value}%` : `$${(discount.value / 100).toFixed(0)}`;
+  const discountName = kind === "permanent30" ? copy.permanent : copy.earlyBird;
 
   return (
     <span
-      title={`${kind === "permanent30" ? "Permanent 30" : "Early Bird"} — ${offLabel}`}
+      title={`${discountName} — ${offLabel}`}
       className="inline-flex w-fit items-center gap-1 whitespace-nowrap rounded-full border border-[#b9d9eb]/80 bg-white/85 px-3 py-1 text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[#72a0c1] shadow-[0_10px_28px_rgba(114,160,193,0.14)] backdrop-blur-xl"
     >
       <Zap size={11} strokeWidth={2} />
-      {kind === "permanent30" ? "Permanent 30" : "Early Bird"} · {shortLabel}
+      {discountName} · {shortLabel}
     </span>
   );
 }

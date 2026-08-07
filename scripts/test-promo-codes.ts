@@ -14,8 +14,8 @@ import {
 } from "@/features/promos/lib/promo-codes";
 import {
   computeTicketAmountCents,
-  GALA_DINNER_CENTS,
 } from "@/features/tickets/lib/pricing";
+import { TEST_TICKET_PRICING } from "@/features/test/fixtures/ticket-pricing";
 
 const ROOT = process.cwd();
 let passed = 0;
@@ -182,6 +182,7 @@ for (const scenario of ticketScenarios) {
     isIbpaMember: false,
     galaDinner: scenario.galaDinner,
     ticketDiscount: null,
+    pricing: TEST_TICKET_PRICING,
   });
   const expectedDiscount = Math.round(amounts.ticketCents * 0.3);
   const expectedTicketSubtotal = amounts.ticketCents - expectedDiscount;
@@ -252,7 +253,7 @@ for (const scenario of ticketScenarios) {
 
   eq(
     amounts.galaCents,
-    scenario.galaDinner ? GALA_DINNER_CENTS : 0,
+    scenario.galaDinner ? TEST_TICKET_PRICING.galaDinnerCents : 0,
     `${scenario.label}: Gala Dinner remains undiscounted`
   );
 }

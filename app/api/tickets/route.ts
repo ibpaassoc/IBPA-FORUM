@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ticketApiSchema } from "@/features/tickets/schemas/ticket-form-schema";
-import { initiateTicketPurchase, InvalidCertError } from "@/features/tickets/server/ticket-service";
+import {
+  initiateTicketPurchase,
+  InvalidCertError,
+  SpecialPacketUnavailableError,
+} from "@/features/tickets/server/ticket-service";
 import { isProduction, validateProductionEnv } from "@/lib/env";
 import { getServerLanguage } from "@/lib/i18n/server";
 import { PromoCodeError } from "@/features/promos/server/promo-service";
@@ -38,6 +42,10 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof InvalidCertError) {
       return NextResponse.json({ message: error.message }, { status: 422 });
+    }
+
+    if (error instanceof SpecialPacketUnavailableError) {
+      return NextResponse.json({ message: error.message }, { status: 409 });
     }
 
     if (error instanceof PromoCodeError) {
