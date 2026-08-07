@@ -37,7 +37,7 @@ export default function CategoriesInfo() {
           <div className="max-w-[980px]">
             <p className="page-eyebrow text-[#72a0c1]">{c.eyebrow}</p>
 
-            <h2 className="mt-5 max-w-[900px] font-(--font-display) text-[clamp(2.65rem,5.8vw,5.55rem)] leading-[0.93] tracking-[-0.055em] text-[#1e2430]">
+            <h2 className="mt-5 max-w-[900px] font-[var(--font-display)] text-[clamp(2.65rem,5.8vw,5.55rem)] leading-[0.93] tracking-[-0.055em] text-[#1e2430]">
               {c.title}
             </h2>
 
@@ -72,7 +72,7 @@ export default function CategoriesInfo() {
                     </h3>
                   </div>
 
-                  <span className="absolute right-6 top-6 font-(--font-display) text-sm font-semibold tracking-[0.22em] text-[#72a0c1]">
+                  <span className="absolute right-6 top-6 font-[var(--font-display)] text-sm font-semibold tracking-[0.22em] text-[#72a0c1]">
                     {step.number}
                   </span>
                 </GlassCard>
@@ -89,7 +89,7 @@ export default function CategoriesInfo() {
               </div>
 
               <div>
-                <h3 className="font-(--font-display) text-[1.75rem] leading-none tracking-[-0.04em] text-[#1e2430] sm:text-[2rem]">
+                <h3 className="font-[var(--font-display)] text-[1.75rem] leading-none tracking-[-0.04em] text-[#1e2430] sm:text-[2rem]">
                   {c.doneTitle}
                 </h3>
 

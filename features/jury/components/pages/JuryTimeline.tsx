@@ -32,7 +32,7 @@ export default function JuryTimeline() {
                 <div>
                   <p className="page-eyebrow">{c.eyebrow}</p>
 
-                  <h2 className="mt-4 max-w-md font-(--font-display) text-[clamp(2.45rem,5vw,5rem)] leading-[0.93] tracking-[-0.045em] text-[#10283a]">
+                  <h2 className="mt-4 max-w-md font-[var(--font-display)] text-[clamp(2.45rem,5vw,5rem)] leading-[0.93] tracking-[-0.045em] text-[#10283a]">
                     {c.title}
                   </h2>
                 </div>
@@ -42,7 +42,7 @@ export default function JuryTimeline() {
                     <p className="text-xs font-medium uppercase tracking-[0.22em] text-[#72a0c1]">
                       {c.yearLabel}
                     </p>
-                    <p className="mt-2 font-(--font-display) text-5xl leading-none tracking-[-0.04em] text-[#10283a]">
+                    <p className="mt-2 font-[var(--font-display)] text-5xl leading-none tracking-[-0.04em] text-[#10283a]">
                       {c.year}
                     </p>
                   </div>
@@ -56,7 +56,7 @@ export default function JuryTimeline() {
                       <p className="text-[0.68rem] font-medium uppercase tracking-[0.2em] text-[#72a0c1]">
                         {c.formatLabel}
                       </p>
-                      <p className="mt-1 font-(--font-display) text-2xl leading-none text-[#10283a]">
+                      <p className="mt-1 font-[var(--font-display)] text-2xl leading-none text-[#10283a]">
                         {c.formatValue}
                       </p>
                     </div>
@@ -84,13 +84,13 @@ export default function JuryTimeline() {
 
                         <div>
 
-                          <h3 className="mt-2 font-(--font-display) text-[clamp(1.45rem,2.4vw,2rem)] leading-[1.02] tracking-[-0.03em] text-[#10283a]">
+                          <h3 className="mt-2 font-[var(--font-display)] text-[clamp(1.45rem,2.4vw,2rem)] leading-[1.02] tracking-[-0.03em] text-[#10283a]">
                             {step.title}
                           </h3>
                         </div>
 
                         <div className="rounded-[1.25rem] border border-[#b9d9eb]/45 bg-[#f7fbfd]/78 px-4 py-3 sm:min-w-[230px]">
-                          <p className="font-(--font-display) text-[clamp(1.2rem,2vw,1.55rem)] leading-tight tracking-[-0.02em] text-[#10283a]">
+                          <p className="font-[var(--font-display)] text-[clamp(1.2rem,2vw,1.55rem)] leading-tight tracking-[-0.02em] text-[#10283a]">
                             {step.date}
                           </p>
                         </div>

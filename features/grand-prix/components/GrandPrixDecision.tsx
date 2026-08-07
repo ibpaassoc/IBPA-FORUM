@@ -14,7 +14,7 @@ export default function GrandPrixDecision() {
           <div className="max-w-2xl">
             <p className="page-eyebrow text-[#72a0c1]">{c.eyebrow}</p>
 
-            <h2 className="mt-5 font-(--font-display) text-[clamp(2.4rem,5vw,4.6rem)] leading-[0.95] tracking-[-0.05em] text-[#1e2430]">
+            <h2 className="mt-5 font-[var(--font-display)] text-[clamp(2.4rem,5vw,4.6rem)] leading-[0.95] tracking-[-0.05em] text-[#1e2430]">
               {c.title}
             </h2>
           </div>
@@ -24,11 +24,11 @@ export default function GrandPrixDecision() {
           {c.steps.map((step, index) => (
             <Reveal key={step.number} delay={index * 0.08}>
               <article className="group relative flex h-full min-h-[230px] flex-col rounded-[28px] border border-[#b9d9eb]/45 bg-white/70 p-6 backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:border-[#72a0c1]/30 hover:shadow-[0_20px_54px_rgba(114,160,193,0.12)]">
-                <span className="font-(--font-display) text-[2.6rem] font-light leading-none text-[#72a0c1]/35 transition-colors duration-200 group-hover:text-[#72a0c1]/60">
+                <span className="font-[var(--font-display)] text-[2.6rem] font-light leading-none text-[#72a0c1]/35 transition-colors duration-200 group-hover:text-[#72a0c1]/60">
                   {step.number}
                 </span>
 
-                <h3 className="mt-6 font-(--font-display) text-[1.35rem] leading-tight tracking-[-0.025em] text-[#1e2430]">
+                <h3 className="mt-6 font-[var(--font-display)] text-[1.35rem] leading-tight tracking-[-0.025em] text-[#1e2430]">
                   {step.title}
                 </h3>
 

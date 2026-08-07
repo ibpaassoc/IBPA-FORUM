@@ -40,7 +40,7 @@ export default function CategoriesAwardResults() {
         <Reveal>
           <div className="max-w-5xl">
             <p className="page-eyebrow text-[#72a0c1]">{c.eyebrow}</p>
-            <h2 className="mt-5 font-(--font-display) text-[clamp(2.75rem,6vw,5.8rem)] leading-[0.9] tracking-[-0.06em] text-[#1e2430]">
+            <h2 className="mt-5 font-[var(--font-display)] text-[clamp(2.75rem,6vw,5.8rem)] leading-[0.9] tracking-[-0.06em] text-[#1e2430]">
               {c.title}
             </h2>
           </div>
@@ -90,7 +90,7 @@ export default function CategoriesAwardResults() {
                         {item.label}
                       </p>
 
-                      <p className="mt-5 font-(--font-display) text-[2.35rem] leading-none tracking-[-0.055em] text-[#1e2430]">
+                      <p className="mt-5 font-[var(--font-display)] text-[2.35rem] leading-none tracking-[-0.055em] text-[#1e2430]">
                         {item.date}
                       </p>
                     </div>
@@ -174,11 +174,11 @@ export default function CategoriesAwardResults() {
                       </div>
                     </div>
 
-                    <p className="font-(--font-display) text-right text-[1.65rem] leading-none tracking-[-0.04em] text-[#1e2430]">
+                    <p className="font-[var(--font-display)] text-right text-[1.65rem] leading-none tracking-[-0.04em] text-[#1e2430]">
                       {row.member}
                     </p>
 
-                    <p className="font-(--font-display) text-right text-[1.65rem] leading-none tracking-[-0.04em] text-[#1e2430]">
+                    <p className="font-[var(--font-display)] text-right text-[1.65rem] leading-none tracking-[-0.04em] text-[#1e2430]">
                       {row.nonMember}
                     </p>
                   </div>

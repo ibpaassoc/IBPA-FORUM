@@ -81,7 +81,7 @@ export default function HomeRegistrationSection() {
             <div className="mx-auto max-w-3xl text-center">
               <p className="page-eyebrow text-[#72a0c1]">{c.eyebrow}</p>
 
-              <h2 className="mt-4 font-(--font-display) text-[clamp(2.5rem,5.7vw,5.7rem)] leading-[0.9] tracking-[-0.065em] text-[#10182a]">
+              <h2 className="mt-4 font-[var(--font-display)] text-[clamp(2.5rem,5.7vw,5.7rem)] leading-[0.9] tracking-[-0.065em] text-[#10182a]">
                 {c.title}
               </h2>
             </div>
@@ -107,7 +107,7 @@ export default function HomeRegistrationSection() {
                 <div>
                   <p className="page-eyebrow text-[#72a0c1]">{c.pricing.eyebrow}</p>
 
-                  <h3 className="mt-4 font-(--font-display) text-[clamp(2.25rem,4.6vw,4.7rem)] leading-[0.9] tracking-[-0.06em] text-[#10182a]">
+                  <h3 className="mt-4 font-[var(--font-display)] text-[clamp(2.25rem,4.6vw,4.7rem)] leading-[0.9] tracking-[-0.06em] text-[#10182a]">
                     {c.pricing.title}
                   </h3>
                 </div>
@@ -213,7 +213,7 @@ function InfoCard({
       <div className={featured ? "min-h-[6.4rem]" : "min-h-[6.6rem]"}>
         <h3
           className={[
-            "mt-3 font-(--font-display) leading-[0.92] tracking-[-0.055em] text-[#10182a]",
+            "mt-3 font-[var(--font-display)] leading-[0.92] tracking-[-0.055em] text-[#10182a]",
             featured
               ? "max-w-[22rem] text-[clamp(2rem,3.6vw,3.4rem)]"
               : "max-w-[12rem] text-[clamp(1.75rem,2.55vw,2.45rem)]",
@@ -251,7 +251,7 @@ function PricingCard({
         <div className="min-w-0">
           <p className="text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-[#72a0c1]">{eyebrow}</p>
 
-          <h4 className="mt-3 font-(--font-display) text-[clamp(2.05rem,3vw,2.4rem)] leading-[0.96] tracking-[-0.06em] text-[#10182a]">
+          <h4 className="mt-3 font-[var(--font-display)] text-[clamp(2.05rem,3vw,2.4rem)] leading-[0.96] tracking-[-0.06em] text-[#10182a]">
             {title}
           </h4>
 
@@ -462,7 +462,7 @@ function PriceCell({
     return (
       <span 
         className={[
-          "whitespace-nowrap text-right font-(--font-display) text-[clamp(1.22rem,1.75vw,1.5rem)] tracking-[-0.045em]",
+          "whitespace-nowrap text-right font-[var(--font-display)] text-[clamp(1.22rem,1.75vw,1.5rem)] tracking-[-0.045em]",
           featured ? "text-[#72a0c1]" : "text-[#10182a]/80",
         ].join(" ")}
       >
@@ -477,7 +477,7 @@ function PriceCell({
 
       <span
         className={[
-          "whitespace-nowrap font-(--font-display) text-[clamp(1.22rem,1.75vw,1.5rem)] tracking-[-0.045em]",
+          "whitespace-nowrap font-[var(--font-display)] text-[clamp(1.22rem,1.75vw,1.5rem)] tracking-[-0.045em]",
           featured ? "text-[#72a0c1]" : "text-[#10182a]/80",
         ].join(" ")}
       >
@@ -522,7 +522,7 @@ function JuryPriceRow({
         </p>
       </div>
 
-      <span className={["shrink-0 font-(--font-display) text-[1.75rem] leading-none tracking-[-0.045em]", featured ? "text-[#72a0c1]" : "text-[#10182a]/80"].join(" ")}>
+      <span className={["shrink-0 font-[var(--font-display)] text-[1.75rem] leading-none tracking-[-0.045em]", featured ? "text-[#72a0c1]" : "text-[#10182a]/80"].join(" ")}>
         {price}
       </span>
     </div>

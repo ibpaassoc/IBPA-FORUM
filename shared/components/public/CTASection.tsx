@@ -22,9 +22,9 @@ export default function CTASection({
 }: CTASectionProps) {
   return (
     <PageSection surface="tint">
-      <div className="page-card rounded-(--radius-lg) px-(--space-xl) py-(--space-xl)">
+      <div className="page-card rounded-[var(--radius-lg)] px-[var(--space-xl)] py-[var(--space-xl)]">
         <SectionHeading eyebrow={eyebrow} title={title} description={description} />
-        <div className="mt-(--space-md) flex flex-wrap items-center gap-3">
+        <div className="mt-[var(--space-md)] flex flex-wrap items-center gap-3">
           <Link href={primary.href} className="ibpa-button ibpa-button-primary">
             {primary.label}
           </Link>
@@ -34,7 +34,7 @@ export default function CTASection({
             </Link>
           ) : null}
         </div>
-        {extra ? <div className="mt-(--space-md)">{extra}</div> : null}
+        {extra ? <div className="mt-[var(--space-md)]">{extra}</div> : null}
       </div>
     </PageSection>
   );

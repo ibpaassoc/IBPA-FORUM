@@ -9,25 +9,25 @@ export default function GrandPrixSection() {
 
   return (
     <section className="bg-[var(--color-white)]">
-      <div className="mx-auto grid max-w-(--content-width) gap-(--space-xl) px-(--page-gutter) page-section-pad lg:grid-cols-[1fr_1.02fr] lg:items-center">
+      <div className="mx-auto grid max-w-[var(--content-width)] gap-[var(--space-xl)] px-[var(--page-gutter)] page-section-pad lg:grid-cols-[1fr_1.02fr] lg:items-center">
         <div className="max-w-2xl">
           <p className="page-eyebrow">{t.home.grandPrix.label}</p>
 
-          <h2 className="mt-(--space-sm) font-(--font-display) text-[clamp(1.8rem,3.5vw,3rem)] text-(--color-ink)">
+          <h2 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(1.8rem,3.5vw,3rem)] text-[var(--color-ink)]">
             {t.home.grandPrix.title}
           </h2>
 
-          <p className="mt-(--space-md) text-sm leading-[1.7] text-(--color-ink-soft)">
+          <p className="mt-[var(--space-md)] text-sm leading-[1.7] text-[var(--color-ink-soft)]">
             {t.home.grandPrix.text1}
           </p>
 
-          <p className="mt-(--space-sm) text-sm leading-[1.7] text-(--color-ink-soft)">
+          <p className="mt-[var(--space-sm)] text-sm leading-[1.7] text-[var(--color-ink-soft)]">
             {t.home.grandPrix.text2}
           </p>
 
           <Link
             href="/grand-prix"
-            className="ibpa-button ibpa-button-ghost mt-(--space-lg)"
+            className="ibpa-button ibpa-button-ghost mt-[var(--space-lg)]"
           >
             {t.home.grandPrix.cta}
           </Link>

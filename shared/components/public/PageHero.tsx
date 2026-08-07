@@ -22,7 +22,7 @@ export default function PageHero({
 }: PageHeroProps) {
   return (
     <PageSection className={clsx("pt-[clamp(76px,10vh,96px)]", className)} surface="tint">
-      <div className="grid gap-(--space-xl) lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+      <div className="grid gap-[var(--space-xl)] lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
         <SectionHeading
           eyebrow={eyebrow}
           title={title}

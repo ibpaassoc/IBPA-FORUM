@@ -47,7 +47,7 @@ export default function FaqAccordion({
           <div className="max-w-3xl">
             <p className="page-eyebrow text-[#72a0c1]">{eyebrow}</p>
 
-            <h2 className="mt-5 font-(--font-display) text-[clamp(2.5rem,5.2vw,5rem)] leading-[0.95] tracking-[-0.055em] text-[#1e2430]">
+            <h2 className="mt-5 font-[var(--font-display)] text-[clamp(2.5rem,5.2vw,5rem)] leading-[0.95] tracking-[-0.055em] text-[#1e2430]">
               {title}
             </h2>
           </div>

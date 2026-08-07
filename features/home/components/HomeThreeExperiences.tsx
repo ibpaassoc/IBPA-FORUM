@@ -42,7 +42,7 @@ export default function HomeThreeExperiences() {
         <Reveal>
           <div className="mx-auto max-w-3xl text-center">
             <p className="page-eyebrow">{tE.eyebrow}</p>
-            <h2 className="mt-4 font-(--font-display) text-[clamp(2.8rem,6vw,5.8rem)] leading-[0.9] tracking-[-0.06em] text-[#111827]">
+            <h2 className="mt-4 font-[var(--font-display)] text-[clamp(2.8rem,6vw,5.8rem)] leading-[0.9] tracking-[-0.06em] text-[#111827]">
               {tE.title}
             </h2>
           </div>
@@ -82,7 +82,7 @@ export default function HomeThreeExperiences() {
                     </div>
 
                     <div className="mt-10">
-                      <h3 className="font-(--font-display) text-[clamp(2rem,2.4vw,3.05rem)] leading-[0.94] tracking-[-0.055em] text-[#111827]">
+                      <h3 className="font-[var(--font-display)] text-[clamp(2rem,2.4vw,3.05rem)] leading-[0.94] tracking-[-0.055em] text-[#111827]">
                         {item.title}
                       </h3>
 
@@ -103,7 +103,7 @@ export default function HomeThreeExperiences() {
                       ))}
                     </div>
 
-                    <p className="mt-auto pt-7 font-(--font-body) text-[0.95rem] italic leading-7 text-[#6b7280]">
+                    <p className="mt-auto pt-7 font-[var(--font-body)] text-[0.95rem] italic leading-7 text-[#6b7280]">
                       {item.footer}
                     </p>
                   </div>

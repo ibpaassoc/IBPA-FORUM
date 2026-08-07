@@ -25,7 +25,7 @@ const FOCUS_RING =
   "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(47,111,159,0.42)]";
 
 const META_LABEL_CLASS =
-  "font-(--font-ui-family) text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-[#2f6f9f]";
+  "font-[var(--font-ui-family)] text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-[#2f6f9f]";
 
 const META_LINK_CLASS = `inline-flex min-h-11 max-w-full items-center gap-2 break-all rounded-full border border-[#b9d9eb]/65 bg-white/64 px-4 py-2 text-sm font-medium text-[#24394b] underline-offset-4 backdrop-blur-xl transition-colors hover:border-[#72a0c1]/65 hover:bg-white hover:text-[#2f6f9f] hover:underline ${FOCUS_RING}`;
 
@@ -61,7 +61,7 @@ function SponsorStory({ sponsor, copy }: { sponsor: Sponsor; copy: SponsorsCopy 
       </div>
 
       <div className="min-w-0">
-        <h3 className="font-(--font-display) text-[clamp(2rem,3.25vw,3.35rem)] leading-[1.02] tracking-[-0.045em] text-[#10182a]">
+        <h3 className="font-[var(--font-display)] text-[clamp(2rem,3.25vw,3.35rem)] leading-[1.02] tracking-[-0.045em] text-[#10182a]">
           {sponsor.name}
         </h3>
 
@@ -281,14 +281,14 @@ export default function HomeSponsors() {
       <div className="page-section relative">
         <Reveal>
           <div className="max-w-3xl">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#b9d9eb]/60 bg-white/70 px-4 py-2 font-(--font-ui-family) text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#2f6f9f] backdrop-blur-xl">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#b9d9eb]/60 bg-white/70 px-4 py-2 font-[var(--font-ui-family)] text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#2f6f9f] backdrop-blur-xl">
               <Handshake className="h-4 w-4" aria-hidden="true" />
               {copy.eyebrow}
             </div>
 
             <h2
               id="sponsors-heading"
-              className="text-balance font-(--font-display) text-[clamp(2.65rem,5.2vw,5.6rem)] leading-[0.94] tracking-[-0.055em] text-[#10182a]"
+              className="text-balance font-[var(--font-display)] text-[clamp(2.65rem,5.2vw,5.6rem)] leading-[0.94] tracking-[-0.055em] text-[#10182a]"
             >
               {copy.title}
             </h2>
@@ -349,7 +349,7 @@ export default function HomeSponsors() {
                     disabled={isTransitioning}
                     onClick={() => selectSponsor(index)}
                     onKeyDown={(event) => handleSponsorKeyDown(event, index)}
-                    className={`relative isolate shrink-0 px-4 pb-3 pt-1 font-(--font-ui-family) text-sm font-semibold transition-colors sm:px-5 ${FOCUS_RING} ${
+                    className={`relative isolate shrink-0 px-4 pb-3 pt-1 font-[var(--font-ui-family)] text-sm font-semibold transition-colors sm:px-5 ${FOCUS_RING} ${
                       isActive
                         ? "cursor-default text-[#17374d]"
                         : "text-[#7890a2] hover:text-[#385d76] disabled:cursor-wait"

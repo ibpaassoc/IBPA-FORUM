@@ -34,23 +34,23 @@ export default function SiteUnderDevelopmentPage() {
   return (
     <main className="page-shell flex min-h-screen flex-col items-center justify-center px-6 py-24">
       <div className="mx-auto w-full max-w-2xl text-center">
-        <p className="text-[clamp(0.62rem,1vw,0.72rem)] font-medium uppercase tracking-[0.22em] text-(--color-hover-accent)">
+        <p className="text-[clamp(0.62rem,1vw,0.72rem)] font-medium uppercase tracking-[0.22em] text-[var(--color-hover-accent)]">
           {copy.eyebrow}
         </p>
 
-        <h1 className="mt-5 font-(--font-display) text-[clamp(1.6rem,4vw,2.6rem)] font-semibold leading-[1.15] tracking-[-0.01em] text-(--color-ink)">
+        <h1 className="mt-5 font-[var(--font-display)] text-[clamp(1.6rem,4vw,2.6rem)] font-semibold leading-[1.15] tracking-[-0.01em] text-[var(--color-ink)]">
           {copy.title}
         </h1>
 
-        <p className="mt-5 text-[clamp(0.9rem,1.4vw,1.05rem)] leading-[1.75] text-(--color-ink-soft)">
+        <p className="mt-5 text-[clamp(0.9rem,1.4vw,1.05rem)] leading-[1.75] text-[var(--color-ink-soft)]">
           {copy.description}
         </p>
 
-        <p className="mt-10 text-xs leading-relaxed text-(--color-ink-soft)">
+        <p className="mt-10 text-xs leading-relaxed text-[var(--color-ink-soft)]">
           {copy.contact}{" "}
           <a
             href={`mailto:${copy.email}`}
-            className="underline underline-offset-2 transition hover:text-(--color-ink)"
+            className="underline underline-offset-2 transition hover:text-[var(--color-ink)]"
           >
             {copy.email}
           </a>

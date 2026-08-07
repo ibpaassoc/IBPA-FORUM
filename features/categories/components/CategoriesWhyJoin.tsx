@@ -38,7 +38,7 @@ export default function CategoriesWhyJoin() {
           <div className="max-w-4xl">
             <p className="page-eyebrow text-[#72a0c1]">{c.eyebrow}</p>
 
-            <h2 className="mt-5 font-(--font-display) text-[clamp(2.6rem,5.4vw,5.2rem)] leading-[0.94] tracking-[-0.055em] text-[#1e2430]">
+            <h2 className="mt-5 font-[var(--font-display)] text-[clamp(2.6rem,5.4vw,5.2rem)] leading-[0.94] tracking-[-0.055em] text-[#1e2430]">
               {c.title}
             </h2>
           </div>
@@ -85,7 +85,7 @@ export default function CategoriesWhyJoin() {
                   {c.grandPrixEyebrow}
                 </p>
 
-                <h3 className="mt-4 max-w-[480px] font-(--font-display) text-[clamp(2.3rem,4vw,3.8rem)] leading-[0.92] tracking-[-0.05em] text-[#1e2430]">
+                <h3 className="mt-4 max-w-[480px] font-[var(--font-display)] text-[clamp(2.3rem,4vw,3.8rem)] leading-[0.92] tracking-[-0.05em] text-[#1e2430]">
                   {c.grandPrixTitle}
                 </h3>
               </div>

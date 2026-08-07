@@ -16,7 +16,7 @@ export default function JuryResponsibilities() {
           <div className="max-w-3xl">
             <p className="page-eyebrow text-[#72a0c1]">{c.eyebrow}</p>
 
-            <h2 className="mt-5 font-(--font-display) text-[clamp(2.2rem,4.6vw,4rem)] leading-[1.0] tracking-[-0.045em] text-[#1e2430]">
+            <h2 className="mt-5 font-[var(--font-display)] text-[clamp(2.2rem,4.6vw,4rem)] leading-[1.0] tracking-[-0.045em] text-[#1e2430]">
               {c.title}
             </h2>
           </div>

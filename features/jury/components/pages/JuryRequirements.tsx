@@ -44,7 +44,7 @@ export default function JuryRequirements() {
           <div className="mb-10 max-w-4xl md:mb-12">
             <p className="page-eyebrow">{c.label}</p>
 
-            <h2 className="mt-4 max-w-3xl font-(--font-display) text-[clamp(2.35rem,5vw,4.9rem)] leading-[0.95] tracking-[-0.045em] text-[#10283a]">
+            <h2 className="mt-4 max-w-3xl font-[var(--font-display)] text-[clamp(2.35rem,5vw,4.9rem)] leading-[0.95] tracking-[-0.045em] text-[#10283a]">
               {c.title}
             </h2>
           </div>

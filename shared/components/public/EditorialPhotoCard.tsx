@@ -48,7 +48,7 @@ export default function EditorialPhotoCard({
         : "bg-[rgba(15,24,32,0.24)]";
 
   return (
-    <article className={clsx("group page-card h-fit rounded-(--radius-lg)", className)}>
+    <article className={clsx("group page-card h-fit rounded-[var(--radius-lg)]", className)}>
       <div className={clsx("relative overflow-hidden rounded-[inherit]", aspectClassMap[aspect])}>
         <SafeImage
           src={src}
@@ -66,12 +66,12 @@ export default function EditorialPhotoCard({
         {(eyebrow || title || description) && (
           <div
             className={clsx(
-              "absolute inset-x-0 bottom-0 p-(--space-md) text-white",
+              "absolute inset-x-0 bottom-0 p-[var(--space-md)] text-white",
               align === "right" && "text-right"
             )}
           >
             {eyebrow ? (
-              <p className="text-[0.66rem] uppercase tracking-[0.2em] text-(--color-blue-soft)">
+              <p className="text-[0.66rem] uppercase tracking-[0.2em] text-[var(--color-blue-soft)]">
                 {eyebrow}
               </p>
             ) : null}

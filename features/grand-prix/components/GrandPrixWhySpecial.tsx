@@ -23,7 +23,7 @@ export default function GrandPrixWhySpecial() {
           <div className="max-w-3xl">
             <p className="page-eyebrow text-[#72a0c1]">{c.eyebrow}</p>
 
-            <h2 className="mt-5 font-(--font-display) text-[clamp(2.4rem,5vw,4.6rem)] leading-[0.95] tracking-[-0.05em] text-[#1e2430]">
+            <h2 className="mt-5 font-[var(--font-display)] text-[clamp(2.4rem,5vw,4.6rem)] leading-[0.95] tracking-[-0.05em] text-[#1e2430]">
               {c.title}
             </h2>
 
@@ -49,7 +49,7 @@ export default function GrandPrixWhySpecial() {
                     <Icon className="h-5 w-5 text-[#72a0c1]" strokeWidth={1.65} />
                   </div>
 
-                  <h3 className="mt-6 font-(--font-display) text-[1.5rem] leading-tight tracking-[-0.03em] text-[#1e2430]">
+                  <h3 className="mt-6 font-[var(--font-display)] text-[1.5rem] leading-tight tracking-[-0.03em] text-[#1e2430]">
                     {card.title}
                   </h3>
 

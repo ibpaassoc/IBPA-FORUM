@@ -121,7 +121,7 @@ export default function PreviousWinnersSection() {
           <div>
             <p className="page-eyebrow text-[#72a0c1]">{c.eyebrow}</p>
 
-            <h2 className="mt-4 max-w-4xl font-(--font-display) text-[clamp(2.7rem,5vw,5.9rem)] leading-[0.9] tracking-[-0.055em] text-[#10182a]">
+            <h2 className="mt-4 max-w-4xl font-[var(--font-display)] text-[clamp(2.7rem,5vw,5.9rem)] leading-[0.9] tracking-[-0.055em] text-[#10182a]">
               {c.title}
             </h2>
           </div>
@@ -178,7 +178,7 @@ export default function PreviousWinnersSection() {
               ) : null}
 
               <div className="absolute bottom-4 left-4 right-4 rounded-[1.6rem] border border-white/25 bg-black/35 p-4 text-white backdrop-blur-2xl">
-                <h3 className="font-(--font-display) text-3xl leading-none tracking-[-0.04em]">
+                <h3 className="font-[var(--font-display)] text-3xl leading-none tracking-[-0.04em]">
                   {winner.name}
                 </h3>
                 <p className="mt-2 text-sm leading-5 text-white/78">
