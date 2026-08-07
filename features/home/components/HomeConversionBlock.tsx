@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 
 import { PRICING } from "@/data/pricing";
+import { ticketTranslations, type TicketTranslation } from "@/features/tickets/copy";
 import { applyDiscountToPrice } from "@/features/tickets/types";
 import type { TicketDiscount } from "@/features/tickets/types";
 import { useTicketDiscount } from "@/features/tickets/useEarlyBird";
@@ -31,8 +32,9 @@ import {
 import TicketModal from "@/features/tickets/components/TicketModal";
 
 export default function HomeRegistrationSection() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const c = t.home.registrationSection;
+  const ticketCopy = ticketTranslations[language];
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const { ticketDiscount, discount } = useTicketDiscount();
   const specialPacket = useSpecialPacket();
@@ -117,7 +119,7 @@ export default function HomeRegistrationSection() {
                 eyebrow={c.pricing.forum.eyebrow}
                 title={c.pricing.forum.title}
                 icon={<Sparkles size={16} />}
-                badge={discount ? <TicketDiscountBadge discount={discount} kind={ticketDiscount.kind} /> : null}
+                badge={discount ? <TicketDiscountBadge discount={discount} kind={ticketDiscount.kind} copy={ticketCopy.pricing} /> : null}
                 footer={
                   <LandingSecondaryButton type="button" onClick={() => setIsTicketModalOpen(true)}>
                     {c.tickets.cta}
@@ -164,6 +166,7 @@ export default function HomeRegistrationSection() {
                 memberPrice={specialPacket.memberPrice}
                 standardPrice={specialPacket.standardPrice}
                 onBuy={() => setIsTicketModalOpen(true)}
+                copy={ticketCopy.pricing}
               />
             </Reveal>
           </div>
@@ -268,11 +271,13 @@ function SpecialPacketCard({
   memberPrice,
   standardPrice,
   onBuy,
+  copy,
 }: {
   enabled: boolean;
   memberPrice: string;
   standardPrice: string;
   onBuy: () => void;
+  copy: TicketTranslation["pricing"];
 }) {
   return (
     <article
@@ -298,33 +303,33 @@ function SpecialPacketCard({
 
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[#72a0c1]">Special Package</p>
+              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[#72a0c1]">{copy.specialEyebrow}</p>
               <span
                 className={[
                   "rounded-full px-2.5 py-1 text-[0.5rem] font-semibold uppercase tracking-[0.1em]",
                   enabled ? "bg-[#72a0c1] text-white" : "bg-[#d3d7da] text-[#10182a]/55",
                 ].join(" ")}
               >
-                {enabled ? "New" : "Coming Soon"}
+                {enabled ? copy.new : copy.comingSoon}
               </span>
             </div>
 
             <h4 className="mt-2 font-[var(--font-title-family)] text-[clamp(1.9rem,3vw,2.7rem)] font-light leading-none tracking-[-0.05em] text-[#10182a]">
-              Special Packet
+              {copy.specialTitle}
             </h4>
             <p className="mt-2 max-w-xl text-sm leading-6 text-[#10182a]/58">
-              Two 2-day Forum passes and Gala Dinner for two people. Includes two separate tickets at a fixed price, unaffected by sales or coupons.
+              {copy.specialDescription}
             </p>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-2 sm:min-w-[300px]">
-          <SpecialPacketPrice label="IBPA Members" price={memberPrice} featured enabled={enabled} />
-          <SpecialPacketPrice label="Guests" price={standardPrice} enabled={enabled} />
+          <SpecialPacketPrice label={copy.members} price={memberPrice} featured enabled={enabled} />
+          <SpecialPacketPrice label={copy.guests} price={standardPrice} enabled={enabled} />
         </div>
 
         <LandingSecondaryButton type="button" onClick={onBuy} disabled={!enabled} className="w-full lg:w-auto">
-          {enabled ? "Buy Special Packet" : "Coming Soon"}
+          {enabled ? copy.buySpecial : copy.comingSoon}
         </LandingSecondaryButton>
       </div>
     </article>
@@ -361,22 +366,25 @@ function SpecialPacketPrice({
 function TicketDiscountBadge({
   discount,
   kind,
+  copy,
 }: {
   discount: TicketDiscount;
   kind: "earlyBird" | "permanent30" | null;
+  copy: TicketTranslation["pricing"];
 }) {
   if (!discount) return null;
 
-  const offLabel = discount.type === "percent" ? `${discount.value}% off` : `$${(discount.value / 100).toFixed(0)} off`;
+  const offLabel = discount.type === "percent" ? `${discount.value}% ${copy.off}` : `$${(discount.value / 100).toFixed(0)} ${copy.off}`;
   const shortLabel = discount.type === "percent" ? `${discount.value}%` : `$${(discount.value / 100).toFixed(0)}`;
+  const discountName = kind === "permanent30" ? copy.permanent : copy.earlyBird;
 
   return (
     <span
-      title={`${kind === "permanent30" ? "Permanent 30" : "Early Bird"} — ${offLabel}`}
+      title={`${discountName} — ${offLabel}`}
       className="inline-flex w-fit items-center gap-1 whitespace-nowrap rounded-full border border-[#b9d9eb]/80 bg-white/85 px-3 py-1 text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[#72a0c1] shadow-[0_10px_28px_rgba(114,160,193,0.14)] backdrop-blur-xl"
     >
       <Zap size={11} strokeWidth={2} />
-      {kind === "permanent30" ? "Permanent 30" : "Early Bird"} · {shortLabel}
+      {discountName} · {shortLabel}
     </span>
   );
 }

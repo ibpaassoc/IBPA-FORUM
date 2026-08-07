@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import clsx from "clsx";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   CalendarDays,
   Check,
@@ -17,11 +18,13 @@ import {
   UsersRound,
 } from "lucide-react";
 import { PRICING } from "@/data/pricing";
+import { ticketTranslations, type TicketTranslation } from "@/features/tickets/copy";
 import { applyDiscountToCents, applyDiscountToPrice } from "@/features/tickets/types";
 import { useTicketDiscount } from "@/features/tickets/useEarlyBird";
 import { useSpecialPacket } from "@/features/tickets/useSpecialPacket";
 import { validateInstagramInput } from "@/features/tickets/lib/instagram";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { LandingPrimaryButton, LandingSecondaryButton } from "@/shared/components/public";
 
 type TicketSelection = "ONE_DAY" | "TWO_DAYS" | "SPECIAL_PACKET" | "";
 
@@ -67,7 +70,7 @@ const attendeeDefaults: AttendeeValues = {
 };
 
 const inputBase =
-  "w-full rounded-[13px] border border-[#cfe0eb] bg-white/80 px-3.5 py-2.5 text-[0.82rem] text-[#10182a] placeholder:text-[#10182a]/35 outline-none transition focus:border-[#72a0c1] focus:ring-2 focus:ring-[#72a0c1]/15 disabled:cursor-not-allowed disabled:opacity-50";
+  "w-full rounded-[18px] border border-[var(--border-default)] bg-white/72 px-4 py-3 text-[0.84rem] text-[var(--color-ink)] shadow-[inset_0_1px_0_rgba(255,255,255,0.85)] placeholder:text-[var(--color-ink)]/35 outline-none transition focus:border-[var(--color-blue)]/55 focus:bg-white/90 focus:ring-4 focus:ring-[var(--color-blue)]/10 disabled:cursor-not-allowed disabled:opacity-50";
 const inputError = "border-red-300 bg-red-50/60 focus:border-red-400 focus:ring-red-100";
 const labelBase = "mb-1.5 block text-[0.66rem] font-semibold uppercase tracking-[0.13em] text-[#10182a]/55";
 const errorText = "mt-1 text-[0.7rem] text-red-600";
@@ -76,8 +79,8 @@ function priceToNumber(value: string) {
   return Number.parseFloat(value.replace(/[^0-9.]/g, ""));
 }
 
-function moneyFromCents(amountCents: number) {
-  return new Intl.NumberFormat("en-US", {
+function moneyFromCents(amountCents: number, language: "en" | "ru" | "ua") {
+  return new Intl.NumberFormat(language === "en" ? "en-US" : language === "ru" ? "ru-RU" : "uk-UA", {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 2,
@@ -131,8 +134,10 @@ function SectionTitle({ icon, children }: { icon: React.ReactNode; children: Rea
 }
 
 export default function TicketForm() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
+  const copy = ticketTranslations[language].form;
   const promoText = t.promo;
+  const reducedMotion = useReducedMotion();
   const { ticketDiscount, discount } = useTicketDiscount();
   const specialPacket = useSpecialPacket();
   const [submitting, setSubmitting] = useState(false);
@@ -222,7 +227,7 @@ export default function TicketForm() {
     : activePromoPreview
       ? activePromoPreview.finalAmountCents
       : Math.round(((discountedTicketPrice ? priceToNumber(discountedTicketPrice) : rawTicketCents / 100) + rawGalaCents / 100) * 100);
-  const discountName = ticketDiscount.kind === "permanent30" ? "Permanent 30" : "Early Bird";
+  const discountName = ticketDiscount.kind === "permanent30" ? copy.discount.permanent : copy.discount.earlyBird;
 
   const promoMessage = useCallback((errorCode?: string) => {
     if (errorCode === "DISABLED") return promoText.promoCodeDisabled;
@@ -277,15 +282,15 @@ export default function TicketForm() {
   const onSubmit = async (data: FormValues) => {
     if (!data.type) return;
     if (data.type === "SPECIAL_PACKET" && !specialPacket.enabled) {
-      setServerError("The Special Packet is coming soon.");
+      setServerError(copy.errors.specialComingSoon);
       return;
     }
     if (isIbpaMember && certStatus === "invalid") {
-      setServerError("Your IBPA certificate number could not be verified.");
+      setServerError(copy.errors.certInvalid);
       return;
     }
     if (isIbpaMember && certStatus === "checking") {
-      setServerError("Please wait while we verify your certificate number.");
+      setServerError(copy.errors.certChecking);
       return;
     }
     if (!isSpecialPacket && promoInput.trim() && !activePromoPreview) {
@@ -312,13 +317,13 @@ export default function TicketForm() {
           setPromoPreview(null);
           setPromoError(promoMessage(json.errorCode.slice(6)));
         } else {
-          setServerError(json.message ?? "Something went wrong. Please try again.");
+          setServerError(copy.errors.generic);
         }
         return;
       }
       if (json.checkoutUrl) window.location.assign(json.checkoutUrl);
     } catch {
-      setServerError("Network error. Please check your connection and try again.");
+      setServerError(copy.errors.network);
     } finally {
       setSubmitting(false);
     }
@@ -327,22 +332,22 @@ export default function TicketForm() {
   const packages = [
     {
       value: "ONE_DAY" as const,
-      title: "1 Day",
-      subtitle: "Single day access",
+      title: copy.package.oneDay,
+      subtitle: copy.package.oneDaySubtitle,
       price: isIbpaMember ? PRICING.forumTickets.ibpaMembers.oneDay : PRICING.forumTickets.standard.oneDay,
       icon: CalendarDays,
     },
     {
       value: "TWO_DAYS" as const,
-      title: "2 Days",
-      subtitle: "Full forum access",
+      title: copy.package.twoDays,
+      subtitle: copy.package.twoDaysSubtitle,
       price: isIbpaMember ? PRICING.forumTickets.ibpaMembers.twoDays : PRICING.forumTickets.standard.twoDays,
       icon: CalendarDays,
     },
     {
       value: "SPECIAL_PACKET" as const,
-      title: "Special Packet",
-      subtitle: "2 days + Gala Dinner",
+      title: copy.package.special,
+      subtitle: copy.package.specialSubtitle,
       price: isIbpaMember ? specialPacket.memberPrice : specialPacket.standardPrice,
       icon: Star,
       disabled: !specialPacket.enabled,
@@ -350,27 +355,40 @@ export default function TicketForm() {
   ];
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4 font-[var(--font-ui-family)]">
+    <motion.form
+      onSubmit={handleSubmit(onSubmit)}
+      noValidate
+      className="space-y-4 font-[var(--font-ui-family)]"
+      initial="hidden"
+      animate="visible"
+      variants={{
+        hidden: { opacity: 0 },
+        visible: {
+          opacity: 1,
+          transition: reducedMotion ? { duration: 0 } : { staggerChildren: 0.055, delayChildren: 0.04 },
+        },
+      }}
+    >
       {discount ? (
-        <div className="flex items-center gap-3 rounded-[16px] border border-[#b9d9eb] bg-[#edf7fc]/80 px-4 py-3">
+        <motion.div variants={reducedMotion ? undefined : { hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className="flex items-center gap-3 rounded-[22px] border border-[var(--color-blue)]/35 bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(185,217,235,0.3))] px-4 py-3 shadow-[0_14px_34px_rgba(114,160,193,0.1)]">
           <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-[#2773c8]">
             <Tag size={17} />
           </span>
           <p className="text-[0.76rem] leading-5 text-[#10182a]/70">
-            <strong className="text-[#10182a]">{discountName} Pricing</strong> — {discount.type === "percent" ? `${discount.value}%` : `$${discount.value / 100}`} off forum passes. Gala Dinner and Special Packet excluded.
+            <strong className="text-[#10182a]">{discountName} {copy.discount.pricing}</strong> — {discount.type === "percent" ? `${discount.value}%` : `$${discount.value / 100}`} {copy.discount.suffix}
           </p>
-        </div>
+        </motion.div>
       ) : null}
 
-      <section>
-        <SectionTitle icon={<Sparkles size={15} />}>Choose your package</SectionTitle>
+      <motion.section variants={reducedMotion ? undefined : { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}>
+        <SectionTitle icon={<Sparkles size={15} />}>{copy.package.title}</SectionTitle>
         <div className="grid gap-3 sm:grid-cols-3">
           {packages.map((option) => {
             const selected = type === option.value;
             const OptionIcon = option.icon;
-            const typeRegistration = register("type", { required: "Please select a ticket package." });
+            const typeRegistration = register("type", { required: copy.package.required });
             return (
-              <label
+              <motion.label
                 key={option.value}
                 className={clsx(
                   "relative flex min-h-[172px] flex-col rounded-[18px] border p-4 transition",
@@ -380,13 +398,16 @@ export default function TicketForm() {
                       ? "cursor-pointer border-[#2773c8] bg-[#f3f8ff] shadow-[0_12px_28px_rgba(39,115,200,0.13)]"
                       : "cursor-pointer border-[#cfe0eb] bg-white/74 hover:border-[#72a0c1] hover:bg-white"
                 )}
+                whileHover={option.disabled || reducedMotion ? undefined : { y: -3 }}
+                whileTap={option.disabled || reducedMotion ? undefined : { scale: 0.985 }}
+                layout={!reducedMotion}
               >
                 {option.value === "SPECIAL_PACKET" ? (
                   <span className={clsx(
                     "absolute right-3 top-3 rounded-full px-2 py-1 text-[0.54rem] font-bold uppercase tracking-[0.1em]",
                     option.disabled ? "bg-[#d9dde1] text-[#10182a]/50" : "bg-[#dceeff] text-[#1766bd]"
                   )}>
-                    {option.disabled ? "Coming Soon" : "Best Value"}
+                    {option.disabled ? copy.package.comingSoon : copy.package.bestValue}
                   </span>
                 ) : null}
                 <input
@@ -411,91 +432,98 @@ export default function TicketForm() {
                 <span className="font-[var(--font-title-family)] text-[1.35rem] font-light leading-none text-[#10182a]">{option.title}</span>
                 <span className="mt-1 text-[0.72rem] text-[#10182a]/55">{option.subtitle}</span>
                 {option.value === "SPECIAL_PACKET" ? (
-                  <span className="mt-1 text-[0.68rem] text-[#2773c8]">2 separate tickets · 2 people</span>
+                  <span className="mt-1 text-[0.68rem] text-[#2773c8]">{copy.package.specialTickets}</span>
                 ) : null}
                 <span className="mt-auto pt-4 font-[var(--font-title-family)] text-[1.35rem] font-light text-[#10182a]">{option.price}</span>
                 <span className={clsx(
                   "absolute bottom-4 right-4 size-4 rounded-full border",
                   selected ? "border-[#2773c8] bg-[#2773c8] shadow-[inset_0_0_0_3px_white]" : "border-[#8ca2b2]"
                 )} />
-              </label>
+              </motion.label>
             );
           })}
         </div>
         {errors.type ? <p className={errorText}>{errors.type.message}</p> : null}
-      </section>
+      </motion.section>
 
-      <section className="flex items-center justify-between gap-4 rounded-[17px] border border-[#d7e7f1] bg-white/58 px-4 py-3">
+      <motion.section variants={reducedMotion ? undefined : { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }} className="premium-glass flex items-center justify-between gap-4 px-4 py-3">
         <div className="flex min-w-0 items-center gap-3">
           <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#eaf4fb] text-[#2773c8]">
             <Gift size={18} />
           </span>
           <div>
-            <p className="text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-[#10182a]">Add-on: Gala Dinner</p>
-            <p className="mt-0.5 text-[0.68rem] text-[#10182a]/50">Evening Gala Dinner on Day 1 · {galaPrice} per person</p>
+            <p className="text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-[#10182a]">{copy.gala.title}</p>
+            <p className="mt-0.5 text-[0.68rem] text-[#10182a]/50">{copy.gala.description} · {galaPrice} {copy.gala.perPerson}</p>
           </div>
         </div>
         {isSpecialPacket ? (
           <span className="inline-flex shrink-0 items-center gap-1.5 rounded-[12px] border border-[#9bc8ee] bg-[#f1f8ff] px-3 py-2 text-[0.66rem] font-semibold text-[#2773c8]">
-            <LockKeyhole size={13} /> Included
+            <LockKeyhole size={13} /> {copy.gala.included}
           </span>
         ) : (
           <label className="inline-flex shrink-0 cursor-pointer items-center gap-2 text-[0.72rem] font-semibold text-[#10182a]">
             <input type="checkbox" className="peer sr-only" {...register("galaDinner")} />
-            <span aria-hidden="true" className="flex size-5 items-center justify-center rounded-[7px] border border-[#a9c7db] bg-white text-transparent shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] transition peer-checked:border-[#2773c8] peer-checked:bg-[#2773c8] peer-checked:text-white peer-focus-visible:ring-4 peer-focus-visible:ring-[#72a0c1]/20">
+            <span aria-hidden="true" className="flex size-6 items-center justify-center rounded-full border border-[rgba(114,160,193,0.34)] bg-white/90 text-transparent transition peer-checked:border-[var(--color-blue)]/50 peer-checked:bg-[var(--color-blue-wash)] peer-checked:text-[#356f98] peer-focus-visible:ring-4 peer-focus-visible:ring-[var(--color-blue)]/20">
               <Check size={13} strokeWidth={2.6} />
             </span>
-            Add
+            {copy.gala.add}
           </label>
         )}
-      </section>
+      </motion.section>
 
-      <div className={clsx("grid gap-4", isSpecialPacket && "xl:grid-cols-2")}>
+      <motion.div variants={reducedMotion ? undefined : { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }} className={clsx("grid gap-4", isSpecialPacket && "xl:grid-cols-2")}>
         <AttendeePanel
           number={isSpecialPacket ? 1 : undefined}
           register={register}
           errors={errors}
+          copy={copy}
         />
-        {isSpecialPacket ? (
-          <SecondAttendeePanel register={register} errors={errors.secondAttendee} />
-        ) : null}
-      </div>
+        <AnimatePresence initial={false}>
+          {isSpecialPacket ? (
+            <motion.div key="second-attendee" initial={reducedMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={reducedMotion ? undefined : { opacity: 0, y: -8 }}>
+              <SecondAttendeePanel register={register} errors={errors.secondAttendee} copy={copy} />
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      </motion.div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <section className="rounded-[18px] border border-[#d7e7f1] bg-white/58 p-4">
-          <SectionTitle icon={<UsersRound size={15} />}>Membership</SectionTitle>
-          <label className="flex cursor-pointer items-start gap-3">
+      <motion.div variants={reducedMotion ? undefined : { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }} className="grid gap-4 lg:grid-cols-2">
+        <section className="premium-glass p-4">
+          <SectionTitle icon={<UsersRound size={15} />}>{copy.membership.title}</SectionTitle>
+          <label className={clsx("flex cursor-pointer items-start gap-3 rounded-[22px] border p-4 transition", isIbpaMember ? "border-[var(--color-blue)]/45 bg-[linear-gradient(145deg,rgba(255,255,255,0.95),rgba(185,217,235,0.36))] shadow-[0_14px_34px_rgba(114,160,193,0.12)]" : "border-[var(--border-default)] bg-white/72")}>
             <input type="checkbox" className="peer sr-only" {...register("isIbpaMember")} />
-            <span aria-hidden="true" className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-[7px] border border-[#a9c7db] bg-white text-transparent shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] transition peer-checked:border-[#2773c8] peer-checked:bg-[#2773c8] peer-checked:text-white peer-focus-visible:ring-4 peer-focus-visible:ring-[#72a0c1]/20">
-              <Check size={13} strokeWidth={2.6} />
+            <span aria-hidden="true" className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full border border-[rgba(114,160,193,0.32)] bg-white/90 text-transparent transition peer-checked:border-[var(--color-blue)]/45 peer-checked:bg-[var(--color-blue-wash)] peer-checked:text-[#356f98] peer-focus-visible:ring-4 peer-focus-visible:ring-[var(--color-blue)]/20">
+              <Check size={15} strokeWidth={3} />
             </span>
             <span>
-              <span className="block text-[0.8rem] font-semibold text-[#10182a]">I am an IBPA Member</span>
-              <span className="mt-0.5 block text-[0.7rem] text-[#10182a]/50">Member pricing applies to the complete order.</span>
+              <span className="block text-[0.8rem] font-semibold text-[#10182a]">{copy.membership.memberLabel}</span>
+              <span className="mt-0.5 block text-[0.7rem] text-[#10182a]/50">{copy.membership.memberHint}</span>
             </span>
           </label>
-          {isIbpaMember ? (
-            <div className="mt-3">
-              <label className={labelBase} htmlFor="tf-cert">IBPA CERT Number *</label>
+          <AnimatePresence initial={false}>
+            {isIbpaMember ? (
+            <motion.div key="member-cert" initial={reducedMotion ? false : { opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={reducedMotion ? undefined : { opacity: 0, height: 0 }} className="mt-3 overflow-hidden">
+              <label className={labelBase} htmlFor="tf-cert">{copy.membership.certLabel} *</label>
               <input
                 id="tf-cert"
                 className={clsx(inputBase, errors.ibpaCertNumber && inputError)}
                 placeholder="CERT-20240124-A00A"
                 {...register("ibpaCertNumber", {
-                  validate: (value) => !isIbpaMember || value.trim().length > 0 || "CERT number is required.",
+                  validate: (value) => !isIbpaMember || value.trim().length > 0 || copy.membership.certRequired,
                 })}
               />
               {visibleCertStatus !== "idle" ? (
                 <p className={clsx("mt-1 text-[0.7rem]", visibleCertStatus === "valid" ? "text-emerald-700" : visibleCertStatus === "invalid" ? "text-red-600" : "text-[#2773c8]")}>
-                  {visibleCertStatus === "checking" ? "Verifying…" : visibleCertStatus === "valid" ? "Valid IBPA member certificate" : visibleCertStatus === "invalid" ? "Certificate not found or expired" : "Could not verify right now"}
+                  {visibleCertStatus === "checking" ? copy.membership.checking : visibleCertStatus === "valid" ? copy.membership.valid : visibleCertStatus === "invalid" ? copy.membership.invalid : copy.membership.error}
                 </p>
               ) : errors.ibpaCertNumber ? <p className={errorText}>{errors.ibpaCertNumber.message}</p> : null}
-            </div>
-          ) : null}
+            </motion.div>
+            ) : null}
+          </AnimatePresence>
         </section>
 
-        <section className="rounded-[18px] border border-[#d7e7f1] bg-white/58 p-4">
-          <SectionTitle icon={<Tag size={15} />}>Promo Code</SectionTitle>
+        <section className="premium-glass p-4">
+          <SectionTitle icon={<Tag size={15} />}>{promoText.promoCode}</SectionTitle>
           <div className="flex gap-2">
             <input
               value={promoInput}
@@ -506,73 +534,75 @@ export default function TicketForm() {
                 setPromoError("");
               }}
               className={inputBase}
-              placeholder={isSpecialPacket ? "Not available for this package" : "Enter code"}
+              placeholder={isSpecialPacket ? copy.promo.unavailable : copy.promo.enter}
               autoCapitalize="characters"
             />
-            <button
-              type="button"
+            <LandingSecondaryButton
               disabled={isSpecialPacket || promoPending || !promoInput.trim() || !type}
               onClick={() => void applyPromoCode()}
-              className="rounded-[13px] border border-[#8fc0eb] bg-[#f2f8ff] px-4 text-[0.68rem] font-semibold uppercase tracking-[0.1em] text-[#1766bd] disabled:cursor-not-allowed disabled:opacity-45"
+              className="min-h-0 shrink-0 px-4 py-2.5 text-[0.66rem]"
             >
               {promoPending ? promoText.applying : promoText.apply}
-            </button>
+            </LandingSecondaryButton>
           </div>
           <p className={clsx("mt-2 text-[0.7rem]", activePromoPreview ? "text-emerald-700" : promoError ? "text-red-600" : "text-[#10182a]/48")}>
             {isSpecialPacket
-              ? "Special Packet pricing is fixed and excludes all sales and coupons."
+              ? copy.promo.fixed
               : activePromoPreview
                 ? promoText.promoCodeApplied
-                : promoError || "Promo codes apply to eligible forum passes only."}
+                : promoError || copy.promo.eligible}
           </p>
         </section>
-      </div>
+      </motion.div>
 
+      <AnimatePresence initial={false}>
       {type ? (
-        <section className="rounded-[18px] border border-[#cbdfea] bg-white/72 p-4">
-          <SectionTitle icon={<ReceiptText size={15} />}>Order Summary</SectionTitle>
+        <motion.section key="order-summary" initial={reducedMotion ? false : { opacity: 0, y: 12, height: 0 }} animate={{ opacity: 1, y: 0, height: "auto" }} exit={reducedMotion ? undefined : { opacity: 0, y: -8, height: 0 }} className="premium-glass overflow-hidden p-4">
+          <SectionTitle icon={<ReceiptText size={15} />}>{copy.summary.title}</SectionTitle>
           <div className="space-y-2 text-[0.78rem]">
             <div className="flex items-start justify-between gap-4">
               <span className="text-[#10182a]/62">
-                {isSpecialPacket ? "Special Packet (2 separate tickets)" : type === "ONE_DAY" ? "1-Day Forum Pass" : "2-Day Forum Pass"}
-                {isIbpaMember ? <span className="ml-2 text-[#2773c8]">Member</span> : null}
+                {isSpecialPacket ? copy.summary.special : type === "ONE_DAY" ? copy.summary.oneDay : copy.summary.twoDays}
+                {isIbpaMember ? <span className="ml-2 text-[#2773c8]">{copy.summary.member}</span> : null}
               </span>
               <span className="text-right font-semibold text-[#10182a]">
                 {discountedTicketPrice ? <><span className="mr-2 text-[#10182a]/35 line-through">{rawTicketPrice}</span>{discountedTicketPrice}</> : rawTicketPrice}
               </span>
             </div>
             {activePromoPreview ? (
-              <div className="flex justify-between text-emerald-700"><span>Promo discount</span><span>-{moneyFromCents(activePromoPreview.discountAmountCents)}</span></div>
+              <div className="flex justify-between text-emerald-700"><span>{copy.summary.promoDiscount}</span><span>-{moneyFromCents(activePromoPreview.discountAmountCents, language)}</span></div>
             ) : null}
             {!isSpecialPacket && galaDinner ? (
-              <div className="flex justify-between text-[#10182a]/62"><span>Gala Dinner add-on</span><span>{galaPrice}</span></div>
+              <div className="flex justify-between text-[#10182a]/62"><span>{copy.summary.gala}</span><span>{galaPrice}</span></div>
             ) : null}
             {isSpecialPacket ? (
               <div className="flex items-start gap-2 rounded-[12px] bg-[#eef7ff] px-3 py-2 text-[0.68rem] leading-5 text-[#1766bd]">
-                <Check size={14} className="mt-0.5 shrink-0" /> Includes 2-day Forum access and Gala Dinner for both attendees. Fixed price; no discounts apply.
+                <Check size={14} className="mt-0.5 shrink-0" /> {copy.summary.specialIncludes}
               </div>
             ) : null}
             <div className="flex justify-between border-t border-[#dbe7ee] pt-2 font-[var(--font-title-family)] text-[1.18rem] text-[#10182a]">
-              <span>Total</span><span>{moneyFromCents(totalCents)}</span>
+              <span>{copy.summary.total}</span><span>{moneyFromCents(totalCents, language)}</span>
             </div>
           </div>
-        </section>
+        </motion.section>
       ) : null}
+      </AnimatePresence>
 
       {serverError ? (
         <p role="alert" className="rounded-[13px] border border-red-200 bg-red-50 px-4 py-3 text-[0.78rem] text-red-700">{serverError}</p>
       ) : null}
 
-      <button
+      <motion.div variants={reducedMotion ? undefined : { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}>
+      <LandingPrimaryButton
         type="submit"
         disabled={submitting || visibleCertStatus === "checking" || !type}
-        className="flex min-h-13 w-full items-center justify-center gap-3 rounded-full bg-[linear-gradient(180deg,#4696e9,#1269c8)] px-6 text-[0.75rem] font-semibold uppercase tracking-[0.15em] text-white shadow-[0_14px_34px_rgba(18,105,200,0.28)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+        className="w-full"
       >
-        {submitting ? "Creating your checkout…" : visibleCertStatus === "checking" ? "Verifying certificate…" : "Continue to Payment"}
-        <span aria-hidden>→</span>
-      </button>
-      <p className="flex items-center justify-center gap-1.5 text-[0.66rem] text-[#10182a]/42"><LockKeyhole size={11} /> Secure checkout powered by Stripe</p>
-    </form>
+        {submitting ? copy.actions.creatingCheckout : visibleCertStatus === "checking" ? copy.actions.verifyingCertificate : copy.actions.continuePayment}
+      </LandingPrimaryButton>
+      <p className="mt-2 flex items-center justify-center gap-1.5 text-[0.66rem] text-[#10182a]/42"><LockKeyhole size={11} /> {copy.actions.secureCheckout}</p>
+      </motion.div>
+    </motion.form>
   );
 }
 
@@ -582,37 +612,39 @@ function AttendeePanel({
   number,
   register,
   errors,
+  copy,
 }: {
   number?: number;
   register: Register;
   errors: ReturnType<typeof useForm<FormValues>>["formState"]["errors"];
+  copy: TicketTranslation["form"];
 }) {
   return (
-    <section className="rounded-[18px] border border-[#d7e7f1] bg-white/58 p-4">
-      <SectionTitle icon={<UserRound size={15} />}>Attendee {number ?? "Information"}</SectionTitle>
+    <section className="premium-glass p-4">
+      <SectionTitle icon={<UserRound size={15} />}>{number ? `${copy.attendee.title} ${number}` : copy.attendee.information}</SectionTitle>
       <div className="grid gap-3 sm:grid-cols-2">
-        <Field label="First Name" error={errors.firstName?.message}><input className={clsx(inputBase, errors.firstName && inputError)} autoComplete="given-name" {...register("firstName", { required: "First name is required." })} /></Field>
-        <Field label="Last Name" error={errors.lastName?.message}><input className={clsx(inputBase, errors.lastName && inputError)} autoComplete="family-name" {...register("lastName", { required: "Last name is required." })} /></Field>
-        <Field label="Email" error={errors.email?.message}><input type="email" className={clsx(inputBase, errors.email && inputError)} autoComplete="email" {...register("email", { required: "Email is required.", pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Enter a valid email." } })} /></Field>
-        <Field label="Phone Number" error={errors.phone?.message}><input type="tel" className={clsx(inputBase, errors.phone && inputError)} autoComplete="tel" {...register("phone", { required: "Phone number is required." })} /></Field>
-        <div className="sm:col-span-2"><Field label="Instagram" error={errors.instagram?.message}><input className={clsx(inputBase, errors.instagram && inputError)} placeholder="@username or instagram.com/username" {...register("instagram", { required: "Instagram is required.", validate: (value) => validateInstagramInput(value) ?? true })} /></Field></div>
+        <Field label={copy.attendee.firstName} error={errors.firstName?.message}><input className={clsx(inputBase, errors.firstName && inputError)} autoComplete="given-name" {...register("firstName", { required: copy.attendee.firstNameRequired })} /></Field>
+        <Field label={copy.attendee.lastName} error={errors.lastName?.message}><input className={clsx(inputBase, errors.lastName && inputError)} autoComplete="family-name" {...register("lastName", { required: copy.attendee.lastNameRequired })} /></Field>
+        <Field label={copy.attendee.email} error={errors.email?.message}><input type="email" className={clsx(inputBase, errors.email && inputError)} autoComplete="email" {...register("email", { required: copy.attendee.emailRequired, pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: copy.attendee.emailInvalid } })} /></Field>
+        <Field label={copy.attendee.phone} error={errors.phone?.message}><input type="tel" className={clsx(inputBase, errors.phone && inputError)} autoComplete="tel" {...register("phone", { required: copy.attendee.phoneRequired })} /></Field>
+        <div className="sm:col-span-2"><Field label={copy.attendee.instagram} error={errors.instagram?.message}><input className={clsx(inputBase, errors.instagram && inputError)} placeholder={copy.attendee.instagramPlaceholder} {...register("instagram", { required: copy.attendee.instagramRequired, validate: (value) => validateInstagramInput(value) ? copy.attendee.instagramInvalid : true })} /></Field></div>
       </div>
     </section>
   );
 }
 
-function SecondAttendeePanel({ register, errors }: { register: Register; errors: ReturnType<typeof useForm<FormValues>>["formState"]["errors"]["secondAttendee"] }) {
+function SecondAttendeePanel({ register, errors, copy }: { register: Register; errors: ReturnType<typeof useForm<FormValues>>["formState"]["errors"]["secondAttendee"]; copy: TicketTranslation["form"] }) {
   return (
-    <section className="rounded-[18px] border border-[#9bc8ee] bg-[#f5faff]/82 p-4">
-      <SectionTitle icon={<UserRound size={15} />}>Attendee 2</SectionTitle>
+    <section className="premium-glass border-[var(--color-blue)]/45 bg-[linear-gradient(145deg,rgba(255,255,255,0.94),rgba(185,217,235,0.25))] p-4">
+      <SectionTitle icon={<UserRound size={15} />}>{copy.attendee.title} 2</SectionTitle>
       <div className="grid gap-3 sm:grid-cols-2">
-        <Field label="First Name" error={errors?.firstName?.message}><input className={clsx(inputBase, errors?.firstName && inputError)} autoComplete="off" {...register("secondAttendee.firstName", { required: "First name is required." })} /></Field>
-        <Field label="Last Name" error={errors?.lastName?.message}><input className={clsx(inputBase, errors?.lastName && inputError)} autoComplete="off" {...register("secondAttendee.lastName", { required: "Last name is required." })} /></Field>
-        <Field label="Email" error={errors?.email?.message}><input type="email" className={clsx(inputBase, errors?.email && inputError)} autoComplete="off" {...register("secondAttendee.email", { required: "Email is required.", pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Enter a valid email." } })} /></Field>
-        <Field label="Phone Number" error={errors?.phone?.message}><input type="tel" className={clsx(inputBase, errors?.phone && inputError)} autoComplete="off" {...register("secondAttendee.phone", { required: "Phone number is required." })} /></Field>
-        <div className="sm:col-span-2"><Field label="Instagram" error={errors?.instagram?.message}><input className={clsx(inputBase, errors?.instagram && inputError)} placeholder="@username or instagram.com/username" autoComplete="off" {...register("secondAttendee.instagram", { required: "Instagram is required.", validate: (value) => validateInstagramInput(value) ?? true })} /></Field></div>
+        <Field label={copy.attendee.firstName} error={errors?.firstName?.message}><input className={clsx(inputBase, errors?.firstName && inputError)} autoComplete="off" {...register("secondAttendee.firstName", { required: copy.attendee.firstNameRequired })} /></Field>
+        <Field label={copy.attendee.lastName} error={errors?.lastName?.message}><input className={clsx(inputBase, errors?.lastName && inputError)} autoComplete="off" {...register("secondAttendee.lastName", { required: copy.attendee.lastNameRequired })} /></Field>
+        <Field label={copy.attendee.email} error={errors?.email?.message}><input type="email" className={clsx(inputBase, errors?.email && inputError)} autoComplete="off" {...register("secondAttendee.email", { required: copy.attendee.emailRequired, pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: copy.attendee.emailInvalid } })} /></Field>
+        <Field label={copy.attendee.phone} error={errors?.phone?.message}><input type="tel" className={clsx(inputBase, errors?.phone && inputError)} autoComplete="off" {...register("secondAttendee.phone", { required: copy.attendee.phoneRequired })} /></Field>
+        <div className="sm:col-span-2"><Field label={copy.attendee.instagram} error={errors?.instagram?.message}><input className={clsx(inputBase, errors?.instagram && inputError)} placeholder={copy.attendee.instagramPlaceholder} autoComplete="off" {...register("secondAttendee.instagram", { required: copy.attendee.instagramRequired, validate: (value) => validateInstagramInput(value) ? copy.attendee.instagramInvalid : true })} /></Field></div>
       </div>
-      <p className="mt-3 flex items-start gap-1.5 text-[0.67rem] leading-5 text-[#1766bd]"><Info size={13} className="mt-0.5 shrink-0" /> Each attendee receives a separate ticket email and QR code. Both email addresses may be the same.</p>
+      <p className="mt-3 flex items-start gap-1.5 text-[0.67rem] leading-5 text-[#1766bd]"><Info size={13} className="mt-0.5 shrink-0" /> {copy.attendee.secondHint}</p>
     </section>
   );
 }

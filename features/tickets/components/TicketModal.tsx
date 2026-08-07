@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { X } from "lucide-react";
 
+import { ticketTranslations } from "@/features/tickets/copy";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import TicketForm from "./TicketForm";
 
 type TicketModalProps = {
@@ -12,11 +15,18 @@ type TicketModalProps = {
 };
 
 export default function TicketModal({ isOpen, onClose }: TicketModalProps) {
+  const { language } = useLanguage();
+  const copy = ticketTranslations[language].modal;
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const reducedMotion = useReducedMotion();
+
   useEffect(() => {
     if (!isOpen) return;
 
     const previousOverflow = document.body.style.overflow;
+    const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     document.body.style.overflow = "hidden";
+    closeButtonRef.current?.focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -29,6 +39,7 @@ export default function TicketModal({ isOpen, onClose }: TicketModalProps) {
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleKeyDown);
+      previouslyFocused?.focus();
     };
   }, [isOpen, onClose]);
 
@@ -41,7 +52,7 @@ export default function TicketModal({ isOpen, onClose }: TicketModalProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: reducedMotion ? 0 : 0.24 }}
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) {
               onClose();
@@ -53,42 +64,55 @@ export default function TicketModal({ isOpen, onClose }: TicketModalProps) {
             role="dialog"
             aria-modal="true"
             aria-labelledby="ticket-modal-title"
-            className="relative max-h-[96dvh] w-full max-w-[1040px] overflow-y-auto overscroll-contain rounded-[26px] border border-white/85 bg-[rgba(250,253,255,0.96)] font-[var(--font-ui-family)] shadow-[0_40px_110px_rgba(3,18,38,0.38)] sm:max-h-[92vh] sm:rounded-[30px]"
-            initial={{ opacity: 0, y: 28, scale: 0.96 }}
+            className="relative max-h-[96dvh] w-full max-w-[1040px] overflow-y-auto overscroll-contain rounded-[26px] border border-white/85 bg-[linear-gradient(145deg,rgba(255,255,255,0.98),rgba(238,248,253,0.96))] font-[var(--font-ui-family)] shadow-[0_40px_110px_rgba(3,18,38,0.38)] sm:max-h-[92vh] sm:rounded-[30px]"
+            initial={{ opacity: 0, y: reducedMotion ? 0 : 34, scale: reducedMotion ? 1 : 0.965 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 16, scale: 0.98 }}
-            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            exit={{ opacity: 0, y: reducedMotion ? 0 : 18, scale: reducedMotion ? 1 : 0.985 }}
+            transition={reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 330, damping: 30 }}
             onMouseDown={(event) => event.stopPropagation()}
           >
             <div className="pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-[linear-gradient(90deg,rgba(114,160,193,0.2)_0%,rgba(114,160,193,0.7)_45%,rgba(185,217,235,0.75)_100%)]" />
 
-            <div className="flex items-start justify-between gap-5 px-5 pb-3 pt-5 sm:px-8 sm:pt-7">
+            <motion.div
+              className="flex items-start justify-between gap-5 px-5 pb-3 pt-5 sm:px-8 sm:pt-7"
+              initial={{ opacity: 0, y: reducedMotion ? 0 : 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: reducedMotion ? 0 : 0.08, duration: reducedMotion ? 0 : 0.3 }}
+            >
               <div>
                 <p className="mb-1 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-blue)]">
-                  IBPA BEAUTY AWARD 2026
+                  {copy.eyebrow}
                 </p>
 
                 <h2
                   id="ticket-modal-title"
                   className="font-[var(--font-title-family)] text-[2rem] font-light leading-none tracking-[-0.04em] text-[#10182a] sm:text-[2.45rem]"
                 >
-                  Buy Tickets
+                  {copy.title}
                 </h2>
               </div>
 
-              <button
+              <motion.button
+                ref={closeButtonRef}
                 type="button"
                 onClick={onClose}
-                aria-label="Close dialog"
-                className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-[#cfe0eb] bg-white/78 text-[1.25rem] font-light text-[#10182a]/70 shadow-[0_6px_16px_rgba(37,42,45,0.07)] transition hover:-translate-y-px hover:border-[#72a0c1] hover:text-[#2773c8]"
+                aria-label={copy.close}
+                className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-[rgba(114,160,193,0.3)] bg-white/80 text-[#35536a] shadow-[0_8px_24px_rgba(114,160,193,0.12)] backdrop-blur-xl transition-colors hover:border-[var(--color-blue)]/60 hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-blue)]/20"
+                whileHover={reducedMotion ? undefined : { y: -2, rotate: 3 }}
+                whileTap={reducedMotion ? undefined : { scale: 0.94 }}
               >
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
+                <X aria-hidden size={18} strokeWidth={1.8} />
+              </motion.button>
+            </motion.div>
 
-            <div className="px-4 pb-5 sm:px-8 sm:pb-7">
+            <motion.div
+              className="px-4 pb-5 sm:px-8 sm:pb-7"
+              initial={{ opacity: 0, y: reducedMotion ? 0 : 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: reducedMotion ? 0 : 0.12, duration: reducedMotion ? 0 : 0.38, ease: [0.22, 1, 0.36, 1] }}
+            >
               <TicketForm />
-            </div>
+            </motion.div>
           </motion.div>
         </motion.div>
       )}
