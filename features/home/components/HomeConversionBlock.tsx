@@ -17,7 +17,8 @@ import {
   Zap,
 } from "lucide-react";
 
-import { PRICING } from "@/data/pricing";
+import { formatStripeAmount } from "@/features/pricing/types";
+import { useStripePricing } from "@/features/pricing/useStripePricing";
 import { ticketTranslations, type TicketTranslation } from "@/features/tickets/copy";
 import { applyDiscountToPrice } from "@/features/tickets/types";
 import type { TicketDiscount } from "@/features/tickets/types";
@@ -38,6 +39,9 @@ export default function HomeRegistrationSection() {
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const { ticketDiscount, discount } = useTicketDiscount();
   const specialPacket = useSpecialPacket();
+  const { pricing, loading: pricingLoading } = useStripePricing();
+  const displayPrice = (amount: Parameters<typeof formatStripeAmount>[0]) =>
+    pricingLoading ? "…" : formatStripeAmount(amount, language);
 
   const topInfoCards = [
     { icon: Calendar, eyebrow: c.registrationInfo.eyebrow, value: c.registrationInfo.value },
@@ -51,20 +55,20 @@ export default function HomeRegistrationSection() {
   ];
 
   const forumRows = [
-    { label: c.pricing.forum.oneDay, member: PRICING.forumTickets.ibpaMembers.oneDay, standard: PRICING.forumTickets.standard.oneDay, discountable: true },
-    { label: c.pricing.forum.twoDays, member: PRICING.forumTickets.ibpaMembers.twoDays, standard: PRICING.forumTickets.standard.twoDays, discountable: true },
-    { label: c.pricing.forum.galaDinner, member: PRICING.forumTickets.ibpaMembers.galaDinner, standard: PRICING.forumTickets.standard.galaDinner, discountable: false },
+    { label: c.pricing.forum.oneDay, member: displayPrice(pricing?.forumTickets.ibpaMembers.oneDay ?? null), standard: displayPrice(pricing?.forumTickets.standard.oneDay ?? null), discountable: true },
+    { label: c.pricing.forum.twoDays, member: displayPrice(pricing?.forumTickets.ibpaMembers.twoDays ?? null), standard: displayPrice(pricing?.forumTickets.standard.twoDays ?? null), discountable: true },
+    { label: c.pricing.forum.galaDinner, member: displayPrice(pricing?.forumTickets.galaDinner ?? null), standard: displayPrice(pricing?.forumTickets.galaDinner ?? null), discountable: false },
   ];
 
   const awardRows = [
-    { label: c.pricing.award.oneNomination, member: PRICING.awardParticipation.ibpaMembers.oneNomination, standard: PRICING.awardParticipation.nonMembers.oneNomination },
-    { label: c.pricing.award.threeNominations, member: PRICING.awardParticipation.ibpaMembers.threeNominations, standard: PRICING.awardParticipation.nonMembers.threeNominations },
-    { label: c.pricing.award.fiveNominations, member: PRICING.awardParticipation.ibpaMembers.fiveNominations, standard: PRICING.awardParticipation.nonMembers.fiveNominations, badge: c.pricing.mostPopular },
+    { label: c.pricing.award.oneNomination, member: displayPrice(pricing?.awardParticipation.ibpaMembers.oneNomination ?? null), standard: displayPrice(pricing?.awardParticipation.nonMembers.oneNomination ?? null) },
+    { label: c.pricing.award.threeNominations, member: displayPrice(pricing?.awardParticipation.ibpaMembers.threeNominations ?? null), standard: displayPrice(pricing?.awardParticipation.nonMembers.threeNominations ?? null) },
+    { label: c.pricing.award.fiveNominations, member: displayPrice(pricing?.awardParticipation.ibpaMembers.fiveNominations ?? null), standard: displayPrice(pricing?.awardParticipation.nonMembers.fiveNominations ?? null), badge: c.pricing.mostPopular },
   ];
 
   const juryRows = [
-    { label: c.pricing.jury.member, price: PRICING.judgeRegistration.ibpaMembers, icon: Crown, featured: true },
-    { label: c.pricing.jury.standard, price: PRICING.judgeRegistration.standard, icon: UserRound, featured: false },
+    { label: c.pricing.jury.member, price: displayPrice(pricing?.judgeRegistration.ibpaMembers ?? null), icon: Crown, featured: true },
+    { label: c.pricing.jury.standard, price: displayPrice(pricing?.judgeRegistration.standard ?? null), icon: UserRound, featured: false },
   ];
 
   return (
@@ -162,9 +166,9 @@ export default function HomeRegistrationSection() {
 
             <Reveal delay={0.12}>
               <SpecialPacketCard
-                enabled={specialPacket.enabled}
-                memberPrice={specialPacket.memberPrice}
-                standardPrice={specialPacket.standardPrice}
+                enabled={specialPacket.enabled && Boolean(pricing?.forumTickets.specialPacket.ibpaMembers && pricing?.forumTickets.specialPacket.standard)}
+                memberPrice={displayPrice(pricing?.forumTickets.specialPacket.ibpaMembers ?? null)}
+                standardPrice={displayPrice(pricing?.forumTickets.specialPacket.standard ?? null)}
                 onBuy={() => setIsTicketModalOpen(true)}
                 copy={ticketCopy.pricing}
               />

@@ -1,13 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { PRICING } from "@/data/pricing";
 import type { SpecialPacketStatus } from "@/features/tickets/types";
 
 const FALLBACK: SpecialPacketStatus = {
   enabled: false,
-  memberPrice: PRICING.forumTickets.specialPacket.ibpaMembers,
-  standardPrice: PRICING.forumTickets.specialPacket.standard,
 };
 
 export function useSpecialPacket() {

@@ -17,9 +17,10 @@ import {
   UserRound,
   UsersRound,
 } from "lucide-react";
-import { PRICING } from "@/data/pricing";
+import { formatStripeAmount } from "@/features/pricing/types";
+import { useStripePricing } from "@/features/pricing/useStripePricing";
 import { ticketTranslations, type TicketTranslation } from "@/features/tickets/copy";
-import { applyDiscountToCents, applyDiscountToPrice } from "@/features/tickets/types";
+import { applyDiscountToCents } from "@/features/tickets/types";
 import { useTicketDiscount } from "@/features/tickets/useEarlyBird";
 import { useSpecialPacket } from "@/features/tickets/useSpecialPacket";
 import { validateInstagramInput } from "@/features/tickets/lib/instagram";
@@ -74,10 +75,6 @@ const inputBase =
 const inputError = "border-red-300 bg-red-50/60 focus:border-red-400 focus:ring-red-100";
 const labelBase = "mb-1.5 block text-[0.66rem] font-semibold uppercase tracking-[0.13em] text-[#10182a]/55";
 const errorText = "mt-1 text-[0.7rem] text-red-600";
-
-function priceToNumber(value: string) {
-  return Number.parseFloat(value.replace(/[^0-9.]/g, ""));
-}
 
 function moneyFromCents(amountCents: number, language: "en" | "ru" | "ua") {
   return new Intl.NumberFormat(language === "en" ? "en-US" : language === "ru" ? "ru-RU" : "uk-UA", {
@@ -140,6 +137,7 @@ export default function TicketForm() {
   const reducedMotion = useReducedMotion();
   const { ticketDiscount, discount } = useTicketDiscount();
   const specialPacket = useSpecialPacket();
+  const { pricing, loading: pricingLoading } = useStripePricing();
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [certStatus, setCertStatus] = useState<CertStatus>("idle");
@@ -193,23 +191,25 @@ export default function TicketForm() {
   }, [ibpaCertNumber, isIbpaMember]);
   const visibleCertStatus = !isIbpaMember || !ibpaCertNumber.trim() ? "idle" : certStatus;
 
-  const rawTicketPrice =
+  const selectedStripePrice =
     type === "ONE_DAY"
       ? isIbpaMember
-        ? PRICING.forumTickets.ibpaMembers.oneDay
-        : PRICING.forumTickets.standard.oneDay
+        ? pricing?.forumTickets.ibpaMembers.oneDay
+        : pricing?.forumTickets.standard.oneDay
       : type === "TWO_DAYS"
         ? isIbpaMember
-          ? PRICING.forumTickets.ibpaMembers.twoDays
-          : PRICING.forumTickets.standard.twoDays
+          ? pricing?.forumTickets.ibpaMembers.twoDays
+          : pricing?.forumTickets.standard.twoDays
         : isSpecialPacket
           ? isIbpaMember
-            ? specialPacket.memberPrice
-            : specialPacket.standardPrice
+            ? pricing?.forumTickets.specialPacket.ibpaMembers
+            : pricing?.forumTickets.specialPacket.standard
           : null;
-  const galaPrice = PRICING.forumTickets.standard.galaDinner;
-  const rawTicketCents = rawTicketPrice ? Math.round(priceToNumber(rawTicketPrice) * 100) : 0;
-  const rawGalaCents = !isSpecialPacket && galaDinner ? Math.round(priceToNumber(galaPrice) * 100) : 0;
+  const galaStripePrice = pricing?.forumTickets.galaDinner ?? null;
+  const rawTicketPrice = formatStripeAmount(selectedStripePrice ?? null, language);
+  const galaPrice = formatStripeAmount(galaStripePrice, language);
+  const rawTicketCents = selectedStripePrice?.amountCents ?? 0;
+  const rawGalaCents = !isSpecialPacket && galaDinner ? galaStripePrice?.amountCents ?? 0 : 0;
   const automaticDiscountStacks = ticketDiscount.kind === "permanent30";
   const automaticTicketCents = !isSpecialPacket && discount && automaticDiscountStacks
     ? applyDiscountToCents(rawTicketCents, discount)
@@ -219,14 +219,18 @@ export default function TicketForm() {
     promoPreview.galaDinnerAmountCents === rawGalaCents
       ? promoPreview
       : null;
-  const discountedTicketPrice = !isSpecialPacket && rawTicketPrice && !activePromoPreview
-    ? applyDiscountToPrice(rawTicketPrice, discount)
+  const discountedTicketCents = !isSpecialPacket && discount && !activePromoPreview
+    ? applyDiscountToCents(rawTicketCents, discount)
     : null;
+  const discountedTicketPrice = discountedTicketCents === null
+    ? null
+    : formatStripeAmount({ amountCents: discountedTicketCents, currency: selectedStripePrice?.currency ?? "usd" }, language);
   const totalCents = isSpecialPacket
     ? rawTicketCents
     : activePromoPreview
       ? activePromoPreview.finalAmountCents
-      : Math.round(((discountedTicketPrice ? priceToNumber(discountedTicketPrice) : rawTicketCents / 100) + rawGalaCents / 100) * 100);
+      : (discountedTicketCents ?? rawTicketCents) + rawGalaCents;
+  const totalPrice = formatStripeAmount({ amountCents: totalCents, currency: selectedStripePrice?.currency ?? galaStripePrice?.currency ?? "usd" }, language);
   const discountName = ticketDiscount.kind === "permanent30" ? copy.discount.permanent : copy.discount.earlyBird;
 
   const promoMessage = useCallback((errorCode?: string) => {
@@ -281,6 +285,10 @@ export default function TicketForm() {
 
   const onSubmit = async (data: FormValues) => {
     if (!data.type) return;
+    if (!selectedStripePrice) {
+      setServerError(copy.errors.generic);
+      return;
+    }
     if (data.type === "SPECIAL_PACKET" && !specialPacket.enabled) {
       setServerError(copy.errors.specialComingSoon);
       return;
@@ -334,21 +342,21 @@ export default function TicketForm() {
       value: "ONE_DAY" as const,
       title: copy.package.oneDay,
       subtitle: copy.package.oneDaySubtitle,
-      price: isIbpaMember ? PRICING.forumTickets.ibpaMembers.oneDay : PRICING.forumTickets.standard.oneDay,
+      price: isIbpaMember ? pricing?.forumTickets.ibpaMembers.oneDay : pricing?.forumTickets.standard.oneDay,
       icon: CalendarDays,
     },
     {
       value: "TWO_DAYS" as const,
       title: copy.package.twoDays,
       subtitle: copy.package.twoDaysSubtitle,
-      price: isIbpaMember ? PRICING.forumTickets.ibpaMembers.twoDays : PRICING.forumTickets.standard.twoDays,
+      price: isIbpaMember ? pricing?.forumTickets.ibpaMembers.twoDays : pricing?.forumTickets.standard.twoDays,
       icon: CalendarDays,
     },
     {
       value: "SPECIAL_PACKET" as const,
       title: copy.package.special,
       subtitle: copy.package.specialSubtitle,
-      price: isIbpaMember ? specialPacket.memberPrice : specialPacket.standardPrice,
+      price: isIbpaMember ? pricing?.forumTickets.specialPacket.ibpaMembers : pricing?.forumTickets.specialPacket.standard,
       icon: Star,
       disabled: !specialPacket.enabled,
     },
@@ -385,6 +393,8 @@ export default function TicketForm() {
         <div className="grid gap-3 sm:grid-cols-3">
           {packages.map((option) => {
             const selected = type === option.value;
+            const unavailable = !option.price;
+            const disabled = option.disabled || unavailable;
             const OptionIcon = option.icon;
             const typeRegistration = register("type", { required: copy.package.required });
             return (
@@ -392,20 +402,20 @@ export default function TicketForm() {
                 key={option.value}
                 className={clsx(
                   "relative flex min-h-[172px] flex-col rounded-[18px] border p-4 transition",
-                  option.disabled
+                  disabled
                     ? "cursor-not-allowed border-[#d7dee4] bg-[#f1f3f5] text-[#10182a]/35 grayscale"
                     : selected
                       ? "cursor-pointer border-[#2773c8] bg-[#f3f8ff] shadow-[0_12px_28px_rgba(39,115,200,0.13)]"
                       : "cursor-pointer border-[#cfe0eb] bg-white/74 hover:border-[#72a0c1] hover:bg-white"
                 )}
-                whileHover={option.disabled || reducedMotion ? undefined : { y: -3 }}
-                whileTap={option.disabled || reducedMotion ? undefined : { scale: 0.985 }}
+                whileHover={disabled || reducedMotion ? undefined : { y: -3 }}
+                whileTap={disabled || reducedMotion ? undefined : { scale: 0.985 }}
                 layout={!reducedMotion}
               >
                 {option.value === "SPECIAL_PACKET" ? (
                   <span className={clsx(
                     "absolute right-3 top-3 rounded-full px-2 py-1 text-[0.54rem] font-bold uppercase tracking-[0.1em]",
-                    option.disabled ? "bg-[#d9dde1] text-[#10182a]/50" : "bg-[#dceeff] text-[#1766bd]"
+                    disabled ? "bg-[#d9dde1] text-[#10182a]/50" : "bg-[#dceeff] text-[#1766bd]"
                   )}>
                     {option.disabled ? copy.package.comingSoon : copy.package.bestValue}
                   </span>
@@ -413,7 +423,7 @@ export default function TicketForm() {
                 <input
                   type="radio"
                   value={option.value}
-                  disabled={option.disabled}
+                  disabled={disabled}
                   className="sr-only"
                   {...typeRegistration}
                   onChange={(event) => {
@@ -434,7 +444,7 @@ export default function TicketForm() {
                 {option.value === "SPECIAL_PACKET" ? (
                   <span className="mt-1 text-[0.68rem] text-[#2773c8]">{copy.package.specialTickets}</span>
                 ) : null}
-                <span className="mt-auto pt-4 font-[var(--font-title-family)] text-[1.35rem] font-light text-[#10182a]">{option.price}</span>
+                <span className="mt-auto pt-4 font-[var(--font-title-family)] text-[1.35rem] font-light text-[#10182a]">{pricingLoading ? "…" : formatStripeAmount(option.price ?? null, language)}</span>
                 <span className={clsx(
                   "absolute bottom-4 right-4 size-4 rounded-full border",
                   selected ? "border-[#2773c8] bg-[#2773c8] shadow-[inset_0_0_0_3px_white]" : "border-[#8ca2b2]"
@@ -462,7 +472,7 @@ export default function TicketForm() {
           </span>
         ) : (
           <label className="inline-flex shrink-0 cursor-pointer items-center gap-2 text-[0.72rem] font-semibold text-[#10182a]">
-            <input type="checkbox" className="peer sr-only" {...register("galaDinner")} />
+            <input type="checkbox" disabled={!galaStripePrice} className="peer sr-only" {...register("galaDinner")} />
             <span aria-hidden="true" className="flex size-6 items-center justify-center rounded-full border border-[rgba(114,160,193,0.34)] bg-white/90 text-transparent transition peer-checked:border-[var(--color-blue)]/50 peer-checked:bg-[var(--color-blue-wash)] peer-checked:text-[#356f98] peer-focus-visible:ring-4 peer-focus-visible:ring-[var(--color-blue)]/20">
               <Check size={13} strokeWidth={2.6} />
             </span>
@@ -581,7 +591,7 @@ export default function TicketForm() {
               </div>
             ) : null}
             <div className="flex justify-between border-t border-[#dbe7ee] pt-2 font-[var(--font-title-family)] text-[1.18rem] text-[#10182a]">
-              <span>{copy.summary.total}</span><span>{moneyFromCents(totalCents, language)}</span>
+              <span>{copy.summary.total}</span><span>{totalPrice}</span>
             </div>
           </div>
         </motion.section>
@@ -595,7 +605,7 @@ export default function TicketForm() {
       <motion.div variants={reducedMotion ? undefined : { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}>
       <LandingPrimaryButton
         type="submit"
-        disabled={submitting || visibleCertStatus === "checking" || !type}
+        disabled={submitting || visibleCertStatus === "checking" || !type || !selectedStripePrice}
         className="w-full"
       >
         {submitting ? copy.actions.creatingCheckout : visibleCertStatus === "checking" ? copy.actions.verifyingCertificate : copy.actions.continuePayment}

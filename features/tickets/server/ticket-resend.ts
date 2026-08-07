@@ -10,6 +10,7 @@ import {
 import { getActiveTicketDiscount } from "./ticket-discount";
 import { sendTicketPaymentLinkEmail } from "./ticket-email.workflow";
 import { computeTicketAmountCents } from "@/features/tickets/lib/pricing";
+import { getTicketPriceConfigFromStripe } from "@/features/pricing/server/stripe-pricing";
 import { isTicketPaymentConfirmed } from "@/features/tickets/lib/ticket-status";
 import { syncTicketOnChange } from "@/features/google-sheets";
 import type { Language } from "@/lib/i18n/translations";
@@ -138,12 +139,16 @@ export async function resendTicketPaymentLink(
       : { ok: false, reason: "email_failed", checkoutUrl: session.url };
   }
 
-  const activeTicketDiscount = await getActiveTicketDiscount();
+  const [activeTicketDiscount, pricing] = await Promise.all([
+    getActiveTicketDiscount(),
+    getTicketPriceConfigFromStripe(),
+  ]);
   const amounts = computeTicketAmountCents({
     type: ticket.type,
     isIbpaMember: ticket.isIbpaMember,
     galaDinner: ticket.galaDinner,
     ticketDiscount: activeTicketDiscount?.discount ?? null,
+    pricing,
   });
 
   const stripe = getStripe();

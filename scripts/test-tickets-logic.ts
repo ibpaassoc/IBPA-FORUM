@@ -14,9 +14,8 @@ import {
 import { normalizeTicketEmail } from "@/features/tickets/lib/normalize-email";
 import {
   computeTicketAmountCents,
-  TICKET_AMOUNTS_CENTS,
-  GALA_DINNER_CENTS,
 } from "@/features/tickets/lib/pricing";
+import { TEST_TICKET_PRICING } from "@/features/test/fixtures/ticket-pricing";
 import { calculatePromoDiscount } from "@/features/promos/lib/promo-codes";
 import { decideTicketReplacement } from "@/features/tickets/lib/replacement";
 import {
@@ -176,8 +175,9 @@ eq(
     isIbpaMember: false,
     galaDinner: false,
     ticketDiscount: null,
+    pricing: TEST_TICKET_PRICING,
   }).totalCents,
-  TICKET_AMOUNTS_CENTS.ONE_DAY.standard,
+  TEST_TICKET_PRICING.ticketAmountsCents.ONE_DAY.standard,
   "one-day standard, no gala"
 );
 eq(
@@ -186,8 +186,9 @@ eq(
     isIbpaMember: true,
     galaDinner: false,
     ticketDiscount: null,
+    pricing: TEST_TICKET_PRICING,
   }).totalCents,
-  TICKET_AMOUNTS_CENTS.ONE_DAY.ibpa,
+  TEST_TICKET_PRICING.ticketAmountsCents.ONE_DAY.ibpa,
   "one-day member price"
 );
 eq(
@@ -196,8 +197,9 @@ eq(
     isIbpaMember: false,
     galaDinner: true,
     ticketDiscount: null,
+    pricing: TEST_TICKET_PRICING,
   }).totalCents,
-  TICKET_AMOUNTS_CENTS.TWO_DAYS.standard + GALA_DINNER_CENTS,
+  TEST_TICKET_PRICING.ticketAmountsCents.TWO_DAYS.standard + TEST_TICKET_PRICING.galaDinnerCents,
   "two-day + gala add-on"
 );
 {
@@ -207,10 +209,11 @@ eq(
     isIbpaMember: false,
     galaDinner: true,
     ticketDiscount: { type: "percent", value: 20 },
+    pricing: TEST_TICKET_PRICING,
   });
   eq(amounts.ticketCents, Math.round(39500 * 0.8), "forum pass discounted 20%");
-  eq(amounts.galaCents, GALA_DINNER_CENTS, "gala not discounted");
-eq(amounts.totalCents, Math.round(39500 * 0.8) + GALA_DINNER_CENTS, "total = discounted pass + gala");
+  eq(amounts.galaCents, TEST_TICKET_PRICING.galaDinnerCents, "gala not discounted");
+eq(amounts.totalCents, Math.round(39500 * 0.8) + TEST_TICKET_PRICING.galaDinnerCents, "total = discounted pass + gala");
 }
 {
   // Automatic ticket discounts and promo codes stack on the forum pass only.
@@ -219,6 +222,7 @@ eq(amounts.totalCents, Math.round(39500 * 0.8) + GALA_DINNER_CENTS, "total = dis
     isIbpaMember: false,
     galaDinner: true,
     ticketDiscount: { type: "percent", value: 30 },
+    pricing: TEST_TICKET_PRICING,
   });
   const promo = calculatePromoDiscount(amounts.ticketCents, 30);
   eq(amounts.ticketCents, 27650, "automatic 30% applies before the ticket promo");

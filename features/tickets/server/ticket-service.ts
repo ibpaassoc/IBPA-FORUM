@@ -18,6 +18,7 @@ import { validatePromoCodeForFlow } from "@/features/promos/server/promo-service
 import { syncTicketOnChange } from "@/features/google-sheets";
 import type { Language } from "@/lib/i18n/translations";
 import { isSpecialPacketEnabled } from "./special-packet";
+import { getTicketPriceConfigFromStripe } from "@/features/pricing/server/stripe-pricing";
 
 export class InvalidCertError extends Error {
   constructor(message: string) {
@@ -32,10 +33,6 @@ export class SpecialPacketUnavailableError extends Error {
     this.name = "SpecialPacketUnavailableError";
   }
 }
-
-// Re-exported for backwards compatibility; the canonical definitions now live in
-// the shared pricing calculator so the checkout and admin-resend flows agree.
-export { TICKET_AMOUNTS_CENTS, GALA_DINNER_CENTS } from "@/features/tickets/lib/pricing";
 
 export type InitiateTicketPurchaseInput = {
   firstName: string;
@@ -145,13 +142,17 @@ export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput)
 
   const ticketId = reservation.ticketId;
 
-  const activeTicketDiscount = await getActiveTicketDiscount();
+  const [activeTicketDiscount, pricing] = await Promise.all([
+    getActiveTicketDiscount(),
+    getTicketPriceConfigFromStripe(),
+  ]);
   const automaticDiscountStacks = activeTicketDiscount?.kind === "permanent30";
   const promoBaseAmounts = computeTicketAmountCents({
     type: input.type,
     isIbpaMember: input.isIbpaMember,
     galaDinner: input.galaDinner,
     ticketDiscount: automaticDiscountStacks ? activeTicketDiscount?.discount ?? null : null,
+    pricing,
   });
   const appliedPromo = await validatePromoCodeForFlow({
     keyword: input.promoCode,
@@ -165,6 +166,7 @@ export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput)
         isIbpaMember: input.isIbpaMember,
         galaDinner: input.galaDinner,
         ticketDiscount: activeTicketDiscount?.discount ?? null,
+        pricing,
       })
     : promoBaseAmounts;
   const paymentAmountCents = appliedPromo

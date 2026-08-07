@@ -4,6 +4,7 @@ import crypto from "node:crypto";
 import type Stripe from "stripe";
 import { reserveTicketForCheckout } from "@/features/tickets/server/ticket-repository";
 import { computeTicketAmountCents } from "@/features/tickets/lib/pricing";
+import { TEST_TICKET_PRICING } from "@/features/test/fixtures/ticket-pricing";
 import { calculatePromoDiscount } from "@/features/promos/lib/promo-codes";
 import { handleTicketStripeEvent } from "@/features/tickets/server/ticket-webhook.workflow";
 import { prisma } from "@/shared/lib/prisma";
@@ -61,6 +62,7 @@ export async function createTestTicketScenario(input: {
         isIbpaMember: input.isIbpaMember,
         galaDinner: input.galaDinner,
         ticketDiscount: null,
+        pricing: TEST_TICKET_PRICING,
       });
       const promo = calculatePromoDiscount(base.ticketCents, input.discountPercent);
       const amount = promo.finalAmountCents + base.galaCents;

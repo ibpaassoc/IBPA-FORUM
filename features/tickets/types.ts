@@ -20,8 +20,6 @@ export type EarlyBirdStatus = {
 
 export type SpecialPacketStatus = {
   enabled: boolean;
-  memberPrice: string;
-  standardPrice: string;
 };
 
 export function applyDiscountToPrice(priceStr: string, discount: TicketDiscount): string | null {
