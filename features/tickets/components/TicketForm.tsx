@@ -20,6 +20,16 @@ import {
 import { formatStripeAmount } from "@/features/pricing/types";
 import { useStripePricing } from "@/features/pricing/useStripePricing";
 import { ticketTranslations, type TicketTranslation } from "@/features/tickets/copy";
+import {
+  columnVariants,
+  controlSpring,
+  EASE_IN,
+  EASE_OUT,
+  formVariants,
+  riseVariants,
+  selectionSpring,
+  swapVariants,
+} from "@/features/tickets/motion";
 import { applyDiscountToCents } from "@/features/tickets/types";
 import { useTicketDiscount } from "@/features/tickets/useEarlyBird";
 import { useSpecialPacket } from "@/features/tickets/useSpecialPacket";
@@ -131,6 +141,71 @@ function SectionTitle({ icon, children }: { icon: React.ReactNode; children: Rea
   );
 }
 
+/**
+ * Vertical reveal driven by the `.ticket-reveal` grid-track transition (see
+ * globals.css). Content stays mounted, so it never has to be re-measured and
+ * never squashes on the way out; `inert` keeps the collapsed copy out of the
+ * tab order and the accessibility tree.
+ */
+function Reveal({ open, children }: { open: boolean; children: React.ReactNode }) {
+  return (
+    <div className="ticket-reveal" data-open={open}>
+      <div inert={!open}>{children}</div>
+    </div>
+  );
+}
+
+/**
+ * Holds on to the last value the caller had. A row whose data vanishes at the
+ * instant it starts collapsing — a promo discount, a server error — would
+ * otherwise blank out and then shrink, which reads as a glitch rather than a
+ * transition.
+ */
+function useRetained<T extends string | number>(value: T | null | undefined): T | null {
+  // Adjusting state during render (React's documented pattern for deriving
+  // from a changed value). Safe to compare with !== because T is primitive,
+  // so this settles after one extra render.
+  const [retained, setRetained] = useState<T | null>(value ?? null);
+
+  if (value !== null && value !== undefined && value !== retained) {
+    setRetained(value);
+  }
+
+  return value ?? retained;
+}
+
+/**
+ * Crossfades a value that changes in place — a price, a status line, a button
+ * label. `popLayout` pulls the outgoing copy out of flow so the two never
+ * stack and shove the surrounding layout.
+ */
+function SwapValue({
+  value,
+  className,
+  children,
+}: {
+  value: string;
+  className?: string;
+  children?: React.ReactNode;
+}) {
+  return (
+    <span className={clsx("relative inline-block", className)}>
+      <AnimatePresence mode="popLayout" initial={false}>
+        <motion.span
+          key={value}
+          className="block"
+          variants={swapVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+        >
+          {children ?? value}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  );
+}
+
 export default function TicketForm() {
   const { language, t } = useLanguage();
   const copy = ticketTranslations[language].form;
@@ -233,6 +308,14 @@ export default function TicketForm() {
       : (discountedTicketCents ?? rawTicketCents) + rawGalaCents;
   const totalPrice = formatStripeAmount({ amountCents: totalCents, currency: selectedStripePrice?.currency ?? galaStripePrice?.currency ?? "usd" });
   const discountName = ticketDiscount.kind === "permanent30" ? copy.discount.permanent : copy.discount.earlyBird;
+  // Both survive their own row collapsing (see useRetained).
+  const retainedPromoDiscountCents = useRetained(activePromoPreview?.discountAmountCents);
+  const retainedServerError = useRetained(serverError);
+  const promoHint = isSpecialPacket
+    ? copy.promo.fixed
+    : activePromoPreview
+      ? promoText.promoCodeApplied
+      : promoError || copy.promo.eligible;
 
   const promoMessage = useCallback((errorCode?: string) => {
     if (errorCode === "DISABLED") return promoText.promoCodeDisabled;
@@ -370,16 +453,10 @@ export default function TicketForm() {
       className="space-y-3 font-[var(--font-ui-family)]"
       initial="hidden"
       animate="visible"
-      variants={{
-        hidden: { opacity: 0 },
-        visible: {
-          opacity: 1,
-          transition: reducedMotion ? { duration: 0 } : { staggerChildren: 0.055, delayChildren: 0.04 },
-        },
-      }}
+      variants={formVariants}
     >
       {discount ? (
-        <motion.div variants={reducedMotion ? undefined : { hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className="flex items-center gap-3 rounded-[18px] border border-[var(--color-blue)]/35 bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(185,217,235,0.3))] px-4 py-2 shadow-[0_14px_34px_rgba(114,160,193,0.1)]">
+        <motion.div variants={riseVariants} className="flex items-center gap-3 rounded-[18px] border border-[var(--color-blue)]/35 bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(185,217,235,0.3))] px-4 py-2 shadow-[0_14px_34px_rgba(114,160,193,0.1)]">
           <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-white text-[#2773c8]">
             <Tag size={15} />
           </span>
@@ -391,10 +468,10 @@ export default function TicketForm() {
 
       {/* Two columns on large screens so the whole form fits without scrolling the modal:
           what you are buying on the left, who is coming and what it costs on the right. */}
-      <motion.div className="grid gap-3 lg:grid-cols-12 lg:items-start">
-      <motion.div className="space-y-3 lg:col-span-7">
+      <motion.div variants={columnVariants} className="grid gap-3 lg:grid-cols-12 lg:items-start">
+      <motion.div variants={columnVariants} className="space-y-3 lg:col-span-7">
 
-      <motion.section variants={reducedMotion ? undefined : { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}>
+      <motion.section variants={riseVariants}>
         <SectionTitle icon={<Sparkles size={15} />}>{copy.package.title}</SectionTitle>
         <div className="grid gap-2.5 sm:grid-cols-3">
           {packages.map((option) => {
@@ -403,21 +480,36 @@ export default function TicketForm() {
             const disabled = option.disabled || unavailable;
             const OptionIcon = option.icon;
             const typeRegistration = register("type", { required: copy.package.required });
+            const priceLabel = pricingLoading ? "…" : formatStripeAmount(option.price ?? null);
             return (
               <motion.label
                 key={option.value}
+                // `isolate` gives the selection highlight below a stacking
+                // context of its own to sit in, behind the card's content but
+                // in front of the card's own background.
                 className={clsx(
-                  "relative flex min-h-[132px] flex-col rounded-[18px] border p-3 transition",
+                  "relative isolate flex min-h-[132px] flex-col rounded-[18px] border p-3 transition-colors duration-300",
                   disabled
                     ? "cursor-not-allowed border-[#d7dee4] bg-[#f1f3f5] text-[#10182a]/35 grayscale"
-                    : selected
-                      ? "cursor-pointer border-[#2773c8] bg-[#f3f8ff] shadow-[0_12px_28px_rgba(39,115,200,0.13)]"
-                      : "cursor-pointer border-[#cfe0eb] bg-white/74 hover:border-[#72a0c1] hover:bg-white"
+                    : "cursor-pointer border-[#cfe0eb] bg-white/74 hover:border-[#72a0c1] hover:bg-white"
                 )}
                 whileHover={disabled || reducedMotion ? undefined : { y: -3 }}
                 whileTap={disabled || reducedMotion ? undefined : { scale: 0.985 }}
-                layout={!reducedMotion}
+                transition={controlSpring}
               >
+                {/* One shared highlight for all three cards, so selecting a
+                    different package slides the blue surface across instead of
+                    repainting two cards at once. */}
+                {selected && !disabled ? (
+                  <motion.span
+                    aria-hidden
+                    layoutId="ticket-package-selection"
+                    // -inset-px so the highlight covers the card's own 1px
+                    // border rather than drawing a second one inside it.
+                    className="pointer-events-none absolute -inset-px -z-10 rounded-[19px] border border-[#2773c8] bg-[#f3f8ff] shadow-[0_12px_28px_rgba(39,115,200,0.13)]"
+                    transition={selectionSpring}
+                  />
+                ) : null}
                 {option.value === "SPECIAL_PACKET" ? (
                   <span className={clsx(
                     "absolute right-3 top-3 rounded-full px-2 py-1 text-[0.54rem] font-bold uppercase tracking-[0.1em]",
@@ -450,11 +542,22 @@ export default function TicketForm() {
                 {option.value === "SPECIAL_PACKET" ? (
                   <span className="mt-1 text-[0.66rem] leading-4 text-[#2773c8]">{copy.package.specialTickets}</span>
                 ) : null}
-                <span className="mt-auto pt-2.5 font-[var(--font-title-family)] text-[1.25rem] font-light text-[#10182a]">{pricingLoading ? "…" : formatStripeAmount(option.price ?? null)}</span>
+                <SwapValue
+                  value={priceLabel}
+                  className="mt-auto pt-2.5 font-[var(--font-title-family)] text-[1.25rem] font-light text-[#10182a]"
+                />
                 <span className={clsx(
-                  "absolute bottom-3 right-3 size-4 rounded-full border",
-                  selected ? "border-[#2773c8] bg-[#2773c8] shadow-[inset_0_0_0_3px_white]" : "border-[#8ca2b2]"
-                )} />
+                  "pointer-events-none absolute bottom-3 right-3 grid size-4 place-items-center rounded-full border transition-colors duration-300",
+                  selected && !disabled ? "border-[#2773c8]" : "border-[#8ca2b2]"
+                )}>
+                  <motion.span
+                    aria-hidden
+                    className="size-2 rounded-full bg-[#2773c8]"
+                    initial={false}
+                    animate={{ scale: selected && !disabled ? 1 : 0 }}
+                    transition={controlSpring}
+                  />
+                </span>
               </motion.label>
             );
           })}
@@ -462,7 +565,7 @@ export default function TicketForm() {
         {errors.type ? <p className={errorText}>{errors.type.message}</p> : null}
       </motion.section>
 
-      <motion.section variants={reducedMotion ? undefined : { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }} className="premium-glass flex items-center justify-between gap-4 px-4 py-2.5">
+      <motion.section variants={riseVariants} className="premium-glass flex items-center justify-between gap-4 px-4 py-2.5">
         <div className="flex min-w-0 items-center gap-3">
           <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#eaf4fb] text-[#2773c8]">
             <Gift size={16} />
@@ -472,42 +575,76 @@ export default function TicketForm() {
             <p className="mt-0.5 text-[0.66rem] leading-4 text-[#10182a]/50">{copy.gala.description} · {galaPrice} {copy.gala.perPerson}</p>
           </div>
         </div>
-        {isSpecialPacket ? (
-          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-[12px] border border-[#9bc8ee] bg-[#f1f8ff] px-3 py-2 text-[0.66rem] font-semibold text-[#2773c8]">
-            <LockKeyhole size={13} /> {copy.gala.included}
-          </span>
-        ) : (
-          <label className="inline-flex shrink-0 cursor-pointer items-center gap-2 text-[0.72rem] font-semibold text-[#10182a]">
-            <input type="checkbox" disabled={!galaStripePrice} className="peer sr-only" {...register("galaDinner")} />
-            <span aria-hidden="true" className="flex size-6 items-center justify-center rounded-full border border-[rgba(114,160,193,0.34)] bg-white/90 text-transparent transition peer-checked:border-[var(--color-blue)]/50 peer-checked:bg-[var(--color-blue-wash)] peer-checked:text-[#356f98] peer-focus-visible:ring-4 peer-focus-visible:ring-[var(--color-blue)]/20">
-              <Check size={13} strokeWidth={2.6} />
-            </span>
-            {copy.gala.add}
-          </label>
-        )}
+        {/* "wait" rather than a crossfade: the two controls are different
+            widths, and overlapping them would jog the row. */}
+        <AnimatePresence mode="wait" initial={false}>
+          {isSpecialPacket ? (
+            <motion.span
+              key="gala-included"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-[12px] border border-[#9bc8ee] bg-[#f1f8ff] px-3 py-2 text-[0.66rem] font-semibold text-[#2773c8]"
+              initial={{ opacity: 0, scale: 0.94 }}
+              animate={{ opacity: 1, scale: 1, transition: { duration: 0.2, ease: EASE_OUT } }}
+              exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.12, ease: EASE_IN } }}
+            >
+              <LockKeyhole size={13} /> {copy.gala.included}
+            </motion.span>
+          ) : (
+            <motion.label
+              key="gala-toggle"
+              className="inline-flex shrink-0 cursor-pointer items-center gap-2 text-[0.72rem] font-semibold text-[#10182a]"
+              initial={{ opacity: 0, scale: 0.94 }}
+              animate={{ opacity: 1, scale: 1, transition: { duration: 0.2, ease: EASE_OUT } }}
+              exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.12, ease: EASE_IN } }}
+            >
+              <input type="checkbox" disabled={!galaStripePrice} className="peer sr-only" {...register("galaDinner")} />
+              <span aria-hidden="true" className="flex size-6 items-center justify-center rounded-full border border-[rgba(114,160,193,0.34)] bg-white/90 text-transparent transition duration-300 peer-checked:border-[var(--color-blue)]/50 peer-checked:bg-[var(--color-blue-wash)] peer-checked:text-[#356f98] peer-focus-visible:ring-4 peer-focus-visible:ring-[var(--color-blue)]/20">
+                <Check size={13} strokeWidth={2.6} />
+              </span>
+              {copy.gala.add}
+            </motion.label>
+          )}
+        </AnimatePresence>
       </motion.section>
 
-      <motion.div variants={reducedMotion ? undefined : { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }} className={clsx("grid gap-3", isSpecialPacket && "lg:grid-cols-2")}>
+      {/* Panel 2 only exists for the Special Packet, and it has to unmount so
+          react-hook-form stops validating its fields. The surrounding grid
+          keeps both tracks at all times and animates between them, so panel 1
+          narrows in step with panel 2 unfolding rather than snapping. */}
+      <motion.div
+        variants={riseVariants}
+        className="ticket-attendee-grid"
+        data-second={isSpecialPacket}
+      >
         <AttendeePanel
           number={isSpecialPacket ? 1 : undefined}
           register={register}
           errors={errors}
           copy={copy}
         />
-        <AnimatePresence initial={false}>
-          {isSpecialPacket ? (
-            <motion.div key="second-attendee" initial={reducedMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={reducedMotion ? undefined : { opacity: 0, y: -8 }}>
-              <SecondAttendeePanel register={register} errors={errors.secondAttendee} copy={copy} />
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
+        <div className="ticket-attendee-slot">
+          <AnimatePresence initial={false}>
+            {isSpecialPacket ? (
+              <motion.div
+                key="second-attendee"
+                // Held back until the column has most of its width, so the
+                // panel is never seen mid-squash.
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0, transition: { duration: 0.32, ease: EASE_OUT, delay: 0.16 } }}
+                exit={{ opacity: 0, y: -6, transition: { duration: 0.16, ease: EASE_IN } }}
+                className="lg:min-w-[16rem]"
+              >
+                <SecondAttendeePanel register={register} errors={errors.secondAttendee} copy={copy} />
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
+        </div>
       </motion.div>
 
       </motion.div>
       {/* Right column. */}
-      <motion.div className="space-y-3 lg:col-span-5">
+      <motion.div variants={columnVariants} className="space-y-3 lg:col-span-5">
 
-      <motion.div variants={reducedMotion ? undefined : { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+      <motion.div variants={riseVariants} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
         <section className="premium-glass p-3.5">
           <SectionTitle icon={<UsersRound size={15} />}>{copy.membership.title}</SectionTitle>
           <label className={clsx("flex cursor-pointer items-start gap-3 rounded-[18px] border p-3 transition", isIbpaMember ? "border-[var(--color-blue)]/45 bg-[linear-gradient(145deg,rgba(255,255,255,0.95),rgba(185,217,235,0.36))] shadow-[0_14px_34px_rgba(114,160,193,0.12)]" : "border-[var(--border-default)] bg-white/72")}>
@@ -520,9 +657,8 @@ export default function TicketForm() {
               <span className="mt-0.5 block text-[0.68rem] leading-4 text-[#10182a]/50">{copy.membership.memberHint}</span>
             </span>
           </label>
-          <AnimatePresence initial={false}>
-            {isIbpaMember ? (
-            <motion.div key="member-cert" initial={reducedMotion ? false : { opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={reducedMotion ? undefined : { opacity: 0, height: 0 }} className="mt-3 overflow-hidden">
+          <Reveal open={isIbpaMember}>
+            <div className="pt-3">
               <label className={labelBase} htmlFor="tf-cert">{copy.membership.certLabel} *</label>
               <input
                 id="tf-cert"
@@ -534,12 +670,13 @@ export default function TicketForm() {
               />
               {visibleCertStatus !== "idle" ? (
                 <p className={clsx("mt-1 text-[0.7rem]", visibleCertStatus === "valid" ? "text-emerald-700" : visibleCertStatus === "invalid" ? "text-red-600" : "text-[#2773c8]")}>
-                  {visibleCertStatus === "checking" ? copy.membership.checking : visibleCertStatus === "valid" ? copy.membership.valid : visibleCertStatus === "invalid" ? copy.membership.invalid : copy.membership.error}
+                  <SwapValue value={visibleCertStatus}>
+                    {visibleCertStatus === "checking" ? copy.membership.checking : visibleCertStatus === "valid" ? copy.membership.valid : visibleCertStatus === "invalid" ? copy.membership.invalid : copy.membership.error}
+                  </SwapValue>
                 </p>
               ) : errors.ibpaCertNumber ? <p className={errorText}>{errors.ibpaCertNumber.message}</p> : null}
-            </motion.div>
-            ) : null}
-          </AnimatePresence>
+            </div>
+          </Reveal>
         </section>
 
         <section className="premium-glass p-3.5">
@@ -566,60 +703,66 @@ export default function TicketForm() {
               {promoPending ? promoText.applying : promoText.apply}
             </LandingSecondaryButton>
           </div>
-          <p className={clsx("mt-2 text-[0.68rem] leading-4", activePromoPreview ? "text-emerald-700" : promoError ? "text-red-600" : "text-[#10182a]/48")}>
-            {isSpecialPacket
-              ? copy.promo.fixed
-              : activePromoPreview
-                ? promoText.promoCodeApplied
-                : promoError || copy.promo.eligible}
+          <p className={clsx("mt-2 text-[0.68rem] leading-4 transition-colors duration-300", activePromoPreview ? "text-emerald-700" : promoError ? "text-red-600" : "text-[#10182a]/48")}>
+            <SwapValue value={promoHint} />
           </p>
         </section>
       </motion.div>
 
-      <AnimatePresence initial={false}>
-      {type ? (
-        <motion.section key="order-summary" initial={reducedMotion ? false : { opacity: 0, y: 12, height: 0 }} animate={{ opacity: 1, y: 0, height: "auto" }} exit={reducedMotion ? undefined : { opacity: 0, y: -8, height: 0 }} className="premium-glass overflow-hidden p-3.5">
+      {/* The summary and every optional line in it stay mounted and collapse
+          through `Reveal`, so a package change resizes the panel continuously
+          instead of popping rows in and out under the total. */}
+      {/* Spacing sits inside the reveal (see .ticket-reveal in globals.css):
+          a collapsed reveal has to leave no gap behind it. */}
+      <Reveal open={Boolean(type)}>
+        <section className="premium-glass mb-3 p-3.5">
           <SectionTitle icon={<ReceiptText size={15} />}>{copy.summary.title}</SectionTitle>
-          <div className="space-y-1.5 text-[0.76rem]">
-            <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col text-[0.76rem]">
+            <div className="flex items-start justify-between gap-4 py-[3px]">
               <span className="text-[#10182a]/62">
-                {isSpecialPacket ? copy.summary.special : type === "ONE_DAY" ? copy.summary.oneDay : copy.summary.twoDays}
+                <SwapValue value={isSpecialPacket ? "special" : type === "ONE_DAY" ? "oneDay" : "twoDays"}>
+                  {isSpecialPacket ? copy.summary.special : type === "ONE_DAY" ? copy.summary.oneDay : copy.summary.twoDays}
+                </SwapValue>
                 {isIbpaMember ? <span className="ml-2 text-[#2773c8]">{copy.summary.member}</span> : null}
               </span>
               <span className="text-right font-semibold text-[#10182a]">
-                {discountedTicketPrice ? <><span className="mr-2 text-[#10182a]/35 line-through">{rawTicketPrice}</span>{discountedTicketPrice}</> : rawTicketPrice}
+                <SwapValue value={`${rawTicketPrice}/${discountedTicketPrice ?? ""}`}>
+                  {discountedTicketPrice ? <><span className="mr-2 text-[#10182a]/35 line-through">{rawTicketPrice}</span>{discountedTicketPrice}</> : rawTicketPrice}
+                </SwapValue>
               </span>
             </div>
-            {activePromoPreview ? (
-              <div className="flex justify-between text-emerald-700"><span>{copy.summary.promoDiscount}</span><span>-{moneyFromCents(activePromoPreview.discountAmountCents)}</span></div>
-            ) : null}
-            {!isSpecialPacket && galaDinner ? (
-              <div className="flex justify-between text-[#10182a]/62"><span>{copy.summary.gala}</span><span>{galaPrice}</span></div>
-            ) : null}
-            {isSpecialPacket ? (
+            <Reveal open={Boolean(activePromoPreview)}>
+              <div className="flex justify-between py-[3px] text-emerald-700"><span>{copy.summary.promoDiscount}</span><span>-{moneyFromCents(retainedPromoDiscountCents ?? 0)}</span></div>
+            </Reveal>
+            <Reveal open={!isSpecialPacket && galaDinner}>
+              <div className="flex justify-between py-[3px] text-[#10182a]/62"><span>{copy.summary.gala}</span><span>{galaPrice}</span></div>
+            </Reveal>
+            <Reveal open={isSpecialPacket}>
               <div className="flex items-start gap-2 rounded-[12px] bg-[#eef7ff] px-3 py-2 text-[0.68rem] leading-5 text-[#1766bd]">
                 <Check size={14} className="mt-0.5 shrink-0" /> {copy.summary.specialIncludes}
               </div>
-            ) : null}
-            <div className="flex justify-between border-t border-[#dbe7ee] pt-2 font-[var(--font-title-family)] text-[1.18rem] text-[#10182a]">
-              <span>{copy.summary.total}</span><span>{totalPrice}</span>
+            </Reveal>
+            <div className="mt-2 flex justify-between border-t border-[#dbe7ee] pt-2 font-[var(--font-title-family)] text-[1.18rem] text-[#10182a]">
+              <span>{copy.summary.total}</span>
+              <SwapValue value={totalPrice} />
             </div>
           </div>
-        </motion.section>
-      ) : null}
-      </AnimatePresence>
+        </section>
+      </Reveal>
 
-      {serverError ? (
-        <p role="alert" className="rounded-[13px] border border-red-200 bg-red-50 px-4 py-3 text-[0.78rem] text-red-700">{serverError}</p>
-      ) : null}
+      <Reveal open={Boolean(serverError)}>
+        <p role="alert" className="mb-3 rounded-[13px] border border-red-200 bg-red-50 px-4 py-3 text-[0.78rem] text-red-700">{retainedServerError}</p>
+      </Reveal>
 
-      <motion.div variants={reducedMotion ? undefined : { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}>
+      <motion.div variants={riseVariants}>
       <LandingPrimaryButton
         type="submit"
         disabled={submitting || visibleCertStatus === "checking" || !type || !selectedStripePrice}
         className="w-full"
       >
-        {submitting ? copy.actions.creatingCheckout : visibleCertStatus === "checking" ? copy.actions.verifyingCertificate : copy.actions.continuePayment}
+        <SwapValue value={submitting ? "submitting" : visibleCertStatus === "checking" ? "verifying" : "idle"}>
+          {submitting ? copy.actions.creatingCheckout : visibleCertStatus === "checking" ? copy.actions.verifyingCertificate : copy.actions.continuePayment}
+        </SwapValue>
       </LandingPrimaryButton>
       <p className="mt-1.5 flex items-center justify-center gap-1.5 text-[0.64rem] text-[#10182a]/42"><LockKeyhole size={11} /> {copy.actions.secureCheckout}</p>
       </motion.div>
