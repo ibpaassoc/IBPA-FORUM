@@ -22,7 +22,7 @@ type JuryMember = {
 function JuryInitialsAvatar({ fullName }: { fullName: string }) {
   return (
     <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_top,#ffffff_0%,#eef5f9_48%,#dfeef6_100%)]">
-      <span className="font-(--font-display) text-7xl tracking-[-0.06em] text-[#72a0c1]/55">
+      <span className="font-[var(--font-display)] text-7xl tracking-[-0.06em] text-[#72a0c1]/55">
         {juryInitials(fullName)}
       </span>
     </div>
@@ -143,7 +143,7 @@ export default function JuryActiveMembers({
                 <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(16,24,42,0.02)_0%,rgba(16,24,42,0.04)_42%,rgba(16,24,42,0.72)_100%)]" />
 
                 <div className="absolute bottom-4 left-4 right-4 rounded-[1.6rem] border border-white/25 bg-black/35 p-4 text-white backdrop-blur-2xl">
-                  <h3 className="font-(--font-display) text-3xl leading-none tracking-[-0.04em]">
+                  <h3 className="font-[var(--font-display)] text-3xl leading-none tracking-[-0.04em]">
                     {member.fullName}
                   </h3>
 

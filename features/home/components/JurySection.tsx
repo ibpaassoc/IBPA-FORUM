@@ -9,29 +9,29 @@ export default function JurySection() {
 
   return (
     <section className="bg-[var(--color-blue-wash)]">
-      <div className="mx-auto grid max-w-(--content-width) gap-(--space-xl) px-(--page-gutter) page-section-pad lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
+      <div className="mx-auto grid max-w-[var(--content-width)] gap-[var(--space-xl)] px-[var(--page-gutter)] page-section-pad lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
         <div className="max-w-2xl">
           <p className="page-eyebrow">{t.home.juryCta.label}</p>
 
-          <h2 className="mt-(--space-sm) font-(--font-display) text-[clamp(1.8rem,3.5vw,3rem)] text-(--color-ink)">
+          <h2 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(1.8rem,3.5vw,3rem)] text-[var(--color-ink)]">
             {t.home.juryCta.title}
           </h2>
 
-          <p className="mt-(--space-md) text-sm leading-[1.7] text-(--color-ink-soft)">
+          <p className="mt-[var(--space-md)] text-sm leading-[1.7] text-[var(--color-ink-soft)]">
             {t.home.juryCta.text1}
           </p>
 
-          <p className="mt-(--space-sm) text-sm leading-[1.7] text-(--color-ink-soft)">
+          <p className="mt-[var(--space-sm)] text-sm leading-[1.7] text-[var(--color-ink-soft)]">
             {t.home.juryCta.text2}
           </p>
 
-          <p className="mt-(--space-sm) text-sm leading-[1.7] text-(--color-ink-soft)">
+          <p className="mt-[var(--space-sm)] text-sm leading-[1.7] text-[var(--color-ink-soft)]">
             {t.home.juryCta.text3}
           </p>
 
           <Link
             href="/jury"
-            className="ibpa-button ibpa-button-blue mt-(--space-lg)"
+            className="ibpa-button ibpa-button-blue mt-[var(--space-lg)]"
           >
             {t.home.juryCta.button}
           </Link>

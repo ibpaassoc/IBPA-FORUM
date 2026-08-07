@@ -13,9 +13,17 @@ async function retrievePrice(envName: string): Promise<StripeAmount | null> {
 
   try {
     const price = await getStripe().prices.retrieve(priceId);
-    if (!price.active || price.unit_amount === null) return null;
+    if (!price.active || price.unit_amount === null) {
+      console.warn(
+        `Stripe price for ${envName} (${priceId}) is unusable: active=${price.active}, unit_amount=${price.unit_amount}`
+      );
+      return null;
+    }
     return { amountCents: price.unit_amount, currency: price.currency };
-  } catch {
+  } catch (error) {
+    console.error(
+      `Failed to retrieve Stripe price for ${envName} (${priceId}): ${error instanceof Error ? error.message : String(error)}`
+    );
     return null;
   }
 }
@@ -26,8 +34,15 @@ async function retrieveCoupon(envName: string): Promise<Stripe.Coupon | null> {
 
   try {
     const coupon = await getStripe().coupons.retrieve(couponId);
-    return coupon.valid ? coupon : null;
-  } catch {
+    if (!coupon.valid) {
+      console.warn(`Stripe coupon for ${envName} (${couponId}) is no longer valid`);
+      return null;
+    }
+    return coupon;
+  } catch (error) {
+    console.error(
+      `Failed to retrieve Stripe coupon for ${envName} (${couponId}): ${error instanceof Error ? error.message : String(error)}`
+    );
     return null;
   }
 }

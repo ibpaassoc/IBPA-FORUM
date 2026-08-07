@@ -9,9 +9,9 @@ export default function CategoriesPreview() {
   const categories = t.home.categoriesPreview.items;
 
   return (
-    <section className="bg-(--color-white)">
-      <div className="mx-auto max-w-(--content-width) px-(--page-gutter) page-section-pad">
-        <div className="flex flex-col gap-(--space-md) md:flex-row md:items-end md:justify-between">
+    <section className="bg-[var(--color-white)]">
+      <div className="mx-auto max-w-[var(--content-width)] px-[var(--page-gutter)] page-section-pad">
+        <div className="flex flex-col gap-[var(--space-md)] md:flex-row md:items-end md:justify-between">
           <SectionTitle
             label={t.home.categoriesPreview.label}
             title={t.home.categoriesPreview.title}
@@ -20,23 +20,23 @@ export default function CategoriesPreview() {
 
           <Link
             href="/directions"
-            className="font-[var(--font-ui-family)] text-[clamp(0.72rem,1vw,0.85rem)] uppercase tracking-widest text-(--color-ink) transition hover:text-(--color-hover-accent)"
+            className="font-[var(--font-ui-family)] text-[clamp(0.72rem,1vw,0.85rem)] uppercase tracking-widest text-[var(--color-ink)] transition hover:text-[var(--color-hover-accent)]"
           >
             {t.home.categoriesPreview.viewAll} {"->"}
           </Link>
         </div>
 
-        <div className="mt-(--space-xl) grid gap-(--space-sm) sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="mt-[var(--space-xl)] grid gap-[var(--space-sm)] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {categories.map((category, index) => (
             <Link
               key={category}
               href="/directions"
-              className="premium-glass group p-(--space-md) transition hover:border-(--color-blue)/45 hover:bg-[var(--color-blue-wash)] hover:shadow-(--shadow-md)"
+              className="premium-glass group p-[var(--space-md)] transition hover:border-[var(--color-blue)]/45 hover:bg-[var(--color-blue-wash)] hover:shadow-[var(--shadow-md)]"
             >
-              <div className="text-sm font-medium tracking-widest text-(--color-blue)">
+              <div className="text-sm font-medium tracking-widest text-[var(--color-blue)]">
                 {String(index + 1).padStart(2, "0")}
               </div>
-              <div className="mt-(--space-xs) font-(--font-display) text-[clamp(1.1rem,2vw,1.6rem)] text-(--color-ink)">
+              <div className="mt-[var(--space-xs)] font-[var(--font-display)] text-[clamp(1.1rem,2vw,1.6rem)] text-[var(--color-ink)]">
                 {category}
               </div>
             </Link>

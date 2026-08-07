@@ -48,7 +48,7 @@ export default function JuryBenefits() {
             <div>
               <p className="page-eyebrow">{b.eyebrow}</p>
 
-              <h2 className="mt-4 max-w-4xl font-(--font-display) text-[clamp(2.35rem,5vw,4.9rem)] leading-[0.95] tracking-[-0.045em] text-[#10283a]">
+              <h2 className="mt-4 max-w-4xl font-[var(--font-display)] text-[clamp(2.35rem,5vw,4.9rem)] leading-[0.95] tracking-[-0.045em] text-[#10283a]">
                 {b.title}
               </h2>
             </div>

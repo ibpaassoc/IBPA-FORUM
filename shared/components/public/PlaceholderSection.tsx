@@ -40,7 +40,7 @@ export default function PlaceholderSection({
 
             <p className="page-eyebrow mt-6 text-[#72a0c1]">{eyebrow}</p>
 
-            <h2 className="mt-4 font-(--font-display) text-[clamp(2rem,4vw,3.4rem)] leading-[1.02] tracking-[-0.04em] text-[#1e2430]">
+            <h2 className="mt-4 font-[var(--font-display)] text-[clamp(2rem,4vw,3.4rem)] leading-[1.02] tracking-[-0.04em] text-[#1e2430]">
               {title}
             </h2>
 

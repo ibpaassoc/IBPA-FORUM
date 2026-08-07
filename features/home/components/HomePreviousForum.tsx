@@ -52,7 +52,7 @@ export default function PreviousForumSection() {
           <div className="max-w-2xl">
             <p className="page-eyebrow text-[#72a0c1]">{c.eyebrow}</p>
 
-            <h2 className="mt-4 font-(--font-display) text-[clamp(2.7rem,5vw,5.9rem)] leading-[0.9] tracking-[-0.055em] text-[#10182a]">
+            <h2 className="mt-4 font-[var(--font-display)] text-[clamp(2.7rem,5vw,5.9rem)] leading-[0.9] tracking-[-0.055em] text-[#10182a]">
               {c.title}
             </h2>
 
@@ -83,7 +83,7 @@ export default function PreviousForumSection() {
 
             <Reveal delay={0.18}>
               <div className="mt-9 max-w-xl border-l border-[#72a0c1]/45 pl-5">
-                <p className="font-(--font-cursive) text-[1.35rem] leading-7 text-[#46677f]">
+                <p className="font-[var(--font-cursive)] text-[1.35rem] leading-7 text-[#46677f]">
                   {c.quote}
                 </p>
               </div>

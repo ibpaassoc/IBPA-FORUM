@@ -91,7 +91,7 @@ export default function ContactUsFormSection() {
           <div className="mb-8 max-w-3xl">
             <p className="page-eyebrow text-[#72a0c1]">{c.eyebrow}</p>
 
-            <h2 className="mt-4 font-(--font-display) text-[clamp(2.35rem,5vw,5.2rem)] leading-[0.9] tracking-[-0.06em] text-[#10182a]">
+            <h2 className="mt-4 font-[var(--font-display)] text-[clamp(2.35rem,5vw,5.2rem)] leading-[0.9] tracking-[-0.06em] text-[#10182a]">
               {c.title}
             </h2>
           </div>

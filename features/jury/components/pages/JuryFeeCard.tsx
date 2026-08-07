@@ -25,7 +25,7 @@ export default function JuryFeeCard() {
           <div className="max-w-2xl">
             <p className="page-eyebrow text-[#72a0c1]">{c.eyebrow}</p>
 
-            <h2 className="mt-5 font-(--font-display) text-[clamp(2.2rem,4.6vw,4rem)] leading-[1.0] tracking-[-0.045em] text-[#1e2430]">
+            <h2 className="mt-5 font-[var(--font-display)] text-[clamp(2.2rem,4.6vw,4rem)] leading-[1.0] tracking-[-0.045em] text-[#1e2430]">
               {c.title}
             </h2>
           </div>
@@ -42,7 +42,7 @@ export default function JuryFeeCard() {
                   {tier.label}
                 </p>
 
-                <p className="mt-4 font-(--font-display) text-[clamp(3rem,6vw,4.5rem)] font-light leading-none tracking-[-0.04em] text-[#1e2430]">
+                <p className="mt-4 font-[var(--font-display)] text-[clamp(3rem,6vw,4.5rem)] font-light leading-none tracking-[-0.04em] text-[#1e2430]">
                   {tier.price}
                 </p>
               </GlassCard>

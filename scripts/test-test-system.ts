@@ -53,7 +53,7 @@ includes("shared/lib/prisma.ts", "args.where = scopedWhere(args.where)", "reads,
 includes("shared/lib/prisma.ts", "scopeNestedWrite", "nested writes automatically inherit scope");
 includes("shared/lib/prisma.ts", "scopeNestedSelection", "nested list reads automatically inherit scope");
 includes("features/account/server/accounts.ts", 'activateRequestDataScope({ dataScope: "TEST" })', "signed test actors activate TEST before account data is loaded");
-includes("features/jury/server/auth.ts", "requireAccount()", "jury authentication reuses actor-aware account authorization");
+includes("features/jury/server/auth.ts", 'requireAccount("JURY")', "jury authentication reuses actor-aware account authorization");
 includes("features/jury/server/reviews.ts", "requireJuryAuth()", "jury API mutations reuse actor-aware jury authorization");
 includes("features/jury/server/reviews.ts", "activateRequestDataScope({ dataScope: judge.dataScope })", "jury review reads and writes preserve a signed test actor's scope");
 includes("features/google-sheets/server/hooks.ts", 'getDataScopeContext().dataScope !== "PRODUCTION"', "non-production changes never schedule Google Sheets sync");
@@ -92,7 +92,7 @@ assert.deepEqual(
   "the unscoped database escape hatch is limited to guarded scope discovery and isolated-data management",
 );
 includes("features/account/server/accounts.ts", 'account?.dataScope === "TEST" ? null : account', "public credentials never discover TEST actors");
-includes("app/account/login/page.tsx", "findAccountForPublicSession", "stale or test-only sessions cannot trap the public login route in a redirect loop");
+includes("app/login/page.tsx", "findAccountForPublicSession", "stale or test-only sessions cannot trap the public login route in a redirect loop");
 includes("features/account/server/accounts.ts", 'session.user.dataScope ?? "PRODUCTION"', "normal account sessions activate their authoritative data scope");
 includes("features/account/server/tokens.ts", "activateRequestDataScope({ dataScope: account.dataScope })", "setup links restore the owning account scope");
 includes("features/test/server/dev-accounts.ts", 'runWithDataScope({ dataScope: "DEV" }', "DEV account management is pinned to DEV scope");

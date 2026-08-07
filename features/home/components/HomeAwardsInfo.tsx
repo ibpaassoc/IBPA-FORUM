@@ -27,7 +27,7 @@ export default function HomeAwardsInfo() {
                 </span>
 
                 <div className="pt-5">
-                  <h2 className="font-(--font-display) text-[clamp(1.7rem,3vw,2.6rem)] leading-none text-[#111827]">
+                  <h2 className="font-[var(--font-display)] text-[clamp(1.7rem,3vw,2.6rem)] leading-none text-[#111827]">
                     {c.title}
                   </h2>
 

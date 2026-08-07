@@ -29,15 +29,15 @@ export default function EditorialMasonryGallery({
   items: GalleryItem[];
 }) {
   return (
-    <section className="bg-(--color-white)">
+    <section className="bg-[var(--color-white)]">
       <div className="mx-auto max-w-[var(--content-width)] px-[var(--page-gutter)] page-section-pad">
         <div className="max-w-3xl">
           <p className="page-eyebrow">{label}</p>
-          <h2 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(1.8rem,3.5vw,3rem)] font-light leading-[1.1] text-(--color-ink)">
+          <h2 className="mt-[var(--space-sm)] font-[var(--font-display)] text-[clamp(1.8rem,3.5vw,3rem)] font-light leading-[1.1] text-[var(--color-ink)]">
             {title}
           </h2>
           {text ? (
-            <p className="mt-[var(--space-sm)] max-w-2xl text-sm leading-[1.7] text-(--color-ink-soft)">
+            <p className="mt-[var(--space-sm)] max-w-2xl text-sm leading-[1.7] text-[var(--color-ink-soft)]">
               {text}
             </p>
           ) : null}
