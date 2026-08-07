@@ -2,8 +2,11 @@ import "server-only";
 import type Stripe from "stripe";
 import { prisma } from "@/shared/lib/prisma";
 import { getStripe } from "@/features/payments/server/stripe-client";
-import { findTicketById } from "./ticket-repository";
-import { createTicketCheckoutSession } from "./ticket-checkout";
+import { findSpecialPacketTickets, findTicketById } from "./ticket-repository";
+import {
+  createSpecialPacketCheckoutSession,
+  createTicketCheckoutSession,
+} from "./ticket-checkout";
 import { getActiveTicketDiscount } from "./ticket-discount";
 import { sendTicketPaymentLinkEmail } from "./ticket-email.workflow";
 import { computeTicketAmountCents } from "@/features/tickets/lib/pricing";
@@ -74,6 +77,65 @@ export async function resendTicketPaymentLink(
   }
   if (ticket.status !== "PENDING") {
     return { ok: false, reason: "not_found" };
+  }
+
+  if (ticket.specialPacketId) {
+    const packetTickets = await findSpecialPacketTickets(ticket.specialPacketId);
+    if (packetTickets.length !== 2 || packetTickets.some((item) => item.status !== "PENDING")) {
+      return { ok: false, reason: "not_found" };
+    }
+
+    const primary = packetTickets[0];
+    const ticketIds = packetTickets.map((item) => item.id) as [string, string];
+    const session = await createSpecialPacketCheckoutSession({
+      ticketIds,
+      email: primary.email,
+      isIbpaMember: primary.isIbpaMember,
+      locale,
+    });
+
+    await prisma.$transaction(async (tx) => {
+      await tx.ticket.updateMany({
+        where: { specialPacketId: ticket.specialPacketId },
+        data: { stripeSessionId: null },
+      });
+      await tx.ticket.update({
+        where: { id: primary.id },
+        data: { stripeSessionId: session.id },
+      });
+      await tx.payment.deleteMany({
+        where: {
+          ticket: { specialPacketId: ticket.specialPacketId },
+          status: { not: "PAID" },
+        },
+      });
+      await tx.payment.create({
+        data: {
+          source: "TICKET",
+          ticketId: primary.id,
+          stripeSessionId: session.id,
+          amount: session.amountTotalCents,
+          currency: "usd",
+          purchaseManifest: { specialPacketId: ticket.specialPacketId, ticketIds },
+          status: "PENDING",
+        },
+      });
+    });
+
+    ticketIds.forEach((id) => syncTicketOnChange(id));
+    const emailResult = await sendTicketPaymentLinkEmail({
+      to: primary.email,
+      fullName: primary.fullName,
+      type: primary.type,
+      galaDinner: true,
+      amountCents: session.amountTotalCents,
+      currency: "usd",
+      checkoutUrl: session.url,
+    });
+
+    return emailResult.delivered
+      ? { ok: true, checkoutUrl: session.url, reused: false }
+      : { ok: false, reason: "email_failed", checkoutUrl: session.url };
   }
 
   const activeTicketDiscount = await getActiveTicketDiscount();

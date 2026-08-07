@@ -4,8 +4,7 @@ import {
   normalizeInstagramHandle,
 } from "@/features/tickets/lib/instagram";
 
-export const ticketApiSchema = z
-  .object({
+const attendeeSchema = z.object({
     firstName: z.string().trim().min(1, "First name is required."),
     lastName: z.string().trim().min(1, "Last name is required."),
     email: z.email("Please enter a valid email address."),
@@ -18,12 +17,26 @@ export const ticketApiSchema = z
       .refine((handle) => handle !== null && isValidInstagramHandle(handle), {
         message: "Enter a valid Instagram username or profile link.",
       }),
-    type: z.enum(["ONE_DAY", "TWO_DAYS"] as const),
-    galaDinner: z.boolean(),
+});
+
+const purchaseDetailsSchema = z.object({
     isIbpaMember: z.boolean(),
     ibpaCertNumber: z.string().optional(),
     promoCode: z.string().trim().optional(),
-  })
+});
+
+export const ticketApiSchema = z
+  .discriminatedUnion("type", [
+    attendeeSchema.extend({
+      type: z.enum(["ONE_DAY", "TWO_DAYS"] as const),
+      galaDinner: z.boolean(),
+    }).merge(purchaseDetailsSchema),
+    attendeeSchema.extend({
+      type: z.literal("SPECIAL_PACKET"),
+      galaDinner: z.literal(true),
+      secondAttendee: attendeeSchema,
+    }).merge(purchaseDetailsSchema),
+  ])
   .refine(
     (data) =>
       !data.isIbpaMember ||

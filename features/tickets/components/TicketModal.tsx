@@ -37,7 +37,7 @@ export default function TicketModal({ isOpen, onClose }: TicketModalProps) {
       {isOpen && (
         <motion.div
           key="ticket-modal-overlay"
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-[rgba(17,26,34,0.58)] px-4 py-6 backdrop-blur-[3px] sm:px-6"
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-[rgba(5,22,43,0.68)] px-2 py-2 backdrop-blur-[6px] sm:px-5 sm:py-5"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -53,7 +53,7 @@ export default function TicketModal({ isOpen, onClose }: TicketModalProps) {
             role="dialog"
             aria-modal="true"
             aria-labelledby="ticket-modal-title"
-            className="relative flex max-h-[90vh] w-full max-w-[560px] flex-col overflow-hidden rounded-[32px] border border-[var(--border-default)] bg-white shadow-[0_40px_100px_rgba(18,34,46,0.28)]"
+            className="relative max-h-[96dvh] w-full max-w-[1040px] overflow-y-auto overscroll-contain rounded-[26px] border border-white/85 bg-[rgba(250,253,255,0.96)] font-[var(--font-ui-family)] shadow-[0_40px_110px_rgba(3,18,38,0.38)] sm:max-h-[92vh] sm:rounded-[30px]"
             initial={{ opacity: 0, y: 28, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.98 }}
@@ -62,7 +62,7 @@ export default function TicketModal({ isOpen, onClose }: TicketModalProps) {
           >
             <div className="pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-[linear-gradient(90deg,rgba(114,160,193,0.2)_0%,rgba(114,160,193,0.7)_45%,rgba(185,217,235,0.75)_100%)]" />
 
-            <div className="flex shrink-0 items-start justify-between gap-5 border-b border-[var(--border-soft)] px-6 py-5">
+            <div className="flex items-start justify-between gap-5 px-5 pb-3 pt-5 sm:px-8 sm:pt-7">
               <div>
                 <p className="mb-1 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-blue)]">
                   IBPA BEAUTY AWARD 2026
@@ -70,7 +70,7 @@ export default function TicketModal({ isOpen, onClose }: TicketModalProps) {
 
                 <h2
                   id="ticket-modal-title"
-                  className="text-[1.65rem] leading-[1.06] tracking-[-0.01em] [font-family:var(--font-accent-family)] text-[var(--color-ink)]"
+                  className="font-[var(--font-title-family)] text-[2rem] font-light leading-none tracking-[-0.04em] text-[#10182a] sm:text-[2.45rem]"
                 >
                   Buy Tickets
                 </h2>
@@ -80,13 +80,13 @@ export default function TicketModal({ isOpen, onClose }: TicketModalProps) {
                 type="button"
                 onClick={onClose}
                 aria-label="Close dialog"
-                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--border-default)] bg-[var(--color-off-white)] text-[1rem] font-medium text-[var(--color-ink-soft)] shadow-[0_4px_12px_rgba(37,42,45,0.08)] transition hover:-translate-y-px hover:border-[var(--color-hover-accent)] hover:bg-white hover:text-[var(--color-hover-accent)]"
+                className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-[#cfe0eb] bg-white/78 text-[1.25rem] font-light text-[#10182a]/70 shadow-[0_6px_16px_rgba(37,42,45,0.07)] transition hover:-translate-y-px hover:border-[#72a0c1] hover:text-[#2773c8]"
               >
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-6 py-6 [font-family:var(--font-legal-family)]">
+            <div className="px-4 pb-5 sm:px-8 sm:pb-7">
               <TicketForm />
             </div>
           </motion.div>

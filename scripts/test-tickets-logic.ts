@@ -21,8 +21,10 @@ import { calculatePromoDiscount } from "@/features/promos/lib/promo-codes";
 import { decideTicketReplacement } from "@/features/tickets/lib/replacement";
 import {
   buildTicketCheckoutMetadata,
+  buildSpecialPacketCheckoutMetadata,
   TICKET_FLOW_TYPE,
 } from "@/features/tickets/lib/checkout-metadata";
+import { ticketApiSchema } from "@/features/tickets/schemas/ticket-form-schema";
 import {
   adminTicketUpdateSchema,
   compareEditableTicketChanges,
@@ -42,6 +44,57 @@ function assert(condition: boolean, label: string) {
     failed += 1;
     console.error(`  ✗ ${label}`);
   }
+}
+
+{
+  const meta = buildSpecialPacketCheckoutMetadata({
+    ticketIds: ["tk_first", "tk_second"],
+    email: "buyer@example.com",
+    locale: "en",
+  });
+  eq(meta.ticketId, "tk_first", "Special Packet metadata carries the primary ticket");
+  eq(meta.ticketIds, "tk_first,tk_second", "Special Packet metadata carries both ticket ids");
+  eq(meta.specialPacket, "true", "Special Packet metadata is explicitly marked");
+  eq(meta.quantity, "2", "Special Packet metadata records two tickets");
+}
+
+// ── Special Packet request validation ────────────────────────────────────────
+console.log("special packet validation");
+{
+  const attendee = {
+    firstName: "Jane",
+    lastName: "Client",
+    email: "jane@example.com",
+    phone: "+1 555 000 0000",
+    instagram: "@jane",
+  };
+  const valid = ticketApiSchema.safeParse({
+    ...attendee,
+    type: "SPECIAL_PACKET",
+    galaDinner: true,
+    isIbpaMember: false,
+    secondAttendee: { ...attendee, firstName: "Joan", email: "joan@example.com" },
+  });
+  assert(valid.success, "Special Packet requires and accepts two complete attendees");
+  assert(
+    !ticketApiSchema.safeParse({
+      ...attendee,
+      type: "SPECIAL_PACKET",
+      galaDinner: true,
+      isIbpaMember: false,
+    }).success,
+    "Special Packet rejects a missing second attendee"
+  );
+  assert(
+    !ticketApiSchema.safeParse({
+      ...attendee,
+      type: "SPECIAL_PACKET",
+      galaDinner: false,
+      isIbpaMember: false,
+      secondAttendee: attendee,
+    }).success,
+    "Special Packet always includes Gala Dinner"
+  );
 }
 
 function eq<T>(actual: T, expected: T, label: string) {

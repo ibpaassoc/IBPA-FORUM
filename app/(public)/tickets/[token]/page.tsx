@@ -54,7 +54,10 @@ export default async function TicketPaymentPage({
           <p className="mb-3 text-[10px] font-bold tracking-[0.14em] uppercase text-[var(--color-ink-muted)]">
             Ticket
           </p>
-          <Row label="Type" value={ticketTypeLabel(ticket.type)} />
+          <Row
+            label="Type"
+            value={ticket.specialPacketId ? "Special Packet — 2-Day Forum Pass" : ticketTypeLabel(ticket.type)}
+          />
           <Row
             label="Gala Dinner"
             value={ticket.galaDinner ? "Included" : "Not included"}

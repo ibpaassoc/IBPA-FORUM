@@ -18,6 +18,12 @@ export type EarlyBirdStatus = {
   discount: TicketDiscount;
 };
 
+export type SpecialPacketStatus = {
+  enabled: boolean;
+  memberPrice: string;
+  standardPrice: string;
+};
+
 export function applyDiscountToPrice(priceStr: string, discount: TicketDiscount): string | null {
   if (!discount) return null;
   const dollars = parseInt(priceStr.replace("$", ""), 10);

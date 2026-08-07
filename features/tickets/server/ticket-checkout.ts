@@ -3,7 +3,11 @@ import { getAppUrl, getStripe } from "@/features/payments/server/stripe-client";
 import { requireEnv } from "@/lib/env";
 import type { TicketType } from "@prisma/client";
 import type { Language } from "@/lib/i18n/translations";
-import { buildTicketCheckoutMetadata } from "@/features/tickets/lib/checkout-metadata";
+import {
+  buildSpecialPacketCheckoutMetadata,
+  buildTicketCheckoutMetadata,
+} from "@/features/tickets/lib/checkout-metadata";
+import { getSpecialPacketPriceId } from "@/features/tickets/server/special-packet";
 
 // Stripe Checkout Sessions may live at most 24h. We set this explicitly (rather
 // than leaning on the default) so both the initial purchase and an admin-resent
@@ -16,6 +20,41 @@ function getTicketPriceId(type: TicketType, isIbpaMember: boolean): string {
     return requireEnv([isIbpaMember ? "ONE_DAY_MEMBER" : "ONE_DAY_NON_MEMBER"]);
   }
   return requireEnv([isIbpaMember ? "TWO_DAYS_MEMBER" : "TWO_DAYS_NON_MEMBER"]);
+}
+
+export async function createSpecialPacketCheckoutSession({
+  ticketIds,
+  email,
+  isIbpaMember,
+  locale,
+}: {
+  ticketIds: [string, string];
+  email: string;
+  isIbpaMember: boolean;
+  locale: Language;
+}) {
+  const stripe = getStripe();
+  const appUrl = getAppUrl();
+  const metadata = buildSpecialPacketCheckoutMetadata({ ticketIds, email, locale });
+
+  const session = await stripe.checkout.sessions.create({
+    mode: "payment",
+    customer_email: email,
+    success_url: `${appUrl}/tickets/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${appUrl}/#pricing`,
+    expires_at: Math.floor(Date.now() / 1000) + CHECKOUT_SESSION_TTL_SECONDS,
+    metadata,
+    payment_intent_data: { metadata },
+    line_items: [
+      { price: getSpecialPacketPriceId(isIbpaMember), quantity: 1 },
+    ],
+  });
+
+  if (!session.url || session.amount_total === null) {
+    throw new Error("Stripe Special Packet checkout is missing a URL or total.");
+  }
+
+  return { id: session.id, url: session.url, amountTotalCents: session.amount_total };
 }
 
 function getGalaDinnerPriceId(): string {
