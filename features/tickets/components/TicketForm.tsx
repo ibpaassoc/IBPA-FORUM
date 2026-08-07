@@ -76,10 +76,11 @@ const inputError = "border-red-300 bg-red-50/60 focus:border-red-400 focus:ring-
 const labelBase = "mb-1.5 block text-[0.66rem] font-semibold uppercase tracking-[0.13em] text-[#10182a]/55";
 const errorText = "mt-1 text-[0.7rem] text-red-600";
 
-function moneyFromCents(amountCents: number, language: "en" | "ru" | "ua") {
-  return new Intl.NumberFormat(language === "en" ? "en-US" : language === "ru" ? "ru-RU" : "uk-UA", {
+function moneyFromCents(amountCents: number) {
+  return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
+    currencyDisplay: "narrowSymbol",
     maximumFractionDigits: 2,
   }).format(amountCents / 100);
 }
@@ -206,8 +207,8 @@ export default function TicketForm() {
             : pricing?.forumTickets.specialPacket.standard
           : null;
   const galaStripePrice = pricing?.forumTickets.galaDinner ?? null;
-  const rawTicketPrice = formatStripeAmount(selectedStripePrice ?? null, language);
-  const galaPrice = formatStripeAmount(galaStripePrice, language);
+  const rawTicketPrice = formatStripeAmount(selectedStripePrice ?? null);
+  const galaPrice = formatStripeAmount(galaStripePrice);
   const rawTicketCents = selectedStripePrice?.amountCents ?? 0;
   const rawGalaCents = !isSpecialPacket && galaDinner ? galaStripePrice?.amountCents ?? 0 : 0;
   const automaticDiscountStacks = ticketDiscount.kind === "permanent30";
@@ -224,13 +225,13 @@ export default function TicketForm() {
     : null;
   const discountedTicketPrice = discountedTicketCents === null
     ? null
-    : formatStripeAmount({ amountCents: discountedTicketCents, currency: selectedStripePrice?.currency ?? "usd" }, language);
+    : formatStripeAmount({ amountCents: discountedTicketCents, currency: selectedStripePrice?.currency ?? "usd" });
   const totalCents = isSpecialPacket
     ? rawTicketCents
     : activePromoPreview
       ? activePromoPreview.finalAmountCents
       : (discountedTicketCents ?? rawTicketCents) + rawGalaCents;
-  const totalPrice = formatStripeAmount({ amountCents: totalCents, currency: selectedStripePrice?.currency ?? galaStripePrice?.currency ?? "usd" }, language);
+  const totalPrice = formatStripeAmount({ amountCents: totalCents, currency: selectedStripePrice?.currency ?? galaStripePrice?.currency ?? "usd" });
   const discountName = ticketDiscount.kind === "permanent30" ? copy.discount.permanent : copy.discount.earlyBird;
 
   const promoMessage = useCallback((errorCode?: string) => {
@@ -444,7 +445,7 @@ export default function TicketForm() {
                 {option.value === "SPECIAL_PACKET" ? (
                   <span className="mt-1 text-[0.68rem] text-[#2773c8]">{copy.package.specialTickets}</span>
                 ) : null}
-                <span className="mt-auto pt-4 font-[var(--font-title-family)] text-[1.35rem] font-light text-[#10182a]">{pricingLoading ? "…" : formatStripeAmount(option.price ?? null, language)}</span>
+                <span className="mt-auto pt-4 font-[var(--font-title-family)] text-[1.35rem] font-light text-[#10182a]">{pricingLoading ? "…" : formatStripeAmount(option.price ?? null)}</span>
                 <span className={clsx(
                   "absolute bottom-4 right-4 size-4 rounded-full border",
                   selected ? "border-[#2773c8] bg-[#2773c8] shadow-[inset_0_0_0_3px_white]" : "border-[#8ca2b2]"
@@ -580,7 +581,7 @@ export default function TicketForm() {
               </span>
             </div>
             {activePromoPreview ? (
-              <div className="flex justify-between text-emerald-700"><span>{copy.summary.promoDiscount}</span><span>-{moneyFromCents(activePromoPreview.discountAmountCents, language)}</span></div>
+              <div className="flex justify-between text-emerald-700"><span>{copy.summary.promoDiscount}</span><span>-{moneyFromCents(activePromoPreview.discountAmountCents)}</span></div>
             ) : null}
             {!isSpecialPacket && galaDinner ? (
               <div className="flex justify-between text-[#10182a]/62"><span>{copy.summary.gala}</span><span>{galaPrice}</span></div>

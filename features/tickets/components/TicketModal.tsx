@@ -64,7 +64,7 @@ export default function TicketModal({ isOpen, onClose }: TicketModalProps) {
             role="dialog"
             aria-modal="true"
             aria-labelledby="ticket-modal-title"
-            className="relative max-h-[96dvh] w-full max-w-[1040px] overflow-y-auto overscroll-contain rounded-[26px] border border-white/85 bg-[linear-gradient(145deg,rgba(255,255,255,0.98),rgba(238,248,253,0.96))] font-[var(--font-ui-family)] shadow-[0_40px_110px_rgba(3,18,38,0.38)] sm:max-h-[92vh] sm:rounded-[30px]"
+            className="no-scrollbar relative max-h-[96dvh] w-full max-w-[1040px] overflow-y-auto overscroll-contain rounded-[26px] border border-white/85 bg-[linear-gradient(145deg,rgba(255,255,255,0.98),rgba(238,248,253,0.96))] font-[var(--font-ui-family)] shadow-[0_40px_110px_rgba(3,18,38,0.38)] sm:max-h-[92vh] sm:rounded-[30px]"
             initial={{ opacity: 0, y: reducedMotion ? 0 : 34, scale: reducedMotion ? 1 : 0.965 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: reducedMotion ? 0 : 18, scale: reducedMotion ? 1 : 0.985 }}

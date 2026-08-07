@@ -41,7 +41,7 @@ export default function HomeRegistrationSection() {
   const specialPacket = useSpecialPacket();
   const { pricing, loading: pricingLoading } = useStripePricing();
   const displayPrice = (amount: Parameters<typeof formatStripeAmount>[0]) =>
-    pricingLoading ? "…" : formatStripeAmount(amount, language);
+    pricingLoading ? "…" : formatStripeAmount(amount);
 
   const topInfoCards = [
     { icon: Calendar, eyebrow: c.registrationInfo.eyebrow, value: c.registrationInfo.value },
