@@ -333,7 +333,7 @@ function SpecialPacketCard({
         </div>
 
         <LandingSecondaryButton type="button" onClick={onBuy} disabled={!enabled} className="w-full lg:w-auto">
-          {enabled ? copy.buySpecial : copy.comingSoon}
+          {enabled ? copy.buy : copy.comingSoon}
         </LandingSecondaryButton>
       </div>
     </article>
