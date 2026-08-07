@@ -487,7 +487,27 @@ export default function TicketForm() {
         )}
       </motion.section>
 
-      <motion.div variants={reducedMotion ? undefined : { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }} className="grid gap-3 sm:grid-cols-2">
+      <motion.div variants={reducedMotion ? undefined : { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }} className={clsx("grid gap-3", isSpecialPacket && "lg:grid-cols-2")}>
+        <AttendeePanel
+          number={isSpecialPacket ? 1 : undefined}
+          register={register}
+          errors={errors}
+          copy={copy}
+        />
+        <AnimatePresence initial={false}>
+          {isSpecialPacket ? (
+            <motion.div key="second-attendee" initial={reducedMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={reducedMotion ? undefined : { opacity: 0, y: -8 }}>
+              <SecondAttendeePanel register={register} errors={errors.secondAttendee} copy={copy} />
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      </motion.div>
+
+      </motion.div>
+      {/* Right column. */}
+      <motion.div className="space-y-3 lg:col-span-5">
+
+      <motion.div variants={reducedMotion ? undefined : { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
         <section className="premium-glass p-3.5">
           <SectionTitle icon={<UsersRound size={15} />}>{copy.membership.title}</SectionTitle>
           <label className={clsx("flex cursor-pointer items-start gap-3 rounded-[18px] border p-3 transition", isIbpaMember ? "border-[var(--color-blue)]/45 bg-[linear-gradient(145deg,rgba(255,255,255,0.95),rgba(185,217,235,0.36))] shadow-[0_14px_34px_rgba(114,160,193,0.12)]" : "border-[var(--border-default)] bg-white/72")}>
@@ -554,26 +574,6 @@ export default function TicketForm() {
                 : promoError || copy.promo.eligible}
           </p>
         </section>
-      </motion.div>
-
-      </motion.div>
-      {/* Right column. */}
-      <motion.div className="space-y-3 lg:col-span-5">
-
-      <motion.div variants={reducedMotion ? undefined : { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }} className={clsx("grid gap-3", isSpecialPacket && "sm:grid-cols-2 lg:grid-cols-1")}>
-        <AttendeePanel
-          number={isSpecialPacket ? 1 : undefined}
-          register={register}
-          errors={errors}
-          copy={copy}
-        />
-        <AnimatePresence initial={false}>
-          {isSpecialPacket ? (
-            <motion.div key="second-attendee" initial={reducedMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={reducedMotion ? undefined : { opacity: 0, y: -8 }}>
-              <SecondAttendeePanel register={register} errors={errors.secondAttendee} copy={copy} />
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
       </motion.div>
 
       <AnimatePresence initial={false}>
