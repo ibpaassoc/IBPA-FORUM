@@ -1,43 +1,52 @@
 import "server-only";
 
-import { prisma } from "@/shared/lib/prisma";
+import { prisma, unscopedPrisma } from "@/shared/lib/prisma";
 import { runWithDataScope } from "@/features/test/server/data-scope";
+import { parseTestEmailDeliveries } from "@/features/test/server/test-records";
 
 export async function getTestDashboardCounts() {
-  return runWithDataScope({ dataScope: "TEST" }, async () => {
-    const [applicants, jury, nominations, emails, tickets, reviews, scenarios, relatedCounts] =
-      await Promise.all([
-        prisma.account.count({ where: { role: "APPLICANT" } }),
-        prisma.account.count({ where: { role: "JURY" } }),
-        prisma.nominationApplication.count(),
-        prisma.emailDeliveryLog.count(),
-        prisma.ticket.count(),
-        prisma.juryNominationReview.count(),
-        prisma.testScenario.count(),
-        Promise.all([
+  const [records, tests] = await Promise.all([
+    runWithDataScope({ dataScope: "TEST" }, async () => {
+      const [applicants, jury, nominations, tickets, reviews, profiles, juryProfiles, juryApplications, payments, webhooks] =
+        await Promise.all([
+          prisma.account.count({ where: { role: "APPLICANT" } }),
+          prisma.account.count({ where: { role: "JURY" } }),
+          prisma.nomination.count(),
+          prisma.ticket.count(),
+          prisma.juryNominationReview.count(),
           prisma.applicantProfile.count(),
           prisma.juryProfile.count(),
           prisma.juryApplication.count(),
           prisma.payment.count(),
-          prisma.nominationAnswer.count(),
-          prisma.nominationFile.count(),
-          prisma.juryApplicationFile.count(),
-          prisma.ticketQrCredential.count(),
-          prisma.ticketActivity.count(),
-          prisma.accountSetupToken.count(),
-          prisma.applicantCheckInCredential.count(),
-          prisma.stripeWebhookEvent.count(),
-        ]),
-      ]);
-    return {
-      applicants,
-      jury,
-      nominations,
+          prisma.stripeWebhook.count(),
+        ]);
+      return {
+        applicants,
+        jury,
+        nominations,
+        tickets,
+        reviews,
+        related: profiles + juryProfiles + juryApplications + payments + webhooks,
+      };
+    }),
+    unscopedPrisma.test.findMany({ select: { status: true, emailDeliveries: true } }),
+  ]);
+  const emails = tests.reduce(
+    (total, test) => total + parseTestEmailDeliveries(test.emailDeliveries).deliveries.length,
+    0,
+  );
+  const scenarios = tests.filter((test) => test.status !== "CLEANED").length;
+  return {
+    ...records,
+    emails,
+    scenarios,
+    all:
+      records.applicants +
+      records.jury +
+      records.nominations +
+      records.tickets +
+      records.reviews +
+      records.related +
       emails,
-      tickets,
-      reviews,
-      scenarios,
-      all: applicants + jury + nominations + emails + tickets + reviews + relatedCounts.reduce((sum, count) => sum + count, 0),
-    };
-  });
+  };
 }

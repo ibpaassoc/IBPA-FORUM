@@ -1,15 +1,16 @@
 import "server-only";
+
 import { Prisma } from "@prisma/client";
 import type Stripe from "stripe";
+import { syncTicketOnChange } from "@/features/google-sheets";
 import { prisma } from "@/shared/lib/prisma";
+import { ensureActiveTicketQr } from "./ticket-admin-service";
+import { sendTicketConfirmationEmail } from "./ticket-email.workflow";
 import {
   findTicketById,
   findTicketByStripeSessionId,
   findTicketsByIds,
 } from "./ticket-repository";
-import { sendTicketConfirmationEmail } from "./ticket-email.workflow";
-import { ensureActiveTicketQr } from "./ticket-admin-service";
-import { syncTicketOnChange } from "@/features/google-sheets";
 
 function getPaymentIntentId(value: string | Stripe.PaymentIntent | null): string | null {
   if (!value) return null;
@@ -21,34 +22,14 @@ function serializeStripeEvent(event: Stripe.Event): Prisma.InputJsonValue {
 }
 
 function isDuplicateStripeEventError(error: unknown) {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error &&
-    error.code === "P2002"
-  );
+  return typeof error === "object" && error !== null && "code" in error && error.code === "P2002";
 }
 
 export async function handleTicketStripeEvent(event: Stripe.Event): Promise<boolean> {
-  switch (event.type) {
-    case "checkout.session.completed":
-      return handleTicketCheckoutCompleted(event);
-    default:
-      return false;
-  }
-}
-
-async function handleTicketCheckoutCompleted(event: Stripe.Event): Promise<boolean> {
+  if (event.type !== "checkout.session.completed") return false;
   const session = event.data.object as Stripe.Checkout.Session;
+  if (session.metadata?.flowType !== "ticket") return false;
 
-  if (session.metadata?.flowType !== "ticket") {
-    return false;
-  }
-
-  // Resolve by the ticket id carried in metadata first: it stays correct even
-  // after an unpaid ticket was replaced or an admin issued a fresh session
-  // (which supersedes the stripeSessionId stored on the row). Fall back to the
-  // session id for any older sessions created before metadata.ticketId existed.
   const metadataTicketId = session.metadata?.ticketId;
   const metadataTicketIds = session.metadata?.ticketIds
     ?.split(",")
@@ -61,9 +42,8 @@ async function handleTicketCheckoutCompleted(event: Stripe.Event): Promise<boole
           ? await findTicketById(metadataTicketId)
           : await findTicketByStripeSessionId(session.id),
       ].filter((ticket) => ticket !== null);
-  const ticket = tickets[0];
-
-  if (!ticket) {
+  const primary = tickets[0];
+  if (!primary) {
     console.warn("Ticket webhook: no ticket found for Stripe session", {
       sessionId: session.id,
       metadataTicketId,
@@ -73,73 +53,73 @@ async function handleTicketCheckoutCompleted(event: Stripe.Event): Promise<boole
 
   const paymentIntentId = getPaymentIntentId(session.payment_intent);
   const paidAt = new Date();
-
   try {
     await prisma.$transaction(async (tx) => {
-      await tx.stripeWebhookEvent.create({
+      await tx.stripeWebhook.create({
         data: {
-          stripeEventId: event.id,
+          eventId: event.id,
           eventType: event.type,
-          payloadJson: serializeStripeEvent(event),
+          payload: serializeStripeEvent(event),
+          state: "PROCESSING",
+          attempts: 1,
+          lastAttemptAt: paidAt,
         },
       });
-
-      const pendingTickets = tickets.filter((item) => item.status === "PENDING");
-      if (pendingTickets.length === 0) return;
-
+      const payment = await tx.payment.findFirst({
+        where: {
+          purchaseType: "TICKET",
+          OR: [
+            { stripeCheckoutSessionId: session.id },
+            { id: primary.paymentId ?? "__missing__" },
+          ],
+        },
+      });
+      if (!payment) throw new Error("Ticket payment was not found for the Stripe event.");
+      if (session.amount_total !== null && payment.amount !== session.amount_total) {
+        throw new Error("Stripe ticket amount does not match the stored payment.");
+      }
+      const ticketIds = tickets.map((ticket) => ticket.id);
       await tx.ticket.updateMany({
-        where: { id: { in: pendingTickets.map((item) => item.id) } },
-        data: { status: "PAID", paidAt },
+        where: { id: { in: ticketIds }, status: "PENDING" },
+        data: { status: "PAID", paidAt, paymentId: payment.id, revision: { increment: 1 } },
       });
-
-      await tx.ticket.update({
-        where: { id: ticket.id },
-        data: {
-          stripePaymentIntentId: paymentIntentId,
-        },
-      });
-
-      await tx.payment.updateMany({
-        where: { stripeSessionId: session.id },
+      await tx.payment.update({
+        where: { id: payment.id },
         data: {
           status: "PAID",
-          ...(session.amount_total !== null ? { amount: session.amount_total } : {}),
+          stripeCheckoutSessionId: session.id,
           stripePaymentIntentId: paymentIntentId,
           paidAt,
+          fulfilledAt: paidAt,
         },
       });
-
-      for (const pendingTicket of pendingTickets) {
-        await ensureActiveTicketQr(pendingTicket.id, tx);
-      }
+      for (const ticketId of ticketIds) await ensureActiveTicketQr(ticketId, tx);
+      await tx.stripeWebhook.update({
+        where: { eventId: event.id },
+        data: { state: "PROCESSED", processedAt: paidAt, paymentId: payment.id },
+      });
     });
   } catch (error) {
-    if (isDuplicateStripeEventError(error)) {
-      return true;
-    }
+    if (isDuplicateStripeEventError(error)) return true;
     throw error;
   }
 
-  for (const fulfilledTicket of tickets) {
-    syncTicketOnChange(fulfilledTicket.id);
-
+  for (const ticket of tickets) {
+    syncTicketOnChange(ticket.id);
+    if (!ticket.type) continue;
     try {
       await sendTicketConfirmationEmail({
-        to: fulfilledTicket.email,
-        fullName: fulfilledTicket.fullName,
-        type: fulfilledTicket.type,
-        galaDinner: fulfilledTicket.galaDinner,
-        secureToken: fulfilledTicket.secureToken,
-        instagram: fulfilledTicket.instagram,
-        specialPacket: Boolean(fulfilledTicket.specialPacketId),
+        to: ticket.email,
+        fullName: ticket.fullName,
+        type: ticket.type,
+        galaDinner: ticket.galaDinner,
+        secureToken: ticket.secureToken,
+        instagram: ticket.instagram,
+        specialPacket: Boolean(ticket.specialPacketId),
       });
     } catch (error) {
-      console.error("Failed to send ticket confirmation email", {
-        ticketId: fulfilledTicket.id,
-        error,
-      });
+      console.error("Failed to send ticket confirmation email", { ticketId: ticket.id, error });
     }
   }
-
   return true;
 }

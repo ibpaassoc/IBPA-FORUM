@@ -1,27 +1,19 @@
 import "server-only";
 
 import crypto from "node:crypto";
-import { Prisma } from "@prisma/client";
-import { put } from "@vercel/blob";
-import type Stripe from "stripe";
-import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
-import { validateNominationBlockB } from "@/features/applications/schemas/category-field-validation";
-import type { ApplicationFileRef, ApplicationValues, ApplyFieldConfig } from "@/features/applications/types/application.types";
-import {
-  APPLICANT_NOMINATION_PURCHASE_FLOW,
-  APPLICANT_PURCHASE_MANIFEST_VERSION,
-  type ApplicantPurchaseManifest,
-} from "@/features/applications/server/purchase-workflow";
-import { handleCompetitorStripeEvent } from "@/features/applications/server/webhook.workflow";
-import { upsertApplicantAccountForApplication } from "@/features/account/server/accounts";
-import { approveJuryApplicationWithoutPayment } from "@/features/jury/server/commands";
+import { Prisma, type NominationStatus } from "@prisma/client";
 import { getCategoryScoringDefinition } from "@/features/jury/scoring/category-scoring";
-import { saveJuryReviewDraft, submitJuryReview } from "@/features/jury/server/reviews";
-import { prisma } from "@/shared/lib/prisma";
-import { accountIdentity } from "@/features/account/server/accounts";
+import { emptyStoredFiles } from "@/features/database/json-fields";
+import { unscopedPrisma } from "@/shared/lib/prisma";
 import { runWithDataScope } from "@/features/test/server/data-scope";
+import {
+  createTestRun,
+  emptyTestCreatedRecords,
+  parseTestCreatedRecords,
+  testJson,
+  type TestCreatedRecords,
+} from "@/features/test/server/test-records";
 import { deleteTestScenario } from "@/features/test/server/cleanup";
-import { buildSampleAsset } from "@/features/test/lib/sample-assets";
 
 export type ApplicantScenarioKind =
   | "applicant-empty"
@@ -37,473 +29,315 @@ export type JuryScenarioKind =
   | "jury-partial"
   | "jury-submitted";
 
-function uniqueEmail(role: "applicant" | "jury") {
-  return `test+${role}.${Date.now()}.${crypto.randomBytes(4).toString("hex")}@example.invalid`;
+type CatalogChoice = {
+  award: { id: string; name: string };
+  category: { id: string; name: string; slug: string };
+};
+
+function uniqueEmail(kind: string) {
+  return `test+${kind}.${Date.now()}.${crypto.randomBytes(4).toString("hex")}@example.invalid`;
 }
-function fakeStripeEvent({
-  eventId,
-  sessionId,
-  paymentId,
-  amount,
-}: {
-  eventId: string;
-  sessionId: string;
-  paymentId: string;
-  amount: number;
-}) {
+
+async function catalogChoice(tx: Prisma.TransactionClient): Promise<CatalogChoice> {
+  const award = await tx.award.findFirst({
+    include: { category: { select: { id: true, name: true, slug: true } } },
+    orderBy: [{ categoryId: "asc" }, { name: "asc" }],
+  });
+  if (!award) throw new Error("At least one Award and Category are required for test scenarios.");
+  return { award: { id: award.id, name: award.name }, category: award.category };
+}
+
+function answersDocument(kind: ApplicantScenarioKind) {
+  const timestamp = new Date().toISOString();
+  if (kind === "applicant-incomplete") {
+    return {
+      schemaVersion: 1,
+      fields: [{ fieldId: "professionalBio", label: "Professional bio", type: "textarea", value: "Partial test answer", updatedAt: timestamp }],
+    };
+  }
+  if (kind === "applicant-draft" || kind === "applicant-upload-failure") {
+    return {
+      schemaVersion: 1,
+      fields: [{ fieldId: "professionalBio", label: "Professional bio", type: "textarea", value: "Draft test answer", updatedAt: timestamp }],
+    };
+  }
   return {
-    id: eventId,
-    type: "checkout.session.completed",
-    data: {
-      object: {
-        id: sessionId,
-        amount_total: amount,
-        currency: "usd",
-        payment_intent: `pi_${eventId}`,
-        metadata: {
-          flowType: APPLICANT_NOMINATION_PURCHASE_FLOW,
-          paymentId,
-        },
-      },
-    },
-  } as unknown as Stripe.Event;
-}
-
-function sampleValue(field: ApplyFieldConfig, index = 0): ApplicationValues[string] {
-  if (field.type === "url") return "https://example.com/test-portfolio";
-  if (field.type === "email") return "test@example.invalid";
-  if (field.type === "number") return String(field.min ?? 1);
-  if (field.type === "checkbox-group") return [field.options?.[0]?.value ?? "test"];
-  if (field.type === "select" || field.type === "radio") {
-    return field.options?.[0]?.value ?? "yes";
-  }
-  if (field.type === "file") {
-    const count = Math.max(field.minFiles ?? (field.required ? 1 : 0), 1);
-    return Array.from({ length: count }, (_, fileIndex) => {
-      const asset = buildSampleAsset({
-        accept: field.accept,
-        label: `${field.label} ${fileIndex + 1}`,
-        seed: index * 7 + fileIndex,
-      });
-      return {
-        fieldKey: field.key,
-        fileName: `${field.key}-${index}-${fileIndex + 1}.${asset.extension}`,
-        // Replaced with the real Blob pathname once the nomination exists and
-        // the bytes have been uploaded; see persistScenarioNominationValues.
-        fileUrl: `test-uploads/${crypto.randomUUID()}/${field.key}-${fileIndex + 1}`,
-        mimeType: asset.mimeType,
-        fileSize: asset.bytes.length,
-      } satisfies ApplicationFileRef;
-    });
-  }
-  return `Test value for ${field.label}`;
-}
-
-function completeNominationValues(categorySlug: string) {
-  const fields = categoryFieldConfigs[categorySlug] ?? [];
-  const values: ApplicationValues = {};
-  for (const [index, field] of fields.entries()) {
-    if (field.required || field.visibleWhen) values[field.key] = sampleValue(field, index);
-  }
-  for (const field of fields) {
-    if (field.visibleWhen && values[field.visibleWhen.fieldKey] === undefined) {
-      values[field.visibleWhen.fieldKey] = field.visibleWhen.equals;
-    }
-  }
-  const errors = validateNominationBlockB(categorySlug, values);
-  if (Object.keys(errors).length > 0) {
-    throw new Error(`Real nomination validation rejected the generated test scenario: ${JSON.stringify(errors)}`);
-  }
-  return values;
-}
-
-/**
- * One seeded file per nomination carries a Cyrillic display name. Uploaded
- * files routinely have them, and a raw non-ASCII filename in a
- * `Content-Disposition` header throws when the Response is constructed — the
- * exact failure that used to 500 the file routes. Keeping one in every
- * scenario means the preview path is tested against it.
- */
-function displayNameForScenarioFile(fieldKey: string, fileIndex: number, fallback: string) {
-  if (fileIndex !== 0) return fallback;
-  const extension = fallback.slice(fallback.lastIndexOf(".") + 1);
-  return `портфолио-${fieldKey}.${extension}`;
-}
-
-async function uploadScenarioFile({
-  nominationId,
-  fieldKey,
-  accept,
-  label,
-  fileName,
-  seed,
-  upload,
-}: {
-  nominationId: string;
-  fieldKey: string;
-  accept?: string[];
-  label: string;
-  fileName: string;
-  seed: number;
-  upload: boolean;
-}) {
-  const asset = buildSampleAsset({ accept, label, seed });
-  const fallback = {
-    fileName,
-    fileUrl: `test-uploads/${crypto.randomUUID()}/${fieldKey}-${seed + 1}`,
-    mimeType: asset.mimeType,
-    fileSize: asset.bytes.length,
+    schemaVersion: 1,
+    fields: [
+      { fieldId: "professionalBio", label: "Professional bio", type: "textarea", value: "Complete isolated test nomination.", updatedAt: timestamp },
+      { fieldId: "yearsExperience", label: "Years of experience", type: "number", value: 8, updatedAt: timestamp },
+    ],
   };
-
-  if (!upload || !process.env.BLOB_READ_WRITE_TOKEN) return fallback;
-
-  // Mirror the production layout: the cleanup routine only deletes blobs whose
-  // key starts with `applications/`, so anything written elsewhere would leak
-  // when the scenario is torn down.
-  const pathname = `applications/${nominationId}/${fieldKey}/${fileName}`;
-  try {
-    const blob = await put(pathname, asset.bytes, {
-      access: "private",
-      addRandomSuffix: true,
-      contentType: asset.mimeType,
-    });
-    return { ...fallback, fileUrl: blob.pathname };
-  } catch (error) {
-    console.error("Test scenario sample upload failed", {
-      nominationId,
-      fieldKey,
-      error: error instanceof Error ? error.message : "Unknown Blob error",
-    });
-    return fallback;
-  }
 }
 
-async function persistScenarioNominationValues(
-  nomination: { id: string; category: { slug: string } },
-  mode: "incomplete" | "complete" | "upload-failure",
-) {
-  const fields = categoryFieldConfigs[nomination.category.slug] ?? [];
-  const values =
-    mode === "complete"
-      ? completeNominationValues(nomination.category.slug)
-      : mode === "incomplete"
-        ? Object.fromEntries(
-            fields
-              .filter((field) => field.required && field.type !== "file")
-              .slice(0, 1)
-              .map((field, index) => [field.key, sampleValue(field, index)]),
-          )
-        : {
-            [fields.find((field) => field.type === "file")?.key ?? "portfolioPhotos"]: [
-              {
-                fieldKey: fields.find((field) => field.type === "file")?.key ?? "portfolioPhotos",
-                fileName: "intentionally-invalid.exe",
-                fileUrl: "test-uploads/missing/intentionally-invalid.exe",
-                mimeType: "application/x-msdownload",
-                fileSize: 99_000_000,
-              } satisfies ApplicationFileRef,
-            ],
-          };
+function nominationStatus(kind: ApplicantScenarioKind): NominationStatus {
+  return kind === "applicant-submitted" || kind === "applicant-multiple" ? "SUBMITTED" : "DRAFT";
+}
 
-  for (const [fieldKey, value] of Object.entries(values)) {
-    if (Array.isArray(value) && value.every((item) => typeof item === "object" && item !== null && "fileUrl" in item)) {
-      const field = fields.find((candidate) => candidate.key === fieldKey);
-      for (const [fileIndex, item] of (value as ApplicationFileRef[]).entries()) {
-        const stored = await uploadScenarioFile({
-          nominationId: nomination.id,
-          fieldKey,
-          accept: field?.accept,
-          label: `${field?.label ?? fieldKey} ${fileIndex + 1}`,
-          fileName: item.fileName,
-          seed: fileIndex,
-          // The upload-failure scenario deliberately points at a blob that was
-          // never written, so leave its reference untouched.
-          upload: mode !== "upload-failure",
-        });
-        await prisma.nominationFile.create({
-          data: {
-            nominationApplicationId: nomination.id,
-            fieldKey,
-            fileName: stored.fileName,
-            fileUrl: stored.fileUrl,
-            displayFileName: displayNameForScenarioFile(fieldKey, fileIndex, stored.fileName),
-            originalFileName: stored.fileName,
-            mimeType: stored.mimeType,
-            fileSize: stored.fileSize,
-            originalFileSize: stored.fileSize,
-            compressedFileSize: stored.fileSize,
-            storageKey: stored.fileUrl,
-          },
-        });
-      }
-      continue;
-    }
-    await prisma.nominationAnswer.create({
+async function createApplicantRecords(
+  tx: Prisma.TransactionClient,
+  kind: ApplicantScenarioKind,
+  records: TestCreatedRecords,
+) {
+  const email = uniqueEmail(kind);
+  const account = await tx.account.create({
+    data: {
+      email,
+      normalizedEmail: email.toLowerCase(),
+      role: "APPLICANT",
+      status: "ACTIVE",
+      dataScope: "TEST",
+    },
+  });
+  const profile = await tx.applicantProfile.create({
+    data: {
+      accountId: account.id,
+      fullName: `Test Applicant ${email.slice(5, 17)}`,
+      phone: "+1 555 010 1000",
+      country: "United States",
+      city: "Test City",
+      professionalTitle: "Test Professional",
+      yearsExperience: 8,
+      preferredLocale: "en",
+      dataScope: "TEST",
+    },
+  });
+  records.accounts.push(account.id);
+  records.applicantProfiles.push(profile.id);
+
+  const nominationCount = kind === "applicant-empty" ? 0 : kind === "applicant-multiple" ? 3 : 1;
+  const nominations = [];
+  for (let index = 0; index < nominationCount; index += 1) {
+    const catalog = await catalogChoice(tx);
+    const payment = await tx.payment.create({
       data: {
-        nominationApplicationId: nomination.id,
-        fieldKey,
-        valueText: typeof value === "string" ? value : null,
-        valueJson: Array.isArray(value) ? (value as Prisma.InputJsonValue) : undefined,
+        accountId: account.id,
+        customerEmail: email,
+        amount: 0,
+        currency: "usd",
+        status: "PAID",
+        purchaseType: "NOMINATION",
+        provider: "MANUAL",
+        pricingSnapshot: testJson({ schemaVersion: 1, reason: "isolated-test-scenario" }),
+        paidAt: new Date(),
+        fulfilledAt: new Date(),
+        dataScope: "TEST",
       },
     });
+    const status = nominationStatus(kind);
+    const nomination = await tx.nomination.create({
+      data: {
+        applicantProfileId: profile.id,
+        paymentId: payment.id,
+        awardId: catalog.award.id,
+        categoryId: catalog.category.id,
+        status,
+        answers: testJson(answersDocument(kind)),
+        files: testJson(emptyStoredFiles()),
+        scoringSchema: testJson(getCategoryScoringDefinition(catalog.category.slug)),
+        submittedAt: status === "SUBMITTED" ? new Date() : null,
+        dataScope: "TEST",
+      },
+      include: { award: true, category: true },
+    });
+    records.payments.push(payment.id);
+    records.nominations.push(nomination.id);
+    nominations.push(nomination);
   }
+  return { account, profile, nominations };
 }
 
-async function createApplicantInScenario({
-  scenarioId,
-  kind,
-}: {
-  scenarioId: string;
-  kind: ApplicantScenarioKind;
-}) {
-  return runWithDataScope({ dataScope: "TEST", testScenarioId: scenarioId }, async () => {
-    const email = uniqueEmail("applicant");
-    const profileInput = {
-      fullName: `Test Applicant ${new Date().toISOString().slice(11, 19)}`,
+async function createJuryRecords(
+  tx: Prisma.TransactionClient,
+  kind: JuryScenarioKind,
+  records: TestCreatedRecords,
+  nominationId?: string,
+) {
+  const catalog = await catalogChoice(tx);
+  const email = uniqueEmail(kind);
+  const account = await tx.account.create({
+    data: {
+      email,
+      normalizedEmail: email.toLowerCase(),
+      role: "JURY",
+      status: "ACTIVE",
+      dataScope: "TEST",
+    },
+  });
+  const application = await tx.juryApplication.create({
+    data: {
+      accountId: account.id,
+      fullName: `Test Juror ${email.slice(5, 17)}`,
       email,
       phone: "+1 555 010 2000",
-      country: "USA",
-      stateProvince: "CA",
-      city: "Los Angeles",
-      professionalTitle: "Test Beauty Professional",
-      yearsExperience: 8,
-      websiteUrl: "https://example.com/test-applicant",
-    };
-
-    if (kind === "applicant-empty") {
-      const result = await prisma.$transaction((tx) =>
-        upsertApplicantAccountForApplication(tx, profileInput),
-      );
-      await prisma.account.update({ where: { id: result.account.id }, data: { status: "ACTIVE" } });
-      return { accountId: result.account.id, profileId: result.profile.id, nominationIds: [] };
-    }
-
-    const nominationCount = kind === "applicant-multiple" ? 3 : 1;
-    const categories = await prisma.category.findMany({
-      where: { awards: { some: {} } },
-      include: { awards: true },
-      orderBy: { createdAt: "asc" },
-    });
-    const selectedAwards = categories
-      .flatMap((category) => category.awards.map((award) => ({ category, award })))
-      .slice(0, nominationCount);
-    if (selectedAwards.length < nominationCount) {
-      throw new Error("The production category catalog does not contain enough nominations for this scenario.");
-    }
-
-    const amount = nominationCount * 10_000;
-    const manifest: ApplicantPurchaseManifest = {
-      version: APPLICANT_PURCHASE_MANIFEST_VERSION,
-      flowType: APPLICANT_NOMINATION_PURCHASE_FLOW,
-      source: "admin_manual",
-      locale: "en",
-      createdAt: new Date().toISOString(),
-      personalInfo: profileInput,
-      membership: { isVerifiedMember: false },
-      selectedAwards: selectedAwards.map(({ category, award }) => ({
-        awardId: award.id,
-        awardName: award.name,
-        categoryId: category.id,
-        categoryName: category.name,
-        categorySlug: category.slug,
-      })),
-      pricing: {
-        amountCents: amount,
-        currency: "usd",
-        nominationCount,
-        billableCount: nominationCount,
-        isIbpaMember: false,
-      },
-    };
-    const payment = await prisma.payment.create({
-      data: {
-        source: "COMPETITOR",
-        applicantEmail: email,
-        provider: "test-stripe-simulator",
-        purchaseManifest: manifest as unknown as Prisma.InputJsonValue,
-        amount,
-        currency: "usd",
-        status: "PENDING",
-      },
-    });
-    const sessionId = `cs_test_${crypto.randomUUID()}`;
-    await prisma.payment.update({ where: { id: payment.id }, data: { stripeSessionId: sessionId } });
-    await handleCompetitorStripeEvent(
-      fakeStripeEvent({
-        eventId: `evt_test_${crypto.randomUUID()}`,
-        sessionId,
-        paymentId: payment.id,
-        amount,
-      }),
-    );
-
-    const account = await prisma.account.findUniqueOrThrow({
-      where: accountIdentity(email, "APPLICANT"),
-      include: { applicantProfile: { include: { nominations: { include: { category: true } } } } },
-    });
-    await prisma.account.update({ where: { id: account.id }, data: { status: "ACTIVE" } });
-    const nominations = account.applicantProfile?.nominations ?? [];
-    for (const nomination of nominations) {
-      if (kind === "applicant-draft") {
-        await prisma.nominationApplication.update({ where: { id: nomination.id }, data: { status: "DRAFT" } });
-      } else if (kind === "applicant-incomplete") {
-        await persistScenarioNominationValues(nomination, "incomplete");
-        await prisma.nominationApplication.update({ where: { id: nomination.id }, data: { status: "DRAFT" } });
-      } else if (kind === "applicant-upload-failure") {
-        await persistScenarioNominationValues(nomination, "upload-failure");
-        await prisma.nominationApplication.update({ where: { id: nomination.id }, data: { status: "DRAFT" } });
-      } else {
-        await persistScenarioNominationValues(nomination, "complete");
-        await prisma.nominationApplication.update({
-          where: { id: nomination.id },
-          data: { status: "SUBMITTED", submittedAt: new Date() },
-        });
-      }
-    }
-    return {
-      accountId: account.id,
-      profileId: account.applicantProfile?.id ?? "",
-      nominationIds: nominations.map((nomination) => nomination.id),
-    };
+      country: "United States",
+      city: "Test City",
+      professionalTitle: "Test Jury Professional",
+      yearsExperience: 12,
+      employerAffiliation: "IBPA Test Suite",
+      previousJudgingExperience: true,
+      previousJudgingDetails: "Isolated test scenario",
+      expertiseAreas: [catalog.category.name],
+      professionalBio: "Isolated jury test profile.",
+      conflictDisclosure: "None",
+      motivation: "Automated workflow validation",
+      status: "PAID",
+      informationRequests: testJson({ schemaVersion: 1, requests: [] }),
+      files: testJson(emptyStoredFiles()),
+      submittedAt: new Date(),
+      approvedAt: new Date(),
+      dataScope: "TEST",
+    },
   });
+  const profile = await tx.juryProfile.create({
+    data: {
+      accountId: account.id,
+      juryApplicationId: application.id,
+      fullName: application.fullName,
+      phone: application.phone,
+      country: application.country,
+      city: application.city,
+      professionalTitle: application.professionalTitle,
+      yearsExperience: application.yearsExperience,
+      employerAffiliation: application.employerAffiliation,
+      expertiseAreas: application.expertiseAreas,
+      approvedCategories: kind === "jury-empty" ? ["__NO_TEST_MATCH__"] : [catalog.category.name],
+      professionalBio: application.professionalBio,
+      dataScope: "TEST",
+    },
+  });
+  const payment = await tx.payment.create({
+    data: {
+      accountId: account.id,
+      juryApplicationId: application.id,
+      customerEmail: email,
+      amount: 0,
+      status: "PAID",
+      currency: "usd",
+      purchaseType: "JURY",
+      provider: "MANUAL",
+      pricingSnapshot: testJson({ schemaVersion: 1, reason: "isolated-test-scenario" }),
+      paidAt: new Date(),
+      fulfilledAt: new Date(),
+      dataScope: "TEST",
+    },
+  });
+  records.accounts.push(account.id);
+  records.juryApplications.push(application.id);
+  records.juryProfiles.push(profile.id);
+  records.payments.push(payment.id);
+
+  let review = null;
+  if (nominationId && (kind === "jury-partial" || kind === "jury-submitted")) {
+    const definition = getCategoryScoringDefinition(catalog.category.slug);
+    const complete = kind === "jury-submitted";
+    const scores = Object.fromEntries(
+      definition.criteria.map((criterion, index) => [criterion.key, complete || index < 2 ? Math.min(criterion.maxScore, 8) : null]),
+    );
+    const present = Object.values(scores).filter((score): score is number => typeof score === "number");
+    review = await tx.juryNominationReview.create({
+      data: {
+        nominationId,
+        juryProfileId: profile.id,
+        status: complete ? "COMPLETED" : "IN_PROGRESS",
+        scoreData: testJson({ version: 1, categorySlug: catalog.category.slug, scores }),
+        totalScore: present.reduce((sum, score) => sum + score, 0),
+        comments: complete ? "Completed isolated test review." : "Partial isolated test review.",
+        startedAt: new Date(),
+        submittedAt: complete ? new Date() : null,
+        dataScope: "TEST",
+      },
+    });
+    records.reviews.push(review.id);
+  }
+  return { account, application, profile, payment, review };
 }
 
 export async function createApplicantScenario(kind: ApplicantScenarioKind) {
-  const scenario = await prisma.testScenario.create({
-    data: { name: kind.replaceAll("-", " "), kind, description: "Applicant test scenario" },
+  const scenario = await createTestRun({
+    name: kind.replaceAll("-", " "),
+    kind,
+    description: "Applicant workflow data isolated through explicit Test record IDs.",
+    configuration: { kind, simulateUploadFailure: kind === "applicant-upload-failure" },
   });
   try {
-    return { scenario, ...(await createApplicantInScenario({ scenarioId: scenario.id, kind })) };
+    const result = await runWithDataScope({ dataScope: "TEST", testId: scenario.id }, async () => {
+      const records = emptyTestCreatedRecords();
+      return unscopedPrisma.$transaction(async (tx) => {
+        const created = await createApplicantRecords(tx, kind, records);
+        await tx.test.update({
+          where: { id: scenario.id },
+          data: { createdRecords: testJson(records), status: "COMPLETED" },
+        });
+        return created;
+      });
+    });
+    return { scenario: await unscopedPrisma.test.findUniqueOrThrow({ where: { id: scenario.id } }), ...result };
   } catch (error) {
+    await unscopedPrisma.test.update({ where: { id: scenario.id }, data: { status: "FAILED" } }).catch(() => undefined);
     await deleteTestScenario(scenario.id).catch(() => undefined);
     throw error;
   }
 }
-async function createJuryInScenario({
-  scenarioId,
-  kind,
-  nominationId,
-}: {
-  scenarioId: string;
-  kind: JuryScenarioKind;
-  nominationId?: string;
-}) {
-  return runWithDataScope({ dataScope: "TEST", testScenarioId: scenarioId }, async () => {
-    const nomination = nominationId
-      ? await prisma.nominationApplication.findUnique({
-          where: { id: nominationId },
-          include: { category: true },
-        })
-      : null;
-    const approvedCategory = nomination?.category.name ?? `No assignments ${crypto.randomUUID()}`;
-    const email = uniqueEmail("jury");
-    const juryApplication = await prisma.juryApplication.create({
-      data: {
-        fullName: `Test Jury ${new Date().toISOString().slice(11, 19)}`,
-        email,
-        phone: "+1 555 010 3000",
-        country: "USA",
-        city: "Los Angeles",
-        professionalTitle: "Test Jury Professional",
-        yearsExperience: 12,
-        employerAffiliation: "IBPA Test Lab",
-        previousJudgingExperience: true,
-        previousJudgingDetails: "Isolated test judging",
-        expertiseAreas: [approvedCategory],
-        approvedCategories: [approvedCategory],
-        professionalBio: "Internal test jury profile exercising the production jury account flow.",
-        professionalWebsite: "https://example.com/test-jury",
-        conflictDisclosure: "No conflicts in isolated test data.",
-        confidentialityAgreementAccepted: true,
-        motivation: "End-to-end validation",
-        status: "SUBMITTED",
-        paymentStatus: "PENDING",
-        submittedAt: new Date(),
-      },
-    });
-    await approveJuryApplicationWithoutPayment(juryApplication.id);
-    const account = await prisma.account.findUniqueOrThrow({
-      where: accountIdentity(email, "JURY"),
-      include: { juryProfile: true },
-    });
-    await prisma.account.update({ where: { id: account.id }, data: { status: "ACTIVE" } });
-    const juryProfile = account.juryProfile;
-    if (!juryProfile) throw new Error("The production jury activation flow did not create a profile.");
-
-    if (nomination && kind === "jury-partial") {
-      const definition = getCategoryScoringDefinition(nomination.category.slug);
-      const first = definition.criteria[0];
-      await saveJuryReviewDraft({
-        judge: {
-          accountId: account.id,
-          email: account.email,
-          juryProfileId: juryProfile.id,
-          juryApplicationId: juryApplication.id,
-          fullName: juryProfile.fullName,
-          professionalTitle: juryProfile.professionalTitle ?? "",
-          approvedCategories: juryProfile.approvedCategories,
-          dataScope: "TEST",
-        },
-        nominationId: nomination.id,
-        input: { scores: { [first.key]: Math.min(5, first.maxScore) }, comment: "Partially completed test review" },
-      });
-    }
-    if (nomination && kind === "jury-submitted") {
-      const definition = getCategoryScoringDefinition(nomination.category.slug);
-      await submitJuryReview({
-        judge: {
-          accountId: account.id,
-          email: account.email,
-          juryProfileId: juryProfile.id,
-          juryApplicationId: juryApplication.id,
-          fullName: juryProfile.fullName,
-          professionalTitle: juryProfile.professionalTitle ?? "",
-          approvedCategories: juryProfile.approvedCategories,
-          dataScope: "TEST",
-        },
-        nominationId: nomination.id,
-        input: {
-          scores: Object.fromEntries(definition.criteria.map((criterion) => [criterion.key, Math.max(1, Math.floor(criterion.maxScore / 2))])),
-          comment: "Completed through the production jury review service.",
-        },
-      });
-    }
-    return { accountId: account.id, juryProfileId: juryProfile.id, juryApplicationId: juryApplication.id };
-  });
-}
 
 export async function createJuryScenario(kind: JuryScenarioKind) {
-  const scenario = await prisma.testScenario.create({
-    data: { name: kind.replaceAll("-", " "), kind, description: "Jury test scenario" },
+  const scenario = await createTestRun({
+    name: kind.replaceAll("-", " "),
+    kind,
+    description: "Jury workflow data isolated through explicit Test record IDs.",
+    configuration: { kind },
   });
   try {
-    let nominationId: string | undefined;
-    if (kind !== "jury-empty") {
-      const applicant = await createApplicantInScenario({ scenarioId: scenario.id, kind: "applicant-submitted" });
-      nominationId = applicant.nominationIds[0];
-    }
-    return {
-      scenario,
-      nominationId,
-      ...(await createJuryInScenario({ scenarioId: scenario.id, kind, nominationId })),
-    };
+    const result = await runWithDataScope({ dataScope: "TEST", testId: scenario.id }, async () => {
+      const records = emptyTestCreatedRecords();
+      return unscopedPrisma.$transaction(async (tx) => {
+        let nominationId: string | undefined;
+        if (kind !== "jury-empty") {
+          const applicant = await createApplicantRecords(tx, "applicant-submitted", records);
+          nominationId = applicant.nominations[0]?.id;
+        }
+        const created = await createJuryRecords(tx, kind, records, nominationId);
+        await tx.test.update({
+          where: { id: scenario.id },
+          data: { createdRecords: testJson(records), status: "COMPLETED" },
+        });
+        return created;
+      });
+    });
+    return { scenario: await unscopedPrisma.test.findUniqueOrThrow({ where: { id: scenario.id } }), ...result };
   } catch (error) {
+    await unscopedPrisma.test.update({ where: { id: scenario.id }, data: { status: "FAILED" } }).catch(() => undefined);
     await deleteTestScenario(scenario.id).catch(() => undefined);
     throw error;
   }
 }
 
 export async function createFullFlowScenario() {
-  const scenario = await prisma.testScenario.create({
-    data: { name: "Full applicant to jury flow", kind: "full-flow", description: "Paid applicant, submitted nomination, jury assignment, and review." },
+  const scenario = await createTestRun({
+    name: "Full applicant to jury flow",
+    kind: "full-flow",
+    description: "Applicant, paid nomination, jury account and completed review in one isolated run.",
   });
   try {
-    const applicant = await createApplicantInScenario({ scenarioId: scenario.id, kind: "applicant-submitted" });
-    const nominationId = applicant.nominationIds[0];
-    const jury = await createJuryInScenario({ scenarioId: scenario.id, kind: "jury-unreviewed", nominationId });
-    return { scenario, applicant, jury, nominationId };
+    const result = await runWithDataScope({ dataScope: "TEST", testId: scenario.id }, async () => {
+      const records = emptyTestCreatedRecords();
+      return unscopedPrisma.$transaction(async (tx) => {
+        const applicant = await createApplicantRecords(tx, "applicant-submitted", records);
+        const jury = await createJuryRecords(tx, "jury-submitted", records, applicant.nominations[0]?.id);
+        await tx.test.update({
+          where: { id: scenario.id },
+          data: { createdRecords: testJson(records), status: "COMPLETED" },
+        });
+        return { applicant, jury };
+      });
+    });
+    return { scenario: await unscopedPrisma.test.findUniqueOrThrow({ where: { id: scenario.id } }), ...result };
   } catch (error) {
-    await deleteTestScenario(scenario.id).catch(() => undefined);
+    const existing = await unscopedPrisma.test.findUnique({ where: { id: scenario.id } });
+    if (existing && parseTestCreatedRecords(existing.createdRecords)) {
+      await unscopedPrisma.test.update({ where: { id: scenario.id }, data: { status: "FAILED" } }).catch(() => undefined);
+      await deleteTestScenario(scenario.id).catch(() => undefined);
+    }
     throw error;
   }
 }

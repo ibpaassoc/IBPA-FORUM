@@ -1,8 +1,14 @@
 import "server-only";
+
 import crypto from "crypto";
-import { prisma } from "@/shared/lib/prisma";
-import type { TicketStatus, TicketType } from "@prisma/client";
+import type { Prisma, TicketStatus, TicketType } from "@prisma/client";
 import { decideTicketReplacement } from "@/features/tickets/lib/replacement";
+import {
+  emptyTicketActivity,
+  parseTicketCredential,
+  type TicketCredential,
+} from "@/features/database/json-fields";
+import { prisma } from "@/shared/lib/prisma";
 
 export type CreateTicketInput = {
   fullName: string;
@@ -15,114 +21,104 @@ export type CreateTicketInput = {
   ibpaCertNumber?: string | null;
 };
 
-export type SpecialPacketAttendeeInput = Omit<
-  CreateTicketInput,
-  "type" | "galaDinner"
->;
+export type SpecialPacketAttendeeInput = Omit<CreateTicketInput, "type" | "galaDinner">;
+
+function newToken() {
+  return crypto.randomBytes(32).toString("hex");
+}
+
+function newCredential(token: string, generatedAt = new Date()): TicketCredential {
+  const timestamp = generatedAt.toISOString();
+  return {
+    schemaVersion: 1,
+    active: { token, status: "ACTIVE", generatedAt: timestamp, lastSentAt: null },
+    history: [
+      {
+        id: crypto.randomUUID(),
+        token,
+        status: "ACTIVE",
+        generatedAt: timestamp,
+        lastSentAt: null,
+      },
+    ],
+  };
+}
+
+function ticketData(input: CreateTicketInput, token: string) {
+  return {
+    kind: "FORUM" as const,
+    secureToken: token,
+    credential: newCredential(token) as unknown as Prisma.InputJsonValue,
+    activity: emptyTicketActivity() as unknown as Prisma.InputJsonValue,
+    fullName: input.fullName,
+    email: input.email,
+    phone: input.phone,
+    instagram: input.instagram ?? null,
+    type: input.type,
+    galaDinner: input.galaDinner,
+    isIbpaMember: input.isIbpaMember,
+    ibpaCertNumber: input.ibpaCertNumber ?? null,
+    status: "PENDING" as const,
+  };
+}
 
 export async function createTicket(input: CreateTicketInput) {
-  const secureToken = crypto.randomBytes(32).toString("hex");
-
-  return prisma.ticket.create({
-    data: {
-      secureToken,
-      fullName: input.fullName,
-      email: input.email,
-      phone: input.phone,
-      instagram: input.instagram ?? null,
-      type: input.type,
-      galaDinner: input.galaDinner,
-      isIbpaMember: input.isIbpaMember,
-      ibpaCertNumber: input.ibpaCertNumber ?? null,
-      status: "PENDING",
-    },
-  });
+  const token = newToken();
+  return prisma.ticket.create({ data: ticketData(input, token) });
 }
 
 export type ReserveTicketResult = { ok: true; ticketId: string };
 
-/**
- * Atomically reserve the single unpaid checkout ticket for a normalized email.
- *
- * Everything runs inside one transaction guarded by a Postgres transaction-level
- * advisory lock keyed on the email, so two near-simultaneous unpaid submissions
- * for the same address are serialized:
- *
- *   • If unpaid ticket(s) exist → the newest is refreshed in place with the new
- *     details (fresh token, Stripe references cleared, old pending payments
- *     removed) and any older unpaid duplicates are deleted. Reusing the row keeps
- *     the Google Sheets sync updating the same line instead of orphaning it.
- *   • Otherwise a brand-new ticket is created. Confirmed tickets for the same
- *     email are left intact and do not block another purchase.
- *
- * Deleting a ticket cascades to its Payment rows (see schema onDelete: Cascade),
- * so no orphaned payment/session references are left behind. Paid tickets are
- * never deleted or modified by this reservation step.
- */
 export async function reserveTicketForCheckout(
   input: CreateTicketInput
 ): Promise<ReserveTicketResult> {
   return prisma.$transaction(async (tx) => {
-    // Serialize all reservations for this email (auto-released on commit/rollback).
     await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${input.email}))`;
-
     const existing = await tx.ticket.findMany({
       where: {
+        kind: "FORUM",
         email: { equals: input.email, mode: "insensitive" },
         specialPacketId: null,
         status: { not: "CANCELED" },
       },
-      select: { id: true, status: true },
+      select: { id: true, status: true, paymentId: true },
       orderBy: { createdAt: "desc" },
     });
-
     const decision = decideTicketReplacement(existing);
 
     if (decision.deleteIds.length > 0) {
+      const obsolete = existing.filter((item) => decision.deleteIds.includes(item.id));
+      const paymentIds = obsolete.flatMap((item) => (item.paymentId ? [item.paymentId] : []));
       await tx.ticket.deleteMany({ where: { id: { in: decision.deleteIds } } });
+      if (paymentIds.length > 0) {
+        await tx.payment.deleteMany({ where: { id: { in: paymentIds }, status: { not: "PAID" } } });
+      }
     }
 
-    const secureToken = crypto.randomBytes(32).toString("hex");
-    const data = {
-      fullName: input.fullName,
-      email: input.email,
-      phone: input.phone,
-      instagram: input.instagram ?? null,
-      type: input.type,
-      galaDinner: input.galaDinner,
-      isIbpaMember: input.isIbpaMember,
-      ibpaCertNumber: input.ibpaCertNumber ?? null,
-    };
-
+    const token = newToken();
     if (decision.kind === "reuse") {
-      // Drop the stale pending payment(s) tied to the old checkout session.
-      await tx.payment.deleteMany({ where: { ticketId: decision.reuseId } });
+      const current = existing.find((item) => item.id === decision.reuseId);
       const ticket = await tx.ticket.update({
         where: { id: decision.reuseId },
         data: {
-          ...data,
-          secureToken,
-          status: "PENDING",
-          stripeSessionId: null,
-          stripePaymentIntentId: null,
-          promoCodeKey: null,
-          promoCodeKeyword: null,
-          promoDiscountPercent: null,
-          promoDiscountAmount: null,
+          ...ticketData(input, token),
+          paymentId: null,
           paidAt: null,
           lastCheckIn: null,
           forumCheckInAt: null,
           dayOneCheckInAt: null,
           dayTwoCheckInAt: null,
           galaCheckInAt: null,
+          revision: { increment: 1 },
         },
       });
+      if (current?.paymentId) {
+        await tx.payment.deleteMany({ where: { id: current.paymentId, status: { not: "PAID" } } });
+      }
       return { ok: true, ticketId: ticket.id };
     }
 
-    const ticket = await tx.ticket.create({
-      data: { ...data, secureToken, status: "PENDING" },
-    });
+    const ticket = await tx.ticket.create({ data: ticketData(input, token) });
     return { ok: true, ticketId: ticket.id };
   });
 }
@@ -137,122 +133,80 @@ export async function reserveSpecialPacketForCheckout({
     for (const email of normalizedEmails) {
       await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${email}))`;
     }
-
     const previous = await tx.ticket.findMany({
       where: {
+        kind: "FORUM",
         email: { in: normalizedEmails, mode: "insensitive" },
         status: "PENDING",
         specialPacketId: { not: null },
       },
-      select: { specialPacketId: true },
+      select: { id: true, specialPacketId: true, paymentId: true },
     });
-    const previousPacketIds = [
-      ...new Set(
-        previous.flatMap((ticket) =>
-          ticket.specialPacketId ? [ticket.specialPacketId] : []
-        )
-      ),
-    ];
-    if (previousPacketIds.length > 0) {
-      await tx.ticket.deleteMany({
-        where: { specialPacketId: { in: previousPacketIds }, status: "PENDING" },
-      });
+    if (previous.length > 0) {
+      const previousIds = previous.map((item) => item.id);
+      const paymentIds = previous.flatMap((item) => (item.paymentId ? [item.paymentId] : []));
+      await tx.ticket.deleteMany({ where: { id: { in: previousIds } } });
+      if (paymentIds.length > 0) {
+        await tx.payment.deleteMany({ where: { id: { in: paymentIds }, status: { not: "PAID" } } });
+      }
     }
 
     const specialPacketId = crypto.randomUUID();
-    const tickets = await Promise.all(
-      attendees.map((attendee, index) =>
-        tx.ticket.create({
+    const tickets = [];
+    for (const [index, attendee] of attendees.entries()) {
+      const token = newToken();
+      tickets.push(
+        await tx.ticket.create({
           data: {
-            secureToken: crypto.randomBytes(32).toString("hex"),
-            fullName: attendee.fullName,
-            email: attendee.email,
-            phone: attendee.phone,
-            instagram: attendee.instagram ?? null,
-            type: "TWO_DAYS",
-            galaDinner: true,
-            isIbpaMember: attendee.isIbpaMember,
-            ibpaCertNumber: attendee.ibpaCertNumber ?? null,
+            ...ticketData({ ...attendee, type: "TWO_DAYS", galaDinner: true }, token),
             specialPacketId,
             specialPacketPosition: index + 1,
-            status: "PENDING",
           },
         })
-      )
-    );
-
+      );
+    }
     return { specialPacketId, tickets };
   });
 }
 
 export async function findTicketByStripeSessionId(stripeSessionId: string) {
-  return prisma.ticket.findUnique({
-    where: { stripeSessionId },
+  return prisma.ticket.findFirst({
+    where: { payment: { stripeCheckoutSessionId: stripeSessionId } },
   });
 }
 
 export async function findTicketById(id: string) {
-  return prisma.ticket.findUnique({
-    where: { id },
-  });
+  return prisma.ticket.findUnique({ where: { id }, include: { payment: true } });
 }
 
 export async function findSpecialPacketTickets(specialPacketId: string) {
-  return prisma.ticket.findMany({
-    where: { specialPacketId },
-    orderBy: { specialPacketPosition: "asc" },
-  });
+  return prisma.ticket.findMany({ where: { specialPacketId }, orderBy: { specialPacketPosition: "asc" } });
 }
 
 export async function findTicketsByIds(ids: string[]) {
-  return prisma.ticket.findMany({
-    where: { id: { in: ids } },
-    orderBy: { specialPacketPosition: "asc" },
-  });
+  return prisma.ticket.findMany({ where: { id: { in: ids } }, orderBy: { specialPacketPosition: "asc" } });
 }
 
 export async function findTicketByToken(secureToken: string) {
-  return prisma.ticket.findUnique({
-    where: { secureToken },
-  });
+  return prisma.ticket.findUnique({ where: { secureToken } });
 }
 
 export async function findTicketWithPaymentByToken(secureToken: string) {
-  const ticket = await prisma.ticket.findUnique({
-    where: { secureToken },
-    include: {
-      payments: {
-        where: { source: "TICKET", status: "PAID" },
-        orderBy: { createdAt: "desc" },
-        take: 1,
-      },
-    },
-  });
-
-  if (!ticket || ticket.payments.length > 0 || !ticket.specialPacketId) {
-    return ticket;
+  const ticket = await prisma.ticket.findUnique({ where: { secureToken }, include: { payment: true } });
+  if (!ticket) return null;
+  let payment = ticket.payment?.status === "PAID" ? ticket.payment : null;
+  if (!payment && ticket.specialPacketId) {
+    payment = await prisma.payment.findFirst({
+      where: { purchaseType: "TICKET", status: "PAID", tickets: { some: { specialPacketId: ticket.specialPacketId } } },
+      orderBy: { createdAt: "desc" },
+    });
   }
-
-  const packetPayment = await prisma.payment.findFirst({
-    where: {
-      source: "TICKET",
-      status: "PAID",
-      ticket: { specialPacketId: ticket.specialPacketId },
-    },
-    orderBy: { createdAt: "desc" },
-  });
-
-  return { ...ticket, payments: packetPayment ? [packetPayment] : [] };
+  return { ...ticket, payments: payment ? [payment] : [] };
 }
 
 export async function findActiveTicketByEmail(email: string) {
   return prisma.ticket.findFirst({
-    where: {
-      email,
-      status: {
-        notIn: ["CANCELED"],
-      },
-    },
+    where: { email, status: { notIn: ["CANCELED"] } },
     select: { id: true, status: true },
   });
 }
@@ -267,6 +221,7 @@ export async function checkInTicket(
     data: {
       status,
       lastCheckIn: checkedInAt,
+      revision: { increment: 1 },
       ...(status === "CHECKED_GALA_DINNER"
         ? { galaCheckInAt: checkedInAt }
         : status === "CHECKED_TWO_DAY"
@@ -276,47 +231,33 @@ export async function checkInTicket(
   });
 }
 
+function credentialRows(value: Prisma.JsonValue) {
+  const credential = parseTicketCredential(value);
+  return credential.history
+    .slice()
+    .reverse()
+    .map((item) => ({
+      id: item.id,
+      status: item.status,
+      generatedAt: new Date(item.generatedAt),
+      replacedAt: item.replacedAt ? new Date(item.replacedAt) : null,
+      revokedAt: item.revokedAt ? new Date(item.revokedAt) : null,
+      lastSentAt: item.lastSentAt ? new Date(item.lastSentAt) : null,
+      lastDeliveryStatus: item.lastDeliveryStatus ?? null,
+      lastDeliveryError: item.lastDeliveryError ?? null,
+    }));
+}
+
 export async function getAllTickets() {
-  return prisma.ticket.findMany({
+  const tickets = await prisma.ticket.findMany({
+    where: { kind: "FORUM" },
     orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      fullName: true,
-      email: true,
-      phone: true,
-      instagram: true,
-      type: true,
-      galaDinner: true,
-      isIbpaMember: true,
-      status: true,
-      paidAt: true,
-      lastCheckIn: true,
-      forumCheckInAt: true,
-      dayOneCheckInAt: true,
-      dayTwoCheckInAt: true,
-      galaCheckInAt: true,
-      createdAt: true,
-      updatedAt: true,
-      payments: {
-        where: { source: "TICKET" },
-        orderBy: { createdAt: "desc" },
-        take: 1,
-        select: { amount: true, currency: true, status: true },
-      },
-      qrCredentials: {
-        orderBy: { generatedAt: "desc" },
-        take: 5,
-        select: {
-          id: true,
-          status: true,
-          generatedAt: true,
-          replacedAt: true,
-          revokedAt: true,
-          lastSentAt: true,
-          lastDeliveryStatus: true,
-          lastDeliveryError: true,
-        },
-      },
-    },
+    include: { payment: { select: { amount: true, currency: true, status: true } } },
   });
+  return tickets.map((ticket) => ({
+    ...ticket,
+    type: ticket.type ?? "TWO_DAYS",
+    payments: ticket.payment ? [ticket.payment] : [],
+    qrCredentials: credentialRows(ticket.credential).slice(0, 5),
+  }));
 }

@@ -1,7 +1,6 @@
 import { CheckCircle2, ChevronDown, FileText, Mail, Send, XCircle } from "lucide-react";
 import { EMAIL_TEST_CATALOG } from "@/features/test/server/email-catalog";
-import { runWithDataScope } from "@/features/test/server/data-scope";
-import { prisma } from "@/shared/lib/prisma";
+import { listTestEmailDeliveries } from "@/features/test/server/test-records";
 import { TestSubmitButton } from "@/features/test/components/TestSubmitButton";
 import { sendTestEmailAction, sendTestEmailSequenceAction } from "./actions";
 import {
@@ -20,7 +19,7 @@ export default async function TestEmailsPage({
 }) {
   const [query, logs] = await Promise.all([
     searchParams,
-    runWithDataScope({ dataScope: "TEST" }, () => prisma.emailDeliveryLog.findMany({ orderBy: { createdAt: "desc" }, take: 50 })),
+    listTestEmailDeliveries(50),
   ]);
   const defaultRecipient = process.env.TEST_EMAIL_RECIPIENT ?? "";
   const categories = ["applicant", "jury", "tickets", "authentication", "payment", "other"] as const;

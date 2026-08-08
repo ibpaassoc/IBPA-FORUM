@@ -56,7 +56,7 @@ export default async function TicketPaymentPage({
           </p>
           <Row
             label="Type"
-            value={ticket.specialPacketId ? "Special Packet — 2-Day Forum Pass" : ticketTypeLabel(ticket.type)}
+            value={ticket.specialPacketId ? "Special Packet — 2-Day Forum Pass" : ticketTypeLabel(ticket.type ?? "TWO_DAYS")}
           />
           <Row
             label="Gala Dinner"
