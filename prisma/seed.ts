@@ -1,4 +1,6 @@
 import "dotenv/config";
+import crypto from "node:crypto";
+import { Prisma } from "@prisma/client";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
@@ -20,22 +22,22 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  for (const definition of Object.values(PROMO_DEFINITIONS)) {
-    await prisma.promoCode.upsert({
-      where: { key: definition.key },
-      update: {
-        paymentFlow: definition.paymentFlow,
-        discountPercent: definition.discountPercent,
-      },
-      create: {
-        key: definition.key,
-        keyword: definition.defaultKeyword,
-        paymentFlow: definition.paymentFlow,
-        discountPercent: definition.discountPercent,
-        enabled: true,
-      },
-    });
-  }
+  const now = new Date().toISOString();
+  const codes = Object.values(PROMO_DEFINITIONS).map((definition) => ({
+    id: crypto.randomUUID(),
+    key: definition.key,
+    keyword: definition.defaultKeyword,
+    paymentFlow: definition.paymentFlow,
+    discountPercent: definition.discountPercent,
+    enabled: true,
+    createdAt: now,
+    updatedAt: now,
+  }));
+  await prisma.siteSetting.upsert({
+    where: { key: "promocodes" },
+    create: { key: "promocodes", value: { schemaVersion: 1, updatedAt: now, codes } as Prisma.InputJsonValue },
+    update: { value: { schemaVersion: 1, updatedAt: now, codes } as Prisma.InputJsonValue },
+  });
 
   for (const definition of categoryCatalog) {
     const category = await prisma.category.upsert({

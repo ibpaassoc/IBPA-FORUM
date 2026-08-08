@@ -1,4 +1,5 @@
 import "server-only";
+import crypto from "node:crypto";
 import { Resend } from "resend";
 import {
   EMAIL_REDIRECT_ALL_TO_TEST,
@@ -7,7 +8,10 @@ import {
   type EmailFromType,
 } from "@/lib/email/config";
 import { getDataScopeContext } from "@/features/test/server/data-scope";
-import { prisma } from "@/shared/lib/prisma";
+import {
+  appendTestEmailDelivery,
+  createTestRun,
+} from "@/features/test/server/test-records";
 
 export type EmailAttachment = {
   filename: string;
@@ -181,21 +185,28 @@ async function recordTestDelivery(
   result: SendEmailResult,
 ) {
   try {
-    await prisma.emailDeliveryLog.create({
-      data: {
-        templateType: inferredTemplateType(input),
-        category: input.category ?? input.type,
-        subject: input.subject,
-        recipient: result.recipient ?? "",
-        intendedRecipient,
-        providerId: result.providerId,
-        delivered: result.delivered,
-        errorCode: result.reason,
-        errorMessage: result.error,
-        providerResponse: JSON.parse(JSON.stringify(result)),
-        relatedEntityType: input.relatedEntity?.type,
-        relatedEntityId: input.relatedEntity?.id,
-      },
+    const context = getDataScopeContext();
+    const testId = context.testId ?? (await createTestRun({
+      name: `Email test: ${inferredTemplateType(input)}`,
+      kind: "email-delivery",
+      description: "Standalone isolated email-template delivery attempt.",
+      configuration: { templateType: inferredTemplateType(input) },
+    })).id;
+    await appendTestEmailDelivery(testId, {
+      id: crypto.randomUUID(),
+      templateType: inferredTemplateType(input),
+      category: input.category ?? input.type,
+      subject: input.subject,
+      recipient: result.recipient ?? "",
+      intendedRecipient,
+      providerId: result.providerId ?? null,
+      delivered: result.delivered,
+      errorCode: result.reason ?? null,
+      errorMessage: result.error ?? null,
+      providerResponse: JSON.parse(JSON.stringify(result)),
+      relatedEntityType: input.relatedEntity?.type ?? null,
+      relatedEntityId: input.relatedEntity?.id ?? null,
+      createdAt: new Date().toISOString(),
     });
   } catch (error) {
     console.error("Failed to record isolated test email delivery.", error);

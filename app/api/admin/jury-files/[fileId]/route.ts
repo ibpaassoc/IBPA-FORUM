@@ -2,6 +2,7 @@ import { get } from "@vercel/blob";
 import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
 import { prisma } from "@/shared/lib/prisma";
 import { adminT } from "@/lib/i18n/admin";
+import { parseStoredFiles } from "@/features/database/json-fields";
 
 export async function GET(
   request: Request,
@@ -15,22 +16,18 @@ export async function GET(
 
   const { fileId } = await params;
 
-  const fileRecord = await prisma.juryApplicationFile.findUnique({
-    where: { id: fileId },
-    select: {
-      fileName: true,
-      mimeType: true,
-      storageKey: true,
-    },
-  });
+  const applications = await prisma.juryApplication.findMany({ select: { files: true } });
+  const fileRecord = applications
+    .flatMap((application) => parseStoredFiles(application.files).items)
+    .find((file) => file.id === fileId);
 
-  if (!fileRecord?.storageKey) {
+  if (!fileRecord?.blobKey) {
     return new Response(adminT.api.notFound, { status: 404 });
   }
 
   let result;
   try {
-    result = await get(fileRecord.storageKey, {
+    result = await get(fileRecord.blobKey, {
       access: "private",
       ifNoneMatch: request.headers.get("if-none-match") ?? undefined,
     });
@@ -62,8 +59,8 @@ export async function GET(
     });
   }
 
-  const encodedFileName = encodeURIComponent(fileRecord.fileName);
-  const asciiFallback = fileRecord.fileName.replace(/[^\x20-\x7E]/g, "_");
+  const encodedFileName = encodeURIComponent(fileRecord.filename);
+  const asciiFallback = fileRecord.filename.replace(/[^\x20-\x7E]/g, "_");
 
   return new Response(result.stream, {
     status: 200,

@@ -36,7 +36,7 @@ type ApplicationRow = {
   award: { name: string };
   registrationEligible: boolean;
   setupEmailNeedsAttention: boolean;
-  nominationApplications: Array<{
+  nominations: Array<{
     id: string;
     category: { name: string };
     award: { name: string };
@@ -86,7 +86,7 @@ export default function ApplicationListPage({
       if (
         category &&
         app.category.name !== category &&
-        !app.nominationApplications.some((nomination) => nomination.category.name === category)
+        !app.nominations.some((nomination) => nomination.category.name === category)
       ) {
         return false;
       }
@@ -100,7 +100,7 @@ export default function ApplicationListPage({
           app.country,
           app.category.name,
           app.award.name,
-          ...app.nominationApplications.flatMap((nomination) => [
+          ...app.nominations.flatMap((nomination) => [
             nomination.category.name,
             nomination.award.name,
           ]),
@@ -255,8 +255,8 @@ export default function ApplicationListPage({
         <div className="flex flex-col gap-3">
           {filtered.map((app) => {
             const nominations =
-              app.nominationApplications.length > 0
-                ? app.nominationApplications
+              app.nominations.length > 0
+                ? app.nominations
                 : [{ id: app.id, category: app.category, award: app.award }];
             const previewNominations = nominations.slice(0, 3);
             const remainingNominationCount = nominations.length - previewNominations.length;

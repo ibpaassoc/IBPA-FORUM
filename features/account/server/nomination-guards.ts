@@ -5,6 +5,8 @@ import { requireApplicantAccount } from "@/features/account/server/accounts";
 import { activateRequestDataScope } from "@/features/test/server/data-scope";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import { prisma } from "@/shared/lib/prisma";
+import { editableNominationStatus } from "@/features/database/nomination-status";
+import { nominationAnswerViewRows, nominationFileViewRows, parseNominationAnswers, parseStoredFiles } from "@/features/database/json-fields";
 
 export type ApplicantNominationNavigationItem = {
   id: string;
@@ -19,17 +21,16 @@ export type ApplicantNominationNavigationItem = {
 export async function getApplicantNominationNavigation(
   applicantProfileId: string,
 ): Promise<ApplicantNominationNavigationItem[]> {
-  const nominations = await prisma.nominationApplication.findMany({
-    where: { applicantProfileId, deletedAt: null },
+  const nominations = await prisma.nomination.findMany({
+    where: { applicantProfileId, status: { not: "ARCHIVED" } },
     orderBy: { createdAt: "asc" },
     select: {
       id: true,
       status: true,
-      lockedAt: true,
       category: { select: { name: true, slug: true } },
       award: { select: { name: true } },
-      answers: { select: { fieldKey: true } },
-      files: { where: { deletedAt: null }, select: { fieldKey: true } },
+      answers: true,
+      files: true,
     },
   });
 
@@ -37,8 +38,8 @@ export async function getApplicantNominationNavigation(
     const requiredFields = (categoryFieldConfigs[nomination.category.slug] ?? []).filter(
       (field) => field.required,
     );
-    const answeredKeys = new Set(nomination.answers.map((answer) => answer.fieldKey));
-    const fileKeys = new Set(nomination.files.map((file) => file.fieldKey));
+    const answeredKeys = new Set(parseNominationAnswers(nomination.answers).fields.map((answer) => answer.fieldId));
+    const fileKeys = new Set(parseStoredFiles(nomination.files).items.map((file) => file.fieldId));
     const missingRequiredCount = requiredFields.filter((field) =>
       field.type === "file" ? !fileKeys.has(field.key) : !answeredKeys.has(field.key),
     ).length;
@@ -46,7 +47,7 @@ export async function getApplicantNominationNavigation(
     return {
       id: nomination.id,
       status: nomination.status,
-      locked: nomination.lockedAt !== null || nomination.status === "LOCKED",
+      locked: nomination.status === "LOCKED",
       categoryName: nomination.category.name,
       awardName: nomination.award.name,
       completionPercentage:
@@ -64,7 +65,7 @@ export async function requireOwnedNomination(nominationId: string) {
   const { account, applicantProfile } = await requireApplicantAccount();
   activateRequestDataScope({ dataScope: account.dataScope });
 
-  const nomination = await prisma.nominationApplication.findFirst({
+  const nomination = await prisma.nomination.findFirst({
     where: {
       id: nominationId,
       applicantProfileId: applicantProfile.id,
@@ -72,13 +73,12 @@ export async function requireOwnedNomination(nominationId: string) {
     include: {
       category: true,
       award: true,
-      answers: { orderBy: { createdAt: "asc" } },
-      files: { where: { deletedAt: null }, orderBy: { createdAt: "asc" } },
+      payment: true,
       reviews: {
         where: { status: "COMPLETED" },
         select: {
           totalScore: true,
-          completedAt: true,
+          submittedAt: true,
         },
       },
     },
@@ -88,14 +88,26 @@ export async function requireOwnedNomination(nominationId: string) {
     notFound();
   }
 
-  return { nomination, applicantProfile };
+  return {
+    nomination: {
+      ...nomination,
+      answersJson: nomination.answers,
+      filesJson: nomination.files,
+      answers: nominationAnswerViewRows(nomination.answers),
+      files: nominationFileViewRows(nomination.files),
+      paymentStatus: nomination.payment.status,
+      paidAt: nomination.payment.paidAt,
+      locked: nomination.status === "LOCKED",
+    },
+    applicantProfile,
+  };
 }
 
 export async function requireEditableNomination(nominationId: string) {
   const context = await requireOwnedNomination(nominationId);
   const { nomination } = context;
 
-  if (nomination.lockedAt || nomination.status === "LOCKED") {
+  if (!editableNominationStatus(nomination.status)) {
     throw new Response("Nomination is locked.", { status: 409 });
   }
 

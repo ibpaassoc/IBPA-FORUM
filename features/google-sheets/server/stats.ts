@@ -104,12 +104,11 @@ export async function computeStatsLayout(): Promise<StatsLayout> {
   const [paidApplications, paidJury, tickets, paidRevenue] = await Promise.all([
     prisma.applicantProfile.findMany({
       where: {
-        deletedAt: null,
-        nominations: { some: { paymentStatus: "PAID", deletedAt: null } },
+        nominations: { some: { payment: { status: "PAID" }, status: { not: "ARCHIVED" } } },
       },
       select: {
         nominations: {
-          where: { paymentStatus: "PAID", deletedAt: null },
+          where: { payment: { status: "PAID" }, status: { not: "ARCHIVED" } },
           select: {
             category: { select: { name: true } },
             award: { select: { name: true } },
@@ -119,22 +118,23 @@ export async function computeStatsLayout(): Promise<StatsLayout> {
     }),
     prisma.juryApplication.findMany({
       where: { status: "PAID" },
-      select: { approvedCategories: true },
+      select: { profile: { select: { approvedCategories: true } } },
     }),
     prisma.ticket.findMany({
+      where: { kind: "FORUM" },
       select: { type: true, status: true },
     }),
     prisma.payment.groupBy({
-      by: ["source"],
+      by: ["purchaseType"],
       where: { status: "PAID" },
       _sum: { amount: true },
     }),
   ]);
 
-  const revenueBySource = (source: "COMPETITOR" | "JURY" | "TICKET"): number =>
-    paidRevenue.find((row) => row.source === source)?._sum.amount ?? 0;
+  const revenueBySource = (source: "NOMINATION" | "JURY" | "TICKET"): number =>
+    paidRevenue.find((row) => row.purchaseType === source)?._sum.amount ?? 0;
 
-  const appRevenue = revenueBySource("COMPETITOR");
+  const appRevenue = revenueBySource("NOMINATION");
   const juryRevenue = revenueBySource("JURY");
   const ticketRevenue = revenueBySource("TICKET");
   const totalRevenue = appRevenue + juryRevenue + ticketRevenue;
@@ -157,14 +157,14 @@ export async function computeStatsLayout(): Promise<StatsLayout> {
 
   const juryCategoryCounts = new Map<string, number>();
   for (const jury of paidJury) {
-    for (const category of orderCategories(jury.approvedCategories)) {
+    for (const category of orderCategories(jury.profile?.approvedCategories ?? [])) {
       increment(juryCategoryCounts, category);
     }
   }
 
   const ticketTypeCounts = new Map<string, number>();
   for (const ticket of soldTickets) {
-    increment(ticketTypeCounts, ticketTypeLabelRu(ticket.type));
+    increment(ticketTypeCounts, ticketTypeLabelRu(ticket.type ?? "TWO_DAYS"));
   }
 
   const now = formatDateTime(new Date());

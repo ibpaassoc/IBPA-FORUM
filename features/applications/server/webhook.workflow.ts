@@ -1,9 +1,13 @@
-import { Prisma, type StripeWebhookEvent } from "@prisma/client";
+import { Prisma, type StripeWebhook } from "@prisma/client";
 import type Stripe from "stripe";
+import { issueApplicantRegistrationLink } from "@/features/account/server/applicant-registration";
+import { accountIdentity } from "@/features/account/server/accounts";
+import {
+  emptyNominationAnswers,
+  emptyStoredFiles,
+} from "@/features/database/json-fields";
 import { sendCompetitorApplicationConfirmedEmail } from "@/features/email/server/competitor-email.workflow";
 import { sendPaymentAdminNotificationEmail } from "@/features/email/server/payment-email.workflow";
-import { issueApplicantRegistrationLink } from "@/features/account/server/applicant-registration";
-import { allocateApplicantNominationAmounts } from "@/features/applications/lib/pricing";
 import {
   APPLICANT_NOMINATION_PURCHASE_FLOW,
   parseApplicantPurchaseManifest,
@@ -12,7 +16,6 @@ import {
 import { syncApplicationOnChange } from "@/features/google-sheets";
 import { getCategoryScoringDefinition } from "@/features/jury/scoring/category-scoring";
 import { prisma } from "@/shared/lib/prisma";
-import { accountIdentity } from "@/features/account/server/accounts";
 
 type CompetitorPaymentEmailPayload = {
   to: string;
@@ -28,40 +31,43 @@ function serializeStripeEvent(event: Stripe.Event): Prisma.InputJsonValue {
 }
 
 function isDuplicateStripeEventError(error: unknown) {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error &&
-    error.code === "P2002"
-  );
+  return typeof error === "object" && error !== null && "code" in error && error.code === "P2002";
 }
 
 async function recordStripeEvent(
   tx: Prisma.TransactionClient,
   event: Stripe.Event
-): Promise<StripeWebhookEvent> {
-  return tx.stripeWebhookEvent.create({
+): Promise<StripeWebhook> {
+  return tx.stripeWebhook.create({
     data: {
-      stripeEventId: event.id,
+      eventId: event.id,
       eventType: event.type,
-      payloadJson: serializeStripeEvent(event),
+      payload: serializeStripeEvent(event),
+      state: "PROCESSING",
+      attempts: 1,
+      lastAttemptAt: new Date(),
     },
   });
 }
 
-function getPaymentIntentId(value: string | Stripe.PaymentIntent | null) {
-  if (!value) {
-    return null;
-  }
+async function markStripeEventProcessed(
+  tx: Prisma.TransactionClient,
+  eventId: string,
+  paymentId: string | null
+) {
+  await tx.stripeWebhook.update({
+    where: { eventId },
+    data: { state: "PROCESSED", processedAt: new Date(), paymentId },
+  });
+}
 
+function getPaymentIntentId(value: string | Stripe.PaymentIntent | null) {
+  if (!value) return null;
   return typeof value === "string" ? value : value.id;
 }
 
 function getApplicantPurchasePaymentId(metadata: Record<string, string> | null | undefined) {
-  if (!metadata || metadata.flowType !== APPLICANT_NOMINATION_PURCHASE_FLOW) {
-    return null;
-  }
-
+  if (!metadata || metadata.flowType !== APPLICANT_NOMINATION_PURCHASE_FLOW) return null;
   return metadata.paymentId ?? null;
 }
 
@@ -82,21 +88,15 @@ async function upsertApplicantAccountForPurchase(
   tx: Prisma.TransactionClient,
   manifest: ApplicantPurchaseManifest
 ) {
-  const email = manifest.personalInfo.email;
+  const email = manifest.personalInfo.email.trim().toLowerCase();
   const existing = await tx.account.findUnique({
     where: accountIdentity(email, "APPLICANT"),
     include: { applicantProfile: true },
   });
-
   const account =
     existing ??
     (await tx.account.create({
-      data: {
-        email,
-        normalizedEmail: email,
-        role: "APPLICANT",
-        status: "INVITED",
-      },
+      data: { email, normalizedEmail: email, role: "APPLICANT", status: "INVITED" },
       include: { applicantProfile: true },
     }));
 
@@ -111,31 +111,18 @@ async function upsertApplicantAccountForPurchase(
     yearsExperience: manifest.personalInfo.yearsExperience,
     membershipNumber: manifest.membership.membershipNumber,
     membershipLevel: manifest.membership.membershipLevel,
-    membershipVerifiedAt: manifest.membership.verifiedAt
-      ? new Date(manifest.membership.verifiedAt)
-      : null,
-    membershipVerificationSource: manifest.membership.verificationSource,
     preferredLocale: manifest.locale,
     websiteUrl: manifest.personalInfo.websiteUrl,
     socialUrl: manifest.personalInfo.socialUrl,
     reviewsUrl: manifest.personalInfo.reviewsUrl,
   };
-
   const profile = account.applicantProfile
     ? canUpdateProfile
-      ? await tx.applicantProfile.update({
-          where: { accountId: account.id },
-          data: profileData,
-        })
+      ? await tx.applicantProfile.update({ where: { accountId: account.id }, data: profileData })
       : account.applicantProfile
-    : await tx.applicantProfile.create({
-        data: {
-      accountId: account.id,
-      ...profileData,
-        },
-      });
+    : await tx.applicantProfile.create({ data: { accountId: account.id, ...profileData } });
 
-  return { account, profile, isNewAccount: !existing };
+  return { account, profile };
 }
 
 async function handleApplicantNominationCheckoutCompleted(event: Stripe.Event) {
@@ -144,24 +131,20 @@ async function handleApplicantNominationCheckoutCompleted(event: Stripe.Event) {
     getApplicantPurchasePaymentId(session.metadata) ??
     (await prisma.payment
       .findFirst({
-        where: { stripeSessionId: session.id, source: "COMPETITOR" },
+        where: { stripeCheckoutSessionId: session.id, purchaseType: "NOMINATION" },
         select: { id: true },
       })
       .then((payment) => payment?.id ?? null));
-
-  if (!paymentId) {
-    return false;
-  }
+  if (!paymentId) return false;
 
   const paymentIntentId = getPaymentIntentId(session.payment_intent);
-  const setupAccountIds: string[] = [];
+  let setupAccountId: string | null = null;
   let fulfilledProfileId: string | null = null;
   let emailPayload: CompetitorPaymentEmailPayload | null = null;
 
   try {
     await prisma.$transaction(async (tx) => {
       await recordStripeEvent(tx, event);
-
       const payment = await tx.payment.findUnique({
         where: { id: paymentId },
         select: {
@@ -170,119 +153,85 @@ async function handleApplicantNominationCheckoutCompleted(event: Stripe.Event) {
           currency: true,
           status: true,
           fulfilledAt: true,
-          purchaseManifest: true,
+          pricingSnapshot: true,
         },
       });
+      if (!payment) throw new Error("Applicant nomination payment was not found.");
 
-      if (!payment || payment.fulfilledAt || payment.status === "PAID") {
-        return;
-      }
+      if (!payment.fulfilledAt && payment.status !== "PAID") {
+        const manifest = parseApplicantPurchaseManifest(payment.pricingSnapshot);
+        if (!manifest) throw new Error("Applicant nomination purchase manifest is missing or invalid.");
+        const amountTotal = session.amount_total ?? 0;
+        const currency = (session.currency ?? "").toLowerCase();
+        if (amountTotal !== payment.amount || currency !== payment.currency.toLowerCase()) {
+          throw new Error("Stripe checkout amount does not match the stored applicant purchase.");
+        }
 
-      const manifest = parseApplicantPurchaseManifest(payment.purchaseManifest);
-      if (!manifest) {
-        throw new Error("Applicant nomination purchase manifest is missing or invalid.");
-      }
-
-      const amountTotal = session.amount_total ?? 0;
-      const currency = (session.currency ?? "").toLowerCase();
-      if (amountTotal !== payment.amount || currency !== payment.currency.toLowerCase()) {
-        throw new Error("Stripe checkout amount does not match the stored applicant purchase.");
-      }
-
-      const paidAt = new Date();
-      const { account, profile } = await upsertApplicantAccountForPurchase(tx, manifest);
-      fulfilledProfileId = profile.id;
-      const amountAllocations = allocateApplicantNominationAmounts(
-        payment.amount,
-        manifest.selectedAwards.length
-      );
-
-      for (const [index, selectedAward] of manifest.selectedAwards.entries()) {
-        const existingNomination = await tx.nominationApplication.findFirst({
-          where: {
-            applicantProfileId: profile.id,
-            awardId: selectedAward.awardId,
-            deletedAt: null,
-          },
-          select: { id: true },
-        });
-        const nominationData = {
-          purchasePaymentId: payment.id,
-          paymentStatus: "PAID" as const,
-          paidAt,
-          stripeCheckoutSessionId: session.id,
-          stripePaymentIntentId: paymentIntentId,
-        };
-
-        if (existingNomination) {
-          await tx.nominationApplication.update({
-            where: { id: existingNomination.id },
-            data: nominationData,
-          });
-        } else {
-          await tx.nominationApplication.create({
-            data: {
+        const paidAt = new Date();
+        const { account, profile } = await upsertApplicantAccountForPurchase(tx, manifest);
+        fulfilledProfileId = profile.id;
+        for (const selectedAward of manifest.selectedAwards) {
+          const existingNomination = await tx.nomination.findFirst({
+            where: {
               applicantProfileId: profile.id,
               awardId: selectedAward.awardId,
-              categoryId: selectedAward.categoryId,
-              status: "PURCHASED",
-              scoringSchema: getCategoryScoringDefinition(
-                selectedAward.categorySlug
-              ) as Prisma.InputJsonValue,
-              amount: amountAllocations[index] ?? 0,
-              currency: payment.currency,
-              ...nominationData,
+              status: { not: "ARCHIVED" },
             },
+            select: { id: true },
           });
+          if (!existingNomination) {
+            await tx.nomination.create({
+              data: {
+                applicantProfileId: profile.id,
+                paymentId: payment.id,
+                awardId: selectedAward.awardId,
+                categoryId: selectedAward.categoryId,
+                status: "DRAFT",
+                answers: emptyNominationAnswers() as unknown as Prisma.InputJsonValue,
+                files: emptyStoredFiles() as unknown as Prisma.InputJsonValue,
+                scoringSchema: getCategoryScoringDefinition(
+                  selectedAward.categorySlug
+                ) as Prisma.InputJsonValue,
+              },
+            });
+          }
         }
+        await tx.payment.update({
+          where: { id: payment.id },
+          data: {
+            accountId: account.id,
+            status: "PAID",
+            paidAt,
+            fulfilledAt: paidAt,
+            stripeCheckoutSessionId: session.id,
+            stripePaymentIntentId: paymentIntentId,
+          },
+        });
+        if (!account.passwordHash && account.status !== "ACTIVE" && !account.lastSetupEmailSentAt) {
+          setupAccountId = account.id;
+        }
+        const firstNomination = manifest.selectedAwards[0];
+        emailPayload = {
+          to: manifest.personalInfo.email,
+          fullName: manifest.personalInfo.fullName,
+          categoryName: firstNomination?.categoryName ?? "IBPA Beauty Award",
+          awardName:
+            manifest.selectedAwards.length === 1
+              ? firstNomination?.awardName ?? "Nomination"
+              : `${manifest.selectedAwards.length} nominations`,
+          amount: payment.amount,
+          currency: payment.currency,
+        };
       }
-
-      await tx.payment.update({
-        where: { id: payment.id },
-        data: {
-          applicantProfileId: profile.id,
-          status: "PAID",
-          paidAt,
-          fulfilledAt: paidAt,
-          stripeSessionId: session.id,
-          stripePaymentIntentId: paymentIntentId,
-        },
-      });
-
-      if (!account.passwordHash && account.status !== "ACTIVE" && !account.lastSetupEmailSentAt) {
-        setupAccountIds.push(account.id);
-      }
-
-      const firstNomination = manifest.selectedAwards[0];
-      emailPayload = {
-        to: manifest.personalInfo.email,
-        fullName: manifest.personalInfo.fullName,
-        categoryName: firstNomination?.categoryName ?? "IBPA Beauty Award",
-        awardName:
-          manifest.selectedAwards.length === 1
-            ? firstNomination?.awardName ?? "Nomination"
-            : `${manifest.selectedAwards.length} nominations`,
-        amount: payment.amount,
-        currency: payment.currency,
-      };
+      await markStripeEventProcessed(tx, event.id, payment.id);
     });
   } catch (error) {
-    if (isDuplicateStripeEventError(error)) {
-      return true;
-    }
-
+    if (isDuplicateStripeEventError(error)) return true;
     throw error;
   }
 
-  const setupAccountId = setupAccountIds[0] ?? null;
-  if (setupAccountId) {
-    await issueApplicantRegistrationLink({ accountId: setupAccountId });
-  }
-
-  if (fulfilledProfileId) {
-    syncApplicationOnChange(fulfilledProfileId);
-  }
-
+  if (setupAccountId) await issueApplicantRegistrationLink({ accountId: setupAccountId });
+  if (fulfilledProfileId) syncApplicationOnChange(fulfilledProfileId);
   if (emailPayload) {
     const confirmed = emailPayload as CompetitorPaymentEmailPayload;
     try {
@@ -290,7 +239,6 @@ async function handleApplicantNominationCheckoutCompleted(event: Stripe.Event) {
     } catch (error) {
       console.error("Failed to send competitor payment confirmation email", error);
     }
-
     try {
       await sendPaymentAdminNotificationEmail({
         flowLabel: "Competitor nominations",
@@ -305,88 +253,56 @@ async function handleApplicantNominationCheckoutCompleted(event: Stripe.Event) {
       console.error("Failed to send competitor payment admin notification email", error);
     }
   }
-
   return true;
 }
+
 async function handleApplicantNominationCheckoutExpired(event: Stripe.Event) {
   const session = event.data.object as Stripe.Checkout.Session;
   const paymentId =
     getApplicantPurchasePaymentId(session.metadata) ??
-    (await prisma.payment.findFirst({
-      where: { stripeSessionId: session.id, source: "COMPETITOR" },
-      select: { id: true },
-    }).then((payment) => payment?.id ?? null));
-
-  if (!paymentId) {
-    return false;
-  }
-
+    (await prisma.payment
+      .findFirst({
+        where: { stripeCheckoutSessionId: session.id, purchaseType: "NOMINATION" },
+        select: { id: true },
+      })
+      .then((payment) => payment?.id ?? null));
+  if (!paymentId) return false;
   try {
     await prisma.$transaction(async (tx) => {
       await recordStripeEvent(tx, event);
-
       await tx.payment.updateMany({
-        where: {
-          id: paymentId,
-          status: "PENDING",
-          stripeSessionId: session.id,
-        },
-        data: {
-          status: "EXPIRED",
-        },
+        where: { id: paymentId, status: "PENDING", stripeCheckoutSessionId: session.id },
+        data: { status: "EXPIRED" },
       });
+      await markStripeEventProcessed(tx, event.id, paymentId);
     });
   } catch (error) {
-    if (isDuplicateStripeEventError(error)) {
-      return true;
-    }
-
+    if (isDuplicateStripeEventError(error)) return true;
     throw error;
   }
-
   return true;
 }
+
 async function handleApplicantNominationPaymentFailed(event: Stripe.Event) {
   const paymentIntent = event.data.object as Stripe.PaymentIntent;
-  const legacyApplicationId = paymentIntent.metadata?.applicationId;
   const paymentId =
     getApplicantPurchasePaymentId(paymentIntent.metadata) ??
-    (legacyApplicationId
-      ? await prisma.payment.findFirst({
-          where: {
-            source: "COMPETITOR",
-            purchaseManifest: { path: ["legacyApplicationId"], equals: legacyApplicationId },
-          },
-          select: { id: true },
-        }).then((payment) => payment?.id ?? null)
-      : null);
-
-  if (!paymentId) {
-    return false;
-  }
-
+    (await prisma.payment
+      .findUnique({ where: { stripePaymentIntentId: paymentIntent.id }, select: { id: true } })
+      .then((payment) => payment?.id ?? null));
+  if (!paymentId) return false;
   try {
     await prisma.$transaction(async (tx) => {
       await recordStripeEvent(tx, event);
-
       await tx.payment.updateMany({
-        where: {
-          id: paymentId,
-          status: "PENDING",
-        },
-        data: {
-          status: "FAILED",
-          stripePaymentIntentId: paymentIntent.id,
-        },
+        where: { id: paymentId, status: "PENDING" },
+        data: { status: "FAILED", stripePaymentIntentId: paymentIntent.id },
       });
+      await markStripeEventProcessed(tx, event.id, paymentId);
     });
   } catch (error) {
-    if (isDuplicateStripeEventError(error)) {
-      return true;
-    }
-
+    if (isDuplicateStripeEventError(error)) return true;
     throw error;
   }
-
   return true;
 }

@@ -1,13 +1,8 @@
 import { requireApplicantAccount } from "@/features/account/server/accounts";
-import { formatDateLabel } from "@/features/account/components/nomination-presentation";
 import ApplicantProfileContent from "@/features/account/components/profile/ApplicantProfileContent";
-import { getServerLanguage } from "@/lib/i18n/server";
 
 export default async function ApplicantProfilePage() {
-  const [{ account, applicantProfile }, language] = await Promise.all([
-    requireApplicantAccount(),
-    getServerLanguage(),
-  ]);
+  const { account, applicantProfile } = await requireApplicantAccount();
 
   return (
     <ApplicantProfileContent
@@ -27,11 +22,7 @@ export default async function ApplicantProfilePage() {
       }}
       membershipNumber={applicantProfile.membershipNumber ?? ""}
       membershipLevel={applicantProfile.membershipLevel ?? ""}
-      membershipVerifiedLabel={
-        applicantProfile.membershipVerifiedAt
-          ? formatDateLabel(applicantProfile.membershipVerifiedAt, language)
-          : ""
-      }
+      membershipVerifiedLabel=""
       isVerifiedMember={Boolean(
         applicantProfile.membershipNumber && applicantProfile.membershipLevel,
       )}

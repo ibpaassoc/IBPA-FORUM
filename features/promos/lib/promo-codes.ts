@@ -1,4 +1,4 @@
-import type { PromoPaymentFlow } from "@prisma/client";
+export type PromoPaymentFlow = "APPLICATIONS" | "TICKETS";
 
 export const PROMO_DEFINITIONS = {
   APPLICATION20: {

@@ -1,11 +1,17 @@
-import { randomUUID } from "node:crypto";
+import { randomBytes, randomUUID } from "node:crypto";
 import { del } from "@vercel/blob";
 import type { JuryApplicationStatus } from "@prisma/client";
-import { sendApplicationReceivedNotificationEmail } from "@/features/email/server/application-email.workflow";
+import { accountIdentity, sendSetupEmailForAccount, upsertJuryAccountForApplication } from "@/features/account/server/accounts";
+import { hashAccountToken } from "@/features/account/server/tokens";
 import {
-  sendSetupEmailForAccount,
-  upsertJuryAccountForApplication,
-} from "@/features/account/server/accounts";
+  emptyJuryInformationRequests,
+  parseJuryInformationRequests,
+  parseStoredFiles,
+  type JuryInformationRequests,
+  type StoredFile,
+  type StoredFiles,
+} from "@/features/database/json-fields";
+import { sendApplicationReceivedNotificationEmail } from "@/features/email/server/application-email.workflow";
 import {
   sendJuryAdditionalInfoRequestedEmail,
   sendJuryApplicationReceivedEmail,
@@ -13,36 +19,44 @@ import {
   sendJuryRejectedEmail,
   sendJuryResubmittedAdminNotificationEmail,
 } from "@/features/email/server/jury-email.workflow";
-import { createJuryCheckoutSession } from "@/features/payments/server/checkout-sessions";
-import { buildJuryFieldErrors } from "@/features/jury/schemas/jury-application.schema";
-import {
-  type BlobFileInfo,
-  getText,
-  toOptionalText,
-} from "@/features/jury/server/uploads";
-import { readEnv } from "@/lib/env";
-import { prisma } from "@/shared/lib/prisma";
-import { revalidatePublicJuryMembers } from "@/features/jury/server/queries";
-import { syncJuryOnChange } from "@/features/google-sheets";
 import {
   getInitialApprovedCategories,
   normalizeApprovedCategories,
   requireApprovedCategories,
 } from "@/features/jury/lib/approved-categories";
+import { buildJuryFieldErrors } from "@/features/jury/schemas/jury-application.schema";
+import { revalidatePublicJuryMembers } from "@/features/jury/server/queries";
+import { type BlobFileInfo, getText, toOptionalText } from "@/features/jury/server/uploads";
+import { createJuryCheckoutSession } from "@/features/payments/server/checkout-sessions";
+import { syncJuryOnChange } from "@/features/google-sheets";
+import { readEnv } from "@/lib/env";
+import { prisma } from "@/shared/lib/prisma";
+
+const INFORMATION_REQUEST_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 function getAppUrl() {
   return readEnv(["APP_URL", "FRONTEND_URL", "NEXT_PUBLIC_APP_URL"]).replace(/\/+$/, "");
 }
 
+function storedFile(fieldId: string, blob: BlobFileInfo): StoredFile {
+  return {
+    id: randomUUID(),
+    fieldId,
+    blobKey: blob.storageKey,
+    filename: blob.fileName,
+    mimeType: blob.mimeType,
+    size: blob.fileSize,
+    uploadedAt: new Date().toISOString(),
+  };
+}
+
 export async function submitJuryApplication(formData: FormData) {
   const fieldErrors = buildJuryFieldErrors(formData);
-
   if (Object.keys(fieldErrors).length > 0) {
     return {
       status: 400,
       body: {
-        message:
-          "Please complete all required jury application fields before submitting.",
+        message: "Please complete all required jury application fields before submitting.",
         fieldErrors,
       },
     };
@@ -51,356 +65,236 @@ export async function submitJuryApplication(formData: FormData) {
   const firstName = getText(formData, "firstName");
   const lastName = getText(formData, "lastName");
   const fullName = `${firstName} ${lastName}`.trim();
-  const email = getText(formData, "email");
-  const normalizedEmail = email.trim().toLowerCase();
+  const normalizedEmail = getText(formData, "email").toLowerCase();
   const phone = getText(formData, "phone");
   const countryValue = getText(formData, "country");
-  const countryOther = getText(formData, "countryOther");
-  const country = countryValue === "Other" ? countryOther : countryValue;
+  const country = countryValue === "Other" ? getText(formData, "countryOther") : countryValue;
   const city = getText(formData, "city");
   const professionalTitle = getText(formData, "professionalTitle");
   const employerAffiliation = getText(formData, "employerAffiliation");
-  const previousJudgingExperience = getText(formData, "previousJudgingExperience");
-  const previousJudgingDetails = getText(formData, "previousJudgingDetails");
+  const previousJudgingExperience = getText(formData, "previousJudgingExperience") === "yes";
+  const previousJudgingDetails = toOptionalText(getText(formData, "previousJudgingDetails"));
   const professionalBio = getText(formData, "professionalBio");
-  const professionalWebsite = getText(formData, "professionalWebsite");
+  const professionalWebsite = toOptionalText(getText(formData, "professionalWebsite"));
   const conflictDisclosure = getText(formData, "conflictDisclosure");
   const motivation = getText(formData, "motivation");
   const yearsExperience = Number(getText(formData, "yearsExperience"));
-  const expertise = formData
-    .getAll("expertise")
-    .map((value) => String(value).trim())
-    .filter(Boolean);
+  const expertiseAreas = formData.getAll("expertise").map(String).map((value) => value.trim()).filter(Boolean);
+  const approvedCategories = getInitialApprovedCategories(expertiseAreas);
   const ibpaAssociationMember = getText(formData, "ibpaAssociationMember") === "yes";
   const ibpaNumber = toOptionalText(getText(formData, "ibpaNumber"));
-
-  const profilePhotoBlob = JSON.parse(
-    getText(formData, "profilePhotoBlob") || "null"
-  ) as BlobFileInfo | null;
+  const profilePhotoBlob = JSON.parse(getText(formData, "profilePhotoBlob") || "null") as BlobFileInfo | null;
   const certificationBlobs = formData
     .getAll("certificationsBlob")
-    .map((v) => JSON.parse(String(v)) as BlobFileInfo);
-
-  const existingApplication = await prisma.juryApplication.findFirst({
-    where: {
-      email: normalizedEmail,
-    },
-    select: {
-      id: true,
-    },
-  });
-
-  if (existingApplication) {
-    return {
-      status: 409,
-      body: {
-        message: "You already submitted the application.",
-      },
-    };
-  }
+    .map((value) => JSON.parse(String(value)) as BlobFileInfo);
 
   if (!profilePhotoBlob) {
-    return {
-      status: 400,
-      body: {
-        message: "Profile photo is required.",
-      },
-    };
+    return { status: 400, body: { message: "Profile photo is required." } };
+  }
+  const existingApplication = await prisma.juryApplication.findFirst({
+    where: { email: { equals: normalizedEmail, mode: "insensitive" } },
+    select: { id: true },
+  });
+  if (existingApplication) {
+    return { status: 409, body: { message: "You already submitted the application." } };
   }
 
   const applicationId = randomUUID();
-
-  const juryApplication = await prisma.juryApplication.create({
-    data: {
-      id: applicationId,
-      fullName,
-      email: normalizedEmail,
-      phone,
-      country,
-      city,
-      professionalTitle,
-      yearsExperience,
-      employerAffiliation,
-      previousJudgingExperience: previousJudgingExperience === "yes",
-      previousJudgingDetails: toOptionalText(previousJudgingDetails),
-      expertiseAreas: expertise,
-      approvedCategories: getInitialApprovedCategories(expertise),
-      professionalBio,
-      professionalWebsite: toOptionalText(professionalWebsite),
-      conflictDisclosure,
-      confidentialityAgreementAccepted: true,
-      motivation,
-      ibpaAssociationMember,
-      ibpaNumber: ibpaAssociationMember ? ibpaNumber : null,
-      status: "SUBMITTED",
-      paymentStatus: "PENDING",
-      submittedAt: new Date(),
-      files: {
-        create: [
-          {
-            fieldKey: "profilePhoto",
-            ...profilePhotoBlob,
-          },
-          ...certificationBlobs.map((blob) => ({
-            fieldKey: "certifications",
-            ...blob,
-          })),
-        ],
+  const files: StoredFiles = {
+    schemaVersion: 1,
+    items: [
+      storedFile("profilePhoto", profilePhotoBlob),
+      ...certificationBlobs.map((blob) => storedFile("certifications", blob)),
+    ],
+  };
+  const juryApplication = await prisma.$transaction(async (tx) => {
+    const existingAccount = await tx.account.findUnique({
+      where: accountIdentity(normalizedEmail, "JURY"),
+      select: { id: true, status: true },
+    });
+    if (existingAccount?.status === "DISABLED") throw new Error("This jury account is disabled.");
+    const account =
+      existingAccount ??
+      (await tx.account.create({
+        data: {
+          email: normalizedEmail,
+          normalizedEmail,
+          role: "JURY",
+          status: "INVITED",
+        },
+        select: { id: true },
+      }));
+    const application = await tx.juryApplication.create({
+      data: {
+        id: applicationId,
+        accountId: account.id,
+        fullName,
+        email: normalizedEmail,
+        phone,
+        country,
+        city,
+        professionalTitle,
+        yearsExperience,
+        employerAffiliation,
+        previousJudgingExperience,
+        previousJudgingDetails,
+        expertiseAreas,
+        professionalBio,
+        professionalWebsite,
+        conflictDisclosure,
+        motivation,
+        ibpaAssociationMember,
+        ibpaNumber: ibpaAssociationMember ? ibpaNumber : null,
+        status: "SUBMITTED",
+        submittedAt: new Date(),
+        informationRequests: emptyJuryInformationRequests(),
+        files,
       },
-    },
-    select: {
-      id: true,
-      fullName: true,
-      city: true,
-      country: true,
-      expertiseAreas: true,
-      status: true,
-    },
+    });
+    await tx.juryProfile.create({
+      data: {
+        accountId: account.id,
+        juryApplicationId: application.id,
+        fullName,
+        phone,
+        country,
+        city,
+        professionalTitle,
+        yearsExperience,
+        employerAffiliation,
+        expertiseAreas,
+        approvedCategories,
+        professionalBio,
+        professionalWebsite,
+      },
+    });
+    return application;
   });
 
   try {
-    await sendJuryApplicationReceivedEmail({
-      to: normalizedEmail,
-      fullName,
-    });
+    await sendJuryApplicationReceivedEmail({ to: normalizedEmail, fullName });
   } catch (error) {
     console.error("Failed to send jury application received email", error);
   }
-
   try {
     await sendApplicationReceivedNotificationEmail({
       applicationType: "Jury",
       applicantName: fullName,
       applicantEmail: normalizedEmail,
-      details: [
-        `Location: ${city}, ${country}`,
-        `Professional title: ${professionalTitle}`,
-      ],
+      details: [`Location: ${city}, ${country}`, `Professional title: ${professionalTitle}`],
     });
   } catch (error) {
     console.error("Failed to send jury application admin notification email", error);
   }
-
   syncJuryOnChange(juryApplication.id);
-
   return {
     status: 201,
     body: {
-      message:
-        "Your jury application has been received. IBPA review may take up to 14 business days.",
+      message: "Your jury application has been received. IBPA review may take up to 14 business days.",
       id: juryApplication.id,
       status: juryApplication.status,
-      summary: {
-        name: juryApplication.fullName,
-        location: `${juryApplication.city}, ${juryApplication.country}`,
-        expertise: juryApplication.expertiseAreas,
-      },
+      summary: { name: fullName, location: `${city}, ${country}`, expertise: expertiseAreas },
     },
   };
 }
 
-export async function saveJuryApplicationNotes({
-  id,
-  adminNotes,
-}: {
-  id: string;
-  adminNotes: string;
-}) {
-  const application = await prisma.juryApplication.findUnique({
+export async function saveJuryApplicationNotes({ id, adminNotes }: { id: string; adminNotes: string }) {
+  const result = await prisma.juryApplication.updateMany({
     where: { id },
-    select: {
-      status: true,
-    },
+    data: { adminNotes: adminNotes || null },
   });
-
-  if (!application) {
-    throw new Error("Jury application not found.");
-  }
-
-  await prisma.juryApplication.update({
-    where: { id },
-    data: {
-      adminNotes: adminNotes || null,
-    },
-  });
-
+  if (result.count === 0) throw new Error("Jury application not found.");
   syncJuryOnChange(id, { refreshStats: false });
 }
 
-export async function resetJuryApplicationToSubmitted({
-  id,
-  adminNotes,
-}: {
-  id: string;
-  adminNotes?: string;
-}) {
+export async function resetJuryApplicationToSubmitted({ id, adminNotes }: { id: string; adminNotes?: string }) {
   const application = await prisma.juryApplication.findUnique({
     where: { id },
-    select: {
-      status: true,
-    },
+    select: { id: true, payments: { where: { status: "PAID" }, select: { id: true }, take: 1 } },
   });
-
-  if (!application) {
-    throw new Error("Jury application not found.");
-  }
-
-  if (application.status === "PAID") {
-    throw new Error("Paid jury applications cannot be moved back to submitted.");
-  }
-
-  await prisma.juryApplication.update({
-    where: { id },
-    data: {
-      status: "SUBMITTED",
-      paymentStatus: "PENDING",
-      approvedAt: null,
-      rejectedAt: null,
-      stripeCheckoutSessionId: null,
-      paidAt: null,
-      adminNotes: adminNotes?.trim() || undefined,
-    },
-  });
-
+  if (!application) throw new Error("Jury application not found.");
+  if (application.payments.length > 0) throw new Error("Paid jury applications cannot be moved back to submitted.");
+  await prisma.$transaction([
+    prisma.payment.updateMany({ where: { juryApplicationId: id, status: "PENDING" }, data: { status: "EXPIRED" } }),
+    prisma.juryApplication.update({
+      where: { id },
+      data: { status: "SUBMITTED", approvedAt: null, rejectedAt: null, adminNotes: adminNotes?.trim() || undefined },
+    }),
+  ]);
   syncJuryOnChange(id);
 }
 
 export async function approveJuryApplication(id: string, isIbpaMemberOverride?: boolean) {
   const application = await prisma.juryApplication.findUnique({
     where: { id },
-    select: {
-      id: true,
-      fullName: true,
-      email: true,
-      status: true,
-      ibpaAssociationMember: true,
-      expertiseAreas: true,
-      approvedCategories: true,
-    },
+    include: { profile: true, payments: { where: { status: "PAID" }, select: { id: true }, take: 1 } },
   });
-
-  if (!application) {
-    throw new Error("Jury application not found.");
-  }
-
-  if (application.status === "PAID") {
-    throw new Error("Paid jury applications cannot be approved again.");
-  }
-
-  requireApprovedCategories(application.approvedCategories, application.expertiseAreas);
-
+  if (!application) throw new Error("Jury application not found.");
+  if (application.payments.length > 0) throw new Error("Paid jury applications cannot be approved again.");
+  const approvedCategories = requireApprovedCategories(
+    application.profile?.approvedCategories ?? [],
+    application.expertiseAreas
+  );
   const isIbpaMember = isIbpaMemberOverride ?? application.ibpaAssociationMember;
-
   const session = await createJuryCheckoutSession({
     juryApplicationId: application.id,
     email: application.email,
     isIbpaMember,
   });
-
   const juryAmountCents = isIbpaMember ? 10000 : 25000;
-
   await prisma.$transaction([
-    prisma.payment.updateMany({
-      where: { juryApplicationId: application.id, status: "PENDING" },
-      data: { status: "EXPIRED" },
-    }),
+    prisma.payment.updateMany({ where: { juryApplicationId: id, status: "PENDING" }, data: { status: "EXPIRED" } }),
     prisma.juryApplication.update({
       where: { id },
-      data: {
-        status: "APPROVED",
-        paymentStatus: "PENDING",
-        approvedAt: new Date(),
-        rejectedAt: null,
-        paidAt: null,
-        stripeCheckoutSessionId: session.id,
-      },
+      data: { status: "APPROVED", approvedAt: new Date(), rejectedAt: null },
     }),
+    prisma.juryProfile.update({ where: { juryApplicationId: id }, data: { approvedCategories } }),
     prisma.payment.create({
       data: {
-        source: "JURY",
-        juryApplicationId: application.id,
-        stripeSessionId: session.id,
+        accountId: application.accountId,
+        juryApplicationId: id,
+        customerEmail: application.email,
         amount: juryAmountCents,
         currency: "usd",
         status: "PENDING",
+        purchaseType: "JURY",
+        provider: "STRIPE",
+        stripeCheckoutSessionId: session.id,
+        pricingSnapshot: { isIbpaMember, approvedCategories },
       },
     }),
   ]);
-
-  syncJuryOnChange(application.id);
-
-  let emailDelivered = false;
-  let emailSkipReason:
-    | "email_sender_missing"
-    | "email_recipient_missing"
-    | "email_test_missing"
-    | "resend_invalid_key"
-    | "resend_missing"
-    | "resend_error"
-    | undefined;
-
+  syncJuryOnChange(id);
   try {
     const result = await sendJuryApprovedPaymentLinkEmail({
       to: application.email,
       fullName: application.fullName,
       checkoutUrl: session.url,
     });
-    emailDelivered = result.delivered;
-    emailSkipReason = result.reason;
+    return { emailDelivered: result.delivered, emailSkipReason: result.reason };
   } catch (error) {
     console.error("Failed to send jury approval payment email", error);
+    return { emailDelivered: false, emailSkipReason: undefined };
   }
-
-  return {
-    emailDelivered,
-    emailSkipReason,
-  };
 }
 
-export async function rejectJuryApplication({
-  id,
-  adminNotes,
-}: {
-  id: string;
-  adminNotes?: string;
-}) {
+export async function rejectJuryApplication({ id, adminNotes }: { id: string; adminNotes?: string }) {
   const application = await prisma.juryApplication.findUnique({
     where: { id },
-    select: {
-      id: true,
-      fullName: true,
-      email: true,
-      status: true,
-    },
+    include: { payments: { where: { status: "PAID" }, select: { id: true }, take: 1 } },
   });
-
-  if (!application) {
-    throw new Error("Jury application not found.");
-  }
-
-  if (application.status === "PAID") {
-    throw new Error("Paid jury applications cannot be rejected.");
-  }
-
-  await prisma.juryApplication.update({
-    where: { id },
-    data: {
-      status: "REJECTED",
-      paymentStatus: "FAILED",
-      adminNotes: adminNotes?.trim() || undefined,
-      approvedAt: null,
-      rejectedAt: new Date(),
-      stripeCheckoutSessionId: null,
-    },
-  });
-
+  if (!application) throw new Error("Jury application not found.");
+  if (application.payments.length > 0) throw new Error("Paid jury applications cannot be rejected.");
+  await prisma.$transaction([
+    prisma.payment.updateMany({ where: { juryApplicationId: id, status: "PENDING" }, data: { status: "FAILED" } }),
+    prisma.juryApplication.update({
+      where: { id },
+      data: { status: "REJECTED", adminNotes: adminNotes?.trim() || undefined, approvedAt: null, rejectedAt: new Date() },
+    }),
+  ]);
   syncJuryOnChange(id);
-
   try {
-    await sendJuryRejectedEmail({
-      to: application.email,
-      fullName: application.fullName,
-    });
+    await sendJuryRejectedEmail({ to: application.email, fullName: application.fullName });
   } catch (error) {
     console.error("Failed to send jury rejection email", error);
   }
@@ -415,29 +309,19 @@ export async function updateJuryApplicationStatus({
   status: JuryApplicationStatus;
   adminNotes?: string;
 }) {
-  // Уведомления показываются в админ-панели, поэтому текст на русском.
   if (status === "SUBMITTED") {
-    await resetJuryApplicationToSubmitted({
-      id,
-      adminNotes,
-    });
+    await resetJuryApplicationToSubmitted({ id, adminNotes });
     return "Заявка возвращена в статус «Отправлено».";
   }
-
   if (status === "APPROVED") {
     await approveJuryApplication(id);
     return "Заявка одобрена, ссылка на оплату отправлена.";
   }
-
   if (status === "REJECTED") {
-    await rejectJuryApplication({
-      id,
-      adminNotes,
-    });
+    await rejectJuryApplication({ id, adminNotes });
     return "Заявка отклонена.";
   }
-
-  throw new Error("Paid status can only be set by Stripe webhook confirmation.");
+  throw new Error("Paid status can only be set by payment confirmation.");
 }
 
 export async function requestAdditionalInfoFromJuryApplication({
@@ -449,34 +333,32 @@ export async function requestAdditionalInfoFromJuryApplication({
 }) {
   const application = await prisma.juryApplication.findUnique({
     where: { id },
-    select: { id: true, fullName: true, email: true, status: true },
+    include: { payments: { where: { status: "PAID" }, select: { id: true }, take: 1 } },
   });
-
   if (!application) throw new Error("Jury application not found.");
-  if (application.status === "PAID") {
-    throw new Error("Cannot request additional information from a paid application.");
-  }
+  if (application.payments.length > 0) throw new Error("Cannot request additional information from a paid application.");
 
-  const token = randomUUID();
-  const appUrl = getAppUrl();
-  const actionUrl = `${appUrl}/jury-update/${token}`;
-
+  const token = randomBytes(32).toString("hex");
+  const requestedAt = new Date();
+  const requests = parseJuryInformationRequests(application.informationRequests);
+  const next: JuryInformationRequests = {
+    ...requests,
+    requests: [
+      ...requests.requests,
+      { message: infoRequestDetails.trim(), requestedAt: requestedAt.toISOString(), resolvedAt: null, response: null },
+    ],
+  };
   await prisma.juryApplication.update({
     where: { id },
     data: {
       status: "ADDITIONAL_INFO_REQUIRED",
-      infoRequestToken: token,
-      infoRequestDetails: infoRequestDetails.trim(),
-      infoRequestedAt: new Date(),
-      infoResubmittedAt: null,
+      informationRequestTokenHash: hashAccountToken(token),
+      informationRequestTokenExpiresAt: new Date(requestedAt.getTime() + INFORMATION_REQUEST_TTL_MS),
+      informationRequests: next,
     },
   });
-
   syncJuryOnChange(id);
-
-  let emailDelivered = false;
-  let emailSkipReason: string | undefined;
-
+  const actionUrl = `${getAppUrl()}/jury-update/${token}`;
   try {
     const result = await sendJuryAdditionalInfoRequestedEmail({
       to: application.email,
@@ -484,13 +366,11 @@ export async function requestAdditionalInfoFromJuryApplication({
       details: infoRequestDetails,
       actionUrl,
     });
-    emailDelivered = result.delivered;
-    emailSkipReason = result.reason;
+    return { emailDelivered: result.delivered, emailSkipReason: result.reason };
   } catch (error) {
     console.error("Failed to send additional info request email", error);
+    return { emailDelivered: false, emailSkipReason: undefined };
   }
-
-  return { emailDelivered, emailSkipReason };
 }
 
 export async function processJuryAdditionalInfoResubmission({
@@ -511,49 +391,44 @@ export async function processJuryAdditionalInfoResubmission({
   certificationBlobs?: BlobFileInfo[];
 }) {
   const application = await prisma.juryApplication.findUnique({
-    where: { infoRequestToken: token },
-    select: {
-      id: true,
-      fullName: true,
-      email: true,
-      status: true,
-      files: { select: { id: true, fieldKey: true, storageKey: true } },
-    },
+    where: { informationRequestTokenHash: hashAccountToken(token) },
   });
-
-  if (!application) throw new Error("Invalid or expired link.");
+  if (!application || !application.informationRequestTokenExpiresAt || application.informationRequestTokenExpiresAt < new Date()) {
+    throw new Error("Invalid or expired link.");
+  }
   if (application.status !== "ADDITIONAL_INFO_REQUIRED") {
     throw new Error("This link has already been used or is no longer valid.");
   }
-
-  const oldProfilePhotos = application.files.filter((f) => f.fieldKey === "profilePhoto");
-
-  await prisma.$transaction(async (tx) => {
-    if (profilePhotoBlob && oldProfilePhotos.length > 0) {
-      await tx.juryApplicationFile.deleteMany({
-        where: { juryApplicationId: application.id, fieldKey: "profilePhoto" },
-      });
-    }
-
-    const newFiles: Array<{
-      fieldKey: string;
-      fileName: string;
-      mimeType: string;
-      fileSize: number;
-      storageKey: string;
-    }> = [];
-
-    if (profilePhotoBlob) {
-      newFiles.push({ fieldKey: "profilePhoto", ...profilePhotoBlob });
-    }
-
-    if (certificationBlobs && certificationBlobs.length > 0) {
-      for (const blob of certificationBlobs) {
-        newFiles.push({ fieldKey: "certifications", ...blob });
-      }
-    }
-
-    await tx.juryApplication.update({
+  const currentFiles = parseStoredFiles(application.files);
+  const oldProfilePhotos = currentFiles.items.filter((file) => file.fieldId === "profilePhoto");
+  const retained = profilePhotoBlob
+    ? currentFiles.items.filter((file) => file.fieldId !== "profilePhoto")
+    : currentFiles.items;
+  const nextFiles: StoredFiles = {
+    ...currentFiles,
+    items: [
+      ...retained,
+      ...(profilePhotoBlob ? [storedFile("profilePhoto", profilePhotoBlob)] : []),
+      ...(certificationBlobs ?? []).map((blob) => storedFile("certifications", blob)),
+    ],
+  };
+  const info = parseJuryInformationRequests(application.informationRequests);
+  const now = new Date();
+  let resolved = false;
+  const nextInfo: JuryInformationRequests = {
+    ...info,
+    requests: info.requests.map((request, index) => {
+      if (resolved || request.resolvedAt || index !== info.requests.length - 1) return request;
+      resolved = true;
+      return {
+        ...request,
+        resolvedAt: now.toISOString(),
+        response: "Applicant resubmitted updated application information and files.",
+      };
+    }),
+  };
+  await prisma.$transaction([
+    prisma.juryApplication.update({
       where: { id: application.id },
       data: {
         status: "SUBMITTED",
@@ -561,270 +436,153 @@ export async function processJuryAdditionalInfoResubmission({
         motivation,
         conflictDisclosure,
         professionalWebsite: professionalWebsite?.trim() || null,
-        infoRequestToken: null,
-        infoResubmittedAt: new Date(),
-        files: newFiles.length > 0 ? { create: newFiles } : undefined,
+        informationRequestTokenHash: null,
+        informationRequestTokenExpiresAt: null,
+        informationRequests: nextInfo,
+        files: nextFiles,
+        submittedAt: now,
       },
-    });
-  });
-
-  if (profilePhotoBlob && oldProfilePhotos.length > 0) {
-    const keysToDelete = oldProfilePhotos
-      .map((f) => f.storageKey)
-      .filter((k): k is string => Boolean(k));
-    if (keysToDelete.length > 0) {
-      try {
-        await del(keysToDelete);
-      } catch (error) {
-        console.error("Failed to delete old profile photo blobs", error);
-      }
+    }),
+    prisma.juryProfile.update({
+      where: { juryApplicationId: application.id },
+      data: { professionalBio, professionalWebsite: professionalWebsite?.trim() || null },
+    }),
+  ]);
+  if (profilePhotoBlob) {
+    const keys = oldProfilePhotos.flatMap((file) => (file.blobKey ? [file.blobKey] : []));
+    if (keys.length > 0) {
+      try { await del(keys); } catch (error) { console.error("Failed to delete replaced jury profile photo blobs", error); }
     }
   }
-
   syncJuryOnChange(application.id);
-
-  const appUrl = getAppUrl();
-  const adminReviewUrl = `${appUrl}/admin/jury-applications/${application.id}`;
-
   try {
     await sendJuryResubmittedAdminNotificationEmail({
       fullName: application.fullName,
       applicantEmail: application.email,
-      adminReviewUrl,
+      adminReviewUrl: `${getAppUrl()}/admin/jury-applications/${application.id}`,
     });
   } catch (error) {
     console.error("Failed to send resubmission admin notification", error);
   }
-
   return { applicationId: application.id };
 }
 
-export async function replaceJuryProfilePhoto(
-  id: string,
-  profilePhotoBlob: BlobFileInfo,
-) {
-  const application = await prisma.juryApplication.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      files: { select: { id: true, fieldKey: true, storageKey: true } },
-    },
-  });
-
-  if (!application) {
-    throw new Error("Jury application not found.");
+export async function replaceJuryProfilePhoto(id: string, profilePhotoBlob: BlobFileInfo) {
+  const application = await prisma.juryApplication.findUnique({ where: { id }, select: { files: true } });
+  if (!application) throw new Error("Jury application not found.");
+  const files = parseStoredFiles(application.files);
+  const old = files.items.filter((file) => file.fieldId === "profilePhoto");
+  const next: StoredFiles = {
+    ...files,
+    items: [...files.items.filter((file) => file.fieldId !== "profilePhoto"), storedFile("profilePhoto", profilePhotoBlob)],
+  };
+  await prisma.juryApplication.update({ where: { id }, data: { files: next } });
+  const keys = old.flatMap((file) => (file.blobKey ? [file.blobKey] : []));
+  if (keys.length > 0) {
+    try { await del(keys); } catch (error) { console.error("Failed to delete old profile photo blobs", error); }
   }
-
-  const oldProfilePhotos = application.files.filter(
-    (file) => file.fieldKey === "profilePhoto",
-  );
-
-  // Persist the new photo first; only remove the old blobs once the swap is
-  // committed so a failure never leaves the application without a photo.
-  await prisma.$transaction(async (tx) => {
-    if (oldProfilePhotos.length > 0) {
-      await tx.juryApplicationFile.deleteMany({
-        where: { juryApplicationId: id, fieldKey: "profilePhoto" },
-      });
-    }
-
-    await tx.juryApplicationFile.create({
-      data: {
-        juryApplicationId: id,
-        fieldKey: "profilePhoto",
-        ...profilePhotoBlob,
-      },
-    });
-  });
-
-  const keysToDelete = oldProfilePhotos
-    .map((file) => file.storageKey)
-    .filter((key): key is string => Boolean(key));
-
-  if (keysToDelete.length > 0) {
-    try {
-      await del(keysToDelete);
-    } catch (error) {
-      console.error("Failed to delete old profile photo blobs", error);
-    }
-  }
-
   syncJuryOnChange(id, { refreshStats: false });
+  revalidatePublicJuryMembers();
 }
 
 export async function deleteJuryApplication(id: string) {
   const application = await prisma.juryApplication.findUnique({
     where: { id },
-    select: {
-      files: {
-        select: { storageKey: true },
-      },
+    include: {
+      profile: { select: { id: true, reviews: { select: { id: true }, take: 1 } } },
+      payments: { select: { id: true, status: true } },
+      account: { select: { id: true } },
     },
   });
-
-  if (!application) {
-    throw new Error("Jury application not found.");
+  if (!application) throw new Error("Jury application not found.");
+  if (application.payments.some((payment) => payment.status === "PAID") || application.profile?.reviews.length) {
+    throw new Error("A paid or reviewed jury application cannot be deleted.");
   }
-
-  const storageKeys = application.files
-    .map((f) => f.storageKey)
-    .filter((key): key is string => Boolean(key));
-
-  if (storageKeys.length > 0) {
-    try {
-      await del(storageKeys);
-    } catch (error) {
-      console.error("Failed to delete jury application blobs", error);
-    }
+  const keys = parseStoredFiles(application.files).items.flatMap((file) => (file.blobKey ? [file.blobKey] : []));
+  await prisma.$transaction(async (tx) => {
+    await tx.ticket.deleteMany({ where: { kind: "JURY", accountId: application.accountId } });
+    await tx.payment.deleteMany({ where: { juryApplicationId: id } });
+    if (application.profile) await tx.juryProfile.delete({ where: { id: application.profile.id } });
+    await tx.juryApplication.delete({ where: { id } });
+    await tx.account.delete({ where: { id: application.accountId } });
+  });
+  if (keys.length > 0) {
+    try { await del(keys); } catch (error) { console.error("Failed to delete jury application blobs", error); }
   }
-
-  await prisma.juryApplication.delete({ where: { id } });
-
-  // A deleted member must drop off the public /jury listing.
   revalidatePublicJuryMembers();
 }
 
 export async function approveJuryApplicationWithoutPayment(id: string) {
-  const application = await prisma.juryApplication.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      fullName: true,
-      email: true,
-      phone: true,
-      country: true,
-      city: true,
-      professionalTitle: true,
-      yearsExperience: true,
-      employerAffiliation: true,
-      expertiseAreas: true,
-      approvedCategories: true,
-      professionalBio: true,
-      professionalWebsite: true,
-      status: true,
-      approvedAt: true,
-    },
-  });
-
+  const application = await prisma.juryApplication.findUnique({ where: { id }, include: { profile: true } });
   if (!application) throw new Error("Jury application not found.");
-  if (application.status === "PAID") throw new Error("Application is already marked as paid.");
-
-  requireApprovedCategories(application.approvedCategories, application.expertiseAreas);
-
+  const approvedCategories = requireApprovedCategories(
+    application.profile?.approvedCategories ?? [],
+    application.expertiseAreas
+  );
   const now = new Date();
   let setupAccountId: string | null = null;
-
   await prisma.$transaction(async (tx) => {
-    await tx.payment.updateMany({
-      where: { juryApplicationId: id, status: "PENDING" },
-      data: { status: "EXPIRED" },
-    });
+    await tx.payment.updateMany({ where: { juryApplicationId: id, status: "PENDING" }, data: { status: "EXPIRED" } });
     await tx.juryApplication.update({
       where: { id },
-      data: {
-        status: "PAID",
-        paymentStatus: "PAID",
-        approvedAt: application.approvedAt ?? now,
-        paidAt: now,
-        rejectedAt: null,
-        stripeCheckoutSessionId: null,
-      },
+      data: { status: "PAID", approvedAt: application.approvedAt ?? now, rejectedAt: null },
     });
-
+    const paidPayment = await tx.payment.findFirst({
+      where: { juryApplicationId: id, status: "PAID" },
+      select: { id: true },
+    });
+    if (!paidPayment) {
+      await tx.payment.create({
+        data: {
+          accountId: application.accountId,
+          juryApplicationId: id,
+          customerEmail: application.email,
+          amount: 0,
+          currency: "usd",
+          status: "PAID",
+          purchaseType: "JURY",
+          provider: "MANUAL",
+          paidAt: now,
+          fulfilledAt: now,
+          pricingSnapshot: { reason: "ADMIN_WAIVER" },
+        },
+      });
+    }
     const { account } = await upsertJuryAccountForApplication(tx, {
       ...application,
+      approvedCategories,
       status: "PAID",
     });
-
-    if (account.status !== "ACTIVE" || !account.passwordHash) {
-      setupAccountId = account.id;
-    }
+    if (account.status !== "ACTIVE" || !account.passwordHash) setupAccountId = account.id;
   });
-
   syncJuryOnChange(id);
   revalidatePublicJuryMembers();
-
   if (setupAccountId) {
-    try {
-      await sendSetupEmailForAccount(setupAccountId);
-    } catch (error) {
-      console.error("Failed to send jury account setup email", error);
-    }
+    try { await sendSetupEmailForAccount(setupAccountId); } catch (error) { console.error("Failed to send jury account setup email", error); }
   }
 }
 
 export async function resendJuryRegistrationLink(id: string) {
   const application = await prisma.juryApplication.findUnique({
     where: { id },
-    select: {
-      id: true,
-      fullName: true,
-      email: true,
-      phone: true,
-      country: true,
-      city: true,
-      professionalTitle: true,
-      yearsExperience: true,
-      employerAffiliation: true,
-      expertiseAreas: true,
-      approvedCategories: true,
-      professionalBio: true,
-      professionalWebsite: true,
-      status: true,
-      paymentStatus: true,
-    },
+    include: { account: true, payments: { where: { status: "PAID" }, select: { id: true }, take: 1 } },
   });
-
-  if (!application) {
+  if (!application || application.status !== "PAID" || application.payments.length === 0) {
     return { status: "ineligible" as const };
   }
-
-  if (application.status !== "PAID" || application.paymentStatus !== "PAID") {
-    return { status: "ineligible" as const };
-  }
-
-  const { account } = await prisma.$transaction((tx) =>
-    upsertJuryAccountForApplication(tx, {
-      ...application,
-      status: "PAID",
-    }),
-  );
-
-  if (account.status === "DISABLED" || account.deletedAt) {
-    return { status: "ineligible" as const };
-  }
-
-  if (account.passwordHash) {
-    return { status: "registered" as const };
-  }
-
-  const result = await sendSetupEmailForAccount(account.id);
-
-  if (!result?.delivered) {
-    return { status: "delivery_failed" as const };
-  }
-
-  return { status: "sent" as const };
+  if (application.account.status === "DISABLED") return { status: "ineligible" as const };
+  if (application.account.passwordHash) return { status: "registered" as const };
+  const result = await sendSetupEmailForAccount(application.account.id);
+  return result?.delivered ? { status: "sent" as const } : { status: "delivery_failed" as const };
 }
 
-export async function setJuryApplicationStatusDirectly(
-  id: string,
-  status: JuryApplicationStatus,
-) {
-  const application = await prisma.juryApplication.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      expertiseAreas: true,
-      approvedCategories: true,
-    },
-  });
+export async function setJuryApplicationStatusDirectly(id: string, status: JuryApplicationStatus) {
+  const application = await prisma.juryApplication.findUnique({ where: { id }, include: { profile: true } });
   if (!application) throw new Error("Jury application not found.");
   if (status === "APPROVED" || status === "PAID") {
-    requireApprovedCategories(application.approvedCategories, application.expertiseAreas);
+    requireApprovedCategories(application.profile?.approvedCategories ?? [], application.expertiseAreas);
   }
   await prisma.juryApplication.update({ where: { id }, data: { status } });
-
   syncJuryOnChange(id);
   revalidatePublicJuryMembers();
 }
@@ -851,100 +609,54 @@ export async function editJuryApplicationFields(
     professionalWebsite: string | null;
     conflictDisclosure: string;
     motivation: string;
-  },
+  }
 ) {
-  const application = await prisma.juryApplication.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      approvedCategories: true,
-      profile: { select: { id: true } },
-    },
-  });
+  const application = await prisma.juryApplication.findUnique({ where: { id }, include: { profile: true } });
   if (!application) throw new Error("Jury application not found.");
-
   const normalizedEmail = data.email.trim().toLowerCase();
-  const conflict = await prisma.juryApplication.findFirst({
-    where: { email: normalizedEmail, NOT: { id } },
+  const conflict = await prisma.account.findFirst({
+    where: { normalizedEmail, role: "JURY", NOT: { id: application.accountId } },
     select: { id: true },
   });
   if (conflict) throw new Error("This email is already registered with another application.");
-
-  const retainedApprovedCategories = normalizeApprovedCategories(
-    application.approvedCategories,
-    data.expertiseAreas,
+  const approvedCategories = normalizeApprovedCategories(
+    application.profile?.approvedCategories ?? [],
+    data.expertiseAreas
   );
-  const approvedCategories =
-    retainedApprovedCategories.length > 0
-      ? retainedApprovedCategories
-      : getInitialApprovedCategories(data.expertiseAreas);
-
-  await prisma.$transaction(async (tx) => {
-    await tx.juryApplication.update({
-      where: { id },
+  const nextApproved = approvedCategories.length > 0 ? approvedCategories : getInitialApprovedCategories(data.expertiseAreas);
+  await prisma.$transaction([
+    prisma.account.update({
+      where: { id: application.accountId },
+      data: { email: normalizedEmail, normalizedEmail },
+    }),
+    prisma.juryApplication.update({ where: { id }, data: { ...data, email: normalizedEmail } }),
+    prisma.juryProfile.update({
+      where: { juryApplicationId: id },
       data: {
-        ...data,
-        email: normalizedEmail,
-        approvedCategories: {
-          set: approvedCategories,
-        },
+        fullName: data.fullName,
+        phone: data.phone,
+        country: data.country,
+        city: data.city,
+        professionalTitle: data.professionalTitle,
+        employerAffiliation: data.employerAffiliation,
+        yearsExperience: data.yearsExperience,
+        expertiseAreas: data.expertiseAreas,
+        approvedCategories: nextApproved,
+        professionalBio: data.professionalBio,
+        professionalWebsite: data.professionalWebsite,
       },
-    });
-
-    if (application.profile) {
-      await tx.juryProfile.update({
-        where: { id: application.profile.id },
-        data: {
-          expertiseAreas: { set: data.expertiseAreas },
-          approvedCategories: { set: approvedCategories },
-        },
-      });
-    }
-  });
-
+    }),
+  ]);
   syncJuryOnChange(id);
-  // Name / title / bio changes are surfaced on the public /jury listing.
   revalidatePublicJuryMembers();
 }
 
-export async function updateJuryApprovedCategories(
-  id: string,
-  approvedCategories: string[],
-) {
-  const application = await prisma.juryApplication.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      expertiseAreas: true,
-      profile: { select: { id: true } },
-    },
-  });
-
-  if (!application) {
-    throw new Error("Jury application not found.");
-  }
-
-  const normalized = requireApprovedCategories(
-    approvedCategories,
-    application.expertiseAreas,
-  );
-
-  await prisma.$transaction(async (tx) => {
-    await tx.juryApplication.update({
-      where: { id },
-      data: { approvedCategories: { set: normalized } },
-    });
-
-    if (application.profile) {
-      await tx.juryProfile.update({
-        where: { id: application.profile.id },
-        data: { approvedCategories: { set: normalized } },
-      });
-    }
-  });
-
+export async function updateJuryApprovedCategories(id: string, approvedCategories: string[]) {
+  const application = await prisma.juryApplication.findUnique({ where: { id }, select: { expertiseAreas: true } });
+  if (!application) throw new Error("Jury application not found.");
+  const normalized = requireApprovedCategories(approvedCategories, application.expertiseAreas);
+  await prisma.juryProfile.update({ where: { juryApplicationId: id }, data: { approvedCategories: normalized } });
   syncJuryOnChange(id);
   revalidatePublicJuryMembers();
-
   return normalized;
 }

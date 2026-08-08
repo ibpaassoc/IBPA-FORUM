@@ -277,7 +277,7 @@ export default function NominationReviewForm({
   }
 
   /**
-   * A just-uploaded file has no `NominationFile` row yet, so the ref that
+   * A just-uploaded file is not in the persisted nomination JSON yet, so the ref that
    * replaces the picked `File` carries no authenticated `previewUrl`. Without
    * one the gallery falls back to `fileUrl` — the private Blob *pathname* — and
    * the browser resolves that relative to the current page, so every thumbnail

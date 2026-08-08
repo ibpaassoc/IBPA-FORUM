@@ -5,7 +5,7 @@ import { useState, useTransition } from "react";
 import { adminT } from "@/lib/i18n/admin";
 import { DashboardSecondaryBtn } from "@/shared/components/admin/DashboardUI";
 
-export default function AdminReopenScoreButton({ scoreId }: { scoreId: string }) {
+export default function AdminReopenScoreButton({ reviewId }: { reviewId: string }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -16,7 +16,7 @@ export default function AdminReopenScoreButton({ scoreId }: { scoreId: string })
     const response = await fetch("/api/admin/scoring/reopen", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ scoreId }),
+      body: JSON.stringify({ reviewId }),
     });
 
     const payload = (await response.json().catch(() => null)) as { message?: string } | null;

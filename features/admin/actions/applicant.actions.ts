@@ -14,6 +14,7 @@ import { prisma } from "@/shared/lib/prisma";
 import { adminT } from "@/lib/i18n/admin";
 import { syncApplicationOnChange } from "@/features/google-sheets";
 import { getCategoryScoringDefinition } from "@/features/jury/scoring/category-scoring";
+import { emptyNominationAnswers, emptyStoredFiles } from "@/features/database/json-fields";
 
 function adminApplicationsPath(params?: Record<string, string>) {
   const query = new URLSearchParams(params).toString();
@@ -87,14 +88,6 @@ export async function updateApplicantProfileAction(formData: FormData) {
       yearsExperience,
       membershipNumber: getOptionalString(formData, "membershipNumber"),
       membershipLevel: getOptionalString(formData, "membershipLevel"),
-      membershipVerifiedAt:
-        getOptionalString(formData, "membershipNumber") || getOptionalString(formData, "membershipLevel")
-          ? new Date()
-          : null,
-      membershipVerificationSource:
-        getOptionalString(formData, "membershipNumber") || getOptionalString(formData, "membershipLevel")
-          ? "admin"
-          : null,
       preferredLocale: getString(formData, "preferredLocale") || "en",
       websiteUrl: getOptionalString(formData, "websiteUrl"),
       socialUrl: getOptionalString(formData, "socialUrl"),
@@ -199,13 +192,13 @@ export async function addManualApplicantNominationAction(formData: FormData) {
       where: { id: awardId },
       include: { category: true },
     }),
-    prisma.nominationApplication.findFirst({
-      where: { applicantProfileId: profileId, awardId, deletedAt: null },
+    prisma.nomination.findFirst({
+      where: { applicantProfileId: profileId, awardId, status: { not: "ARCHIVED" } },
       select: { id: true },
     }),
   ]);
 
-  if (!profile || profile.deletedAt) {
+  if (!profile) {
     redirect(adminApplicationsPath({ error: adminT.actions.applicantNotFound }));
   }
 
@@ -243,7 +236,7 @@ export async function addManualApplicantNominationAction(formData: FormData) {
       membershipNumber: profile.membershipNumber,
       membershipLevel: profile.membershipLevel,
       verificationSource: "admin",
-      verifiedAt: profile.membershipVerifiedAt?.toISOString() ?? null,
+      verifiedAt: null,
     },
     selectedAwards: [
       {
@@ -267,11 +260,11 @@ export async function addManualApplicantNominationAction(formData: FormData) {
     await prisma.$transaction(async (tx) => {
       const payment = await tx.payment.create({
         data: {
-          source: "COMPETITOR",
-          applicantProfileId: profile.id,
-          applicantEmail: profile.account.email,
-          provider: "manual_admin",
-          purchaseManifest: manifest as Prisma.InputJsonValue,
+          accountId: profile.accountId,
+          customerEmail: profile.account.email,
+          purchaseType: "NOMINATION",
+          provider: "MANUAL",
+          pricingSnapshot: manifest as Prisma.InputJsonValue,
           amount: 0,
           currency: "usd",
           status: "PAID",
@@ -281,20 +274,18 @@ export async function addManualApplicantNominationAction(formData: FormData) {
         select: { id: true },
       });
 
-      await tx.nominationApplication.create({
+      await tx.nomination.create({
         data: {
           applicantProfileId: profile.id,
-          purchasePaymentId: payment.id,
+          paymentId: payment.id,
           awardId: award.id,
           categoryId: award.categoryId,
-          status: "PURCHASED",
+          status: "DRAFT",
+          answers: emptyNominationAnswers() as unknown as Prisma.InputJsonValue,
+          files: emptyStoredFiles() as unknown as Prisma.InputJsonValue,
           scoringSchema: getCategoryScoringDefinition(
             award.category.slug
           ) as Prisma.InputJsonValue,
-          paymentStatus: "PAID",
-          amount: 0,
-          currency: "usd",
-          paidAt,
         },
       });
     });

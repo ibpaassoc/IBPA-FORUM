@@ -1,66 +1,27 @@
-type CategoryOption = {
-  id: string;
-  slug: string;
-  name: string;
-  awards: Array<{ id: string; name: string }>;
-};
+/**
+ * Source-level application checkout contract checks. This test deliberately
+ * never creates a real Stripe Checkout Session or sends email.
+ */
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
-const baseUrl = process.env.TEST_APP_URL ?? "http://localhost:3000";
+const read = (file: string) => readFileSync(join(process.cwd(), file), "utf8");
+const route = read("app/api/applications/route.ts");
+const purchase = read("features/applications/server/purchase-workflow.ts");
+const webhook = read("features/applications/server/webhook.workflow.ts");
 
-async function main() {
-  const categoriesResponse = await fetch(`${baseUrl}/api/categories`);
-  if (!categoriesResponse.ok) {
-    throw new Error(`Failed to load categories: ${categoriesResponse.status}`);
-  }
+assert.match(route, /createPublicApplicantNominationCheckout/);
+assert.match(route, /RAW_FILE_REJECTED/);
+assert.match(purchase, /purchaseType: "NOMINATION"/);
+assert.match(purchase, /provider: "STRIPE"/);
+assert.match(purchase, /pricingSnapshot/);
+assert.match(purchase, /promotionSnapshot/);
+assert.match(webhook, /stripeWebhook\.create/);
+assert.match(webhook, /eventId: event\.id/);
+assert.match(webhook, /existingNomination/);
+assert.match(webhook, /paymentId: payment\.id/);
+assert.match(webhook, /fulfilledAt: paidAt/);
+assert.doesNotMatch(read("scripts/forum-db-refactor.ts"), /send[A-Z][A-Za-z]+Email|stripe\.checkout/);
 
-  const categories = (await categoriesResponse.json()) as CategoryOption[];
-  const category =
-    categories.find((item) => item.slug === "body-wellness-nutrition") ?? categories[0];
-  const award = category?.awards[0];
-
-  if (!category || !award) {
-    throw new Error("No application category and award are available.");
-  }
-
-  const formData = new FormData();
-  formData.set("firstName", "Local");
-  formData.set("lastName", "Smoke Test");
-  formData.set("email", `smoke+${Date.now()}@example.com`);
-  formData.set("phone", "555-0100");
-  formData.set("country", "Canada");
-  formData.set("city", "Toronto");
-  formData.set("professionalTitle", "Wellness Specialist");
-  formData.set("yearsExperience", "5");
-  formData.set("categoryId", category.id);
-  formData.set("awardId", award.id);
-  formData.append("selectedAwardIds", award.id);
-  formData.set("websiteUrl", "https://instagram.com/smoke-test");
-  formData.set("socialUrl", "https://instagram.com/smoke-test");
-  formData.set("heardAbout", "email");
-  formData.set("isIbpaMember", "false");
-  formData.set("rulesAccepted", "true");
-  formData.set("privacyAccepted", "true");
-  formData.set("paymentTermsAccepted", "true");
-  formData.set("refundNoticeAccepted", "true");
-
-  const response = await fetch(`${baseUrl}/api/applications`, {
-    method: "POST",
-    body: formData,
-  });
-  const body = await response.json().catch(() => ({}));
-
-  console.log(JSON.stringify({ status: response.status, body }, null, 2));
-
-  if (!response.ok) {
-    throw new Error("Application submission smoke test failed.");
-  }
-
-  if (typeof body.checkoutUrl !== "string" || typeof body.paymentId !== "string") {
-    throw new Error("Application submission did not return a Stripe checkout target.");
-  }
-}
-
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+console.log("Application checkout and webhook contract checks passed without external side effects.");

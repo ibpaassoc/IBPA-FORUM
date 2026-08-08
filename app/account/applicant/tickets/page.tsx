@@ -58,7 +58,7 @@ export default async function ApplicantTicketsPage() {
                     {tk.access}
                   </p>
                   <p className="mt-1.5 text-sm capitalize text-[var(--color-ink)]">
-                    {ticket.type.replaceAll("_", " ").toLowerCase()}
+                    {(ticket.type ?? "TWO_DAYS").replaceAll("_", " ").toLowerCase()}
                     {ticket.galaDinner ? ` · ${tk.galaIncluded}` : ` · ${tk.forumAccess}`}
                   </p>
                 </div>

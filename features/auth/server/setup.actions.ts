@@ -45,51 +45,27 @@ export async function setupPasswordAction(
   const now = new Date();
   const tokenHash = hashAccountToken(token);
   const activated = await prisma.$transaction(async (tx) => {
-    if (validation.record.source === "account") {
-      const consumed = await tx.account.updateMany({
-        where: {
-          id: validation.record.accountId,
-          setupTokenHash: tokenHash,
-          setupTokenUsedAt: null,
-          setupTokenExpiresAt: { gte: now },
-          passwordHash: null,
-          status: { not: "DISABLED" },
-          deletedAt: null,
-        },
-        data: {
-          passwordHash,
-          status: "ACTIVE",
-          setupTokenHash: null,
-          setupTokenExpiresAt: null,
-          setupTokenIssuedAt: null,
-          setupTokenUsedAt: now,
-        },
-      });
-      return consumed.count === 1;
-    }
-
-    const consumed = await tx.accountSetupToken.updateMany({
-      where: {
-        id: validation.record.id,
-        accountId: validation.record.accountId,
-        tokenHash,
-        usedAt: null,
-        expiresAt: { gte: now },
-      },
-      data: { usedAt: now },
-    });
-    if (consumed.count !== 1) return false;
-
-    const accountActivated = await tx.account.updateMany({
+    const consumed = await tx.account.updateMany({
       where: {
         id: validation.record.accountId,
+        setupTokenHash: tokenHash,
+        setupTokenPurpose: "SETUP",
+        setupTokenUsedAt: null,
+        setupTokenExpiresAt: { gte: now },
         passwordHash: null,
         status: { not: "DISABLED" },
-        deletedAt: null,
       },
-      data: { passwordHash, status: "ACTIVE" },
+      data: {
+        passwordHash,
+        status: "ACTIVE",
+        setupTokenHash: null,
+        setupTokenPurpose: null,
+        setupTokenExpiresAt: null,
+        setupTokenIssuedAt: null,
+        setupTokenUsedAt: now,
+      },
     });
-    return accountActivated.count === 1;
+    return consumed.count === 1;
   });
 
   if (!activated) {

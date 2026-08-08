@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { reopenJudgeScore } from "@/features/admin/server/admin";
+import { reopenNominationReview } from "@/features/admin/server/admin";
 import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
 import { adminT } from "@/lib/i18n/admin";
 
@@ -11,15 +11,15 @@ export async function POST(request: Request) {
         { status: 401 }
       );
     }
-    const body = (await request.json()) as { scoreId?: string };
-    const scoreId = String(body.scoreId ?? "").trim();
+    const body = (await request.json()) as { reviewId?: string };
+    const reviewId = String(body.reviewId ?? "").trim();
 
-    if (!scoreId) {
+    if (!reviewId) {
       return NextResponse.json({ message: adminT.api.missingScoreId }, { status: 400 });
     }
 
-    const score = await reopenJudgeScore(scoreId);
-    return NextResponse.json(score);
+    const review = await reopenNominationReview(reviewId);
+    return NextResponse.json(review);
   } catch (error) {
     if (
       typeof error === "object" &&

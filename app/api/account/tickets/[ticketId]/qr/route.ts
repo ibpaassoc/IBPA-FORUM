@@ -3,6 +3,7 @@ import { requireAccount } from "@/features/account/server/accounts";
 import { generateTicketQRBuffer } from "@/features/tickets/server/ticket-qr";
 import { prisma } from "@/shared/lib/prisma";
 import { activateRequestDataScope } from "@/features/test/server/data-scope";
+import { parseTicketCredential } from "@/features/database/json-fields";
 
 function safeSlug(value: string) {
   return value
@@ -32,19 +33,17 @@ export async function GET(
     },
     select: {
       fullName: true,
-      qrCredentials: {
-        where: { status: "ACTIVE" },
-        orderBy: { generatedAt: "desc" },
-        take: 1,
-        select: { token: true },
-      },
+      secureToken: true,
+      credential: true,
     },
   });
 
-  const token = ticket?.qrCredentials[0]?.token;
-  if (!ticket || !token) {
+  if (!ticket) {
     return new Response("Not found", { status: 404 });
   }
+  const active = parseTicketCredential(ticket.credential).active;
+  const token = active?.token === ticket.secureToken ? ticket.secureToken : null;
+  if (!token) return new Response("Not found", { status: 404 });
 
   const buffer = await generateTicketQRBuffer(token);
   return new NextResponse(new Uint8Array(buffer), {

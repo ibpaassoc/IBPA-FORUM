@@ -1,6 +1,7 @@
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { prisma } from "@/shared/lib/prisma";
 import { resolveJuryPhotoSrc } from "@/features/jury/lib/profile-photo";
+import { parseStoredFiles } from "@/features/database/json-fields";
 
 // Cache tag shared by the public jury listing and the mutations that change it.
 // Any write that alters who appears on /jury (or their photo) must invalidate it.
@@ -20,13 +21,15 @@ export function revalidatePublicJuryMembers() {
 
 async function readPublicJuryMembersFromDb() {
   try {
-    const members = await prisma.juryApplication.findMany({
+    const members = await prisma.juryProfile.findMany({
       where: {
-        status: "PAID",
-        paymentStatus: "PAID",
+        juryApplication: {
+          status: "PAID",
+          payments: { some: { status: "PAID" } },
+        },
       },
       orderBy: {
-        paidAt: "desc",
+        updatedAt: "desc",
       },
       select: {
         id: true,
@@ -34,24 +37,16 @@ async function readPublicJuryMembersFromDb() {
         professionalTitle: true,
         city: true,
         country: true,
-        expertiseAreas: true,
         approvedCategories: true,
         professionalBio: true,
-        files: {
-          where: {
-            fieldKey: "profilePhoto",
-          },
-          select: {
-            id: true,
-            storageKey: true,
-          },
-          take: 1,
-        },
+        juryApplication: { select: { files: true } },
       },
     });
 
     return members.map((member) => {
-      const photo = member.files[0];
+      const photo = parseStoredFiles(member.juryApplication.files).items.find(
+        (file) => file.fieldId === "profilePhoto"
+      );
       return {
         id: member.id,
         fullName: member.fullName,
@@ -60,7 +55,7 @@ async function readPublicJuryMembersFromDb() {
         country: member.country,
         expertise: member.approvedCategories,
         bio: member.professionalBio,
-        profilePhotoSrc: resolveJuryPhotoSrc(photo?.id, photo?.storageKey),
+        profilePhotoSrc: resolveJuryPhotoSrc(photo?.id, photo?.blobKey ?? null),
       };
     });
   } catch (error) {

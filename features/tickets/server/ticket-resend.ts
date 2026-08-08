@@ -96,34 +96,39 @@ export async function resendTicketPaymentLink(
     });
 
     await prisma.$transaction(async (tx) => {
+      const oldPaymentIds = packetTickets.flatMap((item) =>
+        item.paymentId ? [item.paymentId] : []
+      );
       await tx.ticket.updateMany({
         where: { specialPacketId: ticket.specialPacketId },
-        data: { stripeSessionId: null },
-      });
-      await tx.ticket.update({
-        where: { id: primary.id },
-        data: { stripeSessionId: session.id },
+        data: { paymentId: null },
       });
       await tx.payment.deleteMany({
         where: {
-          ticket: { specialPacketId: ticket.specialPacketId },
+          id: { in: oldPaymentIds },
           status: { not: "PAID" },
         },
       });
-      await tx.payment.create({
+      const payment = await tx.payment.create({
         data: {
-          source: "TICKET",
-          ticketId: primary.id,
-          stripeSessionId: session.id,
+          customerEmail: primary.email,
+          purchaseType: "TICKET",
+          provider: "STRIPE",
+          stripeCheckoutSessionId: session.id,
           amount: session.amountTotalCents,
           currency: "usd",
-          purchaseManifest: { specialPacketId: ticket.specialPacketId, ticketIds },
+          pricingSnapshot: { specialPacketId: ticket.specialPacketId, ticketIds },
           status: "PENDING",
         },
+      });
+      await tx.ticket.updateMany({
+        where: { id: { in: ticketIds } },
+        data: { paymentId: payment.id },
       });
     });
 
     ticketIds.forEach((id) => syncTicketOnChange(id));
+    if (!primary.type) return { ok: false, reason: "not_found" };
     const emailResult = await sendTicketPaymentLinkEmail({
       to: primary.email,
       fullName: primary.fullName,
@@ -143,6 +148,7 @@ export async function resendTicketPaymentLink(
     getActiveTicketDiscount(),
     getTicketPriceConfigFromStripe(),
   ]);
+  if (!ticket.type) return { ok: false, reason: "not_found" };
   const amounts = computeTicketAmountCents({
     type: ticket.type,
     isIbpaMember: ticket.isIbpaMember,
@@ -157,7 +163,7 @@ export async function resendTicketPaymentLink(
   // create a brand-new one and supersede the old (expired) reference.
   const reusedUrl = await tryReuseOpenSession(
     stripe,
-    ticket.stripeSessionId,
+    ticket.payment?.stripeCheckoutSessionId ?? null,
     amounts.totalCents
   );
 
@@ -182,25 +188,32 @@ export async function resendTicketPaymentLink(
     // Supersede the old session reference and replace the pending payment so the
     // webhook (which matches on the new session id / metadata.ticketId) stays in
     // sync. Never touches a PAID payment.
-    await prisma.$transaction([
-      prisma.ticket.update({
-        where: { id: ticket.id },
-        data: { stripeSessionId: session.id },
-      }),
-      prisma.payment.deleteMany({
-        where: { ticketId: ticket.id, status: { not: "PAID" } },
-      }),
-      prisma.payment.create({
+    await prisma.$transaction(async (tx) => {
+      const oldPaymentId = ticket.paymentId;
+      await tx.ticket.update({ where: { id: ticket.id }, data: { paymentId: null } });
+      if (oldPaymentId) {
+        await tx.payment.deleteMany({
+          where: { id: oldPaymentId, status: { not: "PAID" } },
+        });
+      }
+      const payment = await tx.payment.create({
         data: {
-          source: "TICKET",
-          ticketId: ticket.id,
-          stripeSessionId: session.id,
+          customerEmail: ticket.email,
+          purchaseType: "TICKET",
+          provider: "STRIPE",
+          stripeCheckoutSessionId: session.id,
           amount: amounts.totalCents,
           currency: "usd",
+          pricingSnapshot: {
+            ticketId: ticket.id,
+            type: ticket.type,
+            galaDinner: ticket.galaDinner,
+          },
           status: "PENDING",
         },
-      }),
-    ]);
+      });
+      await tx.ticket.update({ where: { id: ticket.id }, data: { paymentId: payment.id } });
+    });
 
     checkoutUrl = session.url;
     reused = false;

@@ -105,23 +105,24 @@ export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput)
       locale: input.locale,
     });
 
-    await prisma.$transaction([
-      prisma.ticket.update({
-        where: { id: ticketIds[0] },
-        data: { stripeSessionId: session.id },
-      }),
-      prisma.payment.create({
+    await prisma.$transaction(async (tx) => {
+      const payment = await tx.payment.create({
         data: {
-          source: "TICKET",
-          ticketId: ticketIds[0],
-          stripeSessionId: session.id,
+          customerEmail: email,
+          purchaseType: "TICKET",
+          provider: "STRIPE",
+          stripeCheckoutSessionId: session.id,
           amount: session.amountTotalCents,
           currency: "usd",
-          purchaseManifest: { specialPacketId: reservation.specialPacketId, ticketIds },
+          pricingSnapshot: { specialPacketId: reservation.specialPacketId, ticketIds },
           status: "PENDING",
         },
-      }),
-    ]);
+      });
+      await tx.ticket.updateMany({
+        where: { id: { in: ticketIds } },
+        data: { paymentId: payment.id },
+      });
+    });
 
     ticketIds.forEach((ticketId) => syncTicketOnChange(ticketId));
     return { ticketId: ticketIds[0], ticketIds, checkoutUrl: session.url };
@@ -191,32 +192,35 @@ export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput)
     );
   }
 
-  await prisma.$transaction([
-    prisma.ticket.update({
-      where: { id: ticketId },
+  await prisma.$transaction(async (tx) => {
+    const payment = await tx.payment.create({
       data: {
-        stripeSessionId: session.id,
-        promoCodeKey: appliedPromo?.key,
-        promoCodeKeyword: appliedPromo?.keyword,
-        promoDiscountPercent: appliedPromo?.discountPercent,
-        promoDiscountAmount: appliedPromo?.discountAmountCents,
-      },
-    }),
-    prisma.payment.create({
-      data: {
-        source: "TICKET",
-        ticketId,
-        stripeSessionId: session.id,
+        customerEmail: email,
+        purchaseType: "TICKET",
+        provider: "STRIPE",
+        stripeCheckoutSessionId: session.id,
         amount: paymentAmountCents,
         currency: "usd",
-        promoCodeKey: appliedPromo?.key,
-        promoCodeKeyword: appliedPromo?.keyword,
-        promoDiscountPercent: appliedPromo?.discountPercent,
-        promoDiscountAmount: appliedPromo?.discountAmountCents,
+        pricingSnapshot: {
+          ticketId,
+          type: input.type,
+          galaDinner: input.galaDinner,
+          ticketAmountCents: amounts.ticketCents,
+          galaAmountCents: amounts.galaCents,
+        },
+        promotionSnapshot: appliedPromo
+          ? {
+              key: appliedPromo.key,
+              keyword: appliedPromo.keyword,
+              discountPercent: appliedPromo.discountPercent,
+              discountAmountCents: appliedPromo.discountAmountCents,
+            }
+          : undefined,
         status: "PENDING",
       },
-    }),
-  ]);
+    });
+    await tx.ticket.update({ where: { id: ticketId }, data: { paymentId: payment.id } });
+  });
 
   syncTicketOnChange(ticketId);
 

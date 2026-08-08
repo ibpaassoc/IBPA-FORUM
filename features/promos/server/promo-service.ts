@@ -1,24 +1,23 @@
 import "server-only";
 
-import type { PromoPaymentFlow } from "@prisma/client";
+import crypto from "crypto";
 import { EnvConfigError, readEnv } from "@/lib/env";
-import { prisma } from "@/shared/lib/prisma";
+import { promoCodesSettingSchema } from "@/features/database/json-fields";
 import {
   evaluatePromoRecordForFlow,
   getPromoDefinition,
   normalizePromoKeyword,
   PROMO_DEFINITIONS,
   type AppliedPromo,
+  type PromoPaymentFlow,
   type PromoValidationCode,
 } from "@/features/promos/lib/promo-codes";
+import { prisma } from "@/shared/lib/prisma";
 
 export class PromoCodeError extends Error {
-  code: PromoValidationCode;
-
-  constructor(code: PromoValidationCode, message: string) {
+  constructor(public code: PromoValidationCode, message: string) {
     super(message);
     this.name = "PromoCodeError";
-    this.code = code;
   }
 }
 
@@ -29,89 +28,98 @@ export class PromoCodeSetupError extends Error {
   }
 }
 
-function isMissingPromoSchemaError(error: unknown) {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error &&
-    (error.code === "P2021" || error.code === "P2022")
-  );
-}
-
 function promoError(code: PromoValidationCode): PromoCodeError {
-  switch (code) {
-    case "EMPTY":
-      return new PromoCodeError(code, "Promo code is required.");
-    case "DISABLED":
-      return new PromoCodeError(code, "Promo code is disabled.");
-    case "WRONG_FLOW":
-      return new PromoCodeError(code, "Promo code cannot be used for this purchase.");
-    case "ENV_MISSING":
-      return new PromoCodeError(code, "Promo code is not configured for Stripe checkout.");
-    case "INVALID":
-    default:
-      return new PromoCodeError("INVALID", "Invalid promo code.");
-  }
+  const messages: Record<PromoValidationCode, string> = {
+    EMPTY: "Promo code is required.",
+    DISABLED: "Promo code is disabled.",
+    WRONG_FLOW: "Promo code cannot be used for this purchase.",
+    ENV_MISSING: "Promo code is not configured for Stripe checkout.",
+    INVALID: "Invalid promo code.",
+  };
+  return new PromoCodeError(code, messages[code]);
 }
 
-async function findPromoByKeyword(keyword: string) {
-  const normalized = normalizePromoKeyword(keyword);
-  if (!normalized) return null;
-
-  return prisma.promoCode.findUnique({
-    where: { keyword: normalized },
-    select: {
-      key: true,
-      keyword: true,
-      paymentFlow: true,
-      discountPercent: true,
-      enabled: true,
-    },
-  });
-}
-
-export async function getPromoCodesForAdmin() {
-  await ensureDefaultPromoCodes();
-  try {
-    return await prisma.promoCode.findMany({
-      orderBy: [{ paymentFlow: "asc" }, { key: "asc" }],
-    });
-  } catch (error) {
-    if (isMissingPromoSchemaError(error)) {
-      throw new PromoCodeSetupError(
-        "Promo code database tables are missing. Run the promo-code migration before opening this page."
-      );
-    }
-    throw error;
-  }
+async function readPromoCodes() {
+  const setting = await prisma.siteSetting.findUnique({ where: { key: "promocodes" } });
+  if (!setting) return null;
+  const parsed = promoCodesSettingSchema.safeParse(setting.value);
+  if (!parsed.success) throw new PromoCodeSetupError("The promocodes SiteSetting has an invalid JSON shape.");
+  return parsed.data;
 }
 
 export async function ensureDefaultPromoCodes() {
-  try {
+  await prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext('forum:site-setting:promocodes'))`;
+    const setting = await tx.siteSetting.findUnique({ where: { key: "promocodes" } });
+    const parsed = setting ? promoCodesSettingSchema.safeParse(setting.value) : null;
+    if (parsed && !parsed.success) {
+      throw new PromoCodeSetupError("The promocodes SiteSetting has an invalid JSON shape.");
+    }
+    const now = new Date().toISOString();
+    const codes = parsed?.success ? [...parsed.data.codes] : [];
     for (const definition of Object.values(PROMO_DEFINITIONS)) {
-      await prisma.promoCode.upsert({
-        where: { key: definition.key },
-        update: {
-          paymentFlow: definition.paymentFlow,
-          discountPercent: definition.discountPercent,
-        },
-        create: {
+      const existing = codes.find((code) => code.key === definition.key);
+      if (existing) {
+        existing.paymentFlow = definition.paymentFlow;
+        existing.discountPercent = definition.discountPercent;
+        existing.updatedAt = now;
+      } else {
+        codes.push({
+          id: crypto.randomUUID(),
           key: definition.key,
           keyword: definition.defaultKeyword,
           paymentFlow: definition.paymentFlow,
           discountPercent: definition.discountPercent,
           enabled: true,
-        },
-      });
+          createdAt: now,
+          updatedAt: now,
+        });
+      }
     }
-  } catch (error) {
-    if (isMissingPromoSchemaError(error)) {
-      throw new PromoCodeSetupError(
-        "Promo code database tables are missing. Run the promo-code migration before using promo codes."
-      );
+    await tx.siteSetting.upsert({
+      where: { key: "promocodes" },
+      create: { key: "promocodes", value: { schemaVersion: 1, updatedAt: now, codes } },
+      update: { value: { schemaVersion: 1, updatedAt: now, codes } },
+    });
+  });
+}
+
+export async function getPromoCodesForAdmin() {
+  await ensureDefaultPromoCodes();
+  const setting = await readPromoCodes();
+  return (setting?.codes ?? [])
+    .slice()
+    .sort((a, b) => a.paymentFlow.localeCompare(b.paymentFlow) || a.key.localeCompare(b.key))
+    .map((code) => ({
+      ...code,
+      createdAt: new Date(code.createdAt),
+      updatedAt: new Date(code.updatedAt),
+    }));
+}
+
+export async function updatePromoCode(key: string, keyword: string, enabled: boolean) {
+  return prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext('forum:site-setting:promocodes'))`;
+    const setting = await tx.siteSetting.findUnique({ where: { key: "promocodes" } });
+    const parsed = setting ? promoCodesSettingSchema.safeParse(setting.value) : null;
+    if (!parsed?.success) return { ok: false as const, reason: "not_found" as const };
+    if (parsed.data.codes.some((code) => code.keyword === keyword && code.key !== key)) {
+      return { ok: false as const, reason: "duplicate" as const };
     }
-    throw error;
-  }
+    const now = new Date().toISOString();
+    let found = false;
+    const codes = parsed.data.codes.map((code) => {
+      if (code.key !== key) return code;
+      found = true;
+      return { ...code, keyword, enabled, updatedAt: now };
+    });
+    if (!found) return { ok: false as const, reason: "not_found" as const };
+    await tx.siteSetting.update({
+      where: { key: "promocodes" },
+      data: { value: { schemaVersion: 1, updatedAt: now, codes } },
+    });
+    return { ok: true as const };
+  });
 }
 
 export async function validatePromoCodeForFlow({
@@ -125,10 +133,9 @@ export async function validatePromoCodeForFlow({
 }): Promise<AppliedPromo | null> {
   const normalized = normalizePromoKeyword(keyword);
   if (!normalized) return null;
-
-  const promo = await findPromoByKeyword(normalized);
+  const setting = await readPromoCodes();
+  const promo = setting?.codes.find((code) => normalizePromoKeyword(code.keyword) === normalized) ?? null;
   if (!promo) throw promoError("INVALID");
-
   const definition = getPromoDefinition(promo.key);
   const result = evaluatePromoRecordForFlow({
     inputKeyword: normalized,
@@ -143,10 +150,7 @@ export async function validatePromoCodeForFlow({
 export function getStripePromoDiscountId(key: string) {
   const definition = getPromoDefinition(key);
   if (!definition) throw promoError("INVALID");
-
   const value = readEnv([definition.envName]);
-  if (!value) {
-    throw new EnvConfigError(`${definition.envName} must be configured to use ${definition.key}.`);
-  }
+  if (!value) throw new EnvConfigError(`${definition.envName} must be configured to use ${definition.key}.`);
   return value;
 }

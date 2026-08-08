@@ -278,7 +278,8 @@ assert(!purchaseWorkflow.includes("frontendTotal"), "application checkout does n
 const promoService = read("features/promos/server/promo-service.ts");
 assert(promoService.includes("EnvConfigError"), "missing Stripe discount env is reported as configuration error");
 assert(promoService.includes("readEnv([definition.envName])"), "Stripe discount IDs are read only on the server");
-assert(promoService.includes("prisma.promoCode.findUnique"), "every validation reads current promo state from the database");
+assert(promoService.includes('siteSetting.findUnique({ where: { key: "promocodes" } })'), "every validation reads current promo state from SiteSetting");
+assert(promoService.includes("promoCodesSettingSchema.safeParse"), "promo settings are schema validated before use");
 
 const ticketForm = read("features/tickets/components/TicketForm.tsx");
 assert(ticketForm.includes('paymentFlow: "TICKETS"'), "ticket UI validates ticket flow");

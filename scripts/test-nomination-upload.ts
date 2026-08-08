@@ -102,17 +102,18 @@ function testServerSafeguards() {
     "app/api/applicant/nominations/[nominationId]/route.ts",
   );
   assert.match(nominationRoute, /await head\(ref\.fileUrl\)/);
-  assert.match(nominationRoute, /nominationFile\.upsert/);
-  assert.match(nominationRoute, /nominationAnswer\.upsert/);
+  assert.match(nominationRoute, /parseStoredFiles\(nomination\.filesJson\)/);
+  assert.match(nominationRoute, /parseNominationAnswers\(nomination\.answersJson\)/);
+  assert.match(nominationRoute, /revision: nomination\.revision/);
+  assert.match(nominationRoute, /revision: \{ increment: 1 \}/);
   assert.match(nominationRoute, /errorCode: "UPLOAD"/);
   assert.match(nominationRoute, /requestId/);
-  assert.doesNotMatch(nominationRoute, /nominationFile\.createMany/);
+  assert.doesNotMatch(nominationRoute, /nomination(File|Answer)\./);
 
   const schema = read("prisma/schema.prisma");
-  assert.match(
-    schema,
-    /@@unique\(\[nominationApplicationId, fileUrl\]\)/,
-  );
+  assert.match(schema, /answers\s+Json/);
+  assert.match(schema, /files\s+Json/);
+  assert.match(schema, /revision\s+Int/);
 
   const editor = read("features/account/components/nomination-review/NominationReviewForm.tsx");
   assert.match(editor, /const AUTOSAVE_DELAY_MS = 650/);
@@ -122,8 +123,10 @@ function testServerSafeguards() {
   assert.match(editor, /hasActiveUploads \|\| hasFailedUploads \|\| hasPendingFiles/);
   assert.doesNotMatch(editor, /preparePayload/);
 
-  const migration = read("prisma/migrations/20260803103000_make_nomination_answer_upserts_idempotent/migration.sql");
-  assert.match(migration, /CREATE UNIQUE INDEX "NominationAnswer_nominationApplicationId_fieldKey_key"/);
+  const migration = read("prisma/migrations/20260807120000_forum_database_refactor/migration.sql");
+  assert.match(migration, /Nomination_answers_shape/);
+  assert.match(migration, /Nomination_files_shape/);
+  assert.match(migration, /Nomination_active_owner_award_key/);
 
   const publicRoute = read("app/api/applications/route.ts");
   assert.match(publicRoute, /RAW_FILE_REJECTED/);

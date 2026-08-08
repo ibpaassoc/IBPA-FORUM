@@ -37,7 +37,7 @@ export async function issueApplicantRegistrationLink({
 
     // Serialize token issuance for this account. The short issued-at guard also
     // prevents double-clicks from emailing two links where only the last works.
-    await tx.$queryRaw`SELECT "id" FROM "Account" WHERE "id" = ${initial.id} FOR UPDATE`;
+    await tx.$queryRaw`SELECT "id" FROM forum_next."Account" WHERE "id" = ${initial.id} FOR UPDATE`;
 
     const account = await tx.account.findUnique({
       where: { id: initial.id },
@@ -46,33 +46,30 @@ export async function issueApplicantRegistrationLink({
           select: {
             id: true,
             fullName: true,
-            deletedAt: true,
             nominations: {
-              where: { deletedAt: null, paymentStatus: "PAID" },
-              select: { id: true },
-              take: 1,
-            },
-            payments: {
-              where: { status: "PAID" },
+              where: { status: { not: "ARCHIVED" }, payment: { status: "PAID" } },
               select: { id: true },
               take: 1,
             },
           },
         },
+        payments: {
+          where: { purchaseType: "NOMINATION", status: "PAID" },
+          select: { id: true },
+          take: 1,
+        },
       },
     });
 
     const hasPaidPurchase = Boolean(
-      account?.applicantProfile?.nominations.length || account?.applicantProfile?.payments.length,
+      account?.applicantProfile?.nominations.length || account?.payments.length,
     );
     if (
       !account ||
-      account.deletedAt ||
       account.role !== "APPLICANT" ||
       account.status === "DISABLED" ||
       account.passwordHash ||
       !account.applicantProfile ||
-      account.applicantProfile.deletedAt ||
       !hasPaidPurchase
     ) {
       return null;

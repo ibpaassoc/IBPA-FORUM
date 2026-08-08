@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { reopenJudgeScore } from "@/features/admin/server/admin";
+import { reopenNominationReview } from "@/features/admin/server/admin";
 import {
   createApplicantScenario,
   createFullFlowScenario,
@@ -69,7 +69,7 @@ export async function reassignTestJuryAction(formData: FormData) {
   await runWithDataScope({ dataScope: "TEST" }, async () => {
     const [account, nomination] = await Promise.all([
       prisma.account.findUnique({ where: { id: accountId }, include: { juryProfile: true } }),
-      prisma.nominationApplication.findUnique({ where: { id: nominationId }, include: { category: true } }),
+      prisma.nomination.findUnique({ where: { id: nominationId }, include: { category: true } }),
     ]);
     if (!account?.juryProfile || account.role !== "JURY" || !nomination) {
       throw new Error("Both the jury account and nomination must be test-scoped records.");
@@ -85,11 +85,11 @@ export async function reopenTestNominationAction(formData: FormData) {
   await requireTestSession();
   const nominationId = String(formData.get("nominationId") ?? "");
   await runWithDataScope({ dataScope: "TEST" }, async () => {
-    const nomination = await prisma.nominationApplication.findUnique({ where: { id: nominationId } });
+    const nomination = await prisma.nomination.findUnique({ where: { id: nominationId } });
     if (!nomination) throw new Error("Only a test-scoped nomination can be reopened here.");
-    await prisma.nominationApplication.update({
+    await prisma.nomination.update({
       where: { id: nomination.id },
-      data: { status: "RETURNED_FOR_CHANGES", lockedAt: null },
+      data: { status: "RETURNED_FOR_CHANGES", revision: { increment: 1 } },
     });
   });
   revalidatePath("/test/applicant");
@@ -101,7 +101,7 @@ export async function reopenTestReviewAction(formData: FormData) {
   await runWithDataScope({ dataScope: "TEST" }, async () => {
     const review = await prisma.juryNominationReview.findUnique({ where: { id: reviewId } });
     if (!review) throw new Error("Only a test-scoped review can be reopened here.");
-    await reopenJudgeScore(review.id);
+    await reopenNominationReview(review.id);
   });
   revalidatePath("/test/jury");
 }

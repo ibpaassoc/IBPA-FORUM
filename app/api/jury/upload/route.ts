@@ -3,16 +3,18 @@ import { NextResponse } from "next/server";
 import { isValidJuryApplyAccessToken } from "@/lib/jury/apply-access";
 import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
 import { prisma } from "@/shared/lib/prisma";
+import { hashAccountToken } from "@/features/account/server/tokens";
 
 async function hasValidAdditionalInfoToken(token: string | null) {
   if (!token) return false;
 
   const application = await prisma.juryApplication.findUnique({
-    where: { infoRequestToken: token },
-    select: { status: true },
+    where: { informationRequestTokenHash: hashAccountToken(token) },
+    select: { status: true, informationRequestTokenExpiresAt: true },
   });
 
-  return application?.status === "ADDITIONAL_INFO_REQUIRED";
+  return application?.status === "ADDITIONAL_INFO_REQUIRED" &&
+    Boolean(application.informationRequestTokenExpiresAt && application.informationRequestTokenExpiresAt > new Date());
 }
 
 export async function POST(request: Request) {

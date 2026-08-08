@@ -45,11 +45,18 @@ const applicantSelect = {
   membershipLevel: true,
   membershipNumber: true,
   updatedAt: true,
-  account: { select: { email: true } },
-  nominations: {
-    where: { paymentStatus: "PAID" as const, deletedAt: null },
+  account: {
     select: {
-      amount: true,
+      email: true,
+      payments: {
+        where: { status: "PAID" as const, purchaseType: "NOMINATION" as const },
+        select: { amount: true },
+      },
+    },
+  },
+  nominations: {
+    where: { payment: { status: "PAID" as const }, status: { not: "ARCHIVED" as const } },
+    select: {
       submittedAt: true,
       updatedAt: true,
       award: { select: { name: true } },
@@ -60,10 +67,6 @@ const applicantSelect = {
       },
     },
     orderBy: { createdAt: "asc" },
-  },
-  payments: {
-    where: { status: "PAID" as const, source: "COMPETITOR" as const },
-    select: { amount: true },
   },
 } satisfies Prisma.ApplicantProfileSelect;
 
@@ -89,10 +92,7 @@ function applicationScoreSummary(app: ApplicationRecord): string {
 }
 
 function applicationAmountPaidCents(app: ApplicationRecord): number {
-  const paid = app.payments.reduce((sum, payment) => sum + payment.amount, 0);
-  return paid > 0
-    ? paid
-    : app.nominations.reduce((sum, nomination) => sum + nomination.amount, 0);
+  return app.account.payments.reduce((sum, payment) => sum + payment.amount, 0);
 }
 
 function mapApplicationCategorized(app: ApplicationRecord): CategorizedRow {
@@ -136,7 +136,7 @@ export async function fetchApplicationRow(id: string): Promise<CategorizedRow | 
 
 export async function fetchAllApplicationRows(): Promise<CategorizedRow[]> {
   const apps = await prisma.applicantProfile.findMany({
-    where: { deletedAt: null, nominations: { some: { paymentStatus: "PAID", deletedAt: null } } },
+    where: { nominations: { some: { payment: { status: "PAID" }, status: { not: "ARCHIVED" } } } },
     select: applicantSelect,
     orderBy: { createdAt: "asc" },
   });
@@ -154,7 +154,7 @@ const jurySelect = {
   city: true,
   professionalTitle: true,
   yearsExperience: true,
-  approvedCategories: true,
+  profile: { select: { approvedCategories: true } },
   ibpaAssociationMember: true,
   ibpaNumber: true,
   status: true,
@@ -164,7 +164,7 @@ const jurySelect = {
   rejectedAt: true,
   adminNotes: true,
   payments: {
-    where: { source: "JURY" as const },
+    where: { purchaseType: "JURY" as const },
     select: { amount: true, status: true },
     orderBy: { createdAt: "desc" },
   },
@@ -189,7 +189,7 @@ function juryPriceCents(jury: JuryRecord): number {
 function mapJuryCategorized(jury: JuryRecord): CategorizedRow {
   // Areas of expertise are the jury member's categories (shared vocabulary with
   // the Applications tab), so they colour-code and route into tabs identically.
-  const categories = orderCategories(jury.approvedCategories);
+  const categories = orderCategories(jury.profile?.approvedCategories ?? []);
 
   return {
     categories,
@@ -240,9 +240,9 @@ const scoreSelect = {
   juryProfileId: true,
   scoreData: true,
   totalScore: true,
-  notes: true,
+  comments: true,
   status: true,
-  completedAt: true,
+  submittedAt: true,
   updatedAt: true,
   juryProfile: { select: { fullName: true } },
   nomination: {
@@ -283,8 +283,8 @@ export function mapScoreRow(score: ScoreRecord): SheetValues[number] {
     score.totalScore === null ? "" : Number(score.totalScore),
     averageScore(score.totalScore, scoringDefinition.maximumTotal),
     scoreStatusLabel(score.status),
-    score.notes ?? "",
-    formatDateTime(score.completedAt),
+    score.comments ?? "",
+    formatDateTime(score.submittedAt),
     formatDateTime(score.updatedAt),
   ];
 }
@@ -319,18 +319,15 @@ const ticketSelect = {
   galaCheckInAt: true,
   createdAt: true,
   updatedAt: true,
-  payments: {
-    where: { source: "TICKET" as const },
+  payment: {
     select: { amount: true, status: true },
-    orderBy: { createdAt: "desc" },
-    take: 1,
   },
 } satisfies Prisma.TicketSelect;
 
 type TicketRecord = Prisma.TicketGetPayload<{ select: typeof ticketSelect }>;
 
 export function mapTicketRow(ticket: TicketRecord): SheetValues[number] {
-  const payment = ticket.payments[0] ?? null;
+  const payment = ticket.payment ?? null;
   const totalPaidCents = payment?.amount ?? 0;
   const checkInAt =
     ticket.dayOneCheckInAt ??
@@ -344,7 +341,7 @@ export function mapTicketRow(ticket: TicketRecord): SheetValues[number] {
     ticket.email,
     ticket.phone,
     ticket.instagram ?? "",
-    ticketTypeLabelRu(ticket.type),
+    ticketTypeLabelRu(ticket.type ?? "TWO_DAYS"),
     // Single price column: the full amount actually paid (Стоимость). The former
     // Quantity, per-ticket portion and Discount columns were removed.
     formatUsd(totalPaidCents),
@@ -358,12 +355,13 @@ export function mapTicketRow(ticket: TicketRecord): SheetValues[number] {
 }
 
 export async function fetchTicketRow(id: string): Promise<SheetValues[number] | null> {
-  const ticket = await prisma.ticket.findUnique({ where: { id }, select: ticketSelect });
+  const ticket = await prisma.ticket.findFirst({ where: { id, kind: "FORUM" }, select: ticketSelect });
   return ticket ? mapTicketRow(ticket) : null;
 }
 
 export async function fetchAllTicketRows(): Promise<SheetValues> {
   const tickets = await prisma.ticket.findMany({
+    where: { kind: "FORUM" },
     select: ticketSelect,
     orderBy: { createdAt: "asc" },
   });

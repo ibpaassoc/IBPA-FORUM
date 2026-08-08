@@ -46,7 +46,7 @@ export function daysUntil(value: Date) {
 type NominationSource = {
   id: string;
   status: string;
-  lockedAt: Date | null;
+  locked: boolean;
   updatedAt: Date;
   award: { name: string };
   category: { name: string };
@@ -61,7 +61,7 @@ export function toNominationCardData(
   return {
     id: nomination.id,
     status: nomination.status,
-    locked: nomination.lockedAt !== null || nomination.status === "LOCKED",
+    locked: nomination.locked || nomination.status === "LOCKED",
     awardName: nomination.award.name,
     categoryName: nomination.category.name,
     updatedAtLabel: formatDateLabel(nomination.updatedAt, locale),
@@ -74,14 +74,14 @@ const SUBMITTED_STATUSES = new Set(["SUBMITTED", "UNDER_REVIEW", "SCORED", "LOCK
 const DRAFT_STATUSES = new Set(["DRAFT", "RETURNED_FOR_CHANGES"]);
 
 export function applicantNominationStats(
-  nominations: Array<Pick<NominationSource, "status" | "lockedAt" | "completionPercentage">>,
+  nominations: Array<Pick<NominationSource, "status" | "locked" | "completionPercentage">>,
 ) {
   const total = nominations.length;
   const submitted = nominations.filter(
-    (nomination) => nomination.lockedAt !== null || SUBMITTED_STATUSES.has(nomination.status),
+    (nomination) => nomination.locked || SUBMITTED_STATUSES.has(nomination.status),
   ).length;
   const drafts = nominations.filter(
-    (nomination) => nomination.lockedAt === null && DRAFT_STATUSES.has(nomination.status),
+    (nomination) => !nomination.locked && DRAFT_STATUSES.has(nomination.status),
   ).length;
   const overallCompletion =
     total === 0

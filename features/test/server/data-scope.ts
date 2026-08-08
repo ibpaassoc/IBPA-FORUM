@@ -3,7 +3,7 @@ import type { DataScope } from "@prisma/client";
 
 type DataScopeContext = {
   dataScope: DataScope;
-  testScenarioId?: string;
+  testId?: string;
   testEmailRecipient?: string;
   testTemplateType?: string;
   testEmailCategory?: string;
@@ -28,7 +28,7 @@ export function getDataScopeContext(): DataScopeContext {
 
 export function activateRequestDataScope(context: DataScopeContext) {
   // Request authentication may discover the actor's scope after a test
-  // scenario has already supplied metadata such as testScenarioId. Preserve
+  // run has already supplied metadata such as testId. Preserve
   // that metadata while updating the authoritative data scope.
   storage.enterWith({ ...getDataScopeContext(), ...context });
 }

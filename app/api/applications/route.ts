@@ -44,7 +44,7 @@ export async function GET() {
     }
 
     const applications = await prisma.applicantProfile.findMany({
-      where: { deletedAt: null, account: { deletedAt: null } },
+      where: { account: { status: { not: "DISABLED" } } },
       orderBy: { createdAt: "desc" },
       select: {
         id: true,
@@ -53,11 +53,11 @@ export async function GET() {
         country: true,
         account: { select: { email: true, status: true } },
         nominations: {
-          where: { deletedAt: null },
+          where: { status: { not: "ARCHIVED" } },
           select: {
             id: true,
             status: true,
-            paymentStatus: true,
+            payment: { select: { status: true } },
             submittedAt: true,
             category: { select: { name: true } },
             award: { select: { name: true } },
@@ -67,7 +67,16 @@ export async function GET() {
       },
     });
 
-    return NextResponse.json(applications);
+    return NextResponse.json(
+      applications.map((application) => ({
+        ...application,
+        nominations: application.nominations.map((nomination) => ({
+          ...nomination,
+          paymentStatus: nomination.payment.status,
+          payment: undefined,
+        })),
+      }))
+    );
   } catch (error) {
     console.error("GET /api/applications error:", error);
 

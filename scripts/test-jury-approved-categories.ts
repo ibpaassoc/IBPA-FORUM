@@ -123,7 +123,7 @@ const nominationFilesRoute = readFileSync(
 );
 assert.match(
   nominationFilesRoute,
-  /juryUser\.approvedCategories\.includes/,
+  /category: \{ name: \{ in: juryUser\.approvedCategories \} \}/,
   "nomination file downloads use the same approved-category authorization",
 );
 
@@ -160,7 +160,7 @@ const jurySheetRows = readFileSync(
 );
 assert.match(
   jurySheetRows,
-  /orderCategories\(jury\.approvedCategories\)/,
+  /orderCategories\(jury\.profile\?\.approvedCategories \?\? \[\]\)/,
   "approved category changes flow into the paid-jury sheet",
 );
 
