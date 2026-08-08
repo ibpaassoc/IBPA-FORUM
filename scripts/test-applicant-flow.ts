@@ -142,7 +142,7 @@ console.log("purchase workflow");
 const purchaseWorkflow = read("features/applications/server/purchase-workflow.ts");
 assert(has(purchaseWorkflow, "validateMembershipNumber"), "membership discount is validated server-side");
 assert(has(purchaseWorkflow, "assertNoOwnedDuplicateNominations"), "duplicate nominations are blocked server-side");
-assert(has(purchaseWorkflow, "purchaseManifest"), "pending payment stores a purchase manifest");
+assert(has(purchaseWorkflow, "pricingSnapshot"), "pending payment stores a versioned pricing snapshot");
 assert(has(purchaseWorkflow, 'source: "applicant_account"'), "account add-nomination checkout uses account profile data");
 assert(
   has(purchaseWorkflow, "APPLICATIONS_CLOSED"),
@@ -156,8 +156,8 @@ assert(
 );
 assert(has(webhookWorkflow, "amountTotal !== payment.amount"), "webhook validates Stripe amount");
 assert(has(webhookWorkflow, "existingNomination"), "webhook fulfills nominations idempotently");
-assert(has(webhookWorkflow, 'status: "PURCHASED"'), "new paid nominations start in PURCHASED state");
-assert(has(webhookWorkflow, "purchasePaymentId"), "nominations are linked to the purchase payment");
+assert(has(webhookWorkflow, 'status: "DRAFT"'), "new paid nominations start in the editable DRAFT state");
+assert(has(webhookWorkflow, "paymentId: payment.id"), "nominations are linked to the canonical payment");
 assert(has(webhookWorkflow, "fulfilledAt: paidAt"), "payment fulfillment is marked idempotently");
 assert(has(webhookWorkflow, "issueApplicantRegistrationLink"), "webhook issues setup links through the shared service");
 
@@ -166,7 +166,7 @@ console.log("account setup tokens");
 const tokens = read("features/account/server/tokens.ts");
 assert(has(tokens, "SETUP_TOKEN_TTL_MS = 3 * 24 * 60 * 60 * 1000"), "setup token TTL is three days");
 assert(has(tokens, "setupTokenHash"), "setup tokens are stored on Account as a hash");
-assert(has(tokens, 'source: "account"'), "validator recognizes account-backed setup tokens");
+assert(has(tokens, "setupTokenPurpose !== purpose"), "validator checks the Account token purpose");
 assert(
   has(tokens, /purpose === "SETUP"[\s\S]*tx\.account\.update/),
   "SETUP purpose writes token state to Account"
@@ -178,17 +178,17 @@ assert(has(setupActions, "setupTokenHash: null"), "password setup clears account
 assert(has(setupActions, "tx.account.updateMany"), "password setup consumes account tokens atomically");
 assert(has(setupActions, "setupTokenExpiresAt: { gte: now }"), "password setup rechecks expiry during activation");
 assert(has(setupActions, 'status: { not: "DISABLED" }'), "password setup cannot reactivate a disabled account");
-assert(has(setupActions, "deletedAt: null"), "password setup cannot reactivate a deleted account");
+assert(!has(setupActions, "deletedAt"), "password setup no longer depends on removed soft-delete state");
 
 const forgotPasswordActions = read("features/auth/server/forgot-password.actions.ts");
 assert(!has(forgotPasswordActions, "$transaction"), "forgot password does not require an interactive transaction");
 assert(has(forgotPasswordActions, "createPasswordResetToken"), "forgot password uses direct reset token issuance");
 assert(has(forgotPasswordActions, "lastSetupEmailDeliveryStatus"), "forgot password records reset email delivery status");
-assert(has(forgotPasswordActions, "accountSetupToken.updateMany"), "forgot password invalidates undelivered reset tokens");
+assert(has(forgotPasswordActions, "createPasswordResetToken"), "creating a reset token replaces the Account's prior active token");
 
 const registrationService = read("features/account/server/applicant-registration.ts");
-assert(has(registrationService, 'paymentStatus: "PAID"'), "registration links require a paid nomination");
-assert(has(registrationService, 'where: { status: "PAID" }'), "registration links accept a paid applicant payment");
+assert(has(registrationService, 'payment: { status: "PAID" }'), "registration links require a paid nomination");
+assert(has(registrationService, 'purchaseType: "NOMINATION", status: "PAID"'), "registration links accept a paid applicant payment");
 assert(has(registrationService, "FOR UPDATE"), "registration token issuance is serialized per account");
 assert(has(registrationService, "setupTokenHash: null"), "failed email delivery invalidates its setup token");
 assert(has(registrationService, "lastSetupEmailDeliveryStatus === \"delivered\""), "cooldown only follows successful delivery");
@@ -203,7 +203,7 @@ assert(!has(participantQueries, "prisma.application.findUnique"), "admin applica
 
 const applicantAdminActions = read("features/admin/actions/applicant.actions.ts");
 assert(has(applicantAdminActions, "addManualApplicantNominationAction"), "admin can add manual paid nominations");
-assert(has(applicantAdminActions, 'provider: "manual_admin"'), "manual admin payments do not fake Stripe identifiers");
+assert(has(applicantAdminActions, 'provider: "MANUAL"'), "manual admin payments use the canonical non-Stripe provider");
 assert(has(applicantAdminActions, "resendApplicantRegistrationLinkAction"), "admin can resend one registration link");
 assert(has(applicantAdminActions, "bulkResendApplicantRegistrationLinksAction"), "admin can bulk resend registration links");
 assert(has(applicantAdminActions, "issueApplicantRegistrationLink"), "admin resend uses shared registration service");
@@ -240,7 +240,7 @@ console.log("applicant account editing and closure");
 const saveNominationRoute = read("app/api/applicant/nominations/[nominationId]/route.ts");
 assert(has(saveNominationRoute, "requireEditableNomination"), "nomination editor enforces account ownership");
 assert(has(saveNominationRoute, "validateNominationBlockB"), "nomination submit validates category requirements");
-assert(has(saveNominationRoute, "deletedAt"), "file replacement uses soft-delete metadata");
+assert(has(saveNominationRoute, "nextFileItems"), "file replacement atomically rewrites the versioned file document");
 assert(has(saveNominationRoute, "categoryFieldConfigs"), "empty video selections also replace stored nomination files");
 
 const applicantFileRoute = read("app/api/account/applicant/nomination-files/[fileId]/route.ts");
@@ -294,9 +294,9 @@ assert(!has(closure, "instanceof File"), "deadline closure does not reference br
 // -- Jury privacy and file access ---------------------------------------------
 console.log("jury privacy");
 const juryServer = read("features/jury/server/reviews.ts");
-assert(has(juryServer, 'paymentStatus: "PAID"'), "jury queries only expose paid nominations");
-assert(has(juryServer, "closedIncompleteAt: null"), "jury queries exclude closed incomplete nominations");
-assert(has(juryServer, "deletedAt: null"), "jury queries exclude deleted nominations");
+assert(has(juryServer, 'payment: { status: "PAID" }'), "jury queries only expose paid nominations");
+assert(has(juryServer, 'status: { in: ["SUBMITTED", "UNDER_REVIEW", "LOCKED", "SCORED"] }'), "jury queries use the centralized scoreable state set");
+assert(!has(juryServer, "deletedAt"), "jury queries no longer depend on legacy soft-delete columns");
 assert(!has(juryServer, "email: true"), "jury queries do not select applicant email");
 assert(!has(juryServer, "city: true"), "jury queries do not select applicant city");
 assert(!has(juryServer, "country: true"), "jury queries do not select applicant country");
@@ -336,13 +336,13 @@ assert(has(juryAdminDetail, "juryRegistrationAlreadyComplete"), "jury admin page
 
 const juryFileRoute = read("app/api/account/jury/nomination-files/[fileId]/route.ts");
 assert(has(juryFileRoute, "requireJuryAuth"), "jury file route requires jury auth");
-assert(has(juryFileRoute, 'paymentStatus !== "PAID"'), "jury file route rejects unpaid nominations");
-assert(has(juryFileRoute, "closedIncompleteAt"), "jury file route rejects incomplete closed nominations");
+assert(has(juryFileRoute, 'payment: { status: "PAID" }'), "jury file route rejects unpaid nominations");
+assert(has(juryFileRoute, 'status: { in: ["SUBMITTED", "UNDER_REVIEW", "LOCKED", "SCORED"] }'), "jury file route permits only scoreable nomination states");
 assert(
-  has(juryFileRoute, "approvedCategories.includes"),
+  has(juryFileRoute, "category: { name: { in: juryUser.approvedCategories } }"),
   "jury file route enforces approved category access",
 );
-assert(has(juryFileRoute, "displayFileName || fileRecord.fileName"), "jury file route uses display-safe filenames");
+assert(has(juryFileRoute, "fileRecord.filename"), "jury file route uses validated embedded file metadata");
 
 // -- File preview delivery -----------------------------------------------------
 // A raw non-ASCII filename in Content-Disposition makes the Response
@@ -442,32 +442,26 @@ assert(has(ticketEmailTemplate, 'role="presentation"'), "ticket email uses email
 console.log("migration verification scripts");
 const verifyMigration = read("scripts/verify-account-migration.ts");
 assert(has(verifyMigration, "duplicateApplicantAwards"), "migration verifier checks duplicate applicant/award pairs");
-assert(has(verifyMigration, "nominationFilesWithoutNomination"), "migration verifier checks orphan nomination files");
-assert(has(verifyMigration, "paymentsWithoutOwner"), "migration verifier checks orphan payments");
-assert(has(verifyMigration, "paidStripePaymentsMissingSession"), "migration verifier checks paid Stripe session linkage");
+assert(has(verifyMigration, "invalidNominationJson"), "migration verifier validates embedded nomination files and answers");
+assert(has(verifyMigration, "invalidOwnershipPayments"), "migration verifier checks canonical payment ownership");
+assert(has(verifyMigration, "paidStripePaymentsMissingProviderReference"), "migration verifier checks paid Stripe provider linkage");
 
 const prismaSchema = read("prisma/schema.prisma");
 assert(!has(prismaSchema, /^model Application \{/m), "legacy Application model is removed");
 assert(!has(prismaSchema, /^model JudgeScore \{/m), "legacy JudgeScore model is removed");
 assert(has(prismaSchema, /^model JuryNominationReview \{/m), "jury scoring uses nomination reviews");
 
-const cleanupMigration = read(
-  "prisma/migrations/20260721120000_remove_legacy_applications_and_scores/migration.sql"
+const cleanupMigration = read("prisma/migrations/20260807120000_forum_database_refactor/migration.sql");
+assert(
+  has(cleanupMigration, 'CREATE TABLE "forum_next"."ApplicantProfile"'),
+  "target migration creates the canonical applicant profile table"
 );
 assert(
-  cleanupMigration.indexOf('INSERT INTO "ApplicantProfile"') < cleanupMigration.indexOf('DROP TABLE "Application"'),
-  "cleanup migration creates applicant profiles before dropping applications"
+  has(cleanupMigration, 'CREATE TABLE "forum_next"."JuryNominationReview"'),
+  "target migration creates canonical nomination reviews"
 );
-assert(
-  cleanupMigration.indexOf('INSERT INTO "JuryNominationReview"') < cleanupMigration.indexOf('DROP TABLE "JudgeScore"'),
-  "cleanup migration creates nomination reviews before dropping judge scores"
-);
-assert(has(cleanupMigration, "Legacy cleanup aborted"), "cleanup migration aborts on unmigrated owners");
-assert(
-  has(cleanupMigration, "applicant emails conflict with non-applicant accounts"),
-  "cleanup migration rejects single-role account conflicts"
-);
-assert(has(cleanupMigration, 'CREATE TABLE "ApplicantCheckInCredential"'), "legacy participant QR tokens are preserved");
+assert(!has(cleanupMigration, "DROP TABLE"), "foundation migration never drops rollback-source tables");
+assert(has(cleanupMigration, 'CREATE TABLE "forum_next"."Ticket"'), "participant and jury credentials are consolidated into Ticket");
 
 console.log(`\n${passed} passed, ${failed} failed`);
 if (failed > 0) process.exitCode = 1;

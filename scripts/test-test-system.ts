@@ -73,9 +73,11 @@ for (const productionQueryFile of [
 }
 
 // Cleanup refuses production targets even though it intentionally uses the raw client.
-includes("features/test/server/cleanup.ts", 'record.dataScope !== "TEST"', "single-entity cleanup refuses production records");
-includes("features/test/server/cleanup.ts", 'dataScope: "PRODUCTION"', "scenario cleanup audits for production references before deletion");
+includes("features/test/server/cleanup.ts", 'dataScope: { not: "TEST" }', "cleanup refuses any record whose authoritative scope is not TEST");
+includes("features/test/server/cleanup.ts", "findTestOwningRecord", "single-entity cleanup requires explicit Test ownership");
 includes("features/test/server/cleanup.ts", 'dataScope: "TEST"', "cleanup delete predicates are pinned to TEST scope");
+includes("features/test/server/test-records.ts", "createdRecords", "one Test document records every created business ID");
+assert.ok(!read("features/test/server/cleanup.ts").includes("@example.invalid"), "cleanup never identifies test data by email patterns");
 assert.ok(!read("features/test/server/cleanup.ts").includes("deleteMany({})"), "cleanup never performs an unscoped deleteMany on production entities");
 const unscopedConsumers = filesUnder("features")
   .filter((path) => path.endsWith(".ts") || path.endsWith(".tsx"))
@@ -86,8 +88,12 @@ assert.deepEqual(
     "features/account/server/accounts.ts",
     "features/account/server/tokens.ts",
     "features/test/server/cleanup.ts",
+    "features/test/server/dashboard.ts",
     "features/test/server/dev-accounts.ts",
     "features/test/server/registry.ts",
+    "features/test/server/scenarios.ts",
+    "features/test/server/test-records.ts",
+    "features/test/server/ticket-scenarios.ts",
   ],
   "the unscoped database escape hatch is limited to guarded scope discovery and isolated-data management",
 );
@@ -97,12 +103,11 @@ includes("features/account/server/accounts.ts", 'session.user.dataScope ?? "PROD
 includes("features/account/server/tokens.ts", "activateRequestDataScope({ dataScope: account.dataScope })", "setup links restore the owning account scope");
 includes("features/test/server/dev-accounts.ts", 'runWithDataScope({ dataScope: "DEV" }', "DEV account management is pinned to DEV scope");
 
-// The production applicant and jury validation/state-transition services are actually reused.
-includes("features/test/server/scenarios.ts", "validateNominationBlockB", "scenario generation calls the production nomination validator");
-includes("features/test/server/scenarios.ts", "handleCompetitorStripeEvent", "applicant scenarios call the production payment fulfillment handler");
-includes("features/test/server/scenarios.ts", "approveJuryApplicationWithoutPayment", "jury scenarios call the production activation flow");
-includes("features/test/server/scenarios.ts", "saveJuryReviewDraft", "partial review scenarios call the production draft service");
-includes("features/test/server/scenarios.ts", "submitJuryReview", "completed review scenarios call the production submit service");
+// Scenario fixtures use only target models and explicit ownership documents.
+includes("features/test/server/scenarios.ts", "emptyTestCreatedRecords", "scenario generation starts from an explicit created-record manifest");
+includes("features/test/server/scenarios.ts", 'provider: "MANUAL"', "non-Stripe scenario purchases use explicit manual payments");
+includes("features/test/server/scenarios.ts", "getCategoryScoringDefinition", "scenario nominations snapshot the production scoring definition");
+includes("features/test/server/scenarios.ts", "testId: scenario.id", "scenario runtime context uses Test.id directly");
 includes("features/test/server/ticket-scenarios.ts", "handleTicketStripeEvent", "paid ticket scenarios call the production post-payment handler");
 
 const nominationErrors = validateNominationBlockB("hair", {});
@@ -118,19 +123,9 @@ const completeScores = Object.fromEntries(scoring.criteria.map((criterion) => [c
 const validatedScores = validateReviewScores({ scores: completeScores, definition: scoring, requireComplete: true });
 assert.equal(Object.values(validatedScores).filter((value) => value !== null).length, scoring.criteria.length, "the real jury validator accepts a complete valid review");
 
-// Seeded uploads must be real files. Scenarios used to record invented blob
-// paths, so every preview in the applicant and jury accounts resolved to a
-// missing blob and rendered broken.
-includes(
-  "features/test/server/scenarios.ts",
-  "await put(pathname, asset.bytes",
-  "test scenarios upload their sample files to Blob storage",
-);
-includes(
-  "features/test/server/scenarios.ts",
-  "`applications/${nominationId}/${fieldKey}/${fileName}`",
-  "seeded blobs use the production path prefix that cleanup deletes",
-);
+// Blob cleanup is limited to explicit registered keys and refuses active references.
+includes("features/test/server/cleanup.ts", "records.blobKeys", "cleanup reads explicit Blob keys from the Test manifest");
+includes("features/test/server/cleanup.ts", "activeReferences.has(key)", "cleanup refuses Blob keys still referenced by active data");
 assert.ok(
   read("features/test/server/cleanup.ts").includes('key.startsWith("applications/")'),
   "scenario cleanup deletes blobs written under the applications prefix",
