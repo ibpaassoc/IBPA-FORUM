@@ -1,4 +1,5 @@
-import type { JuryApplication, JuryApplicationFile } from "@prisma/client";
+import type { JuryApplication } from "@prisma/client";
+import type { JuryApplicationFileView } from "@/features/jury/types/files";
 import type { ReactNode } from "react";
 import {
   ArrowLeft,
@@ -47,13 +48,15 @@ import {
 import IbpaDropdown from "@/shared/components/admin/IbpaDropdown";
 import FilePreviewGallery from "@/shared/components/files/FilePreviewGallery";
 
-type JuryApplicationDetail = JuryApplication & {
-  files: JuryApplicationFile[];
+type JuryApplicationDetail = Omit<JuryApplication, "files"> & {
+  files: JuryApplicationFileView[];
+  approvedCategories: string[];
+  paymentStatus: string;
+  paidAt: Date | null;
   profile?: {
     account: {
       status: string;
       passwordHash: string | null;
-      deletedAt: Date | null;
     };
   } | null;
   infoRequestDetails?: string | null;
@@ -93,7 +96,7 @@ export default function JuryApplicationDetailPage({
   const canReject = application.status !== "REJECTED" && application.status !== "PAID";
   const account = application.profile?.account;
   const isRegistered = Boolean(account?.passwordHash);
-  const isAccountUnavailable = account?.status === "DISABLED" || Boolean(account?.deletedAt);
+  const isAccountUnavailable = account?.status === "DISABLED";
   const registrationEligible =
     application.status === "PAID" &&
     application.paymentStatus === "PAID" &&

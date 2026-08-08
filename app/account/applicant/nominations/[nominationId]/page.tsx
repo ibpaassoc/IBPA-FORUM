@@ -15,7 +15,7 @@ export default async function ApplicantNominationPage({
   const { nomination, applicantProfile } = await requireOwnedNomination(nominationId);
   activateRequestDataScope({ dataScope: nomination.dataScope });
   const nominationNavigation = await getApplicantNominationNavigation(applicantProfile.id);
-  const locked = nomination.lockedAt !== null || nomination.status === "LOCKED";
+  const locked = nomination.status === "LOCKED";
   const scoreVisible = nomination.scoresReleasedAt !== null;
   const categoryFields = categoryFieldConfigs[nomination.category.slug] ?? [];
   const submittedScores = nomination.reviews

@@ -25,7 +25,6 @@ export async function findAccountByEmail(email: string, role: AccountRole) {
           juryApplicationId: true,
           fullName: true,
           expertiseAreas: true,
-          approvalStatus: true,
         },
       },
     },
@@ -49,7 +48,6 @@ export async function findAccountForPublicAuth(email: string, role: AccountRole)
           juryApplicationId: true,
           fullName: true,
           expertiseAreas: true,
-          approvalStatus: true,
         },
       },
     },
@@ -61,7 +59,7 @@ export async function findAccountForPublicAuth(email: string, role: AccountRole)
 export async function findPublicAccountsByEmail(email: string) {
   const accounts = await unscopedPrisma.account.findMany({
     where: { normalizedEmail: normalizeAccountEmail(email), dataScope: { not: "TEST" } },
-    select: { id: true, role: true, status: true, passwordHash: true, deletedAt: true },
+    select: { id: true, role: true, status: true, passwordHash: true },
   });
   return accounts;
 }
@@ -81,7 +79,6 @@ export async function findSiblingAccount({
       normalizedEmail: normalizeAccountEmail(email),
       role,
       dataScope,
-      deletedAt: null,
       // Account switching creates a new authenticated session for the other
       // role, so only fully activated accounts are eligible.
       status: "ACTIVE",
@@ -123,7 +120,6 @@ export async function findAccountForSessionRoleSwitch({
       role: true,
       dataScope: true,
       status: true,
-      deletedAt: true,
     },
   });
 
@@ -131,8 +127,7 @@ export async function findAccountForSessionRoleSwitch({
     !source ||
     source.role === targetRole ||
     source.dataScope === "TEST" ||
-    source.status !== "ACTIVE" ||
-    source.deletedAt
+    source.status !== "ACTIVE"
   ) {
     return null;
   }
@@ -143,7 +138,6 @@ export async function findAccountForSessionRoleSwitch({
       role: targetRole,
       dataScope: source.dataScope,
       status: "ACTIVE",
-      deletedAt: null,
     },
     include: {
       applicantProfile: { select: { id: true, fullName: true } },
@@ -153,7 +147,6 @@ export async function findAccountForSessionRoleSwitch({
           juryApplicationId: true,
           fullName: true,
           expertiseAreas: true,
-          approvalStatus: true,
         },
       },
     },
@@ -193,7 +186,7 @@ export async function findSameScopeAccount({
 export async function findAccountForPublicSession(accountId: string) {
   const account = await unscopedPrisma.account.findUnique({
     where: { id: accountId },
-    select: { id: true, role: true, status: true, deletedAt: true, dataScope: true },
+    select: { id: true, role: true, status: true, dataScope: true },
   });
   return account?.dataScope === "TEST" ? null : account;
 }
@@ -315,7 +308,6 @@ export async function upsertJuryAccountForApplication(
         approvedCategories: application.approvedCategories,
         professionalBio: application.professionalBio,
         professionalWebsite: application.professionalWebsite,
-        approvalStatus: application.status,
       },
     });
 
@@ -349,7 +341,6 @@ export async function upsertJuryAccountForApplication(
       approvedCategories: application.approvedCategories,
       professionalBio: application.professionalBio,
       professionalWebsite: application.professionalWebsite,
-      approvalStatus: application.status,
     },
     update: {
       juryApplicationId: application.id,
@@ -364,7 +355,6 @@ export async function upsertJuryAccountForApplication(
       approvedCategories: application.approvedCategories,
       professionalBio: application.professionalBio,
       professionalWebsite: application.professionalWebsite,
-      approvalStatus: application.status,
     },
   });
 
@@ -430,7 +420,7 @@ export async function requireAccount(loginRole?: AccountRole) {
     activateRequestDataScope({ dataScope: "TEST" });
     const account = await prisma.account.findUnique({
       where: { id: testActor.accountId },
-      include: { applicantProfile: true, juryProfile: true },
+      include: { applicantProfile: true, juryProfile: { include: { juryApplication: true } } },
     });
     if (!account || account.role !== testActor.role || account.status === "DISABLED") {
       redirect("/test");
@@ -450,7 +440,7 @@ export async function requireAccount(loginRole?: AccountRole) {
     where: { id: session.user.accountId },
     include: {
       applicantProfile: true,
-      juryProfile: true,
+      juryProfile: { include: { juryApplication: true } },
     },
   });
 

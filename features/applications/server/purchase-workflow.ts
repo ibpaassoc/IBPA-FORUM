@@ -263,11 +263,11 @@ async function assertNoOwnedDuplicateNominations({
   applicantProfileId: string;
   awardIds: string[];
 }) {
-  const duplicates = await prisma.nominationApplication.findMany({
+  const duplicates = await prisma.nomination.findMany({
     where: {
       applicantProfileId,
       awardId: { in: awardIds },
-      deletedAt: null,
+      status: { not: "ARCHIVED" },
     },
     select: {
       awardId: true,
@@ -367,17 +367,21 @@ export async function createPublicApplicantNominationCheckout(formData: FormData
 
   const payment = await prisma.payment.create({
     data: {
-      source: "COMPETITOR",
-      applicantProfileId: existingAccount?.applicantProfile?.id,
-      applicantEmail: email,
-      provider: "stripe",
-      purchaseManifest: manifest as unknown as Prisma.InputJsonValue,
+      accountId: existingAccount?.id,
+      customerEmail: email,
+      purchaseType: "NOMINATION",
+      provider: "STRIPE",
+      pricingSnapshot: manifest as unknown as Prisma.InputJsonValue,
+      promotionSnapshot: appliedPromo
+        ? ({
+            key: appliedPromo.key,
+            keyword: appliedPromo.keyword,
+            discountPercent: appliedPromo.discountPercent,
+            discountAmountCents: appliedPromo.discountAmountCents,
+          } as Prisma.InputJsonValue)
+        : undefined,
       amount: finalAmountCents,
       currency: pricing.currency,
-      promoCodeKey: appliedPromo?.key,
-      promoCodeKeyword: appliedPromo?.keyword,
-      promoDiscountPercent: appliedPromo?.discountPercent,
-      promoDiscountAmount: appliedPromo?.discountAmountCents,
       status: "PENDING",
     },
     select: { id: true },
@@ -393,7 +397,7 @@ export async function createPublicApplicantNominationCheckout(formData: FormData
 
   await prisma.payment.update({
     where: { id: payment.id },
-    data: { stripeSessionId: checkoutSession.id },
+    data: { stripeCheckoutSessionId: checkoutSession.id },
   });
 
   return {
@@ -429,7 +433,7 @@ export async function createAccountApplicantNominationCheckout({
     }),
   ]);
 
-  if (!profile || profile.account.status === "DISABLED" || profile.deletedAt) {
+  if (!profile || profile.account.status === "DISABLED") {
     throw new ApplicantPurchaseError(404, "ACCOUNT_NOT_FOUND", "Applicant account not found.");
   }
 
@@ -471,8 +475,8 @@ export async function createAccountApplicantNominationCheckout({
       isVerifiedMember,
       membershipNumber: isVerifiedMember ? profile.membershipNumber : null,
       membershipLevel: isVerifiedMember ? profile.membershipLevel : null,
-      verificationSource: profile.membershipVerificationSource,
-      verifiedAt: profile.membershipVerifiedAt?.toISOString() ?? null,
+      verificationSource: isVerifiedMember ? "PROFILE_SNAPSHOT" : null,
+      verifiedAt: null,
     },
     selectedAwards,
     pricing: {
@@ -491,17 +495,21 @@ export async function createAccountApplicantNominationCheckout({
 
   const payment = await prisma.payment.create({
     data: {
-      source: "COMPETITOR",
-      applicantProfileId: profile.id,
-      applicantEmail: profile.account.email,
-      provider: "stripe",
-      purchaseManifest: manifest as unknown as Prisma.InputJsonValue,
+      accountId: profile.accountId,
+      customerEmail: profile.account.email,
+      purchaseType: "NOMINATION",
+      provider: "STRIPE",
+      pricingSnapshot: manifest as unknown as Prisma.InputJsonValue,
+      promotionSnapshot: appliedPromo
+        ? ({
+            key: appliedPromo.key,
+            keyword: appliedPromo.keyword,
+            discountPercent: appliedPromo.discountPercent,
+            discountAmountCents: appliedPromo.discountAmountCents,
+          } as Prisma.InputJsonValue)
+        : undefined,
       amount: finalAmountCents,
       currency: pricing.currency,
-      promoCodeKey: appliedPromo?.key,
-      promoCodeKeyword: appliedPromo?.keyword,
-      promoDiscountPercent: appliedPromo?.discountPercent,
-      promoDiscountAmount: appliedPromo?.discountAmountCents,
       status: "PENDING",
     },
     select: { id: true },
@@ -517,7 +525,7 @@ export async function createAccountApplicantNominationCheckout({
 
   await prisma.payment.update({
     where: { id: payment.id },
-    data: { stripeSessionId: checkoutSession.id },
+    data: { stripeCheckoutSessionId: checkoutSession.id },
   });
 
   return {
@@ -551,7 +559,7 @@ export async function getApplicantPurchaseSuccessSummary(sessionId: string | und
   if (!sessionId) return null;
 
   const payment = await prisma.payment.findUnique({
-    where: { stripeSessionId: sessionId },
+    where: { stripeCheckoutSessionId: sessionId },
     select: {
       id: true,
       amount: true,
@@ -559,8 +567,8 @@ export async function getApplicantPurchaseSuccessSummary(sessionId: string | und
       status: true,
       fulfilledAt: true,
       stripePaymentIntentId: true,
-      purchaseManifest: true,
-      purchasedNominations: {
+      pricingSnapshot: true,
+      nominations: {
         select: {
           id: true,
           category: { select: { name: true } },
@@ -568,16 +576,12 @@ export async function getApplicantPurchaseSuccessSummary(sessionId: string | und
         },
         orderBy: { createdAt: "asc" },
       },
-      applicantProfile: {
-        select: {
-          account: { select: { status: true, passwordHash: true } },
-        },
-      },
+      account: { select: { status: true, passwordHash: true } },
     },
   });
 
   if (!payment) return null;
-  const manifest = parseApplicantPurchaseManifest(payment.purchaseManifest);
+  const manifest = parseApplicantPurchaseManifest(payment.pricingSnapshot);
 
   return {
     paymentId: payment.id,
@@ -588,11 +592,10 @@ export async function getApplicantPurchaseSuccessSummary(sessionId: string | und
     paymentReference: payment.stripePaymentIntentId
       ? `...${payment.stripePaymentIntentId.slice(-8)}`
       : `...${sessionId.slice(-8)}`,
-    registrationComplete: Boolean(payment.applicantProfile?.account.passwordHash) &&
-      payment.applicantProfile?.account.status === "ACTIVE",
+    registrationComplete: Boolean(payment.account?.passwordHash) && payment.account?.status === "ACTIVE",
     nominations:
-      payment.purchasedNominations.length > 0
-        ? payment.purchasedNominations.map((nomination) => ({
+      payment.nominations.length > 0
+        ? payment.nominations.map((nomination) => ({
             id: nomination.id,
             categoryName: nomination.category.name,
             awardName: nomination.award.name,

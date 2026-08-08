@@ -2,15 +2,18 @@ import { notFound } from "next/navigation";
 import { AlertTriangle, ClipboardEdit, MessageSquare } from "lucide-react";
 import { prisma } from "@/shared/lib/prisma";
 import AdditionalInfoForm from "@/features/jury/components/additional-info/AdditionalInfoForm";
+import { hashAccountToken } from "@/features/account/server/tokens";
+import { parseJuryInformationRequests } from "@/features/database/json-fields";
 
 async function getApplicationByToken(token: string) {
   return prisma.juryApplication.findUnique({
-    where: { infoRequestToken: token },
+    where: { informationRequestTokenHash: hashAccountToken(token) },
     select: {
       id: true,
       fullName: true,
       status: true,
-      infoRequestDetails: true,
+      informationRequests: true,
+      informationRequestTokenExpiresAt: true,
       professionalBio: true,
       motivation: true,
       conflictDisclosure: true,
@@ -52,7 +55,11 @@ export default async function JuryUpdatePage({
     );
   }
 
-  if (application.status !== "ADDITIONAL_INFO_REQUIRED") {
+  if (
+    application.status !== "ADDITIONAL_INFO_REQUIRED" ||
+    !application.informationRequestTokenExpiresAt ||
+    application.informationRequestTokenExpiresAt < new Date()
+  ) {
     return (
       <main className="mx-auto max-w-2xl px-4 py-16 md:py-24">
         <div className="flex flex-col items-center gap-5 rounded-2xl border border-[#7DC8EE] bg-[#EAF6FF]/60 px-8 py-14 text-center">
@@ -98,7 +105,7 @@ export default async function JuryUpdatePage({
               Message from the review committee
             </p>
             <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-[var(--color-ink-soft)]">
-              {application.infoRequestDetails}
+              {parseJuryInformationRequests(application.informationRequests).requests.at(-1)?.message}
             </p>
           </div>
         </div>
@@ -121,7 +128,7 @@ export default async function JuryUpdatePage({
 
         <AdditionalInfoForm
           token={token}
-          adminRequest={application.infoRequestDetails ?? ""}
+          adminRequest={parseJuryInformationRequests(application.informationRequests).requests.at(-1)?.message ?? ""}
           defaultBio={application.professionalBio}
           defaultMotivation={application.motivation}
           defaultConflictDisclosure={application.conflictDisclosure}

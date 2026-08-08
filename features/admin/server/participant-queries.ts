@@ -1,8 +1,9 @@
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import { validateNominationBlockB } from "@/features/applications/schemas/category-field-validation";
 import type { ApplicationFileRef, ApplicationValues } from "@/features/applications/types/application.types";
-import { prisma } from "@/shared/lib/prisma";
+import { nominationAnswerViewRows, nominationFileViewRows } from "@/features/database/json-fields";
 import { adminT } from "@/lib/i18n/admin";
+import { prisma } from "@/shared/lib/prisma";
 
 type AnswerLike = {
   fieldKey: string;
@@ -21,9 +22,7 @@ type FileLike = {
 };
 
 function answerValue(answer: AnswerLike): ApplicationValues[string] {
-  if (Array.isArray(answer.valueJson)) {
-    return answer.valueJson.filter((item): item is string => typeof item === "string");
-  }
+  if (Array.isArray(answer.valueJson)) return answer.valueJson.filter((item): item is string => typeof item === "string");
   if (answer.valueNumber !== null) return String(answer.valueNumber);
   if (answer.valueBoolean !== null) return answer.valueBoolean ? "yes" : "no";
   return answer.valueText ?? "";
@@ -39,14 +38,9 @@ function fileRef(file: FileLike): ApplicationFileRef {
   };
 }
 
-function nominationValues(nomination: {
-  answers: AnswerLike[];
-  files: FileLike[];
-}) {
+function nominationValues(nomination: { answers: AnswerLike[]; files: FileLike[] }) {
   const values: ApplicationValues = {};
-  for (const answer of nomination.answers) {
-    values[answer.fieldKey] = answerValue(answer);
-  }
+  for (const answer of nomination.answers) values[answer.fieldKey] = answerValue(answer);
   for (const file of nomination.files) {
     const current = values[file.fieldKey];
     const refs = Array.isArray(current)
@@ -64,30 +58,22 @@ function completionForNomination(nomination: {
 }) {
   const fields = categoryFieldConfigs[nomination.category.slug] ?? [];
   const requiredFields = fields.filter((field) => field.required);
-  const values = nominationValues(nomination);
-  const errors = validateNominationBlockB(nomination.category.slug, values);
+  const errors = validateNominationBlockB(nomination.category.slug, nominationValues(nomination));
   const missingRequiredCount = Object.keys(errors).length;
-  const completeRequiredCount = Math.max(requiredFields.length - missingRequiredCount, 0);
-  const completionPercent =
-    requiredFields.length === 0
-      ? 100
-      : Math.round((completeRequiredCount / requiredFields.length) * 100);
-
   return {
-    completionPercent,
+    completionPercent:
+      requiredFields.length === 0
+        ? 100
+        : Math.round((Math.max(requiredFields.length - missingRequiredCount, 0) / requiredFields.length) * 100),
     missingRequiredCount,
   };
 }
 
 function aggregateStatus(nominations: Array<{ status: string }>) {
   const statuses = nominations.map((nomination) => nomination.status);
-  if (statuses.includes("UNDER_REVIEW")) return "UNDER_REVIEW";
-  if (statuses.includes("SCORED")) return "SCORED";
-  if (statuses.includes("SUBMITTED")) return "SUBMITTED";
-  if (statuses.includes("LOCKED")) return "LOCKED";
-  if (statuses.includes("RETURNED_FOR_CHANGES")) return "RETURNED_FOR_CHANGES";
-  if (statuses.includes("DRAFT")) return "DRAFT";
-  if (statuses.includes("PURCHASED")) return "PURCHASED";
+  for (const status of ["UNDER_REVIEW", "SCORED", "SUBMITTED", "LOCKED", "RETURNED_FOR_CHANGES", "DRAFT"]) {
+    if (statuses.includes(status)) return status;
+  }
   return statuses[0] ?? "DRAFT";
 }
 
@@ -95,18 +81,13 @@ function aggregatePaymentStatus(nominations: Array<{ paymentStatus: string }>) {
   const statuses = nominations.map((nomination) => nomination.paymentStatus);
   if (statuses.length === 0) return "PENDING";
   if (statuses.every((status) => status === "PAID")) return "PAID";
-  if (statuses.includes("FAILED")) return "FAILED";
-  if (statuses.includes("EXPIRED")) return "EXPIRED";
-  if (statuses.includes("REFUNDED")) return "REFUNDED";
+  for (const status of ["FAILED", "EXPIRED", "REFUNDED"]) if (statuses.includes(status)) return status;
   return "PENDING";
 }
 
 export async function getParticipantApplications(status?: string) {
   const profiles = await prisma.applicantProfile.findMany({
-    where: {
-      deletedAt: null,
-      account: { deletedAt: null },
-    },
+    where: { account: { status: { not: "DISABLED" } } },
     orderBy: { createdAt: "desc" },
     include: {
       account: {
@@ -119,11 +100,11 @@ export async function getParticipantApplications(status?: string) {
         },
       },
       nominations: {
-        where: { deletedAt: null },
+        where: { status: { not: "ARCHIVED" } },
         select: {
           id: true,
           status: true,
-          paymentStatus: true,
+          payment: { select: { status: true } },
           category: { select: { name: true } },
           award: { select: { name: true } },
         },
@@ -134,8 +115,12 @@ export async function getParticipantApplications(status?: string) {
 
   const applications = profiles
     .map((profile) => {
-      const statusValue = aggregateStatus(profile.nominations);
-      const paymentStatus = aggregatePaymentStatus(profile.nominations);
+      const nominations = profile.nominations.map((nomination) => ({
+        ...nomination,
+        paymentStatus: nomination.payment.status,
+      }));
+      const statusValue = aggregateStatus(nominations);
+      const paymentStatus = aggregatePaymentStatus(nominations);
       return {
         id: profile.id,
         fullName: profile.fullName,
@@ -146,20 +131,17 @@ export async function getParticipantApplications(status?: string) {
         status: statusValue,
         paymentStatus,
         createdAt: profile.createdAt,
-        category: profile.nominations[0]?.category ?? { name: adminT.system.applicantAccount },
-        award: profile.nominations[0]?.award ?? { name: adminT.system.noNominations },
-        registrationEligible:
-          paymentStatus === "PAID" &&
-          !profile.account.passwordHash &&
-          profile.account.status !== "DISABLED",
+        category: nominations[0]?.category ?? { name: adminT.system.applicantAccount },
+        award: nominations[0]?.award ?? { name: adminT.system.noNominations },
+        registrationEligible: paymentStatus === "PAID" && !profile.account.passwordHash && profile.account.status !== "DISABLED",
         setupEmailNeedsAttention:
           !profile.account.passwordHash &&
           Boolean(profile.account.lastSetupEmailDeliveryStatus) &&
           profile.account.lastSetupEmailDeliveryStatus !== "delivered",
-        nominationApplications: profile.nominations,
+        nominations,
       };
     })
-    .filter((row) => (!status || row.status === status));
+    .filter((row) => !status || row.status === status);
 
   return {
     activeStatus: status,
@@ -180,66 +162,59 @@ export async function getParticipantApplicationDetail(id: string) {
       where: { id },
       include: {
         account: {
-          select: {
-            id: true,
-            email: true,
-            status: true,
-            passwordHash: true,
-            lastSetupEmailSentAt: true,
-            lastSetupEmailDeliveryStatus: true,
-            lastSetupEmailDeliveryError: true,
-            setupTokenExpiresAt: true,
-            createdAt: true,
-            updatedAt: true,
+          include: {
+            payments: { orderBy: { createdAt: "desc" }, take: 20 },
           },
         },
         nominations: {
-          where: { deletedAt: null },
+          where: { status: { not: "ARCHIVED" } },
           include: {
             award: true,
             category: true,
-            answers: { orderBy: { createdAt: "asc" } },
-            files: {
-              where: { deletedAt: null },
-              orderBy: { createdAt: "asc" },
-            },
-            purchasePayment: true,
+            payment: true,
             reviews: {
-              select: {
-                id: true,
-                status: true,
-                totalScore: true,
-                completedAt: true,
-              },
+              select: { id: true, status: true, totalScore: true, submittedAt: true, comments: true },
             },
           },
           orderBy: { createdAt: "asc" },
         },
-        payments: {
-          orderBy: { createdAt: "desc" },
-          take: 20,
-        },
       },
     }),
     prisma.category.findMany({
-      include: {
-        awards: {
-          orderBy: { name: "asc" },
-        },
-      },
+      include: { awards: { orderBy: { name: "asc" } } },
       orderBy: { name: "asc" },
     }),
   ]);
-
   if (!profile) return null;
+
+  const nominations = profile.nominations.map((nomination) => {
+    const answers = nominationAnswerViewRows(nomination.answers);
+    const files = nominationFileViewRows(nomination.files);
+    return {
+      ...nomination,
+      answers,
+      files,
+      purchasePayment: nomination.payment,
+      paymentStatus: nomination.payment.status,
+      paidAt: nomination.payment.paidAt,
+      amount: nomination.payment.amount,
+      currency: nomination.payment.currency,
+      lockedAt: nomination.status === "LOCKED" ? nomination.updatedAt : null,
+      reviews: nomination.reviews.map((review) => ({
+        ...review,
+        completedAt: review.submittedAt,
+        notes: review.comments,
+      })),
+      completion: completionForNomination({ category: nomination.category, answers, files }),
+    };
+  });
 
   return {
     profile: {
       ...profile,
-      nominations: profile.nominations.map((nomination) => ({
-        ...nomination,
-        completion: completionForNomination(nomination),
-      })),
+      account: { ...profile.account, payments: undefined },
+      payments: profile.account.payments,
+      nominations,
     },
     categories,
   };

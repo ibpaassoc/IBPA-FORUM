@@ -27,47 +27,14 @@ export async function createAccountSetupToken(
   const token = randomBytes(32).toString("hex");
   const tokenHash = hashAccountToken(token);
   const expiresAt = new Date(Date.now() + ttlMs);
-
-  if (purpose === "SETUP") {
-    await tx.accountSetupToken.updateMany({
-      where: {
-        accountId,
-        purpose,
-        usedAt: null,
-        expiresAt: { gt: new Date() },
-      },
-      data: { usedAt: new Date() },
-    });
-
-    await tx.account.update({
-      where: { id: accountId },
-      data: {
-        setupTokenHash: tokenHash,
-        setupTokenExpiresAt: expiresAt,
-        setupTokenIssuedAt: new Date(),
-        setupTokenUsedAt: null,
-      },
-    });
-
-    return { token, tokenHash, expiresAt };
-  }
-
-  await tx.accountSetupToken.updateMany({
-    where: {
-      accountId,
-      purpose,
-      usedAt: null,
-      expiresAt: { gt: new Date() },
-    },
-    data: { usedAt: new Date() },
-  });
-
-  await tx.accountSetupToken.create({
+  await tx.account.update({
+    where: { id: accountId },
     data: {
-      accountId,
-      purpose,
-      tokenHash,
-      expiresAt,
+      setupTokenHash: tokenHash,
+      setupTokenPurpose: purpose,
+      setupTokenExpiresAt: expiresAt,
+      setupTokenIssuedAt: new Date(),
+      setupTokenUsedAt: null,
     },
   });
 
@@ -75,37 +42,18 @@ export async function createAccountSetupToken(
 }
 
 export async function createPasswordResetToken(accountId: string) {
-  const token = randomBytes(32).toString("hex");
-  const tokenHash = hashAccountToken(token);
-  const expiresAt = new Date(Date.now() + PASSWORD_RESET_TOKEN_TTL_MS);
-  const now = new Date();
-
-  await prisma.accountSetupToken.updateMany({
-    where: {
+  return prisma.$transaction((tx) =>
+    createAccountSetupToken(tx, {
       accountId,
       purpose: "PASSWORD_RESET",
-      usedAt: null,
-      expiresAt: { gt: now },
-    },
-    data: { usedAt: now },
-  });
-
-  await prisma.accountSetupToken.create({
-    data: {
-      accountId,
-      purpose: "PASSWORD_RESET",
-      tokenHash,
-      expiresAt,
-    },
-  });
-
-  return { token, tokenHash, expiresAt };
+      ttlMs: PASSWORD_RESET_TOKEN_TTL_MS,
+    }),
+  );
 }
 
 type ValidAccountTokenRecord = {
   id: string;
   accountId: string;
-  source: "account" | "table";
   account: {
     id: string;
     email: string;
@@ -122,70 +70,38 @@ export async function validateAccountToken({
 }) {
   const tokenHash = hashAccountToken(token);
 
-  if (purpose === "SETUP") {
-    const account = await unscopedPrisma.account.findUnique({
-      where: { setupTokenHash: tokenHash },
-      select: {
-        id: true,
-        email: true,
-        role: true,
-        dataScope: true,
-        setupTokenExpiresAt: true,
-        setupTokenUsedAt: true,
-      },
-    });
-
-    if (account) {
-      activateRequestDataScope({ dataScope: account.dataScope });
-      if (account.setupTokenUsedAt) {
-        return { valid: false as const };
-      }
-
-      if (!account.setupTokenExpiresAt || account.setupTokenExpiresAt < new Date()) {
-        return { valid: false as const, expired: true as const };
-      }
-
-      return {
-        valid: true as const,
-        record: {
-          id: account.id,
-          accountId: account.id,
-          source: "account",
-          account: {
-            id: account.id,
-            email: account.email,
-            role: account.role,
-          },
-        } satisfies ValidAccountTokenRecord,
-      };
-    }
-  }
-
-  const record = await unscopedPrisma.accountSetupToken.findUnique({
-    where: { tokenHash },
-    include: { account: { select: { id: true, email: true, role: true, dataScope: true } } },
+  const account = await unscopedPrisma.account.findUnique({
+    where: { setupTokenHash: tokenHash },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      dataScope: true,
+      setupTokenPurpose: true,
+      setupTokenExpiresAt: true,
+      setupTokenUsedAt: true,
+    },
   });
 
-  if (!record || record.purpose !== purpose || record.usedAt) {
+  if (!account || account.setupTokenPurpose !== purpose || account.setupTokenUsedAt) {
     return { valid: false as const };
   }
 
-  if (record.expiresAt < new Date()) {
+  if (!account.setupTokenExpiresAt || account.setupTokenExpiresAt < new Date()) {
     return { valid: false as const, expired: true as const };
   }
 
-  activateRequestDataScope({ dataScope: record.dataScope });
+  activateRequestDataScope({ dataScope: account.dataScope });
 
   return {
     valid: true as const,
     record: {
-      id: record.id,
-      accountId: record.accountId,
-      source: "table",
+      id: account.id,
+      accountId: account.id,
       account: {
-        id: record.account.id,
-        email: record.account.email,
-        role: record.account.role,
+        id: account.id,
+        email: account.email,
+        role: account.role,
       },
     } satisfies ValidAccountTokenRecord,
   };

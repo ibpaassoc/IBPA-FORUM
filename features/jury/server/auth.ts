@@ -36,7 +36,7 @@ export async function findJuryAccountByEmail(email: string) {
           id: true,
           juryApplicationId: true,
           approvedCategories: true,
-          approvalStatus: true,
+          juryApplication: { select: { status: true } },
         },
       },
     },
@@ -44,24 +44,31 @@ export async function findJuryAccountByEmail(email: string) {
 }
 
 export async function getPaidJuryApplicationByEmail(email: string) {
-  return prisma.juryApplication.findUnique({
+  const application = await prisma.juryApplication.findFirst({
     where: {
       email: normalizeJuryEmail(email),
+      payments: { some: { status: "PAID" } },
     },
     select: {
       id: true,
       email: true,
       fullName: true,
-      paymentStatus: true,
       status: true,
       expertiseAreas: true,
-      approvedCategories: true,
+      profile: { select: { approvedCategories: true } },
     },
   });
+  return application
+    ? {
+        ...application,
+        paymentStatus: "PAID" as const,
+        approvedCategories: application.profile?.approvedCategories ?? [],
+      }
+    : null;
 }
 
 export async function getJuryApplicationByEmail(email: string) {
-  return prisma.juryApplication.findUnique({
+  const application = await prisma.juryApplication.findFirst({
     where: {
       email: normalizeJuryEmail(email),
     },
@@ -69,12 +76,19 @@ export async function getJuryApplicationByEmail(email: string) {
       id: true,
       email: true,
       fullName: true,
-      paymentStatus: true,
       status: true,
       expertiseAreas: true,
-      approvedCategories: true,
+      payments: { select: { status: true }, orderBy: { createdAt: "desc" }, take: 1 },
+      profile: { select: { approvedCategories: true } },
     },
   });
+  return application
+    ? {
+        ...application,
+        paymentStatus: application.payments[0]?.status ?? "PENDING",
+        approvedCategories: application.profile?.approvedCategories ?? [],
+      }
+    : null;
 }
 
 export async function validatePasswordResetToken(token: string): Promise<{
@@ -102,7 +116,7 @@ export async function requireJuryAuth() {
     juryProfileId: profile.id,
     juryApplicationId: profile.juryApplicationId,
     approvedCategories: profile.approvedCategories,
-    approvalStatus: profile.approvalStatus,
+    approvalStatus: profile.juryApplication.status,
     fullName: profile.fullName,
     professionalTitle: profile.professionalTitle ?? "",
     dataScope: authenticatedAccount.dataScope,

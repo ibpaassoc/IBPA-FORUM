@@ -1,6 +1,6 @@
 import { get } from "@vercel/blob";
 import { prisma } from "@/shared/lib/prisma";
-import { isPublicBlobUrl } from "@/features/jury/lib/profile-photo";
+import { parseStoredFiles } from "@/features/database/json-fields";
 
 /**
  * Serves an approved jury member's profile photo.
@@ -20,34 +20,23 @@ export async function GET(
 ) {
   const { fileId } = await params;
 
-  const fileRecord = await prisma.juryApplicationFile.findUnique({
-    where: { id: fileId },
-    select: {
-      fileName: true,
-      mimeType: true,
-      storageKey: true,
-      fieldKey: true,
-      juryApplication: {
-        select: {
-          status: true,
-          paymentStatus: true,
-        },
-      },
-    },
+  const applications = await prisma.juryApplication.findMany({
+    where: { status: "PAID", payments: { some: { status: "PAID" } } },
+    select: { files: true },
   });
+  const fileRecord = applications
+    .flatMap((application) => parseStoredFiles(application.files).items)
+    .find((file) => file.id === fileId && file.fieldId === "profilePhoto");
 
   if (
-    !fileRecord?.storageKey ||
-    fileRecord.fieldKey !== "profilePhoto" ||
-    fileRecord.juryApplication.status !== "PAID" ||
-    fileRecord.juryApplication.paymentStatus !== "PAID"
+    !fileRecord?.blobKey
   ) {
     return new Response("Not found", { status: 404 });
   }
 
   let result;
   try {
-    result = await get(fileRecord.storageKey, {
+    result = await get(fileRecord.blobKey, {
       access: "private",
       ifNoneMatch: request.headers.get("if-none-match") ?? undefined,
     });
@@ -80,8 +69,8 @@ export async function GET(
     });
   }
 
-  const encodedFileName = encodeURIComponent(fileRecord.fileName);
-  const asciiFallback = fileRecord.fileName.replace(/[^\x20-\x7E]/g, "_");
+  const encodedFileName = encodeURIComponent(fileRecord.filename);
+  const asciiFallback = fileRecord.filename.replace(/[^\x20-\x7E]/g, "_");
 
   return new Response(result.stream, {
     status: 200,

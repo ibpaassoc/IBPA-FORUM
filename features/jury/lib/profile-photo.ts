@@ -19,7 +19,7 @@ export function isPublicBlobUrl(value: string | null | undefined): value is stri
   return /^https?:\/\//i.test(value.trim());
 }
 
-/** Proxy route used for legacy private-blob records that have no public URL. */
+/** Proxy route used for migrated private-blob records that have no public URL. */
 export function juryPhotoProxyPath(fileId: string) {
   return `/api/jury/profile-photo/${fileId}`;
 }

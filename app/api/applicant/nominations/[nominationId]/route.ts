@@ -13,6 +13,13 @@ import { requireEditableNomination } from "@/features/account/server/nomination-
 import { prisma } from "@/shared/lib/prisma";
 import { syncApplicationOnChange } from "@/features/google-sheets";
 import { activateRequestDataScope } from "@/features/test/server/data-scope";
+import {
+  parseNominationAnswers,
+  parseStoredFiles,
+  type NominationAnswers,
+  type StoredFiles,
+} from "@/features/database/json-fields";
+import { assertNominationStatusTransition } from "@/features/database/nomination-status";
 
 type RequestBody = {
   action?: "draft" | "submit";
@@ -34,24 +41,6 @@ function normalizeValue(value: unknown): ApplicationValues[string] {
     return value.filter((item): item is string => typeof item === "string");
   }
   return "";
-}
-
-function toAnswerRecord(fieldKey: string, value: ApplicationValues[string]) {
-  if (Array.isArray(value)) {
-    const stringValues = value.filter((item): item is string => typeof item === "string");
-    return stringValues.length > 0
-      ? { fieldKey, valueJson: stringValues as Prisma.InputJsonValue }
-      : null;
-  }
-  if (typeof value !== "string") return null;
-
-  const trimmed = value.trim();
-  if (!trimmed) return null;
-
-  const numericValue = Number(trimmed);
-  return Number.isFinite(numericValue) && /^-?\d+$/.test(trimmed)
-    ? { fieldKey, valueText: trimmed, valueNumber: numericValue }
-    : { fieldKey, valueText: trimmed };
 }
 
 function getFileRefs(value: ApplicationValues[string]) {
@@ -177,43 +166,69 @@ export async function POST(request: Request, { params }: { params: Promise<{ nom
 
     const fileFieldKeys = new Set(categoryFields.filter((field) => field.type === "file").map((field) => field.key).filter((key) => Object.hasOwn(values, key)));
     const answerKeys = Object.keys(values).filter((key) => !fileFieldKeys.has(key));
-    const answerRecords = answerKeys.map((key) => toAnswerRecord(key, values[key])).filter((item): item is NonNullable<typeof item> => item !== null);
     const now = new Date();
-
-    await prisma.$transaction(async (tx) => {
-      await tx.nominationAnswer.deleteMany({ where: { nominationApplicationId: nomination.id, fieldKey: { in: answerKeys.filter((key) => !answerRecords.some((answer) => answer.fieldKey === key)) } } });
-      for (const answer of answerRecords) {
-        const { fieldKey, ...data } = answer;
-        await tx.nominationAnswer.upsert({
-          where: { nominationApplicationId_fieldKey: { nominationApplicationId: nomination.id, fieldKey } },
-          create: { nominationApplicationId: nomination.id, fieldKey, ...data },
-          update: { valueText: data.valueText ?? null, valueNumber: data.valueNumber ?? null, valueBoolean: null, valueJson: data.valueJson ?? Prisma.JsonNull },
+    const currentAnswers = parseNominationAnswers(nomination.answersJson);
+    const currentFiles = parseStoredFiles(nomination.filesJson);
+    const answerKeySet = new Set(answerKeys);
+    const nextAnswerFields = currentAnswers.fields.filter((field) => !answerKeySet.has(field.fieldId));
+    for (const fieldKey of answerKeys) {
+      const value = values[fieldKey];
+      const normalizedValue = Array.isArray(value)
+        ? value.filter((item): item is string => typeof item === "string")
+        : typeof value === "string"
+          ? value.trim()
+          : value;
+      if (normalizedValue === "" || (Array.isArray(normalizedValue) && normalizedValue.length === 0)) continue;
+      const config = categoryFields.find((field) => field.key === fieldKey);
+      nextAnswerFields.push({
+        fieldId: fieldKey,
+        label: config?.label ?? fieldKey,
+        type: config?.type ?? "text",
+        value: normalizedValue,
+        updatedAt: now.toISOString(),
+      });
+    }
+    const nextAnswers: NominationAnswers = { ...currentAnswers, fields: nextAnswerFields };
+    const nextFileItems = currentFiles.items.filter((file) => !fileFieldKeys.has(file.fieldId));
+    for (const fieldKey of fileFieldKeys) {
+      const refs = getFileRefs(values[fieldKey]);
+      for (const ref of refs) {
+        const existing = currentFiles.items.find(
+          (file) => file.fieldId === fieldKey && (file.blobKey === ref.fileUrl || file.url === ref.fileUrl)
+        );
+        nextFileItems.push({
+          id: existing?.id ?? crypto.randomUUID(),
+          fieldId: fieldKey,
+          blobKey: ref.fileUrl,
+          url: existing?.url ?? null,
+          filename: sanitizeDisplayFilename(ref.fileName),
+          mimeType: ref.mimeType || "application/octet-stream",
+          size: ref.fileSize,
+          originalSize: ref.fileSize,
+          uploadedAt: existing?.uploadedAt ?? now.toISOString(),
         });
       }
+    }
+    const nextFiles: StoredFiles = { ...currentFiles, items: nextFileItems };
+    const nextStatus = action === "submit" ? "SUBMITTED" : nomination.status;
+    assertNominationStatusTransition(nomination.status, nextStatus);
 
-      for (const fieldKey of fileFieldKeys) {
-        const refs = getFileRefs(values[fieldKey]);
-        await tx.nominationFile.updateMany({ where: { nominationApplicationId: nomination.id, fieldKey, deletedAt: null, ...(refs.length > 0 ? { fileUrl: { notIn: refs.map((ref) => ref.fileUrl) } } : {}) }, data: { deletedAt: now } });
-        for (const ref of refs) {
-          const displayFileName = sanitizeDisplayFilename(ref.fileName);
-          const data = { fieldKey, fileName: displayFileName, fileUrl: ref.fileUrl, originalFileName: ref.fileName, displayFileName, mimeType: ref.mimeType || "application/octet-stream", fileSize: ref.fileSize, originalFileSize: ref.fileSize, compressedFileSize: ref.fileSize, storageKey: ref.fileUrl, deletedAt: null };
-          await tx.nominationFile.upsert({
-            where: { nominationApplicationId_fileUrl: { nominationApplicationId: nomination.id, fileUrl: ref.fileUrl } },
-            create: { nominationApplicationId: nomination.id, ...data },
-            update: data,
-          });
-        }
-      }
-
-      if (action === "submit") {
-        await tx.nominationApplication.update({ where: { id: nomination.id }, data: { status: "SUBMITTED", submittedAt: nomination.submittedAt ?? now } });
-      } else if (nomination.status !== "SUBMITTED") {
-        await tx.nominationApplication.update({ where: { id: nomination.id }, data: { status: "DRAFT" } });
-      }
+    await prisma.$transaction(async (tx) => {
+      const updated = await tx.nomination.updateMany({
+        where: { id: nomination.id, revision: nomination.revision },
+        data: {
+          answers: nextAnswers as unknown as Prisma.InputJsonValue,
+          files: nextFiles as unknown as Prisma.InputJsonValue,
+          status: nextStatus,
+          submittedAt: action === "submit" ? nomination.submittedAt ?? now : nomination.submittedAt,
+          revision: { increment: 1 },
+        },
+      });
+      if (updated.count !== 1) throw new Response("Nomination changed in another session.", { status: 409 });
     });
 
     if (nomination.applicantProfileId) syncApplicationOnChange(nomination.applicantProfileId);
-    return NextResponse.json({ ok: true, requestId, status: action === "submit" ? "SUBMITTED" : nomination.status === "SUBMITTED" ? "SUBMITTED" : "DRAFT" }, { headers: { "X-Request-Id": requestId } });
+    return NextResponse.json({ ok: true, requestId, status: nextStatus }, { headers: { "X-Request-Id": requestId } });
   } catch (error) {
     return failureResponse({ nominationId, requestId, action, error });
   }

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import type { JuryApplication, JuryApplicationFile } from "@prisma/client";
+import type { JuryApplication } from "@prisma/client";
+import type { JuryApplicationFileView } from "@/features/jury/types/files";
 import {
   ArrowLeft,
   Award,
@@ -52,7 +53,7 @@ function FormField({ label, children }: { label: string; children: ReactNode }) 
 export default function JuryApplicationEditPage({
   application,
 }: {
-  application: JuryApplication & { files: JuryApplicationFile[] };
+  application: Omit<JuryApplication, "files"> & { files: JuryApplicationFileView[] };
 }) {
   const expertiseAreasValue = application.expertiseAreas.join(", ");
   const profilePhoto = application.files.find(

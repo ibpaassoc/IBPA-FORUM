@@ -15,7 +15,7 @@ export default async function LoginPage({
 
   if (session?.user?.accountId && session.user.role) {
     const account = await findAccountForPublicSession(session.user.accountId);
-    if (!roleParam && account && !account.deletedAt && account.status !== "DISABLED") {
+    if (!roleParam && account && account.status !== "DISABLED") {
       redirect(getDashboardPathForRole(account.role));
     }
   }

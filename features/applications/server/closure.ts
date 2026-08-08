@@ -6,6 +6,8 @@ import { validateNominationBlockB } from "@/features/applications/schemas/catego
 import type { ApplicationFileRef, ApplicationValues } from "@/features/applications/types/application.types";
 import { APPLICANT_APPLICATIONS_CLOSED_AT_KEY } from "@/features/applications/server/deadlines";
 import { prisma } from "@/shared/lib/prisma";
+import { nominationAnswerViewRows, nominationFileViewRows, parseNominationAnswers, parseStoredFiles } from "@/features/database/json-fields";
+import { assertNominationStatusTransition } from "@/features/database/nomination-status";
 
 function answerValue(answer: {
   fieldKey: string;
@@ -37,12 +39,10 @@ function fileRef(file: {
 }
 
 export async function processApplicantDeadlineClosure(closedAt = new Date()) {
-  const nominations = await prisma.nominationApplication.findMany({
+  const nominations = await prisma.nomination.findMany({
     where: {
-      paymentStatus: "PAID",
-      status: { in: ["PURCHASED", "DRAFT", "SUBMITTED"] },
-      deletedAt: null,
-      lockedAt: null,
+      payment: { status: "PAID" },
+      status: { in: ["DRAFT", "RETURNED_FOR_CHANGES", "SUBMITTED"] },
     },
     select: {
       id: true,
@@ -50,7 +50,7 @@ export async function processApplicantDeadlineClosure(closedAt = new Date()) {
       submittedAt: true,
       category: { select: { slug: true } },
       answers: true,
-      files: { where: { deletedAt: null } },
+      files: true,
     },
   });
 
@@ -67,10 +67,10 @@ export async function processApplicantDeadlineClosure(closedAt = new Date()) {
 
     for (const nomination of nominations) {
       const values: ApplicationValues = {};
-      for (const answer of nomination.answers) {
+      for (const answer of nominationAnswerViewRows(parseNominationAnswers(nomination.answers))) {
         values[answer.fieldKey] = answerValue(answer);
       }
-      for (const file of nomination.files) {
+      for (const file of nominationFileViewRows(parseStoredFiles(nomination.files))) {
         const current = values[file.fieldKey];
         const refs = Array.isArray(current) ? current.filter(isApplicationFileRef) : [];
         values[file.fieldKey] = [...refs, fileRef(file)];
@@ -82,11 +82,10 @@ export async function processApplicantDeadlineClosure(closedAt = new Date()) {
       const complete = hasRequirements ? Object.keys(validation).length === 0 : true;
 
       if (!complete && nomination.status !== "SUBMITTED") {
-        await tx.nominationApplication.update({
+        assertNominationStatusTransition(nomination.status, "LOCKED");
+        await tx.nomination.update({
           where: { id: nomination.id },
           data: {
-            lockedAt: closedAt,
-            closedIncompleteAt: closedAt,
             status: "LOCKED",
           },
         });
@@ -94,12 +93,12 @@ export async function processApplicantDeadlineClosure(closedAt = new Date()) {
         continue;
       }
 
-      await tx.nominationApplication.update({
+      assertNominationStatusTransition(nomination.status, "LOCKED");
+      await tx.nomination.update({
         where: { id: nomination.id },
         data: {
-          status: nomination.status === "SUBMITTED" ? "SUBMITTED" : "SUBMITTED",
+          status: "LOCKED",
           submittedAt: nomination.submittedAt ?? closedAt,
-          lockedAt: closedAt,
         },
       });
       if (nomination.status === "SUBMITTED") {

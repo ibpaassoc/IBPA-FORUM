@@ -15,10 +15,10 @@ export default async function AddNominationPage() {
   activateRequestDataScope({ dataScope: account.dataScope });
   const [categories, ownedNominations, t] = await Promise.all([
     getApplicationCategories(),
-    prisma.nominationApplication.findMany({
+    prisma.nomination.findMany({
       where: {
         applicantProfileId: applicantProfile.id,
-        deletedAt: null,
+        status: { not: "ARCHIVED" },
       },
       select: { awardId: true },
     }),

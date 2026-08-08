@@ -2,7 +2,7 @@
 
 import { prisma } from "@/shared/lib/prisma";
 import { createPasswordHash, isStrongPassword } from "@/features/account/server/password";
-import { validateAccountToken } from "@/features/account/server/tokens";
+import { hashAccountToken, validateAccountToken } from "@/features/account/server/tokens";
 
 export type ResetPasswordState = {
   success?: boolean;
@@ -35,19 +35,26 @@ export async function resetPasswordAction(
 
   const passwordHash = await createPasswordHash(password);
 
-  await prisma.$transaction([
-    prisma.account.update({
-      where: { id: validation.record.accountId },
+  const now = new Date();
+  const consumed = await prisma.account.updateMany({
+      where: {
+        id: validation.record.accountId,
+        setupTokenHash: hashAccountToken(token),
+        setupTokenPurpose: "PASSWORD_RESET",
+        setupTokenUsedAt: null,
+        setupTokenExpiresAt: { gte: now },
+      },
       data: {
         passwordHash,
         status: "ACTIVE",
+        setupTokenHash: null,
+        setupTokenPurpose: null,
+        setupTokenExpiresAt: null,
+        setupTokenIssuedAt: null,
+        setupTokenUsedAt: now,
       },
-    }),
-    prisma.accountSetupToken.update({
-      where: { id: validation.record.id },
-      data: { usedAt: new Date() },
-    }),
-  ]);
+    });
+  if (consumed.count !== 1) return { invalidToken: true };
 
   return { success: true };
 }

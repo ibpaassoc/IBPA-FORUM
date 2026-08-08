@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { BadgePercent, Save, Tag } from "lucide-react";
-import type { PromoCode } from "@prisma/client";
+import type { PromoPaymentFlow } from "@/features/promos/lib/promo-codes";
 import {
   DashboardBadge,
   DashboardCard,
@@ -14,6 +14,17 @@ import { updatePromoCodeAction, type PromoActionState } from "@/features/admin/a
 import { adminT } from "@/lib/i18n/admin";
 
 const initialState: PromoActionState = { ok: false, message: "" };
+
+type PromoCode = {
+  id: string;
+  key: string;
+  keyword: string;
+  paymentFlow: PromoPaymentFlow;
+  discountPercent: number;
+  enabled: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 function flowLabel(flow: PromoCode["paymentFlow"]) {
   return flow === "APPLICATIONS"

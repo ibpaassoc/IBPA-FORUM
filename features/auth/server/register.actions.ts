@@ -74,9 +74,13 @@ export async function registerAccountAction(
   await prisma.$transaction(async (tx) => {
     const fullApplication = await tx.juryApplication.findUniqueOrThrow({
       where: { id: juryApplication.id },
+      include: { profile: { select: { approvedCategories: true } } },
     });
 
-    const { account } = await upsertJuryAccountForApplication(tx, fullApplication);
+    const { account } = await upsertJuryAccountForApplication(tx, {
+      ...fullApplication,
+      approvedCategories: fullApplication.profile?.approvedCategories ?? [],
+    });
 
     await tx.account.update({
       where: { id: account.id },

@@ -22,7 +22,7 @@ export async function inspectLoginAccountAction(
   if (!email || !email.includes("@")) return { error: "Enter a valid email address." };
 
   const requested = await findAccountForPublicAuth(email, toAccountRole(requestedRole));
-  if (requested?.deletedAt || requested?.status === "DISABLED") {
+  if (requested?.status === "DISABLED") {
     return { error: "This account is unavailable. Please contact IBPA support." };
   }
   if (requested && !requested.passwordHash) {
@@ -33,7 +33,7 @@ export async function inspectLoginAccountAction(
   const otherRole: PublicAccountRole = requestedRole === "jury" ? "applicant" : "jury";
   const accounts = await findPublicAccountsByEmail(email);
   const other = accounts.find((account) => account.role === toAccountRole(otherRole));
-  if (other && !other.deletedAt && other.status !== "DISABLED") {
+  if (other && other.status !== "DISABLED") {
     return {
       error: `No ${requestedRole} account exists for this email. A ${otherRole} account is available instead.`,
       switchRole: otherRole,

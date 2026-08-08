@@ -90,7 +90,7 @@ export default function AdminScoringDetailPage({
     judgeId: string;
     judgeName: string;
     judgeEmail: string;
-    scoreId: string | null;
+    reviewId: string | null;
     scores: Record<string, number | null>;
     totalScore: number | null;
     comment: string | null;
@@ -183,8 +183,8 @@ export default function AdminScoringDetailPage({
                 </div>
 
                 <div className="flex justify-start lg:justify-end">
-                  {row.scoreId && (row.scoreStatus === "SUBMITTED" || row.scoreStatus === "REOPENED") ? (
-                    <AdminReopenScoreButton scoreId={row.scoreId} />
+                  {row.reviewId && (row.scoreStatus === "SUBMITTED" || row.scoreStatus === "REOPENED") ? (
+                    <AdminReopenScoreButton reviewId={row.reviewId} />
                   ) : null}
                 </div>
               </div>

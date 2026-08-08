@@ -9,28 +9,27 @@ import {
 import { generateTicketQRDataUrl } from "@/features/tickets/server/ticket-qr";
 import { prisma } from "@/shared/lib/prisma";
 import { activateRequestDataScope } from "@/features/test/server/data-scope";
+import { parseNominationAnswers, parseStoredFiles, parseTicketCredential } from "@/features/database/json-fields";
 
 export async function getApplicantDashboardData() {
   const { account, applicantProfile } = await requireApplicantAccount();
   activateRequestDataScope({ dataScope: account.dataScope });
 
   const [nominations, tickets, deadline, closedAt] = await Promise.all([
-    prisma.nominationApplication.findMany({
-      where: { applicantProfileId: applicantProfile.id, deletedAt: null },
+    prisma.nomination.findMany({
+      where: { applicantProfileId: applicantProfile.id, status: { not: "ARCHIVED" } },
       orderBy: { createdAt: "desc" },
       select: {
         id: true,
         status: true,
-        paymentStatus: true,
-        paidAt: true,
+        payment: { select: { status: true, paidAt: true } },
         submittedAt: true,
-        lockedAt: true,
         scoresReleasedAt: true,
         updatedAt: true,
         category: { select: { name: true, slug: true } },
         award: { select: { name: true } },
-        answers: { select: { fieldKey: true } },
-        files: { where: { deletedAt: null }, select: { fieldKey: true } },
+        answers: true,
+        files: true,
         reviews: {
           where: { status: "COMPLETED" },
           select: { totalScore: true },
@@ -39,6 +38,7 @@ export async function getApplicantDashboardData() {
     }),
     prisma.ticket.findMany({
       where: {
+        kind: "FORUM",
         OR: [
           { accountId: account.id },
           { applicantProfileId: applicantProfile.id },
@@ -56,16 +56,7 @@ export async function getApplicantDashboardData() {
         paidAt: true,
         createdAt: true,
         secureToken: true,
-        qrCredentials: {
-          where: { status: "ACTIVE" },
-          orderBy: { generatedAt: "desc" },
-          take: 1,
-          select: {
-            id: true,
-            token: true,
-            generatedAt: true,
-          },
-        },
+        credential: true,
       },
     }),
     getApplicantSubmissionDeadline(),
@@ -75,8 +66,8 @@ export async function getApplicantDashboardData() {
   const nominationCards = nominations.map((nomination) => {
     const fields = categoryFieldConfigs[nomination.category.slug] ?? [];
     const requiredFields = fields.filter((field) => field.required);
-    const answeredKeys = new Set(nomination.answers.map((answer) => answer.fieldKey));
-    const fileKeys = new Set(nomination.files.map((file) => file.fieldKey));
+    const answeredKeys = new Set(parseNominationAnswers(nomination.answers).fields.map((answer) => answer.fieldId));
+    const fileKeys = new Set(parseStoredFiles(nomination.files).items.map((file) => file.fieldId));
     const missingRequiredFields = requiredFields.filter((field) =>
       field.type === "file" ? !fileKeys.has(field.key) : !answeredKeys.has(field.key)
     );
@@ -87,6 +78,9 @@ export async function getApplicantDashboardData() {
 
     return {
       ...nomination,
+      paymentStatus: nomination.payment.status,
+      paidAt: nomination.payment.paidAt,
+      locked: nomination.status === "LOCKED",
       completionPercentage,
       missingRequiredCount: missingRequiredFields.length,
     };
@@ -94,13 +88,13 @@ export async function getApplicantDashboardData() {
 
   const ticketCards = await Promise.all(
     tickets.map(async (ticket) => {
-      const activeQr = ticket.qrCredentials[0] ?? null;
+      const activeQr = parseTicketCredential(ticket.credential).active;
       return {
         ...ticket,
         secureToken: undefined,
-        qrCredentials: undefined,
+        credential: undefined,
         activeQrGeneratedAt: activeQr?.generatedAt ?? null,
-        qrDataUrl: activeQr ? await generateTicketQRDataUrl(activeQr.token) : null,
+        qrDataUrl: activeQr ? await generateTicketQRDataUrl(ticket.secureToken) : null,
       };
     })
   );

@@ -6,6 +6,7 @@ import type { Prisma } from "@prisma/client";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/shared/lib/prisma";
 import { requireJuryAuth } from "@/features/jury/server/auth";
+import { nominationAnswerViewRows, nominationFileViewRows } from "@/features/database/json-fields";
 
 export const SCOREABLE_NOMINATION_STATUSES = [
   "SUBMITTED",
@@ -46,13 +47,11 @@ export function getScoreableNominationsWhere() {
   const statuses = [...SCOREABLE_NOMINATION_STATUSES];
 
   return {
-    paymentStatus: "PAID" as const,
+    payment: { status: "PAID" as const },
     status: {
       in: statuses,
     },
-    closedIncompleteAt: null,
-    deletedAt: null,
-  } satisfies Prisma.NominationApplicationWhereInput;
+  } satisfies Prisma.NominationWhereInput;
 }
 
 export function getJuryReviewListStatus(
@@ -148,7 +147,7 @@ export async function getScoringNominationOrNotFound({
   nominationId: string;
   approvedCategories: string[];
 }) {
-  const nomination = await prisma.nominationApplication.findFirst({
+  const nomination = await prisma.nomination.findFirst({
     where: {
       id: nominationId,
       ...getScoreableNominationsWhere(),
@@ -162,16 +161,6 @@ export async function getScoringNominationOrNotFound({
       applicantProfile: true,
       category: true,
       award: true,
-      answers: {
-        orderBy: {
-          createdAt: "asc",
-        },
-      },
-      files: {
-        orderBy: {
-          createdAt: "asc",
-        },
-      },
     },
   });
 
@@ -179,7 +168,11 @@ export async function getScoringNominationOrNotFound({
     notFound();
   }
 
-  return nomination;
+  return {
+    ...nomination,
+    answers: nominationAnswerViewRows(nomination.answers),
+    files: nominationFileViewRows(nomination.files),
+  };
 }
 
 export function buildCategoryRanks<T extends {

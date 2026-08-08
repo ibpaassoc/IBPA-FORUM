@@ -2,6 +2,7 @@ import { requireJuryAuth } from "@/features/jury/server/auth";
 import { streamPrivateBlobFile } from "@/shared/lib/blob-file-response";
 import { prisma } from "@/shared/lib/prisma";
 import { activateRequestDataScope } from "@/features/test/server/data-scope";
+import { parseStoredFiles } from "@/features/database/json-fields";
 
 export async function GET(
   request: Request,
@@ -11,39 +12,30 @@ export async function GET(
   activateRequestDataScope({ dataScope: juryUser.dataScope });
   const { fileId } = await params;
 
-  const fileRecord = await prisma.nominationFile.findUnique({
-    where: { id: fileId },
-    include: {
-      nominationApplication: {
-        select: {
-          status: true,
-          paymentStatus: true,
-          closedIncompleteAt: true,
-          deletedAt: true,
-          category: { select: { name: true } },
-        },
-      },
+  const nominations = await prisma.nomination.findMany({
+    where: {
+      payment: { status: "PAID" },
+      status: { in: ["SUBMITTED", "UNDER_REVIEW", "LOCKED", "SCORED"] },
+      category: { name: { in: juryUser.approvedCategories } },
     },
+    select: { files: true },
   });
+  const fileRecord = nominations.flatMap((nomination) => parseStoredFiles(nomination.files).items).find((file) => file.id === fileId);
+  const pathname = fileRecord?.blobKey ?? fileRecord?.url;
 
   if (
     !juryUser.approvalStatus ||
     !["APPROVED", "PAID"].includes(juryUser.approvalStatus) ||
-    !fileRecord?.fileUrl ||
-    fileRecord.deletedAt ||
-    fileRecord.nominationApplication.deletedAt ||
-    fileRecord.nominationApplication.closedIncompleteAt ||
-    fileRecord.nominationApplication.paymentStatus !== "PAID" ||
-    !["SUBMITTED", "UNDER_REVIEW", "LOCKED", "SCORED"].includes(fileRecord.nominationApplication.status) ||
-    !juryUser.approvedCategories.includes(fileRecord.nominationApplication.category.name)
+    !fileRecord ||
+    !pathname
   ) {
     return new Response("Not found", { status: 404 });
   }
 
   const response = await streamPrivateBlobFile({
     request,
-    pathname: fileRecord.fileUrl,
-    fileName: fileRecord.displayFileName || fileRecord.fileName,
+    pathname,
+    fileName: fileRecord.filename,
     mimeType: fileRecord.mimeType,
   });
 

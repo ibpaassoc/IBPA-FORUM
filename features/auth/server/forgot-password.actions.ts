@@ -39,9 +39,9 @@ export async function forgotPasswordAction(
   if (!result.delivered) {
     const error = result.error ?? result.reason ?? "Password reset email delivery failed.";
     await Promise.all([
-      prisma.accountSetupToken.updateMany({
-        where: { tokenHash: token.tokenHash, accountId: account.id },
-        data: { usedAt: new Date() },
+      prisma.account.updateMany({
+        where: { id: account.id, setupTokenHash: token.tokenHash },
+        data: { setupTokenUsedAt: new Date() },
       }),
       prisma.account.update({
         where: { id: account.id },

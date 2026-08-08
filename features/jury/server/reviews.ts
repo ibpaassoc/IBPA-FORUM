@@ -15,6 +15,7 @@ import {
   type ActiveJudgeContext,
 } from "@/features/jury/server/scoring-shared";
 import { requireJuryAuth } from "@/features/jury/server/auth";
+import { nominationAnswerViewRows, nominationFileViewRows } from "@/features/database/json-fields";
 import { activateRequestDataScope } from "@/features/test/server/data-scope";
 import {
   buildReviewScoreData,
@@ -84,9 +85,9 @@ const REVIEW_DETAIL_SELECT = {
   id: true,
   scoreData: true,
   totalScore: true,
-  notes: true,
+  comments: true,
   status: true,
-  completedAt: true,
+  submittedAt: true,
   updatedAt: true,
 } as const;
 
@@ -94,18 +95,18 @@ function toReviewResponse(review: {
   id: string;
   scoreData: Prisma.JsonValue | null;
   totalScore: Prisma.Decimal | null;
-  notes: string | null;
+  comments: string | null;
   status: string;
-  completedAt: Date | null;
+  submittedAt: Date | null;
   updatedAt: Date;
 }, definition: NominationScoringDefinition) {
   return {
     scores: readReviewScores(review.scoreData, definition),
     id: review.id,
     totalScore: review.totalScore === null ? null : Number(review.totalScore),
-    comment: review.notes,
+    comment: review.comments,
     status: getJuryReviewListStatus(review),
-    completedAt: review.completedAt,
+    completedAt: review.submittedAt,
     updatedAt: review.updatedAt,
   };
 }
@@ -117,13 +118,11 @@ async function getAccessibleNominationForJury({
   nominationId: string;
   judge: ActiveJudgeContext;
 }) {
-  const nomination = await prisma.nominationApplication.findFirst({
+  const nomination = await prisma.nomination.findFirst({
     where: {
       id: nominationId,
-      paymentStatus: "PAID",
+      payment: { status: "PAID" },
       status: { in: ["SUBMITTED", "UNDER_REVIEW", "LOCKED", "SCORED"] },
-      closedIncompleteAt: null,
-      deletedAt: null,
       category: { name: { in: judge.approvedCategories } },
     },
     select: {
@@ -153,12 +152,10 @@ export async function getJuryNominationWorkspace({
   const activeCategory =
     category && judge.approvedCategories.includes(category) ? category : undefined;
 
-  const nominations = await prisma.nominationApplication.findMany({
+  const nominations = await prisma.nomination.findMany({
     where: {
-      paymentStatus: "PAID",
+      payment: { status: "PAID" },
       status: { in: ["SUBMITTED", "UNDER_REVIEW", "LOCKED", "SCORED"] },
-      closedIncompleteAt: null,
-      deletedAt: null,
       category: { name: { in: judge.approvedCategories } },
     },
     orderBy: [{ submittedAt: "asc" }, { createdAt: "asc" }],
@@ -274,13 +271,11 @@ export async function getJuryNominationReviewDetail({
   nominationId: string;
 }) {
   activateRequestDataScope({ dataScope: judge.dataScope });
-  const nomination = await prisma.nominationApplication.findFirst({
+  const nomination = await prisma.nomination.findFirst({
     where: {
       id: nominationId,
-      paymentStatus: "PAID",
+      payment: { status: "PAID" },
       status: { in: ["SUBMITTED", "UNDER_REVIEW", "LOCKED", "SCORED"] },
-      closedIncompleteAt: null,
-      deletedAt: null,
       category: { name: { in: judge.approvedCategories } },
     },
     select: {
@@ -295,19 +290,8 @@ export async function getJuryNominationReviewDetail({
       },
       award: { select: { id: true, name: true } },
       category: { select: { id: true, name: true, slug: true } },
-      answers: { orderBy: { createdAt: "asc" } },
-      files: {
-        where: { deletedAt: null },
-        orderBy: { createdAt: "asc" },
-        select: {
-          id: true,
-          fieldKey: true,
-          fileName: true,
-          displayFileName: true,
-          mimeType: true,
-          fileSize: true,
-        },
-      },
+      answers: true,
+      files: true,
       reviews: {
         where: { juryProfileId: judge.juryProfileId },
         select: REVIEW_DETAIL_SELECT,
@@ -325,13 +309,11 @@ export async function getJuryNominationReviewDetail({
     nomination.category.slug
   );
   const peerNominations = nomination.applicantProfileId
-    ? await prisma.nominationApplication.findMany({
+    ? await prisma.nomination.findMany({
         where: {
           applicantProfileId: nomination.applicantProfileId,
-          paymentStatus: "PAID",
+          payment: { status: "PAID" },
           status: { in: ["SUBMITTED", "UNDER_REVIEW", "LOCKED", "SCORED"] },
-          closedIncompleteAt: null,
-          deletedAt: null,
           category: { name: { in: judge.approvedCategories } },
         },
         select: {
@@ -356,8 +338,8 @@ export async function getJuryNominationReviewDetail({
       },
       award: nomination.award,
       category: nomination.category,
-      answers: nomination.answers,
-      files: nomination.files,
+      answers: nominationAnswerViewRows(nomination.answers) as JuryNominationReviewRecord["answers"],
+      files: nominationFileViewRows(nomination.files),
       peerNominations: peerNominations.map((peer) => ({
         id: peer.id,
         award: peer.award,
@@ -415,9 +397,9 @@ export async function saveJuryReviewDraft({
   const reviewData = {
     scoreData: buildReviewScoreData(scoringDefinition, scoreValues) as Prisma.InputJsonValue,
     totalScore,
-    notes: input.comment ?? null,
+    comments: input.comment ?? null,
     status: "IN_PROGRESS" as const,
-    completedAt: null,
+    submittedAt: null,
   };
 
   let review;
@@ -501,10 +483,10 @@ export async function submitJuryReview({
   const reviewData = {
     scoreData: buildReviewScoreData(scoringDefinition, scoreValues) as Prisma.InputJsonValue,
     totalScore,
-    notes: input.comment ?? null,
+    comments: input.comment ?? null,
     status: "COMPLETED" as const,
     startedAt: existingReview ? undefined : submittedAt,
-    completedAt: submittedAt,
+    submittedAt,
   };
 
   let review;

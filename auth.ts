@@ -45,10 +45,7 @@ declare module "next-auth/jwt" {
 }
 
 export const authOptions: NextAuthOptions = {
-  secret:
-    process.env.NEXTAUTH_SECRET ??
-    process.env.AUTH_SECRET ??
-    "beauty-web-dev-jury-auth-secret",
+  secret: process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET,
   session: {
     strategy: "jwt",
   },
@@ -87,7 +84,6 @@ export const authOptions: NextAuthOptions = {
 
         if (
           !account ||
-          account.deletedAt ||
           account.status === "DISABLED" ||
           !account.passwordHash
         ) {

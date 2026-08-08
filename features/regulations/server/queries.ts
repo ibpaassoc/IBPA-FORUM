@@ -1,6 +1,7 @@
 import "server-only";
+import { Prisma } from "@prisma/client";
 
-import type { Regulation } from "@prisma/client";
+import { regulationsSettingSchema } from "@/features/database/json-fields";
 import type {
   AdminRegulationItem,
   RegulationKey,
@@ -14,28 +15,36 @@ import {
 } from "@/features/regulations/types";
 import { prisma } from "@/shared/lib/prisma";
 
-export const regulationUrlField = {
-  en: "enUrl",
-  ru: "ruUrl",
-  ua: "uaUrl",
-} as const satisfies Record<RegulationLanguage, keyof Regulation>;
+type RegulationsSetting = ReturnType<typeof regulationsSettingSchema.parse>;
 
-function hasPrismaCode(error: unknown, code: string) {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error &&
-    (error as { code?: unknown }).code === code
-  );
+function emptyRegulations(): RegulationsSetting {
+  return {
+    schemaVersion: 1,
+    updatedAt: new Date().toISOString(),
+    general: { en: {}, ru: {}, ua: {} },
+    categories: {},
+  };
+}
+
+async function getSetting() {
+  const setting = await prisma.siteSetting.findUnique({ where: { key: "regulations" } });
+  if (!setting) return emptyRegulations();
+  return regulationsSettingSchema.parse(setting.value);
+}
+
+function urlFromLanguage(value: Record<string, unknown> | undefined) {
+  return typeof value?.url === "string" && value.url.length > 0 ? value.url : null;
 }
 
 export function regulationUrls(
-  regulation: Pick<Regulation, "enUrl" | "ruUrl" | "uaUrl"> | null,
+  regulation:
+    | { en?: Record<string, unknown>; ru?: Record<string, unknown>; ua?: Record<string, unknown> }
+    | null
 ): RegulationUrls {
   return {
-    en: regulation?.enUrl ?? null,
-    ru: regulation?.ruUrl ?? null,
-    ua: regulation?.uaUrl ?? null,
+    en: urlFromLanguage(regulation?.en),
+    ru: urlFromLanguage(regulation?.ru),
+    ua: urlFromLanguage(regulation?.ua),
   };
 }
 
@@ -43,88 +52,40 @@ export async function getRegulationsForAdmin(): Promise<{
   general: AdminRegulationItem;
   categories: AdminRegulationItem[];
 }> {
-  let generalRecord: Regulation | null = null;
-  let categories: Array<{
-    id: string;
-    name: string;
-    slug: string;
-    regulation: Regulation | null;
-  }>;
-
-  try {
-    [generalRecord, categories] = await Promise.all([
-      prisma.regulation.findUnique({ where: { key: "general" } }),
-      prisma.category.findMany({
-        select: {
-          id: true,
-          name: true,
-          slug: true,
-          regulation: true,
-        },
-        orderBy: { createdAt: "asc" },
-      }),
-    ]);
-  } catch (error) {
-    if (!hasPrismaCode(error, "P2021")) throw error;
-    const existingCategories = await prisma.category.findMany({
+  const [setting, categories] = await Promise.all([
+    getSetting(),
+    prisma.category.findMany({
       select: { id: true, name: true, slug: true },
       orderBy: { createdAt: "asc" },
-    });
-    categories = existingCategories.map((category) => ({ ...category, regulation: null }));
-  }
-
+    }),
+  ]);
   return {
     general: {
       key: "general",
       categoryId: null,
       title: "Общий регламент",
       storageScope: "general",
-      availability: regulationAvailability(regulationUrls(generalRecord)),
+      availability: regulationAvailability(regulationUrls(setting.general)),
     },
     categories: categories.map((category) => ({
       key: `category:${category.id}`,
       categoryId: category.id,
       title: category.name,
       storageScope: category.slug,
-      availability: regulationAvailability(regulationUrls(category.regulation)),
+      availability: regulationAvailability(regulationUrls(setting.categories[category.id] ?? null)),
     })),
   };
 }
 
 export async function getPublicRegulations(): Promise<PublicRegulations> {
-  let records: Array<{
-    key: string;
-    categoryId: string | null;
-    enUrl: string | null;
-    ruUrl: string | null;
-    uaUrl: string | null;
-  }>;
-
-  try {
-    records = await prisma.regulation.findMany({
-      select: {
-        key: true,
-        categoryId: true,
-        enUrl: true,
-        ruUrl: true,
-        uaUrl: true,
-      },
-    });
-  } catch (error) {
-    if (!hasPrismaCode(error, "P2021")) throw error;
-    records = [];
-  }
-  const general = records.find((record) => record.key === "general") ?? null;
-
+  const setting = await getSetting();
   return {
-    general: regulationAvailability(regulationUrls(general)),
+    general: regulationAvailability(regulationUrls(setting.general)),
     categories: Object.fromEntries(
-      records
-        .filter((record) => record.categoryId)
-        .map((record) => [
-          record.categoryId as string,
-          regulationAvailability(regulationUrls(record)),
-        ]),
+      Object.entries(setting.categories).map(([categoryId, value]) => [
+        categoryId,
+        regulationAvailability(regulationUrls(value)),
+      ])
     ),
   };
 }
@@ -138,20 +99,15 @@ export async function resolveRegulationUrl({
   language: RegulationLanguage;
   exact?: boolean;
 }) {
-  const regulation = await prisma.regulation.findUnique({ where: { key } });
-  const urls = regulationUrls(regulation);
+  const setting = await getSetting();
+  const record = key === "general" ? setting.general : setting.categories[key.slice("category:".length)];
+  const urls = regulationUrls(record ?? null);
   const resolvedLanguage = exact
     ? urls[language]
       ? language
       : null
     : resolveRegulationLanguage(regulationAvailability(urls), language);
-
-  if (!resolvedLanguage) return null;
-
-  return {
-    language: resolvedLanguage,
-    url: urls[resolvedLanguage] as string,
-  };
+  return resolvedLanguage ? { language: resolvedLanguage, url: urls[resolvedLanguage] as string } : null;
 }
 
 export async function getExpectedRegulationTarget({
@@ -161,22 +117,10 @@ export async function getExpectedRegulationTarget({
   key: RegulationKey;
   categoryId: string | null;
 }) {
-  if (key === "general") {
-    return categoryId === null
-      ? { key, categoryId: null, storageScope: "general" }
-      : null;
-  }
-
+  if (key === "general") return categoryId === null ? { key, categoryId: null, storageScope: "general" } : null;
   if (!categoryId || key !== `category:${categoryId}`) return null;
-
-  const category = await prisma.category.findUnique({
-    where: { id: categoryId },
-    select: { id: true, slug: true },
-  });
-
-  return category
-    ? { key, categoryId: category.id, storageScope: category.slug }
-    : null;
+  const category = await prisma.category.findUnique({ where: { id: categoryId }, select: { id: true, slug: true } });
+  return category ? { key, categoryId: category.id, storageScope: category.slug } : null;
 }
 
 export async function setRegulationUrl({
@@ -190,17 +134,30 @@ export async function setRegulationUrl({
   language: RegulationLanguage;
   url: string | null;
 }) {
-  const field = regulationUrlField[language];
-
-  return prisma.regulation.upsert({
-    where: { key },
-    create: {
-      key,
-      categoryId,
-      [field]: url,
-    },
-    update: {
-      [field]: url,
-    },
+  return prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext('forum:site-setting:regulations'))`;
+    const current = await tx.siteSetting.findUnique({ where: { key: "regulations" } });
+    const setting = current ? regulationsSettingSchema.parse(current.value) : emptyRegulations();
+    const now = new Date().toISOString();
+    if (key === "general") {
+      setting.general = {
+        ...setting.general,
+        [language]: { ...setting.general[language], url },
+      };
+    } else {
+      if (!categoryId) throw new Error("A category is required for a category regulation.");
+      const record = setting.categories[categoryId] ?? { en: {}, ru: {}, ua: {} };
+      setting.categories = {
+        ...setting.categories,
+        [categoryId]: { ...record, [language]: { ...record[language], url } },
+      };
+    }
+    setting.updatedAt = now;
+    await tx.siteSetting.upsert({
+      where: { key: "regulations" },
+      create: { key: "regulations", value: setting as unknown as Prisma.InputJsonValue },
+      update: { value: setting as unknown as Prisma.InputJsonValue },
+    });
+    return setting;
   });
 }
