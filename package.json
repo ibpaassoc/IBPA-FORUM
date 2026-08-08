@@ -12,6 +12,8 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test:test-system": "tsx scripts/test-test-system.ts",
+    "test:db-refactor": "tsx scripts/test-forum-db-refactor.ts",
+    "cleanup:nomination-files": "tsx scripts/delete-soft-deleted-nomination-files.ts",
     "test:application-submission": "tsx scripts/test-application-submission.ts",
     "test:applicant-flow": "tsx scripts/test-applicant-flow.ts",
     "test:nomination-upload": "tsx scripts/test-nomination-upload.ts",
