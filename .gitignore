@@ -52,3 +52,6 @@ next-env.d.ts
 
 #googlesheets
 credentials.json
+
+# Local migration manifests may contain production record identifiers.
+/.local-audit/

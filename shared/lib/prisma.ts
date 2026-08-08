@@ -26,21 +26,12 @@ if (process.env.NODE_ENV !== "production") {
 const SCOPED_MODELS = new Set([
   "Account",
   "ApplicantProfile",
-  "ApplicantCheckInCredential",
   "JuryProfile",
-  "AccountSetupToken",
   "JuryApplication",
-  "JuryApplicationFile",
   "Payment",
-  "StripeWebhookEvent",
-  "NominationApplication",
+  "Nomination",
   "JuryNominationReview",
-  "NominationAnswer",
-  "NominationFile",
   "Ticket",
-  "TicketQrCredential",
-  "TicketActivity",
-  "EmailDeliveryLog",
 ]);
 
 type QueryArgs = Record<string, unknown> & {
@@ -53,70 +44,50 @@ type QueryArgs = Record<string, unknown> & {
 };
 
 const SCOPED_RELATIONS: Record<string, Record<string, { model: string; many: boolean }>> = {
-  Category: { nominationApplications: { model: "NominationApplication", many: true } },
-  Award: { nominationApplications: { model: "NominationApplication", many: true } },
+  Category: { nominations: { model: "Nomination", many: true } },
+  Award: { nominations: { model: "Nomination", many: true } },
   Account: {
     applicantProfile: { model: "ApplicantProfile", many: false },
+    juryApplication: { model: "JuryApplication", many: false },
     juryProfile: { model: "JuryProfile", many: false },
-    setupTokens: { model: "AccountSetupToken", many: true },
+    payments: { model: "Payment", many: true },
     tickets: { model: "Ticket", many: true },
   },
   ApplicantProfile: {
     account: { model: "Account", many: false },
-    nominations: { model: "NominationApplication", many: true },
-    payments: { model: "Payment", many: true },
+    nominations: { model: "Nomination", many: true },
     tickets: { model: "Ticket", many: true },
-    checkInCredentials: { model: "ApplicantCheckInCredential", many: true },
-  },
-  ApplicantCheckInCredential: {
-    applicantProfile: { model: "ApplicantProfile", many: false },
   },
   JuryProfile: {
     account: { model: "Account", many: false },
     juryApplication: { model: "JuryApplication", many: false },
     reviews: { model: "JuryNominationReview", many: true },
   },
-  AccountSetupToken: { account: { model: "Account", many: false } },
   JuryApplication: {
-    files: { model: "JuryApplicationFile", many: true },
+    account: { model: "Account", many: false },
     profile: { model: "JuryProfile", many: false },
     payments: { model: "Payment", many: true },
   },
-  JuryApplicationFile: {
-    juryApplication: { model: "JuryApplication", many: false },
-  },
   Payment: {
-    applicantProfile: { model: "ApplicantProfile", many: false },
-    purchasedNominations: { model: "NominationApplication", many: true },
+    account: { model: "Account", many: false },
+    nominations: { model: "Nomination", many: true },
     juryApplication: { model: "JuryApplication", many: false },
-    ticket: { model: "Ticket", many: false },
+    tickets: { model: "Ticket", many: true },
   },
-  NominationApplication: {
+  Nomination: {
     applicantProfile: { model: "ApplicantProfile", many: false },
-    purchasePayment: { model: "Payment", many: false },
-    answers: { model: "NominationAnswer", many: true },
-    files: { model: "NominationFile", many: true },
+    payment: { model: "Payment", many: false },
     reviews: { model: "JuryNominationReview", many: true },
   },
   JuryNominationReview: {
-    nomination: { model: "NominationApplication", many: false },
+    nomination: { model: "Nomination", many: false },
     juryProfile: { model: "JuryProfile", many: false },
-  },
-  NominationAnswer: {
-    nominationApplication: { model: "NominationApplication", many: false },
-  },
-  NominationFile: {
-    nominationApplication: { model: "NominationApplication", many: false },
   },
   Ticket: {
     account: { model: "Account", many: false },
     applicantProfile: { model: "ApplicantProfile", many: false },
-    payments: { model: "Payment", many: true },
-    qrCredentials: { model: "TicketQrCredential", many: true },
-    activities: { model: "TicketActivity", many: true },
+    payment: { model: "Payment", many: false },
   },
-  TicketQrCredential: { ticket: { model: "Ticket", many: false } },
-  TicketActivity: { ticket: { model: "Ticket", many: false } },
 };
 
 function scopedWhere(where: Record<string, unknown> | undefined) {
@@ -125,11 +96,10 @@ function scopedWhere(where: Record<string, unknown> | undefined) {
 }
 
 function scopedData(data: Record<string, unknown>) {
-  const { dataScope, testScenarioId } = getDataScopeContext();
+  const { dataScope } = getDataScopeContext();
   return {
     ...data,
     dataScope,
-    ...(dataScope === "TEST" && testScenarioId ? { testScenarioId } : {}),
   };
 }
 
