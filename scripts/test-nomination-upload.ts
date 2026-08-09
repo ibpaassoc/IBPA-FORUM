@@ -8,6 +8,7 @@ import { strict as assert } from "node:assert";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { runUploadQueue } from "@/features/applications/client/upload-queue";
+import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 
 const ROOT = process.cwd();
 const read = (path: string) => readFileSync(join(ROOT, path), "utf8");
@@ -95,7 +96,7 @@ function testServerSafeguards() {
   const tokenRoute = read("app/api/applications/upload/route.ts");
   assert.match(tokenRoute, /requireEditableNomination/);
   assert.match(tokenRoute, /field\.accept/);
-  assert.match(tokenRoute, /field\.maxFileSizeMb/);
+  assert.doesNotMatch(tokenRoute, /maximumSizeInBytes|maxFileSizeMb/);
   assert.match(tokenRoute, /validUntil/);
 
   const nominationRoute = read(
@@ -132,11 +133,46 @@ function testServerSafeguards() {
   assert.match(publicRoute, /RAW_FILE_REJECTED/);
 }
 
+function testUploadSizeBehavior() {
+  const uploadValidation = read("features/applications/client/upload-files.ts");
+  const fieldValidation = read("features/applications/schemas/category-field-validation.ts");
+  const uploadField = read(
+    "features/applications/components/application-form/fields/UploadField.tsx",
+  );
+  const categoryFields = read(
+    "features/applications/config/category-field-configs/index.ts",
+  );
+  const nominationRoute = read(
+    "app/api/applicant/nominations/[nominationId]/route.ts",
+  );
+
+  assert.doesNotMatch(uploadValidation, /MAX_UPLOAD_SIZE|too large|Maximum size/);
+  assert.doesNotMatch(fieldValidation, /maxFileSize|oversizedFile/);
+  assert.doesNotMatch(categoryFields, /maxFileSizeMb|100 MB each/);
+  assert.doesNotMatch(nominationRoute, /maxFileSizeMb/);
+  assert.match(uploadField, /AUTO_COMPRESS_THRESHOLD_BYTES = 5 \* 1024 \* 1024/);
+  assert.match(uploadField, /file\.size > AUTO_COMPRESS_THRESHOLD_BYTES/);
+}
+
+function testCertificateLimits() {
+  const practitionerCertificates = categoryFieldConfigs.hair.find(
+    (field) => field.key === "professionalCertifications",
+  );
+  const educatorCertificates = categoryFieldConfigs.education.find(
+    (field) => field.key === "educatorProfessionalCertifications",
+  );
+
+  assert.equal(practitionerCertificates?.maxFiles, 25);
+  assert.equal(educatorCertificates?.maxFiles, 25);
+}
+
 async function main() {
   await testSingleUpload();
   await testLimitedConcurrency();
   await testFailedUploadRetry();
   testServerSafeguards();
+  testUploadSizeBehavior();
+  testCertificateLimits();
   console.log("nomination upload checks passed");
 }
 

@@ -34,7 +34,6 @@ export type ApplyFieldConfig = {
   minFiles?: number;
   maxFiles?: number;
   accept?: string[];
-  maxFileSizeMb?: number;
   maxWords?: number;
   visibleWhen?: FieldCondition;
 };
