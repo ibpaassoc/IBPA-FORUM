@@ -9,6 +9,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { runUploadQueue } from "@/features/applications/client/upload-queue";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
+import { getNewValidationErrors } from "@/features/applications/schemas/category-field-validation";
 
 const ROOT = process.cwd();
 const read = (path: string) => readFileSync(join(ROOT, path), "utf8");
@@ -108,6 +109,8 @@ function testServerSafeguards() {
   assert.match(nominationRoute, /revision: nomination\.revision/);
   assert.match(nominationRoute, /revision: \{ increment: 1 \}/);
   assert.match(nominationRoute, /errorCode: "UPLOAD"/);
+  assert.match(nominationRoute, /existingNominationValues\(nomination\.answers, nomination\.files\)/);
+  assert.match(nominationRoute, /getNewValidationErrors/);
   assert.match(nominationRoute, /requestId/);
   assert.doesNotMatch(nominationRoute, /nomination(File|Answer)\./);
 
@@ -137,6 +140,36 @@ function testServerSafeguards() {
 
   const publicRoute = read("app/api/applications/route.ts");
   assert.match(publicRoute, /RAW_FILE_REJECTED/);
+}
+
+function testIncrementalSubmittedRepairs() {
+  const current = {
+    portfolioPhotos: "Upload at least five photos.",
+    beforeAfterPhotos: "Before / After Photos is required.",
+    statementOfAchievements: "Statement of Achievements is required.",
+  };
+
+  assert.deepEqual(
+    getNewValidationErrors(current, current),
+    {},
+    "existing validation gaps do not block incremental submitted saves",
+  );
+  assert.deepEqual(
+    getNewValidationErrors(current, {
+      beforeAfterPhotos: current.beforeAfterPhotos,
+      statementOfAchievements: current.statementOfAchievements,
+    }),
+    {},
+    "repairing one field can be saved before the remaining fields are complete",
+  );
+  assert.deepEqual(
+    getNewValidationErrors(current, {
+      ...current,
+      signatureTechnique: "Signature Technique is required.",
+    }),
+    { signatureTechnique: "Signature Technique is required." },
+    "a submitted edit cannot invalidate a field that was previously valid",
+  );
 }
 
 function testUploadSizeBehavior() {
@@ -177,6 +210,7 @@ async function main() {
   await testLimitedConcurrency();
   await testFailedUploadRetry();
   testServerSafeguards();
+  testIncrementalSubmittedRepairs();
   testUploadSizeBehavior();
   testCertificateLimits();
   console.log("nomination upload checks passed");

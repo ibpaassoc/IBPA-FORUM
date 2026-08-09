@@ -3,7 +3,10 @@ import { Prisma } from "@prisma/client";
 import { head } from "@vercel/blob";
 import { isApplicationFileRef } from "@/features/applications/lib/file-ref";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
-import { validateNominationBlockB } from "@/features/applications/schemas/category-field-validation";
+import {
+  getNewValidationErrors,
+  validateNominationBlockB,
+} from "@/features/applications/schemas/category-field-validation";
 import type {
   ApplicationFileRef,
   ApplicationValues,
@@ -48,6 +51,57 @@ function getFileRefs(value: ApplicationValues[string]) {
   return Array.from(
     new Map(value.filter(isApplicationFileRef).map((ref) => [ref.fileUrl, ref] as const)).values(),
   );
+}
+
+type ExistingAnswer = {
+  fieldKey: string;
+  valueText: string | null;
+  valueNumber: number | null;
+  valueBoolean: boolean | null;
+  valueJson: unknown;
+};
+
+type ExistingFile = {
+  fieldKey: string;
+  fileName: string;
+  fileUrl: string;
+  mimeType: string;
+  fileSize: number;
+};
+
+function existingNominationValues(
+  answers: ExistingAnswer[],
+  files: ExistingFile[],
+): ApplicationValues {
+  const values: ApplicationValues = {};
+  for (const answer of answers) {
+    if (Array.isArray(answer.valueJson)) {
+      values[answer.fieldKey] = answer.valueJson.filter(
+        (item): item is string => typeof item === "string",
+      );
+    } else if (answer.valueNumber !== null) {
+      values[answer.fieldKey] = String(answer.valueNumber);
+    } else if (answer.valueBoolean !== null) {
+      values[answer.fieldKey] = answer.valueBoolean ? "yes" : "no";
+    } else {
+      values[answer.fieldKey] = answer.valueText ?? "";
+    }
+  }
+
+  const filesByField = new Map<string, ApplicationFileRef[]>();
+  for (const file of files) {
+    const refs = filesByField.get(file.fieldKey) ?? [];
+    refs.push({
+      fieldKey: file.fieldKey,
+      fileName: file.fileName,
+      fileUrl: file.fileUrl,
+      mimeType: file.mimeType,
+      fileSize: file.fileSize,
+    });
+    filesByField.set(file.fieldKey, refs);
+  }
+  for (const [fieldKey, refs] of filesByField) values[fieldKey] = refs;
+  return values;
 }
 
 function sanitizeDisplayFilename(name: string) {
@@ -161,7 +215,25 @@ export async function POST(request: Request, { params }: { params: Promise<{ nom
       return NextResponse.json({ errorCode: "VALIDATION", requestId, message: "Please complete the required nomination fields before submitting.", fieldErrors: validation }, { status: 400, headers: { "X-Request-Id": requestId } });
     }
     if (nomination.status === "SUBMITTED" && Object.keys(validation).length > 0) {
-      return NextResponse.json({ errorCode: "VALIDATION", requestId, message: "Submitted nominations must remain complete. Revert to valid values before saving.", fieldErrors: validation }, { status: 400, headers: { "X-Request-Id": requestId } });
+      const currentValidation = validateNominationBlockB(
+        nomination.category.slug,
+        existingNominationValues(nomination.answers, nomination.files),
+      );
+      const newValidationErrors = getNewValidationErrors(
+        currentValidation,
+        validation,
+      );
+      if (Object.keys(newValidationErrors).length > 0) {
+        return NextResponse.json(
+          {
+            errorCode: "VALIDATION",
+            requestId,
+            message: "Submitted nominations cannot make a previously valid field incomplete.",
+            fieldErrors: newValidationErrors,
+          },
+          { status: 400, headers: { "X-Request-Id": requestId } },
+        );
+      }
     }
 
     const fileFieldKeys = new Set(categoryFields.filter((field) => field.type === "file").map((field) => field.key).filter((key) => Object.hasOwn(values, key)));

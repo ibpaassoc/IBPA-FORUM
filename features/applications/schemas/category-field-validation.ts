@@ -286,6 +286,15 @@ function validateNominationBlockB(
   return nomErrors;
 }
 
+function getNewValidationErrors(
+  currentErrors: ValidationErrors,
+  nextErrors: ValidationErrors,
+): ValidationErrors {
+  return Object.fromEntries(
+    Object.entries(nextErrors).filter(([fieldKey]) => !(fieldKey in currentErrors)),
+  );
+}
+
 export function validateApplicationValues({
   values,
   blockBValuesByNomination = {},
@@ -400,4 +409,4 @@ export function validateApplicationValues({
 }
 
 // Export for use in server commands
-export { validateNominationBlockB };
+export { getNewValidationErrors, validateNominationBlockB };
