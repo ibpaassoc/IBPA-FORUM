@@ -16,6 +16,7 @@ import {
   Ticket,
   Users,
   ScrollText,
+  Send,
 } from "lucide-react";
 import { useState } from "react";
 import { logoutAdminAction } from "@/features/admin/actions/auth.actions";
@@ -36,6 +37,7 @@ const navItems = [
   { href: "/admin/regulations", ...adminT.nav.regulations, icon: ScrollText },
   { href: "/admin/scanner", ...adminT.nav.scanner, icon: ScanLine },
   { href: "/admin/google-sheets", ...adminT.nav.sheets, icon: FileSpreadsheet },
+  { href: "/admin/mailing", ...adminT.nav.mailing, icon: Send },
 ];
 
 function isActive(pathname: string, href: string) {
