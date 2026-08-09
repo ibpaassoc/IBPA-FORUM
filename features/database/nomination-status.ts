@@ -23,5 +23,8 @@ export function assertNominationStatusTransition(from: NominationStatus, to: Nom
 }
 
 export function editableNominationStatus(status: NominationStatus) {
-  return status === "DRAFT" || status === "RETURNED_FOR_CHANGES";
+  // Applicants can revise a submitted nomination until staff advances or
+  // explicitly locks it. This preserves the pre-refactor workflow and matches
+  // the editor's "Update submission" action.
+  return status === "DRAFT" || status === "SUBMITTED" || status === "RETURNED_FOR_CHANGES";
 }

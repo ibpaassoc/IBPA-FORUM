@@ -8,7 +8,7 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import { nominationAnswersSchema, storedFilesSchema, ticketActivitySchema, ticketCredentialSchema, regulationsSettingSchema, promoCodesSettingSchema } from "@/features/database/json-fields";
-import { assertNominationStatusTransition, canTransitionNominationStatus } from "@/features/database/nomination-status";
+import { assertNominationStatusTransition, canTransitionNominationStatus, editableNominationStatus } from "@/features/database/nomination-status";
 import { emptyTestAuditEvents, emptyTestCreatedRecords, emptyTestEmailDeliveries, testCreatedRecordsSchema } from "@/features/test/lib/test-records";
 import { normalizeSslMode } from "@/shared/lib/db-url";
 
@@ -28,6 +28,8 @@ function staticChecks() {
   testCreatedRecordsSchema.parse(emptyTestCreatedRecords());
   assert.equal(canTransitionNominationStatus("DRAFT", "SUBMITTED"), true);
   assert.equal(canTransitionNominationStatus("LOCKED", "DRAFT"), false);
+  assert.equal(editableNominationStatus("SUBMITTED"), true);
+  assert.equal(editableNominationStatus("UNDER_REVIEW"), false);
   assert.throws(() => assertNominationStatusTransition("ARCHIVED", "DRAFT"));
   const migration = readFileSync(join(process.cwd(), "prisma/migrations/20260807120000_forum_database_refactor/migration.sql"), "utf8");
   assert.doesNotMatch(migration, /DROP TABLE/);
