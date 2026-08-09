@@ -363,6 +363,7 @@ function PreviewDialog({
   const copy = previewCopy[locale];
   const hasMultiple = items.length > 1;
   const zoomable = item ? isImage(item) : false;
+  const usesTouchGestures = zoomable;
 
   // Index only ever changes through these two, so resetting the view here keeps
   // every new file starting unzoomed, uncentred, and loading — without an
@@ -566,11 +567,11 @@ function PreviewDialog({
               </header>
 
               <div
-                className="relative flex min-h-[min(52dvh,520px)] flex-1 touch-none items-center justify-center overflow-hidden bg-[linear-gradient(145deg,rgba(225,240,249,0.58),rgba(255,255,255,0.88))] p-3 sm:min-h-[420px] sm:p-5"
-                onPointerDown={handlePointerDown}
-                onPointerMove={handlePointerMove}
-                onPointerUp={handlePointerEnd}
-                onPointerCancel={handlePointerEnd}
+                className={`relative flex min-h-[min(52dvh,520px)] flex-1 items-center justify-center overflow-hidden bg-[linear-gradient(145deg,rgba(225,240,249,0.58),rgba(255,255,255,0.88))] p-3 sm:min-h-[420px] sm:p-5 ${usesTouchGestures ? "touch-none" : "touch-pan-y"}`}
+                onPointerDown={usesTouchGestures ? handlePointerDown : undefined}
+                onPointerMove={usesTouchGestures ? handlePointerMove : undefined}
+                onPointerUp={usesTouchGestures ? handlePointerEnd : undefined}
+                onPointerCancel={usesTouchGestures ? handlePointerEnd : undefined}
               >
                 {isImage(item) ? (
                   <>
@@ -620,7 +621,7 @@ function PreviewDialog({
                     key={url}
                     src={url}
                     title={`${copy.document}: ${item.name}`}
-                    className="h-[min(66dvh,760px)] w-full rounded-[18px] border border-[rgba(114,160,193,0.18)] bg-white shadow-[0_18px_55px_rgba(56,91,116,0.1)]"
+                    className="h-[min(66dvh,760px)] w-full touch-pan-y rounded-[18px] border border-[rgba(114,160,193,0.18)] bg-white shadow-[0_18px_55px_rgba(56,91,116,0.1)]"
                   />
                 ) : (
                   <div className="flex max-w-md flex-col items-center rounded-[24px] border border-[rgba(114,160,193,0.18)] bg-white/76 px-8 py-10 text-center shadow-[0_18px_55px_rgba(56,91,116,0.08)]">

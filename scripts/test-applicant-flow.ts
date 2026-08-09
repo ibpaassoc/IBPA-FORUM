@@ -401,6 +401,14 @@ assert(has(gallery, "ThumbSkeleton"), "file previews render a loading placeholde
 assert(has(gallery, 'pairing === "before-after"'), "file previews keep before/after images paired");
 assert(has(gallery, "MAX_ZOOM"), "the preview lightbox supports zoom");
 assert(!has(gallery, "formatFileSize"), "file previews do not surface raw file sizes");
+assert(
+  has(gallery, 'usesTouchGestures ? "touch-none" : "touch-pan-y"'),
+  "PDF previews preserve vertical touch scrolling on mobile browsers",
+);
+assert(
+  has(gallery, "onPointerDown={usesTouchGestures ? handlePointerDown : undefined}"),
+  "PDF previews do not attach the image swipe handler",
+);
 // Chromium answers canPlayType("video/quicktime") with "", so a typed <source>
 // is discarded before a byte is fetched — and its error never reaches <video>.
 assert(
