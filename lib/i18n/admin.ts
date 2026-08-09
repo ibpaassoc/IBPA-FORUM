@@ -80,6 +80,7 @@ export const adminT = {
     regulations: { label: "Регламент", short: "PDF" },
     scanner: { label: "Сканер", short: "Скан" },
     sheets: { label: "Google Sheets", short: "Sheets" },
+    mailing: { label: "Рассылка", short: "Письма" },
     brandSub: "Админ-панель",
     adminDesk: "Администратор",
     signOut: "Выйти",

@@ -18,3 +18,7 @@ export {
   updateApplicantDeadlineOverrideAction,
   updateApplicantProfileAction,
 } from "@/features/admin/actions/applicant.actions";
+export {
+  type MailingActionState,
+  sendMailingAction,
+} from "@/features/admin/actions/mailing.actions";
