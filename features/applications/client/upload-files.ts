@@ -4,9 +4,8 @@ import { upload } from "@vercel/blob/client";
 import type { ApplicationFileRef } from "@/features/applications/types/application.types";
 
 // Files are uploaded straight to Vercel Blob from the browser so the final
-// POST /api/applications request stays small. Images are already compressed to
-// JPEG by UploadField before they reach here, so these ceilings are generous
-// fallbacks that also guard raw PDFs / uncompressed uploads.
+// POST /api/applications request stays small. Images are compressed to JPEG by
+// UploadField before they reach here, while other accepted files upload as-is.
 export const ACCEPTED_UPLOAD_TYPES = [
   "image/jpeg",
   "image/png",
@@ -16,8 +15,6 @@ export const ACCEPTED_UPLOAD_TYPES = [
   "video/webm",
   "video/quicktime",
 ] as const;
-
-export const MAX_UPLOAD_SIZE_MB = 15;
 
 const UPLOAD_ENDPOINT = "/api/applications/upload";
 
@@ -32,14 +29,9 @@ export function sanitizeBlobName(name: string) {
 export function validateUploadFile(
   file: File,
   acceptedTypes: readonly string[] = ACCEPTED_UPLOAD_TYPES,
-  maxFileSizeMb = MAX_UPLOAD_SIZE_MB,
 ): string | null {
   if (!acceptedTypes.includes(file.type)) {
     return `"${file.name}" is an unsupported file type for this field.`;
-  }
-
-  if (file.size > maxFileSizeMb * 1024 * 1024) {
-    return `"${file.name}" is too large. Maximum size is ${maxFileSizeMb} MB.`;
   }
 
   return null;

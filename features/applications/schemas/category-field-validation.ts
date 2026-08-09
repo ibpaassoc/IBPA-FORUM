@@ -250,12 +250,6 @@ function validateConfigField(
       return;
     }
 
-    const maxFileSizeBytes = (field.maxFileSizeMb ?? 5) * 1024 * 1024;
-    const oversizedFile = files.find((file) => file.size > maxFileSizeBytes);
-
-    if (oversizedFile) {
-      errors[field.key] = `${field.label} files must be ${(maxFileSizeBytes / 1024 / 1024).toFixed(0)}MB or smaller.`;
-    }
   }
 }
 

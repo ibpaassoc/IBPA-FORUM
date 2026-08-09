@@ -10,6 +10,7 @@ import { ImageIcon, FileText, Loader2, RefreshCw, Lock, UploadCloud } from "luci
 
 const COMPRESS_QUALITY = 0.78;
 const COMPRESS_MAX_DIM = 2400;
+const AUTO_COMPRESS_THRESHOLD_BYTES = 5 * 1024 * 1024;
 
 /**
  * A file attached to an upload field: either a freshly selected browser File
@@ -54,7 +55,13 @@ async function compressImage(file: File): Promise<File> {
       canvas.toBlob(
         (blob) => {
           if (!blob) { resolve(file); return; }
-          resolve(new File([blob], file.name.replace(/\.[^.]+$/, ".jpg"), { type: "image/jpeg" }));
+          resolve(
+            blob.size < file.size
+              ? new File([blob], file.name.replace(/\.[^.]+$/, ".jpg"), {
+                  type: "image/jpeg",
+                })
+              : file,
+          );
         },
         "image/jpeg",
         COMPRESS_QUALITY
@@ -182,7 +189,10 @@ export function ApplicantUploadField({
     // will still transfer the resulting files with bounded concurrency.
     const processed: File[] = [];
     for (const file of raw) {
-      processed.push(IMAGE_TYPES.includes(file.type) ? await compressImage(file) : file);
+      const shouldCompress =
+        IMAGE_TYPES.includes(file.type) &&
+        file.size > AUTO_COMPRESS_THRESHOLD_BYTES;
+      processed.push(shouldCompress ? await compressImage(file) : file);
     }
     setCompressing(false);
 

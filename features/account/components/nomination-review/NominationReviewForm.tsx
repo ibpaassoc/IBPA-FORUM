@@ -438,7 +438,7 @@ export default function NominationReviewForm({
 
   async function uploadFiles(field: ApplyFieldConfig, files: File[], retrying: boolean) {
     const tasks = files.flatMap((file) => {
-      const validationMessage = validateUploadFile(file, field.accept, field.maxFileSizeMb ?? 5);
+      const validationMessage = validateUploadFile(file, field.accept);
       const id = getFileId(file);
       if (validationMessage) {
         setUploadItems((current) => [...current.filter((item) => item.id !== id), { id, fieldKey: field.key, fileName: file.name, loaded: 0, total: file.size, status: "failed", error: validationMessage, retryable: false }]);

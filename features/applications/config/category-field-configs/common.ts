@@ -20,7 +20,6 @@ export function pressFields(prefix = "press") {
       description: "Optional supporting screenshots, PDFs, or press materials.",
       accept: imageAndPdf,
       maxFiles: 3,
-      maxFileSizeMb: 5,
     },
   ] satisfies ApplyFieldConfig[];
 }

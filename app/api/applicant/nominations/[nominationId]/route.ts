@@ -83,7 +83,7 @@ async function validateUploadedFiles({ nominationId, fields, values, existingFil
       if (existing?.fieldKey === field.key) {
         return { fieldKey: existing.fieldKey, fileName: existing.fileName, fileUrl: existing.fileUrl, mimeType: existing.mimeType, fileSize: existing.fileSize };
       }
-      if (ref.fieldKey !== field.key || !isPathForField(ref.fileUrl, nominationId, field.key) || !field.accept?.includes(ref.mimeType) || ref.fileSize > (field.maxFileSizeMb ?? 5) * 1024 * 1024) {
+      if (ref.fieldKey !== field.key || !isPathForField(ref.fileUrl, nominationId, field.key) || !field.accept?.includes(ref.mimeType)) {
         errors[field.key] = `${ref.fileName} is not a valid upload for ${field.label}.`;
         return null;
       }

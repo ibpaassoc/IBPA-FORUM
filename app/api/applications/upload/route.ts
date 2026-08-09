@@ -87,7 +87,6 @@ export async function POST(request: Request) {
 
         return {
           allowedContentTypes: field.accept,
-          maximumSizeInBytes: (field.maxFileSizeMb ?? 5) * 1024 * 1024,
           addRandomSuffix: true,
           allowOverwrite: false,
           validUntil: Date.now() + 10 * 60 * 1000,

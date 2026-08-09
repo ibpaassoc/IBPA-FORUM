@@ -55,7 +55,6 @@ const practitionerBlockBFields: ApplyFieldConfig[] = [
     accept: imageOnly,
     minFiles: 5,
     maxFiles: 20,
-    maxFileSizeMb: 5,
   },
   {
     key: "beforeAfterPhotos",
@@ -66,7 +65,6 @@ const practitionerBlockBFields: ApplyFieldConfig[] = [
     accept: imageOnly,
     minFiles: 2,
     maxFiles: 20,
-    maxFileSizeMb: 5,
   },
   {
     key: "portfolioVideo",
@@ -80,10 +78,9 @@ const practitionerBlockBFields: ApplyFieldConfig[] = [
     key: "portfolioVideoFiles",
     label: "Portfolio Video Files",
     type: "file",
-    description: "Optional. Upload up to 3 MP4, WebM, or MOV portfolio videos (100 MB each).",
+    description: "Optional. Upload up to 3 MP4, WebM, or MOV portfolio videos.",
     accept: videoOnly,
     maxFiles: 3,
-    maxFileSizeMb: 100,
   },
   statementOfAchievementsField,
   signatureTechniqueField,
@@ -114,7 +111,6 @@ export const categoryFieldConfigs: Record<string, ApplyFieldConfig[]> = {
       accept: imageOnly,
       minFiles: 5,
       maxFiles: 20,
-      maxFileSizeMb: 5,
     },
     {
       key: "photosWithStudents",
@@ -124,7 +120,6 @@ export const categoryFieldConfigs: Record<string, ApplyFieldConfig[]> = {
       accept: imageOnly,
       minFiles: 2,
       maxFiles: 10,
-      maxFileSizeMb: 5,
     },
     {
       key: "teachingVideoDemo",
@@ -155,7 +150,6 @@ export const categoryFieldConfigs: Record<string, ApplyFieldConfig[]> = {
       accept: pdfOnly,
       minFiles: 1,
       maxFiles: 1,
-      maxFileSizeMb: 5,
     },
     {
       key: "studentTestimonialsText",
@@ -173,7 +167,6 @@ export const categoryFieldConfigs: Record<string, ApplyFieldConfig[]> = {
       required: true,
       accept: imageAndPdf,
       maxFiles: 5,
-      maxFileSizeMb: 5,
       description: "Upload up to 5 files if available.",
     },
     {
@@ -232,7 +225,6 @@ export const categoryFieldConfigs: Record<string, ApplyFieldConfig[]> = {
       type: "file",
       accept: imageAndPdf,
       maxFiles: 5,
-      maxFileSizeMb: 5,
     },
   ],
   salon: [
@@ -244,7 +236,6 @@ export const categoryFieldConfigs: Record<string, ApplyFieldConfig[]> = {
       accept: imageOnly,
       minFiles: 3,
       maxFiles: 15,
-      maxFileSizeMb: 5,
     },
     {
       key: "teamPhotos",
@@ -254,7 +245,6 @@ export const categoryFieldConfigs: Record<string, ApplyFieldConfig[]> = {
       accept: imageOnly,
       minFiles: 2,
       maxFiles: 10,
-      maxFileSizeMb: 5,
     },
     {
       key: "serviceMenuPortfolioUrl",
@@ -270,7 +260,6 @@ export const categoryFieldConfigs: Record<string, ApplyFieldConfig[]> = {
       accept: pdfOnly,
       minFiles: 1,
       maxFiles: 1,
-      maxFileSizeMb: 5,
     },
     statementOfAchievementsField,
     {
@@ -325,7 +314,6 @@ export const categoryFieldConfigs: Record<string, ApplyFieldConfig[]> = {
       type: "file",
       accept: imageAndPdf,
       maxFiles: 5,
-      maxFileSizeMb: 5,
     },
     {
       key: "businessLicensePermit",
@@ -335,7 +323,6 @@ export const categoryFieldConfigs: Record<string, ApplyFieldConfig[]> = {
       accept: imageAndPdf,
       minFiles: 1,
       maxFiles: 2,
-      maxFileSizeMb: 5,
     },
   ],
   brand: [
@@ -347,7 +334,6 @@ export const categoryFieldConfigs: Record<string, ApplyFieldConfig[]> = {
       accept: imageOnly,
       minFiles: 3,
       maxFiles: 15,
-      maxFileSizeMb: 5,
     },
     {
       key: "brandPackagingVideo",
@@ -363,7 +349,6 @@ export const categoryFieldConfigs: Record<string, ApplyFieldConfig[]> = {
       accept: pdfOnly,
       minFiles: 1,
       maxFiles: 1,
-      maxFileSizeMb: 5,
     },
     {
       key: "laboratoryTestingResults",
@@ -373,7 +358,6 @@ export const categoryFieldConfigs: Record<string, ApplyFieldConfig[]> = {
       accept: pdfOnly,
       minFiles: 1,
       maxFiles: 5,
-      maxFileSizeMb: 5,
     },
     {
       key: "safetyComplianceCertificate",
@@ -383,7 +367,6 @@ export const categoryFieldConfigs: Record<string, ApplyFieldConfig[]> = {
       accept: imageAndPdf,
       minFiles: 1,
       maxFiles: 5,
-      maxFileSizeMb: 5,
     },
     {
       key: "distributionChannels",
@@ -414,7 +397,6 @@ export const categoryFieldConfigs: Record<string, ApplyFieldConfig[]> = {
       type: "file",
       accept: imageAndPdf,
       maxFiles: 5,
-      maxFileSizeMb: 5,
     },
     {
       key: "industryPartnerships",
@@ -430,7 +412,6 @@ export const categoryFieldConfigs: Record<string, ApplyFieldConfig[]> = {
       type: "file",
       accept: imageAndPdf,
       maxFiles: 5,
-      maxFileSizeMb: 5,
     },
   ],
 };
