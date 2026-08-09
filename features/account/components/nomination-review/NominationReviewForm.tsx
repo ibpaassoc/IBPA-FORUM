@@ -144,6 +144,7 @@ export default function NominationReviewForm({
   const nextFileId = useRef(0);
   const valuesRef = useRef(values);
   const saveInFlight = useRef(false);
+  const activeSavePromise = useRef<Promise<boolean> | null>(null);
   const saveQueued = useRef(false);
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Object URLs minted for files uploaded in this session — see createLocalPreview.
@@ -404,22 +405,39 @@ export default function NominationReviewForm({
       setError("");
       setNotice("");
     }
-    const snapshot = valuesRef.current;
-    try {
-      const saved = await persist("draft", snapshot);
-      if (saved && manual) setNotice(editor.draftSaved);
-      return saved;
-    } catch {
-      setError(editor.saveError);
-      setSaveState("error");
-      return false;
-    } finally {
-      saveInFlight.current = false;
-      if (saveQueued.current) {
-        saveQueued.current = false;
-        void saveDraft();
+    const request = (async () => {
+      const snapshot = valuesRef.current;
+      try {
+        const saved = await persist("draft", snapshot);
+        if (saved && manual) setNotice(editor.draftSaved);
+        return saved;
+      } catch {
+        setError(editor.saveError);
+        setSaveState("error");
+        return false;
+      } finally {
+        saveInFlight.current = false;
+        if (saveQueued.current) {
+          saveQueued.current = false;
+          void saveDraft();
+        }
       }
+    })();
+    activeSavePromise.current = request;
+    const saved = await request;
+    if (activeSavePromise.current === request) {
+      activeSavePromise.current = null;
     }
+    return saved;
+  }
+
+  async function waitForDraftSaves() {
+    let saved = true;
+    while (activeSavePromise.current) {
+      const active = activeSavePromise.current;
+      saved = (await active) && saved;
+    }
+    return saved;
   }
 
   function scheduleDraftSave() {
@@ -506,7 +524,12 @@ export default function NominationReviewForm({
     setError("");
     setNotice("");
     try {
+      // Upload completion can start an autosave immediately before the user
+      // submits. Drain that save (and any coalesced follow-up) before issuing
+      // another revision-checked write, otherwise one request loses with 409.
+      if (!(await waitForDraftSaves())) return;
       if (!(await saveDraft({ allowDuringSubmit: true }))) return;
+      if (!(await waitForDraftSaves())) return;
       const submittedNow = await persist("submit", valuesRef.current);
       if (submittedNow) {
         setNotice(editor.submittedNotice);

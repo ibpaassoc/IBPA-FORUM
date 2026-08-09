@@ -121,6 +121,12 @@ function testServerSafeguards() {
   assert.match(editor, /void uploadFiles\(field, newFiles, false\)/);
   assert.match(editor, /void saveDraft\(\)/);
   assert.match(editor, /await saveDraft\(\{ allowDuringSubmit: true \}\)/);
+  assert.match(editor, /activeSavePromise = useRef<Promise<boolean> \| null>\(null\)/);
+  assert.match(editor, /async function waitForDraftSaves\(\)/);
+  assert.match(
+    editor,
+    /if \(!\(await waitForDraftSaves\(\)\)\) return;\s+if \(!\(await saveDraft\(\{ allowDuringSubmit: true \}\)\)\) return;\s+if \(!\(await waitForDraftSaves\(\)\)\) return;/,
+  );
   assert.match(editor, /hasActiveUploads \|\| hasFailedUploads \|\| hasPendingFiles/);
   assert.doesNotMatch(editor, /preparePayload/);
 
