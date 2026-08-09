@@ -231,8 +231,16 @@ function scopeQueryArgs(
     args.data = scopeNestedWrite(model, args.data);
   }
 
-  args.include = scopeNestedSelection(model, args.include);
-  args.select = scopeNestedSelection(model, args.select);
+  // Aggregate helpers such as `groupBy` desugar their arguments after query
+  // extensions run. Adding an own `select: undefined` property here replaces
+  // Prisma's generated aggregate selection and makes the groupBy mapper crash
+  // while it adds the `by` fields. Preserve absence as well as value.
+  if (args.include !== undefined) {
+    args.include = scopeNestedSelection(model, args.include);
+  }
+  if (args.select !== undefined) {
+    args.select = scopeNestedSelection(model, args.select);
+  }
 
   return args;
 }
