@@ -8,6 +8,7 @@ import { strict as assert } from "node:assert";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { runUploadQueue } from "@/features/applications/client/upload-queue";
+import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 
 const ROOT = process.cwd();
 const read = (path: string) => readFileSync(join(ROOT, path), "utf8");
@@ -132,11 +133,24 @@ function testServerSafeguards() {
   assert.match(publicRoute, /RAW_FILE_REJECTED/);
 }
 
+function testCertificateLimits() {
+  const practitionerCertificates = categoryFieldConfigs.hair.find(
+    (field) => field.key === "professionalCertifications",
+  );
+  const educatorCertificates = categoryFieldConfigs.education.find(
+    (field) => field.key === "educatorProfessionalCertifications",
+  );
+
+  assert.equal(practitionerCertificates?.maxFiles, 25);
+  assert.equal(educatorCertificates?.maxFiles, 25);
+}
+
 async function main() {
   await testSingleUpload();
   await testLimitedConcurrency();
   await testFailedUploadRetry();
   testServerSafeguards();
+  testCertificateLimits();
   console.log("nomination upload checks passed");
 }
 

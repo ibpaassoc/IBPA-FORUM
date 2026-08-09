@@ -27,7 +27,7 @@ export function pressFields(prefix = "press") {
 
 export function optionalCertificates(
   label = "Professional Certifications",
-  maxFiles = 10
+  maxFiles = 25
 ) {
   return [
     {
