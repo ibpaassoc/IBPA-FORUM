@@ -7,7 +7,7 @@ import { join } from "node:path";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
-import { nominationAnswersSchema, storedFilesSchema, ticketActivitySchema, ticketCredentialSchema, regulationsSettingSchema, promoCodesSettingSchema } from "@/features/database/json-fields";
+import { nominationAnswersSchema, nominationFileViewRows, storedFilesSchema, ticketActivitySchema, ticketCredentialSchema, regulationsSettingSchema, promoCodesSettingSchema } from "@/features/database/json-fields";
 import { assertNominationStatusTransition, canTransitionNominationStatus, editableNominationStatus } from "@/features/database/nomination-status";
 import { emptyTestAuditEvents, emptyTestCreatedRecords, emptyTestEmailDeliveries, testCreatedRecordsSchema } from "@/features/test/lib/test-records";
 import { normalizeSslMode } from "@/shared/lib/db-url";
@@ -23,6 +23,10 @@ function staticChecks() {
   assert.deepEqual(models, TARGET_TABLES, "the Prisma schema contains only the approved 13 business models");
   nominationAnswersSchema.parse({ schemaVersion: 1, fields: [{ fieldId: "bio", label: "Bio", type: "text", value: "ok", updatedAt: new Date().toISOString() }] });
   storedFilesSchema.parse({ schemaVersion: 1, items: [{ id: "file-1", fieldId: "portfolio", blobKey: "applications/test/file", url: null, filename: "file.pdf", mimeType: "application/pdf", size: 1, uploadedAt: new Date().toISOString() }] });
+  assert.equal(
+    nominationFileViewRows({ schemaVersion: 1, items: [{ id: "file-1", fieldId: "portfolio", blobKey: "applications/test/file", url: null, filename: "file.pdf", mimeType: "application/pdf", size: 1, uploadedAt: new Date().toISOString() }] })[0]?.fileUrl,
+    "applications/test/file",
+  );
   ticketCredentialSchema.parse({ schemaVersion: 1, active: null, history: [] });
   ticketActivitySchema.parse({ schemaVersion: 1, events: [] });
   testCreatedRecordsSchema.parse(emptyTestCreatedRecords());

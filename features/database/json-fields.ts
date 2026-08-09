@@ -157,7 +157,10 @@ export function nominationFileViewRows(value: unknown) {
     id: file.id,
     fieldKey: file.fieldId,
     fileName: file.filename,
-    fileUrl: file.url ?? "",
+    // Private Vercel Blob records intentionally keep `url` null and persist the
+    // pathname in `blobKey`. The applicant editor needs that pathname as its
+    // opaque file reference so an unchanged upload survives the next save.
+    fileUrl: file.url ?? file.blobKey ?? "",
     originalFileName: file.filename,
     displayFileName: file.filename,
     mimeType: file.mimeType,
