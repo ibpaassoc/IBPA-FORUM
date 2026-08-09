@@ -209,7 +209,18 @@ export async function POST(request: Request, { params }: { params: Promise<{ nom
     }
 
     const values = verifiedFiles.values;
-    const validation = validateNominationBlockB(nomination.category.slug, values);
+    // File fields with uploads still in flight are intentionally omitted from
+    // draft payloads so a partial upload cannot erase their persisted refs.
+    // Validate the effective nomination, not that partial update by itself.
+    const currentValues = existingNominationValues(
+      nomination.answers,
+      nomination.files,
+    );
+    const validationValues = { ...currentValues, ...values };
+    const validation = validateNominationBlockB(
+      nomination.category.slug,
+      validationValues,
+    );
     if (action === "submit" && Object.keys(validation).length > 0) {
       console.warn("Applicant nomination submission validation failed", { nominationId, requestId, action, code: "VALIDATION" });
       return NextResponse.json({ errorCode: "VALIDATION", requestId, message: "Please complete the required nomination fields before submitting.", fieldErrors: validation }, { status: 400, headers: { "X-Request-Id": requestId } });
@@ -217,7 +228,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ nom
     if (nomination.status === "SUBMITTED" && Object.keys(validation).length > 0) {
       const currentValidation = validateNominationBlockB(
         nomination.category.slug,
-        existingNominationValues(nomination.answers, nomination.files),
+        currentValues,
       );
       const newValidationErrors = getNewValidationErrors(
         currentValidation,

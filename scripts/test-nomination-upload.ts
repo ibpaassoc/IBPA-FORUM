@@ -9,7 +9,11 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { runUploadQueue } from "@/features/applications/client/upload-queue";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
-import { getNewValidationErrors } from "@/features/applications/schemas/category-field-validation";
+import {
+  getNewValidationErrors,
+  validateNominationBlockB,
+} from "@/features/applications/schemas/category-field-validation";
+import type { ApplicationFileRef, ApplicationValues } from "@/features/applications/types/application.types";
 
 const ROOT = process.cwd();
 const read = (path: string) => readFileSync(join(ROOT, path), "utf8");
@@ -109,7 +113,9 @@ function testServerSafeguards() {
   assert.match(nominationRoute, /revision: nomination\.revision/);
   assert.match(nominationRoute, /revision: \{ increment: 1 \}/);
   assert.match(nominationRoute, /errorCode: "UPLOAD"/);
-  assert.match(nominationRoute, /existingNominationValues\(nomination\.answers, nomination\.files\)/);
+  assert.match(nominationRoute, /existingNominationValues\([\s\S]*nomination\.answers,[\s\S]*nomination\.files,[\s\S]*\)/);
+  assert.match(nominationRoute, /const validationValues = \{ \.\.\.currentValues, \.\.\.values \}/);
+  assert.match(nominationRoute, /validateNominationBlockB\([\s\S]*nomination\.category\.slug,[\s\S]*validationValues/);
   assert.match(nominationRoute, /getNewValidationErrors/);
   assert.match(nominationRoute, /requestId/);
   assert.doesNotMatch(nominationRoute, /nomination(File|Answer)\./);
@@ -172,6 +178,45 @@ function testIncrementalSubmittedRepairs() {
   );
 }
 
+function testPartialUploadValidationUsesSavedFiles() {
+  const fileRef = (fieldKey: string, index: number): ApplicationFileRef => ({
+    fieldKey,
+    fileName: `${fieldKey}-${index}.jpg`,
+    fileUrl: `applications/nomination/${fieldKey}/${index}.jpg`,
+    mimeType: "image/jpeg",
+    fileSize: 1024,
+  });
+  const savedValues: ApplicationValues = {
+    portfolioPhotos: Array.from({ length: 5 }, (_, index) =>
+      fileRef("portfolioPhotos", index),
+    ),
+    beforeAfterPhotos: [
+      fileRef("beforeAfterPhotos", 0),
+      fileRef("beforeAfterPhotos", 1),
+    ],
+    statementOfAchievements: "Saved achievements",
+    signatureTechnique: "Saved signature technique",
+    sterilizationProtocol: "Saved sterilization protocol",
+  };
+  const partialUploadUpdate: ApplicationValues = {
+    portfolioVideoLink: "https://example.com/portfolio",
+  };
+
+  assert.equal(
+    validateNominationBlockB("hair", partialUploadUpdate).beforeAfterPhotos,
+    "Before / After Photos is required.",
+    "a partial upload payload is incomplete when validated in isolation",
+  );
+  assert.deepEqual(
+    validateNominationBlockB("hair", {
+      ...savedValues,
+      ...partialUploadUpdate,
+    }),
+    {},
+    "saved file fields remain valid while an in-flight field is omitted",
+  );
+}
+
 function testUploadSizeBehavior() {
   const uploadValidation = read("features/applications/client/upload-files.ts");
   const fieldValidation = read("features/applications/schemas/category-field-validation.ts");
@@ -211,6 +256,7 @@ async function main() {
   await testFailedUploadRetry();
   testServerSafeguards();
   testIncrementalSubmittedRepairs();
+  testPartialUploadValidationUsesSavedFiles();
   testUploadSizeBehavior();
   testCertificateLimits();
   console.log("nomination upload checks passed");
