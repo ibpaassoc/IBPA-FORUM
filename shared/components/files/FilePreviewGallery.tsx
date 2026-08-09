@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
+import dynamic from "next/dynamic";
 import {
   ChevronLeft,
   ChevronRight,
@@ -88,6 +89,10 @@ const previewCopy = {
 const MAX_ZOOM = 4;
 const MIN_ZOOM = 1;
 
+const MobilePdfPreview = dynamic(() => import("./MobilePdfPreview"), {
+  ssr: false,
+});
+
 function isImage(asset: FilePreviewAsset) {
   return asset.mimeType.startsWith("image/") || /\.(avif|gif|heic|heif|jpe?g|png|webp)$/i.test(asset.name);
 }
@@ -111,6 +116,24 @@ function isVideo(asset: FilePreviewAsset) {
 
 function isMedia(asset: FilePreviewAsset) {
   return isImage(asset) || isVideo(asset);
+}
+
+function useMobilePdfRenderer() {
+  const [enabled, setEnabled] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia("(max-width: 767px), (pointer: coarse)").matches
+      : false,
+  );
+
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 767px), (pointer: coarse)");
+    const update = () => setEnabled(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+
+  return enabled;
 }
 
 function assetKey(item: FilePreviewAsset) {
@@ -364,6 +387,7 @@ function PreviewDialog({
   const hasMultiple = items.length > 1;
   const zoomable = item ? isImage(item) : false;
   const usesTouchGestures = zoomable;
+  const shouldRenderMobilePdf = useMobilePdfRenderer();
 
   // Index only ever changes through these two, so resetting the view here keeps
   // every new file starting unzoomed, uncentred, and loading — without an
@@ -617,12 +641,22 @@ function PreviewDialog({
                     className="max-h-[calc(88dvh-9.5rem)] max-w-full rounded-[18px] bg-black shadow-[0_18px_55px_rgba(56,91,116,0.13)] sm:max-h-[calc(86vh-8.5rem)]"
                   />
                 ) : isPdf(item) ? (
-                  <iframe
-                    key={url}
-                    src={url}
-                    title={`${copy.document}: ${item.name}`}
-                    className="h-[min(66dvh,760px)] w-full touch-pan-y rounded-[18px] border border-[rgba(114,160,193,0.18)] bg-white shadow-[0_18px_55px_rgba(56,91,116,0.1)]"
-                  />
+                  shouldRenderMobilePdf ? (
+                    <MobilePdfPreview
+                      url={url}
+                      title={`${copy.document}: ${item.name}`}
+                      loadingLabel={copy.loading}
+                      failedLabel={copy.failed}
+                      retryLabel={copy.retry}
+                    />
+                  ) : (
+                    <iframe
+                      key={url}
+                      src={url}
+                      title={`${copy.document}: ${item.name}`}
+                      className="h-[min(66dvh,760px)] w-full rounded-[18px] border border-[rgba(114,160,193,0.18)] bg-white shadow-[0_18px_55px_rgba(56,91,116,0.1)]"
+                    />
+                  )
                 ) : (
                   <div className="flex max-w-md flex-col items-center rounded-[24px] border border-[rgba(114,160,193,0.18)] bg-white/76 px-8 py-10 text-center shadow-[0_18px_55px_rgba(56,91,116,0.08)]">
                     <span className="flex size-16 items-center justify-center rounded-[20px] bg-[var(--color-blue-wash)] text-[var(--color-blue)]">

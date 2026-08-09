@@ -409,6 +409,17 @@ assert(
   has(gallery, "onPointerDown={usesTouchGestures ? handlePointerDown : undefined}"),
   "PDF previews do not attach the image swipe handler",
 );
+assert(
+  has(gallery, 'dynamic(() => import("./MobilePdfPreview")'),
+  "the mobile PDF renderer is loaded client-side on demand",
+);
+assert(
+  has(gallery, "shouldRenderMobilePdf ?"),
+  "mobile PDF previews bypass the browser iframe plug-in",
+);
+const mobilePdfPreview = read("shared/components/files/MobilePdfPreview.tsx");
+assert(has(mobilePdfPreview, "Array.from({ length: numPages }"), "the mobile PDF preview renders every page");
+assert(has(mobilePdfPreview, "overflow-y-auto"), "the mobile PDF preview owns its scroll container");
 // Chromium answers canPlayType("video/quicktime") with "", so a typed <source>
 // is discarded before a byte is fetched — and its error never reaches <video>.
 assert(
