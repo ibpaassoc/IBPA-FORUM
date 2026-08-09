@@ -44,10 +44,27 @@ declare module "next-auth/jwt" {
   }
 }
 
+const useSecureSessionCookie = process.env.NODE_ENV === "production";
+
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET,
   session: {
     strategy: "jwt",
+  },
+  // The database cutover introduced a production NEXTAUTH_SECRET. Sessions
+  // minted before that change cannot be decrypted, and Server Components cannot
+  // reliably forward NextAuth's cleanup cookie. Use a versioned cookie name so
+  // stale tokens are ignored instead of logging JWT_SESSION_ERROR on every page.
+  cookies: {
+    sessionToken: {
+      name: `${useSecureSessionCookie ? "__Secure-" : ""}ibpa.session-token.v2`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: useSecureSessionCookie,
+      },
+    },
   },
   pages: {
     signIn: "/login",

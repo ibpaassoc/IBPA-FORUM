@@ -218,6 +218,8 @@ assert(!has(loginForm, "unregistered applicant account"), "resend copy is not ap
 const accountAuth = read("auth.ts");
 const roleLogin = read("features/auth/server/login.actions.ts");
 const roleRedirects = read("features/auth/lib/role.ts");
+assert(has(accountAuth, "ibpa.session-token.v2"), "database cutover ignores JWT cookies minted with the previous secret");
+assert(has(read(".env.example"), "NEXTAUTH_SECRET="), "deployment template documents the stable JWT secret");
 assert(has(accountAuth, 'role: {'), "credentials authentication receives the selected account role");
 assert(has(roleLogin, "No ${requestedRole} account was found"), "login reports a missing account for the selected role");
 assert(has(roleLogin, "switchRole"), "opposite-role accounts offer a role switch");
