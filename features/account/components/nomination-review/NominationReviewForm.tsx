@@ -12,6 +12,7 @@ import {
   validateUploadFile,
 } from "@/features/applications/client/upload-files";
 import { runUploadQueue } from "@/features/applications/client/upload-queue";
+import { getUploadThumbnail } from "@/features/applications/client/image-processing";
 import { isApplicationFileRef } from "@/features/applications/lib/file-ref";
 import { getFieldVisibility } from "@/features/applications/schemas/category-field-validation";
 import type {
@@ -285,10 +286,15 @@ export default function NominationReviewForm({
    * reads as "preview unavailable" until a reload re-renders the field from the
    * database. Preview the bytes the browser already holds instead.
    */
-  function createLocalPreview(file: File) {
-    const url = URL.createObjectURL(file);
-    localPreviews.current.add(url);
-    return url;
+  function createLocalPreviews(file: File) {
+    const previewUrl = URL.createObjectURL(file);
+    const thumbnail = getUploadThumbnail(file);
+    const thumbnailUrl = thumbnail
+      ? URL.createObjectURL(thumbnail)
+      : previewUrl;
+    localPreviews.current.add(previewUrl);
+    localPreviews.current.add(thumbnailUrl);
+    return { previewUrl, thumbnailUrl };
   }
 
   function releaseLocalPreview(url: string | undefined) {
@@ -305,16 +311,25 @@ export default function NominationReviewForm({
     setFieldErrors((current) => ({ ...current, [key]: "" }));
 
     const field = fields.find((item) => item.key === key);
+    let uploadStarted = false;
     if (field?.type === "file") {
       const kept = getFileValues(value);
       for (const item of getFileValues(previous[key])) {
-        if (isApplicationFileRef(item) && !kept.includes(item)) releaseLocalPreview(item.previewUrl);
+        if (isApplicationFileRef(item) && !kept.includes(item)) {
+          releaseLocalPreview(item.previewUrl);
+          releaseLocalPreview(item.thumbnailUrl);
+        }
       }
       const previousFiles = new Set(getFileValues(previous[key]).filter((item): item is File => item instanceof File));
       const newFiles = kept.filter((item): item is File => item instanceof File && !previousFiles.has(item));
-      if (newFiles.length > 0) void uploadFiles(field, newFiles, false);
+      if (newFiles.length > 0) {
+        uploadStarted = true;
+        void uploadFiles(field, newFiles, false);
+      }
     }
-    scheduleDraftSave();
+    // A selected batch is persisted once its uploads settle. Saving here as
+    // well would send an empty file-field patch and doubles the request burst.
+    if (!uploadStarted) scheduleDraftSave();
   }
 
   function getFileId(file: File) {
@@ -470,7 +485,7 @@ export default function NominationReviewForm({
       ...tasks.map((task) => ({ id: task.id, fieldKey: task.fieldKey, fileName: task.file.name, loaded: 0, total: task.file.size, status: retrying ? "retrying" as const : "pending" as const, retryable: true })),
     ]);
     const byId = new Map(tasks.map((task) => [task.id, task]));
-    await runUploadQueue<ApplicationFileRef>(tasks.map((task) => ({
+    const uploadResult = await runUploadQueue<ApplicationFileRef>(tasks.map((task) => ({
       id: task.id,
       upload: (onProgress) => uploadApplicationBlob(task.file, task.pathname, task.fieldKey, nominationId, onProgress),
     })), {
@@ -485,7 +500,7 @@ export default function NominationReviewForm({
         // Only mint a preview URL while the file is still in the field; one
         // removed mid-upload would leak it.
         const stored = listed.includes(task.file)
-          ? { ...ref, previewUrl: createLocalPreview(task.file) }
+          ? { ...ref, ...createLocalPreviews(task.file) }
           : ref;
         const next = {
           ...valuesRef.current,
@@ -493,10 +508,12 @@ export default function NominationReviewForm({
         };
         valuesRef.current = next;
         setValues(next);
-        void saveDraft();
       },
       onError: (id, uploadError) => updateUploadItem(id, (item) => ({ ...item, status: "failed", error: uploadError.message || editor.uploadProgress.unknownError, retryable: true })),
     });
+    // Persist all successful refs from this selection in one revision-checked
+    // request instead of one autosave per file.
+    if (uploadResult.completed.size > 0) await saveDraft();
   }
 
   function retryUpload(id: string) {

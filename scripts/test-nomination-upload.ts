@@ -118,6 +118,10 @@ function testServerSafeguards() {
   assert.match(nominationRoute, /validateNominationBlockB\([\s\S]*nomination\.category\.slug,[\s\S]*validationValues/);
   assert.match(nominationRoute, /getNewValidationErrors/);
   assert.match(nominationRoute, /requestId/);
+  assert.match(
+    nominationRoute,
+    /syncApplicationOnChange\(nomination\.applicantProfileId, \{[\s\S]*refreshStats: action === "submit"/,
+  );
   assert.doesNotMatch(nominationRoute, /nomination(File|Answer)\./);
 
   const schema = read("prisma/schema.prisma");
@@ -128,7 +132,12 @@ function testServerSafeguards() {
   const editor = read("features/account/components/nomination-review/NominationReviewForm.tsx");
   assert.match(editor, /const AUTOSAVE_DELAY_MS = 650/);
   assert.match(editor, /void uploadFiles\(field, newFiles, false\)/);
-  assert.match(editor, /void saveDraft\(\)/);
+  assert.match(editor, /const uploadResult = await runUploadQueue/);
+  assert.match(editor, /if \(uploadResult\.completed\.size > 0\) await saveDraft\(\)/);
+  assert.doesNotMatch(
+    editor.match(/onComplete:[\s\S]*?onError:/)?.[0] ?? "",
+    /saveDraft/,
+  );
   assert.match(editor, /await saveDraft\(\{ allowDuringSubmit: true \}\)/);
   assert.match(editor, /activeSavePromise = useRef<Promise<boolean> \| null>\(null\)/);
   assert.match(editor, /async function waitForDraftSaves\(\)/);
@@ -223,6 +232,9 @@ function testUploadSizeBehavior() {
   const uploadField = read(
     "features/applications/components/application-form/fields/UploadField.tsx",
   );
+  const imageProcessing = read(
+    "features/applications/client/image-processing.ts",
+  );
   const categoryFields = read(
     "features/applications/config/category-field-configs/index.ts",
   );
@@ -234,8 +246,11 @@ function testUploadSizeBehavior() {
   assert.doesNotMatch(fieldValidation, /maxFileSize|oversizedFile/);
   assert.doesNotMatch(categoryFields, /maxFileSizeMb|100 MB each/);
   assert.doesNotMatch(nominationRoute, /maxFileSizeMb/);
-  assert.match(uploadField, /AUTO_COMPRESS_THRESHOLD_BYTES = 5 \* 1024 \* 1024/);
-  assert.match(uploadField, /file\.size > AUTO_COMPRESS_THRESHOLD_BYTES/);
+  assert.match(imageProcessing, /AUTO_COMPRESS_THRESHOLD_BYTES = 5 \* 1024 \* 1024/);
+  assert.match(imageProcessing, /file\.size > AUTO_COMPRESS_THRESHOLD_BYTES/);
+  assert.match(imageProcessing, /THUMBNAIL_MAX_DIM = 720/);
+  assert.match(uploadField, /await processUploadImage\(file\)/);
+  assert.match(uploadField, /thumbnailSource/);
 }
 
 function testCertificateLimits() {

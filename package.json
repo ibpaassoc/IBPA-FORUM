@@ -25,6 +25,7 @@
     "test:jury-approved-categories": "tsx scripts/test-jury-approved-categories.ts",
     "test:role-auth": "tsx scripts/test-role-auth.ts",
     "test:admin-mailing": "tsx scripts/test-admin-mailing.ts",
+    "test:google-sheets": "tsx scripts/test-google-sheets.ts",
     "verify:account-migration": "tsx scripts/verify-account-migration.ts",
     "repair:test-uploads": "tsx scripts/repair-test-uploads.ts",
     "seed:checkin-samples": "tsx scripts/seed-checkin-samples.ts",
@@ -54,6 +55,7 @@
     "react-icons": "^5.7.0",
     "react-pdf": "^10.4.1",
     "resend": "^6.12.2",
+    "sharp": "^0.34.5",
     "stripe": "^22.3.1",
     "zod": "^4.3.6"
   },

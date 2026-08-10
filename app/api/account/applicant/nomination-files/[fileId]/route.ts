@@ -1,6 +1,7 @@
 import { requireApplicantAccount } from "@/features/account/server/accounts";
 import { activateRequestDataScope } from "@/features/test/server/data-scope";
 import { streamPrivateBlobFile } from "@/shared/lib/blob-file-response";
+import { privateBlobThumbnailResponse } from "@/shared/lib/blob-thumbnail-response";
 import { prisma } from "@/shared/lib/prisma";
 import { parseStoredFiles } from "@/features/database/json-fields";
 
@@ -24,6 +25,15 @@ export async function GET(
 
   if (!fileRecord || !pathname) {
     return new Response("Not found", { status: 404 });
+  }
+
+  if (new URL(request.url).searchParams.get("view") === "thumbnail") {
+    const thumbnail = await privateBlobThumbnailResponse({
+      request,
+      pathname,
+      mimeType: fileRecord.mimeType,
+    });
+    if (thumbnail) return thumbnail;
   }
 
   const response = await streamPrivateBlobFile({

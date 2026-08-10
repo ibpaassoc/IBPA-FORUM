@@ -84,6 +84,8 @@ export type ApplicationFileRef = {
   fileUrl: string;
   /** Authenticated browser URL for an already-saved private file. */
   previewUrl?: string;
+  /** Memory-bounded image used by thumbnail grids; never persisted. */
+  thumbnailUrl?: string;
   mimeType: string;
   fileSize: number;
 };
