@@ -15,6 +15,7 @@ import { adminT } from "@/lib/i18n/admin";
 import { syncApplicationOnChange } from "@/features/google-sheets";
 import { getCategoryScoringDefinition } from "@/features/jury/scoring/category-scoring";
 import { emptyNominationAnswers, emptyStoredFiles } from "@/features/database/json-fields";
+import { parseApplicantDeadlineDateTimeLocal } from "@/features/applications/lib/deadline-timezone";
 
 function adminApplicationsPath(params?: Record<string, string>) {
   const query = new URLSearchParams(params).toString();
@@ -41,9 +42,7 @@ function parseOptionalInt(value: string) {
 }
 
 function parseOverrideDate(value: string) {
-  if (!value.trim()) return null;
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? undefined : date;
+  return parseApplicantDeadlineDateTimeLocal(value);
 }
 
 function isUniqueConstraintError(error: unknown) {

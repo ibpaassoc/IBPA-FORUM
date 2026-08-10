@@ -15,7 +15,7 @@ export async function getApplicantDashboardData() {
   const { account, applicantProfile } = await requireApplicantAccount();
   activateRequestDataScope({ dataScope: account.dataScope });
 
-  const [nominations, tickets, deadline, closedAt] = await Promise.all([
+  const [nominations, tickets, globalDeadline, closedAt] = await Promise.all([
     prisma.nomination.findMany({
       where: { applicantProfileId: applicantProfile.id, status: { not: "ARCHIVED" } },
       orderBy: { createdAt: "desc" },
@@ -104,7 +104,7 @@ export async function getApplicantDashboardData() {
     applicantProfile,
     nominations: nominationCards,
     tickets: ticketCards,
-    deadline,
+    deadline: applicantProfile.deadlineOverrideAt ?? globalDeadline,
     closedAt,
   };
 }
