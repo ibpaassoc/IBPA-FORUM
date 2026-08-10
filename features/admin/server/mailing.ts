@@ -16,6 +16,7 @@ import {
   getRegistrationState,
   type MailingFormValues,
 } from "@/features/admin/lib/mailing";
+import { reserveRateLimitSlot } from "@/features/admin/lib/rate-limit";
 import { prisma } from "@/shared/lib/prisma";
 
 export type MailingRecipient = {
@@ -127,16 +128,33 @@ type MailingDeliveryResult = {
 async function runWithConcurrency<T>(
   items: T[],
   concurrency: number,
+  maxStartsPerSecond: number,
   task: (item: T) => Promise<SendEmailResult>,
 ) {
   const results: SendEmailResult[] = new Array(items.length);
   let nextIndex = 0;
+  let nextStartAt = 0;
+
+  async function waitForStartSlot() {
+    // Slot reservation is synchronous before the await, so concurrent workers
+    // cannot claim the same instant. Keep headroom below Resend's 10 req/s cap.
+    const slot = reserveRateLimitSlot({
+      now: Date.now(),
+      nextStartAt,
+      maxStartsPerSecond,
+    });
+    nextStartAt = slot.nextStartAt;
+    if (slot.delayMs > 0) {
+      await new Promise((resolve) => setTimeout(resolve, slot.delayMs));
+    }
+  }
 
   async function worker() {
     while (nextIndex < items.length) {
       const index = nextIndex;
       nextIndex += 1;
       try {
+        await waitForStartSlot();
         results[index] = await task(items[index]);
       } catch (error) {
         results[index] = {
@@ -166,7 +184,7 @@ export async function sendAdminMailing(
   });
   const uniqueAccounts = deduplicateRecipientsByEmail(accounts);
   const email = buildAdminMailingEmail(values);
-  const results = await runWithConcurrency(uniqueAccounts, 4, (account) =>
+  const results = await runWithConcurrency(uniqueAccounts, 4, 8, (account) =>
     sendEmail({
       type: "user",
       to: account.email,

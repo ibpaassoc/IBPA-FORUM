@@ -6,6 +6,9 @@ import {
   getRegistrationState,
   mailingFormSchema,
 } from "@/features/admin/lib/mailing";
+import { reserveRateLimitSlot } from "@/features/admin/lib/rate-limit";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
 assert.equal(averageCompletion([]), 0);
 assert.equal(averageCompletion([25, 50, 100]), 58);
@@ -61,5 +64,24 @@ assert.equal(
   }).success,
   false,
 );
+
+const firstSlot = reserveRateLimitSlot({
+  now: 1_000,
+  nextStartAt: 0,
+  maxStartsPerSecond: 8,
+});
+assert.deepEqual(firstSlot, { delayMs: 0, nextStartAt: 1_125 });
+const secondSlot = reserveRateLimitSlot({
+  now: 1_000,
+  nextStartAt: firstSlot.nextStartAt,
+  maxStartsPerSecond: 8,
+});
+assert.deepEqual(secondSlot, { delayMs: 125, nextStartAt: 1_250 });
+
+const mailingServer = readFileSync(
+  join(process.cwd(), "features/admin/server/mailing.ts"),
+  "utf8",
+);
+assert.match(mailingServer, /runWithConcurrency\(uniqueAccounts, 4, 8,/);
 
 console.log("Admin mailing validation passed.");
