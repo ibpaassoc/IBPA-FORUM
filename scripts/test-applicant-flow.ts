@@ -474,8 +474,8 @@ const nominationEditor = read(
   "features/account/components/nomination-review/NominationReviewForm.tsx",
 );
 assert(
-  has(nominationEditor, "createLocalPreview(task.file)"),
-  "a completed upload previews the bytes the browser already holds",
+  has(nominationEditor, "createLocalPreviews(task.file)"),
+  "a completed upload keeps local full and thumbnail previews",
 );
 assert(
   has(nominationEditor, "map(toStoredRef)"),

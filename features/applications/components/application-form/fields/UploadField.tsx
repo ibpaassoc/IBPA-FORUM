@@ -7,10 +7,10 @@ import type { ApplicationFileRef } from "@/features/applications/types/applicati
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import FilePreviewGallery from "@/shared/components/files/FilePreviewGallery";
 import { ImageIcon, FileText, Loader2, RefreshCw, Lock, UploadCloud } from "lucide-react";
-
-const COMPRESS_QUALITY = 0.78;
-const COMPRESS_MAX_DIM = 2400;
-const AUTO_COMPRESS_THRESHOLD_BYTES = 5 * 1024 * 1024;
+import {
+  getUploadThumbnail,
+  processUploadImage,
+} from "@/features/applications/client/image-processing";
 
 /**
  * A file attached to an upload field: either a freshly selected browser File
@@ -28,48 +28,6 @@ function itemSize(item: UploadFieldItem) {
 
 function itemMimeType(item: UploadFieldItem) {
   return item instanceof File ? item.type : item.mimeType;
-}
-
-async function compressImage(file: File): Promise<File> {
-  return new Promise((resolve) => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      let { width, height } = img;
-      if (width > COMPRESS_MAX_DIM || height > COMPRESS_MAX_DIM) {
-        if (width > height) {
-          height = Math.round((height * COMPRESS_MAX_DIM) / width);
-          width = COMPRESS_MAX_DIM;
-        } else {
-          width = Math.round((width * COMPRESS_MAX_DIM) / height);
-          height = COMPRESS_MAX_DIM;
-        }
-      }
-      const canvas = document.createElement("canvas");
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) { resolve(file); return; }
-      ctx.drawImage(img, 0, 0, width, height);
-      canvas.toBlob(
-        (blob) => {
-          if (!blob) { resolve(file); return; }
-          resolve(
-            blob.size < file.size
-              ? new File([blob], file.name.replace(/\.[^.]+$/, ".jpg"), {
-                  type: "image/jpeg",
-                })
-              : file,
-          );
-        },
-        "image/jpeg",
-        COMPRESS_QUALITY
-      );
-    };
-    img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
-    img.src = url;
-  });
 }
 
 const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"];
@@ -176,6 +134,9 @@ export function ApplicantUploadField({
         size: itemSize(item),
         mimeType: itemMimeType(item),
         source: isApplicationFileRef(item) ? item.previewUrl ?? item.fileUrl : item,
+        thumbnailSource: isApplicationFileRef(item)
+          ? item.thumbnailUrl ?? item.previewUrl ?? item.fileUrl
+          : getUploadThumbnail(item) ?? item,
       })),
     [items],
   );
@@ -189,10 +150,9 @@ export function ApplicantUploadField({
     // will still transfer the resulting files with bounded concurrency.
     const processed: File[] = [];
     for (const file of raw) {
-      const shouldCompress =
-        IMAGE_TYPES.includes(file.type) &&
-        file.size > AUTO_COMPRESS_THRESHOLD_BYTES;
-      processed.push(shouldCompress ? await compressImage(file) : file);
+      processed.push(
+        IMAGE_TYPES.includes(file.type) ? await processUploadImage(file) : file,
+      );
     }
     setCompressing(false);
 

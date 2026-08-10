@@ -39,11 +39,15 @@ export function answerToValue(answer: InitialAnswer): EditorValue {
 }
 
 export function existingFileToRef(file: InitialFile): ApplicationFileRef {
+  const previewUrl = `/api/account/applicant/nomination-files/${file.id}`;
   return {
     fieldKey: file.fieldKey,
     fileName: file.fileName,
     fileUrl: file.fileUrl,
-    previewUrl: `/api/account/applicant/nomination-files/${file.id}`,
+    previewUrl,
+    thumbnailUrl: file.mimeType.startsWith("image/")
+      ? `${previewUrl}?view=thumbnail`
+      : previewUrl,
     mimeType: file.mimeType,
     fileSize: file.fileSize,
   };

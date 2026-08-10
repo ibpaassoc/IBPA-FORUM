@@ -24,6 +24,8 @@ export type FilePreviewAsset = {
   size: number;
   mimeType: string;
   source: string | File;
+  /** Optional low-resolution source used only in the thumbnail grid. */
+  thumbnailSource?: string | File;
 };
 
 type PreviewLocale = "en" | "ru" | "ua";
@@ -809,8 +811,11 @@ export default function FilePreviewGallery({
         : "grid-cols-2 sm:grid-cols-3 xl:grid-cols-4";
 
   function renderThumb(item: FilePreviewAsset, index: number, caption?: string) {
+    const thumbnailItem = item.thumbnailSource
+      ? { ...item, source: item.thumbnailSource }
+      : item;
     return (
-      <AssetUrl key={assetKey(item)} asset={item}>
+      <AssetUrl key={assetKey(thumbnailItem)} asset={thumbnailItem}>
         {(url) => (
           <PreviewThumb
             item={item}

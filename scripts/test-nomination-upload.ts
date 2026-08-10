@@ -223,6 +223,9 @@ function testUploadSizeBehavior() {
   const uploadField = read(
     "features/applications/components/application-form/fields/UploadField.tsx",
   );
+  const imageProcessing = read(
+    "features/applications/client/image-processing.ts",
+  );
   const categoryFields = read(
     "features/applications/config/category-field-configs/index.ts",
   );
@@ -234,8 +237,11 @@ function testUploadSizeBehavior() {
   assert.doesNotMatch(fieldValidation, /maxFileSize|oversizedFile/);
   assert.doesNotMatch(categoryFields, /maxFileSizeMb|100 MB each/);
   assert.doesNotMatch(nominationRoute, /maxFileSizeMb/);
-  assert.match(uploadField, /AUTO_COMPRESS_THRESHOLD_BYTES = 5 \* 1024 \* 1024/);
-  assert.match(uploadField, /file\.size > AUTO_COMPRESS_THRESHOLD_BYTES/);
+  assert.match(imageProcessing, /AUTO_COMPRESS_THRESHOLD_BYTES = 5 \* 1024 \* 1024/);
+  assert.match(imageProcessing, /file\.size > AUTO_COMPRESS_THRESHOLD_BYTES/);
+  assert.match(imageProcessing, /THUMBNAIL_MAX_DIM = 720/);
+  assert.match(uploadField, /await processUploadImage\(file\)/);
+  assert.match(uploadField, /thumbnailSource/);
 }
 
 function testCertificateLimits() {

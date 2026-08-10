@@ -12,6 +12,7 @@ import {
   validateUploadFile,
 } from "@/features/applications/client/upload-files";
 import { runUploadQueue } from "@/features/applications/client/upload-queue";
+import { getUploadThumbnail } from "@/features/applications/client/image-processing";
 import { isApplicationFileRef } from "@/features/applications/lib/file-ref";
 import { getFieldVisibility } from "@/features/applications/schemas/category-field-validation";
 import type {
@@ -285,10 +286,15 @@ export default function NominationReviewForm({
    * reads as "preview unavailable" until a reload re-renders the field from the
    * database. Preview the bytes the browser already holds instead.
    */
-  function createLocalPreview(file: File) {
-    const url = URL.createObjectURL(file);
-    localPreviews.current.add(url);
-    return url;
+  function createLocalPreviews(file: File) {
+    const previewUrl = URL.createObjectURL(file);
+    const thumbnail = getUploadThumbnail(file);
+    const thumbnailUrl = thumbnail
+      ? URL.createObjectURL(thumbnail)
+      : previewUrl;
+    localPreviews.current.add(previewUrl);
+    localPreviews.current.add(thumbnailUrl);
+    return { previewUrl, thumbnailUrl };
   }
 
   function releaseLocalPreview(url: string | undefined) {
@@ -308,7 +314,10 @@ export default function NominationReviewForm({
     if (field?.type === "file") {
       const kept = getFileValues(value);
       for (const item of getFileValues(previous[key])) {
-        if (isApplicationFileRef(item) && !kept.includes(item)) releaseLocalPreview(item.previewUrl);
+        if (isApplicationFileRef(item) && !kept.includes(item)) {
+          releaseLocalPreview(item.previewUrl);
+          releaseLocalPreview(item.thumbnailUrl);
+        }
       }
       const previousFiles = new Set(getFileValues(previous[key]).filter((item): item is File => item instanceof File));
       const newFiles = kept.filter((item): item is File => item instanceof File && !previousFiles.has(item));
@@ -485,7 +494,7 @@ export default function NominationReviewForm({
         // Only mint a preview URL while the file is still in the field; one
         // removed mid-upload would leak it.
         const stored = listed.includes(task.file)
-          ? { ...ref, previewUrl: createLocalPreview(task.file) }
+          ? { ...ref, ...createLocalPreviews(task.file) }
           : ref;
         const next = {
           ...valuesRef.current,
