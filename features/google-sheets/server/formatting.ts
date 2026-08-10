@@ -552,8 +552,8 @@ const STATS_CHART_HEIGHT = 280;
 const STATS_CHART_ROW_STRIDE = 16; // rows between stacked chart anchors
 
 /**
- * Rebuild the stats dashboard's column charts idempotently: delete the existing
- * charts, then add one column chart per numeric breakdown (categories, jury,
+ * Update the stats dashboard's column charts in place so overlapping syncs do
+ * not delete the same embedded object. Desired breakdowns (categories, jury,
  * nominations…), stacked down the empty area to the right of the metric table.
  * Kept in its own best-effort batch by the caller.
  */
@@ -563,10 +563,6 @@ export function statsChartRequests(
   existingChartIds: number[]
 ): BatchUpdateRequest[] {
   const requests: BatchUpdateRequest[] = [];
-
-  for (const id of existingChartIds) {
-    requests.push({ deleteEmbeddedObject: { objectId: id } });
-  }
 
   specs.forEach((spec, index) => {
     const startRowIndex = spec.firstDataRowIndex;
@@ -586,41 +582,57 @@ export function statsChartRequests(
       endColumnIndex: 2,
     };
 
-    requests.push({
-      addChart: {
-        chart: {
-          spec: {
-            title: spec.title,
-            basicChart: {
-              chartType: "COLUMN",
-              legendPosition: "NO_LEGEND",
-              headerCount: 0,
-              domains: [{ domain: { sourceRange: { sources: [labelSource] } } }],
-              series: [
-                {
-                  series: { sourceRange: { sources: [valueSource] } },
-                  targetAxis: "LEFT_AXIS",
-                },
-              ],
+    const chart = {
+      spec: {
+        title: spec.title,
+        basicChart: {
+          chartType: "COLUMN",
+          legendPosition: "NO_LEGEND",
+          headerCount: 0,
+          domains: [{ domain: { sourceRange: { sources: [labelSource] } } }],
+          series: [
+            {
+              series: { sourceRange: { sources: [valueSource] } },
+              targetAxis: "LEFT_AXIS",
             },
-          },
-          position: {
-            overlayPosition: {
-              anchorCell: {
-                sheetId,
-                rowIndex: 1 + index * STATS_CHART_ROW_STRIDE,
-                columnIndex: STATS_CHART_ANCHOR_COLUMN,
-              },
-              offsetXPixels: 16,
-              offsetYPixels: 0,
-              widthPixels: STATS_CHART_WIDTH,
-              heightPixels: STATS_CHART_HEIGHT,
-            },
-          },
+          ],
         },
+      },
+      position: {
+        overlayPosition: {
+          anchorCell: {
+            sheetId,
+            rowIndex: 1 + index * STATS_CHART_ROW_STRIDE,
+            columnIndex: STATS_CHART_ANCHOR_COLUMN,
+          },
+          offsetXPixels: 16,
+          offsetYPixels: 0,
+          widthPixels: STATS_CHART_WIDTH,
+          heightPixels: STATS_CHART_HEIGHT,
+        },
+      },
+    };
+
+    const existingId = existingChartIds[index];
+    if (existingId === undefined) {
+      requests.push({ addChart: { chart } });
+      return;
+    }
+    requests.push({
+      updateChartSpec: { chartId: existingId, spec: chart.spec },
+    });
+    requests.push({
+      updateEmbeddedObjectPosition: {
+        objectId: existingId,
+        newPosition: chart.position,
+        fields: "overlayPosition",
       },
     });
   });
+
+  for (const id of existingChartIds.slice(specs.length)) {
+    requests.push({ deleteEmbeddedObject: { objectId: id } });
+  }
 
   return requests;
 }
