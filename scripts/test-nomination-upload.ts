@@ -118,6 +118,10 @@ function testServerSafeguards() {
   assert.match(nominationRoute, /validateNominationBlockB\([\s\S]*nomination\.category\.slug,[\s\S]*validationValues/);
   assert.match(nominationRoute, /getNewValidationErrors/);
   assert.match(nominationRoute, /requestId/);
+  assert.match(
+    nominationRoute,
+    /syncApplicationOnChange\(nomination\.applicantProfileId, \{[\s\S]*refreshStats: action === "submit"/,
+  );
   assert.doesNotMatch(nominationRoute, /nomination(File|Answer)\./);
 
   const schema = read("prisma/schema.prisma");

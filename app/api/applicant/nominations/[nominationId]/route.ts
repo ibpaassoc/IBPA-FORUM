@@ -310,7 +310,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ nom
       if (updated.count !== 1) throw new Response("Nomination changed in another session.", { status: 409 });
     });
 
-    if (nomination.applicantProfileId) syncApplicationOnChange(nomination.applicantProfileId);
+    if (nomination.applicantProfileId) {
+      // Draft autosaves only change the mirrored application row. The aggregate
+      // dashboard changes when a nomination is submitted, and rebuilding it on
+      // every file autosave quickly exhausts Google's per-user write quota.
+      syncApplicationOnChange(nomination.applicantProfileId, {
+        refreshStats: action === "submit",
+      });
+    }
     return NextResponse.json({ ok: true, requestId, status: nextStatus }, { headers: { "X-Request-Id": requestId } });
   } catch (error) {
     return failureResponse({ nominationId, requestId, action, error });
