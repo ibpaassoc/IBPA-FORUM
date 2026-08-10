@@ -45,15 +45,15 @@ export function parseApplicantDeadlineDateTimeLocal(value: string) {
   const trimmed = value.trim();
   if (!trimmed) return null;
 
-  const match = /^(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})T(?<hour>\d{2}):(?<minute>\d{2})(?::(?<second>\d{2}))?$/.exec(trimmed);
-  if (!match?.groups) return undefined;
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(trimmed);
+  if (!match) return undefined;
 
-  const year = Number(match.groups.year);
-  const month = Number(match.groups.month);
-  const day = Number(match.groups.day);
-  const hour = Number(match.groups.hour);
-  const minute = Number(match.groups.minute);
-  const second = Number(match.groups.second ?? "0");
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const hour = Number(match[4]);
+  const minute = Number(match[5]);
+  const second = Number(match[6] ?? "0");
   const localAsUtc = Date.UTC(year, month - 1, day, hour, minute, second);
 
   if (
