@@ -128,7 +128,12 @@ function testServerSafeguards() {
   const editor = read("features/account/components/nomination-review/NominationReviewForm.tsx");
   assert.match(editor, /const AUTOSAVE_DELAY_MS = 650/);
   assert.match(editor, /void uploadFiles\(field, newFiles, false\)/);
-  assert.match(editor, /void saveDraft\(\)/);
+  assert.match(editor, /const uploadResult = await runUploadQueue/);
+  assert.match(editor, /if \(uploadResult\.completed\.size > 0\) await saveDraft\(\)/);
+  assert.doesNotMatch(
+    editor.match(/onComplete:[\s\S]*?onError:/)?.[0] ?? "",
+    /saveDraft/,
+  );
   assert.match(editor, /await saveDraft\(\{ allowDuringSubmit: true \}\)/);
   assert.match(editor, /activeSavePromise = useRef<Promise<boolean> \| null>\(null\)/);
   assert.match(editor, /async function waitForDraftSaves\(\)/);

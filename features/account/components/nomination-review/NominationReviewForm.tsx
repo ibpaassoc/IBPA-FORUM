@@ -311,6 +311,7 @@ export default function NominationReviewForm({
     setFieldErrors((current) => ({ ...current, [key]: "" }));
 
     const field = fields.find((item) => item.key === key);
+    let uploadStarted = false;
     if (field?.type === "file") {
       const kept = getFileValues(value);
       for (const item of getFileValues(previous[key])) {
@@ -321,9 +322,14 @@ export default function NominationReviewForm({
       }
       const previousFiles = new Set(getFileValues(previous[key]).filter((item): item is File => item instanceof File));
       const newFiles = kept.filter((item): item is File => item instanceof File && !previousFiles.has(item));
-      if (newFiles.length > 0) void uploadFiles(field, newFiles, false);
+      if (newFiles.length > 0) {
+        uploadStarted = true;
+        void uploadFiles(field, newFiles, false);
+      }
     }
-    scheduleDraftSave();
+    // A selected batch is persisted once its uploads settle. Saving here as
+    // well would send an empty file-field patch and doubles the request burst.
+    if (!uploadStarted) scheduleDraftSave();
   }
 
   function getFileId(file: File) {
@@ -479,7 +485,7 @@ export default function NominationReviewForm({
       ...tasks.map((task) => ({ id: task.id, fieldKey: task.fieldKey, fileName: task.file.name, loaded: 0, total: task.file.size, status: retrying ? "retrying" as const : "pending" as const, retryable: true })),
     ]);
     const byId = new Map(tasks.map((task) => [task.id, task]));
-    await runUploadQueue<ApplicationFileRef>(tasks.map((task) => ({
+    const uploadResult = await runUploadQueue<ApplicationFileRef>(tasks.map((task) => ({
       id: task.id,
       upload: (onProgress) => uploadApplicationBlob(task.file, task.pathname, task.fieldKey, nominationId, onProgress),
     })), {
@@ -502,10 +508,12 @@ export default function NominationReviewForm({
         };
         valuesRef.current = next;
         setValues(next);
-        void saveDraft();
       },
       onError: (id, uploadError) => updateUploadItem(id, (item) => ({ ...item, status: "failed", error: uploadError.message || editor.uploadProgress.unknownError, retryable: true })),
     });
+    // Persist all successful refs from this selection in one revision-checked
+    // request instead of one autosave per file.
+    if (uploadResult.completed.size > 0) await saveDraft();
   }
 
   function retryUpload(id: string) {
