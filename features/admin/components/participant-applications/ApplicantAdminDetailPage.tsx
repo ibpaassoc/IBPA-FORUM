@@ -36,6 +36,7 @@ import ReviewWorkspace, {
 } from "@/features/admin/components/review/ReviewWorkspace";
 import type { getParticipantApplicationDetail } from "@/features/admin/server/participant-queries";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
+import { formatDateTimeLocalInApplicantDeadlineZone } from "@/features/applications/lib/deadline-timezone";
 import { adminT, formatAdminDate, formatAdminMoney } from "@/lib/i18n/admin";
 import {
   DashboardCard,
@@ -55,10 +56,7 @@ type Nomination = ApplicantAdminDetail["profile"]["nominations"][number];
 type Answer = Nomination["answers"][number];
 
 function dateTimeLocal(value: Date | null | undefined) {
-  if (!value) return "";
-  return new Date(value.getTime() - value.getTimezoneOffset() * 60_000)
-    .toISOString()
-    .slice(0, 16);
+  return formatDateTimeLocalInApplicantDeadlineZone(value);
 }
 
 function answerValue(answer: Answer) {

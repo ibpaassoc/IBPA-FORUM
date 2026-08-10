@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, FileText, Plus } from "lucide-react";
 import { getApplicantDashboardData } from "@/features/account/server/applicant-dashboard";
+import { formatApplicantDeadlinePart } from "@/features/applications/lib/deadline-timezone";
 import { getServerLanguage, getServerTranslations } from "@/lib/i18n/server";
 import AccountPageHeader from "@/features/account/components/AccountPageHeader";
 import ApplicantSummary from "@/features/account/components/ApplicantSummary";
@@ -43,8 +44,8 @@ export default async function ApplicantDashboardPage() {
         purchased={stats.total}
         drafts={stats.drafts}
         submitted={stats.submitted}
-        deadlineMonthLabel={new Intl.DateTimeFormat(dateLocale, { month: "short" }).format(data.deadline)}
-        deadlineDayLabel={new Intl.DateTimeFormat(dateLocale, { day: "2-digit" }).format(data.deadline)}
+        deadlineMonthLabel={formatApplicantDeadlinePart(data.deadline, dateLocale, { month: "short" })}
+        deadlineDayLabel={formatApplicantDeadlinePart(data.deadline, dateLocale, { day: "2-digit" })}
         daysRemaining={daysUntil(data.deadline)}
         closed={data.closedAt !== null}
       />

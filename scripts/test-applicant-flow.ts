@@ -15,6 +15,11 @@ import {
   computeApplicantNominationPrice,
 } from "@/features/applications/lib/pricing";
 import { isApplicationFileRef } from "@/features/applications/lib/file-ref";
+import {
+  formatApplicantDeadlinePart,
+  formatDateTimeLocalInApplicantDeadlineZone,
+  parseApplicantDeadlineDateTimeLocal,
+} from "@/features/applications/lib/deadline-timezone";
 
 const ROOT = process.cwd();
 let passed = 0;
@@ -292,6 +297,41 @@ assert(has(closure, "validateNominationBlockB"), "deadline closure validates dra
 assert(has(closure, 'status: "LOCKED"'), "deadline closure locks incomplete nominations");
 assert(has(closure, "isApplicationFileRef"), "deadline closure only reuses stored file references");
 assert(!has(closure, "instanceof File"), "deadline closure does not reference browser File in server code");
+
+const applicantDashboard = read("features/account/server/applicant-dashboard.ts");
+assert(
+  has(applicantDashboard, "applicantProfile.deadlineOverrideAt ?? globalDeadline"),
+  "applicant dashboard prefers account deadline overrides"
+);
+const applicantDashboardPage = read("app/account/applicant/page.tsx");
+assert(
+  has(applicantDashboardPage, "formatApplicantDeadlinePart"),
+  "applicant dashboard renders deadline dates in the configured deadline timezone"
+);
+const applicantDeadlineTimezone = read("features/applications/lib/deadline-timezone.ts");
+assert(
+  has(applicantDeadlineTimezone, 'APPLICANT_DEADLINE_TIME_ZONE = "America/Los_Angeles"'),
+  "applicant deadline helpers pin display and admin input to the event timezone"
+);
+const augustTenDeadline = parseApplicantDeadlineDateTimeLocal("2026-08-10T23:59");
+assert(augustTenDeadline instanceof Date, "applicant deadline local parser accepts datetime-local input");
+if (augustTenDeadline instanceof Date) {
+  eq(
+    augustTenDeadline.toISOString(),
+    "2026-08-11T06:59:00.000Z",
+    "applicant deadline parser stores August 10 end-of-day as the correct UTC instant",
+  );
+  eq(
+    formatDateTimeLocalInApplicantDeadlineZone(augustTenDeadline),
+    "2026-08-10T23:59",
+    "admin deadline input rehydrates in the applicant deadline timezone",
+  );
+  eq(
+    `${formatApplicantDeadlinePart(augustTenDeadline, "en", { month: "short" })} ${formatApplicantDeadlinePart(augustTenDeadline, "en", { day: "2-digit" })}`,
+    "Aug 10",
+    "applicant dashboard does not display August 10 end-of-day as August 11",
+  );
+}
 
 // -- Jury privacy and file access ---------------------------------------------
 console.log("jury privacy");
