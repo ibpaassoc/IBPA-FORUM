@@ -20,6 +20,7 @@ import {
   formatDateTimeLocalInApplicantDeadlineZone,
   parseApplicantDeadlineDateTimeLocal,
 } from "@/features/applications/lib/deadline-timezone";
+import { resolveApplicantSubmissionAccess } from "@/features/applications/lib/deadline-access";
 
 const ROOT = process.cwd();
 let passed = 0;
@@ -213,6 +214,10 @@ assert(has(applicantAdminActions, "resendApplicantRegistrationLinkAction"), "adm
 assert(has(applicantAdminActions, "bulkResendApplicantRegistrationLinksAction"), "admin can bulk resend registration links");
 assert(has(applicantAdminActions, "issueApplicantRegistrationLink"), "admin resend uses shared registration service");
 assert(has(applicantAdminActions, "updateApplicantDeadlineOverrideAction"), "admin can set applicant deadline overrides");
+assert(
+  has(applicantAdminActions, 'status: "RETURNED_FOR_CHANGES"'),
+  "a future admin extension reopens nominations locked by global closure",
+);
 assert(has(applicantAdminActions, "processApplicantDeadlineClosure"), "admin close-all action uses deadline closure workflow");
 
 const loginForm = read("features/auth/components/LoginForm.tsx");
@@ -246,6 +251,10 @@ assert(has(read("features/account/components/jury/JuryAccountSidebar.tsx"), "/lo
 console.log("applicant account editing and closure");
 const saveNominationRoute = read("app/api/applicant/nominations/[nominationId]/route.ts");
 assert(has(saveNominationRoute, "requireEditableNomination"), "nomination editor enforces account ownership");
+assert(
+  has(saveNominationRoute, "getApplicantSubmissionAccess"),
+  "nomination persistence rechecks the deadline after upload validation",
+);
 assert(has(saveNominationRoute, "validateNominationBlockB"), "nomination submit validates category requirements");
 assert(has(saveNominationRoute, "nextFileItems"), "file replacement atomically rewrites the versioned file document");
 assert(has(saveNominationRoute, "categoryFieldConfigs"), "empty video selections also replace stored nomination files");
@@ -297,11 +306,68 @@ assert(has(closure, "validateNominationBlockB"), "deadline closure validates dra
 assert(has(closure, 'status: "LOCKED"'), "deadline closure locks incomplete nominations");
 assert(has(closure, "isApplicationFileRef"), "deadline closure only reuses stored file references");
 assert(!has(closure, "instanceof File"), "deadline closure does not reference browser File in server code");
+assert(
+  !has(closure, "$transaction(async"),
+  "deadline closure does not hold an interactive transaction during nomination validation",
+);
+assert(
+  has(closure, "deadlineOverrideAt: { lte: cutoffAt }"),
+  "deadline closure leaves future applicant extensions open",
+);
+assert(
+  has(closure, "revision: { increment: 1 }"),
+  "deadline closure invalidates in-flight saves when it locks a nomination",
+);
+
+const accessNow = new Date("2026-08-11T19:00:00.000Z");
+const globalDeadline = new Date("2026-08-11T20:00:00.000Z");
+const globalClosedAt = new Date("2026-08-11T18:58:00.000Z");
+eq(
+  resolveApplicantSubmissionAccess({
+    now: accessNow,
+    globalDeadline,
+    globalClosedAt,
+    deadlineOverrideAt: null,
+  }).isOpen,
+  false,
+  "manual global closure blocks applicants without an extension",
+);
+eq(
+  resolveApplicantSubmissionAccess({
+    now: accessNow,
+    globalDeadline,
+    globalClosedAt,
+    deadlineOverrideAt: new Date("2026-08-12T19:00:00.000Z"),
+  }).isOpen,
+  true,
+  "a future applicant override remains open after global closure",
+);
+eq(
+  resolveApplicantSubmissionAccess({
+    now: accessNow,
+    globalDeadline,
+    globalClosedAt,
+    deadlineOverrideAt: new Date("2026-08-11T18:59:59.000Z"),
+  }).isOpen,
+  false,
+  "an applicant extension closes at its exact configured deadline",
+);
+
+const nominationGuards = read("features/account/server/nomination-guards.ts");
+assert(
+  has(nominationGuards, "!submissionAccess.isOpen"),
+  "nomination saves and uploads enforce the effective applicant deadline server-side",
+);
+const applicantDeadlineCron = read("app/api/cron/applicant-deadline/route.ts");
+assert(
+  has(applicantDeadlineCron, "markGlobalClosure: false"),
+  "the deadline cron revisits expired applicant extensions after global closure",
+);
 
 const applicantDashboard = read("features/account/server/applicant-dashboard.ts");
 assert(
-  has(applicantDashboard, "applicantProfile.deadlineOverrideAt ?? globalDeadline"),
-  "applicant dashboard prefers account deadline overrides"
+  has(applicantDashboard, "getApplicantSubmissionAccess(applicantProfile.deadlineOverrideAt)"),
+  "applicant dashboard uses the shared effective deadline access rule"
 );
 const applicantDashboardPage = read("app/account/applicant/page.tsx");
 assert(

@@ -1,5 +1,6 @@
 import "server-only";
 
+import { resolveApplicantSubmissionAccess } from "@/features/applications/lib/deadline-access";
 import { getSiteSetting, setSiteSetting } from "@/features/settings/server/site-settings";
 
 export const APPLICANT_SUBMISSION_DEADLINE_KEY = "applicant_submission_deadline";
@@ -19,6 +20,27 @@ export async function getApplicantApplicationsClosedAt() {
   if (!value) return null;
   const parsed = new Date(value);
   return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+export async function getApplicantSubmissionAccess(
+  deadlineOverrideAt: Date | null,
+  now = new Date(),
+) {
+  const [globalDeadline, globalClosedAt] = await Promise.all([
+    getApplicantSubmissionDeadline(),
+    getApplicantApplicationsClosedAt(),
+  ]);
+
+  return {
+    ...resolveApplicantSubmissionAccess({
+      now,
+      globalDeadline,
+      globalClosedAt,
+      deadlineOverrideAt,
+    }),
+    globalDeadline,
+    globalClosedAt,
+  };
 }
 
 export async function setApplicantSubmissionDeadline(deadline: Date) {

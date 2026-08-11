@@ -3,8 +3,7 @@ import "server-only";
 import { requireApplicantAccount } from "@/features/account/server/accounts";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import {
-  getApplicantApplicationsClosedAt,
-  getApplicantSubmissionDeadline,
+  getApplicantSubmissionAccess,
 } from "@/features/applications/server/deadlines";
 import { generateTicketQRDataUrl } from "@/features/tickets/server/ticket-qr";
 import { prisma } from "@/shared/lib/prisma";
@@ -15,7 +14,7 @@ export async function getApplicantDashboardData() {
   const { account, applicantProfile } = await requireApplicantAccount();
   activateRequestDataScope({ dataScope: account.dataScope });
 
-  const [nominations, tickets, globalDeadline, closedAt] = await Promise.all([
+  const [nominations, tickets, submissionAccess] = await Promise.all([
     prisma.nomination.findMany({
       where: { applicantProfileId: applicantProfile.id, status: { not: "ARCHIVED" } },
       orderBy: { createdAt: "desc" },
@@ -59,8 +58,7 @@ export async function getApplicantDashboardData() {
         credential: true,
       },
     }),
-    getApplicantSubmissionDeadline(),
-    getApplicantApplicationsClosedAt(),
+    getApplicantSubmissionAccess(applicantProfile.deadlineOverrideAt),
   ]);
 
   const nominationCards = nominations.map((nomination) => {
@@ -80,7 +78,7 @@ export async function getApplicantDashboardData() {
       ...nomination,
       paymentStatus: nomination.payment.status,
       paidAt: nomination.payment.paidAt,
-      locked: nomination.status === "LOCKED",
+      locked: nomination.status === "LOCKED" || submissionAccess.isClosed,
       completionPercentage,
       missingRequiredCount: missingRequiredFields.length,
     };
@@ -104,7 +102,8 @@ export async function getApplicantDashboardData() {
     applicantProfile,
     nominations: nominationCards,
     tickets: ticketCards,
-    deadline: applicantProfile.deadlineOverrideAt ?? globalDeadline,
-    closedAt,
+    deadline: submissionAccess.deadline,
+    closedAt: submissionAccess.globalClosedAt,
+    applicationsClosed: submissionAccess.isClosed,
   };
 }

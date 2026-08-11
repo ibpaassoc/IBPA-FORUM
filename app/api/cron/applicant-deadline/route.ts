@@ -20,13 +20,18 @@ export async function POST(request: Request) {
   ]);
 
   if (closedAt) {
-    return NextResponse.json({ ok: true, alreadyClosed: true, closedAt });
+    const result = await processApplicantDeadlineClosure(new Date(), {
+      markGlobalClosure: false,
+    });
+    return NextResponse.json({ ok: true, alreadyClosed: true, ...result });
   }
 
   if (deadline > new Date()) {
     return NextResponse.json({ ok: true, due: false, deadline });
   }
 
-  const result = await processApplicantDeadlineClosure(deadline);
+  const result = await processApplicantDeadlineClosure(new Date(), {
+    globalClosedAt: deadline,
+  });
   return NextResponse.json({ ok: true, due: true, ...result });
 }

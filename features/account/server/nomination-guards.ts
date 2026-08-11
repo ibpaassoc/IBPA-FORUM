@@ -9,6 +9,7 @@ import { computeNominationProgress } from "@/features/account/lib/nomination-pro
 import { prisma } from "@/shared/lib/prisma";
 import { editableNominationStatus } from "@/features/database/nomination-status";
 import { nominationAnswerViewRows, nominationFileViewRows } from "@/features/database/json-fields";
+import { getApplicantSubmissionAccess } from "@/features/applications/server/deadlines";
 
 export type ApplicantNominationNavigationItem = {
   id: string;
@@ -22,6 +23,7 @@ export type ApplicantNominationNavigationItem = {
 
 export async function getApplicantNominationNavigation(
   applicantProfileId: string,
+  submissionOpen = true,
 ): Promise<ApplicantNominationNavigationItem[]> {
   const nominations = await prisma.nomination.findMany({
     where: { applicantProfileId, status: { not: "ARCHIVED" } },
@@ -51,7 +53,7 @@ export async function getApplicantNominationNavigation(
     return {
       id: nomination.id,
       status: nomination.status,
-      locked: nomination.status === "LOCKED",
+      locked: nomination.status === "LOCKED" || !submissionOpen,
       categoryName: nomination.category.name,
       awardName: nomination.award.name,
       completionPercentage: progress.percentage,
@@ -87,6 +89,10 @@ export async function requireOwnedNomination(nominationId: string) {
     notFound();
   }
 
+  const submissionAccess = await getApplicantSubmissionAccess(
+    applicantProfile.deadlineOverrideAt,
+  );
+
   return {
     nomination: {
       ...nomination,
@@ -99,14 +105,15 @@ export async function requireOwnedNomination(nominationId: string) {
       locked: nomination.status === "LOCKED",
     },
     applicantProfile,
+    submissionAccess,
   };
 }
 
 export async function requireEditableNomination(nominationId: string) {
   const context = await requireOwnedNomination(nominationId);
-  const { nomination } = context;
+  const { nomination, submissionAccess } = context;
 
-  if (!editableNominationStatus(nomination.status)) {
+  if (!submissionAccess.isOpen || !editableNominationStatus(nomination.status)) {
     throw new Response("Nomination is locked.", { status: 409 });
   }
 

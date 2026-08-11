@@ -24,6 +24,7 @@ import {
   type StoredFiles,
 } from "@/features/database/json-fields";
 import { assertNominationStatusTransition } from "@/features/database/nomination-status";
+import { getApplicantSubmissionAccess } from "@/features/applications/server/deadlines";
 
 type RequestBody = {
   action?: "draft" | "submit";
@@ -142,7 +143,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ nom
   let action: "draft" | "submit" = "draft";
 
   try {
-    const { nomination } = await requireEditableNomination(nominationId);
+    const { nomination, applicantProfile } = await requireEditableNomination(nominationId);
     activateRequestDataScope({ dataScope: nomination.dataScope });
     if (nomination.paymentStatus !== "PAID") {
       return NextResponse.json({ errorCode: "VALIDATION", message: "Only paid nominations can be edited.", requestId }, { status: 409, headers: { "X-Request-Id": requestId } });
@@ -246,6 +247,15 @@ export async function POST(request: Request, { params }: { params: Promise<{ nom
     const nextFiles: StoredFiles = { ...currentFiles, items: nextFileItems };
     const nextStatus = action === "submit" ? "SUBMITTED" : nomination.status;
     assertNominationStatusTransition(nomination.status, nextStatus);
+
+    // Upload verification can take several seconds. Recheck immediately before
+    // persistence so a close or deadline expiry during the request wins.
+    const submissionAccess = await getApplicantSubmissionAccess(
+      applicantProfile.deadlineOverrideAt,
+    );
+    if (!submissionAccess.isOpen) {
+      throw new Response("Applications are closed.", { status: 409 });
+    }
 
     await prisma.$transaction(async (tx) => {
       const updated = await tx.nomination.updateMany({

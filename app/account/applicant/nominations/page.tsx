@@ -28,11 +28,13 @@ export default async function ApplicantNominationsPage() {
         eyebrow={t.account.nav.brand}
         title={np.title}
         actions={
-          <PremiumButton href="/account/applicant/add-nomination">
-            <Plus size={16} />
-            <span className="hidden sm:inline">{ov.addNominations}</span>
-            <span className="sm:hidden">{ov.add}</span>
-          </PremiumButton>
+          !data.applicationsClosed ? (
+            <PremiumButton href="/account/applicant/add-nomination">
+              <Plus size={16} />
+              <span className="hidden sm:inline">{ov.addNominations}</span>
+              <span className="sm:hidden">{ov.add}</span>
+            </PremiumButton>
+          ) : null
         }
       />
 
@@ -41,11 +43,11 @@ export default async function ApplicantNominationsPage() {
           icon={<FileText size={20} />}
           title={ov.emptyTitle}
           description={ov.emptyText}
-          action={
+          action={!data.applicationsClosed ? (
             <PremiumButton href="/account/applicant/add-nomination">
               <Plus size={16} /> {ov.addNominations}
             </PremiumButton>
-          }
+          ) : undefined}
         />
       ) : (
         <DashboardStagger className="grid gap-3">

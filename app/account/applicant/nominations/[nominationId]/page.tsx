@@ -12,10 +12,13 @@ export default async function ApplicantNominationPage({
   params: Promise<{ nominationId: string }>;
 }) {
   const { nominationId } = await params;
-  const { nomination, applicantProfile } = await requireOwnedNomination(nominationId);
+  const { nomination, applicantProfile, submissionAccess } = await requireOwnedNomination(nominationId);
   activateRequestDataScope({ dataScope: nomination.dataScope });
-  const nominationNavigation = await getApplicantNominationNavigation(applicantProfile.id);
-  const locked = nomination.status === "LOCKED";
+  const nominationNavigation = await getApplicantNominationNavigation(
+    applicantProfile.id,
+    submissionAccess.isOpen,
+  );
+  const locked = nomination.status === "LOCKED" || !submissionAccess.isOpen;
   const scoreVisible = nomination.scoresReleasedAt !== null;
   const categoryFields = categoryFieldConfigs[nomination.category.slug] ?? [];
   const submittedScores = nomination.reviews

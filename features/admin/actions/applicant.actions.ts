@@ -16,6 +16,8 @@ import { syncApplicationOnChange } from "@/features/google-sheets";
 import { getCategoryScoringDefinition } from "@/features/jury/scoring/category-scoring";
 import { emptyNominationAnswers, emptyStoredFiles } from "@/features/database/json-fields";
 import { parseApplicantDeadlineDateTimeLocal } from "@/features/applications/lib/deadline-timezone";
+import { getApplicantApplicationsClosedAt } from "@/features/applications/server/deadlines";
+import { assertNominationStatusTransition } from "@/features/database/nomination-status";
 
 function adminApplicationsPath(params?: Record<string, string>) {
   const query = new URLSearchParams(params).toString();
@@ -315,10 +317,34 @@ export async function updateApplicantDeadlineOverrideAction(formData: FormData) 
     redirect(adminApplicantPath(profileId, { error: adminT.actions.invalidDeadline }));
   }
 
-  await prisma.applicantProfile.update({
-    where: { id: profileId },
-    data: { deadlineOverrideAt: override },
-  });
+  const closedAt = await getApplicantApplicationsClosedAt();
+  const reopensClosedNominations =
+    closedAt !== null && override !== null && override > new Date();
+
+  if (reopensClosedNominations) {
+    assertNominationStatusTransition("LOCKED", "RETURNED_FOR_CHANGES");
+    await prisma.$transaction([
+      prisma.applicantProfile.update({
+        where: { id: profileId },
+        data: { deadlineOverrideAt: override },
+      }),
+      prisma.nomination.updateMany({
+        where: {
+          applicantProfileId: profileId,
+          status: "LOCKED",
+        },
+        data: {
+          status: "RETURNED_FOR_CHANGES",
+          revision: { increment: 1 },
+        },
+      }),
+    ]);
+  } else {
+    await prisma.applicantProfile.update({
+      where: { id: profileId },
+      data: { deadlineOverrideAt: override },
+    });
+  }
 
   revalidatePath("/admin/applications");
   revalidatePath(`/admin/applications/${profileId}`);

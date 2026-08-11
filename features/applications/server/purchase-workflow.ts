@@ -5,6 +5,7 @@ import { normalizeAccountEmail } from "@/features/account/server/password";
 import { computeApplicantNominationPrice } from "@/features/applications/lib/pricing";
 import {
   getApplicantApplicationsClosedAt,
+  getApplicantSubmissionAccess,
   getApplicantSubmissionDeadline,
 } from "@/features/applications/server/deadlines";
 import { validateMembershipNumber } from "@/features/applications/server/membership";
@@ -125,6 +126,17 @@ async function assertApplicantPurchasingOpen() {
   ]);
 
   if (closedAt || deadline <= new Date()) {
+    throw new ApplicantPurchaseError(
+      409,
+      "APPLICATIONS_CLOSED",
+      "Applications are closed for this competition."
+    );
+  }
+}
+
+async function assertApplicantAccountPurchasingOpen(deadlineOverrideAt: Date | null) {
+  const access = await getApplicantSubmissionAccess(deadlineOverrideAt);
+  if (!access.isOpen) {
     throw new ApplicantPurchaseError(
       409,
       "APPLICATIONS_CLOSED",
@@ -417,7 +429,6 @@ export async function createAccountApplicantNominationCheckout({
   awardIds: string[];
   promoCode?: string | null;
 }) {
-  await assertApplicantPurchasingOpen();
   const selectedAwardIds = Array.from(new Set(awardIds.map((id) => id.trim()).filter(Boolean)));
   if (selectedAwardIds.length === 0) {
     throw new ApplicantPurchaseError(400, "VALIDATION_ERROR", "Please choose at least one nomination.", {
@@ -436,6 +447,8 @@ export async function createAccountApplicantNominationCheckout({
   if (!profile || profile.account.status === "DISABLED") {
     throw new ApplicantPurchaseError(404, "ACCOUNT_NOT_FOUND", "Applicant account not found.");
   }
+
+  await assertApplicantAccountPurchasingOpen(profile.deadlineOverrideAt);
 
   const selectedAwards = resolveSelectedAwards(categories, selectedAwardIds);
   await assertNoOwnedDuplicateNominations({
