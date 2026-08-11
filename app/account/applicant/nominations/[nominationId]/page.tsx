@@ -31,6 +31,7 @@ export default async function ApplicantNominationPage({
     <div className="mx-auto w-full max-w-[1180px]">
       <NominationReviewForm
         nominationId={nomination.id}
+        categorySlug={nomination.category.slug}
         fields={categoryFields}
         initialAnswers={nomination.answers}
         initialFiles={nomination.files}

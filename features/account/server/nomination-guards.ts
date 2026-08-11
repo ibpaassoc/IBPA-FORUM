@@ -4,9 +4,11 @@ import { notFound } from "next/navigation";
 import { requireApplicantAccount } from "@/features/account/server/accounts";
 import { activateRequestDataScope } from "@/features/test/server/data-scope";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
+import { nominationValuesFromStorage } from "@/features/applications/lib/nomination-values";
+import { computeNominationProgress } from "@/features/account/lib/nomination-progress";
 import { prisma } from "@/shared/lib/prisma";
 import { editableNominationStatus } from "@/features/database/nomination-status";
-import { nominationAnswerViewRows, nominationFileViewRows, parseNominationAnswers, parseStoredFiles } from "@/features/database/json-fields";
+import { nominationAnswerViewRows, nominationFileViewRows } from "@/features/database/json-fields";
 
 export type ApplicantNominationNavigationItem = {
   id: string;
@@ -35,14 +37,16 @@ export async function getApplicantNominationNavigation(
   });
 
   return nominations.map((nomination) => {
-    const requiredFields = (categoryFieldConfigs[nomination.category.slug] ?? []).filter(
-      (field) => field.required,
+    // Measured with the editor's own progress rules so this badge cannot claim a
+    // nomination is complete that the submit endpoint would reject.
+    const progress = computeNominationProgress(
+      nomination.category.slug,
+      categoryFieldConfigs[nomination.category.slug] ?? [],
+      nominationValuesFromStorage(
+        nominationAnswerViewRows(nomination.answers),
+        nominationFileViewRows(nomination.files),
+      ),
     );
-    const answeredKeys = new Set(parseNominationAnswers(nomination.answers).fields.map((answer) => answer.fieldId));
-    const fileKeys = new Set(parseStoredFiles(nomination.files).items.map((file) => file.fieldId));
-    const missingRequiredCount = requiredFields.filter((field) =>
-      field.type === "file" ? !fileKeys.has(field.key) : !answeredKeys.has(field.key),
-    ).length;
 
     return {
       id: nomination.id,
@@ -50,13 +54,8 @@ export async function getApplicantNominationNavigation(
       locked: nomination.status === "LOCKED",
       categoryName: nomination.category.name,
       awardName: nomination.award.name,
-      completionPercentage:
-        requiredFields.length === 0
-          ? 100
-          : Math.round(
-              ((requiredFields.length - missingRequiredCount) / requiredFields.length) * 100,
-            ),
-      missingRequiredCount,
+      completionPercentage: progress.percentage,
+      missingRequiredCount: progress.issues.length,
     };
   });
 }

@@ -7,6 +7,7 @@
 import { strict as assert } from "node:assert";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { computeNominationProgress } from "@/features/account/lib/nomination-progress";
 import { runUploadQueue } from "@/features/applications/client/upload-queue";
 import { categoryFieldConfigs } from "@/features/applications/config/category-field-configs";
 import {
@@ -113,7 +114,7 @@ function testServerSafeguards() {
   assert.match(nominationRoute, /revision: nomination\.revision/);
   assert.match(nominationRoute, /revision: \{ increment: 1 \}/);
   assert.match(nominationRoute, /errorCode: "UPLOAD"/);
-  assert.match(nominationRoute, /existingNominationValues\([\s\S]*nomination\.answers,[\s\S]*nomination\.files,[\s\S]*\)/);
+  assert.match(nominationRoute, /nominationValuesFromStorage\([\s\S]*nomination\.answers,[\s\S]*nomination\.files,[\s\S]*\)/);
   assert.match(nominationRoute, /const validationValues = \{ \.\.\.currentValues, \.\.\.values \}/);
   assert.match(nominationRoute, /validateNominationBlockB\([\s\S]*nomination\.category\.slug,[\s\S]*validationValues/);
   assert.match(nominationRoute, /getNewValidationErrors/);
@@ -265,6 +266,104 @@ function testCertificateLimits() {
   assert.equal(educatorCertificates?.maxFiles, 25);
 }
 
+/**
+ * The editor's readiness panel and the submit endpoint must reach the same
+ * verdict. When the panel only checked that required fields were non-empty it
+ * reported nominations as complete that the endpoint rejected with a
+ * VALIDATION error the applicant could not act on.
+ */
+function testProgressMatchesSubmitValidation() {
+  const ref = (fieldKey: string, index: number, mimeType = "image/jpeg"): ApplicationFileRef => ({
+    fieldKey,
+    fileName: `${fieldKey}-${index}.jpg`,
+    fileUrl: `applications/nomination/${fieldKey}/${index}.jpg`,
+    mimeType,
+    fileSize: 2048,
+  });
+  const agree = (slug: string, values: ApplicationValues) => {
+    const progress = computeNominationProgress(slug, categoryFieldConfigs[slug] ?? [], values);
+    const errors = validateNominationBlockB(slug, values);
+    assert.equal(
+      progress.issues.length === 0,
+      Object.keys(errors).length === 0,
+      `progress panel and submit validation disagree for ${slug}: ${JSON.stringify(errors)}`,
+    );
+    return progress;
+  };
+
+  const practitioner: ApplicationValues = {
+    portfolioPhotos: Array.from({ length: 5 }, (_, index) => ref("portfolioPhotos", index)),
+    beforeAfterPhotos: [ref("beforeAfterPhotos", 0), ref("beforeAfterPhotos", 1)],
+    statementOfAchievements: "Judge at three championships.",
+    signatureTechnique: "Balayage.",
+    sterilizationProtocol: "Autoclave and single-use tools.",
+  };
+
+  assert.equal(agree("hair", practitioner).issues.length, 0, "a complete nomination is submittable");
+
+  // Below minFiles: presence alone used to read as complete.
+  assert.equal(
+    agree("hair", { ...practitioner, portfolioPhotos: [ref("portfolioPhotos", 0)] }).issues[0]?.field
+      .key,
+    "portfolioPhotos",
+    "a gallery under its minimum blocks submission in the panel",
+  );
+  agree("hair", { ...practitioner, portfolioVideo: "instagram.com/portfolio" });
+  agree("hair", {
+    ...practitioner,
+    statementOfAchievements: Array.from({ length: 520 }, () => "word").join(" "),
+  });
+
+  const education: ApplicationValues = {
+    studentWorkPhotos: Array.from({ length: 5 }, (_, index) => ref("studentWorkPhotos", index)),
+    photosWithStudents: [ref("photosWithStudents", 0), ref("photosWithStudents", 1)],
+    statementOfAchievements: "Ten years teaching.",
+    studentsTrainedLastTwoYears: "120",
+    trainingFormat: ["online"],
+    courseCurriculumSyllabus: [ref("courseCurriculumSyllabus", 0, "application/pdf")],
+    sterilizationCoveredInCurriculum: "no",
+    educatorProfessionalCertifications: [ref("educatorProfessionalCertifications", 0)],
+  };
+
+  // Student Testimonials are an either/or pair, so each side alone is enough.
+  assert.deepEqual(
+    validateNominationBlockB("education", {
+      ...education,
+      studentTestimonialsText: "Anna: the best course I have taken.",
+      studentTestimonialsFiles: [],
+    }),
+    {},
+    "written testimonials satisfy the Student Testimonials requirement",
+  );
+  assert.deepEqual(
+    validateNominationBlockB("education", {
+      ...education,
+      studentTestimonialsText: "",
+      studentTestimonialsFiles: [ref("studentTestimonialsFiles", 0, "application/pdf")],
+    }),
+    {},
+    "uploaded testimonials satisfy the Student Testimonials requirement",
+  );
+  assert.equal(
+    Object.keys(
+      validateNominationBlockB("education", {
+        ...education,
+        studentTestimonialsText: "",
+        studentTestimonialsFiles: [],
+      }),
+    ).length,
+    2,
+    "omitting both testimonial forms still blocks submission",
+  );
+
+  // The editor must refuse to send a submit the endpoint would reject.
+  const form = read(
+    "features/account/components/nomination-review/NominationReviewForm.tsx",
+  );
+  assert.match(form, /validateNominationBlockB\(\s*categorySlug/);
+  assert.match(form, /reportFieldErrors\(blocking/);
+}
+
 async function main() {
   await testSingleUpload();
   await testLimitedConcurrency();
@@ -272,6 +371,7 @@ async function main() {
   testServerSafeguards();
   testIncrementalSubmittedRepairs();
   testPartialUploadValidationUsesSavedFiles();
+  testProgressMatchesSubmitValidation();
   testUploadSizeBehavior();
   testCertificateLimits();
   console.log("nomination upload checks passed");

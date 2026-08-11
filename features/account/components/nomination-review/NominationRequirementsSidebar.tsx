@@ -59,9 +59,9 @@ export default function NominationRequirementsSidebar({
         : saveState === "error"
           ? editor.autosave.failed
           : null;
-  const complete = progress.missingRequired.length === 0;
-  const listedMissing = progress.missingRequired.slice(0, MAX_MISSING_LISTED);
-  const extraMissing = progress.missingRequired.length - listedMissing.length;
+  const complete = progress.issues.length === 0;
+  const listedMissing = progress.issues.slice(0, MAX_MISSING_LISTED);
+  const extraMissing = progress.issues.length - listedMissing.length;
 
   return (
     <div className="flex flex-col gap-3.5">
@@ -72,15 +72,22 @@ export default function NominationRequirementsSidebar({
       ) : (
         <NoticePanel tone="warning" title={editor.requiredBefore}>
           <ul className="mt-1 grid gap-1">
-            {listedMissing.map((field) => (
-              <li key={field.key}>
+            {listedMissing.map((issue) => (
+              <li key={issue.field.key}>
                 <button
                   type="button"
-                  onClick={() => onMissingItem(field)}
+                  onClick={() => onMissingItem(issue.field)}
                   className="group flex w-full items-start gap-2 rounded-[12px] px-2 py-1 text-left text-[0.82rem] leading-snug text-[#7a5b12] transition hover:bg-amber-100/70 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-amber-300/50"
                 >
                   <span aria-hidden className="mt-[0.42rem] size-1.5 shrink-0 rounded-full bg-amber-500/70" />
-                  <span className="underline-offset-2 group-hover:underline">{field.label}</span>
+                  <span>
+                    <span className="underline-offset-2 group-hover:underline">
+                      {issue.field.label}
+                    </span>
+                    <span className="block text-[0.76rem] text-[#7a5b12]/80">
+                      {issue.message}
+                    </span>
+                  </span>
                 </button>
               </li>
             ))}

@@ -183,6 +183,7 @@ export default function NominationFieldControl({
         aria-describedby={describedBy}
         min={field.min}
         max={field.max}
+        step={field.type === "number" ? field.step ?? undefined : undefined}
         placeholder={field.placeholder}
         value={String(value ?? "")}
         onChange={(event) => onChange(field.key, event.target.value)}

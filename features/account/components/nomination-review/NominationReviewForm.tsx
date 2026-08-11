@@ -14,7 +14,10 @@ import {
 import { runUploadQueue } from "@/features/applications/client/upload-queue";
 import { getUploadThumbnail } from "@/features/applications/client/image-processing";
 import { isApplicationFileRef } from "@/features/applications/lib/file-ref";
-import { getFieldVisibility } from "@/features/applications/schemas/category-field-validation";
+import {
+  getFieldVisibility,
+  validateNominationBlockB,
+} from "@/features/applications/schemas/category-field-validation";
 import type {
   ApplicationFileRef,
   ApplicationValues,
@@ -87,6 +90,7 @@ function toStoredRef(ref: ApplicationFileRef): ApplicationFileRef {
  */
 export default function NominationReviewForm({
   nominationId,
+  categorySlug,
   fields,
   initialAnswers,
   initialFiles,
@@ -101,6 +105,7 @@ export default function NominationReviewForm({
   nominations,
 }: {
   nominationId: string;
+  categorySlug: string;
   fields: ApplyFieldConfig[];
   initialAnswers: InitialAnswer[];
   initialFiles: InitialFile[];
@@ -157,8 +162,13 @@ export default function NominationReviewForm({
   const hasActiveUploads = uploadItems.some((item) => item.status === "pending" || item.status === "retrying" || item.status === "uploading");
   const hasPendingFiles = Object.values(values).some((value) => getFileValues(value).some((item) => item instanceof File));
   const progress = useMemo(
-    () => computeNominationProgress(fields, values as unknown as ApplicationValues),
-    [fields, values],
+    () =>
+      computeNominationProgress(
+        categorySlug,
+        fields,
+        values as unknown as ApplicationValues,
+      ),
+    [categorySlug, fields, values],
   );
 
   const sections = useMemo(() => {
@@ -194,14 +204,14 @@ export default function NominationReviewForm({
     activeSection || (sections[0]?.id ?? REVIEW_SECTION_ID);
 
   const missingKeys = useMemo(
-    () => new Set(progress.missingRequired.map((field) => field.key)),
+    () => new Set(progress.issues.map((issue) => issue.field.key)),
     [progress],
   );
 
   const navItems: SectionNavItem[] = useMemo(() => {
     const items: SectionNavItem[] = sections.map((section) => {
       const required = section.fields.filter((field) => field.required);
-      const missing = required.some((field) => missingKeys.has(field.key));
+      const missing = section.fields.some((field) => missingKeys.has(field.key));
       return {
         id: section.id,
         label: section.title,
@@ -211,7 +221,7 @@ export default function NominationReviewForm({
     items.push({
       id: REVIEW_SECTION_ID,
       label: editor.sections.review,
-      state: progress.missingRequired.length === 0 ? "complete" : "none",
+      state: progress.issues.length === 0 ? "complete" : "none",
     });
     return items;
   }, [sections, missingKeys, progress, editor]);
@@ -385,6 +395,32 @@ export default function NominationReviewForm({
     return editor.saveError;
   }
 
+  /**
+   * Name the fields that blocked the write. The review section renders no field
+   * controls, so an inline-only error there leaves the applicant with a generic
+   * banner and nothing to act on. Only a submit jumps to the offending field —
+   * moving the page under someone mid-edit because an autosave failed would be
+   * worse than the stale error.
+   */
+  function reportFieldErrors(
+    errors: Record<string, string>,
+    summary: string,
+    { focusFirst = false } = {},
+  ) {
+    setFieldErrors(errors);
+    const keys = Object.keys(errors);
+    if (keys.length === 0) {
+      setError(summary);
+      return;
+    }
+    const labels = keys.map(
+      (key) => fields.find((field) => field.key === key)?.label ?? key,
+    );
+    setError(`${summary} ${labels.join(" · ")}`);
+    const first = fields.find((field) => field.key === keys[0]);
+    if (focusFirst && first) jumpToField(first);
+  }
+
   async function persist(action: "draft" | "submit", snapshot: EditorValues) {
     const response = await fetch(`/api/applicant/nominations/${nominationId}`, {
       method: "POST",
@@ -393,8 +429,9 @@ export default function NominationReviewForm({
     });
     const body = await readResponse(response);
     if (!response.ok) {
-      setFieldErrors(body.fieldErrors ?? {});
-      setError(errorMessage(body.errorCode));
+      reportFieldErrors(body.fieldErrors ?? {}, errorMessage(body.errorCode), {
+        focusFirst: action === "submit",
+      });
       setSaveState("error");
       return false;
     }
@@ -532,6 +569,17 @@ export default function NominationReviewForm({
       setError(hasFailedUploads ? editor.uploadProgress.failureSummary : editor.waitForUploads);
       return;
     }
+    // Gate on the same rules the endpoint enforces. Presence alone is not
+    // enough — file count minimums, word caps, URL format and number ranges all
+    // reject a submission that a required-field check considers finished.
+    const blocking = validateNominationBlockB(
+      categorySlug,
+      valuesRef.current as unknown as ApplicationValues,
+    );
+    if (Object.keys(blocking).length > 0) {
+      reportFieldErrors(blocking, editor.saveErrors.validation, { focusFirst: true });
+      return;
+    }
     if (autosaveTimer.current) {
       clearTimeout(autosaveTimer.current);
       autosaveTimer.current = null;
@@ -605,9 +653,7 @@ export default function NominationReviewForm({
     const itemStatus = isCurrent ? status : item.status;
     const itemLocked = isCurrent ? locked : item.locked;
     const itemProgress = isCurrent ? progress.percentage : item.completionPercentage;
-    const itemMissing = isCurrent
-      ? progress.missingRequired.length
-      : item.missingRequiredCount;
+    const itemMissing = isCurrent ? progress.issues.length : item.missingRequiredCount;
     return {
       id: item.id,
       href: `/account/applicant/nominations/${item.id}`,
@@ -691,7 +737,7 @@ export default function NominationReviewForm({
                 <NominationReviewSummary
                   groups={reviewGroups}
                   values={values}
-                  missingCount={progress.missingRequired.length}
+                  missingCount={progress.issues.length}
                   locked={locked}
                   onEditSection={goToSection}
                 />
@@ -765,28 +811,31 @@ export default function NominationReviewForm({
         <MobileActionDock
           label={mobileNavigation.actions}
           title={mobileNavigation.quickActions}
-          badgeCount={progress.missingRequired.length}
+          badgeCount={progress.issues.length}
         >
           {(close) => (
             <>
-              {progress.missingRequired.length > 0 ? (
+              {progress.issues.length > 0 ? (
                 <div className="rounded-[20px] border border-amber-200/80 bg-amber-50/82 p-2">
                   <p className="px-2 pb-1 text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-amber-800">
-                    {mobileNavigation.viewMissing} ({progress.missingRequired.length})
+                    {mobileNavigation.viewMissing} ({progress.issues.length})
                   </p>
                   <div className="max-h-36 space-y-0.5 overflow-y-auto">
-                    {progress.missingRequired.slice(0, 8).map((field) => (
+                    {progress.issues.slice(0, 8).map((issue) => (
                       <button
-                        key={field.key}
+                        key={issue.field.key}
                         type="button"
                         onClick={() => {
                           close();
-                          jumpToField(field);
+                          jumpToField(issue.field);
                         }}
-                        className="flex min-h-11 w-full items-center gap-2 rounded-[14px] px-2 text-left text-xs leading-snug text-amber-900 transition hover:bg-amber-100/75 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-amber-300/50"
+                        className="flex min-h-11 w-full items-start gap-2 rounded-[14px] px-2 py-1.5 text-left text-xs leading-snug text-amber-900 transition hover:bg-amber-100/75 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-amber-300/50"
                       >
-                        <AlertTriangle aria-hidden size={14} className="shrink-0" />
-                        <span>{field.label}</span>
+                        <AlertTriangle aria-hidden size={14} className="mt-0.5 shrink-0" />
+                        <span>
+                          <span className="block font-semibold">{issue.field.label}</span>
+                          <span className="block text-amber-900/80">{issue.message}</span>
+                        </span>
                       </button>
                     ))}
                   </div>
