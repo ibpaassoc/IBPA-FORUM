@@ -151,11 +151,13 @@ export const categoryFieldConfigs: Record<string, ApplyFieldConfig[]> = {
       minFiles: 1,
       maxFiles: 1,
     },
+    // Student Testimonials are satisfied by text, files, or both. The either/or
+    // rule lives in validateNominationBlockB — marking each field `required`
+    // here would demand both and make that rule unreachable.
     {
       key: "studentTestimonialsText",
       label: "Student Testimonials",
       type: "textarea",
-      required: true,
       rows: 4,
       description:
         "Provide written testimonials here, or upload files below, or both.",
@@ -164,7 +166,6 @@ export const categoryFieldConfigs: Record<string, ApplyFieldConfig[]> = {
       key: "studentTestimonialsFiles",
       label: "Student Testimonials Files",
       type: "file",
-      required: true,
       accept: imageAndPdf,
       maxFiles: 5,
       description: "Upload up to 5 files if available.",
@@ -289,6 +290,8 @@ export const categoryFieldConfigs: Record<string, ApplyFieldConfig[]> = {
       required: true,
       min: 1,
       max: 5,
+      // Ratings are decimal; the default step of 1 makes 4.8 a step mismatch.
+      step: "any",
     },
     {
       key: "totalNumberOfReviews",

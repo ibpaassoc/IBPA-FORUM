@@ -31,6 +31,7 @@ export type ApplyFieldConfig = {
   options?: FieldOption[];
   min?: number;
   max?: number;
+  step?: number | "any";
   minFiles?: number;
   maxFiles?: number;
   accept?: string[];

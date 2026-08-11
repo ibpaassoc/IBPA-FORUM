@@ -12,6 +12,7 @@ import type {
   ApplicationValues,
   ApplyFieldConfig,
 } from "@/features/applications/types/application.types";
+import { nominationValuesFromStorage } from "@/features/applications/lib/nomination-values";
 import { requireEditableNomination } from "@/features/account/server/nomination-guards";
 import { prisma } from "@/shared/lib/prisma";
 import { syncApplicationOnChange } from "@/features/google-sheets";
@@ -51,57 +52,6 @@ function getFileRefs(value: ApplicationValues[string]) {
   return Array.from(
     new Map(value.filter(isApplicationFileRef).map((ref) => [ref.fileUrl, ref] as const)).values(),
   );
-}
-
-type ExistingAnswer = {
-  fieldKey: string;
-  valueText: string | null;
-  valueNumber: number | null;
-  valueBoolean: boolean | null;
-  valueJson: unknown;
-};
-
-type ExistingFile = {
-  fieldKey: string;
-  fileName: string;
-  fileUrl: string;
-  mimeType: string;
-  fileSize: number;
-};
-
-function existingNominationValues(
-  answers: ExistingAnswer[],
-  files: ExistingFile[],
-): ApplicationValues {
-  const values: ApplicationValues = {};
-  for (const answer of answers) {
-    if (Array.isArray(answer.valueJson)) {
-      values[answer.fieldKey] = answer.valueJson.filter(
-        (item): item is string => typeof item === "string",
-      );
-    } else if (answer.valueNumber !== null) {
-      values[answer.fieldKey] = String(answer.valueNumber);
-    } else if (answer.valueBoolean !== null) {
-      values[answer.fieldKey] = answer.valueBoolean ? "yes" : "no";
-    } else {
-      values[answer.fieldKey] = answer.valueText ?? "";
-    }
-  }
-
-  const filesByField = new Map<string, ApplicationFileRef[]>();
-  for (const file of files) {
-    const refs = filesByField.get(file.fieldKey) ?? [];
-    refs.push({
-      fieldKey: file.fieldKey,
-      fileName: file.fileName,
-      fileUrl: file.fileUrl,
-      mimeType: file.mimeType,
-      fileSize: file.fileSize,
-    });
-    filesByField.set(file.fieldKey, refs);
-  }
-  for (const [fieldKey, refs] of filesByField) values[fieldKey] = refs;
-  return values;
 }
 
 function sanitizeDisplayFilename(name: string) {
@@ -212,7 +162,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ nom
     // File fields with uploads still in flight are intentionally omitted from
     // draft payloads so a partial upload cannot erase their persisted refs.
     // Validate the effective nomination, not that partial update by itself.
-    const currentValues = existingNominationValues(
+    const currentValues = nominationValuesFromStorage(
       nomination.answers,
       nomination.files,
     );
@@ -222,7 +172,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ nom
       validationValues,
     );
     if (action === "submit" && Object.keys(validation).length > 0) {
-      console.warn("Applicant nomination submission validation failed", { nominationId, requestId, action, code: "VALIDATION" });
+      // Field keys only — the values are applicant content and stay out of logs.
+      console.warn("Applicant nomination submission validation failed", { nominationId, requestId, action, code: "VALIDATION", categorySlug: nomination.category.slug, fields: Object.keys(validation) });
       return NextResponse.json({ errorCode: "VALIDATION", requestId, message: "Please complete the required nomination fields before submitting.", fieldErrors: validation }, { status: 400, headers: { "X-Request-Id": requestId } });
     }
     if (nomination.status === "SUBMITTED" && Object.keys(validation).length > 0) {
