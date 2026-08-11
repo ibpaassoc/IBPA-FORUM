@@ -23,6 +23,7 @@ export default async function AdminScoringDetailRoute({
       summary={detail.summary}
       scoringDefinition={detail.scoringDefinition}
       judgeRows={detail.judgeRows}
+      analytics={detail.analytics}
     />
   );
 }

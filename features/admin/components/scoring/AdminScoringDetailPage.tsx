@@ -1,114 +1,91 @@
-import type { AdminScoringApplicationRecord } from "@/features/admin/server/admin";
-import { ArrowLeft, Download, MessageSquareText } from "lucide-react";
+import { ArrowLeft, Activity, ClipboardList, Download, Star, Trophy, Users } from "lucide-react";
 import { adminT } from "@/lib/i18n/admin";
-import AdminReopenScoreButton from "@/features/admin/components/scoring/AdminReopenScoreButton";
+import type { AdminScoringApplicationRecord } from "@/features/admin/server/admin";
+import type {
+  CriterionAverage,
+  ScoreDistributionBucket,
+  ScoreSpread,
+} from "@/features/admin/lib/scoring-metrics";
 import type { NominationScoringDefinition } from "@/features/jury/scoring/category-scoring";
+import CriteriaAverageChart from "@/features/admin/components/scoring/CriteriaAverageChart";
+import type { JudgeReviewRow } from "@/features/admin/components/scoring/JudgeReviewCard";
+import JudgeReviewList from "@/features/admin/components/scoring/JudgeReviewList";
+import ScoreConsistency, {
+  spreadLevelLabel,
+} from "@/features/admin/components/scoring/ScoreConsistency";
+import ScoreDistribution from "@/features/admin/components/scoring/ScoreDistribution";
+import ScoreStatusBadge from "@/features/admin/components/scoring/ScoreStatusBadge";
+import ScoreSummaryCard from "@/features/admin/components/scoring/ScoreSummaryCard";
 import {
-  DashboardAccentBlock,
-  DashboardBadge,
-  DashboardCard,
-  DashboardMetricTile,
   DashboardPageHeader,
-  DashboardPanel,
   DashboardSecondaryBtn,
 } from "@/shared/components/admin/DashboardUI";
 
-type ParticipantApplicationDetail = AdminScoringApplicationRecord;
+type ScoringSummary = {
+  assignedJudgeCount: number;
+  submittedJudgeCount: number;
+  averageScore: number | null;
+  averageScoreLabel: string;
+  averagePercentage: number | null;
+  maximumTotal: number;
+  progressPercentage: number;
+  status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETE";
+  rank: number | null;
+  categorySize: number;
+  spread: ScoreSpread;
+  minScore: number | null;
+  maxScore: number | null;
+};
 
-function scoringBadge(status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETE") {
-  switch (status) {
-    case "COMPLETE":
-      return <DashboardBadge tone="green">{adminT.statuses.COMPLETE}</DashboardBadge>;
-    case "IN_PROGRESS":
-      return <DashboardBadge tone="amber">{adminT.statuses.IN_PROGRESS}</DashboardBadge>;
-    default:
-      return <DashboardBadge tone="neutral">{adminT.statuses.NOT_STARTED}</DashboardBadge>;
-  }
-}
+type ScoringAnalytics = {
+  submittedCount: number;
+  assignedCount: number;
+  maximumTotal: number;
+  distribution: ScoreDistributionBucket[];
+  criteriaAverages: CriterionAverage[];
+  spread: ScoreSpread;
+};
 
-function ScoreStat({
-  label,
-  value,
-  highlight = false,
-}: {
-  label: string;
-  value: number | null;
-  highlight?: boolean;
-}) {
-  return (
-    <div
-      className={`rounded-[16px] border px-2.5 py-2 text-center ${
-        highlight
-          ? "border-[rgba(114,160,193,0.34)] bg-[var(--color-blue-wash)]"
-          : "border-[rgba(37,42,45,0.08)] bg-white/66"
-      }`}
-    >
-      <p className="text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-muted)]">
-        {label}
-      </p>
-      <p
-        className={`mt-1 font-[var(--font-title-family)] text-xl font-light leading-none tracking-[-0.02em] ${
-          highlight ? "text-[var(--color-blue)]" : "text-[var(--color-ink)]"
-        }`}
-      >
-        {value ?? "-"}
-      </p>
-    </div>
-  );
-}
-
-function scoreRowBadge(status: string) {
-  switch (status) {
-    case "SUBMITTED":
-      return <DashboardBadge tone="green">{adminT.statuses.SUBMITTED}</DashboardBadge>;
-    case "REOPENED":
-      return <DashboardBadge tone="blue">{adminT.statuses.REOPENED}</DashboardBadge>;
-    case "DRAFT":
-      return <DashboardBadge tone="amber">{adminT.statuses.DRAFT}</DashboardBadge>;
-    default:
-      return <DashboardBadge tone="neutral">{adminT.statuses.NOT_STARTED}</DashboardBadge>;
-  }
-}
-
+/**
+ * Детали оценивания одной номинации: сводка, отзывы судей и аналитика по
+ * уже отправленным оценкам. Все метрики приходят с сервера — компонент их
+ * только раскладывает.
+ */
 export default function AdminScoringDetailPage({
   application,
   summary,
   scoringDefinition,
   judgeRows,
+  analytics,
 }: {
-  application: ParticipantApplicationDetail;
-  summary: {
-    assignedJudgeCount: number;
-    submittedJudgeCount: number;
-    averageScore: number | null;
-    averageScoreLabel: string;
-    status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETE";
-    rank: number | null;
-  };
+  application: AdminScoringApplicationRecord;
+  summary: ScoringSummary;
   scoringDefinition: NominationScoringDefinition;
-  judgeRows: Array<{
-    judgeId: string;
-    judgeName: string;
-    judgeEmail: string;
-    reviewId: string | null;
-    scores: Record<string, number | null>;
-    totalScore: number | null;
-    comment: string | null;
-    scoreStatus: "NOT_STARTED" | "DRAFT" | "SUBMITTED" | "REOPENED";
-    submittedAt: Date | null;
-  }>;
+  judgeRows: JudgeReviewRow[];
+  analytics: ScoringAnalytics;
 }) {
+  const rankShare =
+    summary.rank && summary.categorySize > 0
+      ? Math.max(1, Math.round((summary.rank / summary.categorySize) * 100))
+      : null;
+
   return (
     <div className="flex flex-col gap-5">
       <DashboardPageHeader
         label={adminT.scoring.detailLabel}
         title={application.fullName}
         description={`${application.category.name} / ${application.award.name}`}
+        meta={
+          <p className="text-[0.75rem] uppercase tracking-[0.1em] text-[var(--color-ink-muted)]">
+            {adminT.scoring.nominationId}: {application.shortId}
+            {application.email ? <span className="normal-case"> · {application.email}</span> : null}
+          </p>
+        }
         actions={
           <>
             <DashboardSecondaryBtn href="/admin/scoring">
               <ArrowLeft aria-hidden size={15} />
-              {adminT.common.back}
+              {adminT.scoring.backToList}
             </DashboardSecondaryBtn>
             <a
               href={`/api/admin/scoring/${application.id}/export`}
@@ -121,77 +98,77 @@ export default function AdminScoringDetailPage({
         }
       />
 
-      <div className="grid grid-cols-2 gap-3 xl:grid-cols-[1.1fr_repeat(3,minmax(0,0.75fr))]">
-        <DashboardAccentBlock>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-soft)]">
-            {adminT.scoring.averageScore}
-          </p>
-          <p className="mt-2 text-3xl font-semibold tracking-[-0.03em]">
-            {summary.averageScoreLabel}
-          </p>
-          <div className="mt-3">{scoringBadge(summary.status)}</div>
-        </DashboardAccentBlock>
-        <DashboardMetricTile label={adminT.scoring.assignedJudges} value={summary.assignedJudgeCount} />
-        <DashboardMetricTile label={adminT.scoring.submittedScores} value={summary.submittedJudgeCount} accent="green" />
-        <DashboardMetricTile
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-3 2xl:grid-cols-6">
+        <ScoreSummaryCard
+          label={adminT.scoring.averageScore}
+          value={summary.averageScoreLabel}
+          suffix={summary.averageScore === null ? undefined : `/ ${summary.maximumTotal}`}
+          icon={Star}
+          detail={
+            summary.averagePercentage === null
+              ? adminT.scoring.spreadUnavailable
+              : adminT.scoring.ofMaxScore(summary.averagePercentage)
+          }
+        />
+        <ScoreSummaryCard
           label={adminT.scoring.rankInCategory}
-          value={summary.rank ? `#${summary.rank}` : adminT.scoring.notRanked}
-          accent="blue"
+          value={summary.rank ?? "—"}
+          suffix={summary.rank ? `/ ${summary.categorySize}` : undefined}
+          icon={Trophy}
+          tone="amber"
+          detail={rankShare === null ? adminT.scoring.notRanked : adminT.scoring.topPercent(rankShare)}
+        />
+        <ScoreSummaryCard
+          label={adminT.scoring.assignedJudges}
+          value={summary.assignedJudgeCount}
+          icon={Users}
+          detail={adminT.scoring.totalAssigned}
+        />
+        <ScoreSummaryCard
+          label={adminT.scoring.submittedScores}
+          value={summary.submittedJudgeCount}
+          suffix={`/ ${summary.assignedJudgeCount}`}
+          icon={ClipboardList}
+          tone="green"
+          detail={adminT.scoring.receivedPercentage(summary.progressPercentage)}
+        />
+        <ScoreSummaryCard
+          label={adminT.scoring.scoreStatus}
+          value={<ScoreStatusBadge status={summary.status} />}
+          icon={Activity}
+          detail={adminT.scoring.progressPercentage(summary.progressPercentage)}
+        />
+        <ScoreSummaryCard
+          label={adminT.scoring.scoreSpread}
+          value={summary.spread ? summary.spread.value.toFixed(1) : "—"}
+          icon={Activity}
+          tone="blue"
+          detail={
+            summary.spread
+              ? spreadLevelLabel(summary.spread.level)
+              : adminT.scoring.spreadUnavailable
+          }
         />
       </div>
 
-      <DashboardCard className="p-0">
-        <div className="border-b border-[rgba(37,42,45,0.08)] p-4 md:p-5">
-          <h2 className="font-[var(--font-title-family)] text-2xl font-light tracking-[-0.025em] text-[var(--color-ink)]">
-            {adminT.scoring.judgeScores}
-          </h2>
-        </div>
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(280px,340px)] xl:items-start">
+        <JudgeReviewList rows={judgeRows} scoringDefinition={scoringDefinition} />
 
-        {judgeRows.length === 0 ? (
-          <div className="p-5 text-center text-sm text-[var(--color-ink-muted)]">
-            {adminT.scoring.noJudges}
-          </div>
-        ) : (
-          <div className="divide-y divide-[rgba(37,42,45,0.08)]">
-            {judgeRows.map((row) => (
-              <div key={row.judgeId} className="grid gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(360px,1fr)_150px] lg:items-start">
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    {scoreRowBadge(row.scoreStatus)}
-                  </div>
-                  <p className="mt-3 text-sm font-medium text-[var(--color-ink)]">{row.judgeName}</p>
-                  <p className="mt-1 truncate text-xs text-[var(--color-ink-soft)]">{row.judgeEmail}</p>
-                  {row.comment ? (
-                    <DashboardPanel className="mt-3">
-                      <div className="flex items-start gap-2 text-sm text-[var(--color-ink-soft)]">
-                        <MessageSquareText aria-hidden size={15} className="mt-1 shrink-0 text-[var(--color-blue)]" />
-                        <p>{row.comment}</p>
-                      </div>
-                    </DashboardPanel>
-                  ) : null}
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                  {scoringDefinition.criteria.map((criterion) => (
-                    <ScoreStat
-                      key={criterion.key}
-                      label={`${criterion.label} /${criterion.maxScore}`}
-                      value={row.scores[criterion.key]}
-                    />
-                  ))}
-                  <ScoreStat label={adminT.scoring.criteria.total} value={row.totalScore} highlight />
-                </div>
-
-                <div className="flex justify-start lg:justify-end">
-                  {row.reviewId && (row.scoreStatus === "SUBMITTED" || row.scoreStatus === "REOPENED") ? (
-                    <AdminReopenScoreButton reviewId={row.reviewId} />
-                  ) : null}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </DashboardCard>
+        <aside className="flex flex-col gap-3">
+          <ScoreDistribution
+            buckets={analytics.distribution}
+            submittedCount={analytics.submittedCount}
+            averageScoreLabel={summary.averageScoreLabel}
+          />
+          <CriteriaAverageChart
+            criteriaAverages={analytics.criteriaAverages}
+            scoringDefinition={scoringDefinition}
+            submittedCount={analytics.submittedCount}
+            assignedCount={analytics.assignedCount}
+          />
+          <ScoreConsistency spread={analytics.spread} />
+        </aside>
+      </div>
     </div>
   );
 }

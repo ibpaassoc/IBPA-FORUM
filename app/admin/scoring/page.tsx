@@ -11,16 +11,37 @@ export default async function AdminScoringPage({
     status?: string;
     q?: string;
     sort?: string;
+    minScore?: string;
+    maxScore?: string;
+    progress?: string;
+    page?: string;
+    perPage?: string;
   }>;
 }) {
   await requireAdmin();
 
-  const { category, direction, status, q, sort } = await searchParams;
+  const {
+    category,
+    direction,
+    status,
+    q,
+    sort,
+    minScore,
+    maxScore,
+    progress,
+    page,
+    perPage,
+  } = await searchParams;
   const data = await getAdminScoringOverview({
     category: category ?? direction,
     status,
     q,
     sort,
+    minScore,
+    maxScore,
+    progress,
+    page,
+    perPage,
   });
 
   return <AdminScoringOverviewPage {...data} />;
