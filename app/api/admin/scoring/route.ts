@@ -21,6 +21,11 @@ export async function GET(request: Request) {
       status: url.searchParams.get("status") ?? undefined,
       q: url.searchParams.get("q") ?? undefined,
       sort: url.searchParams.get("sort") ?? undefined,
+      minScore: url.searchParams.get("minScore") ?? undefined,
+      maxScore: url.searchParams.get("maxScore") ?? undefined,
+      progress: url.searchParams.get("progress") ?? undefined,
+      page: url.searchParams.get("page") ?? undefined,
+      perPage: url.searchParams.get("perPage") ?? undefined,
     });
 
     return NextResponse.json(data);
