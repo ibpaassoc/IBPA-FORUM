@@ -36,7 +36,7 @@ export default async function ApplicantDashboardPage() {
     <div className="flex flex-col gap-5">
       <AccountPageHeader
         eyebrow={ov.eyebrow}
-        title={data.closedAt ? ov.closedTitle : ov.openTitle}
+        title={data.applicationsClosed ? ov.closedTitle : ov.openTitle}
       />
 
       <ApplicantSummary
@@ -47,7 +47,7 @@ export default async function ApplicantDashboardPage() {
         deadlineMonthLabel={formatApplicantDeadlinePart(data.deadline, dateLocale, { month: "short" })}
         deadlineDayLabel={formatApplicantDeadlinePart(data.deadline, dateLocale, { day: "2-digit" })}
         daysRemaining={daysUntil(data.deadline)}
-        closed={data.closedAt !== null}
+        closed={data.applicationsClosed}
       />
 
       <section aria-labelledby="my-nominations-heading" className="mt-1">
@@ -58,11 +58,13 @@ export default async function ApplicantDashboardPage() {
           >
             {ov.myNominations}
           </h2>
-          <PremiumButton href="/account/applicant/add-nomination">
-            <Plus size={16} />
-            <span className="hidden sm:inline">{ov.addNominations}</span>
-            <span className="sm:hidden">{ov.add}</span>
-          </PremiumButton>
+          {!data.applicationsClosed ? (
+            <PremiumButton href="/account/applicant/add-nomination">
+              <Plus size={16} />
+              <span className="hidden sm:inline">{ov.addNominations}</span>
+              <span className="sm:hidden">{ov.add}</span>
+            </PremiumButton>
+          ) : null}
         </div>
 
         {nominationCards.length === 0 ? (
@@ -70,11 +72,11 @@ export default async function ApplicantDashboardPage() {
             icon={<FileText size={20} />}
             title={ov.emptyTitle}
             description={ov.emptyText}
-            action={
+            action={!data.applicationsClosed ? (
               <PremiumButton href="/account/applicant/add-nomination">
                 <Plus size={16} /> {ov.addNominations}
               </PremiumButton>
-            }
+            ) : undefined}
           />
         ) : (
           <DashboardStagger className="grid gap-3">

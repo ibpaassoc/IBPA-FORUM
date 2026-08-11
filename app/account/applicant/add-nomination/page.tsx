@@ -5,6 +5,8 @@ import { getApplicationCategories } from "@/features/applications/server/queries
 import { getServerTranslations } from "@/lib/i18n/server";
 import { prisma } from "@/shared/lib/prisma";
 import { activateRequestDataScope } from "@/features/test/server/data-scope";
+import { getApplicantSubmissionAccess } from "@/features/applications/server/deadlines";
+import { redirect } from "next/navigation";
 import {
   DashboardPageHeader,
   SecondaryButton,
@@ -13,7 +15,7 @@ import {
 export default async function AddNominationPage() {
   const { account, applicantProfile } = await requireApplicantAccount();
   activateRequestDataScope({ dataScope: account.dataScope });
-  const [categories, ownedNominations, t] = await Promise.all([
+  const [categories, ownedNominations, t, submissionAccess] = await Promise.all([
     getApplicationCategories(),
     prisma.nomination.findMany({
       where: {
@@ -23,7 +25,11 @@ export default async function AddNominationPage() {
       select: { awardId: true },
     }),
     getServerTranslations(),
+    getApplicantSubmissionAccess(applicantProfile.deadlineOverrideAt),
   ]);
+  if (!submissionAccess.isOpen) {
+    redirect("/account/applicant/nominations");
+  }
   const flow = t.account.addFlow;
 
   return (
