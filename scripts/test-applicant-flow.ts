@@ -214,6 +214,13 @@ assert(has(applicantAdminActions, "resendApplicantRegistrationLinkAction"), "adm
 assert(has(applicantAdminActions, "bulkResendApplicantRegistrationLinksAction"), "admin can bulk resend registration links");
 assert(has(applicantAdminActions, "issueApplicantRegistrationLink"), "admin resend uses shared registration service");
 assert(has(applicantAdminActions, "updateApplicantDeadlineOverrideAction"), "admin can set applicant deadline overrides");
+assert(has(applicantAdminActions, "updateNominationSubmissionAccessAction"), "admin can open or close one nomination");
+assert(has(applicantAdminActions, "submissionOverrideOpen: access === \"open\""), "individual admin access changes persist an explicit override");
+assert(has(applicantAdminActions, "editableNominationStatus"), "admin only closes applicant-editable nominations");
+assert(
+  has(read("features/admin/components/participant-applications/ApplicantAdminDetailPage.tsx"), "updateNominationSubmissionAccessAction"),
+  "admin nomination detail renders individual access controls",
+);
 assert(
   has(applicantAdminActions, 'status: "RETURNED_FOR_CHANGES"'),
   "a future admin extension reopens nominations locked by global closure",

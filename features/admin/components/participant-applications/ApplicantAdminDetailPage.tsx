@@ -6,6 +6,8 @@ import {
   CheckCircle2,
   CreditCard,
   Layers3,
+  LockKeyhole,
+  LockOpen,
   Mail,
   MailPlus,
   MapPin,
@@ -20,6 +22,7 @@ import {
   addManualApplicantNominationAction,
   resendApplicantRegistrationLinkAction,
   updateApplicantDeadlineOverrideAction,
+  updateNominationSubmissionAccessAction,
   updateApplicantProfileAction,
 } from "@/features/admin/actions/applicant.actions";
 import ApplicationStatusBadge from "@/features/admin/components/badges/ApplicationStatusBadge";
@@ -130,7 +133,13 @@ function AnswerGrid({ fields, answers, empty }: {
   );
 }
 
-function NominationContent({ nomination }: { nomination: Nomination }) {
+function NominationContent({
+  nomination,
+  profileId,
+}: {
+  nomination: Nomination;
+  profileId: string;
+}) {
   const fields = categoryFieldConfigs[nomination.category.slug] ?? [];
   const workFields = fields.filter((field) => field.type !== "textarea" && field.type !== "file");
   const descriptionFields = fields.filter((field) => field.type === "textarea");
@@ -159,6 +168,27 @@ function NominationContent({ nomination }: { nomination: Nomination }) {
             <PaymentStatusBadge status={nomination.paymentStatus} />
           </div>
         </div>
+        {nomination.status === "LOCKED" || ["DRAFT", "SUBMITTED", "RETURNED_FOR_CHANGES"].includes(nomination.status) ? (
+          <form action={updateNominationSubmissionAccessAction} className="mt-4">
+            <input type="hidden" name="profileId" value={profileId} />
+            <input type="hidden" name="nominationId" value={nomination.id} />
+            <input
+              type="hidden"
+              name="access"
+              value={nomination.status === "LOCKED" ? "open" : "close"}
+            />
+            <DashboardSecondaryBtn type="submit">
+              {nomination.status === "LOCKED" ? (
+                <LockOpen aria-hidden size={15} />
+              ) : (
+                <LockKeyhole aria-hidden size={15} />
+              )}
+              {nomination.status === "LOCKED"
+                ? adminT.applicantAccount.openNomination
+                : adminT.applicantAccount.closeNomination}
+            </DashboardSecondaryBtn>
+          </form>
+        ) : null}
       </div>
 
       <div className="grid gap-4 p-4 md:p-5">
@@ -317,7 +347,7 @@ export default function ApplicantAdminDetailPage({
         </span>
       </>
     ),
-    content: <NominationContent nomination={nomination} />,
+    content: <NominationContent nomination={nomination} profileId={profile.id} />,
   }));
 
   const nominations = nominationItems.length > 0 ? (
