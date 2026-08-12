@@ -973,7 +973,7 @@ const en = {
           id: "zisuc",
           name: "ZISU’C",
           label: "Gold Sponsor",
-          logo: "/images/sponsors/zisuc/zisuc-logo.png",
+          logo: "/images/sponsors/zisuc/zisuc-logo-teal-transparent.png",
           logoAlt: "ZISU’C Premium Vegan Aesthetics logo",
           location: "United States",
           description:
@@ -3347,7 +3347,7 @@ const ru: typeof en = {
           id: "zisuc",
           name: "ZISU’C",
           label: "Золотой спонсор",
-          logo: "/images/sponsors/zisuc/zisuc-logo.png",
+          logo: "/images/sponsors/zisuc/zisuc-logo-teal-transparent.png",
           logoAlt: "Логотип ZISU’C Premium Vegan Aesthetics",
           location: "США",
           description:
@@ -5722,7 +5722,7 @@ const ua: typeof en = {
           id: "zisuc",
           name: "ZISU’C",
           label: "Золотий спонсор",
-          logo: "/images/sponsors/zisuc/zisuc-logo.png",
+          logo: "/images/sponsors/zisuc/zisuc-logo-teal-transparent.png",
           logoAlt: "Логотип ZISU’C Premium Vegan Aesthetics",
           location: "США",
           description:
