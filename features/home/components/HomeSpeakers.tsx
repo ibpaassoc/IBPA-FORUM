@@ -11,7 +11,7 @@ import {
   Mic,
   X,
 } from "lucide-react";
-import { FaInstagram } from "react-icons/fa6";
+import { FaInstagram, FaYoutube } from "react-icons/fa6";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
@@ -92,6 +92,10 @@ export default function HomeSpeakers() {
   };
 
   const activeSpeaker = openSpeaker !== null ? c.speakers[openSpeaker] : null;
+  const secondaryPhoto =
+    activeSpeaker && "secondaryPhoto" in activeSpeaker
+      ? activeSpeaker.secondaryPhoto
+      : "";
 
   return (
     <section className="relative overflow-hidden bg-[linear-gradient(170deg,#f3f8fb_0%,#ffffff_55%,#eef5fa_100%)] py-20 md:py-28">
@@ -145,7 +149,7 @@ export default function HomeSpeakers() {
         ref={sliderRef}
         data-speakers-slider
         onScroll={updateActiveIndex}
-        className="relative flex snap-x snap-mandatory scroll-px-[var(--page-gutter)] gap-6 overflow-x-auto overscroll-x-contain scroll-smooth px-[var(--page-gutter)] pb-4 pt-2 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] md:scroll-px-[max(1rem,calc((100vw-1200px)/2))] md:px-[max(1rem,calc((100vw-1200px)/2))] [&::-webkit-scrollbar]:hidden"
+        className="relative flex snap-x snap-mandatory scroll-px-[var(--page-gutter)] gap-6 overflow-x-auto overflow-y-hidden overscroll-x-contain scroll-smooth px-[var(--page-gutter)] pb-4 pt-2 [scrollbar-width:none] [touch-action:pan-x_pan-y] [-webkit-overflow-scrolling:touch] md:scroll-px-[max(1rem,calc((100vw-1200px)/2))] md:px-[max(1rem,calc((100vw-1200px)/2))] [&::-webkit-scrollbar]:hidden"
       >
         {c.speakers.map((speaker, index) => (
           <motion.article
@@ -155,7 +159,7 @@ export default function HomeSpeakers() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="w-[calc(100vw-(2*var(--page-gutter)))] max-w-[420px] shrink-0 snap-start overflow-hidden rounded-[36px] border border-[#b9d9eb]/60 bg-white/70 backdrop-blur-2xl transition duration-300 hover:-translate-y-1 hover:bg-white/85 sm:w-[480px] sm:max-w-none lg:grid lg:w-[580px] lg:grid-cols-[240px_minmax(0,1fr)]"
+            className="box-border w-[calc(100%-(2*var(--page-gutter)))] max-w-[420px] shrink-0 snap-start [scroll-snap-stop:always] overflow-hidden rounded-[36px] border border-[#b9d9eb]/60 bg-white/70 backdrop-blur-2xl transition-[background-color,transform] duration-300 md:hover:-translate-y-1 md:hover:bg-white/85 sm:w-[480px] sm:max-w-none lg:grid lg:w-[580px] lg:grid-cols-[240px_minmax(0,1fr)]"
           >
             <div className="relative aspect-[4/5] overflow-hidden bg-[#eef5f9] sm:aspect-[16/11] lg:aspect-auto lg:h-full lg:min-h-[380px]">
               <Image
@@ -227,6 +231,30 @@ export default function HomeSpeakers() {
                     Website
                   </a>
                 ) : null}
+
+                {"youtube" in speaker && speaker.youtube ? (
+                  <a
+                    href={speaker.youtube}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 rounded-full border border-[#b9d9eb]/70 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 backdrop-blur-xl transition hover:border-[#72a8d4]/50 hover:bg-white hover:text-[#2f6f9f]"
+                  >
+                    <FaYoutube className="h-4 w-4" />
+                    YouTube
+                  </a>
+                ) : null}
+
+                {"academyInstagram" in speaker && speaker.academyInstagram ? (
+                  <a
+                    href={speaker.academyInstagram}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 rounded-full border border-[#b9d9eb]/70 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 backdrop-blur-xl transition hover:border-[#72a8d4]/50 hover:bg-white hover:text-[#2f6f9f]"
+                  >
+                    <FaInstagram className="h-4 w-4" />
+                    {c.academyLabel}
+                  </a>
+                ) : null}
               </div>
             </div>
           </motion.article>
@@ -292,6 +320,17 @@ export default function HomeSpeakers() {
                       sizes="(max-width: 640px) 100vw, 260px"
                       className="object-cover object-[center_25%]"
                     />
+                    {secondaryPhoto ? (
+                      <div className="absolute bottom-4 right-4 hidden aspect-[2/3] w-20 overflow-hidden rounded-2xl border-2 border-white/75 bg-white shadow-xl sm:block">
+                        <Image
+                          src={secondaryPhoto}
+                          alt={`${activeSpeaker.name} portrait`}
+                          fill
+                          sizes="80px"
+                          className="object-cover"
+                        />
+                      </div>
+                    ) : null}
                     <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(16,24,42,0.02)_0%,rgba(16,24,42,0.04)_42%,rgba(16,24,42,0.55)_100%)] sm:bg-none" />
 
                     <div className="absolute bottom-3 left-3 right-3 rounded-[1.2rem] border border-white/25 bg-black/35 p-4 text-white backdrop-blur-2xl sm:hidden">
@@ -331,7 +370,7 @@ export default function HomeSpeakers() {
                         {activeSpeaker.topic}
                       </h4>
 
-                      <p className="mt-4 text-sm leading-6 text-slate-600">
+                      <p className="mt-4 whitespace-pre-line text-sm leading-6 text-slate-600">
                         {activeSpeaker.description}
                       </p>
                     </div>
@@ -358,6 +397,31 @@ export default function HomeSpeakers() {
                         >
                           <Globe className="h-4 w-4" />
                           Website
+                        </a>
+                      ) : null}
+
+                      {"youtube" in activeSpeaker && activeSpeaker.youtube ? (
+                        <a
+                          href={activeSpeaker.youtube}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-2 rounded-full border border-[#b9d9eb]/70 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 backdrop-blur-xl transition hover:border-[#72a8d4]/50 hover:bg-white hover:text-[#2f6f9f]"
+                        >
+                          <FaYoutube className="h-4 w-4" />
+                          YouTube
+                        </a>
+                      ) : null}
+
+                      {"academyInstagram" in activeSpeaker &&
+                      activeSpeaker.academyInstagram ? (
+                        <a
+                          href={activeSpeaker.academyInstagram}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-2 rounded-full border border-[#b9d9eb]/70 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 backdrop-blur-xl transition hover:border-[#72a8d4]/50 hover:bg-white hover:text-[#2f6f9f]"
+                        >
+                          <FaInstagram className="h-4 w-4" />
+                          {c.academyLabel}
                         </a>
                       ) : null}
                     </div>

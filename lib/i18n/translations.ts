@@ -687,6 +687,7 @@ const en = {
       showLess: "Show less",
       topicLabel: "Topic",
       presentationLabel: "Presentation",
+      academyLabel: "Academy",
 
       speakers: [
         {
@@ -778,6 +779,24 @@ const en = {
             "During this presentation, Irina will demonstrate how astrology can help beauty professionals identify their natural strengths, choose the most effective marketing strategy, and stop working against their own nature. Participants will learn how to use their innate talents to attract the right clients, grow their income without burnout, and build a business aligned with their authentic potential.",
           instagram: "https://www.instagram.com/astrolog_chukreeva/",
           website: ""
+        },
+        {
+          name: "Larisa Berdnikova",
+          photo: "/images/speakers/larisa-berdnikova.png",
+          secondaryPhoto: "/images/speakers/larisa-berdnikova-alt.png",
+          role:
+            "Physician, international expert in the development of MedSpas, aesthetic medicine clinics, and beauty businesses, and a business consultant with 20 years of experience. Author of four books and more than 85 educational programs for owners, executives, and professionals in the beauty and medical industries. Larisa helps MedSpa owners build profitable businesses and helps beauty professionals increase their income, develop a loyal client base, raise the value of their services, and become sought-after experts. She specializes in management, financial planning, marketing, sales, service, and client retention.",
+          city: "Tampa, Florida, USA",
+          topic:
+            "Why 80% of Beauty Professionals Never Become High-Priced Experts",
+          description:
+            "For beauty professionals and business owners.\n\nWhy do some professionals rely on discounts while others are booked months in advance? This session explains how to turn a client into a loyal regular, which mistakes drive away even satisfied clients, and how to become the professional people recommend for years.\n\nThe session will also cover:\n• the psychology behind client decisions;\n• why the same service can sell for $80 or $480;\n• how emotions influence sales;\n• why trust is more valuable than advertising.",
+          instagram:
+            "https://www.instagram.com/larisaberdnikova_med?igsh=MXZ0M28zMzZuejRpYg%3D%3D&utm_source=qr",
+          website: "",
+          youtube: "https://youtube.com/@artmediconsult?si=sq22RI4KOv2kBZ2J",
+          academyInstagram:
+            "https://www.instagram.com/medbusinessacademy?igsh=ZTk2MnJ3djUzZmFo"
         },
       ]
     },
@@ -3060,6 +3079,7 @@ const ru: typeof en = {
       showLess: "Свернуть",
       topicLabel: "Тема",
       presentationLabel: "Презентация",
+      academyLabel: "Академия",
 
       speakers: [
         {
@@ -3152,6 +3172,24 @@ const ru: typeof en = {
             "На выступлении Ирина покажет, как астрология помогает понять свои сильные стороны в профессии, выбрать эффективную стратегию продвижения и перестать работать «через силу». Участники узнают, как использовать свои природные таланты, чтобы привлекать именно своих клиентов, увеличить доход без выгорания и выстроить карьеру в гармонии со своими сильными сторонами.",
           instagram: "https://www.instagram.com/astrolog_chukreeva/",
           website: ""
+        },
+        {
+          name: "Лариса Бердникова",
+          photo: "/images/speakers/larisa-berdnikova.png",
+          secondaryPhoto: "/images/speakers/larisa-berdnikova-alt.png",
+          role:
+            "Врач, международный эксперт по развитию MedSpa, клиник эстетической медицины и предприятий индустрии красоты, бизнес-консультант с 20-летним опытом. Автор 4 книг и более 85 образовательных программ для владельцев, руководителей и специалистов beauty-индустрии и медицины. Помогает владельцам MedSpa создавать прибыльный бизнес, а косметологам, мастерам и специалистам индустрии красоты — увеличивать доход, формировать постоянную клиентскую базу, повышать стоимость своих услуг и становиться востребованными экспертами. Специализируется на управлении, финансовом планировании, маркетинге, продажах, сервисе и удержании клиентов.",
+          city: "Тампа, Флорида, США",
+          topic:
+            "Почему 80% мастеров никогда не становятся дорогими специалистами",
+          description:
+            "Для мастеров и владельцев.\n\nПочему одни мастера работают по скидкам, а к другим запись на месяцы вперёд? На выступлении разберём, как превратить клиента в постоянного, какие ошибки заставляют уходить даже довольных клиентов и как стать мастером, которого рекомендуют годами.\n\nТакже разберём:\n• психологию принятия решения;\n• почему одинаковую процедуру продают за $80 и за $480;\n• как эмоции влияют на продажи;\n• почему доверие дороже рекламы.",
+          instagram:
+            "https://www.instagram.com/larisaberdnikova_med?igsh=MXZ0M28zMzZuejRpYg%3D%3D&utm_source=qr",
+          website: "",
+          youtube: "https://youtube.com/@artmediconsult?si=sq22RI4KOv2kBZ2J",
+          academyInstagram:
+            "https://www.instagram.com/medbusinessacademy?igsh=ZTk2MnJ3djUzZmFo"
         },
       ]
     },
@@ -5435,6 +5473,7 @@ const ua: typeof en = {
       showLess: "Згорнути",
       topicLabel: "Тема",
       presentationLabel: "Презентація",
+      academyLabel: "Академія",
 
       speakers: [
         {
@@ -5527,6 +5566,24 @@ const ua: typeof en = {
             "На виступі Ірина покаже, як астрологія допомагає зрозуміти свої сильні сторони в професії, обрати ефективну стратегію просування та перестати працювати «через силу». Учасники дізнаються, як використовувати свої природні таланти, щоб залучати саме своїх клієнтів, збільшувати дохід без вигорання та будувати кар'єру відповідно до власного потенціалу.",
           instagram: "https://www.instagram.com/astrolog_chukreeva/",
           website: ""
+        },
+        {
+          name: "Лариса Бердникова",
+          photo: "/images/speakers/larisa-berdnikova.png",
+          secondaryPhoto: "/images/speakers/larisa-berdnikova-alt.png",
+          role:
+            "Лікарка, міжнародна експертка з розвитку MedSpa, клінік естетичної медицини та підприємств beauty-індустрії, бізнес-консультантка з 20-річним досвідом. Авторка 4 книг і понад 85 освітніх програм для власників, керівників і фахівців beauty-індустрії та медицини. Допомагає власникам MedSpa створювати прибутковий бізнес, а косметологам, майстрам і фахівцям індустрії краси — збільшувати дохід, формувати постійну клієнтську базу, підвищувати вартість своїх послуг і ставати затребуваними експертами. Спеціалізується на управлінні, фінансовому плануванні, маркетингу, продажах, сервісі та утриманні клієнтів.",
+          city: "Тампа, Флорида, США",
+          topic:
+            "Чому 80% майстрів ніколи не стають дорогими фахівцями",
+          description:
+            "Для майстрів і власників.\n\nЧому одні майстри працюють зі знижками, а до інших запис на місяці вперед? Під час виступу розберемо, як перетворити клієнта на постійного, які помилки змушують піти навіть задоволених клієнтів і як стати майстром, якого рекомендують роками.\n\nТакож розберемо:\n• психологію ухвалення рішення;\n• чому однакову процедуру продають за $80 і за $480;\n• як емоції впливають на продажі;\n• чому довіра дорожча за рекламу.",
+          instagram:
+            "https://www.instagram.com/larisaberdnikova_med?igsh=MXZ0M28zMzZuejRpYg%3D%3D&utm_source=qr",
+          website: "",
+          youtube: "https://youtube.com/@artmediconsult?si=sq22RI4KOv2kBZ2J",
+          academyInstagram:
+            "https://www.instagram.com/medbusinessacademy?igsh=ZTk2MnJ3djUzZmFo"
         },
       ]
     },
