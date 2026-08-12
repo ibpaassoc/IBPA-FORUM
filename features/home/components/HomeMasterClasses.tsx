@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Check, GraduationCap, Sparkles, X } from "lucide-react";
+import { createPortal } from "react-dom";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
@@ -158,14 +159,16 @@ export default function HomeMasterClasses() {
         </div>
       </div>
 
-      <AnimatePresence>
+      {typeof document !== "undefined"
+        ? createPortal(
+            <AnimatePresence>
         {activeClass ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[110] flex items-end justify-center bg-[#10182a]/45 backdrop-blur-sm sm:items-center sm:p-6"
+            className="fixed inset-0 z-[110] flex items-center justify-center bg-[#10182a]/45 p-0 backdrop-blur-sm sm:p-4 lg:p-6"
             onClick={() => setOpenClass(null)}
           >
             <motion.div
@@ -177,7 +180,7 @@ export default function HomeMasterClasses() {
               exit={{ opacity: 0, y: 32, scale: 0.985 }}
               transition={{ duration: 0.28, ease: "easeOut" }}
               onClick={(event) => event.stopPropagation()}
-              className="relative max-h-[94dvh] w-full max-w-5xl overflow-hidden rounded-t-[2rem] border border-[#b9d9eb]/60 bg-white/92 shadow-2xl backdrop-blur-2xl sm:rounded-[2.5rem]"
+              className="relative h-dvh w-full overflow-hidden rounded-none border border-[#b9d9eb]/60 bg-white/94 shadow-2xl backdrop-blur-2xl sm:h-[calc(100dvh-2rem)] sm:rounded-[2.25rem] lg:h-[min(780px,calc(100dvh-3rem))] lg:w-[calc(100vw-3rem)] lg:max-w-[1380px]"
             >
               <button
                 type="button"
@@ -188,81 +191,90 @@ export default function HomeMasterClasses() {
                 <X className="h-5 w-5" />
               </button>
 
-              <div className="max-h-[94dvh] overflow-y-auto overscroll-contain">
-                <div className="grid lg:grid-cols-[minmax(300px,0.82fr)_minmax(0,1.18fr)]">
-                  <div className="relative min-h-[320px] overflow-hidden bg-[#eef5f9] lg:min-h-[720px]">
+              <div className="h-full overflow-y-auto overscroll-contain lg:overflow-hidden">
+                <div className="grid min-h-full md:h-full md:grid-cols-[minmax(230px,0.68fr)_minmax(0,1.5fr)] lg:grid-cols-[minmax(300px,0.72fr)_minmax(0,1.65fr)] xl:grid-cols-[380px_minmax(0,1fr)]">
+                  <div className="relative min-h-[300px] overflow-hidden bg-[#eef5f9] md:h-full md:min-h-0">
                     <Image
                       src={activeClass.photo}
                       alt={activeClass.name}
                       fill
-                      sizes="(max-width: 1024px) 100vw, 420px"
+                      sizes="(max-width: 767px) 100vw, (max-width: 1279px) 32vw, 380px"
                       className="object-cover"
                     />
                     <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_38%,rgba(16,24,42,0.72)_100%)]" />
-                    <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-8">
-                      <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/30 bg-black/15 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] backdrop-blur-xl">
+                    <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-7 lg:p-8">
+                      <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/30 bg-black/15 px-4 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.18em] backdrop-blur-xl">
                         <GraduationCap className="h-4 w-4" />
                         {c.formatLabel}
                       </div>
-                      <h3 className="pr-12 font-[var(--font-title-family)] text-4xl font-light leading-none tracking-[-0.035em] sm:text-5xl">
+                      <h3 className="pr-12 font-[var(--font-title-family)] text-4xl font-light leading-none tracking-[-0.035em] sm:text-5xl lg:text-[3.4rem]">
                         {activeClass.name}
                       </h3>
                     </div>
                   </div>
 
-                  <div className="p-6 sm:p-9 lg:p-10">
-                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#72a0c1]">
-                      {c.educatorLabel}
-                    </p>
-                    <p className="mt-3 text-sm leading-6 text-slate-600">
-                      {activeClass.role}
-                    </p>
+                  <div className="min-w-0 p-6 sm:p-7 md:h-full md:overflow-y-auto lg:overflow-hidden lg:p-5 xl:p-8">
+                    <div className="lg:grid lg:h-full lg:grid-rows-[auto_auto_auto_1fr_auto]">
+                      <div>
+                        <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#72a0c1]">
+                          {c.educatorLabel}
+                        </p>
+                        <p className="mt-2 text-xs leading-5 text-slate-600 xl:text-sm xl:leading-6">
+                          {activeClass.role}
+                        </p>
+                      </div>
 
-                    <p className="mt-7 text-xs font-semibold uppercase tracking-[0.22em] text-[#2f6f9f]">
-                      {c.topicLabel}
-                    </p>
-                    <h4 className="mt-3 text-2xl font-semibold leading-tight tracking-[-0.03em] text-slate-950 sm:text-3xl">
-                      {activeClass.topic}
-                    </h4>
+                      <div className="mt-3 xl:mt-4">
+                        <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#2f6f9f]">
+                          {c.topicLabel}
+                        </p>
+                        <h4 className="mt-2 text-xl font-semibold leading-tight tracking-[-0.03em] text-slate-950 xl:text-2xl">
+                          {activeClass.topic}
+                        </h4>
+                      </div>
 
-                    <p className="mt-6 whitespace-pre-line text-sm leading-7 text-slate-600 sm:text-base">
-                      {activeClass.description}
-                    </p>
+                      <p className="mt-3 whitespace-pre-line text-xs leading-5 text-slate-600 xl:mt-4 xl:text-sm xl:leading-6">
+                        {activeClass.description}
+                      </p>
 
-                    <div className="mt-8 rounded-[24px] border border-[#b9d9eb]/55 bg-[#f2f8fb]/80 p-5 sm:p-6">
-                      <div className="mb-5 flex items-center gap-2 text-sm font-semibold text-[#2f6f9f]">
+                      <div className="mt-3 rounded-[22px] border border-[#b9d9eb]/55 bg-[#f2f8fb]/80 p-4 xl:mt-5 xl:p-5">
+                        <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-[#2f6f9f]">
                         <Sparkles className="h-4 w-4" />
                         {c.programLabel}
+                        </div>
+                        <ul className="grid gap-x-6 gap-y-3 md:grid-cols-2">
+                          {activeClass.highlights.map((highlight) => (
+                            <li key={highlight} className="flex gap-2.5 text-xs leading-5 text-slate-600 xl:text-[0.82rem]">
+                              <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-[#72a0c1]/12 text-[#2f6f9f]">
+                                <Check className="h-3 w-3" />
+                              </span>
+                              {highlight}
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-                      <ul className="grid gap-4">
-                        {activeClass.highlights.map((highlight) => (
-                          <li key={highlight} className="flex gap-3 text-sm leading-6 text-slate-600">
-                            <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-[#72a0c1]/12 text-[#2f6f9f]">
-                              <Check className="h-3 w-3" />
-                            </span>
-                            {highlight}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
 
-                    {activeClass.bonus ? (
-                      <div className="mt-6 rounded-[22px] border border-[#72a0c1]/25 bg-white/75 p-5 shadow-sm">
-                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#2f6f9f]">
-                          {c.bonusLabel}
-                        </p>
-                        <p className="mt-2 text-sm leading-6 text-slate-600">
-                          {activeClass.bonus}
-                        </p>
-                      </div>
-                    ) : null}
+                      {activeClass.bonus ? (
+                        <div className="mt-3 rounded-[18px] border border-[#72a0c1]/25 bg-white/78 px-4 py-3 shadow-sm xl:mt-4 xl:px-5 xl:py-4">
+                          <p className="text-[0.66rem] font-semibold uppercase tracking-[0.18em] text-[#2f6f9f]">
+                            {c.bonusLabel}
+                          </p>
+                          <p className="mt-1.5 text-xs leading-5 text-slate-600 xl:text-[0.82rem]">
+                            {activeClass.bonus}
+                          </p>
+                        </div>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
               </div>
             </motion.div>
           </motion.div>
         ) : null}
-      </AnimatePresence>
+            </AnimatePresence>,
+            document.body,
+          )
+        : null}
     </section>
   );
 }
