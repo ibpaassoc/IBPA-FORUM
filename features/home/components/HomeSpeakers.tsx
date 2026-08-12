@@ -152,13 +152,9 @@ export default function HomeSpeakers() {
         className="relative flex snap-x snap-mandatory scroll-px-[var(--page-gutter)] gap-6 overflow-x-auto overflow-y-hidden overscroll-x-contain scroll-smooth px-[var(--page-gutter)] pb-4 pt-2 [scrollbar-width:none] [touch-action:pan-x_pan-y] [-webkit-overflow-scrolling:touch] md:scroll-px-[max(1rem,calc((100vw-1200px)/2))] md:px-[max(1rem,calc((100vw-1200px)/2))] [&::-webkit-scrollbar]:hidden"
       >
         {c.speakers.map((speaker, index) => (
-          <motion.article
+          <article
             key={speaker.name}
             data-speaker-card
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
             className="box-border w-[calc(100%-(2*var(--page-gutter)))] max-w-[420px] shrink-0 snap-start [scroll-snap-stop:always] overflow-hidden rounded-[36px] border border-[#b9d9eb]/60 bg-white/70 backdrop-blur-2xl transition-[background-color,transform] duration-300 md:hover:-translate-y-1 md:hover:bg-white/85 sm:w-[480px] sm:max-w-none lg:grid lg:w-[580px] lg:grid-cols-[240px_minmax(0,1fr)]"
           >
             <div className="relative aspect-[4/5] overflow-hidden bg-[#eef5f9] sm:aspect-[16/11] lg:aspect-auto lg:h-full lg:min-h-[380px]">
@@ -257,7 +253,7 @@ export default function HomeSpeakers() {
                 ) : null}
               </div>
             </div>
-          </motion.article>
+          </article>
         ))}
       </div>
 

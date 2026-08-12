@@ -86,12 +86,8 @@ export default function HomeMasterClasses() {
 
         <div className="grid gap-5 lg:grid-cols-12 lg:gap-6">
           {masterClasses.map((masterClass, index) => (
-            <motion.article
+            <article
               key={masterClass.name}
-              initial={{ opacity: 0, y: 28 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.55, delay: index * 0.06, ease: "easeOut" }}
               className={`${cardLayouts[index] ?? "lg:col-span-6"} group relative min-w-0 overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.055] shadow-[0_30px_90px_rgba(0,0,0,0.2)] backdrop-blur-sm`}
             >
               <div className="relative aspect-[4/3] min-h-[260px] overflow-hidden bg-[#132431] lg:min-h-[340px]">
@@ -154,7 +150,7 @@ export default function HomeMasterClasses() {
                   <ArrowUpRight className="h-4 w-4" />
                 </button>
               </div>
-            </motion.article>
+            </article>
           ))}
         </div>
       </div>
@@ -212,7 +208,14 @@ export default function HomeMasterClasses() {
                   </div>
 
                   <div className="p-6 sm:p-9 lg:p-10">
-                    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#bda36b]">
+                    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#b9d9eb]">
+                      {c.educatorLabel}
+                    </p>
+                    <p className="mt-3 text-sm leading-6 text-white/60">
+                      {activeClass.role}
+                    </p>
+
+                    <p className="mt-7 text-xs font-semibold uppercase tracking-[0.24em] text-[#bda36b]">
                       {c.topicLabel}
                     </p>
                     <h4 className="mt-3 text-2xl font-semibold leading-tight tracking-[-0.035em] text-white sm:text-3xl">

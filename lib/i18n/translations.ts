@@ -807,12 +807,67 @@ const en = {
         "Focused, hands-on sessions where leading educators turn signature techniques into clear, repeatable systems you can apply in your own work.",
       sessionsLabel: "live master classes",
       formatLabel: "Master Class",
+      educatorLabel: "About the educator",
       topicLabel: "Topic",
       programLabel: "What you will learn",
       bonusLabel: "Participant bonus",
       readMore: "View master class",
       closeLabel: "Close",
-      masterClasses: []
+      masterClasses: [
+        {
+          name: "Olha Ladaniuk",
+          photo: "/images/master-classes/olha-ladaniuk.png",
+          role:
+            "International brow and PMU artist, judge, speaker, and educator with more than 7 years of professional experience. Member of the International Association of Beauty Artists (IABA), multiple winner of international championships including Elan Beauty Show and New Stars, and a judge and speaker at beauty conferences and championships including Kwantum and Global Talent Beauty Cup. Creator of the Left Hand PMU, Professional Sketch, and AirContour techniques; author of the Left Hand PMU training manual, international professional articles, and the Professional Sketch online course. Licensed brow and PMU artist based in Chicago and New York.",
+          topic: "Professional Sketch + AirContour: Championship Brow System",
+          description:
+            "Discover how to create championship-level brows with Olha’s signature Professional Sketch and AirContour techniques. This master class turns an award-winning approach into a precise, repeatable workflow for everyday and competition work.",
+          highlights: [
+            "Build a precise brow sketch and achieve accurate symmetry.",
+            "Recognize and avoid the most common sketching mistakes.",
+            "Create brows that meet international championship standards.",
+            "Understand what judges evaluate and which details distinguish award-winning work.",
+            "Apply Professional Sketch and AirContour as one complete brow system."
+          ],
+          bonus:
+            "Every participant will receive a complimentary personal consultation with Olha to discuss professional questions."
+        },
+        {
+          name: "Masha Pixie",
+          photo: "/images/master-classes/masha-pixie.jpg",
+          role:
+            "International educator and expert in trend-forward short women’s haircuts, creator of the Cut. Code. Repeat. haircut coding system, and founder of Masha Pixie Academy. With more than 12 years in the profession, Masha is an international competition winner, Best Hairstylist of the Year 2026, an Official Judge of the IBPA Beauty Awards 2026, and a Global Creative Awards 2025 USA semifinalist. She specializes in modern Pixie and Bob haircuts and teaches professionals to understand how a shape is built instead of simply copying it.",
+          topic: "Pixie Without Fear: Creating Short Haircuts with Confidence",
+          description:
+            "Short women’s haircuts are among the most requested yet most technically challenging services for many professionals. Fear of making a mistake, losing the shape, or disappointing a client often leads stylists to avoid them. In this master class, Masha will demonstrate how to work confidently and achieve a predictable result through her signature Cut. Code. Repeat. system.",
+          highlights: [
+            "Read and construct the architecture of a modern short haircut.",
+            "Encode a haircut shape so it can be reproduced accurately later.",
+            "Work confidently with complex Pixie and Bob forms.",
+            "Replace copying with a clear understanding of haircut construction.",
+            "Create predictable results and raise the quality and value of your service."
+          ]
+        },
+        {
+          name: "Tetiana Kysliuk",
+          photo: "/images/master-classes/tetiana-kysliuk.png",
+          secondaryPhoto: "/images/master-classes/tetiana-kysliuk-poster.png",
+          role:
+            "Practicing lash-lift and brow artist and educator, multiple winner of international championships, international beauty championship judge, and author of professional training materials and methodological guides. Co-owner of TE’ORA Beauty and the TE’ORA Beauty Championship online competition. Tetiana’s teaching focuses on the logic behind lamination: reading the client’s starting point, choosing the right shield, controlling placement, working with formulas, and predicting the final result.",
+          topic: "Error-Free Lash Lifting: An Algorithm for Predictable Results",
+          description:
+            "This master class is for professionals who want to stop working by eye and achieve stable, predictable results across different starting conditions. Tetiana will show why a quality lash lift begins before the first formula is applied—with careful lash analysis, a clearly defined goal, and a technical plan for reaching it.",
+          highlights: [
+            "Analyze the client’s natural lashes and define the desired result.",
+            "Choose the correct shield for different starting conditions.",
+            "Control lash placement, direction, and curl quality.",
+            "Work logically with formulas instead of relying on a standard protocol alone.",
+            "Identify subtle mistakes that affect direction, curl, and retention.",
+            "Follow the complete workflow from client analysis to final result."
+          ],
+          bonus: "Every participant will receive the Base Lash Lift methodology guide."
+        }
+      ]
     },
     dressCode: {
       eyebrow: "Beauty Business Forum",
@@ -3214,12 +3269,67 @@ const ru: typeof en = {
         "Практические занятия, на которых ведущие преподаватели превращают авторские техники в понятные и воспроизводимые системы для вашей работы.",
       sessionsLabel: "живых мастер-класса",
       formatLabel: "Мастер-класс",
+      educatorLabel: "О преподавателе",
       topicLabel: "Тема",
       programLabel: "Что вы узнаете",
       bonusLabel: "Бонус участнику",
       readMore: "Смотреть мастер-класс",
       closeLabel: "Закрыть",
-      masterClasses: []
+      masterClasses: [
+        {
+          name: "Ольга Ладанюк",
+          photo: "/images/master-classes/olha-ladaniuk.png",
+          role:
+            "Международный мастер по бровям и перманентному макияжу, судья, спикер и преподаватель с более чем 7-летним профессиональным опытом. Член International Association of Beauty Artists (IABA), многократный победитель международных чемпионатов, включая Elan Beauty Show и New Stars, судья и спикер beauty-конференций и чемпионатов, среди которых Kwantum и Global Talent Beauty Cup. Создатель авторских техник Left Hand PMU, Professional Sketch и AirContour, автор учебного пособия Left Hand PMU, профессиональных статей в международных beauty-журналах и онлайн-курса Professional Sketch. Лицензированный brow- и PMU-мастер, работающий в Чикаго и Нью-Йорке.",
+          topic: "Professional Sketch + AirContour: чемпионская система бровей",
+          description:
+            "Узнайте, как создавать брови чемпионского уровня с помощью авторских техник Ольги Professional Sketch и AirContour. На мастер-классе конкурсный подход будет превращён в точную, воспроизводимую систему для повседневной и чемпионатной работы.",
+          highlights: [
+            "Построение точного эскиза бровей и достижение правильной симметрии.",
+            "Распознавание и предотвращение самых распространённых ошибок при построении эскиза.",
+            "Создание бровей, соответствующих стандартам международных чемпионатов.",
+            "Критерии судейской оценки и детали, которые отличают призовые работы.",
+            "Объединение Professional Sketch и AirContour в единую систему работы с бровями."
+          ],
+          bonus:
+            "Каждый участник получит бесплатную личную консультацию с Ольгой по профессиональным вопросам."
+        },
+        {
+          name: "Masha Pixie",
+          photo: "/images/master-classes/masha-pixie.jpg",
+          role:
+            "Преподаватель международного класса, эксперт по трендовым коротким женским стрижкам, создатель авторской системы кодирования стрижек Cut. Code. Repeat. и основатель Masha Pixie Academy. Более 12 лет в профессии. Победитель международных профессиональных конкурсов, обладатель титула Best Hairstylist of the Year 2026, официальный судья IBPA Beauty Awards 2026 и полуфиналист Global Creative Awards 2025 (USA). Специализируется на современных коротких женских стрижках Pixie и Bob и учит мастеров не копировать стрижки, а понимать систему их построения.",
+          topic: "Pixie без страха: как создавать короткие стрижки с уверенностью в результате",
+          description:
+            "Короткие женские стрижки — один из самых востребованных, но одновременно самых сложных видов работ для многих мастеров. Страх ошибиться, потерять форму или не оправдать ожидания клиента часто становится причиной отказа от таких услуг. На мастер-классе Маша покажет, как работать с короткими стрижками уверенно и получать предсказуемый результат благодаря авторской системе Cut. Code. Repeat.",
+          highlights: [
+            "Понимание архитектуры и принципов построения современной короткой стрижки.",
+            "Кодирование формы стрижки, чтобы точно повторить её спустя время.",
+            "Уверенная работа со сложными формами Pixie и Bob.",
+            "Переход от копирования к осознанному построению стрижки.",
+            "Предсказуемый результат, повышение качества работы и стоимости услуг."
+          ]
+        },
+        {
+          name: "Татьяна Кислюк",
+          photo: "/images/master-classes/tetiana-kysliuk.png",
+          secondaryPhoto: "/images/master-classes/tetiana-kysliuk-poster.png",
+          role:
+            "Практикующий мастер и преподаватель по ламинированию ресниц и оформлению бровей, многократный победитель международных чемпионатов, международный судья beauty-чемпионатов, автор профессиональных обучающих материалов и методических пособий. Совладелец бренда TE’ORA Beauty и онлайн-чемпионата TE’ORA Beauty Championship. В работе Татьяна делает акцент на понимании логики ламинирования: анализе исходных данных клиента, правильном выборе валика, контроле выкладки, работе с составами и прогнозировании конечного результата.",
+          topic: "Ламинирование без ошибок: алгоритм, который даёт предсказуемый результат",
+          description:
+            "Мастер-класс для специалистов, которые хотят уйти от работы «на глаз» и научиться получать стабильный и прогнозируемый результат на разных исходниках. Татьяна покажет, почему качественное ламинирование начинается не с нанесения первого состава, а с грамотного анализа ресниц, понимания желаемого результата и технического плана его достижения.",
+          highlights: [
+            "Анализ исходных данных клиента и определение желаемого результата.",
+            "Правильный выбор валика для разных исходников.",
+            "Контроль выкладки, направления ресниц и качества завитка.",
+            "Осознанная работа с составами вместо механического следования стандартному протоколу.",
+            "Ошибки, которые незаметны во время процедуры, но влияют на завиток, направление и стойкость.",
+            "Полный алгоритм работы — от анализа клиента до финального результата."
+          ],
+          bonus: "Каждый участник получит методичку Base Lash Lift."
+        }
+      ]
     },
     dressCode: {
       eyebrow: "Beauty Business Forum",
@@ -5622,12 +5732,67 @@ const ua: typeof en = {
         "Практичні заняття, на яких провідні викладачі перетворюють авторські техніки на зрозумілі й відтворювані системи для вашої роботи.",
       sessionsLabel: "живі майстер-класи",
       formatLabel: "Майстер-клас",
+      educatorLabel: "Про викладача",
       topicLabel: "Тема",
       programLabel: "Що ви дізнаєтеся",
       bonusLabel: "Бонус учаснику",
       readMore: "Переглянути майстер-клас",
       closeLabel: "Закрити",
-      masterClasses: []
+      masterClasses: [
+        {
+          name: "Ольга Ладанюк",
+          photo: "/images/master-classes/olha-ladaniuk.png",
+          role:
+            "Міжнародна майстриня з брів і перманентного макіяжу, суддя, спікерка та викладачка з понад 7-річним професійним досвідом. Членкиня International Association of Beauty Artists (IABA), багаторазова переможниця міжнародних чемпіонатів, зокрема Elan Beauty Show і New Stars, суддя та спікерка beauty-конференцій і чемпіонатів, серед яких Kwantum і Global Talent Beauty Cup. Авторка технік Left Hand PMU, Professional Sketch та AirContour, навчального посібника Left Hand PMU, професійних статей у міжнародних beauty-журналах і онлайн-курсу Professional Sketch. Ліцензована brow- і PMU-майстриня, яка працює в Чикаго та Нью-Йорку.",
+          topic: "Professional Sketch + AirContour: чемпіонська система брів",
+          description:
+            "Дізнайтеся, як створювати брови чемпіонського рівня за допомогою авторських технік Ольги Professional Sketch та AirContour. На майстер-класі конкурсний підхід буде перетворено на точну, відтворювану систему для щоденної та чемпіонатної роботи.",
+          highlights: [
+            "Побудова точного ескізу брів і досягнення правильної симетрії.",
+            "Розпізнавання та запобігання найпоширенішим помилкам під час побудови ескізу.",
+            "Створення брів, що відповідають стандартам міжнародних чемпіонатів.",
+            "Критерії суддівського оцінювання та деталі, які вирізняють призові роботи.",
+            "Об’єднання Professional Sketch та AirContour у цілісну систему роботи з бровами."
+          ],
+          bonus:
+            "Кожен учасник отримає безкоштовну особисту консультацію з Ольгою щодо професійних питань."
+        },
+        {
+          name: "Masha Pixie",
+          photo: "/images/master-classes/masha-pixie.jpg",
+          role:
+            "Викладачка міжнародного класу, експертка з трендових коротких жіночих стрижок, авторка системи кодування стрижок Cut. Code. Repeat. і засновниця Masha Pixie Academy. Понад 12 років у професії. Переможниця міжнародних професійних конкурсів, володарка титулу Best Hairstylist of the Year 2026, офіційна суддя IBPA Beauty Awards 2026 і півфіналістка Global Creative Awards 2025 (USA). Спеціалізується на сучасних коротких жіночих стрижках Pixie та Bob і навчає майстрів не копіювати стрижки, а розуміти систему їх побудови.",
+          topic: "Pixie без страху: як створювати короткі стрижки з упевненістю в результаті",
+          description:
+            "Короткі жіночі стрижки — один із найпопулярніших, але водночас найскладніших видів робіт для багатьох майстрів. Страх помилитися, втратити форму або не виправдати очікування клієнта часто стає причиною відмови від таких послуг. На майстер-класі Маша покаже, як упевнено працювати з короткими стрижками й отримувати передбачуваний результат завдяки авторській системі Cut. Code. Repeat.",
+          highlights: [
+            "Розуміння архітектури та принципів побудови сучасної короткої стрижки.",
+            "Кодування форми стрижки, щоб точно відтворити її згодом.",
+            "Упевнена робота зі складними формами Pixie та Bob.",
+            "Перехід від копіювання до усвідомленої побудови стрижки.",
+            "Передбачуваний результат, підвищення якості роботи та вартості послуг."
+          ]
+        },
+        {
+          name: "Тетяна Кислюк",
+          photo: "/images/master-classes/tetiana-kysliuk.png",
+          secondaryPhoto: "/images/master-classes/tetiana-kysliuk-poster.png",
+          role:
+            "Практикуюча майстриня та викладачка з ламінування вій і оформлення брів, багаторазова переможниця міжнародних чемпіонатів, міжнародна суддя beauty-чемпіонатів, авторка професійних навчальних матеріалів і методичних посібників. Співвласниця бренду TE’ORA Beauty та онлайн-чемпіонату TE’ORA Beauty Championship. У роботі Тетяна зосереджується на розумінні логіки ламінування: аналізі вихідних даних клієнта, правильному виборі валика, контролі викладки, роботі зі складами та прогнозуванні кінцевого результату.",
+          topic: "Ламінування без помилок: алгоритм, що дає передбачуваний результат",
+          description:
+            "Майстер-клас для фахівців, які хочуть відійти від роботи «на око» й навчитися отримувати стабільний і передбачуваний результат на різних вихідних даних. Тетяна покаже, чому якісне ламінування починається не з нанесення першого складу, а з грамотного аналізу вій, розуміння бажаного результату й технічного плану його досягнення.",
+          highlights: [
+            "Аналіз вихідних даних клієнта та визначення бажаного результату.",
+            "Правильний вибір валика для різних вихідних даних.",
+            "Контроль викладки, напрямку вій і якості завитка.",
+            "Усвідомлена робота зі складами замість механічного дотримання стандартного протоколу.",
+            "Помилки, які непомітні під час процедури, але впливають на завиток, напрямок і стійкість.",
+            "Повний алгоритм роботи — від аналізу клієнта до фінального результату."
+          ],
+          bonus: "Кожен учасник отримає методичний посібник Base Lash Lift."
+        }
+      ]
     },
     dressCode: {
       eyebrow: "Beauty Business Forum",
