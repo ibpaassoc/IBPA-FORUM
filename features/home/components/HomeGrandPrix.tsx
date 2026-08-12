@@ -83,7 +83,7 @@ export default function HomeGrandPrix() {
 
           <Reveal delay={0.3}>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <LandingPrimaryButton href="/apply">{gp.cta}</LandingPrimaryButton>
+              <LandingPrimaryButton href="/account/login">{gp.cta}</LandingPrimaryButton>
               <LandingSecondaryButton href="/grand-prix">{gp.learnMore}</LandingSecondaryButton>
             </div>
           </Reveal>

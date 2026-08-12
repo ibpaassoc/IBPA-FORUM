@@ -4,7 +4,6 @@ import type { JuryNominationListItem } from "@/features/jury/server/reviews";
 import AccountPageHeader from "@/features/account/components/AccountPageHeader";
 import JuryNominationCard from "@/features/account/components/jury/JuryNominationCard";
 import JuryReviewSummary from "@/features/account/components/jury/JuryReviewSummary";
-import ApplyAsApplicantButton from "@/features/account/components/jury/ApplyAsApplicantButton";
 import { getServerTranslations } from "@/lib/i18n/server";
 import {
   DashboardStagger,
@@ -24,7 +23,6 @@ const CONTINUE_LIMIT = 2;
 export default async function JuryOverview({
   nominations,
   totals,
-  hasApplicantAccount,
 }: {
   nominations: JuryNominationListItem[];
   totals: {
@@ -35,7 +33,6 @@ export default async function JuryOverview({
     remaining: number;
     completionPercentage: number;
   };
-  hasApplicantAccount: boolean;
 }) {
   const t = await getServerTranslations();
   const ov = t.account.jury.overview;
@@ -63,7 +60,6 @@ export default async function JuryOverview({
         remaining={totals.remaining}
       />
 
-      {!hasApplicantAccount ? <ApplyAsApplicantButton /> : null}
 
       <section aria-labelledby="continue-reviewing-heading" className="mt-1">
         <div className="mb-4 flex items-center justify-between gap-3">

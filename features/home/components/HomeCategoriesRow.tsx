@@ -38,7 +38,7 @@ export default function HomeCategoriesRow() {
             const Icon = categoryIconMap[index % categoryIconMap.length];
 
             return (
-              <a key={`${item}-${index}`} href="/apply">
+              <a key={`${item}-${index}`} href="/account/login">
                 <span
                   className="group inline-flex shrink-0 items-center gap-2.5 rounded-full border border-[var(--border-glass)] bg-white px-5 py-2.5 text-sm font-[var(--font-ui-family)] font-medium tracking-[0.04em] text-[var(--color-ink-soft)] transition-all duration-300 hover:border-[var(--color-ink)] hover:bg-[var(--color-ink)] hover:text-white"
                 >

@@ -76,7 +76,7 @@ export default function HomeHero() {
                 </HeroPrimaryButton>
 
                 <div className="flex flex-wrap items-center justify-center gap-3">
-                  <HeroSecondaryButton href="/apply">
+                  <HeroSecondaryButton href="/account/login">
                     {t.common.applyNow}
                   </HeroSecondaryButton>
 
@@ -120,7 +120,7 @@ export default function HomeHero() {
                 </HeroPrimaryButton>
 
                 <div className="flex flex-wrap items-center justify-center gap-3">
-                  <HeroSecondaryButton href="/apply">
+                  <HeroSecondaryButton href="/account/login">
                     {t.common.applyNow}
                   </HeroSecondaryButton>
 

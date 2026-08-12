@@ -72,7 +72,7 @@ export default function GrandPrixHero() {
           {...enter(0.54)}
           className="mt-10 flex flex-wrap items-center justify-center gap-4"
         >
-          <HeroPrimaryButton href="/apply">
+          <HeroPrimaryButton href="/account/login">
             {t.grandPrixPage.hero.cta ?? "Apply Now"}
           </HeroPrimaryButton>
           <HeroSecondaryButton href="#more-info">

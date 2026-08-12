@@ -45,7 +45,7 @@ export default function AssociationCTA() {
             </p>
 
             <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
-              <LandingPrimaryButton href="/apply">
+              <LandingPrimaryButton href="/account/login">
                 {c.applyButton}
               </LandingPrimaryButton>
 

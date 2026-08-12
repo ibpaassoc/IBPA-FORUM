@@ -76,9 +76,9 @@ const uiFiles = [
 for (const file of uiFiles) {
   assert(!read(file).includes("/apply/jury"), `${file} has no /apply/jury link`);
 }
-// The header "Apply" dropdown still offers participant apply + shared account login.
+// The public menu no longer exposes either invite-only application route.
 const juryMenu = read("shared/components/layout/JuryMenu.tsx");
-assert(juryMenu.includes('href: "/apply"'), "header still offers participant apply");
+assert(!juryMenu.includes('href: "/apply"'), "header does not expose participant apply");
 assert(juryMenu.includes('href: "/account/login"'), "header still offers shared account login");
 
 // ── Backend rejects new jury submissions (scenario 8) ────────────────────────
@@ -107,8 +107,8 @@ const juryRegister = read("app/(public)/jury/register/page.tsx");
 assert(juryRegister.includes("searchParams"), "jury register alias reads search params");
 assert(juryRegister.includes("encodeURIComponent(token)"), "jury register alias preserves setup token");
 assert(
-  read("app/(public)/apply/page.tsx").includes("notFound") === false,
-  "participant /apply route NOT closed"
+  read("app/(public)/apply/page.tsx").includes("isValidApplicationAccessToken"),
+  "participant /apply route also requires an invitation token"
 );
 // Other /api/jury/* routes (existing-member flows) remain intact.
 for (const p of [

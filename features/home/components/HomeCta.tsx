@@ -51,7 +51,7 @@ export default function HomeCta() {
                 />
               </BuyTicketsButton>
 
-              <Link href="/apply" className={buttonClass}>
+              <Link href="/account/login" className={buttonClass}>
                 <ButtonLayers />
                 <span className="relative z-10">{fc.applyAward}</span>
                 <ArrowRight

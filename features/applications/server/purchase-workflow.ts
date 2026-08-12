@@ -3,11 +3,7 @@ import "server-only";
 import { Prisma } from "@prisma/client";
 import { normalizeAccountEmail } from "@/features/account/server/password";
 import { computeApplicantNominationPrice } from "@/features/applications/lib/pricing";
-import {
-  getApplicantApplicationsClosedAt,
-  getApplicantSubmissionAccess,
-  getApplicantSubmissionDeadline,
-} from "@/features/applications/server/deadlines";
+import { getApplicantSubmissionAccess } from "@/features/applications/server/deadlines";
 import { validateMembershipNumber } from "@/features/applications/server/membership";
 import { getApplicationCategories } from "@/features/applications/server/queries";
 import type { CategoryOption } from "@/features/applications/types/application.types";
@@ -18,6 +14,7 @@ import {
 } from "@/features/promos/server/promo-service";
 import { prisma } from "@/shared/lib/prisma";
 import { accountIdentity } from "@/features/account/server/accounts";
+import { isValidApplicationAccessToken } from "@/lib/apply/access";
 
 export const APPLICANT_NOMINATION_PURCHASE_FLOW = "applicant_nomination_purchase";
 export const APPLICANT_PURCHASE_MANIFEST_VERSION = 1;
@@ -40,6 +37,7 @@ export type ApplicantPurchaseManifest = {
   version: typeof APPLICANT_PURCHASE_MANIFEST_VERSION;
   flowType: typeof APPLICANT_NOMINATION_PURCHASE_FLOW;
   source: "public_apply" | "applicant_account" | "admin_manual";
+  submissionOverrideOpen?: boolean;
   locale: "en" | "ru" | "ua";
   createdAt: string;
   applicantProfileId?: string;
@@ -117,21 +115,6 @@ function getString(formData: FormData, key: string) {
 function getBool(formData: FormData, key: string) {
   const value = String(formData.get(key) ?? "").trim().toLowerCase();
   return value === "true" || value === "on" || value === "1" || value === "yes";
-}
-
-async function assertApplicantPurchasingOpen() {
-  const [deadline, closedAt] = await Promise.all([
-    getApplicantSubmissionDeadline(),
-    getApplicantApplicationsClosedAt(),
-  ]);
-
-  if (closedAt || deadline <= new Date()) {
-    throw new ApplicantPurchaseError(
-      409,
-      "APPLICATIONS_CLOSED",
-      "Applications are closed for this competition."
-    );
-  }
 }
 
 async function assertApplicantAccountPurchasingOpen(deadlineOverrideAt: Date | null) {
@@ -297,8 +280,17 @@ async function assertNoOwnedDuplicateNominations({
   }
 }
 
-export async function createPublicApplicantNominationCheckout(formData: FormData) {
-  await assertApplicantPurchasingOpen();
+export async function createPublicApplicantNominationCheckout(
+  formData: FormData,
+  accessToken: string,
+) {
+  if (!isValidApplicationAccessToken(accessToken)) {
+    throw new ApplicantPurchaseError(
+      403,
+      "INVALID_ACCESS_TOKEN",
+      "This application link is invalid or no longer available.",
+    );
+  }
   const input = parsePublicPurchaseForm(formData);
   const normalized = validatePublicInput(input);
   const categories = await getApplicationCategories();
@@ -339,6 +331,7 @@ export async function createPublicApplicantNominationCheckout(formData: FormData
     version: APPLICANT_PURCHASE_MANIFEST_VERSION,
     flowType: APPLICANT_NOMINATION_PURCHASE_FLOW,
     source: "public_apply",
+    submissionOverrideOpen: true,
     locale: input.locale,
     createdAt: new Date().toISOString(),
     applicantProfileId: existingAccount?.applicantProfile?.id,
@@ -405,6 +398,7 @@ export async function createPublicApplicantNominationCheckout(formData: FormData
     finalAmountCents,
     currency: pricing.currency,
     nominationCount: selectedAwards.length,
+    applicationAccessToken: accessToken,
   });
 
   await prisma.payment.update({

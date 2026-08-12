@@ -116,7 +116,7 @@ export default function HomePricing({
         eyebrow: "Nomination Pricing",
         icon: Trophy,
         cta: t.home.participation.award.cta,
-        href: "/apply",
+        href: "/account/login",
         note: ps.grandPrixNote,
         rows: [
           { label: ps.oneNomination, value: awardPrices.oneNomination },

@@ -6,6 +6,7 @@ import {
 import { EnvConfigError, isProduction, validateProductionEnv } from "@/lib/env";
 import { isAdminAuthenticated } from "@/shared/lib/admin-auth";
 import { prisma } from "@/shared/lib/prisma";
+import { isValidApplicationAccessToken } from "@/lib/apply/access";
 
 function getErrorMessage(error: unknown) {
   if (error instanceof Error && error.message) {
@@ -115,6 +116,14 @@ export async function POST(request: NextRequest) {
     }
     const formData = await request.formData();
 
+    const accessToken = String(formData.get("accessToken") ?? "");
+    if (!isValidApplicationAccessToken(accessToken)) {
+      return NextResponse.json(
+        { message: "This application link is invalid or no longer available." },
+        { status: 403 },
+      );
+    }
+
     const rawFileFields = Array.from(formData.entries())
       .filter(([, value]) => value instanceof File)
       .map(([key, value]) => ({
@@ -141,7 +150,7 @@ export async function POST(request: NextRequest) {
       keys: Array.from(new Set(Array.from(formData.keys()))),
     });
 
-    const result = await createPublicApplicantNominationCheckout(formData);
+    const result = await createPublicApplicantNominationCheckout(formData, accessToken);
 
     return NextResponse.json(
       {

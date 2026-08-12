@@ -21,6 +21,7 @@ export async function getApplicantDashboardData() {
       select: {
         id: true,
         status: true,
+        submissionOverrideOpen: true,
         payment: { select: { status: true, paidAt: true } },
         submittedAt: true,
         scoresReleasedAt: true,
@@ -78,7 +79,9 @@ export async function getApplicantDashboardData() {
       ...nomination,
       paymentStatus: nomination.payment.status,
       paidAt: nomination.payment.paidAt,
-      locked: nomination.status === "LOCKED" || submissionAccess.isClosed,
+      locked:
+        nomination.status === "LOCKED" ||
+        !(nomination.submissionOverrideOpen ?? submissionAccess.isOpen),
       completionPercentage,
       missingRequiredCount: missingRequiredFields.length,
     };

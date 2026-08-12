@@ -197,7 +197,7 @@ export default function CategoriesAwardResults() {
                   </p>
                 </div>
 
-                <LandingPrimaryButton href="/apply">
+                <LandingPrimaryButton href="/account/login">
                   {t.common.applyNow}
                 </LandingPrimaryButton>
               </div>

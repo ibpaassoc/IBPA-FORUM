@@ -139,7 +139,7 @@ export default function HomeRegistrationSection() {
                 eyebrow={c.pricing.award.eyebrow}
                 title={c.pricing.award.title}
                 icon={<Trophy size={16} />}
-                footer={<LandingSecondaryButton href="/apply">{c.awards.cta}</LandingSecondaryButton>}
+                footer={<LandingSecondaryButton href="/account/login">{c.awards.cta}</LandingSecondaryButton>}
               >
                 <ComparisonTable rows={awardRows} optionLabel={c.pricing.option} memberLabel={c.pricing.members} standardLabel={c.pricing.standard} />
 

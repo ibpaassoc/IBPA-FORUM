@@ -2,11 +2,17 @@ import PurchaseApplicationForm from "@/features/applications/components/applicat
 import { getApplicationCategories } from "@/features/applications/server/queries";
 import { getPublicRegulations } from "@/features/regulations/server/queries";
 
-export default async function ApplyFormServer() {
+export default async function ApplyFormServer({ accessToken }: { accessToken: string }) {
   const [categories, regulations] = await Promise.all([
     getApplicationCategories(),
     getPublicRegulations(),
   ]);
 
-  return <PurchaseApplicationForm categories={categories} regulations={regulations} />;
+  return (
+    <PurchaseApplicationForm
+      accessToken={accessToken}
+      categories={categories}
+      regulations={regulations}
+    />
+  );
 }

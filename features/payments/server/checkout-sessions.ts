@@ -57,12 +57,14 @@ export async function createApplicantNominationCheckoutSession({
   finalAmountCents,
   currency = "usd",
   nominationCount,
+  applicationAccessToken,
 }: {
   paymentId: string;
   email: string;
   finalAmountCents: number;
   currency?: "usd";
   nominationCount: number;
+  applicationAccessToken?: string;
 }) {
   const stripe = getStripe();
   const appUrl = getAppUrl();
@@ -77,7 +79,11 @@ export async function createApplicantNominationCheckoutSession({
     mode: "payment",
     customer_email: email,
     success_url: `${appUrl}/apply/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${appUrl}/apply/cancel?payment_id=${encodeURIComponent(paymentId)}`,
+    cancel_url: `${appUrl}/apply/cancel?payment_id=${encodeURIComponent(paymentId)}${
+      applicationAccessToken
+        ? `&token=${encodeURIComponent(applicationAccessToken)}`
+        : ""
+    }`,
     metadata,
     payment_intent_data: { metadata },
     line_items: [

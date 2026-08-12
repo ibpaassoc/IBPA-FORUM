@@ -25,19 +25,28 @@ export async function getApplicantApplicationsClosedAt() {
 export async function getApplicantSubmissionAccess(
   deadlineOverrideAt: Date | null,
   now = new Date(),
+  nominationOverrideOpen: boolean | null = null,
 ) {
   const [globalDeadline, globalClosedAt] = await Promise.all([
     getApplicantSubmissionDeadline(),
     getApplicantApplicationsClosedAt(),
   ]);
 
+  const baseAccess = resolveApplicantSubmissionAccess({
+    now,
+    globalDeadline,
+    globalClosedAt,
+    deadlineOverrideAt,
+  });
+
   return {
-    ...resolveApplicantSubmissionAccess({
-      now,
-      globalDeadline,
-      globalClosedAt,
-      deadlineOverrideAt,
-    }),
+    ...baseAccess,
+    ...(nominationOverrideOpen === null
+      ? {}
+      : {
+          isOpen: nominationOverrideOpen,
+          isClosed: !nominationOverrideOpen,
+        }),
     globalDeadline,
     globalClosedAt,
   };

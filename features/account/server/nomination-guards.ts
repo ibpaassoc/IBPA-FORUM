@@ -31,6 +31,7 @@ export async function getApplicantNominationNavigation(
     select: {
       id: true,
       status: true,
+      submissionOverrideOpen: true,
       category: { select: { name: true, slug: true } },
       award: { select: { name: true } },
       answers: true,
@@ -53,7 +54,9 @@ export async function getApplicantNominationNavigation(
     return {
       id: nomination.id,
       status: nomination.status,
-      locked: nomination.status === "LOCKED" || !submissionOpen,
+      locked:
+        nomination.status === "LOCKED" ||
+        !(nomination.submissionOverrideOpen ?? submissionOpen),
       categoryName: nomination.category.name,
       awardName: nomination.award.name,
       completionPercentage: progress.percentage,
@@ -91,6 +94,8 @@ export async function requireOwnedNomination(nominationId: string) {
 
   const submissionAccess = await getApplicantSubmissionAccess(
     applicantProfile.deadlineOverrideAt,
+    new Date(),
+    nomination.submissionOverrideOpen,
   );
 
   return {

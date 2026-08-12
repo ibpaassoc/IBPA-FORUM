@@ -252,6 +252,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ nom
     // persistence so a close or deadline expiry during the request wins.
     const submissionAccess = await getApplicantSubmissionAccess(
       applicantProfile.deadlineOverrideAt,
+      new Date(),
+      nomination.submissionOverrideOpen,
     );
     if (!submissionAccess.isOpen) {
       throw new Response("Applications are closed.", { status: 409 });

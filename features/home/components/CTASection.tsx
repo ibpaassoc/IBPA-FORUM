@@ -23,7 +23,7 @@ export default function CTASection() {
 
         <div className="mt-[var(--space-lg)] flex flex-wrap items-center justify-center gap-[var(--space-sm)]">
           <Link
-            href="/apply"
+            href="/account/login"
             className="ibpa-button ibpa-button-blue"
           >
             {t.common.applyNow}

@@ -110,6 +110,7 @@ export async function processApplicantDeadlineClosure(
   const nominations = await prisma.nomination.findMany({
     where: {
       payment: { status: "PAID" },
+      submissionOverrideOpen: { not: true },
       status: { in: ["DRAFT", "RETURNED_FOR_CHANGES", "SUBMITTED"] },
       OR: [
         { applicantProfile: { deadlineOverrideAt: null } },
