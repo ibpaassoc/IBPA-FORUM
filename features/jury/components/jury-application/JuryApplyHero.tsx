@@ -20,7 +20,7 @@ export default function JuryApplyHero() {
 
       <div className="relative mx-auto w-full max-w-[var(--content-width)] px-[var(--page-gutter)]">
         <Link
-          href="/apply"
+          href="/account/login"
           className="mb-4 inline-flex items-center gap-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-soft)] transition hover:text-[var(--color-ink)]"
         >
           ← {t.applyPage.intro.title}

@@ -42,7 +42,7 @@ export default function CategoriesCTA() {
             </p>
 
             <div className="relative mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <LandingPrimaryButton href="/apply" >
+              <LandingPrimaryButton href="/account/login" >
                 {c.ctaButton}
               </LandingPrimaryButton>
             </div>

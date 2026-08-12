@@ -100,7 +100,7 @@ export default function CategoriesFeatures({
           regulationsByCategory={regulations.categories}
           regulationLanguage={language}
           regulationCopy={regulationCopy[language]}
-          getAwardHref={(awardId) => `/apply?nomination=${encodeURIComponent(awardId)}`}
+          getAwardHref={() => "/account/login"}
           copy={{
             nominationSingular: t.categoriesPage.copy.nominationSingular,
             nominationPlural: t.categoriesPage.copy.nominationPlural,

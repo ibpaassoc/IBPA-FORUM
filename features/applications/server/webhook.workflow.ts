@@ -187,6 +187,8 @@ async function handleApplicantNominationCheckoutCompleted(event: Stripe.Event) {
                 awardId: selectedAward.awardId,
                 categoryId: selectedAward.categoryId,
                 status: "DRAFT",
+                submissionOverrideOpen:
+                  manifest.submissionOverrideOpen === true ? true : null,
                 answers: emptyNominationAnswers() as unknown as Prisma.InputJsonValue,
                 files: emptyStoredFiles() as unknown as Prisma.InputJsonValue,
                 scoringSchema: getCategoryScoringDefinition(

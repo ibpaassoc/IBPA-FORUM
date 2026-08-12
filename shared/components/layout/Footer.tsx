@@ -94,7 +94,6 @@ export default function Footer() {
         { href: "/categories", label: copy.categories },
         { href: "/jury", label: copy.jury },
         { href: "/grand-prix", label: copy.grandPrix },
-        { href: "/apply", label: copy.apply },
       ],
     },
     {

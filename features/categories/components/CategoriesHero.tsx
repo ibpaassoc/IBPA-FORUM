@@ -108,7 +108,7 @@ export default function CategoriesHero() {
           {...enter(0.44)}
           className="mt-9 flex flex-wrap items-center justify-center gap-4"
         >
-          <HeroPrimaryButton href="/apply">
+          <HeroPrimaryButton href="/account/login">
             {t.common.applyAsParticipant}
           </HeroPrimaryButton>
 

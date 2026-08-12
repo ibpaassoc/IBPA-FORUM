@@ -47,7 +47,7 @@ export default function GrandPrixCTA() {
             </p>
 
             <div className="mt-8">
-              <LandingPrimaryButton href="/apply">
+              <LandingPrimaryButton href="/account/login">
                 {t.common.applyNow}
               </LandingPrimaryButton>
             </div>

@@ -46,7 +46,6 @@ export default function JuryMenu({
   }, [mobile, open]);
 
   const menuItems = [
-    { href: "/apply", label: t.common.applyNow },
     { href: "/account/login", label: t.common.account },
   ];
 
@@ -95,7 +94,7 @@ export default function JuryMenu({
       >
         <span className="absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-white/80 to-transparent" />
         <span className="absolute inset-0 rounded-full bg-[#72a0c1]/5" />
-        <span className="relative z-10">{t.common.applyNow}</span>
+        <span className="relative z-10">{t.common.account}</span>
         <ChevronDown
           size={14}
           className={`relative z-10 transition-transform duration-500 ${open ? "rotate-180" : ""}`}

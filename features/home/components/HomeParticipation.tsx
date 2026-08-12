@@ -161,7 +161,7 @@ export default function HomeParticipation({
 
                   <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:mt-0 lg:max-w-[440px] lg:justify-self-end lg:pb-3">
                     <OverlayPricingCard
-                      href="/apply"
+                      href="/account/login"
                       icon={<Trophy size={17} strokeWidth={1.6} />}
                       title={p.award.label}
                       price={awardPrice}

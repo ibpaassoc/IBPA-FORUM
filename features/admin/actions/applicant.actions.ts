@@ -17,7 +17,10 @@ import { getCategoryScoringDefinition } from "@/features/jury/scoring/category-s
 import { emptyNominationAnswers, emptyStoredFiles } from "@/features/database/json-fields";
 import { parseApplicantDeadlineDateTimeLocal } from "@/features/applications/lib/deadline-timezone";
 import { getApplicantApplicationsClosedAt } from "@/features/applications/server/deadlines";
-import { assertNominationStatusTransition } from "@/features/database/nomination-status";
+import {
+  assertNominationStatusTransition,
+  editableNominationStatus,
+} from "@/features/database/nomination-status";
 
 function adminApplicationsPath(params?: Record<string, string>) {
   const query = new URLSearchParams(params).toString();
@@ -349,6 +352,76 @@ export async function updateApplicantDeadlineOverrideAction(formData: FormData) 
   revalidatePath("/admin/applications");
   revalidatePath(`/admin/applications/${profileId}`);
   redirect(adminApplicantPath(profileId, { notice: adminT.actions.deadlineUpdated }));
+}
+
+export async function updateNominationSubmissionAccessAction(formData: FormData) {
+  await requireAdmin();
+
+  const profileId = getString(formData, "profileId");
+  const nominationId = getString(formData, "nominationId");
+  const access = getString(formData, "access");
+
+  if (!profileId || !nominationId) {
+    redirect(adminApplicationsPath({ error: adminT.actions.nominationNotFound }));
+  }
+
+  if (access !== "open" && access !== "close") {
+    redirect(adminApplicantPath(profileId, { error: adminT.actions.invalidNominationAccess }));
+  }
+
+  const nomination = await prisma.nomination.findFirst({
+    where: {
+      id: nominationId,
+      applicantProfileId: profileId,
+      status: { not: "ARCHIVED" },
+    },
+    select: { id: true, status: true, revision: true },
+  });
+
+  if (!nomination) {
+    redirect(adminApplicantPath(profileId, { error: adminT.actions.nominationNotFound }));
+  }
+
+  const nextStatus = access === "open" ? "RETURNED_FOR_CHANGES" : "LOCKED";
+  const transitionAllowed =
+    access === "open"
+      ? nomination.status === "LOCKED"
+      : editableNominationStatus(nomination.status);
+
+  if (!transitionAllowed) {
+    redirect(adminApplicantPath(profileId, { error: adminT.actions.nominationAccessUnavailable }));
+  }
+
+  assertNominationStatusTransition(nomination.status, nextStatus);
+  const updated = await prisma.nomination.updateMany({
+    where: {
+      id: nomination.id,
+      applicantProfileId: profileId,
+      status: nomination.status,
+      revision: nomination.revision,
+    },
+    data: {
+      status: nextStatus,
+      submissionOverrideOpen: access === "open",
+      revision: { increment: 1 },
+    },
+  });
+
+  if (updated.count !== 1) {
+    redirect(adminApplicantPath(profileId, { error: adminT.actions.nominationChanged }));
+  }
+
+  revalidatePath("/admin/applications");
+  revalidatePath(`/admin/applications/${profileId}`);
+  syncApplicationOnChange(profileId);
+  redirect(
+    adminApplicantPath(profileId, {
+      notice:
+        access === "open"
+          ? adminT.actions.nominationOpened
+          : adminT.actions.nominationClosed,
+    }),
+  );
 }
 
 export async function closeApplicantApplicationsAction() {

@@ -504,9 +504,11 @@ function findRequestedNomination(categories: CategoryOption[], nominationId: str
  * recalculated server-side at checkout creation.
  */
 export default function PurchaseApplicationForm({
+  accessToken,
   categories,
   regulations,
 }: {
+  accessToken: string;
   categories: CategoryOption[];
   regulations: PublicRegulations;
 }) {
@@ -860,6 +862,7 @@ export default function PurchaseApplicationForm({
       formData.set(key, typeof value === "boolean" ? String(value) : value);
     }
     formData.set("locale", language);
+    formData.set("accessToken", accessToken);
     for (const awardId of selectedAwardIds) {
       formData.append("selectedAwardIds", awardId);
     }

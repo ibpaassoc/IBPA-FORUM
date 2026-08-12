@@ -5,7 +5,7 @@ import { RefreshCcw } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { IconBadge, PageHero, PageSection } from "@/shared/components/public";
 
-export default function PaymentCancelCard() {
+export default function PaymentCancelCard({ accessToken }: { accessToken: string }) {
   const { language } = useLanguage();
   const copy = {
     en: {
@@ -62,7 +62,10 @@ export default function PaymentCancelCard() {
           </p>
 
           <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row">
-            <Link href="/apply" className="ibpa-button ibpa-button-primary">
+            <Link
+              href={`/apply?token=${encodeURIComponent(accessToken)}`}
+              className="ibpa-button ibpa-button-primary"
+            >
               {copy.back}
             </Link>
             <Link href="/account/login" className="ibpa-button ibpa-button-ghost">

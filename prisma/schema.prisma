@@ -308,6 +308,7 @@ model Nomination {
   awardId            String
   categoryId         String
   status             NominationStatus       @default(DRAFT)
+  submissionOverrideOpen Boolean?
   revision           Int                    @default(1)
   answers            Json
   files              Json

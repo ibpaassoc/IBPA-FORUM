@@ -151,8 +151,8 @@ assert(has(purchaseWorkflow, "assertNoOwnedDuplicateNominations"), "duplicate no
 assert(has(purchaseWorkflow, "pricingSnapshot"), "pending payment stores a versioned pricing snapshot");
 assert(has(purchaseWorkflow, 'source: "applicant_account"'), "account add-nomination checkout uses account profile data");
 assert(
-  has(purchaseWorkflow, "APPLICATIONS_CLOSED"),
-  "purchase workflow rejects checkout after deadline closure"
+  has(purchaseWorkflow, "isValidApplicationAccessToken"),
+  "public purchase workflow requires the application invitation token"
 );
 
 const webhookWorkflow = read("features/applications/server/webhook.workflow.ts");
@@ -214,6 +214,13 @@ assert(has(applicantAdminActions, "resendApplicantRegistrationLinkAction"), "adm
 assert(has(applicantAdminActions, "bulkResendApplicantRegistrationLinksAction"), "admin can bulk resend registration links");
 assert(has(applicantAdminActions, "issueApplicantRegistrationLink"), "admin resend uses shared registration service");
 assert(has(applicantAdminActions, "updateApplicantDeadlineOverrideAction"), "admin can set applicant deadline overrides");
+assert(has(applicantAdminActions, "updateNominationSubmissionAccessAction"), "admin can open or close one nomination");
+assert(has(applicantAdminActions, "submissionOverrideOpen: access === \"open\""), "individual admin access changes persist an explicit override");
+assert(has(applicantAdminActions, "editableNominationStatus"), "admin only closes applicant-editable nominations");
+assert(
+  has(read("features/admin/components/participant-applications/ApplicantAdminDetailPage.tsx"), "updateNominationSubmissionAccessAction"),
+  "admin nomination detail renders individual access controls",
+);
 assert(
   has(applicantAdminActions, 'status: "RETURNED_FOR_CHANGES"'),
   "a future admin extension reopens nominations locked by global closure",
@@ -237,12 +244,11 @@ assert(has(roleRedirects, "safeNextForRole"), "cross-role dashboard redirects ar
 assert(has(read("app/login/page.tsx"), "!roleParam"), "explicit role login can replace an existing opposite-role session");
 assert(has(read("features/account/components/AccountRoleSwitcher.tsx"), "Switch to"), "dual-role accounts expose a role switch action");
 assert(has(read("features/test/components/TestActorBanner.tsx"), "Open DEV panel"), "DEV accounts display a quick link to the DEV panel");
-assert(has(read("features/account/components/jury/ApplyAsApplicantButton.tsx"), 'href="/apply"'), "jury applicant action uses the standard public application route");
-assert(!has(read("features/account/components/jury/ApplyAsApplicantButton.tsx"), "startApplicantOnboardingFromJury"), "jury applicant action no longer creates an account from the dashboard");
+assert(!has(read("features/account/components/jury/JuryOverview.tsx"), 'href="/apply"'), "jury account does not expose the invite-only participant route");
 assert(has(read("features/account/server/accounts.ts"), "findSiblingAccount"), "account switcher uses an explicit same-scope sibling lookup");
 assert(has(accountAuth, 'id: "account-switch"'), "authenticated role switching has a dedicated credentials provider");
 assert(has(read("features/account/components/AccountRoleSwitcher.tsx"), 'signIn("account-switch"'), "the role switcher changes the session without returning to login");
-assert(has(read("features/account/components/jury/JuryOverview.tsx"), "!hasApplicantAccount"), "Jury onboarding is hidden when an Applicant identity already exists");
+assert(!has(read("features/account/components/jury/JuryOverview.tsx"), "/apply"), "Jury dashboard does not advertise participant onboarding");
 assert(has(read("features/jury/server/auth.ts"), 'requireAccount("JURY")'), "jury-only routes return unauthenticated users to jury login");
 assert(has(read("features/account/components/ApplicantSidebar.tsx"), "/login?role=applicant"), "applicant logout returns to applicant login");
 assert(has(read("features/account/components/jury/JuryAccountSidebar.tsx"), "/login?role=jury"), "jury logout returns to jury login");
