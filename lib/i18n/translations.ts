@@ -800,6 +800,20 @@ const en = {
         },
       ]
     },
+    masterClassesSection: {
+      eyebrow: "Live Education",
+      title: "Master Classes",
+      description:
+        "Focused, hands-on sessions where leading educators turn signature techniques into clear, repeatable systems you can apply in your own work.",
+      sessionsLabel: "live master classes",
+      formatLabel: "Master Class",
+      topicLabel: "Topic",
+      programLabel: "What you will learn",
+      bonusLabel: "Participant bonus",
+      readMore: "View master class",
+      closeLabel: "Close",
+      masterClasses: []
+    },
     dressCode: {
       eyebrow: "Beauty Business Forum",
       title: "Dress Code",
@@ -3192,6 +3206,20 @@ const ru: typeof en = {
             "https://www.instagram.com/medbusinessacademy?igsh=ZTk2MnJ3djUzZmFo"
         },
       ]
+    },
+    masterClassesSection: {
+      eyebrow: "Живое обучение",
+      title: "Мастер-классы",
+      description:
+        "Практические занятия, на которых ведущие преподаватели превращают авторские техники в понятные и воспроизводимые системы для вашей работы.",
+      sessionsLabel: "живых мастер-класса",
+      formatLabel: "Мастер-класс",
+      topicLabel: "Тема",
+      programLabel: "Что вы узнаете",
+      bonusLabel: "Бонус участнику",
+      readMore: "Смотреть мастер-класс",
+      closeLabel: "Закрыть",
+      masterClasses: []
     },
     dressCode: {
       eyebrow: "Beauty Business Forum",
@@ -5586,6 +5614,20 @@ const ua: typeof en = {
             "https://www.instagram.com/medbusinessacademy?igsh=ZTk2MnJ3djUzZmFo"
         },
       ]
+    },
+    masterClassesSection: {
+      eyebrow: "Живе навчання",
+      title: "Майстер-класи",
+      description:
+        "Практичні заняття, на яких провідні викладачі перетворюють авторські техніки на зрозумілі й відтворювані системи для вашої роботи.",
+      sessionsLabel: "живі майстер-класи",
+      formatLabel: "Майстер-клас",
+      topicLabel: "Тема",
+      programLabel: "Що ви дізнаєтеся",
+      bonusLabel: "Бонус учаснику",
+      readMore: "Переглянути майстер-клас",
+      closeLabel: "Закрити",
+      masterClasses: []
     },
     dressCode: {
       eyebrow: "Beauty Business Forum",

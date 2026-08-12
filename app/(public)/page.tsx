@@ -15,6 +15,10 @@ const HomeSpeakers = dynamic(
   () => import("@/features/home/components/HomeSpeakers")
 );
 
+const HomeMasterClasses = dynamic(
+  () => import("@/features/home/components/HomeMasterClasses")
+);
+
 const HomePreviousWinners = dynamic(
   () => import("@/features/home/components/HomePreviousWinners")
 );
@@ -37,6 +41,7 @@ export default function HomePagePremium() {
       {/*<HomeProgram />*/}
       <HomeConversionBlock />
       <HomeSpeakers />
+      <HomeMasterClasses />
       <HomeDressCode />
       <HomeSponsors />
       <HomePreviousForum />
