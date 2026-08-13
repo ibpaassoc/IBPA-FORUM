@@ -18,7 +18,22 @@ import type { Translations } from "@/lib/i18n/translations";
 import { Reveal } from "@/shared/components/public";
 
 type SponsorsCopy = Translations["home"]["sponsorsSection"];
-type Sponsor = SponsorsCopy["sponsors"][number];
+type Sponsor = {
+  id: string;
+  name: string;
+  label: string;
+  logo: string;
+  logoAlt: string;
+  description: string;
+  location?: string;
+  website?: string;
+  websiteLabel?: string;
+  instagram?: string;
+  instagramLabel?: string;
+  email?: string;
+  featureImage?: string;
+  featureImageAlt?: string;
+};
 type Direction = 1 | -1;
 
 const FOCUS_RING =
@@ -39,7 +54,13 @@ function SponsorStory({ sponsor, copy }: { sponsor: Sponsor; copy: SponsorsCopy 
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 z-[-1] translate-x-3 translate-y-3 rounded-[2rem] border border-[#b9d9eb]/42 bg-white/24 shadow-[0_16px_34px_rgba(114,160,193,0.08)] backdrop-blur-md"
         />
-        <div className="relative flex min-h-56 items-center justify-center overflow-hidden rounded-[2rem] border border-[#9fcae3]/68 bg-white/42 px-7 py-10 shadow-[0_20px_48px_rgba(83,145,184,0.15),inset_0_1px_0_rgba(255,255,255,0.96)] backdrop-blur-xl sm:min-h-64 sm:px-10 sm:py-12">
+        <div
+          className={`relative flex items-center justify-center overflow-hidden rounded-[2rem] border border-[#9fcae3]/68 bg-white/42 shadow-[0_20px_48px_rgba(83,145,184,0.15),inset_0_1px_0_rgba(255,255,255,0.96)] backdrop-blur-xl ${
+            sponsor.featureImage
+              ? "aspect-[4/5] min-h-0"
+              : "min-h-56 px-7 py-10 sm:min-h-64 sm:px-10 sm:py-12"
+          }`}
+        >
           <span
             aria-hidden="true"
             className="pointer-events-none absolute inset-x-8 top-px h-px bg-white/95"
@@ -48,15 +69,42 @@ function SponsorStory({ sponsor, copy }: { sponsor: Sponsor; copy: SponsorsCopy 
             aria-hidden="true"
             className="pointer-events-none absolute bottom-8 left-px top-8 w-px bg-white/78"
           />
-          <div className="relative h-24 w-full max-w-[18rem] sm:h-28">
-            <Image
-              src={sponsor.logo}
-              alt={sponsor.logoAlt}
-              fill
-              sizes="(min-width: 1024px) 19rem, (min-width: 640px) 18rem, calc(100vw - 4rem)"
-              className="object-contain"
-            />
-          </div>
+          {sponsor.featureImage ? (
+            <>
+              <Image
+                src={sponsor.featureImage}
+                alt={sponsor.featureImageAlt ?? sponsor.logoAlt}
+                fill
+                sizes="(min-width: 1024px) 19rem, (min-width: 640px) 18rem, calc(100vw - 4rem)"
+                className="object-cover"
+              />
+              <span
+                aria-hidden="true"
+                className="absolute inset-0 bg-[linear-gradient(180deg,transparent_52%,rgba(16,24,42,0.42)_100%)]"
+              />
+              <div className="absolute inset-x-5 bottom-5 h-24 rounded-[1.35rem] border border-white/80 bg-white/92 px-5 py-3 shadow-xl backdrop-blur-xl sm:inset-x-6 sm:bottom-6 sm:h-28">
+                <div className="relative h-full w-full">
+                  <Image
+                    src={sponsor.logo}
+                    alt={sponsor.logoAlt}
+                    fill
+                    sizes="16rem"
+                    className="object-contain"
+                  />
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="relative h-24 w-full max-w-[18rem] sm:h-28">
+              <Image
+                src={sponsor.logo}
+                alt={sponsor.logoAlt}
+                fill
+                sizes="(min-width: 1024px) 19rem, (min-width: 640px) 18rem, calc(100vw - 4rem)"
+                className="object-contain"
+              />
+            </div>
+          )}
         </div>
       </div>
 
@@ -65,16 +113,20 @@ function SponsorStory({ sponsor, copy }: { sponsor: Sponsor; copy: SponsorsCopy 
           {sponsor.name}
         </h3>
 
-        <p className="page-copy mt-4 max-w-2xl text-pretty">{sponsor.description}</p>
+        <p className="page-copy mt-4 max-w-2xl whitespace-pre-line text-pretty">
+          {sponsor.description}
+        </p>
 
         <dl className="mt-7 grid gap-x-7 gap-y-5 sm:grid-cols-2">
-          <div>
-            <dt className={META_LABEL_CLASS}>{copy.metaLocation}</dt>
-            <dd className="mt-2 inline-flex min-h-11 max-w-full items-center gap-2 break-words text-sm font-medium text-[#24394b]">
-              <MapPin className="h-4 w-4 shrink-0 text-[#72a0c1]" aria-hidden="true" />
-              {sponsor.location}
-            </dd>
-          </div>
+          {sponsor.location ? (
+            <div>
+              <dt className={META_LABEL_CLASS}>{copy.metaLocation}</dt>
+              <dd className="mt-2 inline-flex min-h-11 max-w-full items-center gap-2 break-words text-sm font-medium text-[#24394b]">
+                <MapPin className="h-4 w-4 shrink-0 text-[#72a0c1]" aria-hidden="true" />
+                {sponsor.location}
+              </dd>
+            </div>
+          ) : null}
 
           {sponsor.website ? (
             <div>

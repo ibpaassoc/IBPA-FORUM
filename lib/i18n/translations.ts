@@ -866,6 +866,22 @@ const en = {
             "Follow the complete workflow from client analysis to final result."
           ],
           bonus: "Every participant will receive the Base Lash Lift methodology guide."
+        },
+        {
+          name: "Viktoriia Tesalova",
+          photo: "/images/master-classes/viktoriia-tesalova.jpg",
+          role:
+            "Viktoriia Tesalova is a permanent makeup master trainer and the owner of Tesalova Viktoriia PMU in Sacramento, California. She has worked in permanent makeup for 10 years, beginning in Ukraine and practicing in the United States for the past several years. Her experience includes more than 3,800 clients and over five years of teaching, from foundational programs to advanced courses for working artists. She developed TSCP for scar and stretch-mark camouflage and TCMS, a color-selection system. Her students work in California, Bali, Ukraine, Bulgaria, and Italy. Viktoriia is a professional member of SPCP and IBPA in the Educators & Trainers category and holds a Body Art Practitioner certificate in Placer County. In 2024, she won first place at Golden Hand in Greece and at the Worldwide Beauty Championship in Amsterdam, and was named among the top 10 permanent makeup artists by IBA Beauty Awards. For more than 10 years, she has been invited to judge international championships.",
+          topic:
+            "Complex Color Theory — Explained Simply: Choosing the Right Lip Pigment for Predictable Results",
+          description:
+            "A practical system for understanding what pigments contain, reading their components, forecasting healed color, and controlling saturation — from transparent results to rich, Instagram-ready color that still looks natural.",
+          highlights: [
+            "What pigment consists of and how to read its components.",
+            "How to predict the healed color result.",
+            "How to create effects from transparent to saturated without mistakes.",
+            "How to achieve rich, Instagram-ready coverage while preserving a natural result."
+          ]
         }
       ]
     },
@@ -1069,6 +1085,26 @@ const en = {
           website: "https://www.zisuc.us/",
           websiteLabel: "zisuc.us",
           email: "info@zisuc.us",
+        },
+        {
+          id: "marua-skincare",
+          name: "MARUA Skincare",
+          label: "Featured Sponsor",
+          logo: "/images/sponsors/marua/marua-logo.png",
+          logoAlt: "MARUA Clinical Skincare logo",
+          description:
+            "MARUA Skincare is modern professional skincare that brings together a scientific approach, functional formulas, and a minimalist aesthetic. At the heart of MARUA’s philosophy are skin-barrier restoration, skin comfort, and results that begin with health.",
+        },
+        {
+          id: "ha-skin-lab",
+          name: "H.A. Skin Lab",
+          label: "Featured Sponsor",
+          logo: "/images/sponsors/ha-skin-lab/ha-skin-lab-logo.png",
+          logoAlt: "H.A. Skin Lab logo",
+          featureImage: "/images/sponsors/ha-skin-lab/ha-skin-lab-product.webp",
+          featureImageAlt: "H.A. Skin Lab Oxy Cleanser with a white orchid",
+          description:
+            "H.A. Skin Lab is a professional skincare brand specializing in care for problem-prone skin, acne, post-acne marks, hyperpigmentation, and age-related changes. The brand combines modern active ingredients with a professional approach to correcting skin concerns, emphasizing efficacy, skin-barrier restoration, and comprehensive treatment of imperfections.\n\nPrimary focus: Professional and at-home care for skin prone to acne and inflammation; correction of post-acne marks and pigmentation; support for a healthy skin barrier; and anti-aging care.\n\nProducts: The H.A. Skin Lab line includes professional products for at-home and salon care, including cleansers, corrective pads with active ingredients, masks, and products that restore and maintain skin health.\n\nOne of the brand’s key products is H.A. Skin Lab Corrective Pads — a multifunctional product developed to address breakouts, post-acne marks, uneven tone, and skin texture comprehensively. The formula is designed not only to correct existing imperfections, but also to support clearer, more balanced skin.\n\nBrand mission: To create effective professional skincare solutions that help specialists and their clients achieve visible, lasting results without overly complicated routines.",
         },
       ],
     },
@@ -3328,6 +3364,22 @@ const ru: typeof en = {
             "Полный алгоритм работы — от анализа клиента до финального результата."
           ],
           bonus: "Каждый участник получит методичку Base Lash Lift."
+        },
+        {
+          name: "Виктория Тесалова",
+          photo: "/images/master-classes/viktoriia-tesalova.jpg",
+          role:
+            "Виктория Тесалова — мастер-тренер перманентного макияжа и владелица студии Tesalova Viktoriia PMU в Сакраменто, Калифорния. В профессии уже 10 лет: начинала в Украине, а последние несколько лет практикует в США. За это время Виктория работала с более чем 3 800 клиентами и свыше пяти лет преподаёт — от базового обучения до курсов повышения квалификации для действующих мастеров. Среди её разработок — методика TSCP для камуфляжа шрамов и растяжек и TCMS, система подбора цвета. Ученицы Виктории работают в Калифорнии, на Бали, в Украине, Болгарии и Италии. Она является профессиональным членом SPCP и IBPA в категории педагогов и тренеров и имеет сертификат Body Art Practitioner в округе Placer. В 2024 году Виктория заняла первое место на Golden Hand в Греции и на Worldwide Beauty Championship в Амстердаме, а также вошла в топ-10 мастеров перманентного макияжа по версии IBA Beauty Awards. Более 10 лет её приглашают судить международные чемпионаты.",
+          topic:
+            "Сложная колористика — простым языком: как правильно подбирать пигмент для губ, чтобы получать прогнозируемые результаты",
+          description:
+            "Практическая система, которая поможет разобраться в составе пигментов, научиться читать их компоненты, прогнозировать остаток цвета и управлять насыщенностью — от прозрачного эффекта до сочного, «инстаграмного» прокраса с натуральным результатом.",
+          highlights: [
+            "Из чего состоит пигмент и как читать его компоненты.",
+            "Как прогнозировать остаток цвета.",
+            "Как получать эффект от прозрачного до насыщенного без ошибок.",
+            "Как добиваться сочных, «инстаграмных» прокрасов при натуральном результате."
+          ]
         }
       ]
     },
@@ -3531,6 +3583,26 @@ const ru: typeof en = {
           website: "https://www.zisuc.us/",
           websiteLabel: "zisuc.us",
           email: "info@zisuc.us",
+        },
+        {
+          id: "marua-skincare",
+          name: "MARUA Skincare",
+          label: "Главный спонсор",
+          logo: "/images/sponsors/marua/marua-logo.png",
+          logoAlt: "Логотип MARUA Clinical Skincare",
+          description:
+            "MARUA Skincare — современный профессиональный уход за кожей, объединяющий научный подход, функциональные формулы и эстетику минимализма. В центре философии MARUA — восстановление кожного барьера, комфорт кожи и результат, который начинается со здоровья.",
+        },
+        {
+          id: "ha-skin-lab",
+          name: "H.A. Skin Lab",
+          label: "Главный спонсор",
+          logo: "/images/sponsors/ha-skin-lab/ha-skin-lab-logo.png",
+          logoAlt: "Логотип H.A. Skin Lab",
+          featureImage: "/images/sponsors/ha-skin-lab/ha-skin-lab-product.webp",
+          featureImageAlt: "Очищающее средство H.A. Skin Lab Oxy Cleanser с белой орхидеей",
+          description:
+            "H.A. Skin Lab — профессиональный skincare-бренд, специализирующийся на уходе за проблемной кожей, акне, постакне, гиперпигментацией и возрастными изменениями. Бренд сочетает современные активные ингредиенты и профессиональный подход к коррекции состояния кожи, делая акцент на эффективности, восстановлении кожного барьера и комплексной работе с несовершенствами.\n\nОсновное направление: Профессиональный и домашний уход за кожей, склонной к акне и воспалениям, коррекция постакне и пигментации, поддержание здорового кожного барьера и anti-age уход.\n\nПродукция: В линейку H.A. Skin Lab входят профессиональные средства для домашнего и салонного ухода, включая очищающие средства, корректирующие pads с активными компонентами, маски и продукты для восстановления и поддержания здоровья кожи.\n\nОдним из ключевых продуктов бренда являются H.A. Skin Lab Corrective Pads — многофункциональный продукт, разработанный для комплексной работы с высыпаниями, постакне, неровным тоном и текстурой кожи. Формула направлена не только на коррекцию существующих несовершенств, но и на поддержание более чистого и сбалансированного состояния кожи.\n\nМиссия бренда: Создавать эффективные профессиональные skincare-решения, которые помогают специалистам и их клиентам достигать видимых и устойчивых результатов без чрезмерно сложных схем ухода.",
         },
       ],
     },
@@ -5791,6 +5863,22 @@ const ua: typeof en = {
             "Повний алгоритм роботи — від аналізу клієнта до фінального результату."
           ],
           bonus: "Кожен учасник отримає методичний посібник Base Lash Lift."
+        },
+        {
+          name: "Вікторія Тесалова",
+          photo: "/images/master-classes/viktoriia-tesalova.jpg",
+          role:
+            "Вікторія Тесалова — майстриня-тренерка з перманентного макіяжу та власниця студії Tesalova Viktoriia PMU у Сакраменто, Каліфорнія. У професії вже 10 років: починала в Україні, а останні кілька років практикує у США. За цей час Вікторія працювала з понад 3 800 клієнтами й більше п’яти років викладає — від базового навчання до курсів підвищення кваліфікації для практикуючих майстрів. Серед її розробок — методика TSCP для камуфляжу шрамів і розтяжок та TCMS, система добору кольору. Учениці Вікторії працюють у Каліфорнії, на Балі, в Україні, Болгарії та Італії. Вона є професійною членкинею SPCP та IBPA у категорії педагогів і тренерів і має сертифікат Body Art Practitioner в окрузі Placer. У 2024 році Вікторія посіла перше місце на Golden Hand у Греції та на Worldwide Beauty Championship в Амстердамі, а також увійшла до топ-10 майстрів перманентного макіяжу за версією IBA Beauty Awards. Понад 10 років її запрошують судити міжнародні чемпіонати.",
+          topic:
+            "Складна колористика — простою мовою: як правильно добирати пігмент для губ, щоб отримувати прогнозовані результати",
+          description:
+            "Практична система, яка допоможе розібратися у складі пігментів, навчитися читати їхні компоненти, прогнозувати залишок кольору й керувати насиченістю — від прозорого ефекту до соковитого, «інстаграмного» прокрасу з природним результатом.",
+          highlights: [
+            "Із чого складається пігмент і як читати його компоненти.",
+            "Як прогнозувати залишок кольору.",
+            "Як отримувати ефект від прозорого до насиченого без помилок.",
+            "Як досягати соковитих, «інстаграмних» прокрасів зі збереженням природного результату."
+          ]
         }
       ]
     },
@@ -5994,6 +6082,26 @@ const ua: typeof en = {
           website: "https://www.zisuc.us/",
           websiteLabel: "zisuc.us",
           email: "info@zisuc.us",
+        },
+        {
+          id: "marua-skincare",
+          name: "MARUA Skincare",
+          label: "Головний спонсор",
+          logo: "/images/sponsors/marua/marua-logo.png",
+          logoAlt: "Логотип MARUA Clinical Skincare",
+          description:
+            "MARUA Skincare — сучасний професійний догляд за шкірою, що поєднує науковий підхід, функціональні формули та естетику мінімалізму. У центрі філософії MARUA — відновлення шкірного бар'єра, комфорт шкіри й результат, який починається зі здоров'я.",
+        },
+        {
+          id: "ha-skin-lab",
+          name: "H.A. Skin Lab",
+          label: "Головний спонсор",
+          logo: "/images/sponsors/ha-skin-lab/ha-skin-lab-logo.png",
+          logoAlt: "Логотип H.A. Skin Lab",
+          featureImage: "/images/sponsors/ha-skin-lab/ha-skin-lab-product.webp",
+          featureImageAlt: "Очищувальний засіб H.A. Skin Lab Oxy Cleanser із білою орхідеєю",
+          description:
+            "H.A. Skin Lab — професійний skincare-бренд, що спеціалізується на догляді за проблемною шкірою, акне, постакне, гіперпігментацією та віковими змінами. Бренд поєднує сучасні активні інгредієнти й професійний підхід до корекції стану шкіри, роблячи акцент на ефективності, відновленні шкірного бар'єра та комплексній роботі з недосконалостями.\n\nОсновний напрям: Професійний і домашній догляд за шкірою, схильною до акне та запалень, корекція постакне й пігментації, підтримання здорового шкірного бар'єра та anti-age догляд.\n\nПродукція: До лінійки H.A. Skin Lab входять професійні засоби для домашнього й салонного догляду, зокрема очищувальні засоби, коригувальні pads з активними компонентами, маски та продукти для відновлення й підтримання здоров'я шкіри.\n\nОдним із ключових продуктів бренду є H.A. Skin Lab Corrective Pads — багатофункціональний продукт, розроблений для комплексної роботи з висипаннями, постакне, нерівним тоном і текстурою шкіри. Формула спрямована не лише на корекцію наявних недосконалостей, а й на підтримання чистішого та збалансованішого стану шкіри.\n\nМісія бренду: Створювати ефективні професійні skincare-рішення, які допомагають фахівцям та їхнім клієнтам досягати видимих і стійких результатів без надмірно складних схем догляду.",
         },
       ],
     },
