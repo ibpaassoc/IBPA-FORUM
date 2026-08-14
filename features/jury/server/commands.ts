@@ -24,6 +24,7 @@ import {
   normalizeApprovedCategories,
   requireApprovedCategories,
 } from "@/features/jury/lib/approved-categories";
+import { getJuryAccountSetupState } from "@/features/jury/lib/account-setup";
 import { buildJuryFieldErrors } from "@/features/jury/schemas/jury-application.schema";
 import { revalidatePublicJuryMembers } from "@/features/jury/server/queries";
 import { type BlobFileInfo, getText, toOptionalText } from "@/features/jury/server/uploads";
@@ -565,13 +566,16 @@ export async function approveJuryApplicationWithoutPayment(id: string) {
 export async function resendJuryRegistrationLink(id: string) {
   const application = await prisma.juryApplication.findUnique({
     where: { id },
-    include: { account: true, payments: { where: { status: "PAID" }, select: { id: true }, take: 1 } },
+    include: { account: true, profile: { select: { id: true } } },
   });
-  if (!application || application.status !== "PAID" || application.payments.length === 0) {
-    return { status: "ineligible" as const };
-  }
-  if (application.account.status === "DISABLED") return { status: "ineligible" as const };
-  if (application.account.passwordHash) return { status: "registered" as const };
+  if (!application) return { status: "ineligible" as const };
+  const setupState = getJuryAccountSetupState({
+    hasJuryProfile: Boolean(application.profile),
+    accountStatus: application.account.status,
+    passwordHash: application.account.passwordHash,
+  });
+  if (setupState === "registered") return { status: "registered" as const };
+  if (setupState !== "eligible") return { status: "ineligible" as const };
   const result = await sendSetupEmailForAccount(application.account.id);
   return result?.delivered ? { status: "sent" as const } : { status: "delivery_failed" as const };
 }

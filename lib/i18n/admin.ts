@@ -251,7 +251,9 @@ export const adminT = {
     activateWithoutPayment: "Активировать без оплаты",
     activateWithoutPaymentNote:
       "Судья сразу станет активным (статус «Оплачено») — без Stripe-сессии и письма.",
-    juryRegistrationPaidRequired: "Ссылка регистрации доступна только для оплаченных судей.",
+    sendJurySetupLink: "Отправить ссылку настройки",
+    juryRegistrationUnavailable: "Сначала активируйте профиль судьи, затем отправьте ссылку настройки аккаунта.",
+    juryRegistrationDisabled: "Аккаунт судьи отключён. Ссылка настройки недоступна.",
     juryRegistrationAlreadyComplete: "Аккаунт судьи уже зарегистрирован. Для доступа используйте сброс пароля.",
     statusOverride: "Смена статуса вручную",
     statusOverrideNote: "Статус изменится без писем и Stripe-сессий.",

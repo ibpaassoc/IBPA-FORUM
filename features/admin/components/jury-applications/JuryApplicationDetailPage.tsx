@@ -31,6 +31,7 @@ import {
 import DeleteJuryApplicationButton from "@/features/admin/components/jury-applications/DeleteJuryApplicationButton";
 import ApprovedCategoriesPicker from "@/features/admin/components/jury-applications/ApprovedCategoriesPicker";
 import RequestAdditionalInfoPanel from "@/features/admin/components/jury-applications/RequestAdditionalInfoPanel";
+import { getJuryAccountSetupState } from "@/features/jury/lib/account-setup";
 import ReviewWorkspace, { type ReviewTab } from "@/features/admin/components/review/ReviewWorkspace";
 import {
   MobileActionBar,
@@ -96,13 +97,12 @@ export default function JuryApplicationDetailPage({
   const canDecide = application.status !== "PAID";
   const canReject = application.status !== "REJECTED" && application.status !== "PAID";
   const account = application.account;
-  const isRegistered = Boolean(account?.passwordHash);
-  const isAccountUnavailable = account?.status === "DISABLED";
-  const registrationEligible =
-    application.status === "PAID" &&
-    application.paymentStatus === "PAID" &&
-    !isRegistered &&
-    !isAccountUnavailable;
+  const accountSetupState = getJuryAccountSetupState({
+    hasJuryProfile: Boolean(application.profile),
+    accountStatus: account.status as "INVITED" | "ACTIVE" | "DISABLED",
+    passwordHash: account.passwordHash,
+  });
+  const registrationEligible = accountSetupState === "eligible";
 
   // ── Tab content ─────────────────────────────────────────────────────────
   const overview = (
@@ -373,14 +373,16 @@ export default function JuryApplicationDetailPage({
             <input type="hidden" name="id" value={application.id} />
             <DashboardSecondaryBtn type="submit" disabled={!registrationEligible} className="w-full">
               <MailPlus aria-hidden size={15} />
-              {adminT.applicantAccount.resendRegistration}
+              {adminT.detail.sendJurySetupLink}
             </DashboardSecondaryBtn>
           </form>
           {!registrationEligible ? (
             <p className="mt-2 text-xs leading-5 text-[var(--color-ink-soft)]">
-              {isRegistered
+              {accountSetupState === "registered"
                 ? adminT.detail.juryRegistrationAlreadyComplete
-                : adminT.detail.juryRegistrationPaidRequired}
+                : accountSetupState === "disabled"
+                  ? adminT.detail.juryRegistrationDisabled
+                  : adminT.detail.juryRegistrationUnavailable}
             </p>
           ) : null}
         </div>
