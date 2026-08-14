@@ -213,7 +213,7 @@ export default function HomeMasterClasses() {
                     </div>
                   </div>
 
-                  <div className="min-w-0 p-6 sm:p-7 md:h-full md:overflow-y-auto lg:overflow-hidden lg:p-5 xl:p-8">
+                  <div className="min-w-0 p-6 sm:p-7 md:h-full md:overflow-y-auto lg:p-5 xl:p-8">
                     <div className="lg:grid lg:h-full lg:grid-rows-[auto_auto_auto_1fr_auto]">
                       <div>
                         <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#72a0c1]">
