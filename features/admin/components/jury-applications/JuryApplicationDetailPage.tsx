@@ -18,6 +18,8 @@ import {
   XCircle,
 } from "lucide-react";
 import ApplicationStatusBadge from "@/features/admin/components/badges/ApplicationStatusBadge";
+import AccountStatusBadge from "@/features/admin/components/badges/AccountStatusBadge";
+import PaymentStatusBadge from "@/features/admin/components/badges/PaymentStatusBadge";
 import {
   approveJuryApplicationAction,
   approveJuryApplicationWithoutPaymentAction,
@@ -29,6 +31,7 @@ import {
 import DeleteJuryApplicationButton from "@/features/admin/components/jury-applications/DeleteJuryApplicationButton";
 import ApprovedCategoriesPicker from "@/features/admin/components/jury-applications/ApprovedCategoriesPicker";
 import RequestAdditionalInfoPanel from "@/features/admin/components/jury-applications/RequestAdditionalInfoPanel";
+import { getJuryAccountSetupState } from "@/features/jury/lib/account-setup";
 import ReviewWorkspace, { type ReviewTab } from "@/features/admin/components/review/ReviewWorkspace";
 import {
   MobileActionBar,
@@ -53,12 +56,11 @@ type JuryApplicationDetail = Omit<JuryApplication, "files"> & {
   approvedCategories: string[];
   paymentStatus: string;
   paidAt: Date | null;
-  profile?: {
-    account: {
-      status: string;
-      passwordHash: string | null;
-    };
-  } | null;
+  account: {
+    status: string;
+    passwordHash: string | null;
+  };
+  profile?: { approvedCategories: string[] } | null;
   infoRequestDetails?: string | null;
   infoRequestedAt?: Date | null;
   infoResubmittedAt?: Date | null;
@@ -94,19 +96,43 @@ export default function JuryApplicationDetailPage({
   const certifications = application.files.filter((file) => file.fieldKey === "certifications");
   const canDecide = application.status !== "PAID";
   const canReject = application.status !== "REJECTED" && application.status !== "PAID";
-  const account = application.profile?.account;
-  const isRegistered = Boolean(account?.passwordHash);
-  const isAccountUnavailable = account?.status === "DISABLED";
-  const registrationEligible =
-    application.status === "PAID" &&
-    application.paymentStatus === "PAID" &&
-    !isRegistered &&
-    !isAccountUnavailable;
+  const account = application.account;
+  const accountSetupState = getJuryAccountSetupState({
+    hasJuryProfile: Boolean(application.profile),
+    accountStatus: account.status as "INVITED" | "ACTIVE" | "DISABLED",
+    passwordHash: account.passwordHash,
+  });
+  const registrationEligible = accountSetupState === "eligible";
 
   // ── Tab content ─────────────────────────────────────────────────────────
   const overview = (
-    <DashboardCard>
-      <div className="grid gap-3 sm:grid-cols-2">
+    <div className="grid gap-4">
+      <DashboardCard>
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <DashboardDetailCard
+            label={adminT.detail.applicationStatus}
+            value={<ApplicationStatusBadge status={application.status} />}
+          />
+          <DashboardDetailCard
+            label={adminT.detail.paymentStatus}
+            value={<PaymentStatusBadge status={application.paymentStatus} />}
+          />
+          <DashboardDetailCard
+            label={adminT.applicantAccount.accountStatus}
+            value={<AccountStatusBadge status={account.status} />}
+          />
+          <DashboardDetailCard
+            label={adminT.applicantAccount.registrationStatus}
+            value={
+              account.passwordHash
+                ? adminT.applicantAccount.registered
+                : adminT.applicantAccount.notRegistered
+            }
+          />
+        </div>
+      </DashboardCard>
+      <DashboardCard>
+        <div className="grid gap-3 sm:grid-cols-2">
         <DashboardDetailCard label={adminT.detail.fullName} value={application.fullName} />
         <DashboardDetailCard label={adminT.detail.email} value={application.email} />
         <DashboardDetailCard label={adminT.detail.phone} value={application.phone} />
@@ -129,8 +155,9 @@ export default function JuryApplicationDetailPage({
         {application.ibpaAssociationMember ? (
           <DashboardDetailCard label={adminT.detail.ibpaNumber} value={application.ibpaNumber || adminT.common.notProvided} />
         ) : null}
-      </div>
-    </DashboardCard>
+        </div>
+      </DashboardCard>
+    </div>
   );
 
   const submission = (
@@ -275,6 +302,7 @@ export default function JuryApplicationDetailPage({
       <ReviewActionPanel title={adminT.detail.decision}>
         <div className="flex flex-wrap gap-2">
           <ApplicationStatusBadge status={application.status} />
+          <AccountStatusBadge status={account.status} />
         </div>
 
         {canDecide ? (
@@ -345,14 +373,16 @@ export default function JuryApplicationDetailPage({
             <input type="hidden" name="id" value={application.id} />
             <DashboardSecondaryBtn type="submit" disabled={!registrationEligible} className="w-full">
               <MailPlus aria-hidden size={15} />
-              {adminT.applicantAccount.resendRegistration}
+              {adminT.detail.sendJurySetupLink}
             </DashboardSecondaryBtn>
           </form>
           {!registrationEligible ? (
             <p className="mt-2 text-xs leading-5 text-[var(--color-ink-soft)]">
-              {isRegistered
+              {accountSetupState === "registered"
                 ? adminT.detail.juryRegistrationAlreadyComplete
-                : adminT.detail.juryRegistrationPaidRequired}
+                : accountSetupState === "disabled"
+                  ? adminT.detail.juryRegistrationDisabled
+                  : adminT.detail.juryRegistrationUnavailable}
             </p>
           ) : null}
         </div>
@@ -416,6 +446,7 @@ export default function JuryApplicationDetailPage({
       badges={
         <>
           <ApplicationStatusBadge status={application.status} />
+          <AccountStatusBadge status={account.status} />
         </>
       }
       meta={[

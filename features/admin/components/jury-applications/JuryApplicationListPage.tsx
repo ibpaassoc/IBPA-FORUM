@@ -4,6 +4,7 @@ import { useMemo, useState, type KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, MapPin, Users } from "lucide-react";
 import { adminT, formatAdminDate } from "@/lib/i18n/admin";
+import AccountStatusBadge from "@/features/admin/components/badges/AccountStatusBadge";
 import ApplicationStatusBadge from "@/features/admin/components/badges/ApplicationStatusBadge";
 import ApprovedCategoriesPicker from "@/features/admin/components/jury-applications/ApprovedCategoriesPicker";
 import ApplicationFilters, {
@@ -32,6 +33,7 @@ type JuryRow = {
   approvedCategories: string[];
   ibpaNumber: string | null;
   status: JuryStatus;
+  accountStatus: "INVITED" | "ACTIVE" | "DISABLED";
   paymentStatus: PaymentStatus;
   createdAt: Date;
   submittedAt: Date | null;
@@ -54,6 +56,7 @@ export default function JuryApplicationListPage({
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
+  const [accountStatus, setAccountStatus] = useState("");
   const [area, setArea] = useState("");
   const [payment, setPayment] = useState("");
   const [sort, setSort] = useState("");
@@ -70,11 +73,16 @@ export default function JuryApplicationListPage({
     () => [...new Set(applications.map((app) => app.paymentStatus))],
     [applications],
   );
+  const accountStatusesPresent = useMemo(
+    () => [...new Set(applications.map((app) => app.accountStatus))],
+    [applications],
+  );
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     const list = applications.filter((app) => {
       if (status && app.status !== status) return false;
+      if (accountStatus && app.accountStatus !== accountStatus) return false;
       if (area && !app.expertiseAreas.includes(area)) return false;
       if (payment && app.paymentStatus !== payment) return false;
       if (q) {
@@ -87,7 +95,7 @@ export default function JuryApplicationListPage({
     if (sort === "oldest") return [...list].sort((a, b) => activity(a) - activity(b));
     if (sort === "name") return [...list].sort((a, b) => a.fullName.localeCompare(b.fullName));
     return [...list].sort((a, b) => activity(b) - activity(a));
-  }, [applications, search, status, area, payment, sort]);
+  }, [applications, search, status, accountStatus, area, payment, sort]);
 
   const selects: FilterSelect[] = [
     {
@@ -97,6 +105,15 @@ export default function JuryApplicationListPage({
       options: [
         { value: "", label: adminT.filters.all },
         ...statusesPresent.map((value) => ({ value, label: adminT.statuses[value] })),
+      ],
+    },
+    {
+      key: "accountStatus",
+      label: adminT.filters.allAccountStatuses,
+      value: accountStatus,
+      options: [
+        { value: "", label: adminT.filters.allAccountStatuses },
+        ...accountStatusesPresent.map((value) => ({ value, label: adminT.statuses[value] })),
       ],
     },
     {
@@ -131,6 +148,7 @@ export default function JuryApplicationListPage({
 
   function handleSelect(key: string, value: string) {
     if (key === "status") setStatus(value);
+    else if (key === "accountStatus") setAccountStatus(value);
     else if (key === "area") setArea(value);
     else if (key === "payment") setPayment(value);
     else if (key === "sort") setSort(value);
@@ -139,6 +157,7 @@ export default function JuryApplicationListPage({
   function clearAll() {
     setSearch("");
     setStatus("");
+    setAccountStatus("");
     setArea("");
     setPayment("");
     setSort("");
@@ -201,6 +220,7 @@ export default function JuryApplicationListPage({
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <ApplicationStatusBadge status={app.status} />
+                      <AccountStatusBadge status={app.accountStatus} />
                     </div>
                     <h2 className="mt-3 font-[var(--font-title-family)] text-[1.55rem] font-light tracking-[-0.025em] text-[var(--color-ink)] transition group-hover:text-[var(--color-blue)]">
                       {app.fullName}

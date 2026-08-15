@@ -18,6 +18,7 @@ export async function getJuryApplications() {
   const rows = await prisma.juryApplication.findMany({
     orderBy: { createdAt: "desc" },
     include: {
+      account: { select: { status: true } },
       profile: { select: { approvedCategories: true } },
       payments: { orderBy: { createdAt: "desc" }, take: 1, select: { status: true, paidAt: true } },
     },
@@ -25,6 +26,7 @@ export async function getJuryApplications() {
   const applications = rows.map((application) => ({
     ...application,
     approvedCategories: application.profile?.approvedCategories ?? [],
+    accountStatus: application.account.status,
     paymentStatus: application.payments[0]?.status ?? "PENDING",
     paidAt: application.payments[0]?.paidAt ?? null,
   }));
@@ -33,7 +35,7 @@ export async function getJuryApplications() {
     totalCount: applications.length,
     pendingCount: applications.filter((application) => application.status === "SUBMITTED").length,
     approvedCount: applications.filter((application) => application.status === "APPROVED").length,
-    activeJudgeCount: applications.filter((application) => application.status === "PAID").length,
+    activeJudgeCount: applications.filter((application) => application.accountStatus === "ACTIVE").length,
   };
 }
 
@@ -41,11 +43,11 @@ export async function getJuryApplicationDetail(id: string) {
   const application = await prisma.juryApplication.findUnique({
     where: { id },
     include: {
+      account: { select: { status: true, passwordHash: true } },
       payments: { orderBy: { createdAt: "desc" }, take: 1, select: { status: true, paidAt: true } },
       profile: {
         select: {
           approvedCategories: true,
-          account: { select: { status: true, passwordHash: true } },
         },
       },
     },
