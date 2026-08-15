@@ -742,19 +742,6 @@ const en = {
           website: "https://ainsiders.club"
         },
         {
-          name: "Hanna Vakulych",
-          photo: "/images/speakers/hanna-vakulych.jpg",
-          role:
-              "Founder of Magica Beauty LLC (USA), international educator, beauty industry expert with more than 25 years of experience, former regional trainer for L'Oréal and Vitality's, international championship judge, and creator of proprietary educational methodologies.",
-          city: "United States",
-          topic:
-              "Who Is Your Client? The Psychology of Sales Through Simple Examples",
-          description:
-              "Hanna will introduce her unique client profiling methodology based on well-known cartoon characters. This practical approach helps beauty professionals quickly understand different customer personalities, confidently handle objections, improve communication, and naturally increase sales. Participants will leave with an easy-to-use psychological framework that can be applied immediately in consultations and everyday client interactions.",
-          instagram: "https://www.instagram.com/anna.vakulych.miami?igsh=NTc4MTIwNjQ2YQ==",
-          website: ""
-        },
-        {
           name: "Yulia Bailo",
           photo: "/images/speakers/yulia-bailo.jpg",
           role:
@@ -765,19 +752,6 @@ const en = {
           description:
             "In this presentation, participants will discover where sustainable business growth truly begins. Yulia will explain how to define clear business goals, identify the hidden limitations that slow growth and profitability, and recognize the most common bottlenecks beauty business owners face. She will also demonstrate which growth opportunities should be addressed before investing in scaling. Attendees will leave with a practical framework for diagnosing their own business, identifying what is holding it back, and understanding the highest-priority actions needed to build a more systematic, profitable, and sustainable business.",
           instagram: "https://www.instagram.com/yuliabailo_coach?igsh=NTc4MTIwNjQ2YQ==",
-          website: ""
-        },
-        {
-          name: "Irina Chukreeva",
-          photo: "/images/speakers/irina-chukreeva.jpg",
-          role:
-            "International astrologer, speaker, and expert in unlocking personal potential through natal chart analysis. With more than 10 years of professional experience, over 5,000 students worldwide, and thousands of successful consultations, Irina helps experts and entrepreneurs discover their unique strengths, attract ideal clients, and increase their income by leveraging the natural abilities revealed in their birth chart.",
-          city: "United States",
-          topic:
-            "Why Are Some Beauty Professionals Booked Months in Advance While Others Constantly Search for Clients? What Astrology Can Reveal",
-          description:
-            "During this presentation, Irina will demonstrate how astrology can help beauty professionals identify their natural strengths, choose the most effective marketing strategy, and stop working against their own nature. Participants will learn how to use their innate talents to attract the right clients, grow their income without burnout, and build a business aligned with their authentic potential.",
-          instagram: "https://www.instagram.com/astrolog_chukreeva/",
           website: ""
         },
         {
@@ -3240,19 +3214,6 @@ const ru: typeof en = {
           website: "https://ainsiders.club"
         },
         {
-          name: "Ханна Вакулич",
-          photo: "/images/speakers/hanna-vakulych.jpg",
-          role:
-            "Основатель компании Magica Beauty LLC (США), международный преподаватель и эксперт beauty-индустрии с опытом более 25 лет. Много лет являлась региональным тренером L'Oréal и Vitality's, международным судьёй чемпионатов и автором собственных образовательных методик.",
-          city: "США",
-          topic:
-            "Кто ваш клиент? Психология продаж на простых примерах",
-          description:
-            "Ханна представит авторскую методику определения типа клиента, основанную на известных мультипликационных персонажах. Вы получите простой и понятный инструмент, который поможет с первых минут понимать клиента, легко работать с возражениями, выстраивать доверительное общение и уверенно увеличивать продажи. Методика легко применяется в ежедневной работе мастеров, преподавателей и владельцев beauty-бизнеса.",
-          instagram: "https://www.instagram.com/anna.vakulych.miami?igsh=NTc4MTIwNjQ2YQ==",
-          website: ""
-        },
-        {
           name: "Юлия Байло",
           photo: "/images/speakers/yulia-bailo.jpg",
           role:
@@ -3263,19 +3224,6 @@ const ru: typeof en = {
           description:
             "На выступлении участники разберутся, с чего начинается устойчивый рост бизнеса, как правильно определить свои цели и увидеть ограничения, которые мешают развитию и увеличению прибыли. Юлия покажет основные узкие места, с которыми чаще всего сталкиваются владельцы бьюти-бизнеса, и объяснит, на какие точки роста важно обратить внимание прежде, чем вкладываться в масштабирование. После выступления участники смогут провести первичную диагностику своего бизнеса, определить, что именно сдерживает рост, и понять, какие действия необходимо предпринять в первую очередь для более системного, устойчивого и прибыльного развития.",
           instagram: "https://www.instagram.com/yuliabailo_coach?igsh=NTc4MTIwNjQ2YQ==",
-          website: ""
-        },
-        {
-          name: "Ирина Чукреева",
-          photo: "/images/speakers/irina-chukreeva.jpg",
-          role:
-            "Международный астролог, спикер и эксперт по раскрытию потенциала через натальную карту. Более 10 лет практики, более 5 000 учеников по всему миру и тысячи успешных консультаций. Помогает экспертам и предпринимателям находить свои сильные стороны, привлекать «своих» клиентов и увеличивать доход, используя индивидуальные особенности, заложенные в карте рождения.",
-          city: "США",
-          topic:
-            "Почему к одним мастерам запись на месяцы вперед, а другие постоянно ищут клиентов? Что об этом знает астрология",
-          description:
-            "На выступлении Ирина покажет, как астрология помогает понять свои сильные стороны в профессии, выбрать эффективную стратегию продвижения и перестать работать «через силу». Участники узнают, как использовать свои природные таланты, чтобы привлекать именно своих клиентов, увеличить доход без выгорания и выстроить карьеру в гармонии со своими сильными сторонами.",
-          instagram: "https://www.instagram.com/astrolog_chukreeva/",
           website: ""
         },
         {
@@ -5739,19 +5687,6 @@ const ua: typeof en = {
           website: "https://ainsiders.club"
         },
         {
-          name: "Ганна Вакулич",
-          photo: "/images/speakers/hanna-vakulych.jpg",
-          role:
-            "Засновниця Magica Beauty LLC (США), міжнародний викладач та експерт beauty-індустрії з понад 25-річним досвідом. Багато років працювала регіональним тренером L'Oréal і Vitality's, є міжнародним суддею чемпіонатів та авторкою власних освітніх методик.",
-          city: "США",
-          topic:
-            "Хто ваш клієнт? Психологія продажів на простих прикладах",
-          description:
-            "Ганна представить авторську методику визначення типу клієнта, засновану на відомих мультиплікаційних персонажах. Ви отримаєте простий і зрозумілий інструмент, який допоможе з перших хвилин зрозуміти клієнта, легко працювати із запереченнями, будувати довірливу комунікацію та впевнено збільшувати продажі. Методика легко застосовується у щоденній роботі майстрів, викладачів і власників beauty-бізнесу.",
-          instagram: "https://www.instagram.com/anna.vakulych.miami?igsh=NTc4MTIwNjQ2YQ==",
-          website: ""
-        },
-        {
           name: "Юлія Байло",
           photo: "/images/speakers/yulia-bailo.jpg",
           role:
@@ -5762,19 +5697,6 @@ const ua: typeof en = {
           description:
             "Під час виступу учасники дізнаються, з чого починається стале зростання бізнесу, як правильно визначити свої цілі та побачити обмеження, що заважають розвитку й збільшенню прибутку. Юлія покаже найпоширеніші вузькі місця, з якими стикаються власники beauty-бізнесу, та пояснить, на які точки зростання варто звернути увагу ще до інвестування в масштабування. Після виступу учасники зможуть провести первинну діагностику свого бізнесу, визначити, що саме стримує його розвиток, і зрозуміти, які кроки потрібно зробити насамперед для більш системного, стабільного та прибуткового зростання.",
           instagram: "https://www.instagram.com/yuliabailo_coach?igsh=NTc4MTIwNjQ2YQ==",
-          website: ""
-        },
-        {
-          name: "Ірина Чукреєва",
-          photo: "/images/speakers/irina-chukreeva.jpg",
-          role:
-            "Міжнародний астролог, спікер та експерт із розкриття потенціалу через натальну карту. Понад 10 років практики, понад 5 000 учнів по всьому світу та тисячі успішних консультацій. Допомагає експертам і підприємцям знаходити свої сильні сторони, залучати «своїх» клієнтів і збільшувати дохід, використовуючи індивідуальні особливості, закладені в карті народження.",
-          city: "США",
-          topic:
-            "Чому до одних майстрів запис на місяці вперед, а інші постійно шукають клієнтів? Що про це знає астрологія",
-          description:
-            "На виступі Ірина покаже, як астрологія допомагає зрозуміти свої сильні сторони в професії, обрати ефективну стратегію просування та перестати працювати «через силу». Учасники дізнаються, як використовувати свої природні таланти, щоб залучати саме своїх клієнтів, збільшувати дохід без вигорання та будувати кар'єру відповідно до власного потенціалу.",
-          instagram: "https://www.instagram.com/astrolog_chukreeva/",
           website: ""
         },
         {
