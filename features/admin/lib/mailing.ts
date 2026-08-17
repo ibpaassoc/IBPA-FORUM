@@ -4,6 +4,8 @@ import { buildTextBody, wrapEmail } from "@/features/email/templates/layout";
 export const DEFAULT_MAILING_SUBJECT =
   "Complete your IBPA Beauty Award 2026 application";
 
+export const MAILING_ELIGIBLE_JURY_STATUSES = ["APPROVED", "PAID"] as const;
+
 export const DEFAULT_MAILING_TEXT = `Hello!
 
 This is a reminder that to complete your participation in the IBPA Beauty Award 2026, you must fully complete your application in your personal account.

@@ -14,6 +14,7 @@ import {
   buildAdminMailingEmail,
   deduplicateRecipientsByEmail,
   getRegistrationState,
+  MAILING_ELIGIBLE_JURY_STATUSES,
   type MailingFormValues,
 } from "@/features/admin/lib/mailing";
 import { reserveRateLimitSlot } from "@/features/admin/lib/rate-limit";
@@ -61,6 +62,17 @@ function nominationCompletion(nomination: {
 
 export async function getMailingRecipients() {
   const accounts = await prisma.account.findMany({
+    where: {
+      OR: [
+        { role: "APPLICANT" },
+        {
+          role: "JURY",
+          juryApplication: {
+            status: { in: [...MAILING_ELIGIBLE_JURY_STATUSES] },
+          },
+        },
+      ],
+    },
     orderBy: [{ role: "asc" }, { createdAt: "desc" }],
     select: {
       id: true,
@@ -179,6 +191,15 @@ export async function sendAdminMailing(
     where: {
       id: { in: values.recipientIds },
       status: { not: "DISABLED" },
+      OR: [
+        { role: "APPLICANT" },
+        {
+          role: "JURY",
+          juryApplication: {
+            status: { in: [...MAILING_ELIGIBLE_JURY_STATUSES] },
+          },
+        },
+      ],
     },
     select: { id: true, email: true },
   });

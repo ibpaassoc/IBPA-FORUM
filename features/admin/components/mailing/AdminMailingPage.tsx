@@ -385,7 +385,7 @@ export default function AdminMailingPage({
 
       <RecipientSection
         title={`Жюри · ${visibleJury.length}`}
-        description="Аккаунты жюри выделены в отдельную группу и не смешиваются со списком заявителей."
+        description="В рассылку доступны только члены жюри с одобренными заявками."
         recipients={visibleJury}
         selected={selected}
         onToggle={toggleRecipient}

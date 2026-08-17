@@ -4,6 +4,7 @@ import {
   buildAdminMailingEmail,
   deduplicateRecipientsByEmail,
   getRegistrationState,
+  MAILING_ELIGIBLE_JURY_STATUSES,
   mailingFormSchema,
 } from "@/features/admin/lib/mailing";
 import { reserveRateLimitSlot } from "@/features/admin/lib/rate-limit";
@@ -12,6 +13,8 @@ import { join } from "node:path";
 
 assert.equal(averageCompletion([]), 0);
 assert.equal(averageCompletion([25, 50, 100]), 58);
+
+assert.deepEqual(MAILING_ELIGIBLE_JURY_STATUSES, ["APPROVED", "PAID"]);
 
 assert.deepEqual(
   deduplicateRecipientsByEmail([
@@ -83,5 +86,11 @@ const mailingServer = readFileSync(
   "utf8",
 );
 assert.match(mailingServer, /runWithConcurrency\(uniqueAccounts, 4, 8,/);
+assert.equal(
+  mailingServer.match(/status: \{ in: \[\.\.\.MAILING_ELIGIBLE_JURY_STATUSES\] \}/g)
+    ?.length,
+  2,
+  "jury approval is enforced when listing and sending mailing recipients",
+);
 
 console.log("Admin mailing validation passed.");
