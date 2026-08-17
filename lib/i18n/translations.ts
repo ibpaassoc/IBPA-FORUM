@@ -772,6 +772,20 @@ const en = {
           academyInstagram:
             "https://www.instagram.com/medbusinessacademy?igsh=ZTk2MnJ3djUzZmFo"
         },
+        {
+          name: "Sasha Zvereva",
+          photo: "/images/speakers/sasha-zvereva.jpg",
+          secondaryPhoto: "/images/speakers/sasha-zvereva-alt.jpg",
+          role:
+            "Popular singer, lifestyle blogger, entrepreneur, and mother of four. Creator of projects dedicated to beauty, health, and preserving youth, as well as a motivator and source of inspiration for thousands of women around the world.",
+          city: "United States",
+          topic:
+            "A Business That Adapts to Life: Personal Brand, Women’s Strategy, and the Freedom to Choose",
+          description:
+            "I want to share not a universal formula for success, but my own entrepreneurial experience.\n\nOver more than 20 years of my career, my life has changed completely several times: performing on stage and touring, having four children, moving from Russia to the United States, building my own business, developing a personal brand, and monetizing social media long before blogging became a full-fledged industry.\n\nThroughout those years, I never tried to fit my life into an existing business model. Instead, I continually reshaped my business around the life I wanted to live.\n\nToday, I want to talk about why business for a woman can be not a system that drains all her energy, but a tool that gives her freedom, financial independence, and the opportunity to express the different sides of who she is.",
+          instagram: "https://www.instagram.com/sashazvereva/",
+          website: ""
+        },
       ]
     },
     masterClassesSection: {
@@ -3243,6 +3257,20 @@ const ru: typeof en = {
           youtube: "https://youtube.com/@artmediconsult?si=sq22RI4KOv2kBZ2J",
           academyInstagram:
             "https://www.instagram.com/medbusinessacademy?igsh=ZTk2MnJ3djUzZmFo"
+        },
+        {
+          name: "Саша Зверева",
+          photo: "/images/speakers/sasha-zvereva.jpg",
+          secondaryPhoto: "/images/speakers/sasha-zvereva-alt.jpg",
+          role:
+            "Популярная певица, лайфстайл-блогер, предприниматель и мама четверых детей. Автор проектов о красоте, здоровье и сохранении молодости, мотиватор и вдохновитель тысяч женщин по всему миру.",
+          city: "США",
+          topic:
+            "Бизнес, который подстраивается под жизнь: личный бренд, женская стратегия и свобода выбора",
+          description:
+            "Я хочу поделиться не универсальной формулой успеха, а собственным предпринимательским опытом.\n\nЗа более чем 20 лет моей карьеры моя жизнь несколько раз полностью менялась: сцена и гастроли, рождение четверых детей, переезд из России в США, создание собственного бизнеса, развитие личного бренда и монетизация социальных сетей задолго до того, как блогерство стало полноценной индустрией.\n\nВсе эти годы я не пыталась вписать свою жизнь в существующую бизнес-модель. Наоборот, я постоянно перестраивала бизнес под ту жизнь, которую хотела проживать.\n\nИ сегодня я хочу поговорить о том, почему для женщины бизнес может быть не системой, которая забирает всю ее энергию, а инструментом, который дает ей свободу, финансовую самостоятельность и возможность реализовывать разные стороны своей личности.",
+          instagram: "https://www.instagram.com/sashazvereva/",
+          website: ""
         },
       ]
     },
@@ -5716,6 +5744,20 @@ const ua: typeof en = {
           youtube: "https://youtube.com/@artmediconsult?si=sq22RI4KOv2kBZ2J",
           academyInstagram:
             "https://www.instagram.com/medbusinessacademy?igsh=ZTk2MnJ3djUzZmFo"
+        },
+        {
+          name: "Саша Звєрєва",
+          photo: "/images/speakers/sasha-zvereva.jpg",
+          secondaryPhoto: "/images/speakers/sasha-zvereva-alt.jpg",
+          role:
+            "Популярна співачка, лайфстайл-блогерка, підприємиця та мама чотирьох дітей. Авторка проєктів про красу, здоров’я та збереження молодості, мотиваторка й натхненниця тисяч жінок у всьому світі.",
+          city: "США",
+          topic:
+            "Бізнес, який підлаштовується під життя: особистий бренд, жіноча стратегія та свобода вибору",
+          description:
+            "Я хочу поділитися не універсальною формулою успіху, а власним підприємницьким досвідом.\n\nЗа понад 20 років моєї кар’єри моє життя кілька разів повністю змінювалося: сцена й гастролі, народження чотирьох дітей, переїзд із Росії до США, створення власного бізнесу, розвиток особистого бренду та монетизація соціальних мереж задовго до того, як блогерство стало повноцінною індустрією.\n\nУсі ці роки я не намагалася вписати своє життя в наявну бізнес-модель. Навпаки, я постійно перебудовувала бізнес під те життя, яким хотіла жити.\n\nІ сьогодні я хочу поговорити про те, чому для жінки бізнес може бути не системою, яка забирає всю її енергію, а інструментом, що дає їй свободу, фінансову самостійність і можливість реалізовувати різні сторони своєї особистості.",
+          instagram: "https://www.instagram.com/sashazvereva/",
+          website: ""
         },
       ]
     },
