@@ -1108,6 +1108,15 @@ const en = {
           description:
             "H.A. Skin Lab is a professional skincare brand specializing in care for problem-prone skin, acne, post-acne marks, hyperpigmentation, and age-related changes. The brand combines modern active ingredients with a professional approach to correcting skin concerns, emphasizing efficacy, skin-barrier restoration, and comprehensive treatment of imperfections.\n\nPrimary focus: Professional and at-home care for skin prone to acne and inflammation; correction of post-acne marks and pigmentation; support for a healthy skin barrier; and anti-aging care.\n\nProducts: The H.A. Skin Lab line includes professional products for at-home and salon care, including cleansers, corrective pads with active ingredients, masks, and products that restore and maintain skin health.\n\nOne of the brand’s key products is H.A. Skin Lab Corrective Pads — a multifunctional product developed to address breakouts, post-acne marks, uneven tone, and skin texture comprehensively. The formula is designed not only to correct existing imperfections, but also to support clearer, more balanced skin.\n\nBrand mission: To create effective professional skincare solutions that help specialists and their clients achieve visible, lasting results without overly complicated routines.",
         },
+        {
+          id: "airy-vibes-by-iryna-tkachuk",
+          name: "Airy Vibes by Iryna Tkachuk",
+          label: "Featured Sponsor",
+          logo: "/images/sponsors/airy-vibes/airy-vibes-logo.png",
+          logoAlt: "Airy Vibes by Iryna Tkachuk logo",
+          description:
+            "Airy Vibes by Iryna Tkachuk is an original permanent makeup project built on 17 years of hands-on experience. Its primary focus is delicate permanent makeup techniques and professional education for artists. At Beauty Business Forum 2026, Iryna Tkachuk will present her signature Airy Brows method and Author’s Airy Brows Method manual, created as a step-by-step working system for artists.",
+        },
       ],
     },
     contactUs: {
@@ -3607,6 +3616,15 @@ const ru: typeof en = {
           featureImageAlt: "Очищающее средство H.A. Skin Lab Oxy Cleanser с белой орхидеей",
           description:
             "H.A. Skin Lab — профессиональный skincare-бренд, специализирующийся на уходе за проблемной кожей, акне, постакне, гиперпигментацией и возрастными изменениями. Бренд сочетает современные активные ингредиенты и профессиональный подход к коррекции состояния кожи, делая акцент на эффективности, восстановлении кожного барьера и комплексной работе с несовершенствами.\n\nОсновное направление: Профессиональный и домашний уход за кожей, склонной к акне и воспалениям, коррекция постакне и пигментации, поддержание здорового кожного барьера и anti-age уход.\n\nПродукция: В линейку H.A. Skin Lab входят профессиональные средства для домашнего и салонного ухода, включая очищающие средства, корректирующие pads с активными компонентами, маски и продукты для восстановления и поддержания здоровья кожи.\n\nОдним из ключевых продуктов бренда являются H.A. Skin Lab Corrective Pads — многофункциональный продукт, разработанный для комплексной работы с высыпаниями, постакне, неровным тоном и текстурой кожи. Формула направлена не только на коррекцию существующих несовершенств, но и на поддержание более чистого и сбалансированного состояния кожи.\n\nМиссия бренда: Создавать эффективные профессиональные skincare-решения, которые помогают специалистам и их клиентам достигать видимых и устойчивых результатов без чрезмерно сложных схем ухода.",
+        },
+        {
+          id: "airy-vibes-by-iryna-tkachuk",
+          name: "Airy Vibes by Iryna Tkachuk",
+          label: "Главный спонсор",
+          logo: "/images/sponsors/airy-vibes/airy-vibes-logo.png",
+          logoAlt: "Логотип Airy Vibes by Iryna Tkachuk",
+          description:
+            "Airy Vibes by Iryna Tkachuk — авторский проект в сфере permanent makeup, основанный на 17-летнем практическом опыте. Основное направление — деликатные техники перманентного макияжа и профессиональное обучение мастеров. На Beauty Business Forum 2026 Iryna Tkachuk представит авторский метод Airy Brows и методическое пособие Author’s Airy Brows Method, созданное как пошаговая система работы для мастеров.",
         },
       ],
     },
@@ -6108,6 +6126,15 @@ const ua: typeof en = {
           featureImageAlt: "Очищувальний засіб H.A. Skin Lab Oxy Cleanser із білою орхідеєю",
           description:
             "H.A. Skin Lab — професійний skincare-бренд, що спеціалізується на догляді за проблемною шкірою, акне, постакне, гіперпігментацією та віковими змінами. Бренд поєднує сучасні активні інгредієнти й професійний підхід до корекції стану шкіри, роблячи акцент на ефективності, відновленні шкірного бар'єра та комплексній роботі з недосконалостями.\n\nОсновний напрям: Професійний і домашній догляд за шкірою, схильною до акне та запалень, корекція постакне й пігментації, підтримання здорового шкірного бар'єра та anti-age догляд.\n\nПродукція: До лінійки H.A. Skin Lab входять професійні засоби для домашнього й салонного догляду, зокрема очищувальні засоби, коригувальні pads з активними компонентами, маски та продукти для відновлення й підтримання здоров'я шкіри.\n\nОдним із ключових продуктів бренду є H.A. Skin Lab Corrective Pads — багатофункціональний продукт, розроблений для комплексної роботи з висипаннями, постакне, нерівним тоном і текстурою шкіри. Формула спрямована не лише на корекцію наявних недосконалостей, а й на підтримання чистішого та збалансованішого стану шкіри.\n\nМісія бренду: Створювати ефективні професійні skincare-рішення, які допомагають фахівцям та їхнім клієнтам досягати видимих і стійких результатів без надмірно складних схем догляду.",
+        },
+        {
+          id: "airy-vibes-by-iryna-tkachuk",
+          name: "Airy Vibes by Iryna Tkachuk",
+          label: "Головний спонсор",
+          logo: "/images/sponsors/airy-vibes/airy-vibes-logo.png",
+          logoAlt: "Логотип Airy Vibes by Iryna Tkachuk",
+          description:
+            "Airy Vibes by Iryna Tkachuk — авторський проєкт у сфері permanent makeup, заснований на 17-річному практичному досвіді. Основний напрям — делікатні техніки перманентного макіяжу та професійне навчання майстрів. На Beauty Business Forum 2026 Iryna Tkachuk представить авторський метод Airy Brows і методичний посібник Author’s Airy Brows Method, створений як покрокова система роботи для майстрів.",
         },
       ],
     },
