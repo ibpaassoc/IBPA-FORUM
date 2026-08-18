@@ -772,6 +772,34 @@ const en = {
           academyInstagram:
             "https://www.instagram.com/medbusinessacademy?igsh=ZTk2MnJ3djUzZmFo"
         },
+        {
+          name: "Sasha Zvereva",
+          photo: "/images/speakers/sasha-zvereva.jpg",
+          secondaryPhoto: "/images/speakers/sasha-zvereva-alt.jpg",
+          role:
+            "Popular singer, lifestyle blogger, entrepreneur, and mother of four. Creator of projects dedicated to beauty, health, and preserving youth, as well as a motivator and source of inspiration for thousands of women around the world.",
+          city: "United States",
+          topic:
+            "A Business That Adapts to Life: Personal Brand, Women’s Strategy, and the Freedom to Choose",
+          description:
+            "I want to share not a universal formula for success, but my own entrepreneurial experience.\n\nOver more than 20 years of my career, my life has changed completely several times: performing on stage and touring, having four children, moving from Russia to the United States, building my own business, developing a personal brand, and monetizing social media long before blogging became a full-fledged industry.\n\nThroughout those years, I never tried to fit my life into an existing business model. Instead, I continually reshaped my business around the life I wanted to live.\n\nToday, I want to talk about why business for a woman can be not a system that drains all her energy, but a tool that gives her freedom, financial independence, and the opportunity to express the different sides of who she is.",
+          instagram: "https://www.instagram.com/sashazvereva/",
+          website: ""
+        },
+        {
+          name: "Rustam Solntsev",
+          photo: "/images/speakers/rustam-solntsev.jpg",
+          secondaryPhoto: "/images/speakers/rustam-solntsev-alt.jpg",
+          role:
+            "Showman, television host, and blogger with more than 15 years of experience working on camera and in front of live audiences. He gained wide recognition on Russian television before moving to Los Angeles, where he continues to develop media projects and works as a professional event host.",
+          city: "Los Angeles, California, USA",
+          topic:
+            "Speak So They Remember You: The Art of Self-Presentation",
+          description:
+            "Speaking in a way that makes people listen is a skill anyone can develop.\n\nIn his presentation, Rustam will explain:\n• how to present yourself effectively to any audience;\n• which techniques help you speak with confidence and conviction;\n• how to structure your delivery so people remember you.\n\nThese practical tools will be useful for beauty professionals, educators, salon owners, and anyone who wants to speak confidently on stage.\n\nParticipants will learn how to overcome the fear of public speaking, present themselves confidently to a large audience, and use specific tools immediately—at their next event, meeting, or live broadcast.",
+          instagram: "https://www.instagram.com/solncevrusya",
+          website: ""
+        },
       ]
     },
     masterClassesSection: {
@@ -3243,6 +3271,34 @@ const ru: typeof en = {
           youtube: "https://youtube.com/@artmediconsult?si=sq22RI4KOv2kBZ2J",
           academyInstagram:
             "https://www.instagram.com/medbusinessacademy?igsh=ZTk2MnJ3djUzZmFo"
+        },
+        {
+          name: "Саша Зверева",
+          photo: "/images/speakers/sasha-zvereva.jpg",
+          secondaryPhoto: "/images/speakers/sasha-zvereva-alt.jpg",
+          role:
+            "Популярная певица, лайфстайл-блогер, предприниматель и мама четверых детей. Автор проектов о красоте, здоровье и сохранении молодости, мотиватор и вдохновитель тысяч женщин по всему миру.",
+          city: "США",
+          topic:
+            "Бизнес, который подстраивается под жизнь: личный бренд, женская стратегия и свобода выбора",
+          description:
+            "Я хочу поделиться не универсальной формулой успеха, а собственным предпринимательским опытом.\n\nЗа более чем 20 лет моей карьеры моя жизнь несколько раз полностью менялась: сцена и гастроли, рождение четверых детей, переезд из России в США, создание собственного бизнеса, развитие личного бренда и монетизация социальных сетей задолго до того, как блогерство стало полноценной индустрией.\n\nВсе эти годы я не пыталась вписать свою жизнь в существующую бизнес-модель. Наоборот, я постоянно перестраивала бизнес под ту жизнь, которую хотела проживать.\n\nИ сегодня я хочу поговорить о том, почему для женщины бизнес может быть не системой, которая забирает всю ее энергию, а инструментом, который дает ей свободу, финансовую самостоятельность и возможность реализовывать разные стороны своей личности.",
+          instagram: "https://www.instagram.com/sashazvereva/",
+          website: ""
+        },
+        {
+          name: "Рустам Солнцев",
+          photo: "/images/speakers/rustam-solntsev.jpg",
+          secondaryPhoto: "/images/speakers/rustam-solntsev-alt.jpg",
+          role:
+            "Шоумен, телеведущий и блогер с более чем 15-летним опытом работы перед камерой и живой аудиторией. Широкую известность получил на российском телевидении, после чего переехал в Лос-Анджелес, где продолжает развивать медийные проекты и выступает как профессиональный ведущий мероприятий.",
+          city: "Лос-Анджелес, Калифорния, США",
+          topic:
+            "Speak So They Remember You: Искусство самопрезентации",
+          description:
+            "Умение говорить так, чтобы тебя слышали — это навык, который можно развить.\n\nВ своём выступлении Рустам расскажет:\n• как правильно презентовать себя перед любой аудиторией;\n• какие техники помогают говорить уверенно и убедительно;\n• как выстроить подачу так, чтобы вас запомнили.\n\nПрактические инструменты будут полезны мастерам, педагогам, владельцам салонов и всем, кто хочет говорить со сцены уверенно.\n\nУчастники узнают, как побороть страх публичных выступлений, научатся уверенно презентовать себя перед большой аудиторией и получат конкретные инструменты, которые можно применить сразу — на следующем мероприятии, встрече или прямом эфире.",
+          instagram: "https://www.instagram.com/solncevrusya",
+          website: ""
         },
       ]
     },
@@ -5716,6 +5772,34 @@ const ua: typeof en = {
           youtube: "https://youtube.com/@artmediconsult?si=sq22RI4KOv2kBZ2J",
           academyInstagram:
             "https://www.instagram.com/medbusinessacademy?igsh=ZTk2MnJ3djUzZmFo"
+        },
+        {
+          name: "Саша Звєрєва",
+          photo: "/images/speakers/sasha-zvereva.jpg",
+          secondaryPhoto: "/images/speakers/sasha-zvereva-alt.jpg",
+          role:
+            "Популярна співачка, лайфстайл-блогерка, підприємиця та мама чотирьох дітей. Авторка проєктів про красу, здоров’я та збереження молодості, мотиваторка й натхненниця тисяч жінок у всьому світі.",
+          city: "США",
+          topic:
+            "Бізнес, який підлаштовується під життя: особистий бренд, жіноча стратегія та свобода вибору",
+          description:
+            "Я хочу поділитися не універсальною формулою успіху, а власним підприємницьким досвідом.\n\nЗа понад 20 років моєї кар’єри моє життя кілька разів повністю змінювалося: сцена й гастролі, народження чотирьох дітей, переїзд із Росії до США, створення власного бізнесу, розвиток особистого бренду та монетизація соціальних мереж задовго до того, як блогерство стало повноцінною індустрією.\n\nУсі ці роки я не намагалася вписати своє життя в наявну бізнес-модель. Навпаки, я постійно перебудовувала бізнес під те життя, яким хотіла жити.\n\nІ сьогодні я хочу поговорити про те, чому для жінки бізнес може бути не системою, яка забирає всю її енергію, а інструментом, що дає їй свободу, фінансову самостійність і можливість реалізовувати різні сторони своєї особистості.",
+          instagram: "https://www.instagram.com/sashazvereva/",
+          website: ""
+        },
+        {
+          name: "Рустам Солнцев",
+          photo: "/images/speakers/rustam-solntsev.jpg",
+          secondaryPhoto: "/images/speakers/rustam-solntsev-alt.jpg",
+          role:
+            "Шоумен, телеведучий і блогер із понад 15-річним досвідом роботи перед камерою та живою аудиторією. Широку популярність здобув на російському телебаченні, після чого переїхав до Лос-Анджелеса, де продовжує розвивати медійні проєкти та працює як професійний ведучий заходів.",
+          city: "Лос-Анджелес, Каліфорнія, США",
+          topic:
+            "Speak So They Remember You: Мистецтво самопрезентації",
+          description:
+            "Уміння говорити так, щоб вас чули, — це навичка, яку можна розвинути.\n\nУ своєму виступі Рустам розповість:\n• як правильно презентувати себе перед будь-якою аудиторією;\n• які техніки допомагають говорити впевнено та переконливо;\n• як вибудувати подачу так, щоб вас запам’ятали.\n\nПрактичні інструменти будуть корисні майстрам, викладачам, власникам салонів і всім, хто хоче впевнено говорити зі сцени.\n\nУчасники дізнаються, як подолати страх публічних виступів, навчаться впевнено презентувати себе перед великою аудиторією та отримають конкретні інструменти, які можна застосувати одразу — на наступному заході, зустрічі чи прямому ефірі.",
+          instagram: "https://www.instagram.com/solncevrusya",
+          website: ""
         },
       ]
     },
