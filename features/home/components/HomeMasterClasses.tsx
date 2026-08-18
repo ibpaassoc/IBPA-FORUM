@@ -207,7 +207,13 @@ export default function HomeMasterClasses() {
                         <GraduationCap className="h-4 w-4" />
                         {c.formatLabel}
                       </div>
-                      <h3 className="pr-12 font-[var(--font-title-family)] text-4xl font-light leading-none tracking-[-0.035em] sm:text-5xl lg:text-[3.4rem]">
+                      <h3
+                        className={`break-words font-[var(--font-title-family)] font-light leading-none tracking-[-0.035em] ${
+                          activeClass.name.length > 22
+                            ? "text-[2.1rem] sm:text-4xl lg:text-[2.25rem]"
+                            : "text-4xl sm:text-5xl lg:text-[3.4rem]"
+                        }`}
+                      >
                         {activeClass.name}
                       </h3>
                     </div>

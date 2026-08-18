@@ -884,6 +884,27 @@ const en = {
             "How to create effects from transparent to saturated without mistakes.",
             "How to achieve rich, Instagram-ready coverage while preserving a natural result."
           ]
+        },
+        {
+          name: "Liubov Chetvertinovskaya",
+          photo: "/images/master-classes/liubov-chetvertinovskaya.png",
+          role:
+            "Liubov Chetvertinovskaya represents PLATINUM, an international lash and brow brand with more than nine years of premium product development and a catalog of over 1,000 professional materials. Her session combines hands-on UV/LED technique with a practical business framework for introducing the service, presenting its value to clients, and turning the technology into a new source of revenue.",
+          topic:
+            "UV/LED Technology in Your Beauty Business: How to Introduce UV/LED Lash Extensions and Increase Revenue",
+          description:
+            "Designed for practicing lash artists, beauty salon owners, educators, and lash-industry professionals, this master class is suitable both for specialists who have never used a UV/LED system and for those who want to integrate it more effectively.\n\nUV/LED is a modern lash-extension approach in which the adhesive polymerizes under a specialized light. The practical demonstration covers the equipment, materials, workstation setup, step-by-step workflow, correct lash fixation, and adhesive polymerization. The business portion explains how to add UV/LED extensions without rebuilding an existing operation, train a team member, position the service, communicate its value, and use it as a competitive advantage.",
+          highlights: [
+            "Understand how a UV/LED system works and which equipment and materials are required.",
+            "Organize the workstation and follow the complete UV/LED application workflow.",
+            "Work correctly with UV/LED adhesive and lamp, including lash fixation and polymerization.",
+            "Recognize the key differences between UV/LED and traditional lash extensions.",
+            "Plan the transition to UV/LED and add the service to an existing menu.",
+            "Set pricing and position UV/LED as an add-on or a standalone premium service.",
+            "Attract new clients, increase the average ticket, and market the technology as a competitive advantage."
+          ],
+          bonus:
+            "Every participant will receive a $20 coupon for PLATINUM materials to explore the professional UV/LED system and begin introducing the technology into their work."
         }
       ]
     },
@@ -3316,7 +3337,7 @@ const ru: typeof en = {
       title: "Мастер-классы",
       description:
         "Практические занятия, на которых ведущие преподаватели превращают авторские техники в понятные и воспроизводимые системы для вашей работы.",
-      sessionsLabel: "живых мастер-класса",
+      sessionsLabel: "живых мастер-классов",
       formatLabel: "Мастер-класс",
       educatorLabel: "О преподавателе",
       topicLabel: "Тема",
@@ -3393,6 +3414,27 @@ const ru: typeof en = {
             "Как получать эффект от прозрачного до насыщенного без ошибок.",
             "Как добиваться сочных, «инстаграмных» прокрасов при натуральном результате."
           ]
+        },
+        {
+          name: "Любовь Четвертиновская",
+          photo: "/images/master-classes/liubov-chetvertinovskaya.png",
+          role:
+            "Любовь Четвертиновская представляет PLATINUM — международный бренд для lash & brow индустрии, который более девяти лет создаёт профессиональные материалы премиального качества и предлагает ассортимент из более чем 1 000 позиций. Её мастер-класс объединяет практическую работу с UV/LED и понятную бизнес-систему внедрения услуги, презентации её ценности клиентам и превращения технологии в новый источник дохода.",
+          topic:
+            "UV/LED Technology in Your Beauty Business: как внедрить UV/LED-наращивание ресниц в свой beauty-бизнес и увеличить доход",
+          description:
+            "Мастер-класс предназначен для действующих lash-мастеров, владельцев beauty-салонов, преподавателей и специалистов lash-индустрии. Он будет полезен как мастерам, которые никогда не работали с UV/LED-системой, так и специалистам, которые хотят эффективнее интегрировать технологию в свою работу.\n\nUV/LED — современный подход к наращиванию ресниц, при котором полимеризация клея происходит под воздействием специального света. Практическая демонстрация охватывает оборудование, материалы, организацию рабочего места, пошаговую работу, правильную фиксацию ресницы и полимеризацию клея. Бизнес-часть объясняет, как добавить UV/LED-наращивание без полной перестройки существующего бизнеса, обучить мастера, презентовать услугу клиентам и превратить технологию в конкурентное преимущество.",
+          highlights: [
+            "Принцип работы UV/LED-системы и необходимое оборудование и материалы.",
+            "Организация рабочего места и полный пошаговый алгоритм работы мастера.",
+            "Работа с UV/LED-клеем и лампой, правильная фиксация ресницы и полимеризация клея.",
+            "Ключевые отличия UV/LED-технологии от традиционного наращивания.",
+            "План перехода на UV/LED и добавление услуги в существующее меню.",
+            "Формирование стоимости и позиционирование UV/LED как дополнительной опции или отдельной premium-услуги.",
+            "Привлечение новой аудитории, увеличение среднего чека и использование технологии как маркетингового преимущества."
+          ],
+          bonus:
+            "Каждый участник получит купон на $20 на материалы PLATINUM, чтобы познакомиться с профессиональной UV/LED-системой и начать внедрение технологии в своей работе."
         }
       ]
     },
@@ -5826,7 +5868,7 @@ const ua: typeof en = {
       title: "Майстер-класи",
       description:
         "Практичні заняття, на яких провідні викладачі перетворюють авторські техніки на зрозумілі й відтворювані системи для вашої роботи.",
-      sessionsLabel: "живі майстер-класи",
+      sessionsLabel: "живих майстер-класів",
       formatLabel: "Майстер-клас",
       educatorLabel: "Про викладача",
       topicLabel: "Тема",
@@ -5903,6 +5945,27 @@ const ua: typeof en = {
             "Як отримувати ефект від прозорого до насиченого без помилок.",
             "Як досягати соковитих, «інстаграмних» прокрасів зі збереженням природного результату."
           ]
+        },
+        {
+          name: "Любов Четвертиновська",
+          photo: "/images/master-classes/liubov-chetvertinovskaya.png",
+          role:
+            "Любов Четвертиновська представляє PLATINUM — міжнародний бренд для lash & brow індустрії, який понад дев’ять років створює професійні матеріали преміальної якості та пропонує асортимент із понад 1 000 позицій. Її майстер-клас поєднує практичну роботу з UV/LED і зрозумілу бізнес-систему впровадження послуги, презентації її цінності клієнтам і перетворення технології на нове джерело доходу.",
+          topic:
+            "UV/LED Technology in Your Beauty Business: як упровадити UV/LED-нарощування вій у свій beauty-бізнес і збільшити дохід",
+          description:
+            "Майстер-клас призначений для практикуючих lash-майстрів, власників beauty-салонів, викладачів і фахівців lash-індустрії. Він буде корисним як майстрам, які ніколи не працювали з UV/LED-системою, так і фахівцям, які хочуть ефективніше інтегрувати технологію у свою роботу.\n\nUV/LED — сучасний підхід до нарощування вій, за якого полімеризація клею відбувається під впливом спеціального світла. Практична демонстрація охоплює обладнання, матеріали, організацію робочого місця, покрокову роботу, правильну фіксацію вії та полімеризацію клею. Бізнес-частина пояснює, як додати UV/LED-нарощування без повної перебудови наявного бізнесу, навчити майстра, презентувати послугу клієнтам і перетворити технологію на конкурентну перевагу.",
+          highlights: [
+            "Принцип роботи UV/LED-системи та необхідне обладнання й матеріали.",
+            "Організація робочого місця та повний покроковий алгоритм роботи майстра.",
+            "Робота з UV/LED-клеєм і лампою, правильна фіксація вії та полімеризація клею.",
+            "Ключові відмінності UV/LED-технології від традиційного нарощування.",
+            "План переходу на UV/LED і додавання послуги до наявного меню.",
+            "Формування вартості та позиціювання UV/LED як додаткової опції або окремої premium-послуги.",
+            "Залучення нової аудиторії, збільшення середнього чека та використання технології як маркетингової переваги."
+          ],
+          bonus:
+            "Кожен учасник отримає купон на $20 на матеріали PLATINUM, щоб познайомитися з професійною UV/LED-системою та розпочати впровадження технології у своїй роботі."
         }
       ]
     },
