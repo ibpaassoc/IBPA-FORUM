@@ -46,7 +46,7 @@ const EASING = [0.22, 1, 0.36, 1] as const;
 
 function SponsorStory({ sponsor, copy }: { sponsor: Sponsor; copy: SponsorsCopy }) {
   return (
-    <article className="grid gap-9 py-1 sm:gap-10 md:grid-cols-[minmax(17rem,0.82fr)_minmax(0,1.35fr)] md:items-center md:gap-12 md:py-5 lg:grid-cols-[minmax(19rem,0.9fr)_minmax(0,1.45fr)] lg:gap-16">
+    <article className="grid gap-9 px-5 py-1 sm:gap-10 md:grid-cols-[minmax(17rem,0.82fr)_minmax(0,1.35fr)] md:px-0 md:py-5 md:items-center md:gap-12 lg:grid-cols-[minmax(19rem,0.9fr)_minmax(0,1.45fr)] lg:gap-16">
       <div className="relative isolate self-start transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 motion-reduce:transition-none">
         <span
           aria-hidden="true"
@@ -237,16 +237,16 @@ export default function HomeSponsors() {
     <section
       id="sponsors"
       aria-labelledby="sponsors-heading"
-      className="relative overflow-hidden bg-[linear-gradient(180deg,#ffffff_0%,#f5fafe_52%,#eef7fc_100%)] py-20 md:py-28"
+      className="relative min-h-dvh overflow-hidden bg-[linear-gradient(180deg,#ffffff_0%,#f5fafe_52%,#eef7fc_100%)] py-20 md:min-h-0 md:py-28"
     >
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <div className="absolute left-[-12%] top-[18%] h-72 w-72 rounded-full bg-[#d5ecf8]/44 blur-3xl md:h-[30rem] md:w-[30rem]" />
         <div className="absolute bottom-[-20%] right-[-10%] h-72 w-72 rounded-full bg-[#b9d9eb]/24 blur-3xl md:h-[32rem] md:w-[32rem]" />
       </div>
 
-      <div className="page-section relative">
+      <div className="page-section relative max-md:px-0">
         <Reveal>
-          <div className="max-w-3xl">
+          <div className="max-w-3xl max-md:px-5">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#b9d9eb]/60 bg-white/70 px-4 py-2 font-[var(--font-ui-family)] text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#2f6f9f] backdrop-blur-xl">
               <Handshake className="h-4 w-4" aria-hidden="true" />
               {copy.eyebrow}
@@ -263,7 +263,7 @@ export default function HomeSponsors() {
 
         <Reveal delay={0.08} className="mt-10 md:mt-14">
           {isSwitcher ? (
-            <div className="mb-5 flex items-center gap-3 md:hidden">
+            <div className="mb-5 flex items-center gap-3 px-5 md:hidden">
               <button
                 type="button"
                 aria-label={copy.prevLabel}
@@ -300,7 +300,7 @@ export default function HomeSponsors() {
             role="region"
             aria-label={copy.sliderLabel}
             aria-live="polite"
-            className="relative grid h-[48rem] overflow-hidden sm:h-[43rem] md:h-[40rem]"
+            className="relative grid min-h-[calc(100dvh-20rem)] overflow-visible md:h-[40rem] md:min-h-0 md:overflow-hidden"
           >
             <AnimatePresence initial={false} mode="wait" custom={direction}>
               <motion.div
@@ -311,7 +311,7 @@ export default function HomeSponsors() {
                 animate="center"
                 exit="exit"
                 transition={{ duration: reducedMotion ? 0.16 : 0.54, ease: EASING }}
-                className="col-start-1 row-start-1 h-full overflow-y-auto pr-1 [scrollbar-color:rgba(92,159,198,0.55)_transparent] [scrollbar-width:thin]"
+                className="col-start-1 row-start-1 h-auto overflow-visible md:h-full md:overflow-y-auto md:pr-1 md:[scrollbar-color:rgba(92,159,198,0.55)_transparent] md:[scrollbar-width:thin]"
               >
                 <SponsorStory sponsor={sponsors[activeIndex]} copy={copy} />
               </motion.div>
