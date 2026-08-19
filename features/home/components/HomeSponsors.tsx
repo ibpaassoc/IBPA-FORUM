@@ -10,7 +10,7 @@ import {
 } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ChevronLeft, ChevronRight, Globe, Handshake, Mail, MapPin } from "lucide-react";
+import { Globe, Handshake, Mail, MapPin } from "lucide-react";
 import { FaInstagram } from "react-icons/fa6";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
@@ -221,10 +221,6 @@ export default function HomeSponsors() {
     );
   };
 
-  const moveSponsor = (offset: Direction) => {
-    selectSponsor((activeIndex + offset + sponsors.length) % sponsors.length);
-  };
-
   const handleSponsorKeyDown = (
     event: KeyboardEvent<HTMLButtonElement>,
     index: number,
@@ -383,31 +379,10 @@ export default function HomeSponsors() {
 
         {isSwitcher ? (
           <div className="mt-7 sm:mt-9">
-            <div className="mb-4 flex items-center justify-end gap-2 md:hidden">
-              <button
-                type="button"
-                aria-label={copy.prevLabel}
-                onClick={() => moveSponsor(-1)}
-                disabled={isTransitioning}
-                className={`flex size-11 items-center justify-center rounded-full border border-[#b9d9eb]/70 bg-white/76 text-[#2f6f9f] shadow-sm backdrop-blur-xl transition hover:-translate-y-0.5 hover:bg-white disabled:cursor-wait disabled:opacity-45 ${FOCUS_RING}`}
-              >
-                <ChevronLeft className="h-5 w-5" aria-hidden="true" />
-              </button>
-              <button
-                type="button"
-                aria-label={copy.nextLabel}
-                onClick={() => moveSponsor(1)}
-                disabled={isTransitioning}
-                className={`flex size-11 items-center justify-center rounded-full border border-[#b9d9eb]/70 bg-white/76 text-[#2f6f9f] shadow-sm backdrop-blur-xl transition hover:-translate-y-0.5 hover:bg-white disabled:cursor-wait disabled:opacity-45 ${FOCUS_RING}`}
-              >
-                <ChevronRight className="h-5 w-5" aria-hidden="true" />
-              </button>
-            </div>
-
             <div
               role="tablist"
               aria-label={copy.sliderLabel}
-              className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:flex md:min-w-0 md:overflow-x-auto md:[scrollbar-width:none] md:[&::-webkit-scrollbar]:hidden"
+              className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 md:gap-3"
             >
               {sponsors.map((sponsor, index) => {
                 const isActive = activeIndex === index;
@@ -426,13 +401,13 @@ export default function HomeSponsors() {
                     disabled={isTransitioning}
                     onClick={() => selectSponsor(index)}
                     onKeyDown={(event) => handleSponsorKeyDown(event, index)}
-                    className={`group relative isolate flex min-h-[4.75rem] items-center justify-center overflow-hidden rounded-2xl border px-3 py-2 transition-[border-color,background-color,box-shadow,transform] sm:min-h-[5.25rem] md:shrink-0 md:min-w-[10rem] md:rounded-none md:border-x-0 md:border-t-0 md:border-b md:px-4 md:pb-3 md:pt-1 ${FOCUS_RING} ${
+                    className={`group relative isolate flex items-center justify-center overflow-hidden rounded-2xl border px-3 py-2 transition-[border-color,background-color,box-shadow,transform] sm:min-h-[5.25rem] md:min-h-[5.5rem] md:min-w-0 md:px-4 md:py-3 ${FOCUS_RING} ${
                       isActive
-                        ? "border-[#72a0c1]/70 bg-white/84 text-[#17374d] shadow-[0_8px_24px_rgba(114,160,193,0.14)] md:bg-transparent md:shadow-none"
-                        : "border-[#b9d9eb]/55 bg-white/45 text-[#7890a2] hover:-translate-y-0.5 hover:border-[#9fc7df]/80 hover:bg-white/78 disabled:cursor-wait md:hover:translate-y-0 md:hover:bg-transparent"
+                        ? "col-span-2 min-h-28 border-[#72a0c1]/70 bg-white/84 text-[#17374d] shadow-[0_8px_24px_rgba(114,160,193,0.14)] sm:min-h-32 md:col-auto md:min-h-[5.5rem]"
+                        : "min-h-[4.75rem] border-[#b9d9eb]/55 bg-white/45 text-[#7890a2] hover:-translate-y-0.5 hover:border-[#9fc7df]/80 hover:bg-white/78 disabled:cursor-wait md:hover:translate-y-0"
                     }`}
                   >
-                    <span className="relative h-10 w-full max-w-[8rem] sm:h-11 md:h-9">
+                    <span className={`relative w-full max-w-[8rem] transition-[height] duration-300 sm:max-w-[9rem] md:h-10 md:max-w-[9rem] ${isActive ? "h-14 sm:h-16" : "h-10 sm:h-11"}`}>
                       <Image
                         src={sponsor.logo}
                         alt=""
@@ -441,12 +416,17 @@ export default function HomeSponsors() {
                         className={`object-contain transition-opacity ${isActive ? "opacity-100" : "opacity-60 group-hover:opacity-90"}`}
                       />
                     </span>
+                    {isActive ? (
+                      <span className="absolute inset-x-4 bottom-3 truncate text-center font-[var(--font-ui-family)] text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[#385d76] md:hidden">
+                        {sponsor.name}
+                      </span>
+                    ) : null}
                     <span className="sr-only">{sponsor.name}</span>
                     {isActive ? (
                       <motion.span
                         layoutId="active-sponsor-underline"
                         aria-hidden="true"
-                        className="pointer-events-none absolute inset-x-5 bottom-1 z-10 h-0.5 rounded-full bg-[#5c9fc6] md:inset-x-4 md:bottom-[-1px]"
+                        className="pointer-events-none absolute inset-x-5 bottom-1 z-10 h-0.5 rounded-full bg-[#5c9fc6] md:inset-x-6 md:bottom-2"
                         transition={{ duration: reducedMotion ? 0.16 : 0.45, ease: EASING }}
                       />
                     ) : null}
@@ -454,7 +434,7 @@ export default function HomeSponsors() {
                       <motion.span
                         layoutId="active-sponsor-indicator"
                         aria-hidden="true"
-                        className="pointer-events-none absolute bottom-[-1px] left-1/2 z-10 size-1.5 -translate-x-1/2 rounded-full bg-[#2f6f9f] md:bottom-[-3px]"
+                        className="pointer-events-none absolute bottom-[-1px] left-1/2 z-10 size-1.5 -translate-x-1/2 rounded-full bg-[#2f6f9f] md:bottom-0"
                         transition={{ duration: reducedMotion ? 0.16 : 0.45, ease: EASING }}
                       />
                     ) : null}
