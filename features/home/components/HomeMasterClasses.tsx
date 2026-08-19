@@ -24,6 +24,7 @@ export default function HomeMasterClasses() {
   const c = t.home.masterClassesSection;
   const masterClasses = c.masterClasses as readonly MasterClass[];
   const [openClass, setOpenClass] = useState<number | null>(null);
+  const [activePreview, setActivePreview] = useState(0);
 
   useEffect(() => {
     if (openClass === null) return;
@@ -72,32 +73,32 @@ export default function HomeMasterClasses() {
           </div>
         </div>
 
-        <div className="mt-[var(--space-xl)] grid gap-6 lg:gap-8">
+        <div className="mt-[var(--space-xl)] -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-3 [scrollbar-width:none] sm:-mx-6 sm:px-6 md:mx-0 md:gap-4 md:overflow-visible md:px-0 md:pb-0 [&::-webkit-scrollbar]:hidden">
           {masterClasses.map((masterClass, index) => {
-            const imageOnRight = index % 2 === 1;
+            const isActive = activePreview === index;
 
             return (
               <article
                 key={masterClass.name}
-                className={`group grid min-w-0 overflow-hidden rounded-[34px] border border-[#b9d9eb]/45 bg-white/74 shadow-[0_20px_58px_rgba(114,160,193,0.12)] backdrop-blur-xl transition duration-300 hover:border-[#9fc7df]/70 hover:shadow-[0_24px_68px_rgba(114,160,193,0.17)] ${
-                  imageOnRight
-                    ? "md:grid-cols-[minmax(0,1.28fr)_minmax(240px,0.72fr)] lg:grid-cols-[minmax(0,1fr)_300px]"
-                    : "md:grid-cols-[minmax(240px,0.72fr)_minmax(0,1.28fr)] lg:grid-cols-[300px_minmax(0,1fr)]"
+                onMouseEnter={() => setActivePreview(index)}
+                onFocus={() => setActivePreview(index)}
+                className={`group relative h-[31rem] shrink-0 snap-center overflow-hidden rounded-[30px] border bg-white/74 shadow-[0_20px_58px_rgba(114,160,193,0.12)] backdrop-blur-xl transition-[flex-basis,width,border-color,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-[#9fc7df]/70 hover:shadow-[0_24px_68px_rgba(114,160,193,0.17)] sm:h-[33rem] md:h-[30rem] md:min-w-0 md:snap-none ${
+                  isActive
+                    ? "w-[min(82vw,25rem)] border-[#9fc7df]/70 md:flex-[3.2]"
+                    : "w-[12rem] border-[#b9d9eb]/45 md:flex-[0.78]"
                 }`}
               >
                 <div
-                  className={`relative aspect-[4/5] min-w-0 overflow-hidden bg-[#eef5f9] md:aspect-auto md:min-h-[400px] ${
-                    imageOnRight ? "md:order-2" : ""
-                  }`}
+                  className="absolute inset-0 overflow-hidden bg-[#eef5f9]"
                 >
                   <Image
                     src={masterClass.photo}
                     alt={masterClass.name}
                     fill
-                    sizes="(max-width: 767px) 100vw, 300px"
+                    sizes="(max-width: 767px) 82vw, (min-width: 768px) 50vw, 20vw"
                     className="object-cover transition-transform duration-700 ease-out motion-safe:group-hover:scale-[1.025]"
                   />
-                  <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_58%,rgba(16,24,42,0.38)_100%)]" />
+                  <div className={`absolute inset-0 transition-opacity duration-500 ${isActive ? "bg-[linear-gradient(90deg,rgba(16,24,42,0.14)_0%,rgba(16,24,42,0.62)_100%)]" : "bg-[linear-gradient(180deg,transparent_36%,rgba(16,24,42,0.72)_100%)]"}`} />
 
                   <div className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full border border-white/55 bg-white/72 px-3.5 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[#2f6f9f] shadow-sm backdrop-blur-xl">
                     <span>{String(index + 1).padStart(2, "0")}</span>
@@ -105,7 +106,7 @@ export default function HomeMasterClasses() {
                     <span>{c.formatLabel}</span>
                   </div>
 
-                  {masterClass.secondaryPhoto ? (
+                  {masterClass.secondaryPhoto && isActive ? (
                     <div className="absolute bottom-5 right-5 aspect-[3/4] w-20 overflow-hidden rounded-[18px] border-2 border-white/80 bg-white shadow-[0_16px_36px_rgba(16,24,42,0.22)] sm:w-24">
                       <Image
                         src={masterClass.secondaryPhoto}
@@ -119,39 +120,35 @@ export default function HomeMasterClasses() {
                 </div>
 
                 <div
-                  className={`flex min-w-0 flex-col justify-center p-6 sm:p-8 lg:p-10 ${
-                    imageOnRight ? "md:order-1" : ""
+                  className={`absolute inset-x-0 bottom-0 flex min-w-0 flex-col p-5 text-white transition-all duration-500 sm:p-6 md:p-7 ${
+                    isActive ? "opacity-100" : "opacity-100 md:translate-y-1"
                   }`}
                 >
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#72a0c1]">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/75">
                     {c.formatLabel}
                   </p>
 
-                  <h3 className="mt-3 font-[var(--font-title-family)] text-[clamp(2.25rem,4vw,4rem)] font-light leading-[0.98] tracking-[-0.035em] text-[var(--color-ink)]">
+                  <h3 className={`mt-2 font-[var(--font-title-family)] font-light leading-[0.98] tracking-[-0.035em] text-white transition-[font-size] duration-500 ${isActive ? "text-[clamp(2.2rem,4vw,4.25rem)]" : "text-[1.75rem] md:text-[2rem]"}`}>
                     {masterClass.name}
                   </h3>
 
-                  <p className="mt-5 line-clamp-4 text-sm leading-7 text-[var(--color-ink-soft)] sm:text-[0.96rem]">
-                    {masterClass.role}
-                  </p>
-
-                  <div className="mt-6 rounded-[24px] border border-[#b9d9eb]/55 bg-[linear-gradient(145deg,rgba(242,248,251,0.92),rgba(255,255,255,0.76))] p-5 sm:p-6">
-                    <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#2f6f9f]">
-                      {c.topicLabel}
-                    </p>
-                    <h4 className="mt-2 text-xl font-semibold leading-snug tracking-[-0.025em] text-slate-950 sm:text-2xl">
-                      {masterClass.topic}
-                    </h4>
+                  <div className={`grid transition-[grid-template-rows,opacity,margin] duration-500 ${isActive ? "mt-4 grid-rows-[1fr] opacity-100" : "mt-0 grid-rows-[0fr] opacity-0"}`}>
+                    <div className="min-h-0 overflow-hidden">
+                      <p className="line-clamp-2 text-sm leading-6 text-white/82">{masterClass.role}</p>
+                      <div className="mt-4 rounded-[20px] border border-white/20 bg-white/12 p-4 backdrop-blur-md">
+                        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-white/65">{c.topicLabel}</p>
+                        <h4 className="mt-1.5 text-lg font-semibold leading-snug tracking-[-0.025em] text-white sm:text-xl">{masterClass.topic}</h4>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setOpenClass(index)}
+                        className="mt-4 inline-flex w-fit items-center gap-2 rounded-full border border-white/50 bg-white/88 px-4 py-2.5 text-sm font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-white hover:text-[#2f6f9f]"
+                      >
+                        {c.readMore}
+                        <ArrowRight className="h-4 w-4" />
+                      </button>
+                    </div>
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={() => setOpenClass(index)}
-                    className="mt-6 inline-flex w-fit items-center gap-2 rounded-full border border-[#b9d9eb]/75 bg-white/75 px-5 py-3 text-sm font-semibold text-slate-800 shadow-sm backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-[#72a0c1]/55 hover:bg-white hover:text-[#2f6f9f]"
-                  >
-                    {c.readMore}
-                    <ArrowRight className="h-4 w-4" />
-                  </button>
                 </div>
               </article>
             );
