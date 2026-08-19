@@ -1,5 +1,6 @@
 import type { TicketType } from "@prisma/client";
 import type { Language } from "@/lib/i18n/translations";
+import type { TicketPaymentPlan } from "@/features/tickets/lib/payment-plan";
 
 /**
  * Discriminator written into every ticket Checkout Session's metadata. The
@@ -13,6 +14,9 @@ export type TicketCheckoutMetadata = {
   flowType: typeof TICKET_FLOW_TYPE;
   /** The ticket the webhook must mark paid. Primary lookup key. */
   ticketId: string;
+  paymentId: string;
+  paymentPlan: TicketPaymentPlan;
+  installmentNumber?: "1";
   ticketIds?: string;
   specialPacket?: "true";
   email: string;
@@ -34,12 +38,16 @@ export type TicketCheckoutMetadata = {
  */
 export function buildTicketCheckoutMetadata({
   ticketId,
+  paymentId,
+  paymentPlan,
   email,
   type,
   galaDinner,
   locale,
 }: {
   ticketId: string;
+  paymentId: string;
+  paymentPlan: TicketPaymentPlan;
   email: string;
   type: TicketType;
   galaDinner: boolean;
@@ -50,6 +58,9 @@ export function buildTicketCheckoutMetadata({
   return {
     flowType: TICKET_FLOW_TYPE,
     ticketId,
+    paymentId,
+    paymentPlan,
+    ...(paymentPlan === "TWO_INSTALLMENTS" ? { installmentNumber: "1" as const } : {}),
     email,
     ticketType: type,
     galaDinner: galaDinner ? "true" : "false",
@@ -61,16 +72,23 @@ export function buildTicketCheckoutMetadata({
 
 export function buildSpecialPacketCheckoutMetadata({
   ticketIds,
+  paymentId,
+  paymentPlan,
   email,
   locale,
 }: {
   ticketIds: [string, string];
+  paymentId: string;
+  paymentPlan: TicketPaymentPlan;
   email: string;
   locale: Language;
 }): Record<string, string> {
   return {
     flowType: TICKET_FLOW_TYPE,
     ticketId: ticketIds[0],
+    paymentId,
+    paymentPlan,
+    ...(paymentPlan === "TWO_INSTALLMENTS" ? { installmentNumber: "1" as const } : {}),
     ticketIds: ticketIds.join(","),
     specialPacket: "true",
     email,

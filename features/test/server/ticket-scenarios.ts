@@ -24,6 +24,7 @@ function paidTicketEvent(ticketId: string, sessionId: string, amount: number) {
   const eventId = `evt_test_ticket_${crypto.randomUUID()}`;
   return {
     id: eventId,
+    created: Math.floor(Date.now() / 1000),
     type: "checkout.session.completed",
     data: {
       object: {

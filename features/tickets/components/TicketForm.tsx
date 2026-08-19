@@ -7,6 +7,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   CalendarDays,
   Check,
+  CreditCard,
   Gift,
   Info,
   LockKeyhole,
@@ -34,6 +35,11 @@ import { applyDiscountToCents } from "@/features/tickets/types";
 import { useTicketDiscount } from "@/features/tickets/useEarlyBird";
 import { useSpecialPacket } from "@/features/tickets/useSpecialPacket";
 import { validateInstagramInput } from "@/features/tickets/lib/instagram";
+import {
+  getSecondInstallmentDate,
+  splitTicketTotalIntoTwoPayments,
+  type TicketPaymentPlan,
+} from "@/features/tickets/lib/payment-plan";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { LandingPrimaryButton, LandingSecondaryButton } from "@/shared/components/public";
 
@@ -52,6 +58,7 @@ type FormValues = AttendeeValues & {
   galaDinner: boolean;
   isIbpaMember: boolean;
   ibpaCertNumber: string;
+  paymentPlan: TicketPaymentPlan;
   secondAttendee: AttendeeValues;
 };
 
@@ -91,6 +98,16 @@ function moneyFromCents(amountCents: number) {
     style: "currency",
     currency: "USD",
     currencyDisplay: "narrowSymbol",
+    maximumFractionDigits: 2,
+  }).format(amountCents / 100);
+}
+
+function installmentMoneyFromCents(amountCents: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    currencyDisplay: "narrowSymbol",
+    minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amountCents / 100);
 }
@@ -221,6 +238,7 @@ export default function TicketForm() {
   const [promoPreview, setPromoPreview] = useState<PromoPreview | null>(null);
   const [promoError, setPromoError] = useState("");
   const [promoPending, setPromoPending] = useState(false);
+  const [secondPaymentDate] = useState(() => getSecondInstallmentDate(new Date()));
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const {
@@ -236,13 +254,14 @@ export default function TicketForm() {
       galaDinner: false,
       isIbpaMember: false,
       ibpaCertNumber: "",
+      paymentPlan: "FULL",
       secondAttendee: attendeeDefaults,
     },
   });
 
-  const [type, galaDinner, isIbpaMember, ibpaCertNumber] = useWatch({
+  const [type, galaDinner, isIbpaMember, ibpaCertNumber, paymentPlan] = useWatch({
     control,
-    name: ["type", "galaDinner", "isIbpaMember", "ibpaCertNumber"],
+    name: ["type", "galaDinner", "isIbpaMember", "ibpaCertNumber", "paymentPlan"],
   });
   const isSpecialPacket = type === "SPECIAL_PACKET";
 
@@ -307,6 +326,11 @@ export default function TicketForm() {
       ? activePromoPreview.finalAmountCents
       : (discountedTicketCents ?? rawTicketCents) + rawGalaCents;
   const totalPrice = formatStripeAmount({ amountCents: totalCents, currency: selectedStripePrice?.currency ?? galaStripePrice?.currency ?? "usd" });
+  const installmentAmounts = splitTicketTotalIntoTwoPayments(totalCents);
+  const secondPaymentDateLabel = new Intl.DateTimeFormat(
+    language === "ru" ? "ru-RU" : language === "ua" ? "uk-UA" : "en-US",
+    { month: "long", day: "numeric" }
+  ).format(secondPaymentDate);
   const discountName = ticketDiscount.kind === "permanent30" ? copy.discount.permanent : copy.discount.earlyBird;
   // Both survive their own row collapsing (see useRetained).
   const retainedPromoDiscountCents = useRetained(activePromoPreview?.discountAmountCents);
@@ -746,6 +770,58 @@ export default function TicketForm() {
               <span>{copy.summary.total}</span>
               <SwapValue value={totalPrice} />
             </div>
+          </div>
+        </section>
+
+        <section className="premium-glass mt-3 p-3.5">
+          <SectionTitle icon={<CreditCard size={15} />}>{copy.payment.title}</SectionTitle>
+          <div role="radiogroup" aria-label={copy.payment.title} className="grid grid-cols-2 gap-2 rounded-[16px] bg-[#eaf4fb]/75 p-1">
+            {([
+              ["FULL", copy.payment.full],
+              ["TWO_INSTALLMENTS", copy.payment.two],
+            ] as const).map(([value, label]) => (
+              <label
+                key={value}
+                className={clsx(
+                  "cursor-pointer rounded-[12px] border px-2.5 py-2 text-center text-[0.7rem] font-semibold transition focus-within:ring-4 focus-within:ring-[var(--color-blue)]/15",
+                  paymentPlan === value
+                    ? "border-[var(--color-blue)]/45 bg-white text-[#1766bd] shadow-[0_8px_20px_rgba(114,160,193,0.15)]"
+                    : "border-transparent text-[#10182a]/55"
+                )}
+              >
+                <input type="radio" value={value} className="sr-only" {...register("paymentPlan")} />
+                {label}
+              </label>
+            ))}
+          </div>
+
+          <div className="mt-3 rounded-[14px] border border-white/80 bg-white/65 px-3 py-2.5">
+            {paymentPlan === "TWO_INSTALLMENTS" ? (
+              <div className="space-y-1 text-[0.74rem]">
+                <div className="flex items-baseline justify-between gap-3">
+                  <span className="text-[#10182a]/58">{copy.payment.today}</span>
+                  <SwapValue value={`first-${installmentAmounts.firstAmountCents}`} className="font-semibold text-[#10182a]">
+                    {installmentMoneyFromCents(installmentAmounts.firstAmountCents)}
+                  </SwapValue>
+                </div>
+                <div className="flex items-baseline justify-between gap-3">
+                  <span className="text-[#10182a]/58">{copy.payment.on} {secondPaymentDateLabel}</span>
+                  <SwapValue value={`second-${installmentAmounts.secondAmountCents}`} className="font-semibold text-[#10182a]">
+                    {installmentMoneyFromCents(installmentAmounts.secondAmountCents)}
+                  </SwapValue>
+                </div>
+                <p className="border-t border-[#dbe7ee] pt-2 text-[0.66rem] leading-4 text-[#1766bd]">
+                  {copy.payment.description}
+                </p>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-[0.7rem] text-[#10182a]/55">{copy.payment.payOnce}</span>
+                <SwapValue value={`full-${totalPrice}`} className="font-[var(--font-title-family)] text-[1.1rem] text-[#10182a]">
+                  {totalPrice}
+                </SwapValue>
+              </div>
+            )}
           </div>
         </section>
       </Reveal>

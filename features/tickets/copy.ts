@@ -61,6 +61,15 @@ const en = {
       specialIncludes: "Includes 2-day Forum access and Gala Dinner for both attendees. Fixed price; no discounts apply.",
       total: "Total",
     },
+    payment: {
+      title: "Payment",
+      full: "Pay in full",
+      two: "2 payments",
+      payOnce: "Pay once",
+      today: "today",
+      on: "on",
+      description: "Your ticket will be activated after the first payment. The second payment will be charged automatically in 14 days.",
+    },
     attendee: {
       title: "Attendee",
       information: "Attendee Information",
@@ -169,6 +178,15 @@ const ru: typeof en = {
       specialIncludes: "Включает доступ на 2 дня форума и гала-ужин для обоих гостей. Фиксированная цена без дополнительных скидок.",
       total: "Итого",
     },
+    payment: {
+      title: "Оплата",
+      full: "Оплатить полностью",
+      two: "2 платежа",
+      payOnce: "Один платёж",
+      today: "сегодня",
+      on: "",
+      description: "Билет будет активирован после первого платежа. Второй платёж будет автоматически списан через 14 дней.",
+    },
     attendee: {
       title: "Гость",
       information: "Данные гостя",
@@ -276,6 +294,15 @@ const ua: typeof en = {
       gala: "Гала-вечеря",
       specialIncludes: "Включає доступ на 2 дні форуму та гала-вечерю для обох гостей. Фіксована ціна без додаткових знижок.",
       total: "Разом",
+    },
+    payment: {
+      title: "Оплата",
+      full: "Оплатити повністю",
+      two: "2 платежі",
+      payOnce: "Один платіж",
+      today: "сьогодні",
+      on: "",
+      description: "Квиток буде активовано після першого платежу. Другий платіж буде автоматично списано через 14 днів.",
     },
     attendee: {
       title: "Гість",

@@ -15,6 +15,10 @@ import { normalizeTicketEmail } from "@/features/tickets/lib/normalize-email";
 import {
   computeTicketAmountCents,
 } from "@/features/tickets/lib/pricing";
+import {
+  getSecondInstallmentDate,
+  splitTicketTotalIntoTwoPayments,
+} from "@/features/tickets/lib/payment-plan";
 import { TEST_TICKET_PRICING } from "@/features/test/fixtures/ticket-pricing";
 import { calculatePromoDiscount } from "@/features/promos/lib/promo-codes";
 import { decideTicketReplacement } from "@/features/tickets/lib/replacement";
@@ -48,11 +52,15 @@ function assert(condition: boolean, label: string) {
 {
   const meta = buildSpecialPacketCheckoutMetadata({
     ticketIds: ["tk_first", "tk_second"],
+    paymentId: "pay_special",
+    paymentPlan: "TWO_INSTALLMENTS",
     email: "buyer@example.com",
     locale: "en",
   });
   eq(meta.ticketId, "tk_first", "Special Packet metadata carries the primary ticket");
   eq(meta.ticketIds, "tk_first,tk_second", "Special Packet metadata carries both ticket ids");
+  eq(meta.paymentId, "pay_special", "Special Packet metadata carries the payment id");
+  eq(meta.paymentPlan, "TWO_INSTALLMENTS", "Special Packet metadata carries the payment plan");
   eq(meta.specialPacket, "true", "Special Packet metadata is explicitly marked");
   eq(meta.quantity, "2", "Special Packet metadata records two tickets");
 }
@@ -100,6 +108,27 @@ function eq<T>(actual: T, expected: T, label: string) {
   assert(
     JSON.stringify(actual) === JSON.stringify(expected),
     `${label} (expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)})`
+  );
+}
+
+// ── Two-payment plan (exact cent split and fixed 14-day delay) ──────────────
+console.log("two-payment plan");
+eq(
+  splitTicketTotalIntoTwoPayments(69_500),
+  { firstAmountCents: 34_750, secondAmountCents: 34_750 },
+  "$695.00 splits evenly"
+);
+eq(
+  splitTicketTotalIntoTwoPayments(59_501),
+  { firstAmountCents: 29_750, secondAmountCents: 29_751 },
+  "odd cent is collected with payment #2"
+);
+{
+  const firstPaidAt = new Date("2026-08-19T19:30:00.000Z");
+  eq(
+    getSecondInstallmentDate(firstPaidAt).toISOString(),
+    "2026-09-02T19:30:00.000Z",
+    "payment #2 is exactly 14 days after payment #1"
   );
 }
 
@@ -234,6 +263,8 @@ console.log("buildTicketCheckoutMetadata");
 {
   const meta = buildTicketCheckoutMetadata({
     ticketId: "tk_123",
+    paymentId: "pay_123",
+    paymentPlan: "FULL",
     email: "jane@example.com",
     type: "TWO_DAYS",
     galaDinner: true,
@@ -241,6 +272,8 @@ console.log("buildTicketCheckoutMetadata");
   });
   eq(meta.flowType, TICKET_FLOW_TYPE, "flowType is the ticket discriminator");
   eq(meta.ticketId, "tk_123", "carries ticketId for the webhook");
+  eq(meta.paymentId, "pay_123", "carries paymentId for the webhook");
+  eq(meta.paymentPlan, "FULL", "carries the selected payment plan");
   eq(meta.email, "jane@example.com", "carries email");
   eq(meta.ticketType, "TWO_DAYS", "carries ticket type");
   eq(meta.galaDinner, "true", "carries gala flag as string");

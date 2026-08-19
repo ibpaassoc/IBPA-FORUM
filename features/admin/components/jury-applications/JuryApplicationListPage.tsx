@@ -20,7 +20,14 @@ import {
 } from "@/shared/components/admin/DashboardUI";
 
 type JuryStatus = "SUBMITTED" | "ADDITIONAL_INFO_REQUIRED" | "APPROVED" | "REJECTED" | "PAID";
-type PaymentStatus = "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "REFUNDED";
+type PaymentStatus =
+  | "PENDING"
+  | "PARTIALLY_PAID"
+  | "PAST_DUE"
+  | "PAID"
+  | "FAILED"
+  | "EXPIRED"
+  | "REFUNDED";
 
 type JuryRow = {
   id: string;

@@ -3,6 +3,7 @@ import "server-only";
 import crypto from "crypto";
 import type { Prisma, TicketStatus, TicketType } from "@prisma/client";
 import { decideTicketReplacement } from "@/features/tickets/lib/replacement";
+import { isTicketPaymentConfirmed } from "@/features/tickets/lib/ticket-status";
 import {
   emptyTicketActivity,
   parseTicketCredential,
@@ -180,7 +181,11 @@ export async function findTicketById(id: string) {
 }
 
 export async function findSpecialPacketTickets(specialPacketId: string) {
-  return prisma.ticket.findMany({ where: { specialPacketId }, orderBy: { specialPacketPosition: "asc" } });
+  return prisma.ticket.findMany({
+    where: { specialPacketId },
+    include: { payment: true },
+    orderBy: { specialPacketPosition: "asc" },
+  });
 }
 
 export async function findTicketsByIds(ids: string[]) {
@@ -194,10 +199,14 @@ export async function findTicketByToken(secureToken: string) {
 export async function findTicketWithPaymentByToken(secureToken: string) {
   const ticket = await prisma.ticket.findUnique({ where: { secureToken }, include: { payment: true } });
   if (!ticket) return null;
-  let payment = ticket.payment?.status === "PAID" ? ticket.payment : null;
+  let payment = isTicketPaymentConfirmed(ticket.status) ? ticket.payment : null;
   if (!payment && ticket.specialPacketId) {
     payment = await prisma.payment.findFirst({
-      where: { purchaseType: "TICKET", status: "PAID", tickets: { some: { specialPacketId: ticket.specialPacketId } } },
+      where: {
+        purchaseType: "TICKET",
+        status: { in: ["PARTIALLY_PAID", "PAST_DUE", "PAID"] },
+        tickets: { some: { specialPacketId: ticket.specialPacketId } },
+      },
       orderBy: { createdAt: "desc" },
     });
   }

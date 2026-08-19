@@ -57,10 +57,19 @@ enum NominationStatus {
 
 enum PaymentStatus {
   PENDING
+  PARTIALLY_PAID
+  PAST_DUE
   PAID
   FAILED
   EXPIRED
   REFUNDED
+
+  @@schema("forum_next")
+}
+
+enum PaymentPlan {
+  FULL
+  TWO_INSTALLMENTS
 
   @@schema("forum_next")
 }
@@ -358,32 +367,35 @@ model JuryNominationReview {
 }
 
 model Payment {
-  id                      String              @id @default(cuid())
-  accountId               String?
-  juryApplicationId       String?
-  customerEmail           String
-  amount                  Int
-  currency                String              @default("usd")
-  status                  PaymentStatus       @default(PENDING)
-  purchaseType            PaymentPurchaseType
-  provider                PaymentProvider
-  stripeCheckoutSessionId String?             @unique
-  stripePaymentIntentId   String?             @unique
-  stripeCustomerId        String?
-  pricingSnapshot         Json?
-  promotionSnapshot       Json?
-  refundSnapshot          Json?
-  paidAt                  DateTime?
-  fulfilledAt             DateTime?
-  refundedAt              DateTime?
-  createdAt               DateTime            @default(now())
-  updatedAt               DateTime            @updatedAt
-  dataScope               DataScope           @default(PRODUCTION)
-  account                 Account?            @relation(fields: [accountId], references: [id], onDelete: SetNull)
-  juryApplication         JuryApplication?    @relation(fields: [juryApplicationId], references: [id], onDelete: Restrict)
-  nominations             Nomination[]
-  tickets                 Ticket[]
-  webhookEvents           StripeWebhook[]
+  id                           String              @id @default(cuid())
+  accountId                    String?
+  juryApplicationId            String?
+  customerEmail                String
+  amount                       Int
+  currency                     String              @default("usd")
+  status                       PaymentStatus       @default(PENDING)
+  paymentPlan                  PaymentPlan         @default(FULL)
+  purchaseType                 PaymentPurchaseType
+  provider                     PaymentProvider
+  stripeCheckoutSessionId      String?             @unique
+  stripePaymentIntentId        String?             @unique
+  stripeCustomerId             String?
+  stripeSubscriptionId         String?             @unique
+  stripeSubscriptionScheduleId String?             @unique
+  pricingSnapshot              Json?
+  promotionSnapshot            Json?
+  refundSnapshot               Json?
+  paidAt                       DateTime?
+  fulfilledAt                  DateTime?
+  refundedAt                   DateTime?
+  createdAt                    DateTime            @default(now())
+  updatedAt                    DateTime            @updatedAt
+  dataScope                    DataScope           @default(PRODUCTION)
+  account                      Account?            @relation(fields: [accountId], references: [id], onDelete: SetNull)
+  juryApplication              JuryApplication?    @relation(fields: [juryApplicationId], references: [id], onDelete: Restrict)
+  nominations                  Nomination[]
+  tickets                      Ticket[]
+  webhookEvents                StripeWebhook[]
 
   @@index([accountId, status])
   @@index([customerEmail])

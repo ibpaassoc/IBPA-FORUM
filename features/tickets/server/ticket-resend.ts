@@ -10,7 +10,11 @@ import {
 import { getActiveTicketDiscount } from "./ticket-discount";
 import { sendTicketPaymentLinkEmail } from "./ticket-email.workflow";
 import { computeTicketAmountCents } from "@/features/tickets/lib/pricing";
-import { getTicketPriceConfigFromStripe } from "@/features/pricing/server/stripe-pricing";
+import {
+  getSpecialPacketAmountFromStripe,
+  getTicketPriceConfigFromStripe,
+} from "@/features/pricing/server/stripe-pricing";
+import { splitTicketTotalIntoTwoPayments } from "@/features/tickets/lib/payment-plan";
 import { isTicketPaymentConfirmed } from "@/features/tickets/lib/ticket-status";
 import { syncTicketOnChange } from "@/features/google-sheets";
 import type { Language } from "@/lib/i18n/translations";
@@ -23,6 +27,18 @@ export type ResendPaymentLinkResult =
 // Reuse an existing open session for repeated resends only when it is still
 // comfortably in the future, so an about-to-expire link is never re-sent.
 const REUSE_MIN_REMAINING_MS = 10 * 60 * 1000;
+
+function checkoutAmount(totalAmountCents: number, paymentPlan: "FULL" | "TWO_INSTALLMENTS") {
+  return paymentPlan === "TWO_INSTALLMENTS"
+    ? splitTicketTotalIntoTwoPayments(totalAmountCents).firstAmountCents
+    : totalAmountCents;
+}
+
+function installmentSnapshot(totalAmountCents: number, paymentPlan: "FULL" | "TWO_INSTALLMENTS") {
+  return paymentPlan === "TWO_INSTALLMENTS"
+    ? { paymentPlan, installments: splitTicketTotalIntoTwoPayments(totalAmountCents) }
+    : { paymentPlan };
+}
 
 /**
  * Try to reuse the ticket's current Checkout Session for an idempotent resend.
@@ -88,14 +104,9 @@ export async function resendTicketPaymentLink(
 
     const primary = packetTickets[0];
     const ticketIds = packetTickets.map((item) => item.id) as [string, string];
-    const session = await createSpecialPacketCheckoutSession({
-      ticketIds,
-      email: primary.email,
-      isIbpaMember: primary.isIbpaMember,
-      locale,
-    });
-
-    await prisma.$transaction(async (tx) => {
+    const paymentPlan = primary.payment?.paymentPlan ?? "FULL";
+    const totalAmountCents = await getSpecialPacketAmountFromStripe(primary.isIbpaMember);
+    const payment = await prisma.$transaction(async (tx) => {
       const oldPaymentIds = packetTickets.flatMap((item) =>
         item.paymentId ? [item.paymentId] : []
       );
@@ -104,27 +115,45 @@ export async function resendTicketPaymentLink(
         data: { paymentId: null },
       });
       await tx.payment.deleteMany({
-        where: {
-          id: { in: oldPaymentIds },
-          status: { not: "PAID" },
-        },
+        where: { id: { in: oldPaymentIds }, status: { not: "PAID" } },
       });
-      const payment = await tx.payment.create({
+      const created = await tx.payment.create({
         data: {
           customerEmail: primary.email,
           purchaseType: "TICKET",
           provider: "STRIPE",
-          stripeCheckoutSessionId: session.id,
-          amount: session.amountTotalCents,
+          paymentPlan,
+          amount: totalAmountCents,
           currency: "usd",
-          pricingSnapshot: { specialPacketId: ticket.specialPacketId, ticketIds },
+          pricingSnapshot: {
+            specialPacketId: ticket.specialPacketId,
+            ticketIds,
+            ...installmentSnapshot(totalAmountCents, paymentPlan),
+          },
           status: "PENDING",
         },
       });
       await tx.ticket.updateMany({
         where: { id: { in: ticketIds } },
-        data: { paymentId: payment.id },
+        data: { paymentId: created.id },
       });
+      return created;
+    });
+    const session = await createSpecialPacketCheckoutSession({
+      ticketIds,
+      paymentId: payment.id,
+      paymentPlan,
+      email: primary.email,
+      isIbpaMember: primary.isIbpaMember,
+      locale,
+      orderAmountCents: totalAmountCents,
+    });
+    if (session.amountTotalCents !== checkoutAmount(totalAmountCents, paymentPlan)) {
+      throw new Error("Stripe Special Packet resend amount does not match the payment plan.");
+    }
+    await prisma.payment.update({
+      where: { id: payment.id },
+      data: { stripeCheckoutSessionId: session.id },
     });
 
     ticketIds.forEach((id) => syncTicketOnChange(id));
@@ -134,7 +163,7 @@ export async function resendTicketPaymentLink(
       fullName: primary.fullName,
       type: primary.type,
       galaDinner: true,
-      amountCents: session.amountTotalCents,
+      amountCents: checkoutAmount(totalAmountCents, paymentPlan),
       currency: "usd",
       checkoutUrl: session.url,
     });
@@ -158,13 +187,15 @@ export async function resendTicketPaymentLink(
   });
 
   const stripe = getStripe();
+  const paymentPlan = ticket.payment?.paymentPlan ?? "FULL";
+  const amountDueAtCheckout = checkoutAmount(amounts.totalCents, paymentPlan);
 
   // Idempotency: reuse the current open session for rapid repeat clicks; else
   // create a brand-new one and supersede the old (expired) reference.
   const reusedUrl = await tryReuseOpenSession(
     stripe,
     ticket.payment?.stripeCheckoutSessionId ?? null,
-    amounts.totalCents
+    amountDueAtCheckout
   );
 
   let checkoutUrl: string;
@@ -174,45 +205,52 @@ export async function resendTicketPaymentLink(
     checkoutUrl = reusedUrl;
     reused = true;
   } else {
-    const session = await createTicketCheckoutSession({
-      ticketId: ticket.id,
-      email: ticket.email,
-      type: ticket.type,
-      galaDinner: ticket.galaDinner,
-      isIbpaMember: ticket.isIbpaMember,
-      ticketAmountCents: activeTicketDiscount ? amounts.ticketCents : null,
-      ticketDiscountLabel: activeTicketDiscount?.kind ?? null,
-      locale,
-    });
-
-    // Supersede the old session reference and replace the pending payment so the
-    // webhook (which matches on the new session id / metadata.ticketId) stays in
-    // sync. Never touches a PAID payment.
-    await prisma.$transaction(async (tx) => {
+    const payment = await prisma.$transaction(async (tx) => {
       const oldPaymentId = ticket.paymentId;
       await tx.ticket.update({ where: { id: ticket.id }, data: { paymentId: null } });
       if (oldPaymentId) {
-        await tx.payment.deleteMany({
-          where: { id: oldPaymentId, status: { not: "PAID" } },
-        });
+        await tx.payment.deleteMany({ where: { id: oldPaymentId, status: { not: "PAID" } } });
       }
-      const payment = await tx.payment.create({
+      const created = await tx.payment.create({
         data: {
           customerEmail: ticket.email,
           purchaseType: "TICKET",
           provider: "STRIPE",
-          stripeCheckoutSessionId: session.id,
+          paymentPlan,
           amount: amounts.totalCents,
           currency: "usd",
           pricingSnapshot: {
             ticketId: ticket.id,
             type: ticket.type,
             galaDinner: ticket.galaDinner,
+            ...installmentSnapshot(amounts.totalCents, paymentPlan),
           },
           status: "PENDING",
         },
       });
-      await tx.ticket.update({ where: { id: ticket.id }, data: { paymentId: payment.id } });
+      await tx.ticket.update({ where: { id: ticket.id }, data: { paymentId: created.id } });
+      return created;
+    });
+    const session = await createTicketCheckoutSession({
+      ticketId: ticket.id,
+      paymentId: payment.id,
+      paymentPlan,
+      email: ticket.email,
+      type: ticket.type,
+      galaDinner: ticket.galaDinner,
+      isIbpaMember: ticket.isIbpaMember,
+      orderAmountCents: amounts.totalCents,
+      ticketAmountCents: activeTicketDiscount ? amounts.ticketCents : null,
+      ticketDiscountLabel: activeTicketDiscount?.kind ?? null,
+      locale,
+    });
+
+    if (session.amountTotalCents !== amountDueAtCheckout) {
+      throw new Error("Stripe ticket resend amount does not match the payment plan.");
+    }
+    await prisma.payment.update({
+      where: { id: payment.id },
+      data: { stripeCheckoutSessionId: session.id },
     });
 
     checkoutUrl = session.url;
@@ -225,7 +263,7 @@ export async function resendTicketPaymentLink(
     fullName: ticket.fullName,
     type: ticket.type,
     galaDinner: ticket.galaDinner,
-    amountCents: amounts.totalCents,
+    amountCents: amountDueAtCheckout,
     currency: "usd",
     checkoutUrl,
   });
