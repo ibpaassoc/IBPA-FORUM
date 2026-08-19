@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Check, GraduationCap, Sparkles, X } from "lucide-react";
 import { createPortal } from "react-dom";
 
@@ -25,6 +25,7 @@ export default function HomeMasterClasses() {
   const masterClasses = c.masterClasses as readonly MasterClass[];
   const [openClass, setOpenClass] = useState<number | null>(null);
   const [activePreview, setActivePreview] = useState(0);
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
     if (openClass === null) return;
@@ -78,10 +79,19 @@ export default function HomeMasterClasses() {
             const isActive = activePreview === index;
 
             return (
-              <article
+              <motion.article
+                layout="position"
                 key={masterClass.name}
                 onMouseEnter={() => setActivePreview(index)}
                 onFocus={() => setActivePreview(index)}
+                initial={reducedMotion ? false : { opacity: 0, y: 32, scale: 0.97 }}
+                animate={{ opacity: 1, y: isActive ? -8 : 0, scale: isActive ? 1 : 0.985 }}
+                transition={{
+                  opacity: { duration: reducedMotion ? 0.01 : 0.45, delay: reducedMotion ? 0 : index * 0.08 },
+                  y: { duration: reducedMotion ? 0.01 : 0.5, ease: [0.22, 1, 0.36, 1] },
+                  scale: { duration: reducedMotion ? 0.01 : 0.5, ease: [0.22, 1, 0.36, 1] },
+                  layout: { duration: reducedMotion ? 0.01 : 0.58, ease: [0.22, 1, 0.36, 1] },
+                }}
                 className={`group relative h-[31rem] shrink-0 snap-center overflow-hidden rounded-[30px] border bg-white/74 shadow-[0_20px_58px_rgba(114,160,193,0.12)] backdrop-blur-xl transition-[flex-basis,width,border-color,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-[#9fc7df]/70 hover:shadow-[0_24px_68px_rgba(114,160,193,0.17)] sm:h-[33rem] md:h-[30rem] md:min-w-0 md:snap-none ${
                   isActive
                     ? "w-[min(82vw,25rem)] border-[#9fc7df]/70 md:flex-[3.2]"
@@ -99,6 +109,15 @@ export default function HomeMasterClasses() {
                     className="object-cover transition-transform duration-700 ease-out motion-safe:group-hover:scale-[1.025]"
                   />
                   <div className={`absolute inset-0 transition-opacity duration-500 ${isActive ? "bg-[linear-gradient(90deg,rgba(16,24,42,0.14)_0%,rgba(16,24,42,0.62)_100%)]" : "bg-[linear-gradient(180deg,transparent_36%,rgba(16,24,42,0.72)_100%)]"}`} />
+                  {isActive ? (
+                    <motion.span
+                      aria-hidden="true"
+                      initial={false}
+                      animate={reducedMotion ? { opacity: 0 } : { opacity: [0, 0.42, 0], x: ["-30%", "110%"] }}
+                      transition={{ duration: 1.1, ease: "easeOut" }}
+                      className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/3 -skew-x-12 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                    />
+                  ) : null}
 
                   <div className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full border border-white/55 bg-white/72 px-3.5 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[#2f6f9f] shadow-sm backdrop-blur-xl">
                     <span>{String(index + 1).padStart(2, "0")}</span>
@@ -150,7 +169,7 @@ export default function HomeMasterClasses() {
                     </div>
                   </div>
                 </div>
-              </article>
+              </motion.article>
             );
           })}
         </div>
