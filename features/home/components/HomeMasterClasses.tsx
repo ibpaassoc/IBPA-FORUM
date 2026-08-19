@@ -75,6 +75,7 @@ export default function HomeMasterClasses() {
                 key={masterClass.name}
                 onMouseEnter={() => setActivePreview(index)}
                 onFocus={() => setActivePreview(index)}
+                onClick={() => setActivePreview(index)}
                 className={`group relative h-[31rem] shrink-0 snap-center overflow-hidden rounded-[30px] border bg-white/74 shadow-[0_20px_58px_rgba(114,160,193,0.12)] backdrop-blur-xl transition-[flex-grow,width,border-color,box-shadow] duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] hover:border-[#9fc7df]/70 hover:shadow-[0_24px_68px_rgba(114,160,193,0.17)] sm:h-[33rem] md:h-[30rem] md:min-w-0 md:snap-none motion-reduce:transition-none ${
                   isActive
                     ? "w-[min(82vw,25rem)] border-[#9fc7df]/70 md:flex-[3.2]"
@@ -94,32 +95,32 @@ export default function HomeMasterClasses() {
                   <div className={`absolute inset-0 transition-opacity duration-500 ${isActive ? "bg-[linear-gradient(90deg,rgba(16,24,42,0.14)_0%,rgba(16,24,42,0.62)_100%)]" : "bg-[linear-gradient(180deg,transparent_36%,rgba(16,24,42,0.72)_100%)]"}`} />
                 </div>
 
-                <div
-                  className={`absolute inset-x-0 bottom-0 flex min-w-0 flex-col p-5 text-white transition-all duration-500 sm:p-6 md:p-7 ${
-                    isActive ? "opacity-100" : "opacity-100 md:translate-y-1"
-                  }`}
-                >
+                <div className="absolute inset-x-0 bottom-0 flex min-w-0 flex-col p-5 text-white sm:p-6 md:p-7">
 
-                  <h3 className={`mt-2 font-[var(--font-title-family)] font-light leading-[0.98] tracking-[-0.035em] text-white transition-[font-size] duration-500 ${isActive ? "text-[clamp(2.2rem,4vw,4.25rem)]" : "text-[1.75rem] md:text-[2rem]"}`}>
+                  <h3 className={`mt-2 font-[var(--font-title-family)] font-light leading-[0.98] tracking-[-0.035em] text-white transition-[font-size,transform] duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] ${isActive ? "text-[clamp(2.2rem,4vw,4.25rem)]" : "text-[1.75rem] md:text-[2rem]"}`}>
                     {masterClass.name}
                   </h3>
 
-                  <div className={`grid transition-[grid-template-rows,opacity,margin] duration-500 ${isActive ? "mt-4 grid-rows-[1fr] opacity-100" : "mt-0 grid-rows-[0fr] opacity-0"}`}>
-                    <div className="min-h-0 overflow-hidden">
-                      <div className="mt-4 rounded-[20px] border border-white/20 bg-white/12 p-4 backdrop-blur-md">
-                        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-white/65">{c.topicLabel}</p>
-                        <h4 className="mt-1.5 text-lg font-semibold leading-snug tracking-[-0.025em] text-white sm:text-xl">{masterClass.topic}</h4>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setOpenClass(index)}
-                        className="mt-4 inline-flex w-fit items-center gap-2 rounded-full border border-white/50 bg-white/88 px-4 py-2.5 text-sm font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-white hover:text-[#2f6f9f]"
-                      >
-                        {c.readMore}
-                        <ArrowRight className="h-4 w-4" />
-                      </button>
+                  <div className={`overflow-hidden transition-[max-height,opacity,transform,margin] duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none ${isActive ? "mt-4 max-h-48 translate-y-0 opacity-100" : "mt-0 max-h-0 translate-y-5 opacity-0"}`}>
+                    <div className="rounded-[20px] border border-white/20 bg-white/12 p-4 backdrop-blur-md">
+                      <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-white/65">{c.topicLabel}</p>
+                      <h4 className="mt-1.5 text-lg font-semibold leading-snug tracking-[-0.025em] text-white sm:text-xl">{masterClass.topic}</h4>
                     </div>
                   </div>
+
+                  <button
+                    type="button"
+                    aria-label={c.readMore}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setOpenClass(index);
+                    }}
+                    className={`absolute right-5 top-5 flex size-11 items-center justify-center rounded-full border border-white/45 bg-white/88 text-slate-800 shadow-lg backdrop-blur-xl transition-[opacity,transform,background-color] duration-500 hover:bg-white hover:text-[#2f6f9f] sm:right-6 sm:top-6 md:right-7 md:top-7 ${
+                      isActive ? "opacity-100" : "pointer-events-none -translate-y-2 opacity-0"
+                    }`}
+                  >
+                    <ArrowRight className="h-4 w-4 -rotate-45" />
+                  </button>
                 </div>
               </article>
             );
