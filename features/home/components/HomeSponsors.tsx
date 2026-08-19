@@ -5,12 +5,10 @@ import {
   useRef,
   useState,
   type KeyboardEvent,
-  type MouseEvent,
-  type PointerEvent,
 } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Globe, Handshake, Mail, MapPin } from "lucide-react";
+import { ChevronLeft, ChevronRight, Globe, Handshake, Mail, MapPin } from "lucide-react";
 import { FaInstagram } from "react-icons/fa6";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
@@ -186,13 +184,6 @@ export default function HomeSponsors() {
   const reducedMotion = useReducedMotion();
   const transitionTimerRef = useRef<number | null>(null);
   const sponsorButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
-  const touchState = useRef({
-    pointerId: -1,
-    startX: 0,
-    startY: 0,
-    horizontal: false,
-    didSwipe: false,
-  });
   const [activeIndexState, setActiveIndex] = useState(0);
   const [direction, setDirection] = useState<Direction>(1);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -234,83 +225,6 @@ export default function HomeSponsors() {
     selectSponsor(nextIndex);
   };
 
-  const handleContentPointerDown = (event: PointerEvent<HTMLDivElement>) => {
-    if (
-      event.pointerType !== "touch" ||
-      !window.matchMedia("(max-width: 767px)").matches ||
-      !isSwitcher ||
-      isTransitioning
-    ) {
-      return;
-    }
-
-    touchState.current = {
-      pointerId: event.pointerId,
-      startX: event.clientX,
-      startY: event.clientY,
-      horizontal: false,
-      didSwipe: false,
-    };
-  };
-
-  const handleContentPointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    const touch = touchState.current;
-    if (touch.pointerId !== event.pointerId) return;
-
-    const distanceX = event.clientX - touch.startX;
-    const distanceY = event.clientY - touch.startY;
-
-    if (!touch.horizontal) {
-      if (Math.abs(distanceY) > Math.abs(distanceX) && Math.abs(distanceY) > 8) {
-        touchState.current.pointerId = -1;
-        return;
-      }
-      if (Math.abs(distanceX) < 8) return;
-
-      touch.horizontal = true;
-      event.currentTarget.setPointerCapture(event.pointerId);
-    }
-
-    event.preventDefault();
-    touch.didSwipe = true;
-  };
-
-  const handleContentPointerEnd = (event: PointerEvent<HTMLDivElement>) => {
-    const touch = touchState.current;
-    if (touch.pointerId !== event.pointerId) return;
-
-    const distanceX = event.clientX - touch.startX;
-    const shouldSwitch = touch.horizontal && Math.abs(distanceX) >= 48;
-
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    }
-
-    touchState.current.pointerId = -1;
-    if (shouldSwitch) {
-      const nextIndex = Math.max(
-        0,
-        Math.min(
-          sponsors.length - 1,
-          activeIndex + (distanceX < 0 ? 1 : -1),
-        ),
-      );
-      selectSponsor(nextIndex);
-    }
-
-    if (touch.didSwipe) {
-      window.setTimeout(() => {
-        touchState.current.didSwipe = false;
-      }, 120);
-    }
-  };
-
-  const suppressSwipedLink = (event: MouseEvent<HTMLDivElement>) => {
-    if (!touchState.current.didSwipe) return;
-    event.preventDefault();
-    event.stopPropagation();
-  };
-
   const storyVariants = {
     enter: (enterDirection: Direction) =>
       reducedMotion ? { opacity: 0 } : { opacity: 0, x: enterDirection * 52 },
@@ -348,17 +262,45 @@ export default function HomeSponsors() {
         </Reveal>
 
         <Reveal delay={0.08} className="mt-10 md:mt-14">
+          {isSwitcher ? (
+            <div className="mb-5 flex items-center gap-3 md:hidden">
+              <button
+                type="button"
+                aria-label={copy.prevLabel}
+                onClick={() => selectSponsor((activeIndex - 1 + sponsors.length) % sponsors.length)}
+                disabled={isTransitioning}
+                className={`flex size-8 shrink-0 items-center justify-center rounded-full border border-[#b9d9eb]/70 bg-white/76 text-[#2f6f9f] shadow-sm transition hover:bg-white disabled:cursor-wait disabled:opacity-45 ${FOCUS_RING}`}
+              >
+                <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+              </button>
+              <input
+                type="range"
+                min="0"
+                max={sponsors.length - 1}
+                step="1"
+                value={activeIndex}
+                aria-label={copy.sliderLabel}
+                onChange={(event) => selectSponsor(Number(event.target.value))}
+                className="h-1.5 min-w-0 flex-1 cursor-pointer appearance-none rounded-full bg-[#b9d9eb]/65 accent-[#5c9fc6]"
+              />
+              <button
+                type="button"
+                aria-label={copy.nextLabel}
+                onClick={() => selectSponsor((activeIndex + 1) % sponsors.length)}
+                disabled={isTransitioning}
+                className={`flex size-8 shrink-0 items-center justify-center rounded-full border border-[#b9d9eb]/70 bg-white/76 text-[#2f6f9f] shadow-sm transition hover:bg-white disabled:cursor-wait disabled:opacity-45 ${FOCUS_RING}`}
+              >
+                <ChevronRight className="h-4 w-4" aria-hidden="true" />
+              </button>
+            </div>
+          ) : null}
+
           <div
             id="sponsor-content"
             role="region"
             aria-label={copy.sliderLabel}
             aria-live="polite"
-            onPointerDown={handleContentPointerDown}
-            onPointerMove={handleContentPointerMove}
-            onPointerUp={handleContentPointerEnd}
-            onPointerCancel={handleContentPointerEnd}
-            onClickCapture={suppressSwipedLink}
-            className="relative grid min-h-[46rem] overflow-hidden [touch-action:pan-y] sm:min-h-[41rem] md:min-h-[31rem]"
+            className="relative grid h-[48rem] overflow-hidden sm:h-[43rem] md:h-[40rem]"
           >
             <AnimatePresence initial={false} mode="wait" custom={direction}>
               <motion.div
@@ -369,7 +311,7 @@ export default function HomeSponsors() {
                 animate="center"
                 exit="exit"
                 transition={{ duration: reducedMotion ? 0.16 : 0.54, ease: EASING }}
-                className="col-start-1 row-start-1"
+                className="col-start-1 row-start-1 h-full overflow-y-auto pr-1 [scrollbar-color:rgba(92,159,198,0.55)_transparent] [scrollbar-width:thin]"
               >
                 <SponsorStory sponsor={sponsors[activeIndex]} copy={copy} />
               </motion.div>
@@ -378,7 +320,7 @@ export default function HomeSponsors() {
         </Reveal>
 
         {isSwitcher ? (
-          <div className="mt-7 sm:mt-9">
+          <div className="mt-7 hidden sm:mt-9 md:block">
             <div
               role="tablist"
               aria-label={copy.sliderLabel}
@@ -416,11 +358,6 @@ export default function HomeSponsors() {
                         className={`object-contain transition-opacity ${isActive ? "opacity-100" : "opacity-60 group-hover:opacity-90"}`}
                       />
                     </span>
-                    {isActive ? (
-                      <span className="absolute inset-x-4 bottom-3 truncate text-center font-[var(--font-ui-family)] text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[#385d76] md:hidden">
-                        {sponsor.name}
-                      </span>
-                    ) : null}
                     <span className="sr-only">{sponsor.name}</span>
                     {isActive ? (
                       <motion.span
