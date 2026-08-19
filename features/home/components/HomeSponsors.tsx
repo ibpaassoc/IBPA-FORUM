@@ -10,7 +10,7 @@ import {
 } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Globe, Handshake, Mail, MapPin } from "lucide-react";
+import { ChevronLeft, ChevronRight, Globe, Handshake, Mail, MapPin } from "lucide-react";
 import { FaInstagram } from "react-icons/fa6";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
@@ -221,6 +221,10 @@ export default function HomeSponsors() {
     );
   };
 
+  const moveSponsor = (offset: Direction) => {
+    selectSponsor((activeIndex + offset + sponsors.length) % sponsors.length);
+  };
+
   const handleSponsorKeyDown = (
     event: KeyboardEvent<HTMLButtonElement>,
     index: number,
@@ -378,12 +382,33 @@ export default function HomeSponsors() {
         </Reveal>
 
         {isSwitcher ? (
-          <div
-            role="tablist"
-            aria-label={copy.sliderLabel}
-            className="mt-7 min-w-0 overflow-x-auto [scrollbar-width:none] sm:mt-9 [&::-webkit-scrollbar]:hidden"
-          >
-            <div className="flex w-max min-w-full border-b border-[#b9d9eb]/65">
+          <div className="mt-7 sm:mt-9">
+            <div className="mb-4 flex items-center justify-end gap-2 md:hidden">
+              <button
+                type="button"
+                aria-label={copy.prevLabel}
+                onClick={() => moveSponsor(-1)}
+                disabled={isTransitioning}
+                className={`flex size-11 items-center justify-center rounded-full border border-[#b9d9eb]/70 bg-white/76 text-[#2f6f9f] shadow-sm backdrop-blur-xl transition hover:-translate-y-0.5 hover:bg-white disabled:cursor-wait disabled:opacity-45 ${FOCUS_RING}`}
+              >
+                <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                aria-label={copy.nextLabel}
+                onClick={() => moveSponsor(1)}
+                disabled={isTransitioning}
+                className={`flex size-11 items-center justify-center rounded-full border border-[#b9d9eb]/70 bg-white/76 text-[#2f6f9f] shadow-sm backdrop-blur-xl transition hover:-translate-y-0.5 hover:bg-white disabled:cursor-wait disabled:opacity-45 ${FOCUS_RING}`}
+              >
+                <ChevronRight className="h-5 w-5" aria-hidden="true" />
+              </button>
+            </div>
+
+            <div
+              role="tablist"
+              aria-label={copy.sliderLabel}
+              className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:flex md:min-w-0 md:overflow-x-auto md:[scrollbar-width:none] md:[&::-webkit-scrollbar]:hidden"
+            >
               {sponsors.map((sponsor, index) => {
                 const isActive = activeIndex === index;
 
@@ -401,17 +426,27 @@ export default function HomeSponsors() {
                     disabled={isTransitioning}
                     onClick={() => selectSponsor(index)}
                     onKeyDown={(event) => handleSponsorKeyDown(event, index)}
-                    className={`relative isolate shrink-0 px-4 pb-3 pt-1 font-[var(--font-ui-family)] text-sm font-semibold transition-colors sm:px-5 ${FOCUS_RING} ${
+                    className={`group relative isolate flex min-h-[4.75rem] items-center justify-center overflow-hidden rounded-2xl border px-3 py-2 transition-[border-color,background-color,box-shadow,transform] sm:min-h-[5.25rem] md:shrink-0 md:min-w-[10rem] md:rounded-none md:border-x-0 md:border-t-0 md:border-b md:px-4 md:pb-3 md:pt-1 ${FOCUS_RING} ${
                       isActive
-                        ? "cursor-default text-[#17374d]"
-                        : "text-[#7890a2] hover:text-[#385d76] disabled:cursor-wait"
+                        ? "border-[#72a0c1]/70 bg-white/84 text-[#17374d] shadow-[0_8px_24px_rgba(114,160,193,0.14)] md:bg-transparent md:shadow-none"
+                        : "border-[#b9d9eb]/55 bg-white/45 text-[#7890a2] hover:-translate-y-0.5 hover:border-[#9fc7df]/80 hover:bg-white/78 disabled:cursor-wait md:hover:translate-y-0 md:hover:bg-transparent"
                     }`}
                   >
+                    <span className="relative h-10 w-full max-w-[8rem] sm:h-11 md:h-9">
+                      <Image
+                        src={sponsor.logo}
+                        alt=""
+                        fill
+                        sizes="(max-width: 639px) 42vw, (max-width: 767px) 28vw, 10rem"
+                        className={`object-contain transition-opacity ${isActive ? "opacity-100" : "opacity-60 group-hover:opacity-90"}`}
+                      />
+                    </span>
+                    <span className="sr-only">{sponsor.name}</span>
                     {isActive ? (
                       <motion.span
                         layoutId="active-sponsor-underline"
                         aria-hidden="true"
-                        className="pointer-events-none absolute inset-x-3 bottom-[-1px] z-10 h-0.5 rounded-full bg-[#5c9fc6] sm:inset-x-4"
+                        className="pointer-events-none absolute inset-x-5 bottom-1 z-10 h-0.5 rounded-full bg-[#5c9fc6] md:inset-x-4 md:bottom-[-1px]"
                         transition={{ duration: reducedMotion ? 0.16 : 0.45, ease: EASING }}
                       />
                     ) : null}
@@ -419,11 +454,10 @@ export default function HomeSponsors() {
                       <motion.span
                         layoutId="active-sponsor-indicator"
                         aria-hidden="true"
-                        className="pointer-events-none absolute bottom-[-3px] left-1/2 z-10 size-1.5 -translate-x-1/2 rounded-full bg-[#2f6f9f]"
+                        className="pointer-events-none absolute bottom-[-1px] left-1/2 z-10 size-1.5 -translate-x-1/2 rounded-full bg-[#2f6f9f] md:bottom-[-3px]"
                         transition={{ duration: reducedMotion ? 0.16 : 0.45, ease: EASING }}
                       />
                     ) : null}
-                    {sponsor.name}
                   </button>
                 );
               })}
