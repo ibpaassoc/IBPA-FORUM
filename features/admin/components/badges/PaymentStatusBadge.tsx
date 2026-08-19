@@ -3,6 +3,8 @@ import { DashboardBadge } from "@/shared/components/admin/DashboardUI";
 
 const paymentStatusTones = {
   PENDING: "amber",
+  PARTIALLY_PAID: "blue",
+  PAST_DUE: "red",
   PAID: "green",
   FAILED: "red",
   EXPIRED: "neutral",

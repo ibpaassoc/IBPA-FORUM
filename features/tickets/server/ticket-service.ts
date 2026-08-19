@@ -14,11 +14,18 @@ import { getActiveTicketDiscount } from "./ticket-discount";
 import { normalizeInstagramHandle } from "@/features/tickets/lib/instagram";
 import { normalizeTicketEmail } from "@/features/tickets/lib/normalize-email";
 import { computeTicketAmountCents } from "@/features/tickets/lib/pricing";
+import {
+  splitTicketTotalIntoTwoPayments,
+  type TicketPaymentPlan,
+} from "@/features/tickets/lib/payment-plan";
 import { validatePromoCodeForFlow } from "@/features/promos/server/promo-service";
 import { syncTicketOnChange } from "@/features/google-sheets";
 import type { Language } from "@/lib/i18n/translations";
 import { isSpecialPacketEnabled } from "./special-packet";
-import { getTicketPriceConfigFromStripe } from "@/features/pricing/server/stripe-pricing";
+import {
+  getSpecialPacketAmountFromStripe,
+  getTicketPriceConfigFromStripe,
+} from "@/features/pricing/server/stripe-pricing";
 
 export class InvalidCertError extends Error {
   constructor(message: string) {
@@ -46,6 +53,7 @@ export type InitiateTicketPurchaseInput = {
   ibpaCertNumber?: string | null;
   locale: Language;
   promoCode?: string | null;
+  paymentPlan: TicketPaymentPlan;
   secondAttendee?: {
     firstName: string;
     lastName: string;
@@ -54,6 +62,21 @@ export type InitiateTicketPurchaseInput = {
     instagram?: string | null;
   };
 };
+
+function paymentPlanSnapshot(totalAmountCents: number, paymentPlan: TicketPaymentPlan) {
+  return paymentPlan === "TWO_INSTALLMENTS"
+    ? {
+        paymentPlan,
+        installments: splitTicketTotalIntoTwoPayments(totalAmountCents),
+      }
+    : { paymentPlan };
+}
+
+function checkoutAmount(totalAmountCents: number, paymentPlan: TicketPaymentPlan) {
+  return paymentPlan === "TWO_INSTALLMENTS"
+    ? splitTicketTotalIntoTwoPayments(totalAmountCents).firstAmountCents
+    : totalAmountCents;
+}
 
 export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput) {
   const fullName = `${input.firstName.trim()} ${input.lastName.trim()}`.trim();
@@ -98,30 +121,46 @@ export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput)
       ],
     });
     const ticketIds = reservation.tickets.map((ticket) => ticket.id) as [string, string];
-    const session = await createSpecialPacketCheckoutSession({
-      ticketIds,
-      email,
-      isIbpaMember: input.isIbpaMember,
-      locale: input.locale,
-    });
-
-    await prisma.$transaction(async (tx) => {
-      const payment = await tx.payment.create({
+    const paymentAmountCents = await getSpecialPacketAmountFromStripe(input.isIbpaMember);
+    const payment = await prisma.$transaction(async (tx) => {
+      const created = await tx.payment.create({
         data: {
           customerEmail: email,
           purchaseType: "TICKET",
           provider: "STRIPE",
-          stripeCheckoutSessionId: session.id,
-          amount: session.amountTotalCents,
+          paymentPlan: input.paymentPlan,
+          amount: paymentAmountCents,
           currency: "usd",
-          pricingSnapshot: { specialPacketId: reservation.specialPacketId, ticketIds },
+          pricingSnapshot: {
+            specialPacketId: reservation.specialPacketId,
+            ticketIds,
+            ...paymentPlanSnapshot(paymentAmountCents, input.paymentPlan),
+          },
           status: "PENDING",
         },
       });
       await tx.ticket.updateMany({
         where: { id: { in: ticketIds } },
-        data: { paymentId: payment.id },
+        data: { paymentId: created.id },
       });
+      return created;
+    });
+    const session = await createSpecialPacketCheckoutSession({
+      ticketIds,
+      paymentId: payment.id,
+      paymentPlan: input.paymentPlan,
+      email,
+      isIbpaMember: input.isIbpaMember,
+      locale: input.locale,
+      orderAmountCents: paymentAmountCents,
+    });
+
+    if (session.amountTotalCents !== checkoutAmount(paymentAmountCents, input.paymentPlan)) {
+      throw new Error("Stripe Special Packet checkout amount does not match the payment plan.");
+    }
+    await prisma.payment.update({
+      where: { id: payment.id },
+      data: { stripeCheckoutSessionId: session.id },
     });
 
     ticketIds.forEach((ticketId) => syncTicketOnChange(ticketId));
@@ -174,31 +213,13 @@ export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput)
     ? appliedPromo.finalAmountCents + amounts.galaCents
     : amounts.totalCents;
 
-  const session = await createTicketCheckoutSession({
-    ticketId,
-    email,
-    type: input.type,
-    galaDinner: input.galaDinner,
-    isIbpaMember: input.isIbpaMember,
-    ticketAmountCents:
-      automaticDiscountApplies || appliedPromo ? appliedPromo?.finalAmountCents ?? amounts.ticketCents : null,
-    ticketDiscountLabel: automaticDiscountApplies ? activeTicketDiscount?.kind ?? null : null,
-    locale: input.locale,
-  });
-
-  if (session.amountTotalCents !== paymentAmountCents) {
-    throw new Error(
-      `Stripe ticket total mismatch: expected ${paymentAmountCents}, received ${session.amountTotalCents ?? "null"}.`
-    );
-  }
-
-  await prisma.$transaction(async (tx) => {
-    const payment = await tx.payment.create({
+  const payment = await prisma.$transaction(async (tx) => {
+    const created = await tx.payment.create({
       data: {
         customerEmail: email,
         purchaseType: "TICKET",
         provider: "STRIPE",
-        stripeCheckoutSessionId: session.id,
+        paymentPlan: input.paymentPlan,
         amount: paymentAmountCents,
         currency: "usd",
         pricingSnapshot: {
@@ -207,6 +228,7 @@ export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput)
           galaDinner: input.galaDinner,
           ticketAmountCents: amounts.ticketCents,
           galaAmountCents: amounts.galaCents,
+          ...paymentPlanSnapshot(paymentAmountCents, input.paymentPlan),
         },
         promotionSnapshot: appliedPromo
           ? {
@@ -219,7 +241,35 @@ export async function initiateTicketPurchase(input: InitiateTicketPurchaseInput)
         status: "PENDING",
       },
     });
-    await tx.ticket.update({ where: { id: ticketId }, data: { paymentId: payment.id } });
+    await tx.ticket.update({ where: { id: ticketId }, data: { paymentId: created.id } });
+    return created;
+  });
+
+  const session = await createTicketCheckoutSession({
+    ticketId,
+    paymentId: payment.id,
+    paymentPlan: input.paymentPlan,
+    email,
+    type: input.type,
+    galaDinner: input.galaDinner,
+    isIbpaMember: input.isIbpaMember,
+    orderAmountCents: paymentAmountCents,
+    ticketAmountCents:
+      automaticDiscountApplies || appliedPromo ? appliedPromo?.finalAmountCents ?? amounts.ticketCents : null,
+    ticketDiscountLabel: automaticDiscountApplies ? activeTicketDiscount?.kind ?? null : null,
+    locale: input.locale,
+  });
+
+  const expectedCheckoutAmount = checkoutAmount(paymentAmountCents, input.paymentPlan);
+  if (session.amountTotalCents !== expectedCheckoutAmount) {
+    throw new Error(
+      `Stripe ticket total mismatch: expected ${expectedCheckoutAmount}, received ${session.amountTotalCents}.`
+    );
+  }
+
+  await prisma.payment.update({
+    where: { id: payment.id },
+    data: { stripeCheckoutSessionId: session.id },
   });
 
   syncTicketOnChange(ticketId);

@@ -268,7 +268,7 @@ assert(!ticketService.includes("frontendTotal"), "ticket checkout does not accep
 assert(ticketService.includes("amountCents: promoBaseAmounts.ticketCents"), "ticket promo validates the server-calculated eligible forum pass only");
 assert(ticketService.includes("appliedPromo.finalAmountCents + amounts.galaCents"), "ticket payment adds full Gala price after stacked discounts");
 assert(ticketService.includes("ticketAmountCents"), "ticket checkout uses the final server-calculated ticket amount");
-assert(ticketService.includes("session.amountTotalCents !== paymentAmountCents"), "server rejects a Stripe total that differs from the modal quote");
+assert(ticketService.includes("session.amountTotalCents !== expectedCheckoutAmount"), "server rejects a Stripe total that differs from the selected payment plan");
 
 const purchaseWorkflow = read("features/applications/server/purchase-workflow.ts");
 assert(purchaseWorkflow.includes("resolveApplicationPromo"), "application promo validation is server-side");

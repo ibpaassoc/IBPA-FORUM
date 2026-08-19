@@ -3,6 +3,7 @@ import {
   isValidInstagramHandle,
   normalizeInstagramHandle,
 } from "@/features/tickets/lib/instagram";
+import { TICKET_PAYMENT_PLANS } from "@/features/tickets/lib/payment-plan";
 
 const attendeeSchema = z.object({
     firstName: z.string().trim().min(1, "First name is required."),
@@ -23,6 +24,7 @@ const purchaseDetailsSchema = z.object({
     isIbpaMember: z.boolean(),
     ibpaCertNumber: z.string().optional(),
     promoCode: z.string().trim().optional(),
+    paymentPlan: z.enum(TICKET_PAYMENT_PLANS).default("FULL"),
 });
 
 export const ticketApiSchema = z

@@ -43,6 +43,8 @@ export const adminT = {
     REJECTED: "Отклонено",
     PAID: "Оплачено",
     PENDING: "Ожидает оплаты",
+    PARTIALLY_PAID: "Оплачено частично",
+    PAST_DUE: "Платёж просрочен",
     FAILED: "Ошибка оплаты",
     EXPIRED: "Истекло",
     REFUNDED: "Возврат",

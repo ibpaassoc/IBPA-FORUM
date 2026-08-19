@@ -154,3 +154,13 @@ export async function getTicketPriceConfigFromStripe(): Promise<TicketPriceConfi
     galaDinnerCents: galaDinner.amountCents,
   };
 }
+
+export async function getSpecialPacketAmountFromStripe(isIbpaMember: boolean) {
+  const price = await retrievePrice(
+    isIbpaMember ? "SPECIAL_PACKET_MEMBER" : "SPECIAL_PACKET_NON_MEMBER"
+  );
+  if (!price || price.currency !== "usd") {
+    throw new Error("The required USD Special Packet Stripe price is missing or invalid.");
+  }
+  return price.amountCents;
+}

@@ -13,7 +13,14 @@ export type CheckInScope = (typeof CHECK_IN_SCOPES)[number];
 
 export type CheckInStatus = "CHECKED_IN" | "NOT_CHECKED_IN";
 
-export type PaymentStatusValue = "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "REFUNDED";
+export type PaymentStatusValue =
+  | "PENDING"
+  | "PARTIALLY_PAID"
+  | "PAST_DUE"
+  | "PAID"
+  | "FAILED"
+  | "EXPIRED"
+  | "REFUNDED";
 
 /** A single check-in event available on a resolved ticket. */
 export type CheckInScopeState = {

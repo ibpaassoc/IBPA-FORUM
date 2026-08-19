@@ -7,6 +7,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   CalendarDays,
   Check,
+  CreditCard,
   Gift,
   Info,
   LockKeyhole,
@@ -34,6 +35,11 @@ import { applyDiscountToCents } from "@/features/tickets/types";
 import { useTicketDiscount } from "@/features/tickets/useEarlyBird";
 import { useSpecialPacket } from "@/features/tickets/useSpecialPacket";
 import { validateInstagramInput } from "@/features/tickets/lib/instagram";
+import {
+  getSecondInstallmentDate,
+  splitTicketTotalIntoTwoPayments,
+  type TicketPaymentPlan,
+} from "@/features/tickets/lib/payment-plan";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { LandingPrimaryButton, LandingSecondaryButton } from "@/shared/components/public";
 
@@ -52,6 +58,7 @@ type FormValues = AttendeeValues & {
   galaDinner: boolean;
   isIbpaMember: boolean;
   ibpaCertNumber: string;
+  paymentPlan: TicketPaymentPlan;
   secondAttendee: AttendeeValues;
 };
 
@@ -91,6 +98,16 @@ function moneyFromCents(amountCents: number) {
     style: "currency",
     currency: "USD",
     currencyDisplay: "narrowSymbol",
+    maximumFractionDigits: 2,
+  }).format(amountCents / 100);
+}
+
+function installmentMoneyFromCents(amountCents: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    currencyDisplay: "narrowSymbol",
+    minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amountCents / 100);
 }
@@ -221,6 +238,7 @@ export default function TicketForm() {
   const [promoPreview, setPromoPreview] = useState<PromoPreview | null>(null);
   const [promoError, setPromoError] = useState("");
   const [promoPending, setPromoPending] = useState(false);
+  const [secondPaymentDate] = useState(() => getSecondInstallmentDate(new Date()));
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const {
@@ -236,13 +254,14 @@ export default function TicketForm() {
       galaDinner: false,
       isIbpaMember: false,
       ibpaCertNumber: "",
+      paymentPlan: "FULL",
       secondAttendee: attendeeDefaults,
     },
   });
 
-  const [type, galaDinner, isIbpaMember, ibpaCertNumber] = useWatch({
+  const [type, galaDinner, isIbpaMember, ibpaCertNumber, paymentPlan] = useWatch({
     control,
-    name: ["type", "galaDinner", "isIbpaMember", "ibpaCertNumber"],
+    name: ["type", "galaDinner", "isIbpaMember", "ibpaCertNumber", "paymentPlan"],
   });
   const isSpecialPacket = type === "SPECIAL_PACKET";
 
@@ -307,6 +326,11 @@ export default function TicketForm() {
       ? activePromoPreview.finalAmountCents
       : (discountedTicketCents ?? rawTicketCents) + rawGalaCents;
   const totalPrice = formatStripeAmount({ amountCents: totalCents, currency: selectedStripePrice?.currency ?? galaStripePrice?.currency ?? "usd" });
+  const installmentAmounts = splitTicketTotalIntoTwoPayments(totalCents);
+  const secondPaymentDateLabel = new Intl.DateTimeFormat(
+    language === "ru" ? "ru-RU" : language === "ua" ? "uk-UA" : "en-US",
+    { month: "long", day: "numeric" }
+  ).format(secondPaymentDate);
   const discountName = ticketDiscount.kind === "permanent30" ? copy.discount.permanent : copy.discount.earlyBird;
   // Both survive their own row collapsing (see useRetained).
   const retainedPromoDiscountCents = useRetained(activePromoPreview?.discountAmountCents);
@@ -640,46 +664,45 @@ export default function TicketForm() {
         </div>
       </motion.div>
 
+      <motion.section variants={riseVariants} className="premium-glass p-3.5">
+        <SectionTitle icon={<UsersRound size={15} />}>{copy.membership.title}</SectionTitle>
+        <label className={clsx("flex cursor-pointer items-start gap-3 rounded-[18px] border p-3 transition", isIbpaMember ? "border-[var(--color-blue)]/45 bg-[linear-gradient(145deg,rgba(255,255,255,0.95),rgba(185,217,235,0.36))] shadow-[0_14px_34px_rgba(114,160,193,0.12)]" : "border-[var(--border-default)] bg-white/72")}>
+          <input type="checkbox" className="peer sr-only" {...register("isIbpaMember")} />
+          <span aria-hidden="true" className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full border border-[rgba(114,160,193,0.32)] bg-white/90 text-transparent transition peer-checked:border-[var(--color-blue)]/45 peer-checked:bg-[var(--color-blue-wash)] peer-checked:text-[#356f98] peer-focus-visible:ring-4 peer-focus-visible:ring-[var(--color-blue)]/20">
+            <Check size={15} strokeWidth={3} />
+          </span>
+          <span>
+            <span className="block text-[0.78rem] font-semibold text-[#10182a]">{copy.membership.memberLabel}</span>
+            <span className="mt-0.5 block text-[0.68rem] leading-4 text-[#10182a]/50">{copy.membership.memberHint}</span>
+          </span>
+        </label>
+        <Reveal open={isIbpaMember}>
+          <div className="pt-3">
+            <label className={labelBase} htmlFor="tf-cert">{copy.membership.certLabel} *</label>
+            <input
+              id="tf-cert"
+              className={clsx(inputBase, errors.ibpaCertNumber && inputError)}
+              placeholder="CERT-20240124-A00A"
+              {...register("ibpaCertNumber", {
+                validate: (value) => !isIbpaMember || value.trim().length > 0 || copy.membership.certRequired,
+              })}
+            />
+            {visibleCertStatus !== "idle" ? (
+              <p className={clsx("mt-1 text-[0.7rem]", visibleCertStatus === "valid" ? "text-emerald-700" : visibleCertStatus === "invalid" ? "text-red-600" : "text-[#2773c8]")}>
+                <SwapValue value={visibleCertStatus}>
+                  {visibleCertStatus === "checking" ? copy.membership.checking : visibleCertStatus === "valid" ? copy.membership.valid : visibleCertStatus === "invalid" ? copy.membership.invalid : copy.membership.error}
+                </SwapValue>
+              </p>
+            ) : errors.ibpaCertNumber ? <p className={errorText}>{errors.ibpaCertNumber.message}</p> : null}
+          </div>
+        </Reveal>
+      </motion.section>
+
       </motion.div>
       {/* Right column. */}
       <motion.div variants={columnVariants} className="space-y-3 lg:col-span-5">
 
-      <motion.div variants={riseVariants} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-        <section className="premium-glass p-3.5">
-          <SectionTitle icon={<UsersRound size={15} />}>{copy.membership.title}</SectionTitle>
-          <label className={clsx("flex cursor-pointer items-start gap-3 rounded-[18px] border p-3 transition", isIbpaMember ? "border-[var(--color-blue)]/45 bg-[linear-gradient(145deg,rgba(255,255,255,0.95),rgba(185,217,235,0.36))] shadow-[0_14px_34px_rgba(114,160,193,0.12)]" : "border-[var(--border-default)] bg-white/72")}>
-            <input type="checkbox" className="peer sr-only" {...register("isIbpaMember")} />
-            <span aria-hidden="true" className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full border border-[rgba(114,160,193,0.32)] bg-white/90 text-transparent transition peer-checked:border-[var(--color-blue)]/45 peer-checked:bg-[var(--color-blue-wash)] peer-checked:text-[#356f98] peer-focus-visible:ring-4 peer-focus-visible:ring-[var(--color-blue)]/20">
-              <Check size={15} strokeWidth={3} />
-            </span>
-            <span>
-              <span className="block text-[0.78rem] font-semibold text-[#10182a]">{copy.membership.memberLabel}</span>
-              <span className="mt-0.5 block text-[0.68rem] leading-4 text-[#10182a]/50">{copy.membership.memberHint}</span>
-            </span>
-          </label>
-          <Reveal open={isIbpaMember}>
-            <div className="pt-3">
-              <label className={labelBase} htmlFor="tf-cert">{copy.membership.certLabel} *</label>
-              <input
-                id="tf-cert"
-                className={clsx(inputBase, errors.ibpaCertNumber && inputError)}
-                placeholder="CERT-20240124-A00A"
-                {...register("ibpaCertNumber", {
-                  validate: (value) => !isIbpaMember || value.trim().length > 0 || copy.membership.certRequired,
-                })}
-              />
-              {visibleCertStatus !== "idle" ? (
-                <p className={clsx("mt-1 text-[0.7rem]", visibleCertStatus === "valid" ? "text-emerald-700" : visibleCertStatus === "invalid" ? "text-red-600" : "text-[#2773c8]")}>
-                  <SwapValue value={visibleCertStatus}>
-                    {visibleCertStatus === "checking" ? copy.membership.checking : visibleCertStatus === "valid" ? copy.membership.valid : visibleCertStatus === "invalid" ? copy.membership.invalid : copy.membership.error}
-                  </SwapValue>
-                </p>
-              ) : errors.ibpaCertNumber ? <p className={errorText}>{errors.ibpaCertNumber.message}</p> : null}
-            </div>
-          </Reveal>
-        </section>
-
-        <section className="premium-glass p-3.5">
+      <motion.section variants={riseVariants} className="premium-glass p-3.5">
           <SectionTitle icon={<Tag size={15} />}>{promoText.promoCode}</SectionTitle>
           {/* Stacked: the column is too narrow for the input and the button side by side. */}
           <div className="flex flex-col gap-2">
@@ -706,8 +729,7 @@ export default function TicketForm() {
           <p className={clsx("mt-2 text-[0.68rem] leading-4 transition-colors duration-300", activePromoPreview ? "text-emerald-700" : promoError ? "text-red-600" : "text-[#10182a]/48")}>
             <SwapValue value={promoHint} />
           </p>
-        </section>
-      </motion.div>
+      </motion.section>
 
       {/* The summary and every optional line in it stay mounted and collapse
           through `Reveal`, so a package change resizes the panel continuously
@@ -747,6 +769,89 @@ export default function TicketForm() {
               <SwapValue value={totalPrice} />
             </div>
           </div>
+        </section>
+
+        <section className="premium-glass mt-3 p-3.5">
+          <SectionTitle icon={<CreditCard size={15} />}>{copy.payment.title}</SectionTitle>
+          <div role="radiogroup" aria-label={copy.payment.title} className="relative isolate grid grid-cols-2 rounded-[16px] bg-[#eaf4fb]/75 p-1">
+            {([
+              ["FULL", copy.payment.full],
+              ["TWO_INSTALLMENTS", copy.payment.two],
+            ] as const).map(([value, label]) => {
+              const selected = paymentPlan === value;
+              return (
+                <motion.label
+                  key={value}
+                  className={clsx(
+                    "relative isolate cursor-pointer rounded-[12px] px-2.5 py-2 text-center text-[0.7rem] font-semibold transition-colors focus-within:ring-4 focus-within:ring-[var(--color-blue)]/15",
+                    selected ? "text-[#1766bd]" : "text-[#10182a]/55"
+                  )}
+                  whileTap={reducedMotion ? undefined : { scale: 0.98 }}
+                  transition={controlSpring}
+                >
+                  {selected ? (
+                    <motion.span
+                      aria-hidden
+                      layoutId="ticket-payment-selection"
+                      className="pointer-events-none absolute inset-0 -z-10 rounded-[12px] border border-[var(--color-blue)]/45 bg-white shadow-[0_8px_20px_rgba(114,160,193,0.15)]"
+                      transition={selectionSpring}
+                    />
+                  ) : null}
+                  <input type="radio" value={value} className="sr-only" {...register("paymentPlan")} />
+                  {label}
+                </motion.label>
+              );
+            })}
+          </div>
+
+          <motion.div
+            layout={!reducedMotion}
+            className="mt-3 overflow-hidden rounded-[14px] border border-white/80 bg-white/65 px-3 py-2.5"
+            transition={controlSpring}
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              {paymentPlan === "TWO_INSTALLMENTS" ? (
+                <motion.div
+                  key="two-installments"
+                  className="space-y-1 text-[0.74rem]"
+                  initial={reducedMotion ? false : { opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={reducedMotion ? undefined : { opacity: 0, y: -4 }}
+                  transition={{ duration: reducedMotion ? 0 : 0.18, ease: EASE_OUT }}
+                >
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className="text-[#10182a]/58">{copy.payment.today}</span>
+                    <SwapValue value={`first-${installmentAmounts.firstAmountCents}`} className="font-semibold text-[#10182a]">
+                      {installmentMoneyFromCents(installmentAmounts.firstAmountCents)}
+                    </SwapValue>
+                  </div>
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className="text-[#10182a]/58">{copy.payment.on} {secondPaymentDateLabel}</span>
+                    <SwapValue value={`second-${installmentAmounts.secondAmountCents}`} className="font-semibold text-[#10182a]">
+                      {installmentMoneyFromCents(installmentAmounts.secondAmountCents)}
+                    </SwapValue>
+                  </div>
+                  <p className="border-t border-[#dbe7ee] pt-2 text-[0.66rem] leading-4 text-[#1766bd]">
+                    {copy.payment.description}
+                  </p>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="full-payment"
+                  className="flex items-center justify-between gap-3"
+                  initial={reducedMotion ? false : { opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={reducedMotion ? undefined : { opacity: 0, y: -4 }}
+                  transition={{ duration: reducedMotion ? 0 : 0.18, ease: EASE_OUT }}
+                >
+                  <span className="text-[0.7rem] text-[#10182a]/55">{copy.payment.payOnce}</span>
+                  <SwapValue value={`full-${totalPrice}`} className="font-[var(--font-title-family)] text-[1.1rem] text-[#10182a]">
+                    {totalPrice}
+                  </SwapValue>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
         </section>
       </Reveal>
 
