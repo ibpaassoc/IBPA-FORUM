@@ -104,8 +104,9 @@ const en = {
   },
   pricing: {
     specialEyebrow: "Special Package",
-    specialTitle: "Special Packet",
-    specialDescription: "2-day Forum passes and Gala Dinner for two people.",
+    specialTitle: "Special Package 2 FOR 1",
+    specialDescription:
+      "Pay for one 2-day Forum + Gala Dinner package and bring a second attendee free. One price for two guests.",
     new: "New",
     comingSoon: "Coming Soon",
     members: "IBPA Members",
@@ -221,8 +222,9 @@ const ru: typeof en = {
   },
   pricing: {
     specialEyebrow: "Специальное предложение",
-    specialTitle: "Специальный пакет",
-    specialDescription: "Два билета на 2 дня форума и гала-ужин для двух человек.",
+    specialTitle: "Специальный пакет 2 FOR 1",
+    specialDescription:
+      "Оплатите один пакет «2 дня форума + Gala Dinner» и приведите второго участника бесплатно. Одна стоимость на двоих.",
     new: "Новинка",
     comingSoon: "Скоро",
     members: "Участники IBPA",
@@ -338,8 +340,9 @@ const ua: typeof en = {
   },
   pricing: {
     specialEyebrow: "Спеціальна пропозиція",
-    specialTitle: "Спеціальний пакет",
-    specialDescription: "Два квитки на 2 дні форуму та гала-вечеря для двох осіб.",
+    specialTitle: "Спеціальний пакет 2 FOR 1",
+    specialDescription:
+      "Оплатіть один пакет «2 дні форуму + Gala Dinner» і приведіть другого учасника безкоштовно. Одна ціна для двох.",
     new: "Новинка",
     comingSoon: "Незабаром",
     members: "Учасники IBPA",
