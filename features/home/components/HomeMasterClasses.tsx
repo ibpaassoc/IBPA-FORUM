@@ -65,13 +65,6 @@ export default function HomeMasterClasses() {
           <p className="mx-auto mt-[var(--space-md)] max-w-2xl text-[clamp(0.95rem,1.6vw,1.08rem)] leading-[1.8] text-[var(--color-ink-soft)]">
             {c.description}
           </p>
-
-          <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-[#b9d9eb]/65 bg-white/68 px-5 py-2.5 shadow-[0_10px_28px_rgba(114,160,193,0.1)] backdrop-blur-xl">
-            <GraduationCap className="h-4 w-4 text-[#72a0c1]" />
-            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-soft)]">
-              {String(masterClasses.length).padStart(2, "0")} {c.sessionsLabel}
-            </span>
-          </div>
         </div>
 
         <div className="mt-[var(--space-xl)] -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-3 [scrollbar-width:none] sm:-mx-6 sm:px-6 md:mx-0 md:gap-4 md:overflow-visible md:px-0 md:pb-0 [&::-webkit-scrollbar]:hidden">
@@ -118,24 +111,6 @@ export default function HomeMasterClasses() {
                       className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/3 -skew-x-12 bg-gradient-to-r from-transparent via-white/30 to-transparent"
                     />
                   ) : null}
-
-                  <div className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full border border-white/55 bg-white/72 px-3.5 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[#2f6f9f] shadow-sm backdrop-blur-xl">
-                    <span>{String(index + 1).padStart(2, "0")}</span>
-                    <span className="h-3 w-px bg-[#72a0c1]/35" />
-                    <span>{c.formatLabel}</span>
-                  </div>
-
-                  {masterClass.secondaryPhoto && isActive ? (
-                    <div className="absolute bottom-5 right-5 aspect-[3/4] w-20 overflow-hidden rounded-[18px] border-2 border-white/80 bg-white shadow-[0_16px_36px_rgba(16,24,42,0.22)] sm:w-24">
-                      <Image
-                        src={masterClass.secondaryPhoto}
-                        alt=""
-                        fill
-                        sizes="96px"
-                        className="object-cover"
-                      />
-                    </div>
-                  ) : null}
                 </div>
 
                 <div
@@ -143,9 +118,6 @@ export default function HomeMasterClasses() {
                     isActive ? "opacity-100" : "opacity-100 md:translate-y-1"
                   }`}
                 >
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/75">
-                    {c.formatLabel}
-                  </p>
 
                   <h3 className={`mt-2 font-[var(--font-title-family)] font-light leading-[0.98] tracking-[-0.035em] text-white transition-[font-size] duration-500 ${isActive ? "text-[clamp(2.2rem,4vw,4.25rem)]" : "text-[1.75rem] md:text-[2rem]"}`}>
                     {masterClass.name}
@@ -153,7 +125,6 @@ export default function HomeMasterClasses() {
 
                   <div className={`grid transition-[grid-template-rows,opacity,margin] duration-500 ${isActive ? "mt-4 grid-rows-[1fr] opacity-100" : "mt-0 grid-rows-[0fr] opacity-0"}`}>
                     <div className="min-h-0 overflow-hidden">
-                      <p className="line-clamp-2 text-sm leading-6 text-white/82">{masterClass.role}</p>
                       <div className="mt-4 rounded-[20px] border border-white/20 bg-white/12 p-4 backdrop-blur-md">
                         <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-white/65">{c.topicLabel}</p>
                         <h4 className="mt-1.5 text-lg font-semibold leading-snug tracking-[-0.025em] text-white sm:text-xl">{masterClass.topic}</h4>
