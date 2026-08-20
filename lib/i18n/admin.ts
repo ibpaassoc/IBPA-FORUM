@@ -84,6 +84,7 @@ export const adminT = {
     scanner: { label: "Сканер", short: "Скан" },
     sheets: { label: "Google Sheets", short: "Sheets" },
     mailing: { label: "Рассылка", short: "Письма" },
+    notifications: { label: "Уведомления", short: "Увед." },
     brandSub: "Админ-панель",
     adminDesk: "Администратор",
     signOut: "Выйти",
