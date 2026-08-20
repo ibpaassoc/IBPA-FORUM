@@ -6,6 +6,7 @@ import { signOut } from "next-auth/react";
 import { useState } from "react";
 import {
   CheckCircle2,
+  BellRing,
   ClipboardList,
   LayoutDashboard,
   LogOut,
@@ -25,6 +26,7 @@ const navItemDefs = [
   { href: "/account/jury", key: "overview", icon: LayoutDashboard },
   { href: "/account/jury/nominations", key: "nominations", icon: ClipboardList },
   { href: "/account/jury/completed", key: "completed", icon: CheckCircle2 },
+  { href: "/account/jury/notifications", key: "notifications", icon: BellRing },
 ] as const;
 
 function isActive(pathname: string, href: string) {

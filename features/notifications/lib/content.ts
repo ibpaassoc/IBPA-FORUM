@@ -50,6 +50,17 @@ export const notificationContentSchema = z.discriminatedUnion("kind", [
 export type NotificationContent = z.infer<typeof notificationContentSchema>;
 export type NotificationKind = NotificationContent["kind"];
 export type LocalizedNotificationCopy = z.infer<typeof localizedCopySchema>;
+export type AccountNotificationView = {
+  id: string;
+  accountId: string;
+  type: "JURY" | "APPLICANT";
+  name: string;
+  email: string;
+  content: NotificationContent;
+  isViewed: boolean;
+  dateCreated: Date | string;
+  dateViewed: Date | string | null;
+};
 
 export function parseNotificationContent(value: unknown) {
   return notificationContentSchema.parse(value);

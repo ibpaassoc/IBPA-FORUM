@@ -16,6 +16,8 @@ import {
   EmptyState,
   PremiumButton,
 } from "@/shared/components/admin/DashboardUI";
+import NotificationsOverview from "@/features/notifications/components/NotificationsOverview";
+import { getNotificationsForAccount } from "@/features/notifications/server/notifications";
 
 const OVERVIEW_NOMINATION_LIMIT = 4;
 
@@ -26,6 +28,7 @@ export default async function ApplicantDashboardPage() {
     getServerTranslations(),
   ]);
   const ov = t.account.overview;
+  const notifications = await getNotificationsForAccount(data.account.id, 3);
   const dateLocale = language === "ua" ? "uk" : language;
   const stats = applicantNominationStats(data.nominations);
   const nominationCards = data.nominations.map((nomination) =>
@@ -48,6 +51,11 @@ export default async function ApplicantDashboardPage() {
         deadlineDayLabel={formatApplicantDeadlinePart(data.deadline, dateLocale, { day: "2-digit" })}
         daysRemaining={daysUntil(data.deadline)}
         closed={data.applicationsClosed}
+      />
+
+      <NotificationsOverview
+        notifications={notifications}
+        href="/account/applicant/notifications"
       />
 
       <section aria-labelledby="my-nominations-heading" className="mt-1">

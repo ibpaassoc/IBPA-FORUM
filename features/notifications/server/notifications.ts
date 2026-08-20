@@ -21,6 +21,14 @@ export async function getNotificationsForAccount(accountId: string, take?: numbe
   return rows.map((row) => ({ ...row, content: parseNotificationContent(row.content) }));
 }
 
+export async function getNextUnviewedNotification(accountId: string) {
+  const row = await prisma.notification.findFirst({
+    where: { accountId, isViewed: false },
+    orderBy: { dateCreated: "desc" },
+  });
+  return row ? { ...row, content: parseNotificationContent(row.content) } : null;
+}
+
 export async function markNotificationViewed(accountId: string, notificationId: string) {
   const now = new Date();
   return prisma.notification.updateMany({
