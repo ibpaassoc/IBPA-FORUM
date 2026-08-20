@@ -196,7 +196,10 @@ export async function createComplimentaryGalaTicket(
       fullName: input.fullName,
       email: input.email,
       phone: input.phone,
-      type: null,
+      // The legacy database constraint requires every FORUM record to carry a
+      // type. Access is still gala-only because JURY_GALA is authoritative in
+      // scanner scope validation and admin presentation.
+      type: "TWO_DAYS",
       galaDinner: true,
       status: "PAID",
       paidAt: now,
@@ -346,7 +349,7 @@ export async function getAllTickets() {
   });
   return tickets.map((ticket) => ({
     ...ticket,
-    type: ticket.type ?? (ticket.origin === "JURY_GALA" ? "GALA_ONLY" : "TWO_DAYS"),
+    type: ticket.origin === "JURY_GALA" ? "GALA_ONLY" : (ticket.type ?? "TWO_DAYS"),
     payments: ticket.payment ? [ticket.payment] : [],
     qrCredentials: credentialRows(ticket.credential).slice(0, 5),
   }));

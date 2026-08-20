@@ -19,6 +19,42 @@ const buttonClass =
 const secondaryButtonClass =
   "inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[rgba(114,160,193,0.25)] bg-white/82 px-5 py-2.5 text-[0.72rem] font-semibold uppercase tracking-[0.11em] text-[var(--color-ink)] transition hover:bg-[var(--color-blue-wash)] disabled:opacity-55";
 
+const uiCopy = {
+  en: {
+    viewed: "Viewed",
+    new: "New",
+    galaConfirmed: "Gala Dinner ticket confirmed",
+    emailFailed: "Email delivery failed. Download the QR below or retry the email.",
+    galaOnly: "This QR is valid for the Gala Dinner only. It cannot be used for Forum entry.",
+    downloadQr: "Download QR",
+    resendEmail: "Resend email",
+    passConfirmed: "Your 2-Day Forum pass is confirmed",
+    viewTicket: "View ticket",
+  },
+  ru: {
+    viewed: "Просмотрено",
+    new: "Новое",
+    galaConfirmed: "Билет на гала-ужин подтверждён",
+    emailFailed: "Не удалось доставить email. Скачайте QR-код ниже или отправьте письмо повторно.",
+    galaOnly: "Этот QR-код действует только на гала-ужин и не даёт доступ к форуму.",
+    downloadQr: "Скачать QR",
+    resendEmail: "Отправить повторно",
+    passConfirmed: "Ваш пропуск на 2 дня форума подтверждён",
+    viewTicket: "Открыть билет",
+  },
+  ua: {
+    viewed: "Переглянуто",
+    new: "Нове",
+    galaConfirmed: "Квиток на гала-вечерю підтверджено",
+    emailFailed: "Не вдалося доставити email. Завантажте QR-код нижче або надішліть лист повторно.",
+    galaOnly: "Цей QR-код діє лише на гала-вечерю і не надає доступу до форуму.",
+    downloadQr: "Завантажити QR",
+    resendEmail: "Надіслати повторно",
+    passConfirmed: "Вашу перепустку на 2 дні форуму підтверджено",
+    viewTicket: "Відкрити квиток",
+  },
+} as const;
+
 export default function NotificationCard({
   notification,
   compact = false,
@@ -28,6 +64,7 @@ export default function NotificationCard({
 }) {
   const { language } = useLanguage();
   const copy = notificationCopy(notification.content, language);
+  const labels = uiCopy[language];
   const [consent, setConsent] = useState(false);
   const [pending, startTransition] = useTransition();
   const [message, setMessage] = useState<string | null>(null);
@@ -74,7 +111,7 @@ export default function NotificationCard({
               </h2>
             </div>
             <StatusBadge tone={notification.isViewed ? "neutral" : "blue"}>
-              {notification.isViewed ? "Viewed" : "New"}
+              {notification.isViewed ? labels.viewed : labels.new}
             </StatusBadge>
           </div>
           <p className="mt-3 text-sm font-semibold leading-6 text-[var(--color-ink)]">{copy.summary}</p>
@@ -84,16 +121,16 @@ export default function NotificationCard({
             accepted ? (
               <div className="mt-4 rounded-[20px] border border-emerald-200 bg-emerald-50/72 p-4">
                 <p className="flex items-center gap-2 text-sm font-semibold text-emerald-800">
-                  <CheckCircle2 size={16} /> Gala Dinner ticket confirmed
+                  <CheckCircle2 size={16} /> {labels.galaConfirmed}
                 </p>
                 {content.state.emailDelivery === "FAILED" ? (
                   <p className="mt-2 flex items-start gap-2 text-xs leading-5 text-amber-800">
                     <MailWarning className="mt-0.5 shrink-0" size={14} />
-                    Email delivery failed. Download the QR below or retry the email.
+                    {labels.emailFailed}
                   </p>
                 ) : (
                   <p className="mt-2 text-xs leading-5 text-emerald-800">
-                    This QR is valid for the Gala Dinner only. It cannot be used for Forum entry.
+                    {labels.galaOnly}
                   </p>
                 )}
                 <div className="mt-3 flex flex-col gap-2 sm:flex-row">
@@ -102,12 +139,12 @@ export default function NotificationCard({
                       href={`/api/account/tickets/${content.state.ticketId}/qr`}
                       className={secondaryButtonClass}
                     >
-                      <QrCode size={15} /> Download QR
+                      <QrCode size={15} /> {labels.downloadQr}
                     </Link>
                   ) : null}
                   <button type="button" onClick={claimGala} disabled={pending} className={secondaryButtonClass}>
                     {pending ? <Loader2 className="animate-spin" size={15} /> : <ExternalLink size={15} />}
-                    Resend email
+                    {labels.resendEmail}
                   </button>
                 </div>
               </div>
@@ -131,10 +168,10 @@ export default function NotificationCard({
           ) : purchased ? (
             <div className="mt-4 rounded-[20px] border border-emerald-200 bg-emerald-50/72 p-4">
               <p className="flex items-center gap-2 text-sm font-semibold text-emerald-800">
-                <CheckCircle2 size={16} /> Your 2-Day Forum pass is confirmed
+                <CheckCircle2 size={16} /> {labels.passConfirmed}
               </p>
               <Link href="/account/applicant/tickets" className={`${secondaryButtonClass} mt-3`}>
-                <QrCode size={15} /> View ticket
+                <QrCode size={15} /> {labels.viewTicket}
               </Link>
             </div>
           ) : (

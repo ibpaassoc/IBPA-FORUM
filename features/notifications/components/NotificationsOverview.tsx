@@ -10,9 +10,9 @@ import {
 import { DashboardCard, DashboardPanel, StatusBadge } from "@/shared/components/admin/DashboardUI";
 
 const overviewCopy = {
-  en: { title: "Notifications", viewAll: "View all", empty: "No notifications yet" },
-  ru: { title: "Уведомления", viewAll: "Смотреть все", empty: "Уведомлений пока нет" },
-  ua: { title: "Сповіщення", viewAll: "Переглянути всі", empty: "Сповіщень поки немає" },
+  en: { title: "Notifications", viewAll: "View all", empty: "No notifications yet", viewed: "Viewed", new: "New" },
+  ru: { title: "Уведомления", viewAll: "Смотреть все", empty: "Уведомлений пока нет", viewed: "Просмотрено", new: "Новое" },
+  ua: { title: "Сповіщення", viewAll: "Переглянути всі", empty: "Сповіщень поки немає", viewed: "Переглянуто", new: "Нове" },
 } as const;
 
 export default function NotificationsOverview({
@@ -51,7 +51,7 @@ export default function NotificationsOverview({
                     <p className="mt-1 line-clamp-2 text-xs leading-5 text-[var(--color-ink-soft)]">{copy.summary}</p>
                   </div>
                   <StatusBadge tone={notification.isViewed ? "neutral" : "blue"}>
-                    {notification.isViewed ? "Viewed" : "New"}
+                    {notification.isViewed ? labels.viewed : labels.new}
                   </StatusBadge>
                 </DashboardPanel>
               </Link>
