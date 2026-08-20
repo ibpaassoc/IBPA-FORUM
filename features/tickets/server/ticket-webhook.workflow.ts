@@ -15,6 +15,7 @@ import {
   createSecondInstallmentSchedule,
 } from "./ticket-checkout";
 import { sendTicketConfirmationEmail } from "./ticket-email.workflow";
+import { sendTicketPaymentAdminNotificationEmail } from "@/features/email/server/payment-email.workflow";
 import {
   findTicketById,
   findTicketByStripeSessionId,
@@ -44,6 +45,34 @@ function subscriptionDetails(invoice: Stripe.Invoice) {
   return invoice.parent?.type === "subscription_details"
     ? invoice.parent.subscription_details
     : null;
+}
+
+async function stripePaymentFailureMessage(invoice: Stripe.Invoice) {
+  const invoiceWithPaymentIntent = invoice as Stripe.Invoice & {
+    payment_intent?: string | Stripe.PaymentIntent | null;
+  };
+  let paymentIntent = invoiceWithPaymentIntent.payment_intent;
+  if (typeof paymentIntent === "string") {
+    try {
+      paymentIntent = await getStripe().paymentIntents.retrieve(paymentIntent);
+    } catch (error) {
+      console.warn("Unable to retrieve the failed Stripe invoice payment intent", { error });
+      paymentIntent = null;
+    }
+  }
+  if (paymentIntent && paymentIntent.last_payment_error) {
+    const error = paymentIntent.last_payment_error;
+    return [error.code, error.message].filter(Boolean).join(": ") || "Stripe could not collect the payment.";
+  }
+
+  return invoice.last_finalization_error?.message ?? "Stripe could not collect the payment.";
+}
+
+function stripeIntentFailureMessage(paymentIntent: Stripe.PaymentIntent) {
+  const error = paymentIntent.last_payment_error;
+  return error
+    ? [error.code, error.message].filter(Boolean).join(": ") || "Stripe could not collect the payment."
+    : "Stripe could not collect the payment.";
 }
 
 async function resolveInstallmentInvoice(invoice: Stripe.Invoice) {
@@ -188,6 +217,9 @@ async function handleInitialCheckout(event: Stripe.Event, session: Stripe.Checko
           stripeSubscriptionId: schedule?.subscriptionId ?? currentPayment.stripeSubscriptionId,
           pricingSnapshot,
           paidAt: isInstallment ? currentPayment.paidAt : firstPaidAt,
+          nextPaymentAt: schedule?.secondPaymentDueAt ?? null,
+          lastPaymentError: null,
+          lastPaymentFailedAt: null,
           fulfilledAt: currentPayment.fulfilledAt ?? firstPaidAt,
         },
       });
@@ -219,6 +251,25 @@ async function handleInitialCheckout(event: Stripe.Event, session: Stripe.Checko
     } catch (error) {
       console.error("Failed to send ticket confirmation email", { ticketId: ticket.id, error });
     }
+  }
+  try {
+    await sendTicketPaymentAdminNotificationEmail({
+      attendeeNames: tickets.map((ticket) => ticket.fullName).join(", "),
+      attendeeEmails: tickets.map((ticket) => ticket.email).join(", "),
+      ticketSummary: tickets
+        .map((ticket) => `${ticket.type === "ONE_DAY" ? "1-Day Forum Pass" : "2-Day Forum Pass"}${ticket.galaDinner ? " + Gala Dinner" : ""}`)
+        .join("; "),
+      totalAmount: payment.amount,
+      paidAmount: isInstallment ? installmentAmounts.firstAmountCents : payment.amount,
+      nextAmount: isInstallment ? installmentAmounts.secondAmountCents : null,
+      currency: payment.currency,
+      paymentStatus: isInstallment ? "PARTIALLY_PAID" : "PAID",
+      nextPaymentAt: schedule?.secondPaymentDueAt ?? null,
+      stripeSessionId: session.id,
+      stripePaymentIntentId: paymentIntentId,
+    });
+  } catch (error) {
+    console.error("Failed to send ticket payment admin notification email", { paymentId: payment.id, error });
   }
   return true;
 }
@@ -265,6 +316,9 @@ async function handleSecondInstallmentInvoice(event: Stripe.Event, invoice: Stri
           data: {
             status: "PAID",
             paidAt: new Date(paidAtUnix * 1000),
+            nextPaymentAt: null,
+            lastPaymentError: null,
+            lastPaymentFailedAt: null,
             stripeSubscriptionId: resolved.subscriptionId,
           },
         });
@@ -273,6 +327,8 @@ async function handleSecondInstallmentInvoice(event: Stripe.Event, invoice: Stri
           where: { id: payment.id, status: { not: "PAID" } },
           data: {
             status: "PAST_DUE",
+            lastPaymentError: await stripePaymentFailureMessage(invoice),
+            lastPaymentFailedAt: processedAt,
             stripeSubscriptionId: resolved.subscriptionId,
           },
         });
@@ -281,6 +337,44 @@ async function handleSecondInstallmentInvoice(event: Stripe.Event, invoice: Stri
       await tx.stripeWebhook.update({
         where: { eventId: event.id },
         data: { state: "PROCESSED", processedAt, paymentId: payment.id },
+      });
+    });
+  } catch (error) {
+    if (isDuplicateStripeEventError(error)) return true;
+    throw error;
+  }
+
+  return true;
+}
+
+async function handleTicketPaymentIntentFailed(event: Stripe.Event, paymentIntent: Stripe.PaymentIntent) {
+  if (paymentIntent.metadata?.flowType !== "ticket" || !paymentIntent.metadata.paymentId) return false;
+
+  const paymentId = paymentIntent.metadata.paymentId;
+  try {
+    await prisma.$transaction(async (tx) => {
+      await tx.stripeWebhook.create({
+        data: {
+          eventId: event.id,
+          eventType: event.type,
+          payload: serializeStripeEvent(event),
+          state: "PROCESSING",
+          attempts: 1,
+          lastAttemptAt: new Date(event.created * 1000),
+          paymentId,
+        },
+      });
+      await tx.payment.updateMany({
+        where: { id: paymentId, status: { not: "PAID" } },
+        data: {
+          status: "FAILED",
+          lastPaymentError: stripeIntentFailureMessage(paymentIntent),
+          lastPaymentFailedAt: new Date(event.created * 1000),
+        },
+      });
+      await tx.stripeWebhook.update({
+        where: { eventId: event.id },
+        data: { state: "PROCESSED", processedAt: new Date(event.created * 1000), paymentId },
       });
     });
   } catch (error) {
@@ -300,6 +394,10 @@ export async function handleTicketStripeEvent(event: Stripe.Event): Promise<bool
 
   if (event.type === "invoice.paid" || event.type === "invoice.payment_failed") {
     return handleSecondInstallmentInvoice(event, event.data.object as Stripe.Invoice);
+  }
+
+  if (event.type === "payment_intent.payment_failed") {
+    return handleTicketPaymentIntentFailed(event, event.data.object as Stripe.PaymentIntent);
   }
 
   return false;
