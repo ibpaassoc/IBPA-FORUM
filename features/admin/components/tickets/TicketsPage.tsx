@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Ticket, Camera, X, ChevronDown, Send, Pencil, QrCode, RefreshCw, Mail, Loader2, Save, PackageOpen } from "lucide-react";
+import { Ticket, Camera, X, ChevronDown, Send, Pencil, QrCode, RefreshCw, Mail, Loader2, Save, PackageOpen, CalendarClock, CreditCard, AlertTriangle } from "lucide-react";
 import {
   DashboardAccentBlock,
   DashboardCard,
@@ -18,6 +18,7 @@ import {
   SearchBar,
 } from "@/shared/components/admin/DashboardUI";
 import { instagramProfileUrl } from "@/features/tickets/lib/instagram";
+import { splitTicketTotalIntoTwoPayments } from "@/features/tickets/lib/payment-plan";
 import { adminT } from "@/lib/i18n/admin";
 import UnifiedScanner from "@/features/check-in/components/UnifiedScanner";
 
@@ -25,6 +26,10 @@ type TicketPayment = {
   amount: number;
   currency: string;
   status: string;
+  paymentPlan: string;
+  nextPaymentAt: Date | string | null;
+  lastPaymentError: string | null;
+  lastPaymentFailedAt: Date | string | null;
 };
 
 type TicketQrCredential = {
@@ -86,6 +91,18 @@ function qrStatusLabel(status?: string | null) {
 }
 
 function ticketStatusBadge(status: string, paymentStatus?: string) {
+  if (paymentStatus === "PARTIALLY_PAID") {
+    return <DashboardBadge tone="blue">{adminT.statuses.PARTIALLY_PAID}</DashboardBadge>;
+  }
+  if (paymentStatus === "PAST_DUE") {
+    return <DashboardBadge tone="red">{adminT.statuses.PAST_DUE}</DashboardBadge>;
+  }
+  if (paymentStatus === "FAILED") {
+    return <DashboardBadge tone="red">{adminT.tickets.badgeFailed}</DashboardBadge>;
+  }
+  if (paymentStatus === "EXPIRED") {
+    return <DashboardBadge tone="neutral">{adminT.tickets.badgeExpired}</DashboardBadge>;
+  }
   switch (status) {
     case "PAID": return <DashboardBadge tone="blue">{adminT.tickets.badgePaid}</DashboardBadge>;
     case "CHECKED_ONE_DAY": return <DashboardBadge tone="green">{adminT.tickets.badgeCheckedIn}</DashboardBadge>;
@@ -94,8 +111,6 @@ function ticketStatusBadge(status: string, paymentStatus?: string) {
     case "PENDING":
       // Surface the latest payment state so an unpaid ticket shows why it is still
       // unpaid (failed / expired) rather than a flat "pending".
-      if (paymentStatus === "FAILED") return <DashboardBadge tone="red">{adminT.tickets.badgeFailed}</DashboardBadge>;
-      if (paymentStatus === "EXPIRED") return <DashboardBadge tone="neutral">{adminT.tickets.badgeExpired}</DashboardBadge>;
       return <DashboardBadge tone="amber">{adminT.tickets.badgePending}</DashboardBadge>;
     case "CANCELED": return <DashboardBadge tone="red">{adminT.tickets.badgeCanceled}</DashboardBadge>;
     default: return <DashboardBadge tone="neutral">{status}</DashboardBadge>;
@@ -187,6 +202,91 @@ function formatMoney(amount: number, currency: string) {
     style: "currency",
     currency: currency.toUpperCase(),
   }).format(amount / 100);
+}
+
+function PaymentSummary({ payment }: { payment: TicketPayment | null }) {
+  if (!payment) {
+    return (
+      <div className="rounded-[20px] border border-dashed border-[rgba(114,160,193,0.28)] bg-[var(--color-blue-wash)]/35 px-4 py-4 text-sm text-[var(--color-ink-soft)]">
+        {adminT.tickets.paymentFailureUnknown}
+      </div>
+    );
+  }
+
+  const isInstallment = payment.paymentPlan === "TWO_INSTALLMENTS";
+  const installmentAmounts = isInstallment
+    ? splitTicketTotalIntoTwoPayments(payment.amount)
+    : null;
+  const paidNow = payment.status === "FAILED" || payment.status === "EXPIRED" || payment.status === "PENDING"
+    ? 0
+    : installmentAmounts && payment.status !== "PAID"
+      ? installmentAmounts.firstAmountCents
+      : payment.amount;
+  const isPastDue = payment.status === "PAST_DUE";
+  const isFailed = payment.status === "FAILED";
+  const isPending = payment.status === "PENDING" || payment.status === "EXPIRED";
+  const isPartial = payment.status === "PARTIALLY_PAID" || isPastDue;
+  const statusTone = isPastDue || isFailed ? "border-red-200 bg-red-50/70" : isPartial ? "border-[rgba(114,160,193,0.28)] bg-[var(--color-blue-wash)]/55" : isPending ? "border-[rgba(114,160,193,0.24)] bg-white/72" : "border-emerald-200 bg-emerald-50/65";
+  const statusLabel = isPastDue
+    ? adminT.tickets.paymentPastDue
+    : isFailed
+      ? adminT.tickets.badgeFailed
+      : isPending
+        ? payment.status === "EXPIRED" ? adminT.tickets.badgeExpired : adminT.tickets.badgePending
+        : payment.status === "PARTIALLY_PAID"
+          ? adminT.statuses.PARTIALLY_PAID
+          : adminT.statuses.PAID;
+
+  return (
+    <div className={`rounded-[22px] border px-4 py-4 ${statusTone}`}>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex items-start gap-3">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-[13px] bg-white/75 text-[var(--color-blue)] shadow-sm">
+            {isPastDue || isFailed ? <AlertTriangle size={17} /> : <CreditCard size={17} />}
+          </span>
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]">
+              {adminT.tickets.paymentPlan}
+            </p>
+            <p className="mt-1 text-sm font-semibold text-[var(--color-ink)]">
+              {isInstallment ? adminT.tickets.installments : adminT.tickets.fullPayment}
+            </p>
+          </div>
+        </div>
+        <DashboardBadge tone={isPastDue || isFailed ? "red" : isPartial ? "blue" : isPending ? "amber" : "green"}>
+          {statusLabel}
+        </DashboardBadge>
+      </div>
+
+      <div className="mt-4 grid gap-2 sm:grid-cols-3">
+        <div className="rounded-[15px] bg-white/62 px-3 py-2.5">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-muted)]">{adminT.tickets.paidNow}</p>
+          <p className="mt-1 text-sm font-semibold text-[var(--color-ink)]">{formatMoney(paidNow, payment.currency)}</p>
+        </div>
+        <div className="rounded-[15px] bg-white/62 px-3 py-2.5">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-muted)]">{adminT.tickets.orderTotal}</p>
+          <p className="mt-1 text-sm font-semibold text-[var(--color-ink)]">{formatMoney(payment.amount, payment.currency)}</p>
+        </div>
+        <div className="rounded-[15px] bg-white/62 px-3 py-2.5">
+          <p className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-muted)]">
+            <CalendarClock size={12} />
+            {adminT.tickets.nextPayment}
+          </p>
+          <p className={`mt-1 text-sm font-semibold ${isPastDue ? "text-red-700" : "text-[var(--color-ink)]"}`}>
+            {payment.nextPaymentAt ? formatDate(payment.nextPaymentAt) : "—"}
+          </p>
+        </div>
+      </div>
+
+      {(isPastDue || isFailed) && (
+        <div className="mt-3 rounded-[15px] border border-red-200/80 bg-white/60 px-3 py-2.5 text-xs leading-5 text-red-800">
+          <span className="font-semibold">{adminT.tickets.paymentFailure}:</span>{" "}
+          {payment.lastPaymentError || adminT.tickets.paymentFailureUnknown}
+          {payment.lastPaymentFailedAt ? <span className="ml-1 text-red-700/70">({formatDate(payment.lastPaymentFailedAt)})</span> : null}
+        </div>
+      )}
+    </div>
+  );
 }
 
 function DetailItem({ label, value }: { label: string; value: React.ReactNode }) {
@@ -686,6 +786,9 @@ function TicketDetailPanel({
         value={payment ? formatMoney(payment.amount, payment.currency) : null}
       />
       <DetailItem label={adminT.tickets.paymentStatus} value={ticketStatusBadge(ticket.status, payment?.status)} />
+      <div className="sm:col-span-2">
+        <PaymentSummary payment={payment} />
+      </div>
       <DetailItem label={adminT.tickets.paymentTime} value={ticket.paidAt ? formatDate(ticket.paidAt) : null} />
       <DetailItem label={adminT.tickets.created} value={formatDate(ticket.createdAt)} />
       <div className="sm:col-span-2">
@@ -914,9 +1017,13 @@ export default function TicketsPage({
     }
   }
 
-  const paid = tickets.filter((t) => t.status !== "PENDING" && t.status !== "CANCELED");
+  const paid = tickets.filter((t) => t.payments[0]?.status === "PAID");
   const checkedIn = tickets.filter((t) => t.status.startsWith("CHECKED"));
   const pending = tickets.filter((t) => t.status === "PENDING");
+  const paymentAttention = tickets.filter((t) => {
+    const status = t.payments[0]?.status;
+    return status === "PARTIALLY_PAID" || status === "PAST_DUE" || status === "FAILED" || status === "EXPIRED";
+  });
 
   const query = search.trim().toLowerCase();
   const filtered = tickets.filter(
@@ -975,7 +1082,7 @@ export default function TicketsPage({
         </div>
       </DashboardCard>
 
-      <div className="grid grid-cols-2 gap-3 xl:grid-cols-[1.1fr_repeat(3,minmax(0,0.75fr))]">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-[1.1fr_repeat(4,minmax(0,0.75fr))]">
         <DashboardAccentBlock>
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-soft)]">
             {adminT.tickets.totalTickets}
@@ -985,6 +1092,7 @@ export default function TicketsPage({
         <DashboardMetricTile label={adminT.tickets.paid} value={paid.length} accent="blue" />
         <DashboardMetricTile label={adminT.tickets.checkedIn} value={checkedIn.length} accent="green" />
         <DashboardMetricTile label={adminT.tickets.pendingPayment} value={pending.length} accent="amber" />
+        <DashboardMetricTile label={adminT.tickets.paymentAttention} value={paymentAttention.length} accent="red" />
       </div>
 
       <DashboardCard className="overflow-hidden p-0">

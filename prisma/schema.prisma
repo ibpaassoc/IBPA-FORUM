@@ -386,6 +386,9 @@ model Payment {
   promotionSnapshot            Json?
   refundSnapshot               Json?
   paidAt                       DateTime?
+  nextPaymentAt                DateTime?
+  lastPaymentError             String?
+  lastPaymentFailedAt          DateTime?
   fulfilledAt                  DateTime?
   refundedAt                   DateTime?
   createdAt                    DateTime            @default(now())

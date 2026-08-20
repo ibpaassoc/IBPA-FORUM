@@ -261,7 +261,19 @@ export async function getAllTickets() {
   const tickets = await prisma.ticket.findMany({
     where: { kind: "FORUM" },
     orderBy: { createdAt: "desc" },
-    include: { payment: { select: { amount: true, currency: true, status: true } } },
+    include: {
+      payment: {
+        select: {
+          amount: true,
+          currency: true,
+          status: true,
+          paymentPlan: true,
+          nextPaymentAt: true,
+          lastPaymentError: true,
+          lastPaymentFailedAt: true,
+        },
+      },
+    },
   });
   return tickets.map((ticket) => ({
     ...ticket,
