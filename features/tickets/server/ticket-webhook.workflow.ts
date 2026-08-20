@@ -21,6 +21,7 @@ import {
   findTicketByStripeSessionId,
   findTicketsByIds,
 } from "./ticket-repository";
+import { parseNotificationContent } from "@/features/notifications/lib/content";
 
 function stripeId(value: { id: string } | string | null): string | null {
   if (!value) return null;
@@ -224,6 +225,31 @@ async function handleInitialCheckout(event: Stripe.Event, session: Stripe.Checko
         },
       });
 
+      const notificationId = jsonRecord(currentPayment.pricingSnapshot).notificationId;
+      if (typeof notificationId === "string") {
+        const notification = await tx.notification.findUnique({ where: { id: notificationId } });
+        if (notification) {
+          const content = parseNotificationContent(notification.content);
+          if (content.kind === "SPECIAL_OFFER_2_DAYS") {
+            await tx.notification.update({
+              where: { id: notification.id },
+              data: {
+                isViewed: true,
+                dateViewed: notification.dateViewed ?? firstPaidAt,
+                content: {
+                  ...content,
+                  state: {
+                    ...content.state,
+                    status: "PURCHASED",
+                    purchasedAt: firstPaidAt.toISOString(),
+                  },
+                },
+              },
+            });
+          }
+        }
+      }
+
       for (const ticketId of ticketIds) await ensureActiveTicketQr(ticketId, tx);
       await tx.stripeWebhook.update({
         where: { eventId: event.id },
@@ -247,6 +273,7 @@ async function handleInitialCheckout(event: Stripe.Event, session: Stripe.Checko
         secureToken: ticket.secureToken,
         instagram: ticket.instagram,
         specialPacket: Boolean(ticket.specialPacketId),
+        specialOffer: ticket.origin === "SPECIAL_OFFER",
       });
     } catch (error) {
       console.error("Failed to send ticket confirmation email", { ticketId: ticket.id, error });

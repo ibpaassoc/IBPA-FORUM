@@ -44,23 +44,32 @@ function externalKind(ticket: Ticket): TicketKind {
 function normalizeForumTicket(ticket: Ticket): NormalizedTicket {
   const dayOneCheckedInAt = ticket.dayOneCheckInAt ?? ticket.forumCheckInAt;
   const dayTwoCheckedInAt = ticket.dayTwoCheckInAt;
+  const isGalaOnly = ticket.origin === "JURY_GALA" || ticket.type === null;
   const isOneDayPass = ticket.type === "ONE_DAY";
-  const dayOneAvailable = !isOneDayPass || !dayTwoCheckedInAt;
-  const dayTwoAvailable = !isOneDayPass || !dayOneCheckedInAt;
+  const dayOneAvailable = !isGalaOnly && (!isOneDayPass || !dayTwoCheckedInAt);
+  const dayTwoAvailable = !isGalaOnly && (!isOneDayPass || !dayOneCheckedInAt);
   const scopes: CheckInScopeState[] = [
     {
       scope: "DAY_ONE",
       label: adminT.scanner.dayOne,
       checkedInAt: dayOneCheckedInAt?.toISOString() ?? null,
       available: dayOneAvailable,
-      unavailableReason: dayOneAvailable ? null : adminT.scanner.oneDayPassUsed,
+      unavailableReason: dayOneAvailable
+        ? null
+        : isGalaOnly
+          ? adminT.scanner.notIncluded
+          : adminT.scanner.oneDayPassUsed,
     },
     {
       scope: "DAY_TWO",
       label: adminT.scanner.dayTwo,
       checkedInAt: dayTwoCheckedInAt?.toISOString() ?? null,
       available: dayTwoAvailable,
-      unavailableReason: dayTwoAvailable ? null : adminT.scanner.oneDayPassUsed,
+      unavailableReason: dayTwoAvailable
+        ? null
+        : isGalaOnly
+          ? adminT.scanner.notIncluded
+          : adminT.scanner.oneDayPassUsed,
     },
     {
       scope: "GALA",
@@ -72,7 +81,11 @@ function normalizeForumTicket(ticket: Ticket): NormalizedTicket {
   ];
   return {
     ticketKind: "TICKET",
-    ticketType: ticket.type ? TICKET_TYPE_LABELS[ticket.type] ?? ticket.type : "Forum ticket",
+    ticketType: isGalaOnly
+      ? "Только гала-ужин"
+      : ticket.type
+        ? TICKET_TYPE_LABELS[ticket.type] ?? ticket.type
+        : "Forum ticket",
     ownerName: ticket.fullName,
     email: ticket.email,
     phone: ticket.phone,
@@ -190,6 +203,9 @@ function validateScope(ticket: Ticket, scope: CheckInScope): CheckInError | null
   }
   if (scope !== "DAY_ONE" && scope !== "DAY_TWO" && scope !== "GALA") {
     return { ok: false, code: "BAD_SCOPE", status: 400, message: "Недопустимый тип чек-ина." };
+  }
+  if ((ticket.origin === "JURY_GALA" || ticket.type === null) && scope !== "GALA") {
+    return { ok: false, code: "BAD_SCOPE", status: 400, message: "Этот билет действует только на гала-ужин." };
   }
   if (scope === "GALA" && !ticket.galaDinner) {
     return { ok: false, code: "BAD_SCOPE", status: 400, message: "Этот билет не включает гала-ужин." };

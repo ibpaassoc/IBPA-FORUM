@@ -19,6 +19,8 @@ export type TicketCheckoutMetadata = {
   installmentNumber?: "1";
   ticketIds?: string;
   specialPacket?: "true";
+  specialOffer?: "true";
+  notificationId?: string;
   email: string;
   ticketType: TicketType;
   galaDinner: string;
@@ -64,6 +66,35 @@ export function buildTicketCheckoutMetadata({
     email,
     ticketType: type,
     galaDinner: galaDinner ? "true" : "false",
+    quantity: "1",
+    locale,
+    checkoutType: "ticket",
+  } satisfies TicketCheckoutMetadata;
+}
+
+export function buildSpecialOfferCheckoutMetadata({
+  ticketId,
+  paymentId,
+  notificationId,
+  email,
+  locale,
+}: {
+  ticketId: string;
+  paymentId: string;
+  notificationId: string;
+  email: string;
+  locale: Language;
+}): Record<string, string> {
+  return {
+    flowType: TICKET_FLOW_TYPE,
+    ticketId,
+    paymentId,
+    paymentPlan: "FULL",
+    specialOffer: "true",
+    notificationId,
+    email,
+    ticketType: "TWO_DAYS",
+    galaDinner: "false",
     quantity: "1",
     locale,
     checkoutType: "ticket",

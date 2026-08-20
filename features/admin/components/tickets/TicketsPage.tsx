@@ -51,6 +51,7 @@ type TicketRecord = {
   phone: string;
   instagram: string | null;
   type: string;
+  origin: "STANDARD" | "SPECIAL_PACKET" | "JURY_GALA" | "SPECIAL_OFFER";
   galaDinner: boolean;
   isIbpaMember: boolean;
   status: string;
@@ -189,6 +190,7 @@ function SendPaymentLinkAction({ ticketId }: { ticketId: string }) {
 }
 
 function ticketTypeLabelRu(type: string) {
+  if (type === "GALA_ONLY") return "Только гала-ужин";
   return adminT.tickets.typeLabels[type] ?? type.replace("_", " ").toLowerCase();
 }
 
@@ -204,11 +206,11 @@ function formatMoney(amount: number, currency: string) {
   }).format(amount / 100);
 }
 
-function PaymentSummary({ payment }: { payment: TicketPayment | null }) {
+function PaymentSummary({ payment, complimentary = false }: { payment: TicketPayment | null; complimentary?: boolean }) {
   if (!payment) {
     return (
       <div className="rounded-[20px] border border-dashed border-[rgba(114,160,193,0.28)] bg-[var(--color-blue-wash)]/35 px-4 py-4 text-sm text-[var(--color-ink-soft)]">
-        {adminT.tickets.paymentFailureUnknown}
+        {complimentary ? "Бесплатный пропуск — оплата не требуется." : adminT.tickets.paymentFailureUnknown}
       </div>
     );
   }
@@ -689,7 +691,7 @@ function TicketDetailPanel({
   return (
     <div className="px-4 pb-4 pt-3 lg:px-5">
       <div className="relative">
-        {!editing && (
+        {!editing && ticket.origin !== "JURY_GALA" && (
           <IconButton
             label={ticketAdminCopy.editTicket}
             icon={Pencil}
@@ -787,7 +789,7 @@ function TicketDetailPanel({
       />
       <DetailItem label={adminT.tickets.paymentStatus} value={ticketStatusBadge(ticket.status, payment?.status)} />
       <div className="sm:col-span-2">
-        <PaymentSummary payment={payment} />
+        <PaymentSummary payment={payment} complimentary={ticket.origin === "JURY_GALA"} />
       </div>
       <DetailItem label={adminT.tickets.paymentTime} value={ticket.paidAt ? formatDate(ticket.paidAt) : null} />
       <DetailItem label={adminT.tickets.created} value={formatDate(ticket.createdAt)} />
@@ -897,6 +899,11 @@ function TicketRow({
             {ticket.isIbpaMember && (
               <p className="text-[11px] font-semibold text-[var(--color-blue)]">{adminT.tickets.ibpaMember}</p>
             )}
+            {ticket.origin === "SPECIAL_OFFER" ? (
+              <div className="mt-2"><DashboardBadge tone="purple">Спецпредложение</DashboardBadge></div>
+            ) : ticket.origin === "JURY_GALA" ? (
+              <div className="mt-2"><DashboardBadge tone="purple">Бесплатный гала-ужин</DashboardBadge></div>
+            ) : null}
           </div>
           <div className="flex items-center gap-2 lg:hidden">
             {ticketStatusBadge(ticket.status, ticket.payments[0]?.status)}
