@@ -32,6 +32,7 @@ const SCOPED_MODELS = new Set([
   "Nomination",
   "JuryNominationReview",
   "Ticket",
+  "Notification",
 ]);
 
 type QueryArgs = Record<string, unknown> & {
@@ -52,6 +53,7 @@ const SCOPED_RELATIONS: Record<string, Record<string, { model: string; many: boo
     juryProfile: { model: "JuryProfile", many: false },
     payments: { model: "Payment", many: true },
     tickets: { model: "Ticket", many: true },
+    notifications: { model: "Notification", many: true },
   },
   ApplicantProfile: {
     account: { model: "Account", many: false },
@@ -87,6 +89,9 @@ const SCOPED_RELATIONS: Record<string, Record<string, { model: string; many: boo
     account: { model: "Account", many: false },
     applicantProfile: { model: "ApplicantProfile", many: false },
     payment: { model: "Payment", many: false },
+  },
+  Notification: {
+    account: { model: "Account", many: false },
   },
 };
 
