@@ -194,6 +194,7 @@ export const TICKETS_SHEET: SheetDefinition = {
     { header: "Телефон", width: 140, wrap: "CLIP" },
     { header: "Instagram", width: 150, wrap: "CLIP" },
     { header: "Тип билета", width: 160, wrap: "WRAP" },
+    { header: "Гала-ужин", width: 115, wrap: "CLIP" },
     { header: "Стоимость", width: 110, wrap: "CLIP" },
     { header: "Статус оплаты", width: 130, wrap: "CLIP" },
     { header: "ID QR-кода", width: 210, wrap: "CLIP" },
@@ -202,13 +203,27 @@ export const TICKETS_SHEET: SheetDefinition = {
     { header: "Дата покупки", width: 150, wrap: "CLIP" },
     { header: "Дата обновления", width: 150, wrap: "CLIP" },
   ],
-  // Статус оплаты is column index 7; Отмечен is column index 9. Отменён and
+  // Статус оплаты is column index 8; Отмечен is column index 10. Отменён and
   // Ожидает take precedence over the checked-in / paid colours.
   conditionalRules: [
-    { columnIndex: 7, equals: "Отменён", color: COLORS.red },
-    { columnIndex: 7, equals: "Ожидает", color: COLORS.yellow },
-    { columnIndex: 9, equals: "Да", color: COLORS.green },
-    { columnIndex: 7, equals: "Оплачен", color: COLORS.blue },
+    { columnIndex: 8, equals: "Отменён", color: COLORS.red },
+    { columnIndex: 8, equals: "Ожидает", color: COLORS.yellow },
+    {
+      columnIndex: 5,
+      equals: "Форум — 1 день",
+      textColor: COLORS.ticketOneDayText,
+      columnOnly: true,
+    },
+    {
+      columnIndex: 5,
+      equals: "Форум — 2 дня",
+      textColor: COLORS.ticketTwoDaysText,
+      columnOnly: true,
+    },
+    { columnIndex: 6, equals: "Да", textColor: COLORS.greenText, columnOnly: true },
+    { columnIndex: 6, equals: "Нет", textColor: COLORS.grayText, columnOnly: true },
+    { columnIndex: 10, equals: "Да", color: COLORS.green },
+    { columnIndex: 8, equals: "Оплачен", color: COLORS.blue },
   ],
 };
 

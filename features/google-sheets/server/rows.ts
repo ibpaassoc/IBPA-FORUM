@@ -311,6 +311,7 @@ const ticketSelect = {
   phone: true,
   instagram: true,
   type: true,
+  galaDinner: true,
   secureToken: true,
   status: true,
   forumCheckInAt: true,
@@ -342,6 +343,7 @@ export function mapTicketRow(ticket: TicketRecord): SheetValues[number] {
     ticket.phone,
     ticket.instagram ?? "",
     ticketTypeLabelRu(ticket.type ?? "TWO_DAYS"),
+    yesNo(ticket.galaDinner),
     // Single price column: the full amount actually paid (Стоимость). The former
     // Quantity, per-ticket portion and Discount columns were removed.
     formatUsd(totalPaidCents),
