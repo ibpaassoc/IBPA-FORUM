@@ -208,8 +208,20 @@ export const TICKETS_SHEET: SheetDefinition = {
   conditionalRules: [
     { columnIndex: 8, equals: "Отменён", color: COLORS.red },
     { columnIndex: 8, equals: "Ожидает", color: COLORS.yellow },
-    { columnIndex: 6, equals: "Да", color: COLORS.green, columnOnly: true },
-    { columnIndex: 6, equals: "Нет", color: COLORS.gray, columnOnly: true },
+    {
+      columnIndex: 5,
+      equals: "Форум — 1 день",
+      textColor: COLORS.ticketOneDayText,
+      columnOnly: true,
+    },
+    {
+      columnIndex: 5,
+      equals: "Форум — 2 дня",
+      textColor: COLORS.ticketTwoDaysText,
+      columnOnly: true,
+    },
+    { columnIndex: 6, equals: "Да", textColor: COLORS.greenText, columnOnly: true },
+    { columnIndex: 6, equals: "Нет", textColor: COLORS.grayText, columnOnly: true },
     { columnIndex: 10, equals: "Да", color: COLORS.green },
     { columnIndex: 8, equals: "Оплачен", color: COLORS.blue },
   ],

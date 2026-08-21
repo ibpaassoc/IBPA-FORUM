@@ -30,8 +30,9 @@ export type ColumnSpec = {
 /**
  * A conditional-format rule. By default it colours the whole row when the value
  * in `columnIndex` matches, but it can also match a checkbox being ticked
- * (`matchTrue`), scope the fill to just that column (`columnOnly`), and set a
- * foreground colour (`textColor`) — used to turn ticked checkboxes green.
+ * (`matchTrue`), scope formatting to just that column (`columnOnly`), and set a
+ * foreground colour (`textColor`) — used for text-only badges and green
+ * checkbox ticks.
  */
 export type ConditionalRule = {
   columnIndex: number;
@@ -39,8 +40,8 @@ export type ConditionalRule = {
   equals?: string;
   /** Match when the (checkbox) cell is TRUE. */
   matchTrue?: boolean;
-  /** Background colour applied on match. */
-  color: RgbColor;
+  /** Optional background colour applied on match. */
+  color?: RgbColor;
   /** Optional foreground colour applied on match (e.g. green checkmark). */
   textColor?: RgbColor;
   /** Colour only `columnIndex` instead of the whole row. */
@@ -58,6 +59,10 @@ export const COLORS = {
   blue: { red: 0.86, green: 0.93, blue: 0.98 },
   red: { red: 0.98, green: 0.87, blue: 0.87 },
   gray: { red: 0.95, green: 0.95, blue: 0.95 },
+  greenText: { red: 0.16, green: 0.45, blue: 0.23 },
+  grayText: { red: 0.38, green: 0.42, blue: 0.46 },
+  ticketOneDayText: { red: 0.1, green: 0.36, blue: 0.58 },
+  ticketTwoDaysText: { red: 0.48, green: 0.24, blue: 0.52 },
   // Ticked-checkbox highlight: clearly green background + a strong green
   // checkmark (the tick follows the cell's foreground colour).
   checkboxTrueBg: { red: 0.71, green: 0.88, blue: 0.72 },
@@ -186,7 +191,10 @@ export function conditionalFormatRequests(
     const formula = rule.matchTrue
       ? `=$${letter}2=TRUE`
       : `=$${letter}2="${rule.equals ?? ""}"`;
-    const format: Record<string, unknown> = { backgroundColor: rule.color };
+    const format: Record<string, unknown> = {};
+    if (rule.color) {
+      format.backgroundColor = rule.color;
+    }
     if (rule.textColor) {
       format.textFormat = { bold: true, foregroundColor: rule.textColor };
     }
