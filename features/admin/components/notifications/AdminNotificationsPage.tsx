@@ -5,7 +5,6 @@ import {
   BellRing,
   CheckCircle2,
   ChevronRight,
-  Gift,
   Loader2,
   Search,
   Send,
@@ -49,7 +48,8 @@ type RecentNotification = {
 
 const KIND_META = {
   JURY_GALA: {
-    audience: "Активное жюри",
+    optionLabel: "Гала-ужин",
+    recipientLabel: "Активное жюри",
     shortAudience: "Жюри",
     title: "Бесплатный гала-ужин",
     description: "Приглашение с подтверждением и отдельным QR только для гала-ужина.",
@@ -58,7 +58,8 @@ const KIND_META = {
     tone: "purple" as const,
   },
   SPECIAL_OFFER_2_DAYS: {
-    audience: "Активные заявители",
+    optionLabel: "Приглашение на 2 дня",
+    recipientLabel: "Активные заявители",
     shortAudience: "Заявители",
     title: "Спеццена на 2 дня форума",
     description: "Приватная покупка двухдневного пропуска с новым QR после оплаты.",
@@ -88,7 +89,7 @@ function RecipientAvatar({ name }: { name: string }) {
   );
 }
 
-function AudienceOption({
+function NotificationTypeOption({
   kind,
   active,
   count,
@@ -117,8 +118,8 @@ function AudienceOption({
         <Icon size={16} />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block text-sm font-semibold text-[var(--color-ink)]">{meta.audience}</span>
-        <span className="mt-0.5 block text-xs text-[var(--color-ink-soft)]">{count} пользователей</span>
+        <span className="block text-sm font-semibold text-[var(--color-ink)]">{meta.optionLabel}</span>
+        <span className="mt-0.5 block text-xs text-[var(--color-ink-soft)]">{count} получателей</span>
       </span>
       <ChevronRight size={15} className="shrink-0 text-[var(--color-ink-muted)]" />
     </button>
@@ -135,7 +136,7 @@ export default function AdminNotificationsPage({
   recent: RecentNotification[];
 }) {
   const [state, action, pending] = useActionState(createNotificationsAction, initialState);
-  const [activeKind, setActiveKind] = useState<NotificationKind>("JURY_GALA");
+  const [activeKind, setActiveKind] = useState<NotificationKind>("SPECIAL_OFFER_2_DAYS");
   const [search, setSearch] = useState("");
   const [selectedByKind, setSelectedByKind] = useState<Record<NotificationKind, Set<string>>>(
     () => ({ JURY_GALA: new Set(), SPECIAL_OFFER_2_DAYS: new Set() }),
@@ -179,7 +180,7 @@ export default function AdminNotificationsPage({
       <DashboardHeader
         label="Коммуникации"
         title="Уведомления аккаунтов"
-        description="Выберите аудиторию, проверьте шаблон и отправьте интерактивное уведомление в кабинет пользователя."
+        description="Выберите сценарий, получателей и отправьте уведомление в личный кабинет."
         actions={
           <DashboardPrimaryBtn
             onClick={() => document.getElementById("notification-composer")?.scrollIntoView({ behavior: "smooth" })}
@@ -203,23 +204,16 @@ export default function AdminNotificationsPage({
         <DashboardCard className="overflow-hidden p-0 md:p-0">
           <div className="grid min-h-[40rem] xl:grid-cols-[15rem_minmax(0,1fr)_21rem]">
             <aside className="border-b border-[rgba(37,42,45,0.08)] p-4 xl:border-b-0 xl:border-r xl:p-5">
-              <h2 className="font-[var(--font-title-family)] text-2xl font-light">Кому отправить</h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--color-ink-soft)]">Выберите аудиторию и настройте получателей уведомления.</p>
-              <div className="mt-5 grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
-                <AudienceOption kind="JURY_GALA" active={activeKind === "JURY_GALA"} count={jury.length} onSelect={() => selectKind("JURY_GALA")} />
-                <AudienceOption kind="SPECIAL_OFFER_2_DAYS" active={activeKind === "SPECIAL_OFFER_2_DAYS"} count={applicants.length} onSelect={() => selectKind("SPECIAL_OFFER_2_DAYS")} />
+              <h2 className="font-[var(--font-title-family)] text-2xl font-light">Тип уведомления</h2>
+              <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
+                <NotificationTypeOption kind="SPECIAL_OFFER_2_DAYS" active={activeKind === "SPECIAL_OFFER_2_DAYS"} count={applicants.length} onSelect={() => selectKind("SPECIAL_OFFER_2_DAYS")} />
+                <NotificationTypeOption kind="JURY_GALA" active={activeKind === "JURY_GALA"} count={jury.length} onSelect={() => selectKind("JURY_GALA")} />
               </div>
-              <DashboardPanel className="mt-4 p-3.5">
-                <div className="flex items-start gap-2.5">
-                  <Gift size={16} className="mt-0.5 shrink-0 text-[var(--color-blue)]" />
-                  <p className="text-xs leading-5 text-[var(--color-ink-soft)]">Каждая аудитория связана с безопасным фиксированным шаблоном и собственным действием.</p>
-                </div>
-              </DashboardPanel>
             </aside>
 
             <section className="min-w-0 border-b border-[rgba(37,42,45,0.08)] p-4 xl:border-b-0 xl:border-r xl:p-5">
               <div className="grid grid-cols-2 rounded-[22px] border border-[rgba(114,160,193,0.18)] bg-white/58 p-1">
-                {(["JURY_GALA", "SPECIAL_OFFER_2_DAYS"] as NotificationKind[]).map((kind) => (
+                {(["SPECIAL_OFFER_2_DAYS", "JURY_GALA"] as NotificationKind[]).map((kind) => (
                   <button
                     key={kind}
                     type="button"
@@ -230,7 +224,7 @@ export default function AdminNotificationsPage({
                         : "text-[var(--color-ink-soft)] hover:bg-white/60"
                     }`}
                   >
-                    {KIND_META[kind].audience}
+                    {KIND_META[kind].optionLabel}
                     <span className="rounded-full bg-[var(--color-blue-wash)] px-2 py-0.5 text-[0.62rem] text-[var(--color-blue)]">
                       {kind === "JURY_GALA" ? jury.length : applicants.length}
                     </span>
@@ -249,7 +243,7 @@ export default function AdminNotificationsPage({
               </div>
 
               <div className="mt-3 flex items-center justify-between gap-3 text-xs text-[var(--color-ink-soft)]">
-                <span>{meta.description}</span>
+                <span>Получатели: {meta.recipientLabel}</span>
                 <strong className="shrink-0 font-semibold text-[var(--color-ink)]">Выбрано: {selected.size}</strong>
               </div>
 
@@ -274,9 +268,6 @@ export default function AdminNotificationsPage({
                           <span className="block truncate text-sm font-semibold text-[var(--color-ink)]">{recipient.fullName}</span>
                           <span className="mt-0.5 block truncate text-xs text-[var(--color-ink-soft)]">{recipient.email}</span>
                         </span>
-                        <span className="hidden shrink-0 sm:block">
-                          <StatusBadge tone={meta.tone}>{meta.audience}</StatusBadge>
-                        </span>
                       </label>
                     );
                   })
@@ -285,18 +276,14 @@ export default function AdminNotificationsPage({
             </section>
 
             <aside className="bg-[var(--color-blue-wash)]/28 p-4 xl:p-5">
-              <h2 className="font-[var(--font-title-family)] text-2xl font-light">Настройка уведомления</h2>
-              <div className="mt-4">
-                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">Тип уведомления</p>
-                <div className="mt-2 flex items-center gap-3 rounded-[18px] border border-[rgba(114,160,193,0.2)] bg-white/72 p-3">
+              <h2 className="font-[var(--font-title-family)] text-2xl font-light">Предпросмотр</h2>
+              <div className="mt-4 flex items-center gap-3 rounded-[18px] border border-[rgba(114,160,193,0.2)] bg-white/72 p-3">
                   <span className="flex size-9 items-center justify-center rounded-full bg-[var(--color-blue-wash)] text-[var(--color-blue)]"><meta.icon size={16} /></span>
-                  <div><p className="text-sm font-semibold text-[var(--color-ink)]">{meta.title}</p><p className="mt-0.5 text-xs text-[var(--color-ink-soft)]">{meta.audience}</p></div>
-                </div>
+                  <div><p className="text-sm font-semibold text-[var(--color-ink)]">{meta.optionLabel}</p><p className="mt-0.5 text-xs text-[var(--color-ink-soft)]">{meta.recipientLabel}</p></div>
               </div>
 
               <div className="mt-4 rounded-[22px] border border-[rgba(114,160,193,0.18)] bg-[var(--color-blue-wash)]/54 p-3">
-                <p className="text-xs text-[var(--color-ink-soft)]">Предпросмотр</p>
-                <div className="mt-3 rounded-[18px] border border-[rgba(37,42,45,0.08)] bg-white p-4 shadow-[0_12px_30px_rgba(37,42,45,0.05)]">
+                <div className="rounded-[18px] border border-[rgba(37,42,45,0.08)] bg-white p-4 shadow-[0_12px_30px_rgba(37,42,45,0.05)]">
                   <div className="flex items-center justify-between gap-3 text-[0.62rem] uppercase tracking-[0.12em] text-[var(--color-ink-soft)]"><strong className="font-semibold text-[var(--color-ink)]">IBPA</strong><span>сейчас</span></div>
                   <h3 className="mt-4 font-[var(--font-title-family)] text-xl font-light leading-tight">{preview.title}</h3>
                   <p className="mt-2 text-sm font-semibold leading-5 text-[var(--color-ink)]">{preview.summary}</p>
@@ -307,10 +294,7 @@ export default function AdminNotificationsPage({
 
               <div className="mt-4 rounded-[20px] border border-[rgba(37,42,45,0.08)] bg-white/68 p-4">
                 <div className="flex items-center justify-between gap-3"><h3 className="font-[var(--font-title-family)] text-lg font-light">Получатели</h3><strong className="text-sm font-semibold text-[var(--color-blue)]">{selected.size}</strong></div>
-                <div className="mt-3 space-y-2 text-xs text-[var(--color-ink-soft)]">
-                  <div className="flex justify-between gap-3"><span>Активное жюри</span><span>{activeKind === "JURY_GALA" ? selected.size : 0}</span></div>
-                  <div className="flex justify-between gap-3"><span>Активные заявители</span><span>{activeKind === "SPECIAL_OFFER_2_DAYS" ? selected.size : 0}</span></div>
-                </div>
+                <p className="mt-2 text-xs text-[var(--color-ink-soft)]">{meta.recipientLabel}</p>
               </div>
 
               <div aria-live="polite" className="mt-4 min-h-5 text-sm">
