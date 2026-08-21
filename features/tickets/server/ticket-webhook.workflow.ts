@@ -17,11 +17,13 @@ import {
 import { sendTicketConfirmationEmail } from "./ticket-email.workflow";
 import { sendTicketPaymentAdminNotificationEmail } from "@/features/email/server/payment-email.workflow";
 import {
+  createPaidTicketsFromManifest,
   findTicketById,
   findTicketByStripeSessionId,
   findTicketsByIds,
 } from "./ticket-repository";
 import { parseNotificationContent } from "@/features/notifications/lib/content";
+import { parseTicketPurchaseManifest } from "./ticket-purchase-manifest";
 
 function stripeId(value: { id: string } | string | null): string | null {
   if (!value) return null;
@@ -111,13 +113,6 @@ async function handleInitialCheckout(event: Stripe.Event, session: Stripe.Checko
           : await findTicketByStripeSessionId(session.id),
       ].filter((ticket) => ticket !== null);
   const primary = tickets[0];
-  if (!primary) {
-    console.warn("Ticket webhook: no ticket found for Stripe session", {
-      sessionId: session.id,
-      metadataTicketId,
-    });
-    return true;
-  }
 
   const payment = await prisma.payment.findFirst({
     where: {
@@ -125,13 +120,20 @@ async function handleInitialCheckout(event: Stripe.Event, session: Stripe.Checko
       OR: [
         { id: session.metadata?.paymentId ?? "__missing__" },
         { stripeCheckoutSessionId: session.id },
-        { id: primary.paymentId ?? "__missing__" },
+        { id: primary?.paymentId ?? "__missing__" },
       ],
     },
   });
   if (!payment) throw new Error("Ticket payment was not found for the Stripe event.");
 
-  const ticketIds = tickets.map((ticket) => ticket.id);
+  const manifest = parseTicketPurchaseManifest(payment.pricingSnapshot);
+  const ticketIds =
+    tickets.length > 0
+      ? tickets.map((ticket) => ticket.id)
+      : manifest?.attendees.map((attendee) => attendee.ticketId) ?? [];
+  if (ticketIds.length === 0) {
+    throw new Error("Ticket payment has neither reserved tickets nor a purchase manifest.");
+  }
   const paymentIntentId = stripeId(session.payment_intent);
   const customerId = stripeId(session.customer);
   const firstPaidAt = new Date(event.created * 1000);
@@ -141,8 +143,8 @@ async function handleInitialCheckout(event: Stripe.Event, session: Stripe.Checko
     ? installmentAmounts.firstAmountCents
     : payment.amount;
 
-  if (isInstallment && session.payment_status !== "paid") {
-    throw new Error("Ticket payment #1 has not been paid.");
+  if (session.payment_status !== "paid") {
+    throw new Error("Ticket checkout completed without a confirmed payment.");
   }
   if (session.amount_total !== expectedCheckoutAmount) {
     throw new Error("Stripe ticket amount does not match the stored payment plan.");
@@ -181,15 +183,24 @@ async function handleInitialCheckout(event: Stripe.Event, session: Stripe.Checko
       const currentPayment = await tx.payment.findUnique({ where: { id: payment.id } });
       if (!currentPayment) throw new Error("Ticket payment disappeared during webhook processing.");
 
-      await tx.ticket.updateMany({
-        where: { id: { in: ticketIds }, status: "PENDING" },
-        data: {
-          status: "PAID",
-          paidAt: firstPaidAt,
-          paymentId: payment.id,
-          revision: { increment: 1 },
-        },
-      });
+      const storedTickets = await tx.ticket.findMany({ where: { id: { in: ticketIds } } });
+      if (storedTickets.length === 0) {
+        if (!manifest) throw new Error("Ticket purchase manifest is missing or invalid.");
+        await createPaidTicketsFromManifest(tx, manifest, payment.id, firstPaidAt);
+      } else {
+        if (storedTickets.length !== ticketIds.length) {
+          throw new Error("Ticket purchase is only partially materialized.");
+        }
+        await tx.ticket.updateMany({
+          where: { id: { in: ticketIds }, status: "PENDING" },
+          data: {
+            status: "PAID",
+            paidAt: firstPaidAt,
+            paymentId: payment.id,
+            revision: { increment: 1 },
+          },
+        });
+      }
 
       const pricingSnapshot = isInstallment
         ? {
@@ -261,7 +272,8 @@ async function handleInitialCheckout(event: Stripe.Event, session: Stripe.Checko
     throw error;
   }
 
-  for (const ticket of tickets) {
+  const fulfilledTickets = await findTicketsByIds(ticketIds);
+  for (const ticket of fulfilledTickets) {
     syncTicketOnChange(ticket.id);
     if (!ticket.type) continue;
     try {
@@ -281,9 +293,9 @@ async function handleInitialCheckout(event: Stripe.Event, session: Stripe.Checko
   }
   try {
     await sendTicketPaymentAdminNotificationEmail({
-      attendeeNames: tickets.map((ticket) => ticket.fullName).join(", "),
-      attendeeEmails: tickets.map((ticket) => ticket.email).join(", "),
-      ticketSummary: tickets
+      attendeeNames: fulfilledTickets.map((ticket) => ticket.fullName).join(", "),
+      attendeeEmails: fulfilledTickets.map((ticket) => ticket.email).join(", "),
+      ticketSummary: fulfilledTickets
         .map((ticket) => `${ticket.type === "ONE_DAY" ? "1-Day Forum Pass" : "2-Day Forum Pass"}${ticket.galaDinner ? " + Gala Dinner" : ""}`)
         .join("; "),
       totalAmount: payment.amount,
@@ -297,6 +309,69 @@ async function handleInitialCheckout(event: Stripe.Event, session: Stripe.Checko
     });
   } catch (error) {
     console.error("Failed to send ticket payment admin notification email", { paymentId: payment.id, error });
+  }
+  return true;
+}
+
+async function handleTicketCheckoutExpired(event: Stripe.Event, session: Stripe.Checkout.Session) {
+  const payment = await prisma.payment.findFirst({
+    where: {
+      purchaseType: "TICKET",
+      OR: [
+        { id: session.metadata?.paymentId ?? "__missing__" },
+        { stripeCheckoutSessionId: session.id },
+      ],
+    },
+    select: { id: true },
+  });
+  if (!payment) return true;
+
+  const processedAt = new Date(event.created * 1000);
+  try {
+    await prisma.$transaction(async (tx) => {
+      await tx.stripeWebhook.create({
+        data: {
+          eventId: event.id,
+          eventType: event.type,
+          payload: serializeStripeEvent(event),
+          state: "PROCESSING",
+          attempts: 1,
+          lastAttemptAt: processedAt,
+        },
+      });
+
+      const discarded = await tx.payment.deleteMany({
+        where: {
+          id: payment.id,
+          status: { notIn: ["PAID", "PARTIALLY_PAID", "PAST_DUE"] },
+          tickets: { none: {} },
+        },
+      });
+      const discardedUnfulfilledOrder = discarded.count === 1;
+
+      if (!discardedUnfulfilledOrder) {
+        await tx.payment.updateMany({
+          where: { id: payment.id, status: "PENDING" },
+          data: { status: "EXPIRED" },
+        });
+      }
+      const remainingPayment = await tx.payment.findUnique({
+        where: { id: payment.id },
+        select: { id: true },
+      });
+
+      await tx.stripeWebhook.update({
+        where: { eventId: event.id },
+        data: {
+          state: "PROCESSED",
+          processedAt,
+          paymentId: remainingPayment?.id ?? null,
+        },
+      });
+    });
+  } catch (error) {
+    if (isDuplicateStripeEventError(error)) return true;
+    throw error;
   }
   return true;
 }
@@ -417,6 +492,12 @@ export async function handleTicketStripeEvent(event: Stripe.Event): Promise<bool
     const session = event.data.object as Stripe.Checkout.Session;
     if (session.metadata?.flowType !== "ticket") return false;
     return handleInitialCheckout(event, session);
+  }
+
+  if (event.type === "checkout.session.expired") {
+    const session = event.data.object as Stripe.Checkout.Session;
+    if (session.metadata?.flowType !== "ticket") return false;
+    return handleTicketCheckoutExpired(event, session);
   }
 
   if (event.type === "invoice.paid" || event.type === "invoice.payment_failed") {

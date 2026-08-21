@@ -78,3 +78,12 @@ export function hasQrRelevantChanges(changes: TicketChange[]) {
 export function ticketCanReceiveQr(status: string) {
   return status !== "PENDING" && status !== "CANCELED";
 }
+
+export function ticketCanBeDeleted(ticketStatus: string, paymentStatus?: string | null) {
+  return (
+    ticketStatus === "PENDING" &&
+    paymentStatus !== "PAID" &&
+    paymentStatus !== "PARTIALLY_PAID" &&
+    paymentStatus !== "PAST_DUE"
+  );
+}
