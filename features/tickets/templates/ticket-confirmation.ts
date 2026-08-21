@@ -11,6 +11,7 @@ type TicketConfirmationParams = {
   instagram?: string | null;
   accessUpdated?: boolean;
   specialPacket?: boolean;
+  specialOffer?: boolean;
 };
 
 export function ticketConfirmationTemplate({
@@ -21,10 +22,13 @@ export function ticketConfirmationTemplate({
   instagram,
   accessUpdated = false,
   specialPacket = false,
+  specialOffer = false,
 }: TicketConfirmationParams) {
   const ticketLabel = specialPacket
     ? "Special Packet — 2-Day Forum Pass"
-    : TICKET_TYPE_LABELS[type];
+    : specialOffer
+      ? "Special Offer — 2-Day Forum Pass"
+      : TICKET_TYPE_LABELS[type];
   const instagramRow = instagram
     ? `
               <tr>

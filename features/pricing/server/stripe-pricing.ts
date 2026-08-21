@@ -164,3 +164,11 @@ export async function getSpecialPacketAmountFromStripe(isIbpaMember: boolean) {
   }
   return price.amountCents;
 }
+
+export async function getSpecialOffer2DaysAmountFromStripe() {
+  const price = await retrievePrice("SPECIAL_OFFER_2_DAYS_PRICE");
+  if (!price) {
+    throw new Error("SPECIAL_OFFER_2_DAYS_PRICE is missing, inactive, or invalid.");
+  }
+  return price;
+}

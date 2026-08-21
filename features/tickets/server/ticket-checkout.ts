@@ -12,6 +12,7 @@ import { requireEnv } from "@/lib/env";
 import type { Language } from "@/lib/i18n/translations";
 import {
   buildSpecialPacketCheckoutMetadata,
+  buildSpecialOfferCheckoutMetadata,
   buildTicketCheckoutMetadata,
 } from "@/features/tickets/lib/checkout-metadata";
 import { getSpecialPacketPriceId } from "@/features/tickets/server/special-packet";
@@ -21,6 +22,50 @@ import { getSpecialPacketPriceId } from "@/features/tickets/server/special-packe
 // link have a well-defined, valid expiration and callers never assume a session
 // stays payable forever.
 const CHECKOUT_SESSION_TTL_SECONDS = 24 * 60 * 60;
+
+export async function createSpecialOfferCheckoutSession({
+  ticketId,
+  paymentId,
+  notificationId,
+  email,
+  locale,
+}: {
+  ticketId: string;
+  paymentId: string;
+  notificationId: string;
+  email: string;
+  locale: Language;
+}) {
+  const stripe = getStripe();
+  const appUrl = getAppUrl();
+  const metadata = buildSpecialOfferCheckoutMetadata({
+    ticketId,
+    paymentId,
+    notificationId,
+    email,
+    locale,
+  });
+  const session = await stripe.checkout.sessions.create({
+    mode: "payment",
+    customer_email: email,
+    success_url: `${appUrl}/account/applicant/notifications?checkout=success`,
+    cancel_url: `${appUrl}/account/applicant/notifications?checkout=canceled`,
+    expires_at: Math.floor(Date.now() / 1000) + CHECKOUT_SESSION_TTL_SECONDS,
+    metadata,
+    payment_intent_data: { metadata },
+    line_items: [{ price: requireEnv(["SPECIAL_OFFER_2_DAYS_PRICE"]), quantity: 1 }],
+  });
+
+  if (!session.url || session.amount_total === null || !session.currency) {
+    throw new Error("Stripe special-offer Checkout is missing required values.");
+  }
+  return {
+    id: session.id,
+    url: session.url,
+    amountTotalCents: session.amount_total,
+    currency: session.currency,
+  };
+}
 
 function getTicketPriceId(type: TicketType, isIbpaMember: boolean): string {
   if (type === "ONE_DAY") {

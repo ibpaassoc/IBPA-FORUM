@@ -134,6 +134,22 @@ enum TicketStatus {
   @@schema("forum_next")
 }
 
+enum TicketOrigin {
+  STANDARD
+  SPECIAL_PACKET
+  JURY_GALA
+  SPECIAL_OFFER
+
+  @@schema("forum_next")
+}
+
+enum NotificationType {
+  JURY
+  APPLICANT
+
+  @@schema("forum_next")
+}
+
 enum StripeWebhookState {
   RECEIVED
   PROCESSING
@@ -201,6 +217,7 @@ model Account {
   juryProfile                  JuryProfile?
   payments                     Payment[]
   tickets                      Ticket[]
+  notifications                Notification[]
 
   @@unique([normalizedEmail, role])
   @@index([role, status])
@@ -311,27 +328,27 @@ model JuryProfile {
 }
 
 model Nomination {
-  id                 String                 @id @default(cuid())
-  applicantProfileId String
-  paymentId          String
-  awardId            String
-  categoryId         String
-  status             NominationStatus       @default(DRAFT)
+  id                     String                 @id @default(cuid())
+  applicantProfileId     String
+  paymentId              String
+  awardId                String
+  categoryId             String
+  status                 NominationStatus       @default(DRAFT)
   submissionOverrideOpen Boolean?
-  revision           Int                    @default(1)
-  answers            Json
-  files              Json
-  scoringSchema      Json
-  submittedAt        DateTime?
-  scoresReleasedAt   DateTime?
-  createdAt          DateTime               @default(now())
-  updatedAt          DateTime               @updatedAt
-  dataScope          DataScope              @default(PRODUCTION)
-  applicantProfile   ApplicantProfile       @relation(fields: [applicantProfileId], references: [id], onDelete: Restrict)
-  payment            Payment                @relation(fields: [paymentId], references: [id], onDelete: Restrict)
-  award              Award                  @relation(fields: [awardId], references: [id], onDelete: Restrict)
-  category           Category               @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  reviews            JuryNominationReview[]
+  revision               Int                    @default(1)
+  answers                Json
+  files                  Json
+  scoringSchema          Json
+  submittedAt            DateTime?
+  scoresReleasedAt       DateTime?
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+  dataScope              DataScope              @default(PRODUCTION)
+  applicantProfile       ApplicantProfile       @relation(fields: [applicantProfileId], references: [id], onDelete: Restrict)
+  payment                Payment                @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+  award                  Award                  @relation(fields: [awardId], references: [id], onDelete: Restrict)
+  category               Category               @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  reviews                JuryNominationReview[]
 
   @@index([applicantProfileId, createdAt])
   @@index([paymentId])
@@ -414,6 +431,7 @@ model Ticket {
   applicantProfileId    String?
   paymentId             String?
   kind                  TicketKind        @default(FORUM)
+  origin                TicketOrigin      @default(STANDARD)
   secureToken           String            @unique
   credential            Json
   activity              Json
@@ -449,6 +467,24 @@ model Ticket {
   @@index([specialPacketId])
   @@index([kind, status])
   @@index([dataScope, status, createdAt])
+  @@schema("forum_next")
+}
+
+model Notification {
+  id          String           @id @default(cuid())
+  accountId   String
+  type        NotificationType
+  name        String
+  email       String
+  content     Json
+  isViewed    Boolean          @default(false)
+  dateCreated DateTime         @default(now())
+  dateViewed  DateTime?
+  dataScope   DataScope        @default(PRODUCTION)
+  account     Account          @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@index([accountId, isViewed, dateCreated])
+  @@index([dataScope, type, dateCreated])
   @@schema("forum_next")
 }
 

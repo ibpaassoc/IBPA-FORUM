@@ -10,6 +10,8 @@ import {
   EmptyState,
   PremiumButton,
 } from "@/shared/components/admin/DashboardUI";
+import NotificationsOverview from "@/features/notifications/components/NotificationsOverview";
+import type { AccountNotificationView } from "@/features/notifications/lib/content";
 
 const CONTINUE_LIMIT = 2;
 
@@ -23,6 +25,7 @@ const CONTINUE_LIMIT = 2;
 export default async function JuryOverview({
   nominations,
   totals,
+  notifications,
 }: {
   nominations: JuryNominationListItem[];
   totals: {
@@ -33,6 +36,7 @@ export default async function JuryOverview({
     remaining: number;
     completionPercentage: number;
   };
+  notifications: AccountNotificationView[];
 }) {
   const t = await getServerTranslations();
   const ov = t.account.jury.overview;
@@ -58,6 +62,11 @@ export default async function JuryOverview({
         inProgress={totals.inProgress}
         completed={totals.completed}
         remaining={totals.remaining}
+      />
+
+      <NotificationsOverview
+        notifications={notifications}
+        href="/account/jury/notifications"
       />
 
 

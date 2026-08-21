@@ -11,6 +11,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   BadgePercent,
+  BellRing,
   ScanLine,
   Star,
   Ticket,
@@ -38,6 +39,7 @@ const navItems = [
   { href: "/admin/scanner", ...adminT.nav.scanner, icon: ScanLine },
   { href: "/admin/google-sheets", ...adminT.nav.sheets, icon: FileSpreadsheet },
   { href: "/admin/mailing", ...adminT.nav.mailing, icon: Send },
+  { href: "/admin/notifications", ...adminT.nav.notifications, icon: BellRing },
 ];
 
 function isActive(pathname: string, href: string) {

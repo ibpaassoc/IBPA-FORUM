@@ -17,7 +17,20 @@ const adapter = new PrismaPg(
   process.env.DATABASE_SCHEMA ? { schema: process.env.DATABASE_SCHEMA } : undefined
 );
 
-const basePrisma = globalForPrisma.basePrisma ?? new PrismaClient({ adapter });
+const cachedBasePrisma = globalForPrisma.basePrisma;
+const cachedClientMatchesSchema =
+  cachedBasePrisma !== undefined &&
+  typeof (cachedBasePrisma as unknown as { notification?: unknown }).notification === "object";
+const basePrisma = cachedClientMatchesSchema
+  ? cachedBasePrisma
+  : new PrismaClient({ adapter });
+
+// Prisma delegates are generated code. During development, Turbopack can keep
+// a client created before a newly generated model existed. Replace that stale
+// global instance instead of failing later with `prisma.<model> === undefined`.
+if (cachedBasePrisma && !cachedClientMatchesSchema) {
+  void cachedBasePrisma.$disconnect();
+}
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.basePrisma = basePrisma;
@@ -32,6 +45,7 @@ const SCOPED_MODELS = new Set([
   "Nomination",
   "JuryNominationReview",
   "Ticket",
+  "Notification",
 ]);
 
 type QueryArgs = Record<string, unknown> & {
@@ -52,6 +66,7 @@ const SCOPED_RELATIONS: Record<string, Record<string, { model: string; many: boo
     juryProfile: { model: "JuryProfile", many: false },
     payments: { model: "Payment", many: true },
     tickets: { model: "Ticket", many: true },
+    notifications: { model: "Notification", many: true },
   },
   ApplicantProfile: {
     account: { model: "Account", many: false },
@@ -87,6 +102,9 @@ const SCOPED_RELATIONS: Record<string, Record<string, { model: string; many: boo
     account: { model: "Account", many: false },
     applicantProfile: { model: "ApplicantProfile", many: false },
     payment: { model: "Payment", many: false },
+  },
+  Notification: {
+    account: { model: "Account", many: false },
   },
 };
 

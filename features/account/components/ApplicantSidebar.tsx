@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   FileText,
+  BellRing,
   LayoutDashboard,
   LogOut,
   MoreHorizontal,
@@ -27,6 +28,7 @@ const navItemDefs = [
   { href: "/account/applicant", key: "overview", shortKey: "overviewShort", icon: LayoutDashboard },
   { href: "/account/applicant/nominations", key: "nominations", shortKey: "nominationsShort", icon: FileText },
   { href: "/account/applicant/tickets", key: "tickets", shortKey: "ticketsShort", icon: Ticket },
+  { href: "/account/applicant/notifications", key: "notifications", shortKey: "notificationsShort", icon: BellRing },
   { href: "/account/applicant/profile", key: "profile", shortKey: "profileShort", icon: UserRound },
   { href: "/account/applicant/settings", key: "settings", shortKey: "settingsShort", icon: Settings },
 ] as const;

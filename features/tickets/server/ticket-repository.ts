@@ -1,11 +1,12 @@
 import "server-only";
 
 import crypto from "crypto";
-import type { Prisma, TicketStatus, TicketType } from "@prisma/client";
+import type { DataScope, Prisma, TicketStatus, TicketType } from "@prisma/client";
 import { decideTicketReplacement } from "@/features/tickets/lib/replacement";
 import { isTicketPaymentConfirmed } from "@/features/tickets/lib/ticket-status";
 import {
   emptyTicketActivity,
+  emptyTicketCredential,
   parseTicketCredential,
   type TicketCredential,
 } from "@/features/database/json-fields";
@@ -48,6 +49,7 @@ function newCredential(token: string, generatedAt = new Date()): TicketCredentia
 function ticketData(input: CreateTicketInput, token: string) {
   return {
     kind: "FORUM" as const,
+    origin: "STANDARD" as const,
     secureToken: token,
     credential: newCredential(token) as unknown as Prisma.InputJsonValue,
     activity: emptyTicketActivity() as unknown as Prisma.InputJsonValue,
@@ -160,6 +162,7 @@ export async function reserveSpecialPacketForCheckout({
         await tx.ticket.create({
           data: {
             ...ticketData({ ...attendee, type: "TWO_DAYS", galaDinner: true }, token),
+            origin: "SPECIAL_PACKET",
             specialPacketId,
             specialPacketPosition: index + 1,
           },
@@ -167,6 +170,73 @@ export async function reserveSpecialPacketForCheckout({
       );
     }
     return { specialPacketId, tickets };
+  });
+}
+
+export async function createComplimentaryGalaTicket(
+  tx: Prisma.TransactionClient,
+  input: {
+    accountId: string;
+    fullName: string;
+    email: string;
+    phone: string;
+    dataScope: DataScope;
+  },
+) {
+  const token = newToken();
+  const now = new Date();
+  return tx.ticket.create({
+    data: {
+      accountId: input.accountId,
+      kind: "FORUM",
+      origin: "JURY_GALA",
+      secureToken: token,
+      credential: newCredential(token, now) as unknown as Prisma.InputJsonValue,
+      activity: emptyTicketActivity() as unknown as Prisma.InputJsonValue,
+      fullName: input.fullName,
+      email: input.email,
+      phone: input.phone,
+      // The legacy database constraint requires every FORUM record to carry a
+      // type. Access is still gala-only because JURY_GALA is authoritative in
+      // scanner scope validation and admin presentation.
+      type: "TWO_DAYS",
+      galaDinner: true,
+      status: "PAID",
+      paidAt: now,
+      dataScope: input.dataScope,
+    },
+  });
+}
+
+export async function createSpecialOfferTicket(
+  tx: Prisma.TransactionClient,
+  input: {
+    accountId: string;
+    fullName: string;
+    email: string;
+    phone: string;
+    dataScope: DataScope;
+  },
+) {
+  const token = newToken();
+  return tx.ticket.create({
+    data: {
+      ...ticketData(
+        {
+          fullName: input.fullName,
+          email: input.email,
+          phone: input.phone,
+          type: "TWO_DAYS",
+          galaDinner: false,
+          isIbpaMember: false,
+        },
+        token,
+      ),
+      accountId: input.accountId,
+      origin: "SPECIAL_OFFER",
+      credential: emptyTicketCredential() as unknown as Prisma.InputJsonValue,
+      dataScope: input.dataScope,
+    },
   });
 }
 
@@ -277,7 +347,7 @@ export async function getAllTickets() {
   });
   return tickets.map((ticket) => ({
     ...ticket,
-    type: ticket.type ?? "TWO_DAYS",
+    type: ticket.origin === "JURY_GALA" ? "GALA_ONLY" : (ticket.type ?? "TWO_DAYS"),
     payments: ticket.payment ? [ticket.payment] : [],
     qrCredentials: credentialRows(ticket.credential).slice(0, 5),
   }));

@@ -4,10 +4,15 @@ import { getAuthenticatedJuryContext } from "@/features/jury/server/reviews";
 import { findSiblingAccount } from "@/features/account/server/accounts";
 import { DashboardShell } from "@/shared/components/admin/DashboardUI";
 import { TestActorBanner } from "@/features/test/components/TestActorBanner";
+import NotificationPopup from "@/features/notifications/components/NotificationPopup";
+import { getNextUnviewedNotification } from "@/features/notifications/server/notifications";
 
 export default async function JuryAccountLayout({ children }: { children: ReactNode }) {
   const jury = await getAuthenticatedJuryContext();
-  const applicantAccount = await findSiblingAccount({ email: jury.email, role: "APPLICANT", dataScope: jury.dataScope });
+  const [applicantAccount, nextNotification] = await Promise.all([
+    findSiblingAccount({ email: jury.email, role: "APPLICANT", dataScope: jury.dataScope }),
+    getNextUnviewedNotification(jury.accountId),
+  ]);
 
   return (
     <DashboardShell className="font-[var(--font-ui-family)]">
@@ -20,6 +25,10 @@ export default async function JuryAccountLayout({ children }: { children: ReactN
         <JuryAccountSidebar juryName={jury.fullName} email={jury.email} approvedCategories={jury.approvedCategories} canSwitchAccount={Boolean(applicantAccount)} />
         <main className="min-w-0 flex-1">{children}</main>
       </div>
+      <NotificationPopup
+        notification={nextNotification}
+        allNotificationsHref="/account/jury/notifications"
+      />
     </DashboardShell>
   );
 }
