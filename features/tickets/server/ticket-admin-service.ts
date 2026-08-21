@@ -15,6 +15,7 @@ import {
   compareEditableTicketChanges,
   getEditableTicketSnapshot,
   hasQrRelevantChanges,
+  ticketCanBeDeleted,
   ticketCanReceiveQr,
   type AdminTicketUpdateInput,
 } from "@/features/tickets/lib/admin-ticket-rules";
@@ -105,6 +106,49 @@ export async function getAdminTicketById(ticketId: string) {
     payments: ticket.payment ? [ticket.payment] : [],
     qrCredentials: credential.history.slice().reverse().map(credentialView).slice(0, 5),
   };
+}
+
+export async function deleteUnpaidAdminTicket(ticketId: string) {
+  const result = await prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${ticketId}))`;
+    const ticket = await tx.ticket.findUnique({
+      where: { id: ticketId },
+      include: { payment: { select: { id: true, status: true } } },
+    });
+    if (!ticket) return { ok: false as const, reason: "not_found" as const };
+    if (!ticketCanBeDeleted(ticket.status, ticket.payment?.status)) {
+      return { ok: false as const, reason: "paid" as const };
+    }
+
+    const ticketsToDelete = ticket.specialPacketId
+      ? await tx.ticket.findMany({
+          where: { specialPacketId: ticket.specialPacketId },
+          select: { id: true, status: true, payment: { select: { status: true } } },
+        })
+      : [ticket];
+    if (
+      ticketsToDelete.some((item) => !ticketCanBeDeleted(item.status, item.payment?.status))
+    ) {
+      return { ok: false as const, reason: "paid" as const };
+    }
+
+    const deletedIds = ticketsToDelete.map((item) => item.id);
+    const paymentId = ticket.payment?.id ?? null;
+    await tx.ticket.deleteMany({ where: { id: { in: deletedIds } } });
+    if (paymentId) {
+      await tx.payment.deleteMany({
+        where: {
+          id: paymentId,
+          status: { notIn: ["PAID", "PARTIALLY_PAID", "PAST_DUE"] },
+          tickets: { none: {} },
+        },
+      });
+    }
+    return { ok: true as const, deletedIds };
+  });
+
+  if (result.ok) result.deletedIds.forEach((id) => syncTicketOnChange(id));
+  return result;
 }
 
 export async function ensureActiveTicketQr(ticketId: string, tx: Tx = prisma) {

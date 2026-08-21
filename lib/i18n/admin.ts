@@ -696,6 +696,12 @@ export const adminT = {
       regenerateAndResend: "Пересоздать и отправить QR-код",
       resendCurrent: "Отправить текущий QR-код повторно",
       discardUnsaved: "Отменить несохранённые изменения билета?",
+      deleteTicket: "Удалить неоплаченный билет",
+      deleteTicketConfirm: (name: string) =>
+        `Удалить неоплаченный билет «${name}» безвозвратно? Действие нельзя отменить.`,
+      ticketDeleted: "Неоплаченный билет удалён.",
+      deleteFailed: "Не удалось удалить билет. Возможно, он уже оплачен.",
+      deleteNetworkError: "Ошибка сети при удалении билета.",
       qrStatuses: {
         ACTIVE: "Активен",
         REPLACED: "Заменён",

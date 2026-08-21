@@ -32,6 +32,7 @@ import {
   adminTicketUpdateSchema,
   compareEditableTicketChanges,
   hasQrRelevantChanges,
+  ticketCanBeDeleted,
   ticketCanReceiveQr,
 } from "@/features/tickets/lib/admin-ticket-rules";
 import { translations } from "@/lib/i18n/translations";
@@ -367,6 +368,14 @@ console.log("admin ticket updates");
   eq(ticketCanReceiveQr("CHECKED_ONE_DAY"), true, "checked-in ticket can receive refreshed QR");
   eq(ticketCanReceiveQr("PENDING"), false, "pending ticket cannot receive QR");
   eq(ticketCanReceiveQr("CANCELED"), false, "canceled ticket cannot receive QR");
+  eq(ticketCanBeDeleted("PENDING", "PENDING"), true, "pending unpaid ticket can be deleted");
+  eq(ticketCanBeDeleted("PENDING", "FAILED"), true, "failed unpaid ticket can be deleted");
+  eq(ticketCanBeDeleted("PAID", "PAID"), false, "paid ticket cannot be deleted");
+  eq(
+    ticketCanBeDeleted("PENDING", "PARTIALLY_PAID"),
+    false,
+    "partially paid ticket cannot be deleted"
+  );
 }
 
 // ── Refund notice localization (scenarios 13, 14, 15, 16) ────────────────────

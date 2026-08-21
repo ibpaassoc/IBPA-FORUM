@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Ticket, Camera, X, ChevronDown, Send, Pencil, QrCode, RefreshCw, Mail, Loader2, Save, PackageOpen, CalendarClock, CreditCard, AlertTriangle } from "lucide-react";
+import { Ticket, Camera, X, ChevronDown, Send, Pencil, QrCode, RefreshCw, Mail, Loader2, Save, PackageOpen, CalendarClock, CreditCard, AlertTriangle, Trash2 } from "lucide-react";
 import {
   DashboardAccentBlock,
   DashboardCard,
@@ -14,11 +14,13 @@ import {
   DashboardEmptyState,
   DashboardPageHeader,
   DashboardPrimaryBtn,
+  DashboardDangerBtn,
   IconButton,
   SearchBar,
 } from "@/shared/components/admin/DashboardUI";
 import { instagramProfileUrl } from "@/features/tickets/lib/instagram";
 import { splitTicketTotalIntoTwoPayments } from "@/features/tickets/lib/payment-plan";
+import { ticketCanBeDeleted } from "@/features/tickets/lib/admin-ticket-rules";
 import { adminT } from "@/lib/i18n/admin";
 import UnifiedScanner from "@/features/check-in/components/UnifiedScanner";
 
@@ -526,11 +528,13 @@ function TicketDetailPanel({
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState<TicketFormState>(() => ticketFormState(ticket));
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [qrPending, setQrPending] = useState<null | "preview" | "generate" | "regenerate" | "resend">(null);
   const [qrPreview, setQrPreview] = useState<QrPreview | null>(null);
   const [showQr, setShowQr] = useState(false);
   const dirty = editing && isFormDirty(ticket, form);
   const qr = activeQr(ticket);
+  const canDelete = ticketCanBeDeleted(ticket.status, payment?.status);
 
   useEffect(() => {
     onDirtyChange(dirty);
@@ -688,6 +692,32 @@ function TicketDetailPanel({
     }
   }
 
+  async function deleteTicket() {
+    if (!window.confirm(ticketAdminCopy.deleteTicketConfirm(ticket.fullName))) return;
+
+    setDeleting(true);
+    try {
+      const res = await fetch("/api/admin/tickets/manage", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticketId: ticket.id }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { ok?: boolean };
+      if (!res.ok || !data.ok) {
+        onToast({ tone: "error", message: ticketAdminCopy.deleteFailed });
+        return;
+      }
+
+      onDirtyChange(false);
+      onToast({ tone: "success", message: ticketAdminCopy.ticketDeleted });
+      router.refresh();
+    } catch {
+      onToast({ tone: "error", message: ticketAdminCopy.deleteNetworkError });
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   return (
     <div className="px-4 pb-4 pt-3 lg:px-5">
       <div className="relative">
@@ -819,19 +849,30 @@ function TicketDetailPanel({
           {qr?.lastSentAt ? <span>{ticketAdminCopy.lastSent}: {formatDate(qr.lastSentAt)}</span> : null}
         </div>
         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-          <button type="button" className={smallButtonClass} onClick={() => runQrAction("preview")} disabled={saving || qrPending !== null}>
+          <button type="button" className={smallButtonClass} onClick={() => runQrAction("preview")} disabled={saving || deleting || qrPending !== null}>
             {qrPending === "preview" ? <Loader2 className="animate-spin" size={15} /> : <QrCode size={15} />}
             {ticketAdminCopy.viewQr}
           </button>
-          <button type="button" className={smallButtonClass} onClick={() => runQrAction("regenerate_resend")} disabled={saving || qrPending !== null || ticket.status === "PENDING" || ticket.status === "CANCELED"}>
+          <button type="button" className={smallButtonClass} onClick={() => runQrAction("regenerate_resend")} disabled={saving || deleting || qrPending !== null || ticket.status === "PENDING" || ticket.status === "CANCELED"}>
             {qrPending === "regenerate" ? <Loader2 className="animate-spin" size={15} /> : <RefreshCw size={15} />}
             {ticketAdminCopy.regenerateAndResend}
           </button>
           {qr && (
-            <button type="button" className={smallButtonClass} onClick={() => runQrAction("resend_current")} disabled={saving || qrPending !== null || ticket.status === "PENDING" || ticket.status === "CANCELED"}>
+            <button type="button" className={smallButtonClass} onClick={() => runQrAction("resend_current")} disabled={saving || deleting || qrPending !== null || ticket.status === "PENDING" || ticket.status === "CANCELED"}>
               {qrPending === "resend" ? <Loader2 className="animate-spin" size={15} /> : <Mail size={15} />}
               {ticketAdminCopy.resendCurrent}
             </button>
+          )}
+          {canDelete && (
+            <DashboardDangerBtn
+              type="button"
+              onClick={() => void deleteTicket()}
+              disabled={saving || deleting || qrPending !== null}
+              className="sm:ml-auto"
+            >
+              {deleting ? <Loader2 className="animate-spin" size={15} /> : <Trash2 size={15} />}
+              {ticketAdminCopy.deleteTicket}
+            </DashboardDangerBtn>
           )}
         </div>
       </div>

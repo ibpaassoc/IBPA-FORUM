@@ -11,6 +11,7 @@ import {
   type TicketCredential,
 } from "@/features/database/json-fields";
 import { prisma } from "@/shared/lib/prisma";
+import type { TicketPurchaseManifest } from "./ticket-purchase-manifest";
 
 export type CreateTicketInput = {
   fullName: string;
@@ -68,6 +69,33 @@ function ticketData(input: CreateTicketInput, token: string) {
 export async function createTicket(input: CreateTicketInput) {
   const token = newToken();
   return prisma.ticket.create({ data: ticketData(input, token) });
+}
+
+export async function createPaidTicketsFromManifest(
+  tx: Prisma.TransactionClient,
+  manifest: TicketPurchaseManifest,
+  paymentId: string,
+  paidAt: Date
+) {
+  const tickets = [];
+  for (const attendee of manifest.attendees) {
+    const token = newToken();
+    tickets.push(
+      await tx.ticket.create({
+        data: {
+          id: attendee.ticketId,
+          ...ticketData(attendee, token),
+          origin: attendee.origin,
+          specialPacketId: manifest.specialPacketId,
+          specialPacketPosition: attendee.specialPacketPosition,
+          paymentId,
+          status: "PAID",
+          paidAt,
+        },
+      })
+    );
+  }
+  return tickets;
 }
 
 export type ReserveTicketResult = { ok: true; ticketId: string };
