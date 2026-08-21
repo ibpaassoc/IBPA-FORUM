@@ -50,7 +50,6 @@ const KIND_META = {
   JURY_GALA: {
     optionLabel: "Гала-ужин",
     recipientLabel: "Активное жюри",
-    shortAudience: "Жюри",
     title: "Бесплатный гала-ужин",
     description: "Приглашение с подтверждением и отдельным QR только для гала-ужина.",
     content: JURY_GALA_CONTENT,
@@ -59,8 +58,7 @@ const KIND_META = {
   },
   SPECIAL_OFFER_2_DAYS: {
     optionLabel: "Приглашение на 2 дня",
-    recipientLabel: "Активные заявители",
-    shortAudience: "Заявители",
+    recipientLabel: "Активное жюри",
     title: "Спеццена на 2 дня форума",
     description: "Приватная покупка двухдневного пропуска с новым QR после оплаты.",
     content: SPECIAL_OFFER_CONTENT,
@@ -128,11 +126,9 @@ function NotificationTypeOption({
 
 export default function AdminNotificationsPage({
   jury,
-  applicants,
   recent,
 }: {
   jury: NotificationRecipient[];
-  applicants: NotificationRecipient[];
   recent: RecentNotification[];
 }) {
   const [state, action, pending] = useActionState(createNotificationsAction, initialState);
@@ -143,7 +139,7 @@ export default function AdminNotificationsPage({
   );
 
   const viewed = recent.filter((item) => item.isViewed).length;
-  const recipients = activeKind === "JURY_GALA" ? jury : applicants;
+  const recipients = jury;
   const selected = selectedByKind[activeKind];
   const meta = KIND_META[activeKind];
   const preview = meta.content.copy.ru;
@@ -193,7 +189,7 @@ export default function AdminNotificationsPage({
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <DashboardMetricTile label="Последние уведомления" value={recent.length} detail="отправлено" icon={BellRing} accent="blue" />
         <DashboardMetricTile label="Активное жюри" value={jury.length} detail="пользователей" icon={Users} accent="purple" />
-        <DashboardMetricTile label="Активные заявители" value={applicants.length} detail="пользователей" icon={Users} accent="blue" />
+        <DashboardMetricTile label="Новые из последних" value={recent.length - viewed} detail="не просмотрено" icon={BellRing} accent="blue" />
         <DashboardMetricTile label="Просмотрено из последних" value={viewed} detail="просмотров" icon={CheckCircle2} accent="green" />
       </div>
 
@@ -206,7 +202,7 @@ export default function AdminNotificationsPage({
             <aside className="border-b border-[rgba(37,42,45,0.08)] p-4 xl:border-b-0 xl:border-r xl:p-5">
               <h2 className="font-[var(--font-title-family)] text-2xl font-light">Тип уведомления</h2>
               <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
-                <NotificationTypeOption kind="SPECIAL_OFFER_2_DAYS" active={activeKind === "SPECIAL_OFFER_2_DAYS"} count={applicants.length} onSelect={() => selectKind("SPECIAL_OFFER_2_DAYS")} />
+                <NotificationTypeOption kind="SPECIAL_OFFER_2_DAYS" active={activeKind === "SPECIAL_OFFER_2_DAYS"} count={jury.length} onSelect={() => selectKind("SPECIAL_OFFER_2_DAYS")} />
                 <NotificationTypeOption kind="JURY_GALA" active={activeKind === "JURY_GALA"} count={jury.length} onSelect={() => selectKind("JURY_GALA")} />
               </div>
             </aside>
@@ -226,7 +222,7 @@ export default function AdminNotificationsPage({
                   >
                     {KIND_META[kind].optionLabel}
                     <span className="rounded-full bg-[var(--color-blue-wash)] px-2 py-0.5 text-[0.62rem] text-[var(--color-blue)]">
-                      {kind === "JURY_GALA" ? jury.length : applicants.length}
+                      {jury.length}
                     </span>
                   </button>
                 ))}
@@ -327,7 +323,7 @@ export default function AdminNotificationsPage({
                 return (
                   <div key={item.id} className="grid grid-cols-[1.4fr_1fr_1.35fr_0.7fr_1fr] items-center gap-4 border-b border-[rgba(37,42,45,0.07)] px-5 py-4 text-sm last:border-b-0">
                     <div className="min-w-0"><p className="truncate font-semibold text-[var(--color-ink)]">{itemMeta.title}</p><p className="mt-0.5 truncate text-xs text-[var(--color-ink-soft)]">{itemMeta.content.copy.ru.title}</p></div>
-                    <StatusBadge tone={itemMeta.tone}>{itemMeta.shortAudience}</StatusBadge>
+                    <StatusBadge tone={item.type === "JURY" ? "purple" : "blue"}>{item.type === "JURY" ? "Жюри" : "Заявители"}</StatusBadge>
                     <div className="min-w-0"><p className="truncate font-semibold text-[var(--color-ink)]">{item.name}</p><p className="mt-0.5 truncate text-xs text-[var(--color-ink-soft)]">{item.email}</p></div>
                     <StatusBadge tone={item.isViewed ? "green" : "amber"}>{item.isViewed ? "Да" : "Нет"}</StatusBadge>
                     <span className="text-xs text-[var(--color-ink-soft)]">{new Intl.DateTimeFormat("ru-RU", { dateStyle: "medium", timeStyle: "short" }).format(new Date(item.dateCreated))}</span>

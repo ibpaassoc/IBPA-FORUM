@@ -38,9 +38,9 @@ export async function claimJuryGalaAction(notificationId: string, consent: boole
 }
 
 export async function startSpecialOfferCheckoutAction(notificationId: string) {
-  const account = await requireAccount("APPLICANT");
-  if (account.role !== "APPLICANT") {
-    return { ok: false, message: "An applicant account is required." };
+  const account = await requireAccount("JURY");
+  if (account.role !== "JURY") {
+    return { ok: false, message: "A jury account is required." };
   }
   try {
     const result = await startSpecialOfferCheckout({

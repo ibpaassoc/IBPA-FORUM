@@ -134,7 +134,7 @@ export async function startSpecialOfferCheckout({
   const reservation = await prisma.$transaction(async (tx) => {
     await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${notificationId}))`;
     const notification = await tx.notification.findFirst({
-      where: { id: notificationId, accountId, type: "APPLICANT" },
+      where: { id: notificationId, accountId, type: "JURY" },
     });
     if (!notification) throw new Error("Notification not found.");
     const content = parseNotificationContent(notification.content);
@@ -146,10 +146,10 @@ export async function startSpecialOfferCheckout({
     }
 
     const account = await tx.account.findFirst({
-      where: { id: accountId, role: "APPLICANT", status: "ACTIVE" },
-      include: { applicantProfile: true },
+      where: { id: accountId, role: "JURY", status: "ACTIVE" },
+      include: { juryProfile: true },
     });
-    if (!account?.applicantProfile) throw new Error("An active applicant account is required.");
+    if (!account?.juryProfile) throw new Error("An active jury account is required.");
 
     let ticket = content.state.ticketId
       ? await tx.ticket.findFirst({ where: { id: content.state.ticketId, accountId } })
@@ -161,10 +161,9 @@ export async function startSpecialOfferCheckout({
     if (!ticket || !payment) {
       ticket = await createSpecialOfferTicket(tx, {
         accountId,
-        applicantProfileId: account.applicantProfile.id,
-        fullName: account.applicantProfile.fullName,
+        fullName: account.juryProfile.fullName,
         email: account.email,
-        phone: account.applicantProfile.phone ?? "Not provided",
+        phone: account.juryProfile.phone ?? "Not provided",
         dataScope: account.dataScope,
       });
       payment = await tx.payment.create({

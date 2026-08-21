@@ -29,7 +29,6 @@ const uiCopy = {
     downloadQr: "Download QR",
     resendEmail: "Resend email",
     passConfirmed: "Your 2-Day Forum pass is confirmed",
-    viewTicket: "View ticket",
   },
   ru: {
     viewed: "Просмотрено",
@@ -40,7 +39,6 @@ const uiCopy = {
     downloadQr: "Скачать QR",
     resendEmail: "Отправить повторно",
     passConfirmed: "Ваш пропуск на 2 дня форума подтверждён",
-    viewTicket: "Открыть билет",
   },
   ua: {
     viewed: "Переглянуто",
@@ -51,7 +49,6 @@ const uiCopy = {
     downloadQr: "Завантажити QR",
     resendEmail: "Надіслати повторно",
     passConfirmed: "Вашу перепустку на 2 дні форуму підтверджено",
-    viewTicket: "Відкрити квиток",
   },
 } as const;
 
@@ -170,9 +167,11 @@ export default function NotificationCard({
               <p className="flex items-center gap-2 text-sm font-semibold text-emerald-800">
                 <CheckCircle2 size={16} /> {labels.passConfirmed}
               </p>
-              <Link href="/account/applicant/tickets" className={`${secondaryButtonClass} mt-3`}>
-                <QrCode size={15} /> {labels.viewTicket}
-              </Link>
+              {content.state.ticketId ? (
+                <Link href={`/api/account/tickets/${content.state.ticketId}/qr`} className={`${secondaryButtonClass} mt-3`}>
+                  <QrCode size={15} /> {labels.downloadQr}
+                </Link>
+              ) : null}
             </div>
           ) : (
             <button type="button" onClick={buyOffer} disabled={pending} className={`${buttonClass} mt-4 w-full sm:w-auto`}>

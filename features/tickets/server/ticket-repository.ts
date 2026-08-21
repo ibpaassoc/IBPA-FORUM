@@ -212,7 +212,6 @@ export async function createSpecialOfferTicket(
   tx: Prisma.TransactionClient,
   input: {
     accountId: string;
-    applicantProfileId: string;
     fullName: string;
     email: string;
     phone: string;
@@ -234,7 +233,6 @@ export async function createSpecialOfferTicket(
         token,
       ),
       accountId: input.accountId,
-      applicantProfileId: input.applicantProfileId,
       origin: "SPECIAL_OFFER",
       credential: emptyTicketCredential() as unknown as Prisma.InputJsonValue,
       dataScope: input.dataScope,
