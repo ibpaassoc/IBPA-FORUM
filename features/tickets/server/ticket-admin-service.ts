@@ -11,6 +11,7 @@ import {
 } from "@/features/database/json-fields";
 import { syncTicketOnChange } from "@/features/google-sheets";
 import {
+  ADMIN_GENERATED_VALUE,
   adminManualTicketSchema,
   adminTicketUpdateSchema,
   compareEditableTicketChanges,
@@ -23,7 +24,10 @@ import {
 import { prisma } from "@/shared/lib/prisma";
 import { sendTicketQrEmail } from "./ticket-email.workflow";
 import { generateTicketQRDataUrl } from "./ticket-qr";
-import { createAdminManualTicket } from "./ticket-repository";
+import {
+  createAdminManualTicket,
+  findAdminManualTicketRecipient,
+} from "./ticket-repository";
 
 type Tx = Prisma.TransactionClient;
 type CredentialHistoryItem = TicketCredential["history"][number];
@@ -124,7 +128,35 @@ export async function createAndSendAdminManualTicket(rawInput: unknown) {
     };
   }
 
-  const ticket = await createAdminManualTicket(parsed.data);
+  const recipient = parsed.data.recipientSource === "EXISTING"
+    ? await findAdminManualTicketRecipient(parsed.data.accountId, parsed.data.recipientType)
+    : {
+        id: null,
+        applicantProfileId: null,
+        role: "MANUAL" as const,
+        fullName: parsed.data.fullName,
+        email: parsed.data.email,
+      };
+  if (!recipient) {
+    return {
+      ok: false as const,
+      reason: "invalid" as const,
+      message: adminT.tickets.manual.recipientUnavailable,
+    };
+  }
+
+  const ticket = await createAdminManualTicket({
+    accountId: recipient.id,
+    applicantProfileId: recipient.applicantProfileId,
+    recipientRole: recipient.role,
+    fullName: recipient.fullName,
+    email: recipient.email.trim().toLowerCase(),
+    phone: ADMIN_GENERATED_VALUE,
+    instagram: null,
+    type: parsed.data.type,
+    galaDinner: parsed.data.galaDinner,
+    isIbpaMember: false,
+  });
   let delivery;
   try {
     delivery = await sendCurrentTicketQr(ticket.id);

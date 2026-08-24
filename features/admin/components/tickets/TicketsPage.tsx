@@ -20,7 +20,10 @@ import {
 } from "@/shared/components/admin/DashboardUI";
 import { instagramProfileUrl } from "@/features/tickets/lib/instagram";
 import { splitTicketTotalIntoTwoPayments } from "@/features/tickets/lib/payment-plan";
-import { ticketCanBeDeleted } from "@/features/tickets/lib/admin-ticket-rules";
+import {
+  ticketCanBeDeleted,
+  type AdminManualTicketRecipient,
+} from "@/features/tickets/lib/admin-ticket-rules";
 import { adminT } from "@/lib/i18n/admin";
 import UnifiedScanner from "@/features/check-in/components/UnifiedScanner";
 import ManualTicketDialog from "./ManualTicketDialog";
@@ -1025,9 +1028,11 @@ function ScannerDialog({ onClose, onCheckIn }: { onClose: () => void; onCheckIn:
 export default function TicketsPage({
   tickets,
   specialPacketEnabled,
+  manualTicketRecipients,
 }: {
   tickets: TicketRecord[];
   specialPacketEnabled: boolean;
+  manualTicketRecipients: AdminManualTicketRecipient[];
 }) {
   const router = useRouter();
   const reduceMotion = useReducedMotion() ?? false;
@@ -1206,6 +1211,7 @@ export default function TicketsPage({
       )}
       <ManualTicketDialog
         open={showManualTicket}
+        recipients={manualTicketRecipients}
         onClose={() => setShowManualTicket(false)}
         onCreated={(message, tone) => {
           showToast({ tone, message });

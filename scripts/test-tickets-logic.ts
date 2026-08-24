@@ -31,6 +31,7 @@ import { ticketApiSchema } from "@/features/tickets/schemas/ticket-form-schema";
 import {
   adminTicketUpdateSchema,
   adminManualTicketSchema,
+  ADMIN_GENERATED_VALUE,
   compareEditableTicketChanges,
   hasQrRelevantChanges,
   ticketCanBeDeleted,
@@ -384,32 +385,51 @@ console.log("admin ticket updates");
 console.log("manual admin ticket issuance");
 {
   const parsed = adminManualTicketSchema.safeParse({
-    fullName: "  Анна Иванова  ",
-    email: "  ANNA@EXAMPLE.COM ",
-    phone: "+1 555 123 4567",
-    instagram: "https://instagram.com/anna.beauty/",
+    recipientSource: "EXISTING",
+    recipientType: "APPLICANT",
+    accountId: "account_anna",
     type: "TWO_DAYS",
     galaDinner: true,
-    isIbpaMember: true,
   });
   assert(parsed.success, "valid manual ticket payload parses");
-  if (parsed.success) {
-    eq(parsed.data.fullName, "Анна Иванова", "manual ticket trims the attendee name");
-    eq(parsed.data.email, "anna@example.com", "manual ticket normalizes email");
-    eq(parsed.data.instagram, "anna.beauty", "manual ticket normalizes Instagram");
+  if (parsed.success && parsed.data.recipientSource === "EXISTING") {
+    eq(parsed.data.recipientType, "APPLICANT", "manual ticket keeps the recipient role");
+    eq(parsed.data.accountId, "account_anna", "manual ticket keeps the selected account");
+    assert(!("phone" in parsed.data), "manual ticket input does not accept a phone field");
   }
   assert(
     !adminManualTicketSchema.safeParse({
-      fullName: "Анна Иванова",
-      email: "invalid",
-      phone: "+1",
-      instagram: "",
+      recipientSource: "EXISTING",
+      recipientType: "JURY",
+      accountId: "",
       type: "ONE_DAY",
       galaDinner: false,
-      isIbpaMember: false,
     }).success,
-    "manual ticket rejects an invalid email"
+    "manual ticket requires a selected account"
   );
+  const manualRecipient = adminManualTicketSchema.safeParse({
+    recipientSource: "MANUAL",
+    fullName: "  Анна Иванова  ",
+    email: " Anna@Example.COM ",
+    type: "ONE_DAY",
+    galaDinner: false,
+  });
+  assert(manualRecipient.success, "manual ticket accepts a manually entered recipient");
+  if (manualRecipient.success && manualRecipient.data.recipientSource === "MANUAL") {
+    eq(manualRecipient.data.fullName, "Анна Иванова", "manual recipient name is trimmed");
+    eq(manualRecipient.data.email, "anna@example.com", "manual recipient email is normalized");
+  }
+  assert(
+    !adminManualTicketSchema.safeParse({
+      recipientSource: "MANUAL",
+      fullName: "",
+      email: "not-an-email",
+      type: "ONE_DAY",
+      galaDinner: false,
+    }).success,
+    "manual recipient requires a name and valid email"
+  );
+  eq(ADMIN_GENERATED_VALUE, "ADMIN-GENERATED", "hidden required values use the admin marker");
 
   const email = ticketConfirmationTemplate({
     fullName: "Анна Иванова",
