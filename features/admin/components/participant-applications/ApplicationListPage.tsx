@@ -43,10 +43,13 @@ type ApplicationRow = {
   }>;
 };
 
+const GRAND_PRIX_FILTER = "grandprix";
+
 export default function ApplicationListPage({
   applications,
   totals,
   error,
+  initialFilter,
   notice,
 }: {
   applications: ApplicationRow[];
@@ -58,12 +61,14 @@ export default function ApplicationListPage({
     approved: number;
   };
   error?: string;
+  initialFilter?: string;
   notice?: string;
 }) {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const [category, setCategory] = useState("");
   const [payment, setPayment] = useState("");
+  const [grandPrix, setGrandPrix] = useState(initialFilter === GRAND_PRIX_FILTER ? GRAND_PRIX_FILTER : "");
   const [sort, setSort] = useState("");
 
   const categories = useMemo(
@@ -91,6 +96,7 @@ export default function ApplicationListPage({
         return false;
       }
       if (payment && app.paymentStatus !== payment) return false;
+      if (grandPrix === GRAND_PRIX_FILTER && app.nominations.length < 5) return false;
       if (q) {
         const haystack = [
           app.fullName,
@@ -118,7 +124,7 @@ export default function ApplicationListPage({
       return [...list].sort((a, b) => a.fullName.localeCompare(b.fullName));
     }
     return [...list].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-  }, [applications, search, status, category, payment, sort]);
+  }, [applications, search, status, category, payment, grandPrix, sort]);
 
   const selects: FilterSelect[] = [
     {
@@ -149,6 +155,15 @@ export default function ApplicationListPage({
       ],
     },
     {
+      key: GRAND_PRIX_FILTER,
+      label: adminT.filters.grandPrixLabel,
+      value: grandPrix,
+      options: [
+        { value: "", label: adminT.filters.allNominations },
+        { value: GRAND_PRIX_FILTER, label: adminT.filters.grandPrix },
+      ],
+    },
+    {
       key: "sort",
       label: adminT.filters.sortLabel,
       value: sort,
@@ -164,6 +179,7 @@ export default function ApplicationListPage({
     if (key === "status") setStatus(value);
     else if (key === "category") setCategory(value);
     else if (key === "payment") setPayment(value);
+    else if (key === GRAND_PRIX_FILTER) setGrandPrix(value);
     else if (key === "sort") setSort(value);
   }
 
@@ -172,6 +188,7 @@ export default function ApplicationListPage({
     setStatus("");
     setCategory("");
     setPayment("");
+    setGrandPrix("");
     setSort("");
   }
 

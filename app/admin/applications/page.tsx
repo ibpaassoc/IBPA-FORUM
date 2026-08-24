@@ -5,11 +5,11 @@ import { requireAdmin } from "@/shared/lib/admin-auth";
 export default async function AdminApplicationsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; notice?: string }>;
+  searchParams: Promise<{ error?: string; filter?: string; notice?: string }>;
 }) {
   await requireAdmin();
 
-  const { error, notice } = await searchParams;
+  const { error, filter, notice } = await searchParams;
   const { applications, totals } = await getParticipantApplications();
 
   return (
@@ -17,6 +17,7 @@ export default async function AdminApplicationsPage({
       applications={applications}
       totals={totals}
       error={error}
+      initialFilter={filter}
       notice={notice}
     />
   );
