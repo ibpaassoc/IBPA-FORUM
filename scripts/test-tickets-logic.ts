@@ -30,12 +30,14 @@ import {
 import { ticketApiSchema } from "@/features/tickets/schemas/ticket-form-schema";
 import {
   adminTicketUpdateSchema,
+  adminManualTicketSchema,
   compareEditableTicketChanges,
   hasQrRelevantChanges,
   ticketCanBeDeleted,
   ticketCanReceiveQr,
 } from "@/features/tickets/lib/admin-ticket-rules";
 import { translations } from "@/lib/i18n/translations";
+import { ticketConfirmationTemplate } from "@/features/tickets/templates/ticket-confirmation";
 
 let passed = 0;
 let failed = 0;
@@ -376,6 +378,49 @@ console.log("admin ticket updates");
     false,
     "partially paid ticket cannot be deleted"
   );
+}
+
+// ── Manual admin-issued tickets ─────────────────────────────────────────────
+console.log("manual admin ticket issuance");
+{
+  const parsed = adminManualTicketSchema.safeParse({
+    fullName: "  Анна Иванова  ",
+    email: "  ANNA@EXAMPLE.COM ",
+    phone: "+1 555 123 4567",
+    instagram: "https://instagram.com/anna.beauty/",
+    type: "TWO_DAYS",
+    galaDinner: true,
+    isIbpaMember: true,
+  });
+  assert(parsed.success, "valid manual ticket payload parses");
+  if (parsed.success) {
+    eq(parsed.data.fullName, "Анна Иванова", "manual ticket trims the attendee name");
+    eq(parsed.data.email, "anna@example.com", "manual ticket normalizes email");
+    eq(parsed.data.instagram, "anna.beauty", "manual ticket normalizes Instagram");
+  }
+  assert(
+    !adminManualTicketSchema.safeParse({
+      fullName: "Анна Иванова",
+      email: "invalid",
+      phone: "+1",
+      instagram: "",
+      type: "ONE_DAY",
+      galaDinner: false,
+      isIbpaMember: false,
+    }).success,
+    "manual ticket rejects an invalid email"
+  );
+
+  const email = ticketConfirmationTemplate({
+    fullName: "Анна Иванова",
+    type: "TWO_DAYS",
+    galaDinner: true,
+    paymentUrl: "https://example.com/tickets/token",
+    manualIssue: true,
+  });
+  assert(email.subject.includes("Ваш билет подтверждён"), "manual ticket email subject is Russian");
+  assert(email.html.includes("Билет оформлен без оплаты"), "manual ticket email states no payment is required");
+  assert(!email.html.includes("Payment received"), "manual ticket email never claims payment was received");
 }
 
 // ── Refund notice localization (scenarios 13, 14, 15, 16) ────────────────────

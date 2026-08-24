@@ -7,6 +7,7 @@ import { isTicketPaymentConfirmed } from "@/features/tickets/lib/ticket-status";
 import {
   emptyTicketActivity,
   emptyTicketCredential,
+  parseTicketActivity,
   parseTicketCredential,
   type TicketCredential,
 } from "@/features/database/json-fields";
@@ -69,6 +70,27 @@ function ticketData(input: CreateTicketInput, token: string) {
 export async function createTicket(input: CreateTicketInput) {
   const token = newToken();
   return prisma.ticket.create({ data: ticketData(input, token) });
+}
+
+export async function createAdminManualTicket(input: CreateTicketInput) {
+  const token = newToken();
+  const now = new Date();
+  return prisma.ticket.create({
+    data: {
+      ...ticketData(input, token),
+      status: "PAID",
+      activity: {
+        schemaVersion: 1,
+        events: [
+          {
+            id: crypto.randomUUID(),
+            type: "CREATED_MANUALLY",
+            createdAt: now.toISOString(),
+          },
+        ],
+      } as unknown as Prisma.InputJsonValue,
+    },
+  });
 }
 
 export async function createPaidTicketsFromManifest(
@@ -376,6 +398,9 @@ export async function getAllTickets() {
   return tickets.map((ticket) => ({
     ...ticket,
     type: ticket.origin === "JURY_GALA" ? "GALA_ONLY" : (ticket.type ?? "TWO_DAYS"),
+    manualIssue: parseTicketActivity(ticket.activity).events.some(
+      (event) => event.type === "CREATED_MANUALLY"
+    ),
     payments: ticket.payment ? [ticket.payment] : [],
     qrCredentials: credentialRows(ticket.credential).slice(0, 5),
   }));
