@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { findTicketWithPaymentByToken } from "@/features/tickets/server/ticket-repository";
 import { ticketTypeLabel } from "@/features/tickets/lib/labels";
+import { parseTicketActivity } from "@/features/database/json-fields";
 
 export const metadata = {
   title: "Payment Details — IBPA BEAUTY AWARD 2026",
@@ -20,6 +21,9 @@ export default async function TicketPaymentPage({
   }
 
   const payment = ticket.payments[0] ?? null;
+  const manualIssue = parseTicketActivity(ticket.activity).events.some(
+    (event) => event.type === "CREATED_MANUALLY"
+  );
   const amountFormatted = payment
     ? new Intl.NumberFormat("en-US", {
         style: "currency",
@@ -43,7 +47,7 @@ export default async function TicketPaymentPage({
         </p>
 
         <h1 className="mb-1 text-[1.7rem] leading-tight [font-family:var(--font-accent-family)] text-[var(--color-ink)]">
-          Payment Details
+          {manualIssue ? "Данные билета" : "Payment Details"}
         </h1>
         <p className="mb-8 text-[0.9rem] text-[var(--color-ink-soft)]">
           {ticket.fullName}
@@ -52,20 +56,32 @@ export default async function TicketPaymentPage({
         {/* Ticket info */}
         <div className="mb-4 rounded-xl border border-[var(--border-soft)] bg-white/72 px-5 py-4">
           <p className="mb-3 text-[10px] font-bold tracking-[0.14em] uppercase text-[var(--color-ink-muted)]">
-            Ticket
+            {manualIssue ? "Билет" : "Ticket"}
           </p>
           <Row
-            label="Type"
-            value={ticket.specialPacketId ? "Special Packet — 2-Day Forum Pass" : ticketTypeLabel(ticket.type ?? "TWO_DAYS")}
+            label={manualIssue ? "Тип" : "Type"}
+            value={
+              manualIssue
+                ? ticket.type === "ONE_DAY"
+                  ? "Форум — 1 день"
+                  : "Форум — 2 дня"
+                : ticket.specialPacketId
+                  ? "Special Packet — 2-Day Forum Pass"
+                  : ticketTypeLabel(ticket.type ?? "TWO_DAYS")
+            }
           />
           <Row
-            label="Gala Dinner"
-            value={ticket.galaDinner ? "Included" : "Not included"}
+            label={manualIssue ? "Гала-ужин" : "Gala Dinner"}
+            value={
+              ticket.galaDinner
+                ? manualIssue ? "Включён" : "Included"
+                : manualIssue ? "Не включён" : "Not included"
+            }
           />
           {ticket.instagram && <Row label="Instagram" value={`@${ticket.instagram}`} />}
           <Row
-            label="Status"
-            value={ticket.status === "PAID" ? "Paid" : ticket.status}
+            label={manualIssue ? "Статус" : "Status"}
+            value={manualIssue ? "Без оплаты" : ticket.status === "PAID" ? "Paid" : ticket.status}
             highlight={ticket.status === "PAID"}
           />
         </div>
@@ -84,7 +100,7 @@ export default async function TicketPaymentPage({
 
         <div className="mt-8">
           <Link href="/" className="ibpa-button ibpa-button-ghost w-full text-center">
-            Back to Home
+            {manualIssue ? "На главную" : "Back to Home"}
           </Link>
         </div>
       </div>

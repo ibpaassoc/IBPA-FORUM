@@ -7,11 +7,13 @@ import { isTicketPaymentConfirmed } from "@/features/tickets/lib/ticket-status";
 import {
   emptyTicketActivity,
   emptyTicketCredential,
+  parseTicketActivity,
   parseTicketCredential,
   type TicketCredential,
 } from "@/features/database/json-fields";
 import { prisma } from "@/shared/lib/prisma";
 import type { TicketPurchaseManifest } from "./ticket-purchase-manifest";
+import type { AdminManualTicketRecipient } from "@/features/tickets/lib/admin-ticket-rules";
 
 export type CreateTicketInput = {
   fullName: string;
@@ -69,6 +71,114 @@ function ticketData(input: CreateTicketInput, token: string) {
 export async function createTicket(input: CreateTicketInput) {
   const token = newToken();
   return prisma.ticket.create({ data: ticketData(input, token) });
+}
+
+type CreateAdminManualTicketInput = CreateTicketInput & {
+  accountId: string | null;
+  applicantProfileId: string | null;
+  recipientRole: AdminManualTicketRecipient["role"] | "MANUAL";
+};
+
+export async function createAdminManualTicket(input: CreateAdminManualTicketInput) {
+  const token = newToken();
+  const now = new Date();
+  return prisma.ticket.create({
+    data: {
+      ...ticketData(input, token),
+      accountId: input.accountId,
+      applicantProfileId: input.applicantProfileId,
+      status: "PAID",
+      activity: {
+        schemaVersion: 1,
+        events: [
+          {
+            id: crypto.randomUUID(),
+            type: "CREATED_MANUALLY",
+            createdAt: now.toISOString(),
+            recipientRole: input.recipientRole,
+            accountId: input.accountId,
+          },
+        ],
+      } as unknown as Prisma.InputJsonValue,
+    },
+  });
+}
+
+const ELIGIBLE_JURY_TICKET_STATUSES = ["APPROVED", "PAID"] as const;
+
+const manualRecipientWhere = {
+  status: { not: "DISABLED" as const },
+  OR: [
+    { role: "APPLICANT" as const },
+    {
+      role: "JURY" as const,
+      juryApplication: {
+        status: { in: [...ELIGIBLE_JURY_TICKET_STATUSES] },
+      },
+    },
+  ],
+};
+
+const manualRecipientSelect = {
+  id: true,
+  email: true,
+  role: true,
+  applicantProfile: { select: { id: true, fullName: true } },
+  juryProfile: { select: { fullName: true } },
+  juryApplication: { select: { fullName: true } },
+} as const;
+
+export async function getAdminManualTicketRecipients(): Promise<AdminManualTicketRecipient[]> {
+  const accounts = await prisma.account.findMany({
+    where: manualRecipientWhere,
+    orderBy: [{ role: "asc" }, { createdAt: "desc" }],
+    select: manualRecipientSelect,
+  });
+
+  return accounts.map((account) => ({
+    id: account.id,
+    role: account.role,
+    fullName:
+      account.applicantProfile?.fullName ??
+      account.juryProfile?.fullName ??
+      account.juryApplication?.fullName ??
+      account.email,
+    email: account.email,
+  }));
+}
+
+export async function findAdminManualTicketRecipient(
+  accountId: string,
+  role: AdminManualTicketRecipient["role"]
+) {
+  const account = await prisma.account.findFirst({
+    where: {
+      id: accountId,
+      status: { not: "DISABLED" },
+      role,
+      ...(role === "JURY"
+        ? {
+            juryApplication: {
+              status: { in: [...ELIGIBLE_JURY_TICKET_STATUSES] },
+            },
+          }
+        : {}),
+    },
+    select: manualRecipientSelect,
+  });
+  if (!account) return null;
+
+  return {
+    id: account.id,
+    role: account.role,
+    fullName:
+      account.applicantProfile?.fullName ??
+      account.juryProfile?.fullName ??
+      account.juryApplication?.fullName ??
+      account.email,
+    email: account.email,
+    applicantProfileId: account.applicantProfile?.id ?? null,
+  };
 }
 
 export async function createPaidTicketsFromManifest(
@@ -376,6 +486,9 @@ export async function getAllTickets() {
   return tickets.map((ticket) => ({
     ...ticket,
     type: ticket.origin === "JURY_GALA" ? "GALA_ONLY" : (ticket.type ?? "TWO_DAYS"),
+    manualIssue: parseTicketActivity(ticket.activity).events.some(
+      (event) => event.type === "CREATED_MANUALLY"
+    ),
     payments: ticket.payment ? [ticket.payment] : [],
     qrCredentials: credentialRows(ticket.credential).slice(0, 5),
   }));

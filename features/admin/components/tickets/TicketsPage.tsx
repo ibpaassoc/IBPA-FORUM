@@ -20,9 +20,13 @@ import {
 } from "@/shared/components/admin/DashboardUI";
 import { instagramProfileUrl } from "@/features/tickets/lib/instagram";
 import { splitTicketTotalIntoTwoPayments } from "@/features/tickets/lib/payment-plan";
-import { ticketCanBeDeleted } from "@/features/tickets/lib/admin-ticket-rules";
+import {
+  ticketCanBeDeleted,
+  type AdminManualTicketRecipient,
+} from "@/features/tickets/lib/admin-ticket-rules";
 import { adminT } from "@/lib/i18n/admin";
 import UnifiedScanner from "@/features/check-in/components/UnifiedScanner";
+import ManualTicketDialog from "./ManualTicketDialog";
 
 type TicketPayment = {
   amount: number;
@@ -54,6 +58,7 @@ type TicketRecord = {
   instagram: string | null;
   type: string;
   origin: "STANDARD" | "SPECIAL_PACKET" | "JURY_GALA" | "SPECIAL_OFFER";
+  manualIssue: boolean;
   galaDinner: boolean;
   isIbpaMember: boolean;
   status: string;
@@ -93,7 +98,10 @@ function qrStatusLabel(status?: string | null) {
   return ticketAdminCopy.qrStatuses[status] ?? status;
 }
 
-function ticketStatusBadge(status: string, paymentStatus?: string) {
+function ticketStatusBadge(status: string, paymentStatus?: string, manualIssue = false) {
+  if (manualIssue && status === "PAID") {
+    return <DashboardBadge tone="purple">{adminT.tickets.manualBadge}</DashboardBadge>;
+  }
   if (paymentStatus === "PARTIALLY_PAID") {
     return <DashboardBadge tone="blue">{adminT.statuses.PARTIALLY_PAID}</DashboardBadge>;
   }
@@ -208,11 +216,11 @@ function formatMoney(amount: number, currency: string) {
   }).format(amount / 100);
 }
 
-function PaymentSummary({ payment, complimentary = false }: { payment: TicketPayment | null; complimentary?: boolean }) {
+function PaymentSummary({ payment, noPayment = false }: { payment: TicketPayment | null; noPayment?: boolean }) {
   if (!payment) {
     return (
       <div className="rounded-[20px] border border-dashed border-[rgba(114,160,193,0.28)] bg-[var(--color-blue-wash)]/35 px-4 py-4 text-sm text-[var(--color-ink-soft)]">
-        {complimentary ? "Бесплатный пропуск — оплата не требуется." : adminT.tickets.paymentFailureUnknown}
+        {noPayment ? adminT.tickets.noPaymentRequired : adminT.tickets.paymentFailureUnknown}
       </div>
     );
   }
@@ -817,9 +825,9 @@ function TicketDetailPanel({
         label={adminT.tickets.price}
         value={payment ? formatMoney(payment.amount, payment.currency) : null}
       />
-      <DetailItem label={adminT.tickets.paymentStatus} value={ticketStatusBadge(ticket.status, payment?.status)} />
+      <DetailItem label={adminT.tickets.paymentStatus} value={ticketStatusBadge(ticket.status, payment?.status, ticket.manualIssue)} />
       <div className="sm:col-span-2">
-        <PaymentSummary payment={payment} complimentary={ticket.origin === "JURY_GALA"} />
+        <PaymentSummary payment={payment} noPayment={ticket.origin === "JURY_GALA" || ticket.manualIssue} />
       </div>
       <DetailItem label={adminT.tickets.paymentTime} value={ticket.paidAt ? formatDate(ticket.paidAt) : null} />
       <DetailItem label={adminT.tickets.created} value={formatDate(ticket.createdAt)} />
@@ -947,7 +955,7 @@ function TicketRow({
             ) : null}
           </div>
           <div className="flex items-center gap-2 lg:hidden">
-            {ticketStatusBadge(ticket.status, ticket.payments[0]?.status)}
+            {ticketStatusBadge(ticket.status, ticket.payments[0]?.status, ticket.manualIssue)}
             <ChevronDown
               size={16}
               className={`shrink-0 text-[var(--color-ink-muted)] transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
@@ -965,7 +973,7 @@ function TicketRow({
           {ticket.galaDinner ? <DashboardBadge tone="purple">{adminT.common.yes}</DashboardBadge> : <span className="text-xs text-[var(--color-ink-muted)]">{adminT.common.no}</span>}
         </div>
 
-        <div className="hidden lg:block">{ticketStatusBadge(ticket.status, ticket.payments[0]?.status)}</div>
+        <div className="hidden lg:block">{ticketStatusBadge(ticket.status, ticket.payments[0]?.status, ticket.manualIssue)}</div>
 
         <p className="flex items-center justify-between gap-2 text-xs text-[var(--color-ink-muted)] lg:block">
           <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)] lg:hidden">{adminT.tickets.lastCheckIn}</span>
@@ -1020,13 +1028,16 @@ function ScannerDialog({ onClose, onCheckIn }: { onClose: () => void; onCheckIn:
 export default function TicketsPage({
   tickets,
   specialPacketEnabled,
+  manualTicketRecipients,
 }: {
   tickets: TicketRecord[];
   specialPacketEnabled: boolean;
+  manualTicketRecipients: AdminManualTicketRecipient[];
 }) {
   const router = useRouter();
   const reduceMotion = useReducedMotion() ?? false;
   const [showScanner, setShowScanner] = useState(false);
+  const [showManualTicket, setShowManualTicket] = useState(false);
   const [search, setSearch] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [toast, setToast] = useState<ToastState>(null);
@@ -1055,11 +1066,11 @@ export default function TicketsPage({
       showToast({
         tone: "success",
         message: next
-          ? "Special Packet sales are now enabled."
-          : "Special Packet is disabled and shown as Coming Soon.",
+          ? adminT.tickets.specialPacketEnabled
+          : adminT.tickets.specialPacketDisabled,
       });
     } catch {
-      showToast({ tone: "error", message: "Could not update the Special Packet setting." });
+      showToast({ tone: "error", message: adminT.tickets.specialPacketUpdateFailed });
     } finally {
       setPacketPending(false);
     }
@@ -1087,10 +1098,16 @@ export default function TicketsPage({
         label={adminT.tickets.label}
         title={adminT.tickets.title}
         actions={
-          <DashboardPrimaryBtn onClick={() => setShowScanner(true)}>
-            <Camera size={16} />
-            {adminT.tickets.scanQr}
-          </DashboardPrimaryBtn>
+          <div className="flex flex-wrap gap-2">
+            <DashboardPrimaryBtn onClick={() => setShowManualTicket(true)}>
+              <Send size={16} />
+              {adminT.tickets.send}
+            </DashboardPrimaryBtn>
+            <DashboardPrimaryBtn onClick={() => setShowScanner(true)}>
+              <Camera size={16} />
+              {adminT.tickets.scanQr}
+            </DashboardPrimaryBtn>
+          </div>
         }
       />
 
@@ -1101,9 +1118,9 @@ export default function TicketsPage({
               <PackageOpen size={18} />
             </span>
             <div>
-              <p className="text-sm font-semibold text-[var(--color-ink)]">Special Packet sales</p>
+              <p className="text-sm font-semibold text-[var(--color-ink)]">{adminT.tickets.specialPacketTitle}</p>
               <p className="mt-1 max-w-2xl text-xs leading-5 text-[var(--color-ink-soft)]">
-                Enables the fixed-price package for two complete 2-day Forum tickets with Gala Dinner access.
+                {adminT.tickets.specialPacketDescription}
               </p>
             </div>
           </div>
@@ -1112,7 +1129,7 @@ export default function TicketsPage({
             type="button"
             role="switch"
             aria-checked={packetEnabled}
-            aria-label="Enable Special Packet sales"
+            aria-label={adminT.tickets.specialPacketToggle}
             disabled={packetPending}
             onClick={() => void toggleSpecialPacket()}
             className={`relative inline-flex h-8 w-14 shrink-0 rounded-full border p-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.25)] disabled:cursor-wait disabled:opacity-60 ${
@@ -1192,6 +1209,15 @@ export default function TicketsPage({
           onCheckIn={() => router.refresh()}
         />
       )}
+      <ManualTicketDialog
+        open={showManualTicket}
+        recipients={manualTicketRecipients}
+        onClose={() => setShowManualTicket(false)}
+        onCreated={(message, tone) => {
+          showToast({ tone, message });
+          router.refresh();
+        }}
+      />
       {toast && (
         <div
           className={`fixed bottom-5 right-5 z-50 max-w-sm rounded-[18px] border bg-white/95 px-4 py-3 text-sm shadow-[0_20px_60px_rgba(3,2,19,0.18)] backdrop-blur-xl ${

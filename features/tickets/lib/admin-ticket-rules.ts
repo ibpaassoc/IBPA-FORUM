@@ -3,6 +3,15 @@ import { z } from "zod";
 import { adminT } from "@/lib/i18n/admin";
 
 export const ADMIN_EDITABLE_TICKET_TYPES = ["ONE_DAY", "TWO_DAYS"] as const;
+export const ADMIN_MANUAL_RECIPIENT_TYPES = ["APPLICANT", "JURY"] as const;
+export const ADMIN_GENERATED_VALUE = "ADMIN-GENERATED";
+
+export type AdminManualTicketRecipient = {
+  id: string;
+  role: (typeof ADMIN_MANUAL_RECIPIENT_TYPES)[number];
+  fullName: string;
+  email: string;
+};
 
 export const adminTicketUpdateSchema = z.object({
   ticketId: z.string().trim().min(1, adminT.api.ticketIdRequired),
@@ -20,6 +29,30 @@ export const adminTicketUpdateSchema = z.object({
 });
 
 export type AdminTicketUpdateInput = z.infer<typeof adminTicketUpdateSchema>;
+
+const adminManualTicketDetailsSchema = z.object({
+  type: z.enum(ADMIN_EDITABLE_TICKET_TYPES),
+  galaDinner: z.boolean(),
+});
+
+export const adminManualTicketSchema = z.discriminatedUnion("recipientSource", [
+  adminManualTicketDetailsSchema.extend({
+    recipientSource: z.literal("EXISTING"),
+    recipientType: z.enum(ADMIN_MANUAL_RECIPIENT_TYPES),
+    accountId: z.string().trim().min(1, adminT.tickets.manual.recipientRequired),
+  }),
+  adminManualTicketDetailsSchema.extend({
+    recipientSource: z.literal("MANUAL"),
+    fullName: z.string().trim().min(1, adminT.tickets.manual.fullNameRequired),
+    email: z
+      .string()
+      .trim()
+      .pipe(z.email(adminT.tickets.manual.validEmailRequired))
+      .transform((value) => value.toLowerCase()),
+  }),
+]);
+
+export type AdminManualTicketInput = z.infer<typeof adminManualTicketSchema>;
 
 export type EditableTicketSnapshot = {
   fullName: string;

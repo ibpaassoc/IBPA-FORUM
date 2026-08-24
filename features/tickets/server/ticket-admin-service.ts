@@ -11,6 +11,8 @@ import {
 } from "@/features/database/json-fields";
 import { syncTicketOnChange } from "@/features/google-sheets";
 import {
+  ADMIN_GENERATED_VALUE,
+  adminManualTicketSchema,
   adminTicketUpdateSchema,
   compareEditableTicketChanges,
   getEditableTicketSnapshot,
@@ -22,6 +24,10 @@ import {
 import { prisma } from "@/shared/lib/prisma";
 import { sendTicketQrEmail } from "./ticket-email.workflow";
 import { generateTicketQRDataUrl } from "./ticket-qr";
+import {
+  createAdminManualTicket,
+  findAdminManualTicketRecipient,
+} from "./ticket-repository";
 
 type Tx = Prisma.TransactionClient;
 type CredentialHistoryItem = TicketCredential["history"][number];
@@ -103,8 +109,84 @@ export async function getAdminTicketById(ticketId: string) {
   const credential = parseTicketCredential(ticket.credential);
   return {
     ...ticket,
+    manualIssue: parseTicketActivity(ticket.activity).events.some(
+      (event) => event.type === "CREATED_MANUALLY"
+    ),
     payments: ticket.payment ? [ticket.payment] : [],
     qrCredentials: credential.history.slice().reverse().map(credentialView).slice(0, 5),
+  };
+}
+
+export async function createAndSendAdminManualTicket(rawInput: unknown) {
+  const parsed = adminManualTicketSchema.safeParse(rawInput);
+  if (!parsed.success) {
+    return {
+      ok: false as const,
+      reason: "invalid" as const,
+      message: adminT.tickets.manual.invalidFields,
+      fieldErrors: parsed.error.flatten().fieldErrors,
+    };
+  }
+
+  const recipient = parsed.data.recipientSource === "EXISTING"
+    ? await findAdminManualTicketRecipient(parsed.data.accountId, parsed.data.recipientType)
+    : {
+        id: null,
+        applicantProfileId: null,
+        role: "MANUAL" as const,
+        fullName: parsed.data.fullName,
+        email: parsed.data.email,
+      };
+  if (!recipient) {
+    return {
+      ok: false as const,
+      reason: "invalid" as const,
+      message: adminT.tickets.manual.recipientUnavailable,
+    };
+  }
+
+  const ticket = await createAdminManualTicket({
+    accountId: recipient.id,
+    applicantProfileId: recipient.applicantProfileId,
+    recipientRole: recipient.role,
+    fullName: recipient.fullName,
+    email: recipient.email.trim().toLowerCase(),
+    phone: ADMIN_GENERATED_VALUE,
+    instagram: null,
+    type: parsed.data.type,
+    galaDinner: parsed.data.galaDinner,
+    isIbpaMember: false,
+  });
+  let delivery;
+  try {
+    delivery = await sendCurrentTicketQr(ticket.id);
+  } catch (error) {
+    console.error("Failed to send a manually issued ticket", { ticketId: ticket.id, error });
+    syncTicketOnChange(ticket.id);
+    return {
+      ok: false as const,
+      reason: "email_failed" as const,
+      created: true as const,
+      ticketId: ticket.id,
+      message: adminT.tickets.manual.emailFailed,
+    };
+  }
+
+  syncTicketOnChange(ticket.id);
+  if (!delivery.ok) {
+    return {
+      ok: false as const,
+      reason: "email_failed" as const,
+      created: true as const,
+      ticketId: ticket.id,
+      message: adminT.tickets.manual.emailFailed,
+    };
+  }
+
+  return {
+    ok: true as const,
+    ticket: await getAdminTicketById(ticket.id),
+    message: adminT.tickets.manual.created,
   };
 }
 
@@ -364,6 +446,9 @@ export async function sendCurrentTicketQr(
     instagram: ticket.instagram,
     accessUpdated: options.accessUpdated ?? false,
     specialPacket: Boolean(ticket.specialPacketId),
+    manualIssue: parseTicketActivity(ticket.activity).events.some(
+      (event) => event.type === "CREATED_MANUALLY"
+    ),
   });
 
   await prisma.$transaction(async (tx) => {

@@ -30,12 +30,15 @@ import {
 import { ticketApiSchema } from "@/features/tickets/schemas/ticket-form-schema";
 import {
   adminTicketUpdateSchema,
+  adminManualTicketSchema,
+  ADMIN_GENERATED_VALUE,
   compareEditableTicketChanges,
   hasQrRelevantChanges,
   ticketCanBeDeleted,
   ticketCanReceiveQr,
 } from "@/features/tickets/lib/admin-ticket-rules";
 import { translations } from "@/lib/i18n/translations";
+import { ticketConfirmationTemplate } from "@/features/tickets/templates/ticket-confirmation";
 
 let passed = 0;
 let failed = 0;
@@ -376,6 +379,68 @@ console.log("admin ticket updates");
     false,
     "partially paid ticket cannot be deleted"
   );
+}
+
+// ── Manual admin-issued tickets ─────────────────────────────────────────────
+console.log("manual admin ticket issuance");
+{
+  const parsed = adminManualTicketSchema.safeParse({
+    recipientSource: "EXISTING",
+    recipientType: "APPLICANT",
+    accountId: "account_anna",
+    type: "TWO_DAYS",
+    galaDinner: true,
+  });
+  assert(parsed.success, "valid manual ticket payload parses");
+  if (parsed.success && parsed.data.recipientSource === "EXISTING") {
+    eq(parsed.data.recipientType, "APPLICANT", "manual ticket keeps the recipient role");
+    eq(parsed.data.accountId, "account_anna", "manual ticket keeps the selected account");
+    assert(!("phone" in parsed.data), "manual ticket input does not accept a phone field");
+  }
+  assert(
+    !adminManualTicketSchema.safeParse({
+      recipientSource: "EXISTING",
+      recipientType: "JURY",
+      accountId: "",
+      type: "ONE_DAY",
+      galaDinner: false,
+    }).success,
+    "manual ticket requires a selected account"
+  );
+  const manualRecipient = adminManualTicketSchema.safeParse({
+    recipientSource: "MANUAL",
+    fullName: "  Анна Иванова  ",
+    email: " Anna@Example.COM ",
+    type: "ONE_DAY",
+    galaDinner: false,
+  });
+  assert(manualRecipient.success, "manual ticket accepts a manually entered recipient");
+  if (manualRecipient.success && manualRecipient.data.recipientSource === "MANUAL") {
+    eq(manualRecipient.data.fullName, "Анна Иванова", "manual recipient name is trimmed");
+    eq(manualRecipient.data.email, "anna@example.com", "manual recipient email is normalized");
+  }
+  assert(
+    !adminManualTicketSchema.safeParse({
+      recipientSource: "MANUAL",
+      fullName: "",
+      email: "not-an-email",
+      type: "ONE_DAY",
+      galaDinner: false,
+    }).success,
+    "manual recipient requires a name and valid email"
+  );
+  eq(ADMIN_GENERATED_VALUE, "ADMIN-GENERATED", "hidden required values use the admin marker");
+
+  const email = ticketConfirmationTemplate({
+    fullName: "Анна Иванова",
+    type: "TWO_DAYS",
+    galaDinner: true,
+    paymentUrl: "https://example.com/tickets/token",
+    manualIssue: true,
+  });
+  assert(email.subject.includes("Ваш билет подтверждён"), "manual ticket email subject is Russian");
+  assert(email.html.includes("Билет оформлен без оплаты"), "manual ticket email states no payment is required");
+  assert(!email.html.includes("Payment received"), "manual ticket email never claims payment was received");
 }
 
 // ── Refund notice localization (scenarios 13, 14, 15, 16) ────────────────────
