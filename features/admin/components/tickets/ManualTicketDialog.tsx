@@ -85,9 +85,16 @@ export default function ManualTicketDialog({
   const [form, setForm] = useState(initialForm);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const recipientSource = form.recipientSource ?? initialForm.recipientSource;
+  const recipientType = form.recipientType ?? initialForm.recipientType;
+  const accountId = form.accountId ?? "";
+  const fullName = form.fullName ?? "";
+  const email = form.email ?? "";
+  const ticketType = form.type ?? initialForm.type;
+  const galaDinner = form.galaDinner ?? initialForm.galaDinner;
   const availableRecipients = useMemo(
-    () => recipients.filter((recipient) => recipient.role === form.recipientType),
-    [form.recipientType, recipients]
+    () => recipients.filter((recipient) => recipient.role === recipientType),
+    [recipientType, recipients]
   );
 
   useEffect(() => {
@@ -132,11 +139,11 @@ export default function ManualTicketDialog({
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (form.recipientSource === "EXISTING" && !form.accountId) {
+    if (recipientSource === "EXISTING" && !accountId) {
       setError(copy.recipientRequired);
       return;
     }
-    if (form.recipientSource === "MANUAL" && !form.fullName.trim()) {
+    if (recipientSource === "MANUAL" && !fullName.trim()) {
       setError(copy.fullNameRequired);
       return;
     }
@@ -148,20 +155,20 @@ export default function ManualTicketDialog({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ticket: form.recipientSource === "EXISTING"
+          ticket: recipientSource === "EXISTING"
             ? {
-                recipientSource: form.recipientSource,
-                recipientType: form.recipientType,
-                accountId: form.accountId,
-                type: form.type,
-                galaDinner: form.galaDinner,
+                recipientSource,
+                recipientType,
+                accountId,
+                type: ticketType,
+                galaDinner,
               }
             : {
-                recipientSource: form.recipientSource,
-                fullName: form.fullName,
-                email: form.email,
-                type: form.type,
-                galaDinner: form.galaDinner,
+                recipientSource,
+                fullName,
+                email,
+                type: ticketType,
+                galaDinner,
               },
         }),
       });
@@ -254,7 +261,7 @@ export default function ManualTicketDialog({
                     ["EXISTING", copy.existingRecipient, UsersRound],
                     ["MANUAL", copy.manualRecipient, UserRoundCheck],
                   ] as const).map(([value, label, Icon]) => {
-                    const selected = form.recipientSource === value;
+                    const selected = recipientSource === value;
                     return (
                       <button
                         key={value}
@@ -273,11 +280,11 @@ export default function ManualTicketDialog({
                     );
                   })}
                 </div>
-                {form.recipientSource === "EXISTING" ? (
+                {recipientSource === "EXISTING" ? (
                   <div className="grid gap-4 sm:grid-cols-2">
                     <SelectField label={copy.recipientType} icon={<UsersRound size={14} />}>
                       <select
-                        value={form.recipientType}
+                        value={recipientType}
                         onChange={(event) =>
                           selectRecipientType(
                             event.target.value as AdminManualTicketRecipient["role"]
@@ -291,7 +298,7 @@ export default function ManualTicketDialog({
                     </SelectField>
                     <SelectField label={copy.recipient} icon={<UserRoundCheck size={14} />}>
                       <select
-                        value={form.accountId}
+                        value={accountId}
                         onChange={(event) => update("accountId", event.target.value)}
                         className={selectClass}
                         required
@@ -317,7 +324,7 @@ export default function ManualTicketDialog({
                         {copy.fullName}
                       </span>
                       <input
-                        value={form.fullName}
+                        value={fullName}
                         onChange={(event) => update("fullName", event.target.value)}
                         placeholder={copy.fullNamePlaceholder}
                         className={selectClass.replace("pr-11", "pr-4")}
@@ -331,7 +338,7 @@ export default function ManualTicketDialog({
                       </span>
                       <input
                         type="email"
-                        value={form.email}
+                        value={email}
                         onChange={(event) => update("email", event.target.value)}
                         placeholder={copy.emailPlaceholder}
                         className={selectClass.replace("pr-11", "pr-4")}
@@ -355,7 +362,7 @@ export default function ManualTicketDialog({
                     ["ONE_DAY", copy.oneDay],
                     ["TWO_DAYS", copy.twoDays],
                   ] as const).map(([value, label]) => {
-                    const selected = form.type === value;
+                    const selected = ticketType === value;
                     return (
                       <label
                         key={value}
@@ -390,26 +397,26 @@ export default function ManualTicketDialog({
 
                 <label
                   className={`mt-3 flex cursor-pointer items-center justify-between gap-4 rounded-[17px] border px-4 py-3.5 text-sm font-semibold transition focus-within:ring-4 focus-within:ring-[var(--color-blue)]/12 ${
-                    form.galaDinner
+                    galaDinner
                       ? "border-[var(--color-blue)]/55 bg-[var(--color-blue-wash)]/72 text-[#1766bd]"
                       : "border-[rgba(114,160,193,0.2)] bg-white/58 text-[#10182a]/72"
                   }`}
                 >
                   <input
                     type="checkbox"
-                    checked={form.galaDinner}
+                    checked={galaDinner}
                     onChange={(event) => update("galaDinner", event.target.checked)}
                     className="sr-only"
                   />
                   <span>{copy.galaDinner}</span>
                   <span
                     className={`flex size-7 items-center justify-center rounded-[10px] border transition ${
-                      form.galaDinner
+                      galaDinner
                         ? "border-[var(--color-blue)] bg-[var(--color-blue)] text-white shadow-[0_6px_14px_rgba(114,160,193,0.25)]"
                         : "border-[rgba(37,42,45,0.16)] bg-white/80"
                     }`}
                   >
-                    {form.galaDinner ? <Check size={14} strokeWidth={2.5} /> : null}
+                    {galaDinner ? <Check size={14} strokeWidth={2.5} /> : null}
                   </span>
                 </label>
               </section>
@@ -436,9 +443,9 @@ export default function ManualTicketDialog({
                   type="submit"
                   disabled={
                     submitting ||
-                    (form.recipientSource === "EXISTING"
-                      ? !form.accountId
-                      : !form.fullName.trim() || !form.email.trim())
+                    (recipientSource === "EXISTING"
+                      ? !accountId
+                      : !fullName.trim() || !email.trim())
                   }
                   className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--color-blue)] bg-[var(--color-blue)] px-6 text-[0.74rem] font-semibold uppercase tracking-[0.1em] text-white shadow-[0_12px_28px_rgba(114,160,193,0.24)] transition hover:bg-[#4d86ad] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-blue)]/20 disabled:cursor-not-allowed disabled:opacity-50"
                 >
