@@ -1141,6 +1141,17 @@ const en = {
           description:
             "Airy Vibes by Iryna Tkachuk is an original permanent makeup project built on 17 years of hands-on experience. Its primary focus is delicate permanent makeup techniques and professional education for artists. At Beauty Business Forum 2026, Iryna Tkachuk will present her signature Airy Brows method and Author’s Airy Brows Method manual, created as a step-by-step working system for artists.",
         },
+        {
+          id: "hair-profi-by-natalya-morozova",
+          name: "HAIR PROFI by Natalya Morozova",
+          label: "Featured Sponsor",
+          logo: "/images/sponsors/hair-profi/hair-profi-wordmark.svg",
+          logoAlt: "HAIR PROFI by Natalya Morozova logo",
+          description:
+            "HAIR PROFI is a professional company in the beauty industry founded by Natalya Morozova — a stylist, colorist, blonde expert, and trainer-technologist with more than 28 years of experience.\n\nCore focus: Complex coloring techniques and expert work with blondes; color correction and restoration of damaged hair; modern women\u2019s haircutting techniques; sales of professional brands, cosmetics, colorants, and tools for artists; and individually tailored professional and at-home care.\n\nHAIR PROFI Academy — an academy of colorimetry and modern haircutting techniques — operates within the company. It hosts signature seminars, masterclasses, and hands-on courses for both beginners and experienced specialists.\n\nTraining covers colorimetry, Total Blonde, Airtouch, complex color corrections, safe transitions out of dark shades, modern cutting techniques, and work with professional colorants from any brand. Artists learn to understand the principles of colorimetry, build formulas, and work confidently with any professional product.\n\nHAIR PROFI brings together professional education, years of practical experience, quality products, and modern tools for beauty industry specialists.",
+          instagram: "https://www.instagram.com/morozova.hair_artist/",
+          instagramLabel: "@morozova.hair_artist",
+        },
       ],
     },
     contactUs: {
@@ -3673,6 +3684,17 @@ const ru: typeof en = {
           logoAlt: "Логотип Airy Vibes by Iryna Tkachuk",
           description:
             "Airy Vibes by Iryna Tkachuk — авторский проект в сфере permanent makeup, основанный на 17-летнем практическом опыте. Основное направление — деликатные техники перманентного макияжа и профессиональное обучение мастеров. На Beauty Business Forum 2026 Iryna Tkachuk представит авторский метод Airy Brows и методическое пособие Author’s Airy Brows Method, созданное как пошаговая система работы для мастеров.",
+        },
+        {
+          id: "hair-profi-by-natalya-morozova",
+          name: "HAIR PROFI by Natalya Morozova",
+          label: "Главный спонсор",
+          logo: "/images/sponsors/hair-profi/hair-profi-wordmark.svg",
+          logoAlt: "Логотип HAIR PROFI by Natalya Morozova",
+          description:
+            "HAIR PROFI — профессиональная компания в сфере бьюти-индустрии, основанная Натальей Морозовой — стилистом, колористом, блонд-экспертом и тренером-технологом с опытом более 28 лет.\n\nОсновные направления компании: сложные техники окрашивания и экспертная работа с блондом; коррекция цвета и восстановление повреждённых волос; современные техники женских стрижек; продажа профессиональных брендов, косметики, красителей и инструментов для мастеров; индивидуальный подбор профессионального и домашнего ухода.\n\nНа базе компании работает HAIR PROFI Academy — академия колористики и современных техник стрижек. Здесь проводятся авторские семинары, мастер-классы и практические курсы для начинающих и опытных специалистов.\n\nОбучение включает колористику, Total Blonde, Airtouch, сложные коррекции цвета, безопасный выход из тёмных оттенков, современные техники стрижек, а также работу с профессиональными красителями любых брендов. Мастера учатся понимать принципы колористики, составлять формулы и уверенно работать на любом профессиональном продукте.\n\nHAIR PROFI объединяет профессиональное образование, многолетний практический опыт, качественную продукцию и современные инструменты для специалистов бьюти-индустрии.",
+          instagram: "https://www.instagram.com/morozova.hair_artist/",
+          instagramLabel: "@morozova.hair_artist",
         },
       ],
     },
@@ -6207,6 +6229,17 @@ const ua: typeof en = {
           logoAlt: "Логотип Airy Vibes by Iryna Tkachuk",
           description:
             "Airy Vibes by Iryna Tkachuk — авторський проєкт у сфері permanent makeup, заснований на 17-річному практичному досвіді. Основний напрям — делікатні техніки перманентного макіяжу та професійне навчання майстрів. На Beauty Business Forum 2026 Iryna Tkachuk представить авторський метод Airy Brows і методичний посібник Author’s Airy Brows Method, створений як покрокова система роботи для майстрів.",
+        },
+        {
+          id: "hair-profi-by-natalya-morozova",
+          name: "HAIR PROFI by Natalya Morozova",
+          label: "Головний спонсор",
+          logo: "/images/sponsors/hair-profi/hair-profi-wordmark.svg",
+          logoAlt: "Логотип HAIR PROFI by Natalya Morozova",
+          description:
+            "HAIR PROFI — професійна компанія у сфері б\u2019юті-індустрії, заснована Наталією Морозовою — стилістом, колористом, блонд-експертом і тренером-технологом із досвідом понад 28 років.\n\nОсновні напрями компанії: складні техніки фарбування та експертна робота з блондом; корекція кольору й відновлення пошкодженого волосся; сучасні техніки жіночих стрижок; продаж професійних брендів, косметики, барвників та інструментів для майстрів; індивідуальний підбір професійного й домашнього догляду.\n\nНа базі компанії працює HAIR PROFI Academy — академія колористики та сучасних технік стрижок. Тут проводяться авторські семінари, майстер-класи й практичні курси для початківців і досвідчених спеціалістів.\n\nНавчання охоплює колористику, Total Blonde, Airtouch, складні корекції кольору, безпечний вихід із темних відтінків, сучасні техніки стрижок, а також роботу з професійними барвниками будь-яких брендів. Майстри вчаться розуміти принципи колористики, складати формули та впевнено працювати на будь-якому професійному продукті.\n\nHAIR PROFI поєднує професійну освіту, багаторічний практичний досвід, якісну продукцію та сучасні інструменти для спеціалістів б\u2019юті-індустрії.",
+          instagram: "https://www.instagram.com/morozova.hair_artist/",
+          instagramLabel: "@morozova.hair_artist",
         },
       ],
     },

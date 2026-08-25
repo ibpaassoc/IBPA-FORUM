@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 300" width="900" height="300" role="img" aria-label="HAIR PROFI by Natalya Morozova">
+  <title>HAIR PROFI by Natalya Morozova</title>
+  <g fill="#10182a" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+    <text x="450" y="128" text-anchor="middle" font-size="96" font-weight="300" letter-spacing="16">HAIR PROFI</text>
+    <line x1="250" y1="166" x2="650" y2="166" stroke="#b98d5a" stroke-width="2" />
+    <text x="450" y="216" text-anchor="middle" font-size="34" font-weight="400" letter-spacing="10" fill="#5d6b7d">BY NATALYA MOROZOVA</text>
+    <text x="450" y="262" text-anchor="middle" font-size="24" font-weight="400" letter-spacing="7" fill="#b98d5a">ACADEMY OF COLOR</text>
+  </g>
+</svg>
