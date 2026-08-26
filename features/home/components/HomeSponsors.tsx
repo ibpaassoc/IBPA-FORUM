@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  useEffect,
-  useRef,
-  useState,
-  type KeyboardEvent,
-} from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Globe, Handshake, Mail, MapPin } from "lucide-react";
@@ -183,7 +178,6 @@ export default function HomeSponsors() {
   const sponsors = copy.sponsors;
   const reducedMotion = useReducedMotion();
   const transitionTimerRef = useRef<number | null>(null);
-  const sponsorButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const [activeIndexState, setActiveIndex] = useState(0);
   const [direction, setDirection] = useState<Direction>(1);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -212,18 +206,13 @@ export default function HomeSponsors() {
     );
   };
 
-  const handleSponsorKeyDown = (
-    event: KeyboardEvent<HTMLButtonElement>,
-    index: number,
-  ) => {
-    if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
+  const goPrev = () =>
+    selectSponsor((activeIndex - 1 + sponsors.length) % sponsors.length);
+  const goNext = () => selectSponsor((activeIndex + 1) % sponsors.length);
 
-    event.preventDefault();
-    const offset = event.key === "ArrowRight" ? 1 : -1;
-    const nextIndex = (index + offset + sponsors.length) % sponsors.length;
-    sponsorButtonRefs.current[nextIndex]?.focus();
-    selectSponsor(nextIndex);
-  };
+  // Duplicate the list so the auto-scrolling strip loops seamlessly; reduced-
+  // motion users get a single, manually scrollable strip with no animation.
+  const marqueeItems = reducedMotion ? sponsors : [...sponsors, ...sponsors];
 
   const storyVariants = {
     enter: (enterDirection: Direction) =>
@@ -237,7 +226,7 @@ export default function HomeSponsors() {
     <section
       id="sponsors"
       aria-labelledby="sponsors-heading"
-      className="relative min-h-dvh overflow-hidden bg-[linear-gradient(180deg,#ffffff_0%,#f5fafe_52%,#eef7fc_100%)] py-20 md:min-h-0 md:py-28"
+      className="relative overflow-hidden bg-[linear-gradient(180deg,#ffffff_0%,#f5fafe_52%,#eef7fc_100%)] py-20 md:py-28"
     >
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <div className="absolute left-[-12%] top-[18%] h-72 w-72 rounded-full bg-[#d5ecf8]/44 blur-3xl md:h-[30rem] md:w-[30rem]" />
@@ -262,45 +251,12 @@ export default function HomeSponsors() {
         </Reveal>
 
         <Reveal delay={0.08} className="mt-10 md:mt-14">
-          {isSwitcher ? (
-            <div className="mb-5 flex items-center gap-3 px-5 md:hidden">
-              <button
-                type="button"
-                aria-label={copy.prevLabel}
-                onClick={() => selectSponsor((activeIndex - 1 + sponsors.length) % sponsors.length)}
-                disabled={isTransitioning}
-                className={`flex size-8 shrink-0 items-center justify-center rounded-full border border-[#b9d9eb]/70 bg-white/76 text-[#2f6f9f] shadow-sm transition hover:bg-white disabled:cursor-wait disabled:opacity-45 ${FOCUS_RING}`}
-              >
-                <ChevronLeft className="h-4 w-4" aria-hidden="true" />
-              </button>
-              <input
-                type="range"
-                min="0"
-                max={sponsors.length - 1}
-                step="1"
-                value={activeIndex}
-                aria-label={copy.sliderLabel}
-                onChange={(event) => selectSponsor(Number(event.target.value))}
-                className="h-1.5 min-w-0 flex-1 cursor-pointer appearance-none rounded-full bg-[#b9d9eb]/65 accent-[#5c9fc6]"
-              />
-              <button
-                type="button"
-                aria-label={copy.nextLabel}
-                onClick={() => selectSponsor((activeIndex + 1) % sponsors.length)}
-                disabled={isTransitioning}
-                className={`flex size-8 shrink-0 items-center justify-center rounded-full border border-[#b9d9eb]/70 bg-white/76 text-[#2f6f9f] shadow-sm transition hover:bg-white disabled:cursor-wait disabled:opacity-45 ${FOCUS_RING}`}
-              >
-                <ChevronRight className="h-4 w-4" aria-hidden="true" />
-              </button>
-            </div>
-          ) : null}
-
           <div
             id="sponsor-content"
             role="region"
             aria-label={copy.sliderLabel}
             aria-live="polite"
-            className="relative grid min-h-[calc(100dvh-20rem)] overflow-visible md:h-[40rem] md:min-h-0 md:overflow-hidden"
+            className="relative grid min-h-[32rem] overflow-visible md:h-[34rem] md:min-h-0 md:overflow-hidden"
           >
             <AnimatePresence initial={false} mode="wait" custom={direction}>
               <motion.div
@@ -320,66 +276,83 @@ export default function HomeSponsors() {
         </Reveal>
 
         {isSwitcher ? (
-          <div className="mt-7 hidden sm:mt-9 md:block">
-            <div
-              role="tablist"
-              aria-label={copy.sliderLabel}
-              className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 md:gap-3"
-            >
-              {sponsors.map((sponsor, index) => {
-                const isActive = activeIndex === index;
+          <Reveal delay={0.12} className="mt-8 md:mt-10">
+            <div className="flex items-center gap-3 px-5 md:gap-4 md:px-0">
+              <button
+                type="button"
+                aria-label={copy.prevLabel}
+                onClick={goPrev}
+                disabled={isTransitioning}
+                className={`flex size-10 shrink-0 items-center justify-center rounded-full border border-[#b9d9eb]/70 bg-white/76 text-[#2f6f9f] shadow-sm transition hover:bg-white disabled:cursor-wait disabled:opacity-45 ${FOCUS_RING}`}
+              >
+                <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+              </button>
 
-                return (
-                  <button
-                    key={sponsor.id}
-                    ref={(element) => {
-                      sponsorButtonRefs.current[index] = element;
-                    }}
-                    type="button"
-                    role="tab"
-                    tabIndex={isActive ? 0 : -1}
-                    aria-selected={isActive}
-                    aria-controls="sponsor-content"
-                    disabled={isTransitioning}
-                    onClick={() => selectSponsor(index)}
-                    onKeyDown={(event) => handleSponsorKeyDown(event, index)}
-                    className={`group relative isolate flex items-center justify-center overflow-hidden rounded-2xl border px-3 py-2 transition-[border-color,background-color,box-shadow,transform] sm:min-h-[5.25rem] md:min-h-[5.5rem] md:min-w-0 md:px-4 md:py-3 ${FOCUS_RING} ${
-                      isActive
-                        ? "col-span-2 min-h-28 border-[#72a0c1]/70 bg-white/84 text-[#17374d] shadow-[0_8px_24px_rgba(114,160,193,0.14)] sm:min-h-32 md:col-auto md:min-h-[5.5rem]"
-                        : "min-h-[4.75rem] border-[#b9d9eb]/55 bg-white/45 text-[#7890a2] hover:-translate-y-0.5 hover:border-[#9fc7df]/80 hover:bg-white/78 disabled:cursor-wait md:hover:translate-y-0"
-                    }`}
-                  >
-                    <span className={`relative w-full max-w-[8rem] transition-[height] duration-300 sm:max-w-[9rem] md:h-10 md:max-w-[9rem] ${isActive ? "h-14 sm:h-16" : "h-10 sm:h-11"}`}>
-                      <Image
-                        src={sponsor.logo}
-                        alt=""
-                        fill
-                        sizes="(max-width: 639px) 42vw, (max-width: 767px) 28vw, 10rem"
-                        className={`object-contain transition-opacity ${isActive ? "opacity-100" : "opacity-60 group-hover:opacity-90"}`}
-                      />
-                    </span>
-                    <span className="sr-only">{sponsor.name}</span>
-                    {isActive ? (
-                      <motion.span
-                        layoutId="active-sponsor-underline"
-                        aria-hidden="true"
-                        className="pointer-events-none absolute inset-x-5 bottom-1 z-10 h-0.5 rounded-full bg-[#5c9fc6] md:inset-x-6 md:bottom-2"
-                        transition={{ duration: reducedMotion ? 0.16 : 0.45, ease: EASING }}
-                      />
-                    ) : null}
-                    {isActive ? (
-                      <motion.span
-                        layoutId="active-sponsor-indicator"
-                        aria-hidden="true"
-                        className="pointer-events-none absolute bottom-[-1px] left-1/2 z-10 size-1.5 -translate-x-1/2 rounded-full bg-[#2f6f9f] md:bottom-0"
-                        transition={{ duration: reducedMotion ? 0.16 : 0.45, ease: EASING }}
-                      />
-                    ) : null}
-                  </button>
-                );
-              })}
+              <div
+                className={`relative min-w-0 flex-1 ${
+                  reducedMotion
+                    ? "overflow-x-auto"
+                    : "overflow-hidden [-webkit-mask-image:linear-gradient(to_right,transparent,#000_6%,#000_94%,transparent)] [mask-image:linear-gradient(to_right,transparent,#000_6%,#000_94%,transparent)]"
+                }`}
+              >
+                <ul
+                  aria-hidden="true"
+                  className={`flex w-max items-center gap-3 py-1 md:gap-4 ${
+                    reducedMotion
+                      ? ""
+                      : "animate-[marquee-left_40s_linear_infinite] hover:[animation-play-state:paused]"
+                  }`}
+                >
+                  {marqueeItems.map((sponsor, i) => {
+                    const index = i % sponsors.length;
+                    const isActive = index === activeIndex;
+
+                    return (
+                      <li key={`${sponsor.id}-${i}`}>
+                        <button
+                          type="button"
+                          tabIndex={-1}
+                          title={sponsor.name}
+                          onClick={() => selectSponsor(index)}
+                          className={`group relative flex h-[4.75rem] w-[9.5rem] shrink-0 items-center justify-center rounded-2xl border px-4 transition-[border-color,background-color,box-shadow,transform] ${
+                            isActive
+                              ? "border-[#72a0c1]/70 bg-white/85 shadow-[0_8px_24px_rgba(114,160,193,0.14)]"
+                              : "border-[#b9d9eb]/55 bg-white/45 hover:-translate-y-0.5 hover:border-[#9fc7df]/80 hover:bg-white/78"
+                          }`}
+                        >
+                          <span className="relative h-9 w-full max-w-[7.25rem]">
+                            <Image
+                              src={sponsor.logo}
+                              alt=""
+                              fill
+                              sizes="9.5rem"
+                              className={`object-contain transition-opacity ${isActive ? "opacity-100" : "opacity-55 group-hover:opacity-90"}`}
+                            />
+                          </span>
+                          {isActive ? (
+                            <span
+                              aria-hidden="true"
+                              className="pointer-events-none absolute inset-x-6 bottom-1.5 h-0.5 rounded-full bg-[#5c9fc6]"
+                            />
+                          ) : null}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+
+              <button
+                type="button"
+                aria-label={copy.nextLabel}
+                onClick={goNext}
+                disabled={isTransitioning}
+                className={`flex size-10 shrink-0 items-center justify-center rounded-full border border-[#b9d9eb]/70 bg-white/76 text-[#2f6f9f] shadow-sm transition hover:bg-white disabled:cursor-wait disabled:opacity-45 ${FOCUS_RING}`}
+              >
+                <ChevronRight className="h-4 w-4" aria-hidden="true" />
+              </button>
             </div>
-          </div>
+          </Reveal>
         ) : null}
       </div>
     </section>
