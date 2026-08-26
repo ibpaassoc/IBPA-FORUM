@@ -1165,6 +1165,46 @@ const en = {
           description:
             "KART is professional Israeli cosmetics and a modern preparation-based pedicure system for the care of the skin of the feet and the nails. The methodology is built on specialized preparations with active ingredients that make pedicure treatments atraumatic, safe, and effective, without aggressive impact on the skin.\n\nKART suits both aesthetic pedicure masters and specialists working in podology practice: pronounced dryness, hyperkeratosis, cracks, calluses, disruptions of the skin's microflora, and a range of skin and nail changes.\n\nThe brand includes two professional lines for the master's work in the salon or studio, along with an extensive home-care range, helping maintain the condition of the skin and nails between treatments and extending the results of a professional pedicure.\n\nBeauty Room Education is the official distributor of KART cosmetics in the United States and provides professional training for masters in the KART preparation-based pedicure method.",
         },
+        {
+          id: "eat-me-golden-state",
+          name: "Eat Me Golden State",
+          label: "Featured Sponsor",
+          logo: "/images/sponsors/eat-me-golden-state/eat-me-golden-state-logo.webp",
+          logoAlt: "Eat Me Golden State Catering & Events logo",
+          location: "California",
+          description:
+            "For more than 10 years, we've helped turn corporate events, private celebrations, and special occasions into stylish, thoughtfully designed, and striking experiences.\n\nWe don't just deliver food. We create a complete atmosphere: we tailor the menu individually to the format, the number of guests, your wishes, and your budget, follow gastronomic trends, offer contemporary plating, and think through every detail.\n\nWhen needed, we take care of buffet-area styling, table setting, tableware, decor, and other organizational details.\n\nOur goal is to make everything look professional and stylish, and to create that true “Wow effect” for your clients, partners, and guests.",
+          instagram: "https://www.instagram.com/eatme.goldenstate/",
+          instagramLabel: "@eatme.goldenstate",
+        },
+        {
+          id: "mahoney-production",
+          name: "Mahoney Production",
+          label: "Featured Sponsor",
+          logo: "/images/sponsors/mahoney-production/mahoney-production-logo.webp",
+          logoAlt: "Mahoney Production logo",
+          location: "Los Angeles, California",
+          description:
+            "Mahoney Production is a Los Angeles–based creative studio specializing in photo and video content for brands, businesses, and events. From concept to final edit, we create polished visuals that capture attention and tell each client's story.",
+          instagram: "https://www.instagram.com/mahoney_production/",
+          instagramLabel: "@mahoney_production",
+        },
+        {
+          id: "tesalova",
+          name: "TESALOVA",
+          label: "Featured Sponsor",
+          logo: "/images/sponsors/tesalova/tesalova-logo.webp",
+          logoAlt: "TESALOVA logo",
+          featureImage: "/images/sponsors/tesalova/tesalova-feature.webp",
+          featureImageAlt:
+            "TESALOVA product tube among coral and seashells on the sand",
+          description:
+            "TESALOVA is a professional brand in permanent makeup and paramedical tattooing, uniting education, products, and original techniques.\n\nFounder Viktoriia Tesalova is a master trainer with 10 years of experience, specializing in the camouflage of scars and stretch marks and in advanced PMU techniques. She developed two proprietary methods — TSCP (Tesalova Scar Camouflage Protocol) and TCMS (Tesalova Color Matching System) — which she teaches to artists worldwide; her graduates work in California, Bali, Ukraine, Bulgaria, and Italy.\n\nThe brand develops in three directions: training for artists, its own line of skin-care and recovery products, and a professional platform for the permanent makeup industry.",
+          website: "https://viktoriiatesalovapmu.glossgenius.com/",
+          websiteLabel: "viktoriiatesalovapmu.glossgenius.com",
+          instagram: "https://www.instagram.com/tesalova_viktoriya_permanent/",
+          instagramLabel: "@tesalova_viktoriya_permanent",
+        },
       ],
     },
     contactUs: {
@@ -3721,6 +3761,46 @@ const ru: typeof en = {
             "Beauty Room Education — официальный дистрибьютор KART в США",
           description:
             "KART — профессиональная израильская косметика и современная система препаратного педикюра для ухода за кожей стоп и ногтями. Методика основана на работе специализированных препаратов с активными компонентами, которые позволяют выполнять педикюр атравматично, безопасно и эффективно, без агрессивного воздействия на кожу.\n\nKART подходит как мастерам эстетического педикюра, так и специалистам, работающим с подологической практикой: выраженной сухостью, гиперкератозом, трещинами, мозолями, нарушениями микрофлоры кожи, а также различными изменениями кожи и ногтей.\n\nБренд включает две профессиональные линии для работы мастера в салоне или кабинете, а также большую линейку домашнего ухода — помогая поддерживать состояние кожи и ногтей между процедурами и продлевая результат профессионального педикюра.\n\nBeauty Room Education является официальным дистрибьютором косметики KART в США, а также проводит профессиональное обучение мастеров методике препаратного педикюра KART.",
+        },
+        {
+          id: "eat-me-golden-state",
+          name: "Eat Me Golden State",
+          label: "Главный спонсор",
+          logo: "/images/sponsors/eat-me-golden-state/eat-me-golden-state-logo.webp",
+          logoAlt: "Логотип Eat Me Golden State Catering & Events",
+          location: "Калифорния",
+          description:
+            "Более 10 лет мы помогаем превращать корпоративные события, частные праздники и специальные мероприятия в стильные, продуманные и эффектные события.\n\nМы не просто привозим еду. Мы создаём целостную атмосферу: индивидуально подбираем меню под формат, количество гостей, пожелания и бюджет, следим за гастрономическими трендами, предлагаем современную подачу и продумываем каждую деталь.\n\nПри необходимости берём на себя оформление фуршетной зоны, сервировку, посуду, декор и другие организационные моменты.\n\nНаша задача — сделать так, чтобы всё выглядело профессионально, стильно и вызвало тот самый «Wow-эффект» у ваших клиентов, партнёров и гостей.",
+          instagram: "https://www.instagram.com/eatme.goldenstate/",
+          instagramLabel: "@eatme.goldenstate",
+        },
+        {
+          id: "mahoney-production",
+          name: "Mahoney Production",
+          label: "Главный спонсор",
+          logo: "/images/sponsors/mahoney-production/mahoney-production-logo.webp",
+          logoAlt: "Логотип Mahoney Production",
+          location: "Лос-Анджелес, Калифорния",
+          description:
+            "Mahoney Production — креативная студия из Лос-Анджелеса, специализирующаяся на фото- и видеоконтенте для брендов, бизнесов и мероприятий. От идеи до финального монтажа мы создаём отточенные визуальные материалы, которые привлекают внимание и рассказывают историю каждого клиента.",
+          instagram: "https://www.instagram.com/mahoney_production/",
+          instagramLabel: "@mahoney_production",
+        },
+        {
+          id: "tesalova",
+          name: "TESALOVA",
+          label: "Главный спонсор",
+          logo: "/images/sponsors/tesalova/tesalova-logo.webp",
+          logoAlt: "Логотип TESALOVA",
+          featureImage: "/images/sponsors/tesalova/tesalova-feature.webp",
+          featureImageAlt:
+            "Продукт TESALOVA среди кораллов и ракушек на песке",
+          description:
+            "TESALOVA — профессиональный бренд в сфере перманентного макияжа и парамедицинского татуажа, объединяющий обучение, продукты и авторские методики.\n\nОснователь — Viktoriia Tesalova, мастер-тренер с 10-летним опытом, специализируется на камуфляже шрамов и растяжек, а также продвинутых техниках PMU. Разработала две собственные методики: TSCP (Tesalova Scar Camouflage Protocol) и TCMS (Tesalova Color Matching System), которые преподаёт мастерам по всему миру — выпускники работают в Калифорнии, на Бали, в Украине, Болгарии и Италии.\n\nБренд развивается в трёх направлениях: обучение мастеров, собственная линейка продукции для ухода и восстановления кожи, и профессиональная платформа для индустрии перманентного макияжа.",
+          website: "https://viktoriiatesalovapmu.glossgenius.com/",
+          websiteLabel: "viktoriiatesalovapmu.glossgenius.com",
+          instagram: "https://www.instagram.com/tesalova_viktoriya_permanent/",
+          instagramLabel: "@tesalova_viktoriya_permanent",
         },
       ],
     },
@@ -6279,6 +6359,46 @@ const ua: typeof en = {
             "Beauty Room Education — офіційний дистриб’ютор KART у США",
           description:
             "KART — професійна ізраїльська косметика та сучасна система препаратного педикюру для догляду за шкірою стоп і нігтями. Методика заснована на роботі спеціалізованих препаратів з активними компонентами, які дозволяють виконувати педикюр атравматично, безпечно та ефективно, без агресивного впливу на шкіру.\n\nKART підходить як майстрам естетичного педикюру, так і спеціалістам, які працюють із подологічною практикою: вираженою сухістю, гіперкератозом, тріщинами, мозолями, порушеннями мікрофлори шкіри, а також різними змінами шкіри та нігтів.\n\nБренд включає дві професійні лінії для роботи майстра в салоні або кабінеті, а також велику лінійку домашнього догляду — допомагаючи підтримувати стан шкіри та нігтів між процедурами та продовжуючи результат професійного педикюру.\n\nBeauty Room Education є офіційним дистриб’ютором косметики KART у США, а також проводить професійне навчання майстрів методики препаратного педикюру KART.",
+        },
+        {
+          id: "eat-me-golden-state",
+          name: "Eat Me Golden State",
+          label: "Головний спонсор",
+          logo: "/images/sponsors/eat-me-golden-state/eat-me-golden-state-logo.webp",
+          logoAlt: "Логотип Eat Me Golden State Catering & Events",
+          location: "Каліфорнія",
+          description:
+            "Понад 10 років ми допомагаємо перетворювати корпоративні події, приватні свята та спеціальні заходи на стильні, продумані й ефектні події.\n\nМи не просто привозимо їжу. Ми створюємо цілісну атмосферу: індивідуально добираємо меню під формат, кількість гостей, побажання та бюджет, стежимо за гастрономічними трендами, пропонуємо сучасну подачу та продумуємо кожну деталь.\n\nЗа потреби беремо на себе оформлення фуршетної зони, сервірування, посуд, декор та інші організаційні моменти.\n\nНаше завдання — зробити так, щоб усе виглядало професійно, стильно й викликало той самий «Wow-ефект» у ваших клієнтів, партнерів і гостей.",
+          instagram: "https://www.instagram.com/eatme.goldenstate/",
+          instagramLabel: "@eatme.goldenstate",
+        },
+        {
+          id: "mahoney-production",
+          name: "Mahoney Production",
+          label: "Головний спонсор",
+          logo: "/images/sponsors/mahoney-production/mahoney-production-logo.webp",
+          logoAlt: "Логотип Mahoney Production",
+          location: "Лос-Анджелес, Каліфорнія",
+          description:
+            "Mahoney Production — креативна студія з Лос-Анджелеса, що спеціалізується на фото- та відеоконтенті для брендів, бізнесів і заходів. Від ідеї до фінального монтажу ми створюємо відточені візуальні матеріали, які привертають увагу та розповідають історію кожного клієнта.",
+          instagram: "https://www.instagram.com/mahoney_production/",
+          instagramLabel: "@mahoney_production",
+        },
+        {
+          id: "tesalova",
+          name: "TESALOVA",
+          label: "Головний спонсор",
+          logo: "/images/sponsors/tesalova/tesalova-logo.webp",
+          logoAlt: "Логотип TESALOVA",
+          featureImage: "/images/sponsors/tesalova/tesalova-feature.webp",
+          featureImageAlt:
+            "Продукт TESALOVA серед коралів і черепашок на піску",
+          description:
+            "TESALOVA — професійний бренд у сфері перманентного макіяжу та парамедичного татуажу, що поєднує навчання, продукти та авторські методики.\n\nЗасновниця — Viktoriia Tesalova, майстер-тренер із 10-річним досвідом, спеціалізується на камуфляжі шрамів і розтяжок, а також просунутих техніках PMU. Розробила дві власні методики: TSCP (Tesalova Scar Camouflage Protocol) і TCMS (Tesalova Color Matching System), які викладає майстрам по всьому світу — випускники працюють у Каліфорнії, на Балі, в Україні, Болгарії та Італії.\n\nБренд розвивається у трьох напрямах: навчання майстрів, власна лінійка продукції для догляду та відновлення шкіри, і професійна платформа для індустрії перманентного макіяжу.",
+          website: "https://viktoriiatesalovapmu.glossgenius.com/",
+          websiteLabel: "viktoriiatesalovapmu.glossgenius.com",
+          instagram: "https://www.instagram.com/tesalova_viktoriya_permanent/",
+          instagramLabel: "@tesalova_viktoriya_permanent",
         },
       ],
     },
