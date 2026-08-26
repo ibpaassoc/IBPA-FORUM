@@ -1165,6 +1165,18 @@ const en = {
           description:
             "KART is professional Israeli cosmetics and a modern preparation-based pedicure system for the care of the skin of the feet and the nails. The methodology is built on specialized preparations with active ingredients that make pedicure treatments atraumatic, safe, and effective, without aggressive impact on the skin.\n\nKART suits both aesthetic pedicure masters and specialists working in podology practice: pronounced dryness, hyperkeratosis, cracks, calluses, disruptions of the skin's microflora, and a range of skin and nail changes.\n\nThe brand includes two professional lines for the master's work in the salon or studio, along with an extensive home-care range, helping maintain the condition of the skin and nails between treatments and extending the results of a professional pedicure.\n\nBeauty Room Education is the official distributor of KART cosmetics in the United States and provides professional training for masters in the KART preparation-based pedicure method.",
         },
+        {
+          id: "eat-me-golden-state",
+          name: "Eat Me Golden State",
+          label: "Featured Sponsor",
+          logo: "/images/sponsors/eat-me-golden-state/eat-me-golden-state-logo.webp",
+          logoAlt: "Eat Me Golden State Catering & Events logo",
+          location: "California",
+          description:
+            "For more than 10 years, we've helped turn corporate events, private celebrations, and special occasions into stylish, thoughtfully designed, and striking experiences.\n\nWe don't just deliver food. We create a complete atmosphere: we tailor the menu individually to the format, the number of guests, your wishes, and your budget, follow gastronomic trends, offer contemporary plating, and think through every detail.\n\nWhen needed, we take care of buffet-area styling, table setting, tableware, decor, and other organizational details.\n\nOur goal is to make everything look professional and stylish, and to create that true “Wow effect” for your clients, partners, and guests.",
+          instagram: "https://www.instagram.com/eatme.goldenstate/",
+          instagramLabel: "@eatme.goldenstate",
+        },
       ],
     },
     contactUs: {
@@ -3721,6 +3733,18 @@ const ru: typeof en = {
             "Beauty Room Education — официальный дистрибьютор KART в США",
           description:
             "KART — профессиональная израильская косметика и современная система препаратного педикюра для ухода за кожей стоп и ногтями. Методика основана на работе специализированных препаратов с активными компонентами, которые позволяют выполнять педикюр атравматично, безопасно и эффективно, без агрессивного воздействия на кожу.\n\nKART подходит как мастерам эстетического педикюра, так и специалистам, работающим с подологической практикой: выраженной сухостью, гиперкератозом, трещинами, мозолями, нарушениями микрофлоры кожи, а также различными изменениями кожи и ногтей.\n\nБренд включает две профессиональные линии для работы мастера в салоне или кабинете, а также большую линейку домашнего ухода — помогая поддерживать состояние кожи и ногтей между процедурами и продлевая результат профессионального педикюра.\n\nBeauty Room Education является официальным дистрибьютором косметики KART в США, а также проводит профессиональное обучение мастеров методике препаратного педикюра KART.",
+        },
+        {
+          id: "eat-me-golden-state",
+          name: "Eat Me Golden State",
+          label: "Главный спонсор",
+          logo: "/images/sponsors/eat-me-golden-state/eat-me-golden-state-logo.webp",
+          logoAlt: "Логотип Eat Me Golden State Catering & Events",
+          location: "Калифорния",
+          description:
+            "Более 10 лет мы помогаем превращать корпоративные события, частные праздники и специальные мероприятия в стильные, продуманные и эффектные события.\n\nМы не просто привозим еду. Мы создаём целостную атмосферу: индивидуально подбираем меню под формат, количество гостей, пожелания и бюджет, следим за гастрономическими трендами, предлагаем современную подачу и продумываем каждую деталь.\n\nПри необходимости берём на себя оформление фуршетной зоны, сервировку, посуду, декор и другие организационные моменты.\n\nНаша задача — сделать так, чтобы всё выглядело профессионально, стильно и вызвало тот самый «Wow-эффект» у ваших клиентов, партнёров и гостей.",
+          instagram: "https://www.instagram.com/eatme.goldenstate/",
+          instagramLabel: "@eatme.goldenstate",
         },
       ],
     },
@@ -6279,6 +6303,18 @@ const ua: typeof en = {
             "Beauty Room Education — офіційний дистриб’ютор KART у США",
           description:
             "KART — професійна ізраїльська косметика та сучасна система препаратного педикюру для догляду за шкірою стоп і нігтями. Методика заснована на роботі спеціалізованих препаратів з активними компонентами, які дозволяють виконувати педикюр атравматично, безпечно та ефективно, без агресивного впливу на шкіру.\n\nKART підходить як майстрам естетичного педикюру, так і спеціалістам, які працюють із подологічною практикою: вираженою сухістю, гіперкератозом, тріщинами, мозолями, порушеннями мікрофлори шкіри, а також різними змінами шкіри та нігтів.\n\nБренд включає дві професійні лінії для роботи майстра в салоні або кабінеті, а також велику лінійку домашнього догляду — допомагаючи підтримувати стан шкіри та нігтів між процедурами та продовжуючи результат професійного педикюру.\n\nBeauty Room Education є офіційним дистриб’ютором косметики KART у США, а також проводить професійне навчання майстрів методики препаратного педикюру KART.",
+        },
+        {
+          id: "eat-me-golden-state",
+          name: "Eat Me Golden State",
+          label: "Головний спонсор",
+          logo: "/images/sponsors/eat-me-golden-state/eat-me-golden-state-logo.webp",
+          logoAlt: "Логотип Eat Me Golden State Catering & Events",
+          location: "Каліфорнія",
+          description:
+            "Понад 10 років ми допомагаємо перетворювати корпоративні події, приватні свята та спеціальні заходи на стильні, продумані й ефектні події.\n\nМи не просто привозимо їжу. Ми створюємо цілісну атмосферу: індивідуально добираємо меню під формат, кількість гостей, побажання та бюджет, стежимо за гастрономічними трендами, пропонуємо сучасну подачу та продумуємо кожну деталь.\n\nЗа потреби беремо на себе оформлення фуршетної зони, сервірування, посуд, декор та інші організаційні моменти.\n\nНаше завдання — зробити так, щоб усе виглядало професійно, стильно й викликало той самий «Wow-ефект» у ваших клієнтів, партнерів і гостей.",
+          instagram: "https://www.instagram.com/eatme.goldenstate/",
+          instagramLabel: "@eatme.goldenstate",
         },
       ],
     },
