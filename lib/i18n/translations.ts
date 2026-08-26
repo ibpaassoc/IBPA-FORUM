@@ -1189,6 +1189,22 @@ const en = {
           instagram: "https://www.instagram.com/mahoney_production/",
           instagramLabel: "@mahoney_production",
         },
+        {
+          id: "tesalova",
+          name: "TESALOVA",
+          label: "Featured Sponsor",
+          logo: "/images/sponsors/tesalova/tesalova-logo.webp",
+          logoAlt: "TESALOVA logo",
+          featureImage: "/images/sponsors/tesalova/tesalova-feature.webp",
+          featureImageAlt:
+            "TESALOVA product tube among coral and seashells on the sand",
+          description:
+            "TESALOVA is a professional brand in permanent makeup and paramedical tattooing, uniting education, products, and original techniques.\n\nFounder Viktoriia Tesalova is a master trainer with 10 years of experience, specializing in the camouflage of scars and stretch marks and in advanced PMU techniques. She developed two proprietary methods — TSCP (Tesalova Scar Camouflage Protocol) and TCMS (Tesalova Color Matching System) — which she teaches to artists worldwide; her graduates work in California, Bali, Ukraine, Bulgaria, and Italy.\n\nThe brand develops in three directions: training for artists, its own line of skin-care and recovery products, and a professional platform for the permanent makeup industry.",
+          website: "https://viktoriiatesalovapmu.glossgenius.com/",
+          websiteLabel: "viktoriiatesalovapmu.glossgenius.com",
+          instagram: "https://www.instagram.com/tesalova_viktoriya_permanent/",
+          instagramLabel: "@tesalova_viktoriya_permanent",
+        },
       ],
     },
     contactUs: {
@@ -3769,6 +3785,22 @@ const ru: typeof en = {
             "Mahoney Production — креативная студия из Лос-Анджелеса, специализирующаяся на фото- и видеоконтенте для брендов, бизнесов и мероприятий. От идеи до финального монтажа мы создаём отточенные визуальные материалы, которые привлекают внимание и рассказывают историю каждого клиента.",
           instagram: "https://www.instagram.com/mahoney_production/",
           instagramLabel: "@mahoney_production",
+        },
+        {
+          id: "tesalova",
+          name: "TESALOVA",
+          label: "Главный спонсор",
+          logo: "/images/sponsors/tesalova/tesalova-logo.webp",
+          logoAlt: "Логотип TESALOVA",
+          featureImage: "/images/sponsors/tesalova/tesalova-feature.webp",
+          featureImageAlt:
+            "Продукт TESALOVA среди кораллов и ракушек на песке",
+          description:
+            "TESALOVA — профессиональный бренд в сфере перманентного макияжа и парамедицинского татуажа, объединяющий обучение, продукты и авторские методики.\n\nОснователь — Viktoriia Tesalova, мастер-тренер с 10-летним опытом, специализируется на камуфляже шрамов и растяжек, а также продвинутых техниках PMU. Разработала две собственные методики: TSCP (Tesalova Scar Camouflage Protocol) и TCMS (Tesalova Color Matching System), которые преподаёт мастерам по всему миру — выпускники работают в Калифорнии, на Бали, в Украине, Болгарии и Италии.\n\nБренд развивается в трёх направлениях: обучение мастеров, собственная линейка продукции для ухода и восстановления кожи, и профессиональная платформа для индустрии перманентного макияжа.",
+          website: "https://viktoriiatesalovapmu.glossgenius.com/",
+          websiteLabel: "viktoriiatesalovapmu.glossgenius.com",
+          instagram: "https://www.instagram.com/tesalova_viktoriya_permanent/",
+          instagramLabel: "@tesalova_viktoriya_permanent",
         },
       ],
     },
@@ -6351,6 +6383,22 @@ const ua: typeof en = {
             "Mahoney Production — креативна студія з Лос-Анджелеса, що спеціалізується на фото- та відеоконтенті для брендів, бізнесів і заходів. Від ідеї до фінального монтажу ми створюємо відточені візуальні матеріали, які привертають увагу та розповідають історію кожного клієнта.",
           instagram: "https://www.instagram.com/mahoney_production/",
           instagramLabel: "@mahoney_production",
+        },
+        {
+          id: "tesalova",
+          name: "TESALOVA",
+          label: "Головний спонсор",
+          logo: "/images/sponsors/tesalova/tesalova-logo.webp",
+          logoAlt: "Логотип TESALOVA",
+          featureImage: "/images/sponsors/tesalova/tesalova-feature.webp",
+          featureImageAlt:
+            "Продукт TESALOVA серед коралів і черепашок на піску",
+          description:
+            "TESALOVA — професійний бренд у сфері перманентного макіяжу та парамедичного татуажу, що поєднує навчання, продукти та авторські методики.\n\nЗасновниця — Viktoriia Tesalova, майстер-тренер із 10-річним досвідом, спеціалізується на камуфляжі шрамів і розтяжок, а також просунутих техніках PMU. Розробила дві власні методики: TSCP (Tesalova Scar Camouflage Protocol) і TCMS (Tesalova Color Matching System), які викладає майстрам по всьому світу — випускники працюють у Каліфорнії, на Балі, в Україні, Болгарії та Італії.\n\nБренд розвивається у трьох напрямах: навчання майстрів, власна лінійка продукції для догляду та відновлення шкіри, і професійна платформа для індустрії перманентного макіяжу.",
+          website: "https://viktoriiatesalovapmu.glossgenius.com/",
+          websiteLabel: "viktoriiatesalovapmu.glossgenius.com",
+          instagram: "https://www.instagram.com/tesalova_viktoriya_permanent/",
+          instagramLabel: "@tesalova_viktoriya_permanent",
         },
       ],
     },
