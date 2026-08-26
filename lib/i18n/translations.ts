@@ -1152,6 +1152,19 @@ const en = {
           instagram: "https://www.instagram.com/morozova.hair_artist/",
           instagramLabel: "@morozova.hair_artist",
         },
+        {
+          id: "kart",
+          name: "KART",
+          label: "Featured Sponsor",
+          logo: "/images/sponsors/kart/kart-logo.webp",
+          logoAlt: "KART Podology logo",
+          location: "United States",
+          featureImage: "/images/sponsors/kart/kart-feature.webp",
+          featureImageAlt:
+            "Beauty Room Education, the official KART distributor in the United States",
+          description:
+            "KART is professional Israeli cosmetics and a modern preparation-based pedicure system for the care of the skin of the feet and the nails. The methodology is built on specialized preparations with active ingredients that make pedicure treatments atraumatic, safe, and effective, without aggressive impact on the skin.\n\nKART suits both aesthetic pedicure masters and specialists working in podology practice: pronounced dryness, hyperkeratosis, cracks, calluses, disruptions of the skin's microflora, and a range of skin and nail changes.\n\nThe brand includes two professional lines for the master's work in the salon or studio, along with an extensive home-care range, helping maintain the condition of the skin and nails between treatments and extending the results of a professional pedicure.\n\nBeauty Room Education is the official distributor of KART cosmetics in the United States and provides professional training for masters in the KART preparation-based pedicure method.",
+        },
       ],
     },
     contactUs: {
@@ -3695,6 +3708,19 @@ const ru: typeof en = {
             "HAIR PROFI — профессиональная компания в сфере бьюти-индустрии, основанная Натальей Морозовой — стилистом, колористом, блонд-экспертом и тренером-технологом с опытом более 28 лет.\n\nОсновные направления компании: сложные техники окрашивания и экспертная работа с блондом; коррекция цвета и восстановление повреждённых волос; современные техники женских стрижек; продажа профессиональных брендов, косметики, красителей и инструментов для мастеров; индивидуальный подбор профессионального и домашнего ухода.\n\nНа базе компании работает HAIR PROFI Academy — академия колористики и современных техник стрижек. Здесь проводятся авторские семинары, мастер-классы и практические курсы для начинающих и опытных специалистов.\n\nОбучение включает колористику, Total Blonde, Airtouch, сложные коррекции цвета, безопасный выход из тёмных оттенков, современные техники стрижек, а также работу с профессиональными красителями любых брендов. Мастера учатся понимать принципы колористики, составлять формулы и уверенно работать на любом профессиональном продукте.\n\nHAIR PROFI объединяет профессиональное образование, многолетний практический опыт, качественную продукцию и современные инструменты для специалистов бьюти-индустрии.",
           instagram: "https://www.instagram.com/morozova.hair_artist/",
           instagramLabel: "@morozova.hair_artist",
+        },
+        {
+          id: "kart",
+          name: "KART",
+          label: "Главный спонсор",
+          logo: "/images/sponsors/kart/kart-logo.webp",
+          logoAlt: "Логотип KART Podology",
+          location: "США",
+          featureImage: "/images/sponsors/kart/kart-feature.webp",
+          featureImageAlt:
+            "Beauty Room Education — официальный дистрибьютор KART в США",
+          description:
+            "KART — профессиональная израильская косметика и современная система препаратного педикюра для ухода за кожей стоп и ногтями. Методика основана на работе специализированных препаратов с активными компонентами, которые позволяют выполнять педикюр атравматично, безопасно и эффективно, без агрессивного воздействия на кожу.\n\nKART подходит как мастерам эстетического педикюра, так и специалистам, работающим с подологической практикой: выраженной сухостью, гиперкератозом, трещинами, мозолями, нарушениями микрофлоры кожи, а также различными изменениями кожи и ногтей.\n\nБренд включает две профессиональные линии для работы мастера в салоне или кабинете, а также большую линейку домашнего ухода — помогая поддерживать состояние кожи и ногтей между процедурами и продлевая результат профессионального педикюра.\n\nBeauty Room Education является официальным дистрибьютором косметики KART в США, а также проводит профессиональное обучение мастеров методике препаратного педикюра KART.",
         },
       ],
     },
@@ -6240,6 +6266,19 @@ const ua: typeof en = {
             "HAIR PROFI — професійна компанія у сфері б\u2019юті-індустрії, заснована Наталією Морозовою — стилістом, колористом, блонд-експертом і тренером-технологом із досвідом понад 28 років.\n\nОсновні напрями компанії: складні техніки фарбування та експертна робота з блондом; корекція кольору й відновлення пошкодженого волосся; сучасні техніки жіночих стрижок; продаж професійних брендів, косметики, барвників та інструментів для майстрів; індивідуальний підбір професійного й домашнього догляду.\n\nНа базі компанії працює HAIR PROFI Academy — академія колористики та сучасних технік стрижок. Тут проводяться авторські семінари, майстер-класи й практичні курси для початківців і досвідчених спеціалістів.\n\nНавчання охоплює колористику, Total Blonde, Airtouch, складні корекції кольору, безпечний вихід із темних відтінків, сучасні техніки стрижок, а також роботу з професійними барвниками будь-яких брендів. Майстри вчаться розуміти принципи колористики, складати формули та впевнено працювати на будь-якому професійному продукті.\n\nHAIR PROFI поєднує професійну освіту, багаторічний практичний досвід, якісну продукцію та сучасні інструменти для спеціалістів б\u2019юті-індустрії.",
           instagram: "https://www.instagram.com/morozova.hair_artist/",
           instagramLabel: "@morozova.hair_artist",
+        },
+        {
+          id: "kart",
+          name: "KART",
+          label: "Головний спонсор",
+          logo: "/images/sponsors/kart/kart-logo.webp",
+          logoAlt: "Логотип KART Podology",
+          location: "США",
+          featureImage: "/images/sponsors/kart/kart-feature.webp",
+          featureImageAlt:
+            "Beauty Room Education — офіційний дистриб’ютор KART у США",
+          description:
+            "KART — професійна ізраїльська косметика та сучасна система препаратного педикюру для догляду за шкірою стоп і нігтями. Методика заснована на роботі спеціалізованих препаратів з активними компонентами, які дозволяють виконувати педикюр атравматично, безпечно та ефективно, без агресивного впливу на шкіру.\n\nKART підходить як майстрам естетичного педикюру, так і спеціалістам, які працюють із подологічною практикою: вираженою сухістю, гіперкератозом, тріщинами, мозолями, порушеннями мікрофлори шкіри, а також різними змінами шкіри та нігтів.\n\nБренд включає дві професійні лінії для роботи майстра в салоні або кабінеті, а також велику лінійку домашнього догляду — допомагаючи підтримувати стан шкіри та нігтів між процедурами та продовжуючи результат професійного педикюру.\n\nBeauty Room Education є офіційним дистриб’ютором косметики KART у США, а також проводить професійне навчання майстрів методики препаратного педикюру KART.",
         },
       ],
     },
