@@ -26,6 +26,9 @@ type Sponsor = {
   email?: string;
   featureImage?: string;
   featureImageAlt?: string;
+  // Badge/emblem logos (square, not a wide wordmark) need a larger, squarer
+  // render box so they don't read as a tiny mark next to the wordmarks.
+  logoBadge?: boolean;
 };
 type Direction = 1 | -1;
 
@@ -88,7 +91,13 @@ function SponsorStory({ sponsor, copy }: { sponsor: Sponsor; copy: SponsorsCopy 
               </div>
             </>
           ) : (
-            <div className="relative h-24 w-full max-w-[18rem] sm:h-28">
+            <div
+              className={
+                sponsor.logoBadge
+                  ? "relative h-36 w-36 sm:h-44 sm:w-44"
+                  : "relative h-24 w-full max-w-[18rem] sm:h-28"
+              }
+            >
               <Image
                 src={sponsor.logo}
                 alt={sponsor.logoAlt}
@@ -320,7 +329,13 @@ export default function HomeSponsors() {
                               : "border-[#b9d9eb]/55 bg-white/45 hover:-translate-y-0.5 hover:border-[#9fc7df]/80 hover:bg-white/78"
                           }`}
                         >
-                          <span className="relative h-9 w-full max-w-[7.25rem]">
+                          <span
+                            className={
+                              sponsor.logoBadge
+                                ? "relative h-14 w-14"
+                                : "relative h-9 w-full max-w-[7.25rem]"
+                            }
+                          >
                             <Image
                               src={sponsor.logo}
                               alt=""

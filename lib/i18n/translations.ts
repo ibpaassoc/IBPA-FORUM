@@ -1170,6 +1170,7 @@ const en = {
           name: "Eat Me Golden State",
           label: "Featured Sponsor",
           logo: "/images/sponsors/eat-me-golden-state/eat-me-golden-state-logo.webp",
+          logoBadge: true,
           logoAlt: "Eat Me Golden State Catering & Events logo",
           location: "California",
           description:
@@ -3781,6 +3782,7 @@ const ru: typeof en = {
           name: "Eat Me Golden State",
           label: "Главный спонсор",
           logo: "/images/sponsors/eat-me-golden-state/eat-me-golden-state-logo.webp",
+          logoBadge: true,
           logoAlt: "Логотип Eat Me Golden State Catering & Events",
           location: "Калифорния",
           description:
@@ -6393,6 +6395,7 @@ const ua: typeof en = {
           name: "Eat Me Golden State",
           label: "Головний спонсор",
           logo: "/images/sponsors/eat-me-golden-state/eat-me-golden-state-logo.webp",
+          logoBadge: true,
           logoAlt: "Логотип Eat Me Golden State Catering & Events",
           location: "Каліфорнія",
           description:
