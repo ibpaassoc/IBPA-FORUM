@@ -1043,8 +1043,8 @@ const en = {
       goToLabel: "Go to winner",
     },
     program: {
-      eyebrow: "Forum Program",
-      title: "Two days of ideas, craft, and celebration",
+      eyebrow: "September 2026",
+      title: "Forum Program",
       description:
         "Choose a day to explore the complete schedule across the main stage, live master classes, and Gala Dinner.",
       dateRange: "September 25–26, 2026",
@@ -3803,8 +3803,8 @@ const ru: typeof en = {
       goToLabel: "Перейти к победителю",
     },
     program: {
-      eyebrow: "Программа форума",
-      title: "Два дня идей, мастерства и ярких событий",
+      eyebrow: "Сентябрь 2026",
+      title: "Программа форума",
       description:
         "Выберите день, чтобы увидеть полное расписание главной сцены, мастер-классов и Gala Dinner.",
       dateRange: "25–26 сентября 2026",
@@ -6564,8 +6564,8 @@ const ua: typeof en = {
       goToLabel: "Перейти до переможця",
     },
     program: {
-      eyebrow: "Програма форуму",
-      title: "Два дні ідей, майстерності та яскравих подій",
+      eyebrow: "Вересень 2026",
+      title: "Програма форуму",
       description:
         "Оберіть день, щоб переглянути повний розклад головної сцени, майстер-класів і Gala Dinner.",
       dateRange: "25–26 вересня 2026",
