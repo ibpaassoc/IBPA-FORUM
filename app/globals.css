@@ -96,8 +96,8 @@
   --z-command: 800;
   --z-toast: 900;
 
-  --scrollbar-thumb: rgba(114, 160, 193, 0.58);
-  --scrollbar-thumb-hover: rgba(77, 134, 173, 0.76);
+  --scrollbar-thumb: var(--color-blue);
+  --scrollbar-thumb-hover: var(--color-hover-accent);
   --scrollbar-track: rgba(242, 248, 251, 0.72);
 
   --admin-bg: #f7f9fb;
@@ -159,6 +159,21 @@ html {
 *::-webkit-scrollbar-thumb:hover {
   background: var(--scrollbar-thumb-hover);
   background-clip: padding-box;
+}
+
+/* Recipient lists keep their own bounded scroll surface so long audiences stay reachable. */
+.notification-recipient-scroll {
+  max-height: min(18rem, 42dvh);
+  min-height: 8rem;
+  scrollbar-gutter: stable;
+}
+
+@media (min-width: 1280px) {
+  .notification-recipient-scroll {
+    max-height: min(22rem, 42dvh);
+    min-height: 0;
+    flex: 1 1 auto;
+  }
 }
 
 @media (forced-colors: active) {

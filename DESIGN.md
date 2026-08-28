@@ -61,6 +61,8 @@ The interface should feel like an invitation desk at a contemporary internationa
 
 Ink is the primary text and high-emphasis action color. IBPA blue is the brand/action accent and focus color, while blue wash and white establish surface hierarchy. Success and danger remain semantic and always include text or icon cues. The product currently uses a light theme; forced-color behavior remains system-owned.
 
+Application-owned scrollbars use the exact IBPA blue accent for their thumb, a darker accent on hover, and a pale blue wash track. Long recipient lists may use a reserved gutter and bounded internal scroll surface so every account remains reachable without moving the composer actions.
+
 ## Typography
 
 Bodoni Moda is reserved for page and dialog titles. Lora carries body copy, labels, controls, and data because it includes Cyrillic coverage. Cormorant Garamond is a restrained accent for eyebrows. Uppercase with wide tracking is reserved for short utility labels and buttons, never long prose.

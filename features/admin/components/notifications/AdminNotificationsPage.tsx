@@ -502,7 +502,7 @@ export default function AdminNotificationsPage({
                 </div>
                 <p aria-live="polite" className="mt-1 min-h-4 text-xs text-red-700">{errors.recipients ?? ""}</p>
 
-                <div className="mt-2 max-h-48 space-y-1.5 overflow-y-auto pr-1 xl:max-h-none xl:min-h-32 xl:flex-1">
+                <div className="notification-recipient-scroll mt-2 space-y-1.5 overflow-y-auto pr-1">
                   {visibleRecipients.length === 0 ? (
                     <div className="flex min-h-24 items-center justify-center rounded-[14px] border border-dashed border-[rgba(114,160,193,0.3)] p-4 text-center text-xs text-[var(--color-ink-soft)]">{recipients.length === 0 ? "В этой группе пока нет активных аккаунтов." : "Получатели не найдены."}</div>
                   ) : visibleRecipients.map((recipient) => {
