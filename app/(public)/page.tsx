@@ -38,8 +38,8 @@ export default function HomePagePremium() {
       <HomeHero />
       <HomeAwardsInfo />
       <HomeThreeExperiences />
-      {/*<HomeProgram />*/}
       <HomeConversionBlock />
+      <HomeProgram />
       <HomeSpeakers />
       <HomeMasterClasses />
       <HomeDressCode />
