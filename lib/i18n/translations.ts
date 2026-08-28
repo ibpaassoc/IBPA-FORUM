@@ -28,7 +28,6 @@ type ProgramEvent = {
 type ProgramCopy = {
   eyebrow: string;
   title: string;
-  description: string;
   dateRange: string;
   location: string;
   tabsLabel: string;
@@ -1045,8 +1044,6 @@ const en = {
     program: {
       eyebrow: "September 2026",
       title: "Forum Program",
-      description:
-        "Choose a day to explore the complete schedule across the main stage, live master classes, and Gala Dinner.",
       dateRange: "September 25–26, 2026",
       location: "Los Angeles, California",
       tabsLabel: "Choose a forum day",
@@ -3805,8 +3802,6 @@ const ru: typeof en = {
     program: {
       eyebrow: "Сентябрь 2026",
       title: "Программа форума",
-      description:
-        "Выберите день, чтобы увидеть полное расписание главной сцены, мастер-классов и Gala Dinner.",
       dateRange: "25–26 сентября 2026",
       location: "Лос-Анджелес, Калифорния",
       tabsLabel: "Выберите день форума",
@@ -6566,8 +6561,6 @@ const ua: typeof en = {
     program: {
       eyebrow: "Вересень 2026",
       title: "Програма форуму",
-      description:
-        "Оберіть день, щоб переглянути повний розклад головної сцени, майстер-класів і Gala Dinner.",
       dateRange: "25–26 вересня 2026",
       location: "Лос-Анджелес, Каліфорнія",
       tabsLabel: "Оберіть день форуму",

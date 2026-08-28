@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type KeyboardEvent, type ReactNode } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   CalendarDays,
   Clock3,
@@ -41,7 +42,15 @@ export default function HomeProgram() {
   const { t } = useLanguage();
   const c = t.home.program;
   const [activeDayIndex, setActiveDayIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const reducedMotion = useReducedMotion();
   const activeDay = c.days[activeDayIndex];
+
+  const selectDay = (nextIndex: number) => {
+    if (nextIndex === activeDayIndex) return;
+    setDirection(nextIndex > activeDayIndex ? 1 : -1);
+    setActiveDayIndex(nextIndex);
+  };
 
   const handleTabKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
@@ -58,7 +67,7 @@ export default function HomeProgram() {
       nextIndex = (activeDayIndex + 1) % c.days.length;
     }
 
-    setActiveDayIndex(nextIndex);
+    selectDay(nextIndex);
     const tabs = event.currentTarget.querySelectorAll<HTMLButtonElement>("[role='tab']");
     tabs[nextIndex]?.focus();
   };
@@ -67,7 +76,7 @@ export default function HomeProgram() {
     <section
       id="program"
       aria-labelledby="program-title"
-      className="landing-section relative overflow-hidden py-16 md:py-20 lg:py-24"
+      className="landing-section relative overflow-clip py-16 md:py-20 lg:py-24"
     >
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="absolute -left-32 top-20 h-96 w-96 rounded-full bg-[#b9d9eb]/20 blur-3xl" />
@@ -85,9 +94,6 @@ export default function HomeProgram() {
               >
                 {c.title}
               </h2>
-              <p className="mt-5 max-w-2xl text-sm leading-6 text-[#10182a]/58 md:text-base md:leading-7">
-                {c.description}
-              </p>
             </div>
 
             <div className="mt-8 lg:mt-0">
@@ -102,59 +108,114 @@ export default function HomeProgram() {
                 </span>
               </div>
 
-              <div
-                role="tablist"
-                aria-label={c.tabsLabel}
-                onKeyDown={handleTabKeyDown}
-                className="grid grid-cols-2 rounded-[1.35rem] border border-[#b9d9eb] bg-[#f2f8fb]/88 p-1.5"
-              >
-                {c.days.map((day, index) => {
-                  const isActive = index === activeDayIndex;
-
-                  return (
-                    <button
-                      key={day.date}
-                      id={`program-tab-${index}`}
-                      type="button"
-                      role="tab"
-                      aria-selected={isActive}
-                      aria-controls={`program-panel-${index}`}
-                      tabIndex={isActive ? 0 : -1}
-                      onClick={() => setActiveDayIndex(index)}
-                      className={`min-h-14 cursor-pointer rounded-[1rem] px-4 py-3 text-left transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#72a0c1] focus-visible:ring-offset-2 ${
-                        isActive
-                          ? "bg-[#72a0c1] text-white shadow-[0_12px_28px_rgba(114,160,193,0.25)]"
-                          : "text-[#10182a] hover:bg-white/80"
-                      }`}
-                    >
-                      <span className="block text-[0.62rem] font-semibold uppercase tracking-[0.18em] opacity-70">
-                        {day.dayLabel}
-                      </span>
-                      <span className="mt-1 block text-sm font-semibold">{day.date}</span>
-                    </button>
-                  );
-                })}
+              <div className="hidden md:block">
+                <DayTabs
+                  days={c.days}
+                  activeDayIndex={activeDayIndex}
+                  label={c.tabsLabel}
+                  idPrefix="desktop"
+                  onSelect={selectDay}
+                  onKeyDown={handleTabKeyDown}
+                />
               </div>
             </div>
           </div>
         </Reveal>
 
-        <div
-          id={`program-panel-${activeDayIndex}`}
-          role="tabpanel"
-          aria-labelledby={`program-tab-${activeDayIndex}`}
-          aria-label={`${c.scheduleLabel}: ${activeDay.date}`}
-          className="mt-6"
-        >
-          <div className="hidden md:block">
-            <DesktopSchedule day={activeDay} tracks={c.tracks} />
-          </div>
-          <div className="md:hidden">
-            <MobileSchedule day={activeDay} tracks={c.tracks} />
-          </div>
+        <div className="sticky top-[calc(var(--site-header-height)+0.5rem)] z-50 -mx-1 mt-3 rounded-[1.45rem] border border-[#b9d9eb]/80 bg-white/88 p-1.5 shadow-[0_16px_40px_rgba(20,49,71,0.12)] backdrop-blur-2xl md:hidden">
+          <DayTabs
+            days={c.days}
+            activeDayIndex={activeDayIndex}
+            label={c.tabsLabel}
+            idPrefix="mobile"
+            onSelect={selectDay}
+            onKeyDown={handleTabKeyDown}
+            mobile
+          />
         </div>
+
+        <AnimatePresence initial={false} mode="wait" custom={direction}>
+          <motion.div
+            key={activeDayIndex}
+            id="program-panel"
+            role="tabpanel"
+            aria-label={`${c.scheduleLabel}: ${activeDay.date}`}
+            tabIndex={0}
+            custom={direction}
+            initial={reducedMotion ? { opacity: 1 } : { opacity: 0, x: direction * 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={reducedMotion ? { opacity: 1 } : { opacity: 0, x: direction * -16 }}
+            transition={{ duration: reducedMotion ? 0 : 0.28, ease: [0.19, 1, 0.22, 1] }}
+            className="mt-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#72a0c1] focus-visible:ring-offset-4"
+          >
+            <div className="hidden md:block">
+              <DesktopSchedule day={activeDay} tracks={c.tracks} />
+            </div>
+            <div className="md:hidden">
+              <MobileSchedule day={activeDay} tracks={c.tracks} />
+            </div>
+          </motion.div>
+        </AnimatePresence>
       </div>
     </section>
+  );
+}
+
+function DayTabs({
+  days,
+  activeDayIndex,
+  label,
+  idPrefix,
+  onSelect,
+  onKeyDown,
+  mobile = false,
+}: {
+  days: ProgramCopy["days"];
+  activeDayIndex: number;
+  label: string;
+  idPrefix: "desktop" | "mobile";
+  onSelect: (index: number) => void;
+  onKeyDown: (event: KeyboardEvent<HTMLDivElement>) => void;
+  mobile?: boolean;
+}) {
+  return (
+    <div
+      role="tablist"
+      aria-label={label}
+      onKeyDown={onKeyDown}
+      className={`grid grid-cols-2 border border-[#b9d9eb] bg-[#f2f8fb]/92 ${
+        mobile ? "rounded-[1.15rem] p-1" : "rounded-[1.35rem] p-1.5"
+      }`}
+    >
+      {days.map((day, index) => {
+        const isActive = index === activeDayIndex;
+
+        return (
+          <button
+            key={day.date}
+            id={`${idPrefix}-program-tab-${index}`}
+            type="button"
+            role="tab"
+            aria-selected={isActive}
+            aria-controls="program-panel"
+            tabIndex={isActive ? 0 : -1}
+            onClick={() => onSelect(index)}
+            className={`cursor-pointer text-left transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#72a0c1] focus-visible:ring-offset-2 ${
+              mobile ? "min-h-12 rounded-[0.9rem] px-3 py-2.5" : "min-h-14 rounded-[1rem] px-4 py-3"
+            } ${
+              isActive
+                ? "bg-[#72a0c1] text-white shadow-[0_12px_28px_rgba(114,160,193,0.25)]"
+                : "text-[#10182a] hover:bg-white/80"
+            }`}
+          >
+            <span className="block text-[0.6rem] font-semibold uppercase tracking-[0.18em] opacity-70">
+              {day.dayLabel}
+            </span>
+            <span className={`mt-1 block font-semibold ${mobile ? "text-xs" : "text-sm"}`}>{day.date}</span>
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
