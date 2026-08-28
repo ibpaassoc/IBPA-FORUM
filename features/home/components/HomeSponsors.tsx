@@ -26,6 +26,9 @@ type Sponsor = {
   email?: string;
   featureImage?: string;
   featureImageAlt?: string;
+  // Badge/emblem logos (square, not a wide wordmark) need a larger, squarer
+  // render box so they don't read as a tiny mark next to the wordmarks.
+  logoBadge?: boolean;
 };
 type Direction = 1 | -1;
 
@@ -88,7 +91,13 @@ function SponsorStory({ sponsor, copy }: { sponsor: Sponsor; copy: SponsorsCopy 
               </div>
             </>
           ) : (
-            <div className="relative h-24 w-full max-w-[18rem] sm:h-28">
+            <div
+              className={
+                sponsor.logoBadge
+                  ? "relative h-36 w-36 sm:h-44 sm:w-44"
+                  : "relative h-24 w-full max-w-[18rem] sm:h-28"
+              }
+            >
               <Image
                 src={sponsor.logo}
                 alt={sponsor.logoAlt}
@@ -183,12 +192,40 @@ export default function HomeSponsors() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const isSwitcher = sponsors.length > 1;
   const activeIndex = Math.max(0, Math.min(activeIndexState, sponsors.length - 1));
+  const [isPaused, setIsPaused] = useState(false);
+  const [panelHeight, setPanelHeight] = useState<number | undefined>(undefined);
+  const measureRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     return () => {
       if (transitionTimerRef.current) window.clearTimeout(transitionTimerRef.current);
     };
   }, []);
+
+  // Measure the current sponsor's rendered height (via a hidden clone) so the
+  // mobile panel can ease between heights instead of jumping when the amount of
+  // text changes. On desktop the clone is hidden, so panelHeight stays 0 and the
+  // panel keeps its fixed height.
+  useEffect(() => {
+    const node = measureRef.current;
+    if (!node) return;
+    const measure = () => setPanelHeight(node.getBoundingClientRect().height);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  // Auto-advance the info carousel, kept in sync with the highlighted logo.
+  // Reschedules after every change and pauses on hover/focus or reduced motion.
+  useEffect(() => {
+    if (reducedMotion || isPaused || sponsors.length < 2) return;
+    const timer = window.setTimeout(() => {
+      setDirection(1);
+      setActiveIndex((current) => (current + 1) % sponsors.length);
+    }, 6500);
+    return () => window.clearTimeout(timer);
+  }, [activeIndex, isPaused, reducedMotion, sponsors.length]);
 
   if (!sponsors.length) return null;
 
@@ -233,7 +270,13 @@ export default function HomeSponsors() {
         <div className="absolute bottom-[-20%] right-[-10%] h-72 w-72 rounded-full bg-[#b9d9eb]/24 blur-3xl md:h-[32rem] md:w-[32rem]" />
       </div>
 
-      <div className="page-section relative max-md:px-0">
+      <div
+        className="page-section relative max-md:px-0"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+        onFocusCapture={() => setIsPaused(true)}
+        onBlurCapture={() => setIsPaused(false)}
+      >
         <Reveal>
           <div className="max-w-3xl max-md:px-5">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#b9d9eb]/60 bg-white/70 px-4 py-2 font-[var(--font-ui-family)] text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#2f6f9f] backdrop-blur-xl">
@@ -256,9 +299,20 @@ export default function HomeSponsors() {
             role="region"
             aria-label={copy.sliderLabel}
             aria-live="polite"
-            className="relative grid min-h-[32rem] overflow-visible md:h-[34rem] md:min-h-0 md:overflow-hidden"
+            className="relative min-h-[22rem] overflow-hidden transition-[height] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:h-[34rem] md:min-h-0 motion-reduce:transition-none"
+            style={panelHeight ? { height: panelHeight } : undefined}
           >
-            <AnimatePresence initial={false} mode="wait" custom={direction}>
+            {/* Hidden clone of the current sponsor. Its measured height drives the
+                mobile panel height so switching eases instead of jumping. */}
+            <div
+              ref={measureRef}
+              aria-hidden="true"
+              className="pointer-events-none invisible absolute inset-x-0 top-0 md:hidden"
+            >
+              <SponsorStory sponsor={sponsors[activeIndex]} copy={copy} />
+            </div>
+
+            <AnimatePresence initial={false} custom={direction}>
               <motion.div
                 key={sponsors[activeIndex].id}
                 custom={direction}
@@ -267,7 +321,7 @@ export default function HomeSponsors() {
                 animate="center"
                 exit="exit"
                 transition={{ duration: reducedMotion ? 0.16 : 0.54, ease: EASING }}
-                className="col-start-1 row-start-1 h-auto overflow-visible md:h-full md:overflow-y-auto md:pr-1 md:[scrollbar-color:rgba(92,159,198,0.55)_transparent] md:[scrollbar-width:thin]"
+                className="absolute inset-x-0 top-0 md:inset-0 md:h-full md:overflow-y-auto md:pr-1 md:[scrollbar-color:rgba(92,159,198,0.55)_transparent] md:[scrollbar-width:thin]"
               >
                 <SponsorStory sponsor={sponsors[activeIndex]} copy={copy} />
               </motion.div>
@@ -297,6 +351,11 @@ export default function HomeSponsors() {
               >
                 <ul
                   aria-hidden="true"
+                  style={
+                    !reducedMotion && isPaused
+                      ? { animationPlayState: "paused" }
+                      : undefined
+                  }
                   className={`flex w-max items-center gap-3 py-1 md:gap-4 ${
                     reducedMotion
                       ? ""
@@ -320,7 +379,13 @@ export default function HomeSponsors() {
                               : "border-[#b9d9eb]/55 bg-white/45 hover:-translate-y-0.5 hover:border-[#9fc7df]/80 hover:bg-white/78"
                           }`}
                         >
-                          <span className="relative h-9 w-full max-w-[7.25rem]">
+                          <span
+                            className={
+                              sponsor.logoBadge
+                                ? "relative h-14 w-14"
+                                : "relative h-9 w-full max-w-[7.25rem]"
+                            }
+                          >
                             <Image
                               src={sponsor.logo}
                               alt=""

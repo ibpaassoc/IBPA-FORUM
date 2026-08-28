@@ -1170,6 +1170,7 @@ const en = {
           name: "Eat Me Golden State",
           label: "Featured Sponsor",
           logo: "/images/sponsors/eat-me-golden-state/eat-me-golden-state-logo.webp",
+          logoBadge: true,
           logoAlt: "Eat Me Golden State Catering & Events logo",
           location: "California",
           description:
@@ -1218,6 +1219,17 @@ const en = {
           websiteLabel: "maria-osipova.kavyar.site",
           instagram: "https://www.instagram.com/maria.osipova.visual/",
           instagramLabel: "@maria.osipova.visual",
+        },
+        {
+          id: "lux-photography",
+          name: "LUX Photography",
+          label: "Featured Sponsor",
+          logo: "/images/sponsors/lux-photography/lux-photography-logo.webp",
+          logoAlt: "LUX Photography logo",
+          description:
+            "LUX Photography is the brand of photographer Sofia Dobrianskyi, specializing in personal, lifestyle, and creative photography. Its work combines modern aesthetics, attention to detail, and a personalized approach to every project. The style is defined by clean, expressive, and refined imagery that highlights individuality while preserving the natural feel of the moment.",
+          instagram: "https://www.instagram.com/lux_photograph_/",
+          instagramLabel: "@lux_photograph_",
         },
       ],
     },
@@ -3781,6 +3793,7 @@ const ru: typeof en = {
           name: "Eat Me Golden State",
           label: "Главный спонсор",
           logo: "/images/sponsors/eat-me-golden-state/eat-me-golden-state-logo.webp",
+          logoBadge: true,
           logoAlt: "Логотип Eat Me Golden State Catering & Events",
           location: "Калифорния",
           description:
@@ -3829,6 +3842,17 @@ const ru: typeof en = {
           websiteLabel: "maria-osipova.kavyar.site",
           instagram: "https://www.instagram.com/maria.osipova.visual/",
           instagramLabel: "@maria.osipova.visual",
+        },
+        {
+          id: "lux-photography",
+          name: "LUX Photography",
+          label: "Главный спонсор",
+          logo: "/images/sponsors/lux-photography/lux-photography-logo.webp",
+          logoAlt: "Логотип LUX Photography",
+          description:
+            "LUX Photography — бренд фотографа Sofia Dobrianskyi, специализирующийся на персональной, lifestyle- и креативной фотографии. В работе сочетаются современная эстетика, внимание к деталям и индивидуальный подход к каждому проекту. Стиль отличают чистые, выразительные и утончённые кадры, которые подчёркивают индивидуальность и сохраняют естественность момента.",
+          instagram: "https://www.instagram.com/lux_photograph_/",
+          instagramLabel: "@lux_photograph_",
         },
       ],
     },
@@ -6393,6 +6417,7 @@ const ua: typeof en = {
           name: "Eat Me Golden State",
           label: "Головний спонсор",
           logo: "/images/sponsors/eat-me-golden-state/eat-me-golden-state-logo.webp",
+          logoBadge: true,
           logoAlt: "Логотип Eat Me Golden State Catering & Events",
           location: "Каліфорнія",
           description:
@@ -6441,6 +6466,17 @@ const ua: typeof en = {
           websiteLabel: "maria-osipova.kavyar.site",
           instagram: "https://www.instagram.com/maria.osipova.visual/",
           instagramLabel: "@maria.osipova.visual",
+        },
+        {
+          id: "lux-photography",
+          name: "LUX Photography",
+          label: "Головний спонсор",
+          logo: "/images/sponsors/lux-photography/lux-photography-logo.webp",
+          logoAlt: "Логотип LUX Photography",
+          description:
+            "LUX Photography — бренд фотографа Sofia Dobrianskyi, що спеціалізується на персональній, lifestyle- та креативній фотографії. У роботі поєднуються сучасна естетика, увага до деталей та індивідуальний підхід до кожного проєкту. Стиль вирізняють чисті, виразні й витончені кадри, які підкреслюють індивідуальність і зберігають природність моменту.",
+          instagram: "https://www.instagram.com/lux_photograph_/",
+          instagramLabel: "@lux_photograph_",
         },
       ],
     },
