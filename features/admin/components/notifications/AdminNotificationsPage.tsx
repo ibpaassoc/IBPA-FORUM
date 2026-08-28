@@ -408,7 +408,7 @@ export default function AdminNotificationsPage({
         aria-modal="true"
         aria-labelledby="notification-composer-title"
         aria-describedby="notification-composer-description"
-        className="relative z-[var(--z-dialog)] flex max-h-[96dvh] w-full max-w-[1180px] flex-col overflow-hidden rounded-[24px] border border-white/85 bg-[rgba(255,255,255,0.97)] shadow-[0_40px_110px_rgba(22,42,58,0.28)] sm:max-h-[92dvh] sm:rounded-[28px]"
+        className="relative z-[var(--z-dialog)] flex h-[96dvh] max-h-[96dvh] w-full max-w-[1180px] flex-col overflow-hidden rounded-[24px] border border-white/85 bg-[rgba(255,255,255,0.97)] shadow-[0_40px_110px_rgba(22,42,58,0.28)] sm:h-[92dvh] sm:max-h-[92dvh] sm:rounded-[28px]"
         onMouseDown={(event) => event.stopPropagation()}
       >
         <div className="flex shrink-0 items-start justify-between gap-4 border-b border-[rgba(37,42,45,0.09)] px-4 py-4 sm:px-6">
@@ -421,7 +421,7 @@ export default function AdminNotificationsPage({
 
         <form onSubmit={handleSubmit} noValidate aria-busy={pending} className="flex min-h-0 flex-1 flex-col">
           <div className="min-h-0 flex-1 overflow-y-auto xl:overflow-hidden">
-            <div className="grid min-h-full xl:grid-cols-[12.5rem_minmax(0,1fr)_22rem]">
+            <div className="min-h-full xl:grid xl:h-full xl:min-h-0 xl:grid-cols-[12.5rem_minmax(0,1fr)_22rem]">
               <aside className="border-b border-[rgba(37,42,45,0.08)] p-4 xl:border-b-0 xl:border-r">
                 <p className="text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-soft)]">Тип уведомления</p>
                 <div className="mt-4 grid grid-cols-2 gap-2 xl:grid-cols-1">
@@ -430,7 +430,7 @@ export default function AdminNotificationsPage({
                 </div>
               </aside>
 
-              <section className="border-b border-[rgba(37,42,45,0.08)] p-4 sm:p-5 xl:overflow-y-auto xl:border-b-0 xl:border-r">
+              <section className="border-b border-[rgba(37,42,45,0.08)] p-4 sm:p-5 xl:min-h-0 xl:overflow-y-auto xl:border-b-0 xl:border-r">
                 <h3 className="font-[var(--font-title-family)] text-xl font-light text-[var(--color-ink)]">{mode === "MANUAL" ? "Содержание" : "Выберите шаблон"}</h3>
                 {mode === "MANUAL" ? (
                   <div className="mt-4 space-y-1">
@@ -480,7 +480,7 @@ export default function AdminNotificationsPage({
                 )}
               </section>
 
-              <aside className="p-4 sm:p-5 xl:flex xl:min-h-0 xl:flex-col">
+              <aside className="p-4 sm:p-5 xl:flex xl:min-h-0 xl:flex-col xl:overflow-hidden">
                 <h3 className="font-[var(--font-title-family)] text-xl font-light text-[var(--color-ink)]">Получатели</h3>
                 <div className="relative mt-3 grid grid-cols-2 rounded-full border border-[rgba(114,160,193,0.22)] bg-white p-1 shadow-[inset_0_1px_3px_rgba(37,42,45,0.04)]">
                   <span aria-hidden="true" className={`absolute inset-y-1 w-[calc(50%-0.25rem)] rounded-full bg-[var(--color-blue)] shadow-[0_8px_20px_rgba(114,160,193,0.3)] transition-transform duration-300 ${audience === "APPLICANT" ? "translate-x-[calc(100%+0.5rem)]" : "translate-x-0"}`} />
