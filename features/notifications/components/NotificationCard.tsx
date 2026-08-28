@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useState, useTransition } from "react";
-import { CheckCircle2, ExternalLink, Loader2, MailWarning, QrCode, Sparkles } from "lucide-react";
+import { BellRing, CheckCircle2, ExternalLink, Loader2, MailWarning, QrCode, Sparkles, Ticket } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import {
   claimJuryGalaAction,
@@ -18,6 +19,11 @@ const buttonClass =
   "inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[var(--color-blue)] px-5 py-2.5 text-[0.72rem] font-semibold uppercase tracking-[0.11em] text-white shadow-[0_14px_34px_rgba(114,160,193,0.28)] transition hover:-translate-y-0.5 hover:bg-[#4d86ad] disabled:cursor-not-allowed disabled:opacity-55";
 const secondaryButtonClass =
   "inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[rgba(114,160,193,0.25)] bg-white/82 px-5 py-2.5 text-[0.72rem] font-semibold uppercase tracking-[0.11em] text-[var(--color-ink)] transition hover:bg-[var(--color-blue-wash)] disabled:opacity-55";
+
+const TicketModal = dynamic(() => import("@/features/tickets/components/TicketModal"), {
+  ssr: false,
+  loading: () => null,
+});
 
 const uiCopy = {
   en: {
@@ -66,6 +72,7 @@ export default function NotificationCard({
   const [pending, startTransition] = useTransition();
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState(false);
+  const [ticketModalOpen, setTicketModalOpen] = useState(false);
   const content = notification.content;
   const accepted = content.kind === "JURY_GALA" && content.state.status === "ACCEPTED";
   const purchased =
@@ -92,16 +99,17 @@ export default function NotificationCard({
   }
 
   return (
+    <>
     <GlassCard className={compact ? "p-4 sm:p-5" : "p-5 sm:p-6"}>
       <div className="flex items-start gap-3">
         <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[var(--color-blue-wash)] text-[var(--color-blue)]">
-          {content.kind === "JURY_GALA" ? <Sparkles size={19} /> : <QrCode size={19} />}
+          {content.kind === "JURY_GALA" ? <Sparkles size={19} /> : content.kind === "MANUAL" ? <BellRing size={19} /> : <QrCode size={19} />}
         </span>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div>
               <p className="text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-[var(--color-blue)]">
-                {content.kind === "JURY_GALA" ? "IBPA Gala Dinner" : "IBPA Forum"}
+                {content.kind === "JURY_GALA" ? "IBPA Gala Dinner" : content.kind === "MANUAL" ? "IBPA" : "IBPA Forum"}
               </p>
               <h2 className="mt-1 font-[var(--font-title-family)] text-[1.45rem] font-light leading-tight text-[var(--color-ink)]">
                 {copy.title}
@@ -112,9 +120,23 @@ export default function NotificationCard({
             </StatusBadge>
           </div>
           <p className="mt-3 text-sm font-semibold leading-6 text-[var(--color-ink)]">{copy.summary}</p>
-          <p className="mt-2 text-sm leading-6 text-[var(--color-ink-soft)]">{copy.description}</p>
+          {copy.description ? <p className="mt-2 text-sm leading-6 text-[var(--color-ink-soft)]">{copy.description}</p> : null}
 
-          {content.kind === "JURY_GALA" ? (
+          {content.kind === "MANUAL" ? (
+            content.action.type === "LINK" ? (
+              <Link href={content.action.url} className={`${buttonClass} mt-4 w-full sm:w-auto`}>
+                <ExternalLink size={16} /> {copy.actionLabel}
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setTicketModalOpen(true)}
+                className={`${buttonClass} mt-4 w-full sm:w-auto`}
+              >
+                <Ticket size={16} /> {copy.actionLabel}
+              </button>
+            )
+          ) : content.kind === "JURY_GALA" ? (
             accepted ? (
               <div className="mt-4 rounded-[20px] border border-emerald-200 bg-emerald-50/72 p-4">
                 <p className="flex items-center gap-2 text-sm font-semibold text-emerald-800">
@@ -191,5 +213,7 @@ export default function NotificationCard({
         </div>
       </div>
     </GlassCard>
+    {ticketModalOpen ? <TicketModal isOpen onClose={() => setTicketModalOpen(false)} /> : null}
+    </>
   );
 }

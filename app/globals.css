@@ -88,6 +88,18 @@
   --motion-slow: 420ms ease;
   --motion-editorial: cubic-bezier(0.22, 1, 0.36, 1);
 
+  --z-dropdown: 200;
+  --z-popover: 300;
+  --z-backdrop: 500;
+  --z-dialog: 600;
+  --z-sheet: 700;
+  --z-command: 800;
+  --z-toast: 900;
+
+  --scrollbar-thumb: rgba(114, 160, 193, 0.58);
+  --scrollbar-thumb-hover: rgba(77, 134, 173, 0.76);
+  --scrollbar-track: rgba(242, 248, 251, 0.72);
+
   --admin-bg: #f7f9fb;
   --admin-surface: #ffffff;
   --admin-surface-soft: #fbfdff;
@@ -121,6 +133,38 @@ html {
   background: var(--color-white);
   scroll-behavior: smooth;
   scrollbar-gutter: stable;
+}
+
+* {
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar {
+  width: 0.65rem;
+  height: 0.65rem;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+*::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: var(--radius-pill);
+  background: var(--scrollbar-thumb);
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+  background-clip: padding-box;
+}
+
+@media (forced-colors: active) {
+  * {
+    scrollbar-color: auto;
+  }
 }
 
 body {

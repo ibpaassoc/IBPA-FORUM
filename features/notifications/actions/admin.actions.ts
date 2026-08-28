@@ -6,8 +6,45 @@ import { createAccountNotifications } from "@/features/notifications/server/admi
 import { requireAdmin } from "@/shared/lib/admin-auth";
 
 const formSchema = z.object({
-  kind: z.enum(["JURY_GALA", "SPECIAL_OFFER_2_DAYS"]),
+  audience: z.enum(["JURY", "APPLICANT"]),
+  mode: z.enum(["MANUAL", "TEMPLATE"]),
+  templateId: z.enum(["FORUM_INVITE", "GALA_INFO"]).optional(),
+  title: z.string().trim().max(120).optional(),
+  summary: z.string().trim().max(360).optional(),
+  description: z.string().trim().max(900).optional(),
+  actionType: z.enum(["LINK", "TICKET_MODAL"]).optional(),
+  actionLabel: z.string().trim().max(48).optional(),
+  actionUrl: z.string().trim().max(500).optional(),
   accountIds: z.array(z.string().min(1)).min(1),
+}).superRefine((value, context) => {
+  if (value.mode === "TEMPLATE") {
+    if (!value.templateId) {
+      context.addIssue({ code: "custom", path: ["templateId"], message: "Выберите шаблон." });
+    }
+    return;
+  }
+
+  const requiredFields = [
+    ["title", value.title, "Введите заголовок."],
+    ["summary", value.summary, "Введите текст уведомления."],
+    ["actionType", value.actionType, "Выберите действие кнопки."],
+    ["actionLabel", value.actionLabel, "Введите текст кнопки."],
+  ] as const;
+  for (const [field, fieldValue, message] of requiredFields) {
+    if (!fieldValue) context.addIssue({ code: "custom", path: [field], message });
+  }
+
+  if (value.actionType === "LINK") {
+    if (!value.actionUrl) {
+      context.addIssue({ code: "custom", path: ["actionUrl"], message: "Укажите ссылку." });
+    } else if (!value.actionUrl.startsWith("/") && !/^https?:\/\//i.test(value.actionUrl)) {
+      context.addIssue({
+        code: "custom",
+        path: ["actionUrl"],
+        message: "Используйте адрес, начинающийся с /, http:// или https://.",
+      });
+    }
+  }
 });
 
 export type CreateNotificationsState = {
@@ -23,11 +60,19 @@ export async function createNotificationsAction(
   await requireAdmin();
 
   const parsed = formSchema.safeParse({
-    kind: formData.get("kind"),
+    audience: formData.get("audience"),
+    mode: formData.get("mode"),
+    templateId: formData.get("templateId") || undefined,
+    title: formData.get("title") || undefined,
+    summary: formData.get("summary") || undefined,
+    description: formData.get("description") || undefined,
+    actionType: formData.get("actionType") || undefined,
+    actionLabel: formData.get("actionLabel") || undefined,
+    actionUrl: formData.get("actionUrl") || undefined,
     accountIds: formData.getAll("accountIds"),
   });
   if (!parsed.success) {
-    return { status: "error", message: "Выберите хотя бы одного получателя." };
+    return { status: "error", message: parsed.error.issues[0]?.message ?? "Проверьте данные уведомления." };
   }
 
   try {

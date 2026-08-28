@@ -4,7 +4,7 @@ import type { Language } from "@/lib/i18n/translations";
 const localizedCopySchema = z.object({
   title: z.string().min(1),
   summary: z.string().min(1),
-  description: z.string().min(1),
+  description: z.string(),
   actionLabel: z.string().min(1),
   consentLabel: z.string().min(1).optional(),
 });
@@ -42,9 +42,24 @@ export const specialOfferNotificationContentSchema = baseSchema.extend({
   }),
 });
 
+const manualActionSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("LINK"),
+    url: z.string().min(1),
+  }),
+  z.object({ type: z.literal("TICKET_MODAL") }),
+]);
+
+export const manualNotificationContentSchema = baseSchema.extend({
+  kind: z.literal("MANUAL"),
+  action: manualActionSchema,
+  templateId: z.enum(["FORUM_INVITE", "GALA_INFO"]).optional(),
+});
+
 export const notificationContentSchema = z.discriminatedUnion("kind", [
   juryGalaNotificationContentSchema,
   specialOfferNotificationContentSchema,
+  manualNotificationContentSchema,
 ]);
 
 export type NotificationContent = z.infer<typeof notificationContentSchema>;
