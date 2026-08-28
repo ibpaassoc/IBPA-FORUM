@@ -8,6 +8,48 @@ export const languageLabels: Record<Language, { short: string; label: string }> 
   ua: { short: "UA", label: "Українська" },
 };
 
+type ProgramEventKind =
+  | "doors"
+  | "opening"
+  | "talk"
+  | "break"
+  | "address"
+  | "awards"
+  | "performance"
+  | "entertainment";
+
+type ProgramEvent = {
+  time: string;
+  speaker: string;
+  title: string;
+  kind: ProgramEventKind;
+};
+
+type ProgramCopy = {
+  eyebrow: string;
+  title: string;
+  description: string;
+  dateRange: string;
+  location: string;
+  tabsLabel: string;
+  scheduleLabel: string;
+  tracks: {
+    mainStage: string;
+    masterClasses: string;
+    galaDinner: string;
+  };
+  days: {
+    date: string;
+    dayLabel: string;
+    mainStage: ProgramEvent[];
+    masterClasses: {
+      time: string;
+      sessions: { speaker: string; title: string }[];
+    };
+    galaDinner: ProgramEvent[];
+  }[];
+};
+
 const en = {
   account: {
     nav: {
@@ -1001,11 +1043,148 @@ const en = {
       goToLabel: "Go to winner",
     },
     program: {
-      eyebrow: "Program",
-      title: "The full program is coming soon",
+      eyebrow: "Forum Program",
+      title: "Two days of ideas, craft, and celebration",
       description:
-        "Speakers, masterclasses, the schedule, and more will be published here.",
-    },
+        "Choose a day to explore the complete schedule across the main stage, live master classes, and Gala Dinner.",
+      dateRange: "September 25–26, 2026",
+      location: "Los Angeles, California",
+      tabsLabel: "Choose a forum day",
+      scheduleLabel: "Forum schedule",
+      tracks: {
+        mainStage: "Main Stage",
+        masterClasses: "Master Classes",
+        galaDinner: "Gala Dinner",
+      },
+      days: [
+        {
+          date: "September 25",
+          dayLabel: "Day 1",
+          mainStage: [
+            { time: "12:00", speaker: "", title: "Doors open and registration", kind: "doors" },
+            { time: "13:00", speaker: "", title: "Conference begins", kind: "opening" },
+            {
+              time: "13:15",
+              speaker: "Yaroslavna Atapina",
+              title: "Systems Instead of Chaos: The Foundations of Scaling a Beauty Business",
+              kind: "talk",
+            },
+            {
+              time: "13:45",
+              speaker: "Natalie Vaulin",
+              title: "How to Build Your Own Beauty Brand in the USA: From Idea to Store Shelf",
+              kind: "talk",
+            },
+            {
+              time: "14:15",
+              speaker: "Yulia Malina",
+              title: "The Next Generation of Beauty Business: How an AI Team Helps You Create, Sell, and Grow",
+              kind: "talk",
+            },
+            {
+              time: "14:45",
+              speaker: "Yulia Bailo",
+              title: "Before Scaling: How to Identify Bottlenecks and Find Growth Opportunities in Your Beauty Business",
+              kind: "talk",
+            },
+            {
+              time: "15:15",
+              speaker: "Rustam Solntsev",
+              title: "Speak So They Remember You: The Art of Self-Presentation",
+              kind: "talk",
+            },
+            { time: "15:45–16:45", speaker: "", title: "Break and coffee", kind: "break" },
+          ],
+          masterClasses: {
+            time: "16:45–18:45",
+            sessions: [
+              {
+                speaker: "Tetiana Kysliuk",
+                title: "Error-Free Lash Lifting: An Algorithm for Predictable Results",
+              },
+              {
+                speaker: "Masha Pixie",
+                title: "Pixie Without Fear: Creating Short Haircuts with Confidence",
+              },
+              {
+                speaker: "Viktoriia Tesalova",
+                title: "Complex Color Theory — Explained Simply: Choosing the Right Lip Pigment for Predictable Results",
+              },
+              {
+                speaker: "Anzhelika Syveniuk",
+                title: "Acne and the Skin Barrier: How to Combine Active Therapy with a Professional Procedure Without Overloading the Skin",
+              },
+            ],
+          },
+          galaDinner: [],
+        },
+        {
+          date: "September 26",
+          dayLabel: "Day 2",
+          mainStage: [
+            { time: "10:00", speaker: "", title: "Doors open and registration", kind: "doors" },
+            { time: "10:30", speaker: "", title: "Program begins", kind: "opening" },
+            {
+              time: "10:45",
+              speaker: "Larisa Berdnikova",
+              title: "Why 80% of Beauty Professionals Never Become High-Priced Experts",
+              kind: "talk",
+            },
+            {
+              time: "11:15",
+              speaker: "Danil Tegay",
+              title: "Attracting Clients Through Events and Staff Professionalism",
+              kind: "talk",
+            },
+            {
+              time: "11:45",
+              speaker: "Eleonora Bediukh",
+              title: "Content That Sells: A Social Media Growth System for Beauty Professionals Without Burnout",
+              kind: "talk",
+            },
+            {
+              time: "12:15",
+              speaker: "Sasha Zvereva",
+              title: "Personal Experience of Building a Business While Raising Four Children",
+              kind: "talk",
+            },
+            { time: "12:45–13:30", speaker: "", title: "Break and coffee", kind: "break" },
+          ],
+          masterClasses: {
+            time: "13:30–15:30",
+            sessions: [
+              {
+                speaker: "Olha Ladaniuk",
+                title: "Professional Sketch + AirContour: Championship Brow System",
+              },
+              {
+                speaker: "Kateryna Lushakova",
+                title: "How to Introduce UV/LED Eyelash Extensions Into Your Beauty Business and Increase Revenue",
+              },
+              {
+                speaker: "Anastasia Huk",
+                title: "Mistakes in Acne Correction That Prevent Lasting Remission",
+              },
+              { speaker: "Anastasiia Moskaliuk", title: "Manicure" },
+            ],
+          },
+          galaDinner: [
+            { time: "17:30", speaker: "", title: "Gala Dinner doors open and registration", kind: "doors" },
+            { time: "18:00", speaker: "", title: "Gala Dinner begins", kind: "opening" },
+            { time: "18:00–18:10", speaker: "", title: "President’s address", kind: "address" },
+            {
+              time: "18:10–20:00",
+              speaker: "",
+              title: "Official announcement of the IBPA Beauty Award 2026 results and winner ceremony",
+              kind: "awards",
+            },
+            { time: "20:00–20:30", speaker: "TEORA", title: "", kind: "performance" },
+            { time: "20:30–21:00", speaker: "Sasha Zvereva", title: "Performance", kind: "performance" },
+            { time: "21:00–22:00", speaker: "", title: "Entertainment program", kind: "entertainment" },
+          ],
+        },
+      ],
+    } as ProgramCopy,
     speakers: {
       eyebrow: "Speakers",
       title: "Speakers to be announced",
@@ -3624,11 +3803,148 @@ const ru: typeof en = {
       goToLabel: "Перейти к победителю",
     },
     program: {
-      eyebrow: "Программа",
-      title: "Полная программа скоро появится",
+      eyebrow: "Программа форума",
+      title: "Два дня идей, мастерства и ярких событий",
       description:
-        "Здесь будут опубликованы спикеры, мастер-классы, расписание и многое другое.",
-    },
+        "Выберите день, чтобы увидеть полное расписание главной сцены, мастер-классов и Gala Dinner.",
+      dateRange: "25–26 сентября 2026",
+      location: "Лос-Анджелес, Калифорния",
+      tabsLabel: "Выберите день форума",
+      scheduleLabel: "Расписание форума",
+      tracks: {
+        mainStage: "Главная сцена",
+        masterClasses: "Мастер-классы",
+        galaDinner: "Gala Dinner",
+      },
+      days: [
+        {
+          date: "25 сентября",
+          dayLabel: "День 1",
+          mainStage: [
+            { time: "12:00", speaker: "", title: "Открытие дверей и регистрация", kind: "doors" },
+            { time: "13:00", speaker: "", title: "Начало конференции", kind: "opening" },
+            {
+              time: "13:15",
+              speaker: "Ярославна Атапина",
+              title: "Система вместо хаоса: основы масштабирования beauty-бизнеса",
+              kind: "talk",
+            },
+            {
+              time: "13:45",
+              speaker: "Натали Ваулин",
+              title: "Как создать собственный beauty-бренд в США: от идеи до полки магазина",
+              kind: "talk",
+            },
+            {
+              time: "14:15",
+              speaker: "Юлия Малина",
+              title: "Beauty-бизнес нового поколения: как AI-команда помогает создавать, продавать и расти",
+              kind: "talk",
+            },
+            {
+              time: "14:45",
+              speaker: "Юлия Байло",
+              title: "Перед масштабом: как выявить узкие места и найти точки роста в бьюти-бизнесе",
+              kind: "talk",
+            },
+            {
+              time: "15:15",
+              speaker: "Рустам Солнцев",
+              title: "Искусство самопрезентации: говори так, чтобы запомнили",
+              kind: "talk",
+            },
+            { time: "15:45–16:45", speaker: "", title: "Перерыв, кофе-брейк", kind: "break" },
+          ],
+          masterClasses: {
+            time: "16:45–18:45",
+            sessions: [
+              {
+                speaker: "Татьяна Кислюк",
+                title: "Ламинирование ресниц без ошибок: алгоритм, который даёт предсказуемый результат",
+              },
+              {
+                speaker: "Masha Pixie",
+                title: "Pixie без страха: как создавать короткие стрижки с уверенностью в результате",
+              },
+              {
+                speaker: "Viktoriya Tesalova",
+                title: "Сложная колористика перманентного макияжа — простым языком. Как правильно подбирать пигмент для губ, чтобы получать прогнозируемые результаты",
+              },
+              {
+                speaker: "Анджелика Сивенюк",
+                title: "Акне и кожный барьер: как сочетать активную терапию и профессиональную процедуру без перегрузки кожи",
+              },
+            ],
+          },
+          galaDinner: [],
+        },
+        {
+          date: "26 сентября",
+          dayLabel: "День 2",
+          mainStage: [
+            { time: "10:00", speaker: "", title: "Открытие дверей и регистрация", kind: "doors" },
+            { time: "10:30", speaker: "", title: "Начало программы", kind: "opening" },
+            {
+              time: "10:45",
+              speaker: "Лариса Бердникова",
+              title: "Почему 80% мастеров никогда не становятся дорогими специалистами",
+              kind: "talk",
+            },
+            {
+              time: "11:15",
+              speaker: "Danil Tegay",
+              title: "Привлечение клиентов через эвенты и профессионализм сотрудников",
+              kind: "talk",
+            },
+            {
+              time: "11:45",
+              speaker: "Eleonora Bediukh",
+              title: "Контент, который продаёт: система продвижения бьюти-мастера в соцсетях без хаоса и выгорания",
+              kind: "talk",
+            },
+            {
+              time: "12:15",
+              speaker: "Саша Зверева",
+              title: "Личный опыт выстраивания бизнеса с четырьмя детьми",
+              kind: "talk",
+            },
+            { time: "12:45–13:30", speaker: "", title: "Перерыв, кофе-брейк", kind: "break" },
+          ],
+          masterClasses: {
+            time: "13:30–15:30",
+            sessions: [
+              {
+                speaker: "Olha Ladaniuk",
+                title: "Professional Sketch + AirContour: Championship Brow System",
+              },
+              {
+                speaker: "Катерина Лушакова",
+                title: "Как внедрить UV/LED-наращивание ресниц в свой beauty-бизнес и увеличить доход",
+              },
+              {
+                speaker: "Anastasia Huk",
+                title: "Ошибки в коррекции акне, которые мешают достичь стойкой ремиссии",
+              },
+              { speaker: "Анастасия Москалюк", title: "Маникюр" },
+            ],
+          },
+          galaDinner: [
+            { time: "17:30", speaker: "", title: "Открытие дверей Gala Dinner и регистрация", kind: "doors" },
+            { time: "18:00", speaker: "", title: "Начало Gala Dinner", kind: "opening" },
+            { time: "18:00–18:10", speaker: "", title: "Слово президента", kind: "address" },
+            {
+              time: "18:10–20:00",
+              speaker: "",
+              title: "Торжественное оглашение результатов премии IBPA Beauty Award 2026 и награждение победителей",
+              kind: "awards",
+            },
+            { time: "20:00–20:30", speaker: "TEORA", title: "", kind: "performance" },
+            { time: "20:30–21:00", speaker: "Саша Зверева", title: "Выступление", kind: "performance" },
+            { time: "21:00–22:00", speaker: "", title: "Развлекательная программа", kind: "entertainment" },
+          ],
+        },
+      ],
+    } as ProgramCopy,
     speakers: {
       eyebrow: "Спикеры",
       title: "Спикеры будут объявлены",
@@ -6248,11 +6564,148 @@ const ua: typeof en = {
       goToLabel: "Перейти до переможця",
     },
     program: {
-      eyebrow: "Програма",
-      title: "Повна програма скоро з'явиться",
+      eyebrow: "Програма форуму",
+      title: "Два дні ідей, майстерності та яскравих подій",
       description:
-        "Тут будуть опубліковані спікери, майстер-класи, розклад та багато іншого.",
-    },
+        "Оберіть день, щоб переглянути повний розклад головної сцени, майстер-класів і Gala Dinner.",
+      dateRange: "25–26 вересня 2026",
+      location: "Лос-Анджелес, Каліфорнія",
+      tabsLabel: "Оберіть день форуму",
+      scheduleLabel: "Розклад форуму",
+      tracks: {
+        mainStage: "Головна сцена",
+        masterClasses: "Майстер-класи",
+        galaDinner: "Gala Dinner",
+      },
+      days: [
+        {
+          date: "25 вересня",
+          dayLabel: "День 1",
+          mainStage: [
+            { time: "12:00", speaker: "", title: "Відкриття дверей і реєстрація", kind: "doors" },
+            { time: "13:00", speaker: "", title: "Початок конференції", kind: "opening" },
+            {
+              time: "13:15",
+              speaker: "Ярославна Атапіна",
+              title: "Система замість хаосу: основи масштабування beauty-бізнесу",
+              kind: "talk",
+            },
+            {
+              time: "13:45",
+              speaker: "Наталі Ваулін",
+              title: "Як створити власний beauty-бренд у США: від ідеї до полиці магазину",
+              kind: "talk",
+            },
+            {
+              time: "14:15",
+              speaker: "Юлія Маліна",
+              title: "Beauty-бізнес нового покоління: як AI-команда допомагає створювати, продавати та зростати",
+              kind: "talk",
+            },
+            {
+              time: "14:45",
+              speaker: "Юлія Байло",
+              title: "Перед масштабуванням: як виявити вузькі місця та знайти точки зростання в beauty-бізнесі",
+              kind: "talk",
+            },
+            {
+              time: "15:15",
+              speaker: "Рустам Солнцев",
+              title: "Мистецтво самопрезентації: говори так, щоб запам’ятали",
+              kind: "talk",
+            },
+            { time: "15:45–16:45", speaker: "", title: "Перерва, кава-брейк", kind: "break" },
+          ],
+          masterClasses: {
+            time: "16:45–18:45",
+            sessions: [
+              {
+                speaker: "Тетяна Кислюк",
+                title: "Ламінування вій без помилок: алгоритм, що дає передбачуваний результат",
+              },
+              {
+                speaker: "Masha Pixie",
+                title: "Pixie без страху: як створювати короткі стрижки з упевненістю в результаті",
+              },
+              {
+                speaker: "Viktoriia Tesalova",
+                title: "Складна колористика перманентного макіяжу — простою мовою. Як правильно добирати пігмент для губ, щоб отримувати прогнозовані результати",
+              },
+              {
+                speaker: "Анджеліка Сивенюк",
+                title: "Акне та шкірний бар’єр: як поєднати активну терапію і професійну процедуру без перевантаження шкіри",
+              },
+            ],
+          },
+          galaDinner: [],
+        },
+        {
+          date: "26 вересня",
+          dayLabel: "День 2",
+          mainStage: [
+            { time: "10:00", speaker: "", title: "Відкриття дверей і реєстрація", kind: "doors" },
+            { time: "10:30", speaker: "", title: "Початок програми", kind: "opening" },
+            {
+              time: "10:45",
+              speaker: "Лариса Бердникова",
+              title: "Чому 80% майстрів ніколи не стають дорогими фахівцями",
+              kind: "talk",
+            },
+            {
+              time: "11:15",
+              speaker: "Danil Tegay",
+              title: "Залучення клієнтів через івенти та професіоналізм співробітників",
+              kind: "talk",
+            },
+            {
+              time: "11:45",
+              speaker: "Eleonora Bediukh",
+              title: "Контент, що продає: система просування beauty-майстра в соцмережах без хаосу та вигорання",
+              kind: "talk",
+            },
+            {
+              time: "12:15",
+              speaker: "Саша Звєрєва",
+              title: "Особистий досвід побудови бізнесу з чотирма дітьми",
+              kind: "talk",
+            },
+            { time: "12:45–13:30", speaker: "", title: "Перерва, кава-брейк", kind: "break" },
+          ],
+          masterClasses: {
+            time: "13:30–15:30",
+            sessions: [
+              {
+                speaker: "Ольга Ладанюк",
+                title: "Professional Sketch + AirContour: чемпіонська система брів",
+              },
+              {
+                speaker: "Катерина Лушакова",
+                title: "Як впровадити UV/LED-нарощування вій у свій beauty-бізнес і збільшити дохід",
+              },
+              {
+                speaker: "Anastasia Huk",
+                title: "Помилки в корекції акне, які заважають досягти стійкої ремісії",
+              },
+              { speaker: "Анастасія Москалюк", title: "Манікюр" },
+            ],
+          },
+          galaDinner: [
+            { time: "17:30", speaker: "", title: "Відкриття дверей Gala Dinner і реєстрація", kind: "doors" },
+            { time: "18:00", speaker: "", title: "Початок Gala Dinner", kind: "opening" },
+            { time: "18:00–18:10", speaker: "", title: "Слово президента", kind: "address" },
+            {
+              time: "18:10–20:00",
+              speaker: "",
+              title: "Урочисте оголошення результатів премії IBPA Beauty Award 2026 і нагородження переможців",
+              kind: "awards",
+            },
+            { time: "20:00–20:30", speaker: "TEORA", title: "", kind: "performance" },
+            { time: "20:30–21:00", speaker: "Саша Звєрєва", title: "Виступ", kind: "performance" },
+            { time: "21:00–22:00", speaker: "", title: "Розважальна програма", kind: "entertainment" },
+          ],
+        },
+      ],
+    } as ProgramCopy,
     speakers: {
       eyebrow: "Спікери",
       title: "Спікерів буде оголошено",
