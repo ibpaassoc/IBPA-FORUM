@@ -155,12 +155,13 @@ export async function createAccountNotifications({
     select: {
       id: true,
       email: true,
+      role: true,
       juryProfile: { select: { fullName: true } },
       applicantProfile: { select: { fullName: true } },
     },
   });
 
-  if (accounts.length === 0) return { created: 0, skipped: uniqueIds.length };
+  if (accounts.length === 0) return { created: 0, skipped: uniqueIds.length, recipients: [] as NotificationRecipient[] };
 
   const content = notificationContent({
     mode,
@@ -182,5 +183,14 @@ export async function createAccountNotifications({
     })),
   });
 
-  return { created: result.count, skipped: uniqueIds.length - accounts.length };
+  return {
+    created: result.count,
+    skipped: uniqueIds.length - accounts.length,
+    recipients: accounts.map((account) => ({
+      id: account.id,
+      email: account.email,
+      role: account.role,
+      fullName: account.juryProfile?.fullName ?? account.applicantProfile?.fullName ?? account.email,
+    })) satisfies NotificationRecipient[],
+  };
 }

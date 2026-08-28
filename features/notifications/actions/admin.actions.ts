@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createAccountNotifications } from "@/features/notifications/server/admin";
+import { sendNewNotificationEmail } from "@/features/notifications/server/email";
 import { requireAdmin } from "@/shared/lib/admin-auth";
 
 const formSchema = z.object({
@@ -16,6 +17,7 @@ const formSchema = z.object({
   actionLabel: z.string().trim().max(48).optional(),
   actionUrl: z.string().trim().max(500).optional(),
   accountIds: z.array(z.string().min(1)).min(1),
+  sendEmail: z.boolean(),
 }).superRefine((value, context) => {
   if (value.mode === "TEMPLATE") {
     if (!value.templateId) {
@@ -70,13 +72,32 @@ export async function createNotificationsAction(
     actionLabel: formData.get("actionLabel") || undefined,
     actionUrl: formData.get("actionUrl") || undefined,
     accountIds: formData.getAll("accountIds"),
+    sendEmail: formData.get("sendEmail") === "true",
   });
   if (!parsed.success) {
     return { status: "error", message: parsed.error.issues[0]?.message ?? "Проверьте данные уведомления." };
   }
 
   try {
-    const result = await createAccountNotifications(parsed.data);
+    const { sendEmail: shouldSendEmail, ...notificationInput } = parsed.data;
+    const result = await createAccountNotifications(notificationInput);
+    let emailMessage = "";
+    if (shouldSendEmail && result.recipients.length > 0) {
+      const emailResults = await Promise.allSettled(
+        result.recipients.map((recipient) => sendNewNotificationEmail({
+          to: recipient.email,
+          fullName: recipient.fullName,
+          role: recipient.role,
+        })),
+      );
+      const emailsSent = emailResults.filter(
+        (emailResult) => emailResult.status === "fulfilled" && emailResult.value.delivered,
+      ).length;
+      const emailsFailed = emailResults.length - emailsSent;
+      emailMessage = emailsFailed > 0
+        ? ` Email отправлен: ${emailsSent}, не отправлен: ${emailsFailed}.`
+        : ` Email отправлен: ${emailsSent}.`;
+    }
     revalidatePath("/admin/notifications");
     revalidatePath("/account/applicant");
     revalidatePath("/account/jury");
@@ -84,9 +105,7 @@ export async function createNotificationsAction(
       status: "success",
       created: result.created,
       message:
-        result.skipped > 0
-          ? `Создано уведомлений: ${result.created}. Пропущено: ${result.skipped}.`
-          : `Создано уведомлений: ${result.created}.`,
+        `${result.skipped > 0 ? `Создано уведомлений: ${result.created}. Пропущено: ${result.skipped}.` : `Создано уведомлений: ${result.created}.`}${emailMessage}`,
     };
   } catch (error) {
     console.error("Failed to create account notifications.", error);

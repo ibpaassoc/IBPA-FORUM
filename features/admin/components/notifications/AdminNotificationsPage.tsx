@@ -17,6 +17,7 @@ import {
   ExternalLink,
   LayoutTemplate,
   Loader2,
+  Mail,
   PencilLine,
   Search,
   Send,
@@ -198,6 +199,7 @@ export default function AdminNotificationsPage({
   const [templateId, setTemplateId] = useState<TemplateId>("FORUM_INVITE");
   const [audience, setAudience] = useState<Audience>("JURY");
   const [actionType, setActionType] = useState<ActionType>("TICKET_MODAL");
+  const [emailAlertEnabled, setEmailAlertEnabled] = useState(false);
   const [fields, setFields] = useState<ManualFields>(initialManualFields);
   const [selectedByAudience, setSelectedByAudience] = useState<Record<Audience, Set<string>>>(() => ({
     JURY: new Set(),
@@ -237,6 +239,7 @@ export default function AdminNotificationsPage({
   const preview = mode === "TEMPLATE" ? template : { ...fields, actionType };
   const dirty = mode !== "MANUAL" || actionType !== "TICKET_MODAL" ||
     (Object.keys(fields) as Array<keyof ManualFields>).some((field) => fields[field] !== initialManualFields[field]) ||
+    emailAlertEnabled ||
     selectedByAudience.JURY.size > 0 || selectedByAudience.APPLICANT.size > 0;
 
   useEffect(() => {
@@ -375,6 +378,7 @@ export default function AdminNotificationsPage({
       if (actionType === "LINK") formData.set("actionUrl", fields.actionUrl.trim());
     }
     selected.forEach((id) => formData.append("accountIds", id));
+    formData.set("sendEmail", emailAlertEnabled ? "true" : "false");
 
     startTransition(async () => {
       const result = await createNotificationsAction(initialState, formData);
@@ -384,6 +388,7 @@ export default function AdminNotificationsPage({
       }
       setPageMessage(result.message ?? "Уведомления созданы.");
       setSelectedByAudience((current) => ({ ...current, [audience]: new Set() }));
+      setEmailAlertEnabled(false);
       setComposerOpen(false);
       router.refresh();
     });
@@ -521,7 +526,14 @@ export default function AdminNotificationsPage({
           </div>
 
           <div className="flex shrink-0 flex-col gap-3 border-t border-[rgba(37,42,45,0.09)] bg-white/96 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-            <div className="min-h-5 text-sm">{serverError ? <p role="alert" className="text-red-700">{serverError}</p> : <p className="text-[var(--color-ink-soft)]">Будет создано уведомлений: {selected.size}</p>}</div>
+            <div className="min-h-5 text-sm">
+              {serverError ? <p role="alert" className="text-red-700">{serverError}</p> : (
+                <label className="flex cursor-pointer items-start gap-2.5 text-[var(--color-ink-soft)]">
+                  <input type="checkbox" checked={emailAlertEnabled} onChange={(event) => setEmailAlertEnabled(event.target.checked)} className="admin-checkbox mt-0.5" />
+                  <span className="flex items-start gap-1.5"><Mail size={15} className="mt-0.5 shrink-0 text-[var(--color-blue)]" /><span><span className="block font-semibold text-[var(--color-ink)]">Отправить email-оповещение</span><span className="mt-0.5 block text-xs">Выбранным пользователям придёт письмо о новом уведомлении.</span><span className="mt-1 block text-xs">Будет создано уведомлений: <strong className="text-[var(--color-ink)]">{selected.size}</strong></span></span></span>
+                </label>
+              )}
+            </div>
             <div className="flex w-full gap-2 sm:w-auto"><DashboardSecondaryBtn onClick={() => setComposerOpen(false)} disabled={pending}>Отмена</DashboardSecondaryBtn><DashboardPrimaryBtn type="submit" disabled={pending || selected.size === 0} className="min-w-0 flex-1 sm:min-w-[15rem]">{pending ? <Loader2 className="animate-spin" size={16} /> : <Send size={16} />}{pending ? "Создаём…" : "Создать уведомление"}</DashboardPrimaryBtn></div>
           </div>
         </form>
