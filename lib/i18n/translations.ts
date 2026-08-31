@@ -930,10 +930,10 @@ const en = {
           ]
         },
         {
-          name: "Liubov Chetvertinovskaya",
+          name: "Kate Lushakova",
           photo: "/images/master-classes/liubov-chetvertinovskaya.png",
           role:
-            "Liubov Chetvertinovskaya represents PLATINUM, an international lash and brow brand with more than nine years of premium product development and a catalog of over 1,000 professional materials. Her session combines hands-on UV/LED technique with a practical business framework for introducing the service, presenting its value to clients, and turning the technology into a new source of revenue.",
+            "Kate Lushakova represents PLATINUM, an international lash and brow brand with more than nine years of premium product development and a catalog of over 1,000 professional materials. Her session combines hands-on UV/LED technique with a practical business framework for introducing the service, presenting its value to clients, and turning the technology into a new source of revenue.",
           topic:
             "UV/LED Technology in Your Beauty Business: How to Introduce UV/LED Lash Extensions and Increase Revenue",
           description:
@@ -1162,7 +1162,7 @@ const en = {
                 speaker: "Anastasia Huk",
                 title: "Mistakes in Acne Correction That Prevent Lasting Remission",
               },
-              { speaker: "Anastasiia Moskaliuk", title: "Manicure" },
+              { speaker: "Anastasiia Moskaliuk", title: "Modern techniques in the nail industry" },
             ],
           },
           galaDinner: [
@@ -3688,10 +3688,10 @@ const ru: typeof en = {
           ]
         },
         {
-          name: "Любовь Четвертиновская",
+          name: "Кейт Лушакова",
           photo: "/images/master-classes/liubov-chetvertinovskaya.png",
           role:
-            "Любовь Четвертиновская представляет PLATINUM — международный бренд для lash & brow индустрии, который более девяти лет создаёт профессиональные материалы премиального качества и предлагает ассортимент из более чем 1 000 позиций. Её мастер-класс объединяет практическую работу с UV/LED и понятную бизнес-систему внедрения услуги, презентации её ценности клиентам и превращения технологии в новый источник дохода.",
+            "Кейт Лушакова представляет PLATINUM — международный бренд для lash & brow индустрии, который более девяти лет создаёт профессиональные материалы премиального качества и предлагает ассортимент из более чем 1 000 позиций. Её мастер-класс объединяет практическую работу с UV/LED и понятную бизнес-систему внедрения услуги, презентации её ценности клиентам и превращения технологии в новый источник дохода.",
           topic:
             "UV/LED Technology in Your Beauty Business: как внедрить UV/LED-наращивание ресниц в свой beauty-бизнес и увеличить доход",
           description:
@@ -3920,7 +3920,7 @@ const ru: typeof en = {
                 speaker: "Anastasia Huk",
                 title: "Ошибки в коррекции акне, которые мешают достичь стойкой ремиссии",
               },
-              { speaker: "Анастасия Москалюк", title: "Маникюр" },
+              { speaker: "Анастасия Москалюк", title: "Современные техники в Nail-индустрии" }
             ],
           },
           galaDinner: [
@@ -6447,10 +6447,10 @@ const ua: typeof en = {
           ]
         },
         {
-          name: "Любов Четвертиновська",
+          name: "Кейт Лушакова",
           photo: "/images/master-classes/liubov-chetvertinovskaya.png",
           role:
-            "Любов Четвертиновська представляє PLATINUM — міжнародний бренд для lash & brow індустрії, який понад дев’ять років створює професійні матеріали преміальної якості та пропонує асортимент із понад 1 000 позицій. Її майстер-клас поєднує практичну роботу з UV/LED і зрозумілу бізнес-систему впровадження послуги, презентації її цінності клієнтам і перетворення технології на нове джерело доходу.",
+            "Кейт Лушакова представляє PLATINUM — міжнародний бренд для lash & brow індустрії, який понад дев’ять років створює професійні матеріали преміальної якості та пропонує асортимент із понад 1 000 позицій. Її майстер-клас поєднує практичну роботу з UV/LED і зрозумілу бізнес-систему впровадження послуги, презентації її цінності клієнтам і перетворення технології на нове джерело доходу.",
           topic:
             "UV/LED Technology in Your Beauty Business: як упровадити UV/LED-нарощування вій у свій beauty-бізнес і збільшити дохід",
           description:
@@ -6679,7 +6679,7 @@ const ua: typeof en = {
                 speaker: "Anastasia Huk",
                 title: "Помилки в корекції акне, які заважають досягти стійкої ремісії",
               },
-              { speaker: "Анастасія Москалюк", title: "Манікюр" },
+              { speaker: "Анастасія Москалюк", title: "Сучасні техніки в Nail-індустрії" },
             ],
           },
           galaDinner: [

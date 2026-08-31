@@ -74,34 +74,9 @@ export default function HomeRegistrationSection() {
   return (
     <>
       <section id="pricing" className="landing-section-strong relative overflow-hidden py-12 md:py-16 lg:py-20">
-        <div className="pointer-events-none absolute left-[-10%] top-0 h-80 w-80 rounded-full bg-[#b9d9eb]/18 blur-2xl" />
-
         <div className="page-section relative">
-          <Reveal>
-            <div className="mx-auto max-w-3xl text-center">
-              <p className="page-eyebrow text-[#72a0c1]">{c.eyebrow}</p>
 
-              <h2 className="mt-4 font-[var(--font-display)] text-[clamp(2.5rem,5.7vw,5.7rem)] leading-[0.9] tracking-[-0.065em] text-[#10182a]">
-                {c.title}
-              </h2>
-            </div>
-          </Reveal>
-
-          <div className="mx-auto mt-10 max-w-5xl">
-            <StaggerContainer className="grid gap-3 md:grid-cols-2" stagger={0.08}>
-              {topInfoCards.map((card) => (
-                <InfoCard key={card.eyebrow} {...card} featured />
-              ))}
-            </StaggerContainer>
-
-            <StaggerContainer className="mt-3 grid gap-3 md:grid-cols-3" stagger={0.06} delay={0.05}>
-              {bottomInfoCards.map((card) => (
-                <InfoCard key={card.eyebrow} {...card} />
-              ))}
-            </StaggerContainer>
-          </div>
-
-          <div className="mx-auto mt-12 max-w-7xl lg:mt-14">
+          <div className="mx-auto max-w-7xl lg:mt-14">
             <Reveal>
               <div className="mb-7 grid gap-6 md:grid-cols-[0.85fr_1fr] md:items-end">
                 <div>
