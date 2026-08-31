@@ -1162,7 +1162,7 @@ const en = {
                 speaker: "Anastasia Huk",
                 title: "Mistakes in Acne Correction That Prevent Lasting Remission",
               },
-              { speaker: "Anastasiia Moskaliuk", title: "Manicure" },
+              { speaker: "Anastasiia Moskaliuk", title: "Modern techniques in the nail industry" },
             ],
           },
           galaDinner: [
@@ -3920,7 +3920,7 @@ const ru: typeof en = {
                 speaker: "Anastasia Huk",
                 title: "Ошибки в коррекции акне, которые мешают достичь стойкой ремиссии",
               },
-              { speaker: "Анастасия Москалюк", title: "Маникюр" },
+              { speaker: "Анастасия Москалюк", title: "Современные техники в Nail-индустрии" }
             ],
           },
           galaDinner: [
@@ -6679,7 +6679,7 @@ const ua: typeof en = {
                 speaker: "Anastasia Huk",
                 title: "Помилки в корекції акне, які заважають досягти стійкої ремісії",
               },
-              { speaker: "Анастасія Москалюк", title: "Манікюр" },
+              { speaker: "Анастасія Москалюк", title: "Сучасні техніки в Nail-індустрії" },
             ],
           },
           galaDinner: [
