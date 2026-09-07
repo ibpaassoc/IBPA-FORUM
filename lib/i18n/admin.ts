@@ -606,6 +606,27 @@ export const adminT = {
       IN_PROGRESS: "В процессе",
       NOT_STARTED: "Не начато",
     } as Record<string, string>,
+    // ── Ручной доступ к оцениванию ────────────────────────────────────
+    juryAccess: "Доступ к оцениванию",
+    juryAccessGlobalOpen: "Открыто для всех",
+    juryAccessClosed: "Закрыто",
+    juryAccessManual: "Открыто вручную",
+    juryAccessOpenAction: "Открыть оценивание",
+    juryAccessCloseAction: "Закрыть доступ",
+    juryAccessBusy: "Сохраняем…",
+    juryAccessOpenTitle: "Открыть оценивание этому члену жюри?",
+    juryAccessOpenDescription:
+      "Член жюри сможет снова сохранять черновики и отправлять оценки, пока оценивание закрыто для остальных. Уже отправленные оценки не изменятся.",
+    juryAccessOpenConfirm: "Да, открыть",
+    juryAccessCloseTitle: "Закрыть доступ к оцениванию?",
+    juryAccessCloseDescription:
+      "Член жюри снова перейдёт в режим только для чтения. Сохранённые черновики и отправленные оценки останутся без изменений.",
+    juryAccessCloseConfirm: "Да, закрыть",
+    juryAccessError: "Не удалось изменить доступ к оцениванию. Попробуйте ещё раз.",
+    juryAccessHint:
+      "Оценивание закрыто. Здесь можно вручную открыть его отдельному члену жюри — например, чтобы он завершил незаконченные оценки.",
+    juryAccessManualCount: (count: number) =>
+      `Ручной доступ открыт: ${count}`,
     juryDetailTitle: "Назначения члена жюри",
     juryDetailBack: "Назад к прогрессу жюри",
     reviewStatus: "Статус отзыва",
@@ -1023,6 +1044,7 @@ export const adminT = {
     missingScoreId: "Не указан идентификатор оценки.",
     requestFailed: "Запрос не выполнен.",
     reopenScoreFailed: "Не удалось открыть оценку заново.",
+    juryScoringAccessFailed: "Не удалось изменить доступ жюри к оцениванию.",
     scoringOverviewFailed: "Не удалось загрузить сводку оценивания.",
     scoringDetailFailed: "Не удалось загрузить детали оценивания.",
     scoreExportFailed: "Не удалось экспортировать оценки.",

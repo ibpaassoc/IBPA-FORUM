@@ -2,6 +2,7 @@ import Link from "next/link";
 import { UsersRound } from "lucide-react";
 import { adminT } from "@/lib/i18n/admin";
 import { DashboardCard, DashboardEmptyState } from "@/shared/components/admin/DashboardUI";
+import JuryScoringAccessControl from "@/features/admin/components/scoring/JuryScoringAccessControl";
 
 export type JuryProgressRow = {
   juryId: string;
@@ -16,19 +17,21 @@ export type JuryProgressRow = {
   completion: number;
   lastActivityLabel: string | null;
   status: string;
+  scoringOpen: boolean;
+  manuallyOpened: boolean;
 };
 
-export default function JuryProgressTable({ rows, detailQuery }: { rows: JuryProgressRow[]; detailQuery: string }) {
+export default function JuryProgressTable({ rows, detailQuery, scoringClosed }: { rows: JuryProgressRow[]; detailQuery: string; scoringClosed: boolean }) {
   if (rows.length === 0) {
     return <DashboardCard><DashboardEmptyState icon={<UsersRound size={22} />} title={adminT.scoring.juryProgressEmptyTitle} description={adminT.scoring.juryProgressEmptyText} /></DashboardCard>;
   }
   return (
     <DashboardCard className="overflow-hidden p-0">
       <div className="overflow-x-auto">
-        <table className="min-w-[1050px] w-full border-collapse text-left">
+        <table className="min-w-[1250px] w-full border-collapse text-left">
           <caption className="sr-only">{adminT.scoring.juryProgressTitle}</caption>
           <thead className="bg-white/60 text-[0.62rem] font-semibold uppercase tracking-[0.11em] text-[var(--color-ink-muted)]">
-            <tr>{[adminT.scoring.juryMember, adminT.scoring.assignedNominations, adminT.scoring.submitted, adminT.scoring.draftInProgress, adminT.scoring.notStarted, adminT.scoring.completion, adminT.scoring.lastScoringActivity, adminT.scoring.juryStatus].map((header) => <th key={header} scope="col" className="border-b border-[rgba(37,42,45,0.08)] px-4 py-3">{header}</th>)}</tr>
+            <tr>{[adminT.scoring.juryMember, adminT.scoring.assignedNominations, adminT.scoring.submitted, adminT.scoring.draftInProgress, adminT.scoring.notStarted, adminT.scoring.completion, adminT.scoring.lastScoringActivity, adminT.scoring.juryStatus, adminT.scoring.juryAccess].map((header) => <th key={header} scope="col" className="border-b border-[rgba(37,42,45,0.08)] px-4 py-3">{header}</th>)}</tr>
           </thead>
           <tbody className="divide-y divide-[rgba(37,42,45,0.08)]">
             {rows.map((row) => (
@@ -46,6 +49,21 @@ export default function JuryProgressTable({ rows, detailQuery }: { rows: JuryPro
                 </td>
                 <td className="px-4 py-4 align-top text-xs leading-5 text-[var(--color-ink-soft)]">{row.lastActivityLabel ?? adminT.scoring.neverActive}</td>
                 <td className="px-4 py-4 align-top"><span className="inline-flex min-h-7 items-center rounded-full border border-[rgba(114,160,193,0.2)] bg-[var(--color-blue-wash)] px-3 text-[0.65rem] font-semibold text-[#356f98]">{adminT.scoring.juryStatuses[row.status] ?? row.status}</span></td>
+                <td className="px-4 py-4 align-top">
+                  {scoringClosed ? (
+                    <div className="flex flex-col gap-2">
+                      <span className={row.manuallyOpened
+                        ? "inline-flex min-h-7 w-fit items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 text-[0.65rem] font-semibold text-emerald-800"
+                        : "inline-flex min-h-7 w-fit items-center rounded-full border border-[rgba(37,42,45,0.12)] bg-[rgba(37,42,45,0.04)] px-3 text-[0.65rem] font-semibold text-[var(--color-ink-soft)]"}
+                      >
+                        {row.manuallyOpened ? adminT.scoring.juryAccessManual : adminT.scoring.juryAccessClosed}
+                      </span>
+                      <JuryScoringAccessControl juryId={row.juryId} juryName={row.name} manuallyOpened={row.manuallyOpened} />
+                    </div>
+                  ) : (
+                    <span className="inline-flex min-h-7 items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 text-[0.65rem] font-semibold text-emerald-800">{adminT.scoring.juryAccessGlobalOpen}</span>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>

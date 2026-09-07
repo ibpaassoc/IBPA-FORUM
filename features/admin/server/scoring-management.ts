@@ -14,6 +14,7 @@ import {
   isSubmittedReviewStatus,
 } from "@/features/jury/scoring/review-status";
 import { getScoreableNominationsWhere } from "@/features/jury/server/scoring-shared";
+import { getScoringState } from "@/features/jury/server/scoring-state";
 import { prisma } from "@/shared/lib/prisma";
 import { getDataScopeContext } from "@/features/test/server/data-scope";
 
@@ -260,7 +261,7 @@ type ProgressInput = {
 };
 
 export async function getAdminJuryProgress(input: ProgressInput) {
-  const [{ judges }, nominations] = await Promise.all([
+  const [{ judges }, nominations, scoringState] = await Promise.all([
     getActiveJudgeAssignments(),
     prisma.nomination.findMany({
       where: getScoreableNominationsWhere(),
@@ -272,7 +273,10 @@ export async function getAdminJuryProgress(input: ProgressInput) {
         award: { select: { id: true, name: true } },
       },
     }),
+    getScoringState(),
   ]);
+  const scoringClosed = scoringState.status === "CLOSED";
+  const manuallyOpenJuryIds = new Set(scoringState.openJuryIds);
   const awards = [...new Map(nominations.map((row) => [row.award.id, row.award])).values()];
   const categories = [...new Map(nominations.map((row) => [row.category.id, row.category])).values()];
   const nominationOptions = nominations.map((row) => ({
@@ -357,6 +361,9 @@ export async function getAdminJuryProgress(input: ProgressInput) {
       lastActivityTime: lastActivityAt?.getTime() ?? 0,
       lastActivityLabel: lastActivityAt ? formatAdminDateTime(lastActivityAt) : null,
       status: juryStatus(submitted, draft, assigned),
+      // Оценивание доступно судье глобально или через ручное исключение.
+      scoringOpen: !scoringClosed || manuallyOpenJuryIds.has(judge.id),
+      manuallyOpened: scoringClosed && manuallyOpenJuryIds.has(judge.id),
     };
   });
   const filtered = baseRows
@@ -381,6 +388,8 @@ export async function getAdminJuryProgress(input: ProgressInput) {
   const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
   const page = Math.min(safePage(input.page), totalPages);
   return {
+    scoringClosed,
+    manuallyOpenCount: baseRows.filter((row) => row.manuallyOpened).length,
     filters: {
       q: query,
       status: activeStatus,

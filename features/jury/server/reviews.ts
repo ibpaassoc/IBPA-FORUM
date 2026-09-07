@@ -28,7 +28,7 @@ import {
 } from "@/features/jury/scoring/category-scoring";
 import {
   assertScoringOpen,
-  getScoringState,
+  getScoringStateForJury,
 } from "@/features/jury/server/scoring-state";
 
 export type JuryNominationFilter = "all" | "pending" | "in-progress" | "completed";
@@ -264,7 +264,7 @@ export async function getJuryNominationWorkspace({
         : Math.round((completedCount / allNominations.length) * 100),
       categories: judge.approvedCategories.length,
     },
-    scoringState: await getScoringState(),
+    scoringState: await getScoringStateForJury(judge.juryProfileId),
   };
 }
 
@@ -355,7 +355,7 @@ export async function getJuryNominationReviewDetail({
     categoryFields: categoryFieldConfigs[nomination.category.slug] ?? [],
     scoringDefinition,
     review: review === null ? null : toReviewResponse(review, scoringDefinition),
-    scoringState: await getScoringState(),
+    scoringState: await getScoringStateForJury(judge.juryProfileId),
   };
 }
 
@@ -395,7 +395,7 @@ export async function saveJuryReviewDraft({
   };
 
   const review = await prisma.$transaction(async (tx) => {
-    await assertScoringOpen(tx);
+    await assertScoringOpen(tx, judge.juryProfileId);
     const existingReview = await tx.juryNominationReview.findUnique({
       where: {
         nominationId_juryProfileId: {
@@ -487,7 +487,7 @@ export async function submitJuryReview({
   };
 
   const review = await prisma.$transaction(async (tx) => {
-    await assertScoringOpen(tx);
+    await assertScoringOpen(tx, judge.juryProfileId);
     const existingReview = await tx.juryNominationReview.findUnique({
       where: {
         nominationId_juryProfileId: {
