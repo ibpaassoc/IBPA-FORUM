@@ -31,7 +31,7 @@ export async function getApplicantDashboardData() {
         answers: true,
         files: true,
         reviews: {
-          where: { status: "COMPLETED" },
+          where: { status: "SUBMITTED" },
           select: { totalScore: true },
         },
       },

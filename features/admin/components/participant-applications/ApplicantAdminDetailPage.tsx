@@ -145,7 +145,7 @@ function NominationContent({
   const descriptionFields = fields.filter((field) => field.type === "textarea");
   const fileFields = fields.filter((field) => field.type === "file");
   const submittedScores = nomination.reviews.filter(
-    (score) => score.status === "COMPLETED" && score.totalScore !== null,
+    (score) => score.status === "SUBMITTED" && score.totalScore !== null,
   );
   const averageScore = submittedScores.length
     ? submittedScores.reduce((sum, score) => sum + Number(score.totalScore), 0) / submittedScores.length

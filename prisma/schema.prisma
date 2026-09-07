@@ -102,6 +102,7 @@ enum JuryApplicationStatus {
 enum JuryReviewStatus {
   NOT_STARTED
   IN_PROGRESS
+  SUBMITTED
   COMPLETED
   LOCKED
 

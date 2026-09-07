@@ -91,7 +91,7 @@ export default async function TestJuryPage({
                       {profile?.reviews.length ? profile.reviews.map((review) => (
                         <div key={review.id} className="mt-3 flex items-center justify-between gap-3 text-sm">
                           <span>{review.nomination.award.name} · {review.status}</span>
-                          {review.status === "COMPLETED" || review.status === "LOCKED" ? (
+                          {review.status === "SUBMITTED" ? (
                             <form action={reopenTestReviewAction}>
                               <input type="hidden" name="reviewId" value={review.id} />
                               <button type="submit" className="text-xs font-semibold text-zinc-300 underline underline-offset-4 hover:text-white">Reopen</button>

@@ -16,6 +16,7 @@ import type { JuryReviewStatus, TicketType } from "@prisma/client";
 const SCORE_STATUS_RU: Record<JuryReviewStatus, string> = {
   NOT_STARTED: "Не начата",
   IN_PROGRESS: "Черновик",
+  SUBMITTED: "Отправлена",
   COMPLETED: "Отправлена",
   LOCKED: "Заблокирована",
 };

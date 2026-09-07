@@ -62,7 +62,7 @@ const applicantSelect = {
       award: { select: { name: true } },
       category: { select: { name: true } },
       reviews: {
-        where: { status: "COMPLETED" as const },
+        where: { status: "SUBMITTED" as const },
         select: { totalScore: true },
       },
     },

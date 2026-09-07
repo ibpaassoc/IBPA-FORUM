@@ -7,6 +7,10 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/shared/lib/prisma";
 import { requireJuryAuth } from "@/features/jury/server/auth";
 import { nominationAnswerViewRows, nominationFileViewRows } from "@/features/database/json-fields";
+import {
+  getAverageOfficialScore,
+  getSubmittedReviewCount,
+} from "@/features/jury/scoring/review-status";
 
 export const SCOREABLE_NOMINATION_STATUSES = [
   "SUBMITTED",
@@ -65,7 +69,7 @@ export function getJuryReviewListStatus(
     return "LOCKED";
   }
 
-  if (review.status === "COMPLETED") {
+  if (review.status === "SUBMITTED" || review.status === "COMPLETED") {
     return "COMPLETED";
   }
 
@@ -91,26 +95,13 @@ export function getAdminScoringStatus({
 }
 
 export function getSubmittedJudgeCount(scores: Array<{ status: string }>) {
-  return scores.filter(
-    (score) => score.status === "COMPLETED" || score.status === "LOCKED"
-  ).length;
+  return getSubmittedReviewCount(scores);
 }
 
 export function getAverageSubmittedScore(
   scores: Array<{ status: string; totalScore: Prisma.Decimal | number | null }>
 ) {
-  const submittedScores = scores.filter(
-    (score) =>
-      (score.status === "COMPLETED" || score.status === "LOCKED") &&
-      score.totalScore !== null
-  );
-
-  if (submittedScores.length === 0) {
-    return null;
-  }
-
-  const total = submittedScores.reduce((sum, score) => sum + Number(score.totalScore), 0);
-  return total / submittedScores.length;
+  return getAverageOfficialScore(scores);
 }
 
 export function formatAverageScore(value: number | null) {
