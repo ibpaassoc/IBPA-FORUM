@@ -20,8 +20,12 @@ export async function GET(
 ) {
   const { fileId } = await params;
 
+  // Must stay in sync with the public listing filter in
+  // features/jury/server/queries.ts: `status: "PAID"` alone is the
+  // authoritative confirmed state. Admin-confirmed members have no Payment
+  // row, and requiring one here 404'd their photos into the placeholder.
   const applications = await prisma.juryApplication.findMany({
-    where: { status: "PAID", payments: { some: { status: "PAID" } } },
+    where: { status: "PAID" },
     select: { files: true },
   });
   const fileRecord = applications
