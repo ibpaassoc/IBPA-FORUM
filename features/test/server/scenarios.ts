@@ -239,7 +239,7 @@ async function createJuryRecords(
       data: {
         nominationId,
         juryProfileId: profile.id,
-        status: complete ? "COMPLETED" : "IN_PROGRESS",
+        status: complete ? "SUBMITTED" : "IN_PROGRESS",
         scoreData: testJson({ version: 1, categorySlug: catalog.category.slug, scores }),
         totalScore: present.reduce((sum, score) => sum + score, 0),
         comments: complete ? "Completed isolated test review." : "Partial isolated test review.",

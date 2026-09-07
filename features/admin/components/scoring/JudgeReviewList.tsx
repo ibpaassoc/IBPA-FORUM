@@ -27,9 +27,11 @@ const statusOrder: Record<JudgeReviewRow["scoreStatus"], number> = {
 export default function JudgeReviewList({
   rows,
   scoringDefinition,
+  scoringClosed,
 }: {
   rows: JudgeReviewRow[];
   scoringDefinition: NominationScoringDefinition;
+  scoringClosed: boolean;
 }) {
   const [status, setStatus] = useState("");
   const [sort, setSort] = useState("recent");
@@ -119,6 +121,7 @@ export default function JudgeReviewList({
                 key={row.judgeId}
                 row={row}
                 scoringDefinition={scoringDefinition}
+                scoringClosed={scoringClosed}
               />
             ))}
           </div>

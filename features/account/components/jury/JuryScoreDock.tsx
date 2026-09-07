@@ -257,7 +257,7 @@ export default function JuryScoreDock({
                   </button>
                 </div>
 
-                {scoring.isComplete ? null : (
+                {scoring.isReadOnly ? null : (
                   <>
                     <label
                       htmlFor="jury-comment-mobile"
@@ -272,12 +272,12 @@ export default function JuryScoreDock({
                       <textarea
                         id="jury-comment-mobile"
                         value={scoring.comment}
-                        disabled={scoring.busy}
+                        disabled={scoring.busy || scoring.isClosed}
                         onChange={(event) => scoring.setComment(event.target.value)}
                         rows={3}
                         maxLength={5000}
                         placeholder={copy.notePlaceholder}
-                        className="mt-2.5 w-full resize-y rounded-[16px] border border-[rgba(114,160,193,0.2)] bg-white/82 px-3.5 py-2.5 text-sm leading-6 text-[var(--color-ink)] outline-none transition placeholder:text-[var(--color-ink-muted)] focus:border-[var(--color-blue)] focus:ring-4 focus:ring-[rgba(114,160,193,0.16)] disabled:cursor-not-allowed disabled:opacity-60"
+                        className="mt-2.5 w-full resize-none rounded-[16px] border border-[rgba(114,160,193,0.2)] bg-white/82 px-3.5 py-2.5 text-sm leading-6 text-[var(--color-ink)] outline-none transition placeholder:text-[var(--color-ink-muted)] focus:border-[var(--color-blue)] focus:ring-4 focus:ring-[rgba(114,160,193,0.16)] disabled:cursor-not-allowed disabled:opacity-60"
                       />
                     </label>
                     <JuryScoreActions scoring={scoring} />

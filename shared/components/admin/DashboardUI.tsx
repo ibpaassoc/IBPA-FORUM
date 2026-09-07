@@ -13,12 +13,11 @@ import {
   Search,
   X,
 } from "lucide-react";
-import { Children } from "react";
+import { Children, useEffect, useId, useRef } from "react";
 import type {
   ButtonHTMLAttributes,
   CSSProperties,
   ComponentType,
-  FormEvent,
   ReactNode,
 } from "react";
 import clsx from "clsx";
@@ -170,6 +169,9 @@ type ButtonProps = {
   className?: string;
   target?: string;
   rel?: string;
+  title?: string;
+  autoFocus?: boolean;
+  dialogInitialFocus?: boolean;
 };
 
 function buttonClass(variant: "primary" | "secondary" | "danger" | "ghost", extra?: string) {
@@ -200,12 +202,15 @@ function ButtonBase({
   className,
   target,
   rel,
+  title,
+  autoFocus,
+  dialogInitialFocus,
 }: ButtonProps & { variant: "primary" | "secondary" | "danger" | "ghost" }) {
   const classNames = buttonClass(variant, className);
 
   if (href) {
     return (
-      <Link href={href} className={classNames} target={target} rel={rel}>
+      <Link href={href} className={classNames} target={target} rel={rel} title={title}>
         {children}
       </Link>
     );
@@ -217,6 +222,9 @@ function ButtonBase({
       onClick={onClick}
       disabled={disabled}
       className={classNames}
+      title={title}
+      autoFocus={autoFocus}
+      data-dialog-initial-focus={dialogInitialFocus ? "true" : undefined}
     >
       {children}
     </button>
@@ -606,12 +614,58 @@ export function Drawer({
   onOpenChange,
   title,
   children,
+  preventClose = false,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title?: ReactNode;
   children: ReactNode;
+  preventClose?: boolean;
 }) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const titleId = useId();
+
+  useEffect(() => {
+    if (!open) return;
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    (dialogRef.current?.querySelector<HTMLElement>("[data-dialog-initial-focus]") ?? dialogRef.current)?.focus();
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape" && !preventClose) {
+        event.preventDefault();
+        onOpenChange(false);
+        return;
+      }
+      if (event.key !== "Tab" || !dialogRef.current) return;
+      const focusable = [...dialogRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      )];
+      if (focusable.length === 0) {
+        event.preventDefault();
+        dialogRef.current.focus();
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+      previousFocus?.focus();
+    };
+  }, [onOpenChange, open, preventClose]);
+
   return (
     <AnimatePresence>
       {open ? (
@@ -625,9 +679,15 @@ export function Drawer({
             type="button"
             aria-label={adminT.common.closeDialog}
             className="absolute inset-0 cursor-default"
+            disabled={preventClose}
             onClick={() => onOpenChange(false)}
           />
           <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={title ? titleId : undefined}
+            tabIndex={-1}
             className="relative max-h-[88vh] w-full max-w-xl overflow-auto rounded-[32px] border border-[rgba(114,160,193,0.22)] bg-white/94 p-5 shadow-[0_28px_90px_rgba(3,2,19,0.2)] backdrop-blur-2xl"
             initial={{ y: 40, opacity: 0, scale: 0.98 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
@@ -636,13 +696,18 @@ export function Drawer({
           >
             <div className="mb-4 flex items-center justify-between gap-3">
               {title ? (
-                <h2 className="font-[var(--font-title-family)] text-2xl font-light text-[var(--color-ink)]">
+                <h2 id={titleId} className="font-[var(--font-title-family)] text-2xl font-light text-[var(--color-ink)]">
                   {title}
                 </h2>
               ) : (
                 <span />
               )}
-              <IconButton label={adminT.common.close} icon={X} onClick={() => onOpenChange(false)} />
+              <IconButton
+                label={adminT.common.close}
+                icon={X}
+                disabled={preventClose}
+                onClick={() => onOpenChange(false)}
+              />
             </div>
             {children}
           </motion.div>
@@ -662,6 +727,8 @@ export function ConfirmDialog({
   cancelLabel = adminT.common.cancel,
   onConfirm,
   onCancel,
+  busy = false,
+  error,
 }: {
   open: boolean;
   title: string;
@@ -670,17 +737,29 @@ export function ConfirmDialog({
   cancelLabel?: string;
   onConfirm: () => void;
   onCancel: () => void;
+  busy?: boolean;
+  error?: string | null;
 }) {
   return (
-    <Drawer open={open} onOpenChange={(next) => (!next ? onCancel() : undefined)} title={title}>
+    <Drawer
+      open={open}
+      preventClose={busy}
+      onOpenChange={(next) => (!next && !busy ? onCancel() : undefined)}
+      title={title}
+    >
       {description ? (
         <p className="font-[var(--font-body-family)] text-sm leading-6 text-[var(--color-ink-soft)]">
           {description}
         </p>
       ) : null}
+      {error ? (
+        <p role="alert" className="mt-4 rounded-[18px] border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-700">
+          {error}
+        </p>
+      ) : null}
       <div className="mt-5 grid gap-2 sm:grid-cols-2">
-        <SecondaryButton onClick={onCancel}>{cancelLabel}</SecondaryButton>
-        <DangerButton onClick={onConfirm}>{confirmLabel}</DangerButton>
+        <SecondaryButton dialogInitialFocus disabled={busy} onClick={onCancel}>{cancelLabel}</SecondaryButton>
+        <DangerButton disabled={busy} onClick={onConfirm}>{confirmLabel}</DangerButton>
       </div>
     </Drawer>
   );
@@ -1025,30 +1104,6 @@ export function DashboardTableRow({
     </div>
   );
   return href ? <Link href={href} className="block">{inner}</Link> : inner;
-}
-
-export function NativeConfirmForm({
-  children,
-  message,
-  className,
-  action,
-}: {
-  children: ReactNode;
-  message: string;
-  className?: string;
-  action?: (formData: FormData) => void | Promise<void>;
-}) {
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    if (!window.confirm(message)) {
-      event.preventDefault();
-    }
-  }
-
-  return (
-    <form action={action} onSubmit={handleSubmit} className={className}>
-      {children}
-    </form>
-  );
 }
 
 export const ink = IBPA_INK;

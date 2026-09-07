@@ -111,6 +111,7 @@ export default function JuryReviewWorkspace({
   submission,
   files,
   peers,
+  scoringOpen,
 }: {
   nominationId: string;
   scoringDefinition: NominationScoringDefinition;
@@ -119,10 +120,11 @@ export default function JuryReviewWorkspace({
   submission: ReactNode;
   files: ReactNode;
   peers?: ReactNode;
+  scoringOpen: boolean;
 }) {
   const { t } = useLanguage();
   const labels = t.account.jury.review;
-  const scoring = useJuryScoring({ nominationId, scoringDefinition, initialReview: review });
+  const scoring = useJuryScoring({ nominationId, scoringDefinition, initialReview: review, scoringOpen });
   // The tab this judge last had open, read after hydration so the server and
   // the first client render still agree.
   const rememberedTab = useSyncExternalStore(

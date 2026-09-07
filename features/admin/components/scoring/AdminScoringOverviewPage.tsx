@@ -11,7 +11,6 @@ import ScoringPagination from "@/features/admin/components/scoring/ScoringPagina
 import {
   DashboardCard,
   DashboardEmptyState,
-  DashboardPageHeader,
 } from "@/shared/components/admin/DashboardUI";
 
 type ScoringStats = {
@@ -77,8 +76,6 @@ export default function AdminScoringOverviewPage({
 
   return (
     <div className="flex flex-col gap-5">
-      <DashboardPageHeader label={adminT.scoring.label} title={adminT.scoring.title} />
-
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <ScoreSummaryCard
           label={adminT.scoring.pendingReviews}

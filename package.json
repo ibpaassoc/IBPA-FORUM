@@ -22,6 +22,7 @@
     "test:regulations": "tsx scripts/test-regulations.ts",
     "test:jury-closure": "tsx scripts/test-jury-closure.ts",
     "test:category-scoring": "tsx scripts/test-category-scoring.ts",
+    "test:scoring-management": "tsx scripts/test-scoring-management.ts",
     "test:jury-approved-categories": "tsx scripts/test-jury-approved-categories.ts",
     "test:role-auth": "tsx scripts/test-role-auth.ts",
     "test:admin-mailing": "tsx scripts/test-admin-mailing.ts",

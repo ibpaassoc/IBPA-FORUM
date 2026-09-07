@@ -26,6 +26,10 @@ import {
   type NominationScoringDefinition,
   type ReviewScores,
 } from "@/features/jury/scoring/category-scoring";
+import {
+  assertScoringOpen,
+  getScoringState,
+} from "@/features/jury/server/scoring-state";
 
 export type JuryNominationFilter = "all" | "pending" | "in-progress" | "completed";
 
@@ -260,6 +264,7 @@ export async function getJuryNominationWorkspace({
         : Math.round((completedCount / allNominations.length) * 100),
       categories: judge.approvedCategories.length,
     },
+    scoringState: await getScoringState(),
   };
 }
 
@@ -350,6 +355,7 @@ export async function getJuryNominationReviewDetail({
     categoryFields: categoryFieldConfigs[nomination.category.slug] ?? [],
     scoringDefinition,
     review: review === null ? null : toReviewResponse(review, scoringDefinition),
+    scoringState: await getScoringState(),
   };
 }
 
@@ -368,20 +374,6 @@ export async function saveJuryReviewDraft({
     nomination.scoringSchema,
     nomination.category.slug
   );
-
-  const existingReview = await prisma.juryNominationReview.findUnique({
-    where: {
-      nominationId_juryProfileId: {
-        nominationId,
-        juryProfileId: judge.juryProfileId,
-      },
-    },
-    select: { id: true, status: true },
-  });
-
-  if (existingReview?.status === "COMPLETED" || existingReview?.status === "LOCKED") {
-    throw new ScoringHttpError(409, "Completed reviews are locked until an admin reopens them.");
-  }
 
   let scoreValues: ReviewScores;
   try {
@@ -402,15 +394,35 @@ export async function saveJuryReviewDraft({
     submittedAt: null,
   };
 
-  let review;
-  if (existingReview) {
-    review = await prisma.juryNominationReview.update({
-      where: { id: existingReview.id },
-      data: reviewData,
-      select: REVIEW_DETAIL_SELECT,
+  const review = await prisma.$transaction(async (tx) => {
+    await assertScoringOpen(tx);
+    const existingReview = await tx.juryNominationReview.findUnique({
+      where: {
+        nominationId_juryProfileId: {
+          nominationId,
+          juryProfileId: judge.juryProfileId,
+        },
+      },
+      select: { id: true, status: true },
     });
-  } else {
-    review = await prisma.juryNominationReview.create({
+
+    if (
+      existingReview?.status === "SUBMITTED" ||
+      existingReview?.status === "COMPLETED" ||
+      existingReview?.status === "LOCKED"
+    ) {
+      throw new ScoringHttpError(409, "Submitted reviews are read-only until an admin reopens them.");
+    }
+
+    if (existingReview) {
+      return tx.juryNominationReview.update({
+        where: { id: existingReview.id },
+        data: reviewData,
+        select: REVIEW_DETAIL_SELECT,
+      });
+    }
+
+    return tx.juryNominationReview.create({
       data: {
         nominationId,
         juryProfileId: judge.juryProfileId,
@@ -419,7 +431,7 @@ export async function saveJuryReviewDraft({
       },
       select: REVIEW_DETAIL_SELECT,
     });
-  }
+  });
 
   revalidatePath("/account/jury");
   revalidatePath("/account/jury/nominations");
@@ -449,20 +461,6 @@ export async function submitJuryReview({
     nomination.category.slug
   );
 
-  const existingReview = await prisma.juryNominationReview.findUnique({
-    where: {
-      nominationId_juryProfileId: {
-        nominationId,
-        juryProfileId: judge.juryProfileId,
-      },
-    },
-    select: { id: true, status: true },
-  });
-
-  if (existingReview?.status === "COMPLETED" || existingReview?.status === "LOCKED") {
-    throw new ScoringHttpError(409, "You have already completed this nomination review.");
-  }
-
   let scoreValues: ReviewScores;
   try {
     scoreValues = validateReviewScores({
@@ -484,28 +482,48 @@ export async function submitJuryReview({
     scoreData: buildReviewScoreData(scoringDefinition, scoreValues) as Prisma.InputJsonValue,
     totalScore,
     comments: input.comment ?? null,
-    status: "COMPLETED" as const,
-    startedAt: existingReview ? undefined : submittedAt,
+    status: "SUBMITTED" as const,
     submittedAt,
   };
 
-  let review;
-  if (existingReview) {
-    review = await prisma.juryNominationReview.update({
-      where: { id: existingReview.id },
-      data: reviewData,
-      select: REVIEW_DETAIL_SELECT,
+  const review = await prisma.$transaction(async (tx) => {
+    await assertScoringOpen(tx);
+    const existingReview = await tx.juryNominationReview.findUnique({
+      where: {
+        nominationId_juryProfileId: {
+          nominationId,
+          juryProfileId: judge.juryProfileId,
+        },
+      },
+      select: { id: true, status: true },
     });
-  } else {
-    review = await prisma.juryNominationReview.create({
+
+    if (
+      existingReview?.status === "SUBMITTED" ||
+      existingReview?.status === "COMPLETED" ||
+      existingReview?.status === "LOCKED"
+    ) {
+      throw new ScoringHttpError(409, "You have already submitted this nomination review.");
+    }
+
+    if (existingReview) {
+      return tx.juryNominationReview.update({
+        where: { id: existingReview.id },
+        data: reviewData,
+        select: REVIEW_DETAIL_SELECT,
+      });
+    }
+
+    return tx.juryNominationReview.create({
       data: {
         nominationId,
         juryProfileId: judge.juryProfileId,
         ...reviewData,
+        startedAt: submittedAt,
       },
       select: REVIEW_DETAIL_SELECT,
     });
-  }
+  });
 
   revalidatePath("/account/jury");
   revalidatePath("/account/jury/nominations");

@@ -12,7 +12,7 @@ import { assertNominationStatusTransition, canTransitionNominationStatus, editab
 import { emptyTestAuditEvents, emptyTestCreatedRecords, emptyTestEmailDeliveries, testCreatedRecordsSchema } from "@/features/test/lib/test-records";
 import { normalizeSslMode } from "@/shared/lib/db-url";
 
-const TARGET_TABLES = ["Account", "ApplicantProfile", "JuryApplication", "JuryProfile", "JuryNominationReview", "Nomination", "Award", "Category", "Ticket", "Payment", "StripeWebhook", "SiteSetting", "Test"].sort();
+const TARGET_TABLES = ["Account", "ApplicantProfile", "JuryApplication", "JuryProfile", "JuryNominationReview", "Nomination", "Award", "Category", "Ticket", "Payment", "StripeWebhook", "SiteSetting", "Notification", "Test"].sort();
 const PROTECTED_BRANCHES = new Set(["br-ancient-night-aknk0wql", "br-nameless-block-akc62q54"]);
 const PROTECTED_EMAILS = ["annakrainik86@gmail.com", "elenamutalieva@gmail.com", "farangizkarimava15@gmail.com", "9868851@gmail.com"];
 const json = (value: unknown) => value as Prisma.InputJsonValue;
@@ -20,7 +20,7 @@ const json = (value: unknown) => value as Prisma.InputJsonValue;
 function staticChecks() {
   const schema = readFileSync(join(process.cwd(), "prisma/schema.prisma"), "utf8");
   const models = [...schema.matchAll(/^model\s+(\w+)\s+\{/gm)].map((match) => match[1]).sort();
-  assert.deepEqual(models, TARGET_TABLES, "the Prisma schema contains only the approved 13 business models");
+  assert.deepEqual(models, TARGET_TABLES, "the Prisma schema contains only the approved 14 business models");
   nominationAnswersSchema.parse({ schemaVersion: 1, fields: [{ fieldId: "bio", label: "Bio", type: "text", value: "ok", updatedAt: new Date().toISOString() }] });
   storedFilesSchema.parse({ schemaVersion: 1, items: [{ id: "file-1", fieldId: "portfolio", blobKey: "applications/test/file", url: null, filename: "file.pdf", mimeType: "application/pdf", size: 1, uploadedAt: new Date().toISOString() }] });
   assert.equal(
@@ -107,7 +107,7 @@ async function integrationChecks() {
     ids.juryProfiles.push(juryProfile.id);
     const juryPayment = await prisma.payment.create({ data: { accountId: juryAccount.id, juryApplicationId: juryApplication.id, customerEmail: juryAccount.email, amount: 0, status: "PAID", purchaseType: "JURY", provider: "MANUAL", paidAt: now, fulfilledAt: now, dataScope: "TEST" } });
     ids.payments.push(juryPayment.id);
-    const review = await prisma.juryNominationReview.create({ data: { nominationId: nomination.id, juryProfileId: juryProfile.id, status: "COMPLETED", scoreData: json({ version: 1, scores: {} }), totalScore: 0, comments: "integration", startedAt: now, submittedAt: now, dataScope: "TEST" } });
+    const review = await prisma.juryNominationReview.create({ data: { nominationId: nomination.id, juryProfileId: juryProfile.id, status: "SUBMITTED", scoreData: json({ version: 1, scores: {} }), totalScore: 0, comments: "integration", startedAt: now, submittedAt: now, dataScope: "TEST" } });
     ids.reviews.push(review.id);
     await assert.rejects(() => prisma.juryNominationReview.create({ data: { nominationId: nomination.id, juryProfileId: juryProfile.id, dataScope: "TEST" } }));
 

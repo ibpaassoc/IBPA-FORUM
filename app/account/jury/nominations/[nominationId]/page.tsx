@@ -19,6 +19,7 @@ export default async function AccountJuryNominationPage({
       categoryFields={data.categoryFields}
       scoringDefinition={data.scoringDefinition}
       review={data.review}
+      scoringOpen={data.scoringState.status === "OPEN"}
     />
   );
 }

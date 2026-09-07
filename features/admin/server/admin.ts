@@ -13,6 +13,8 @@ import {
   getSubmittedJudgeCount,
   ScoringHttpError,
 } from "@/features/jury/server/scoring-shared";
+import { isSubmittedReviewStatus } from "@/features/jury/scoring/review-status";
+import { assertScoringOpen } from "@/features/jury/server/scoring-state";
 import {
   getCategoryScoringDefinition,
   readReviewScores,
@@ -139,7 +141,7 @@ function getCategoryMaximumTotal(categorySlug: string, cache: Map<string, number
   return maximumTotal;
 }
 
-async function getActiveJudgeAssignments() {
+export async function getActiveJudgeAssignments() {
   const judges = await prisma.juryProfile.findMany({
     where: {
       juryApplication: { status: {
@@ -247,9 +249,7 @@ export async function getAdminScoringOverview({
     const maximumTotal = getCategoryMaximumTotal(application.category.slug, maximumTotalCache);
     const submittedTotals = application.reviews
       .filter(
-        (review) =>
-          (review.status === "COMPLETED" || review.status === "LOCKED") &&
-          review.totalScore !== null
+        (review) => isSubmittedReviewStatus(review.status) && review.totalScore !== null
       )
       .map((review) => Number(review.totalScore));
     const lastReviewActivity = application.reviews.reduce<Date | null>((latest, review) => {
@@ -627,7 +627,7 @@ export async function getAdminApplicationScoringDetail(nominationId: string) {
         ? null
         : Number(review.totalScore);
     const scoreStatus = (
-      review?.status === "COMPLETED" || review?.status === "LOCKED"
+      review?.status === "SUBMITTED"
         ? "SUBMITTED"
         : review
           ? "DRAFT"
@@ -656,13 +656,11 @@ export async function getAdminApplicationScoringDetail(nominationId: string) {
 
   const submittedTotals = application.reviews
     .filter(
-      (review) =>
-        (review.status === "COMPLETED" || review.status === "LOCKED") &&
-        review.totalScore !== null
+      (review) => isSubmittedReviewStatus(review.status) && review.totalScore !== null
     )
     .map((review) => Number(review.totalScore));
   const submittedScoreRows = application.reviews
-    .filter((review) => review.status === "COMPLETED" || review.status === "LOCKED")
+    .filter((review) => isSubmittedReviewStatus(review.status))
     .map((review) => readReviewScores(review.scoreData, scoringDefinition));
   const scoreSpread = getScoreSpread(submittedTotals, scoringDefinition.maximumTotal);
   const scoreRange = getScoreRange(submittedTotals);
@@ -711,39 +709,26 @@ export async function getAdminApplicationScoringDetail(nominationId: string) {
 }
 
 export async function reopenNominationReview(reviewId: string) {
-  const existingReview = await prisma.juryNominationReview.findUnique({
-    where: {
-      id: reviewId,
-    },
-    select: {
-      id: true,
-      nominationId: true,
-      status: true,
-    },
-  });
+  const review = await prisma.$transaction(async (tx) => {
+    await assertScoringOpen(tx);
+    const existingReview = await tx.juryNominationReview.findUnique({
+      where: { id: reviewId },
+      select: { id: true, nominationId: true, status: true },
+    });
 
-  if (!existingReview) {
-    throw new ScoringHttpError(404, adminT.api.judgeScoreNotFound);
-  }
+    if (!existingReview) {
+      throw new ScoringHttpError(404, adminT.api.judgeScoreNotFound);
+    }
 
-  if (existingReview.status !== "COMPLETED" && existingReview.status !== "LOCKED") {
-    throw new ScoringHttpError(409, adminT.api.submittedScoresOnly);
-  }
+    if (existingReview.status !== "SUBMITTED") {
+      throw new ScoringHttpError(409, adminT.api.submittedScoresOnly);
+    }
 
-  const review = await prisma.juryNominationReview.update({
-    where: {
-      id: reviewId,
-    },
-    data: {
-      status: "IN_PROGRESS",
-      submittedAt: null,
-    },
-    select: {
-      id: true,
-      nominationId: true,
-      status: true,
-      updatedAt: true,
-    },
+    return tx.juryNominationReview.update({
+      where: { id: reviewId },
+      data: { status: "IN_PROGRESS", submittedAt: null },
+      select: { id: true, nominationId: true, status: true, updatedAt: true },
+    });
   });
 
   revalidatePath("/account/jury");

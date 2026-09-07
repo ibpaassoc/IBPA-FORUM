@@ -79,7 +79,7 @@ export async function requireOwnedNomination(nominationId: string) {
       award: true,
       payment: true,
       reviews: {
-        where: { status: "COMPLETED" },
+        where: { status: "SUBMITTED" },
         select: {
           totalScore: true,
           submittedAt: true,

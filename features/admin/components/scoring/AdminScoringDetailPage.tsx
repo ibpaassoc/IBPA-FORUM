@@ -16,6 +16,8 @@ import ScoreConsistency, {
 import ScoreDistribution from "@/features/admin/components/scoring/ScoreDistribution";
 import ScoreStatusBadge from "@/features/admin/components/scoring/ScoreStatusBadge";
 import ScoreSummaryCard from "@/features/admin/components/scoring/ScoreSummaryCard";
+import ScoringStateBanner from "@/features/admin/components/scoring/ScoringStateBanner";
+import type { ScoringState } from "@/features/jury/scoring/scoring-state";
 import {
   DashboardPageHeader,
   DashboardSecondaryBtn,
@@ -57,12 +59,14 @@ export default function AdminScoringDetailPage({
   scoringDefinition,
   judgeRows,
   analytics,
+  scoringState,
 }: {
   application: AdminScoringApplicationRecord;
   summary: ScoringSummary;
   scoringDefinition: NominationScoringDefinition;
   judgeRows: JudgeReviewRow[];
   analytics: ScoringAnalytics;
+  scoringState: ScoringState;
 }) {
   const rankShare =
     summary.rank && summary.categorySize > 0
@@ -97,6 +101,8 @@ export default function AdminScoringDetailPage({
           </>
         }
       />
+
+      <ScoringStateBanner state={scoringState} />
 
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-3 2xl:grid-cols-6">
         <ScoreSummaryCard
@@ -152,7 +158,7 @@ export default function AdminScoringDetailPage({
       </div>
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(280px,340px)] xl:items-start">
-        <JudgeReviewList rows={judgeRows} scoringDefinition={scoringDefinition} />
+        <JudgeReviewList rows={judgeRows} scoringDefinition={scoringDefinition} scoringClosed={scoringState.status === "CLOSED"} />
 
         <aside className="flex flex-col gap-3">
           <ScoreDistribution

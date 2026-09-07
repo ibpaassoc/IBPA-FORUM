@@ -43,6 +43,10 @@ export default function ScoringPagination({
   totalCount,
   pageSizes,
   query,
+  pageParam = "page",
+  perPageParam = "perPage",
+  totalLabel,
+  defaultPageSize = 10,
 }: {
   page: number;
   perPage: number;
@@ -51,13 +55,19 @@ export default function ScoringPagination({
   pageSizes: number[];
   /** Текущие фильтры в виде query-строки, без page/perPage. */
   query: string;
+  pageParam?: string;
+  perPageParam?: string;
+  totalLabel?: string;
+  defaultPageSize?: number;
 }) {
   const router = useRouter();
 
   function hrefFor(nextPage: number, nextPerPage = perPage) {
     const params = new URLSearchParams(query);
-    if (nextPage > 1) params.set("page", String(nextPage));
-    if (nextPerPage !== 10) params.set("perPage", String(nextPerPage));
+    params.delete(pageParam);
+    params.delete(perPageParam);
+    if (nextPage > 1) params.set(pageParam, String(nextPage));
+    if (nextPerPage !== defaultPageSize) params.set(perPageParam, String(nextPerPage));
     const search = params.toString();
     return search ? `${SCORING_BASE_PATH}?${search}` : SCORING_BASE_PATH;
   }
@@ -71,7 +81,7 @@ export default function ScoringPagination({
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <p className="text-[0.8rem] text-[var(--color-ink-soft)]">
-        {adminT.scoring.totalNominations(totalCount)}
+        {totalLabel ?? adminT.scoring.totalNominations(totalCount)}
       </p>
 
       <div className="flex flex-wrap items-center gap-3">

@@ -14,6 +14,7 @@ export default async function AccountJuryPage() {
       nominations={data.allNominations}
       totals={data.totals}
       notifications={notifications}
+      scoringClosed={data.scoringState.status === "CLOSED"}
     />
   );
 }
