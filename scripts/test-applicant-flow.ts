@@ -445,7 +445,7 @@ assert(has(juryAdminActions, "resendJuryRegistrationLinkAction"), "admin can res
 
 const juryAdminDetail = read("features/admin/components/jury-applications/JuryApplicationDetailPage.tsx");
 assert(has(juryAdminDetail, "resendJuryRegistrationLinkAction"), "jury admin page exposes resend registration action");
-assert(has(juryAdminDetail, "isRegistered"), "jury admin resend detects already registered accounts");
+assert(has(juryAdminDetail, "account.passwordHash"), "jury admin resend detects already registered accounts");
 assert(has(juryAdminDetail, "juryRegistrationAlreadyComplete"), "jury admin page explains completed registration");
 
 const juryFileRoute = read("app/api/account/jury/nomination-files/[fileId]/route.ts");
