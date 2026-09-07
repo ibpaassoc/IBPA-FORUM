@@ -27,6 +27,7 @@ export default async function JuryNominationsPage({
       approvedCategories={data.judge.approvedCategories}
       activeCategory={data.activeCategory}
       activeStatus={data.activeStatus}
+      scoringClosed={data.scoringState.status === "CLOSED"}
     />
   );
 }

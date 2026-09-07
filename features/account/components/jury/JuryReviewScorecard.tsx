@@ -51,10 +51,12 @@ export function useJuryScoring({
   nominationId,
   scoringDefinition,
   initialReview,
+  scoringOpen,
 }: {
   nominationId: string;
   scoringDefinition: NominationScoringDefinition;
   initialReview: JuryReviewValue | null;
+  scoringOpen: boolean;
 }) {
   const router = useRouter();
   const { t } = useLanguage();
@@ -76,6 +78,8 @@ export function useJuryScoring({
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   const isComplete = status === "COMPLETED" || status === "LOCKED";
+  const isClosed = !scoringOpen;
+  const isReadOnly = isComplete || isClosed;
   const presentScoreCount = scoringDefinition.criteria.filter(
     (criterion) => values[criterion.key] !== "",
   ).length;
@@ -87,11 +91,12 @@ export function useJuryScoring({
     scoringDefinition.criteria.length === 0
       ? 100
       : Math.round((presentScoreCount / scoringDefinition.criteria.length) * 100);
-  const canSubmit = presentScoreCount === scoringDefinition.criteria.length;
+  const canSubmit = scoringOpen && presentScoreCount === scoringDefinition.criteria.length;
   const busy = isPending || isSaving;
 
   const setScore = useCallback(
     (key: string, next: number | "") => {
+      if (isReadOnly) return;
       if (next === "") {
         setValues((current) => ({ ...current, [key]: "" }));
         return;
@@ -103,13 +108,22 @@ export function useJuryScoring({
       const safe = Math.max(0, Math.min(maxScore, Math.round(next)));
       setValues((current) => ({ ...current, [key]: `${safe}` as ScoreValue }));
     },
-    [scoringDefinition.criteria],
+    [isReadOnly, scoringDefinition.criteria],
   );
+
+  const setCommentSafe = useCallback((next: string) => {
+    if (!isReadOnly) setComment(next);
+  }, [isReadOnly]);
 
   const sendReview = useCallback(
     async (mode: "draft" | "submit") => {
       setError(null);
       setNotice(null);
+
+      if (isClosed) {
+        setError(copy.closedText);
+        return;
+      }
 
       if (mode === "submit" && presentScoreCount !== scoringDefinition.criteria.length) {
         setError(copy.incompleteError);
@@ -145,6 +159,9 @@ export function useJuryScoring({
 
       if (!response.ok) {
         setError(payload?.message ?? copy.saveError);
+        if (response.status === 409) {
+          startTransition(() => router.refresh());
+        }
         return;
       }
 
@@ -154,10 +171,12 @@ export function useJuryScoring({
     },
     [
       comment,
+      copy.closedText,
       copy.draftSaved,
       copy.incompleteError,
       copy.saveError,
       copy.submittedNotice,
+      isClosed,
       nominationId,
       presentScoreCount,
       router,
@@ -172,7 +191,7 @@ export function useJuryScoring({
       maximumTotal: scoringDefinition.maximumTotal,
       values,
       comment,
-      setComment,
+      setComment: setCommentSafe,
       setScore,
       scoreOf: (key: string) => parseScore(values[key] ?? ""),
       total,
@@ -180,11 +199,13 @@ export function useJuryScoring({
       progress,
       canSubmit,
       isComplete,
+      isClosed,
+      isReadOnly,
       busy,
       error,
       notice,
       confirmOpen,
-      openConfirm: () => setConfirmOpen(true),
+      openConfirm: () => { if (!isReadOnly) setConfirmOpen(true); },
       closeConfirm: () => setConfirmOpen(false),
       saveDraft: () => void sendReview("draft"),
       submit: () => {
@@ -199,6 +220,8 @@ export function useJuryScoring({
       confirmOpen,
       error,
       isComplete,
+      isClosed,
+      isReadOnly,
       notice,
       presentScoreCount,
       progress,
@@ -206,6 +229,7 @@ export function useJuryScoring({
       scoringDefinition.maximumTotal,
       sendReview,
       setScore,
+      setCommentSafe,
       total,
       values,
     ],
@@ -225,7 +249,7 @@ export function JuryScoreControl({
   const { t } = useLanguage();
   const copy = t.account.jury.scorecard;
   const value = scoring.scoreOf(criterion.key);
-  const disabled = scoring.isComplete || scoring.busy;
+  const disabled = scoring.isReadOnly || scoring.busy;
   const large = size === "large";
   const buttonSize = large ? "size-14" : "size-9";
 
@@ -341,7 +365,7 @@ export function JuryScoreActions({ scoring }: { scoring: JuryScoring }) {
     <div className="grid grid-cols-2 gap-2">
       <button
         type="button"
-        disabled={scoring.busy}
+        disabled={scoring.busy || scoring.isClosed}
         onClick={scoring.saveDraft}
         className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[rgba(114,160,193,0.28)] bg-white/82 px-4 text-[0.7rem] font-semibold uppercase tracking-[0.11em] text-[var(--color-ink)] transition hover:bg-[var(--color-blue-wash)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.3)] disabled:cursor-wait disabled:opacity-55"
       >
@@ -350,7 +374,7 @@ export function JuryScoreActions({ scoring }: { scoring: JuryScoring }) {
       </button>
       <button
         type="button"
-        disabled={scoring.busy || !scoring.canSubmit}
+        disabled={scoring.busy || scoring.isClosed || !scoring.canSubmit}
         onClick={scoring.openConfirm}
         className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--color-blue)] px-4 text-[0.7rem] font-semibold uppercase tracking-[0.11em] text-white shadow-[0_14px_30px_rgba(114,160,193,0.24)] transition hover:bg-[#5f91b6] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.35)] disabled:cursor-not-allowed disabled:opacity-45"
       >
@@ -388,6 +412,11 @@ export function JuryScoreFeedback({ scoring }: { scoring: JuryScoring }) {
       {scoring.isComplete ? (
         <NoticePanel tone="success" title={copy.completeTitle}>
           {copy.completeText}
+        </NoticePanel>
+      ) : null}
+      {scoring.isClosed && !scoring.isComplete ? (
+        <NoticePanel tone="warning" title={copy.closedTitle}>
+          {copy.closedText}
         </NoticePanel>
       ) : null}
       {scoring.error ? (
@@ -473,17 +502,17 @@ export default function JuryReviewScorecard({ scoring }: { scoring: JuryScoring 
           <textarea
             id="jury-comment"
             value={scoring.comment}
-            disabled={scoring.isComplete || scoring.busy}
+            disabled={scoring.isReadOnly || scoring.busy}
             onChange={(event) => scoring.setComment(event.target.value)}
             rows={3}
             maxLength={5000}
             placeholder={copy.notePlaceholder}
-            className="mt-2.5 w-full resize-y rounded-[16px] border border-[rgba(114,160,193,0.2)] bg-white/82 px-3.5 py-2.5 text-sm leading-6 text-[var(--color-ink)] outline-none transition placeholder:text-[var(--color-ink-muted)] focus:border-[var(--color-blue)] focus:ring-4 focus:ring-[rgba(114,160,193,0.16)] disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-2.5 w-full resize-none rounded-[16px] border border-[rgba(114,160,193,0.2)] bg-white/82 px-3.5 py-2.5 text-sm leading-6 text-[var(--color-ink)] outline-none transition placeholder:text-[var(--color-ink-muted)] focus:border-[var(--color-blue)] focus:ring-4 focus:ring-[rgba(114,160,193,0.16)] disabled:cursor-not-allowed disabled:opacity-60"
           />
         </label>
       </div>
 
-      {scoring.isComplete ? null : (
+      {scoring.isReadOnly ? null : (
         <div className="shrink-0 border-t border-[rgba(37,42,45,0.08)] bg-white/60 p-4">
           <JuryScoreActions scoring={scoring} />
         </div>

@@ -12,6 +12,7 @@ import {
 } from "@/shared/components/admin/DashboardUI";
 import NotificationsOverview from "@/features/notifications/components/NotificationsOverview";
 import type { AccountNotificationView } from "@/features/notifications/lib/content";
+import { NoticePanel } from "@/shared/components/account/AccountUI";
 
 const CONTINUE_LIMIT = 2;
 
@@ -26,6 +27,7 @@ export default async function JuryOverview({
   nominations,
   totals,
   notifications,
+  scoringClosed,
 }: {
   nominations: JuryNominationListItem[];
   totals: {
@@ -37,6 +39,7 @@ export default async function JuryOverview({
     completionPercentage: number;
   };
   notifications: AccountNotificationView[];
+  scoringClosed: boolean;
 }) {
   const t = await getServerTranslations();
   const ov = t.account.jury.overview;
@@ -54,6 +57,12 @@ export default async function JuryOverview({
   return (
     <div className="flex flex-col gap-5">
       <AccountPageHeader eyebrow={ov.eyebrow} title={ov.title} />
+
+      {scoringClosed ? (
+        <NoticePanel tone="warning" title={t.account.jury.scorecard.closedTitle}>
+          {t.account.jury.scorecard.closedText}
+        </NoticePanel>
+      ) : null}
 
       <JuryReviewSummary
         completionPercentage={totals.completionPercentage}

@@ -6,6 +6,7 @@ import AccountPageHeader from "@/features/account/components/AccountPageHeader";
 import JuryNominationCard from "@/features/account/components/jury/JuryNominationCard";
 import { getServerTranslations } from "@/lib/i18n/server";
 import { DashboardStagger, EmptyState } from "@/shared/components/admin/DashboardUI";
+import { NoticePanel } from "@/shared/components/account/AccountUI";
 
 const statusFilterOrder: Array<{ value: JuryNominationFilter; statusKey: string }> = [
   { value: "all", statusKey: "" },
@@ -50,6 +51,7 @@ export default async function JuryNominationCollection({
   activeStatus,
   basePath = "/account/jury/nominations",
   showStatusFilters = true,
+  scoringClosed = false,
 }: {
   variant: "queue" | "completed";
   nominations: JuryNominationListItem[];
@@ -58,6 +60,7 @@ export default async function JuryNominationCollection({
   activeStatus: JuryNominationFilter;
   basePath?: string;
   showStatusFilters?: boolean;
+  scoringClosed?: boolean;
 }) {
   const t = await getServerTranslations();
   const list = t.account.jury.list;
@@ -70,6 +73,12 @@ export default async function JuryNominationCollection({
         eyebrow={completedView ? list.completedEyebrow : list.eyebrow}
         title={completedView ? list.completedTitle : list.title}
       />
+
+      {scoringClosed ? (
+        <NoticePanel tone="warning" title={t.account.jury.scorecard.closedTitle}>
+          {t.account.jury.scorecard.closedText}
+        </NoticePanel>
+      ) : null}
 
       {showStatusFilters || showCategoryFilters ? (
         <section

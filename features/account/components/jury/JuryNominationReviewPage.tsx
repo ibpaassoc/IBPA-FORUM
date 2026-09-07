@@ -69,11 +69,13 @@ export default async function JuryNominationReviewPage({
   categoryFields,
   scoringDefinition,
   review,
+  scoringOpen,
 }: {
   nomination: JuryNominationReviewRecord;
   categoryFields: Array<{ key: string; label: string; type: string; description?: string }>;
   scoringDefinition: NominationScoringDefinition;
   review: JuryReviewValue | null;
+  scoringOpen: boolean;
 }) {
   const t = await getServerTranslations();
   const labels = t.account.jury.review;
@@ -317,6 +319,7 @@ export default async function JuryNominationReviewPage({
       submission={submission}
       files={files}
       peers={peers}
+      scoringOpen={scoringOpen}
     />
   );
 }

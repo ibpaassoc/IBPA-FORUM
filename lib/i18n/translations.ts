@@ -467,6 +467,8 @@ const en = {
         completeTitle: "Review complete",
         completeText:
           "Your final scores are read-only. An administrator can reopen this review if a correction is required.",
+        closedTitle: "Scoring is closed",
+        closedText: "Judging has been finalized. Reviews remain visible, but drafts and scores can no longer be changed or submitted.",
         incompleteError: "Score every criterion before submitting this review.",
         draftSaved: "Draft saved. You can safely return later.",
         submittedNotice: "Review submitted.",
@@ -3221,6 +3223,8 @@ const ru: typeof en = {
         completeTitle: "Оценка завершена",
         completeText:
           "Ваши итоговые баллы доступны только для просмотра. Администратор может открыть оценку заново, если нужна правка.",
+        closedTitle: "Оценивание закрыто",
+        closedText: "Судейство завершено. Отзывы остаются видимыми, но черновики и оценки больше нельзя изменять или отправлять.",
         incompleteError: "Оцените каждый критерий перед отправкой оценки.",
         draftSaved: "Черновик сохранён. Вы можете вернуться позже.",
         submittedNotice: "Оценка отправлена.",
@@ -5981,6 +5985,8 @@ const ua: typeof en = {
         completeTitle: "Оцінювання завершено",
         completeText:
           "Ваші підсумкові бали доступні лише для перегляду. Адміністратор може відкрити оцінку знову, якщо потрібне виправлення.",
+        closedTitle: "Оцінювання закрито",
+        closedText: "Суддівство завершено. Відгуки залишаються доступними для перегляду, але чернетки й оцінки більше не можна змінювати або надсилати.",
         incompleteError: "Оцініть кожен критерій перед надсиланням оцінки.",
         draftSaved: "Чернетку збережено. Ви можете повернутися пізніше.",
         submittedNotice: "Оцінку надіслано.",

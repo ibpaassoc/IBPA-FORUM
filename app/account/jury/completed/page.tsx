@@ -19,6 +19,7 @@ export default async function JuryCompletedReviewsPage({
       activeStatus="completed"
       basePath="/account/jury/completed"
       showStatusFilters={false}
+      scoringClosed={data.scoringState.status === "CLOSED"}
     />
   );
 }
