@@ -23,10 +23,11 @@ async function readPublicJuryMembersFromDb() {
   try {
     const members = await prisma.juryProfile.findMany({
       where: {
-        juryApplication: {
-          status: "PAID",
-          payments: { some: { status: "PAID" } },
-        },
+        // `status: "PAID"` on the application is the authoritative confirmed
+        // state. Do not also require a PAID payment row: admins can confirm a
+        // member directly (setJuryApplicationStatusDirectly) without one, and
+        // those members were silently missing from the public listing.
+        juryApplication: { status: "PAID" },
       },
       orderBy: {
         updatedAt: "desc",
