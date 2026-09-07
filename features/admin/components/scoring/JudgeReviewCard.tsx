@@ -62,9 +62,11 @@ function TimelineItem({
 export default function JudgeReviewCard({
   row,
   scoringDefinition,
+  scoringClosed,
 }: {
   row: JudgeReviewRow;
   scoringDefinition: NominationScoringDefinition;
+  scoringClosed: boolean;
 }) {
   const [reviewOpen, setReviewOpen] = useState(false);
   const isNotStarted = row.scoreStatus === "NOT_STARTED";
@@ -104,7 +106,7 @@ export default function JudgeReviewCard({
               {adminT.scoring.openReview}
             </button>
           ) : null}
-          {row.reviewId && isSubmitted ? <AdminReopenScoreButton reviewId={row.reviewId} /> : null}
+          {row.reviewId && isSubmitted && !scoringClosed ? <AdminReopenScoreButton reviewId={row.reviewId} /> : null}
         </div>
       </div>
 

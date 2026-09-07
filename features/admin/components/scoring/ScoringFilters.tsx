@@ -154,6 +154,7 @@ export default function ScoringFilters({
     <DashboardCard className="flex flex-col gap-3">
       {/* Сетка на планшете, гибкая строка на широких экранах. */}
       <form
+        noValidate
         className="grid gap-2 sm:grid-cols-2 xl:flex xl:flex-wrap xl:items-center"
         onSubmit={(event) => {
           event.preventDefault();
