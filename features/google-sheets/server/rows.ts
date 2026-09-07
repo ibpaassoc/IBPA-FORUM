@@ -7,7 +7,7 @@ import { formatDateTime, formatUsd, joinList, yesNo } from "./format";
 import {
   scoreStatusLabel,
   ticketPaymentLabel,
-  ticketTypeLabelRu,
+  ticketAccessLabelRu,
 } from "./labels";
 import {
   readReviewScores,
@@ -311,6 +311,7 @@ const ticketSelect = {
   phone: true,
   instagram: true,
   type: true,
+  origin: true,
   galaDinner: true,
   secureToken: true,
   status: true,
@@ -342,7 +343,7 @@ export function mapTicketRow(ticket: TicketRecord): SheetValues[number] {
     ticket.email,
     ticket.phone,
     ticket.instagram ?? "",
-    ticketTypeLabelRu(ticket.type ?? "TWO_DAYS"),
+    ticketAccessLabelRu(ticket.origin, ticket.type),
     yesNo(ticket.galaDinner),
     // Single price column: the full amount actually paid (Стоимость). The former
     // Quantity, per-ticket portion and Discount columns were removed.

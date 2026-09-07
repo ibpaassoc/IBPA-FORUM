@@ -139,6 +139,7 @@ enum TicketOrigin {
   SPECIAL_PACKET
   JURY_GALA
   SPECIAL_OFFER
+  GALA_ONLY
 
   @@schema("forum_next")
 }

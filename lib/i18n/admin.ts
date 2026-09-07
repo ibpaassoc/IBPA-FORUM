@@ -655,7 +655,9 @@ export const adminT = {
     typeLabels: {
       ONE_DAY: "Форум — 1 день",
       TWO_DAYS: "Форум — 2 дня",
+      GALA_ONLY: "Только гала-ужин",
     } as Record<string, string>,
+    galaOnlyBadge: "Только гала-ужин",
     noPaymentRequired: "Билет выдан без оплаты.",
     manualBadge: "Без оплаты",
     manual: {
@@ -680,6 +682,9 @@ export const adminT = {
       oneDay: "Форум — 1 день",
       twoDays: "Форум — 2 дня",
       galaDinner: "Гала-ужин",
+      galaOnly: "Только гала-ужин",
+      galaOnlyHint: "Без доступа на дни форума",
+      galaAlwaysIncluded: "Гала-ужин входит в этот билет",
       cancel: "Отмена",
       submit: "Отправить",
       sending: "Отправка…",

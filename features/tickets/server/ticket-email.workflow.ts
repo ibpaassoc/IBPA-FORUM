@@ -15,6 +15,7 @@ export async function sendTicketConfirmationEmail({
   secureToken,
   instagram,
   accessUpdated = false,
+  galaOnly = false,
   specialPacket = false,
   specialOffer = false,
   manualIssue = false,
@@ -26,6 +27,8 @@ export async function sendTicketConfirmationEmail({
   secureToken: string;
   instagram?: string | null;
   accessUpdated?: boolean;
+  /** Gala dinner only — the ticket grants no forum-day access. */
+  galaOnly?: boolean;
   specialPacket?: boolean;
   specialOffer?: boolean;
   manualIssue?: boolean;
@@ -39,6 +42,7 @@ export async function sendTicketConfirmationEmail({
     paymentUrl,
     instagram,
     accessUpdated,
+    galaOnly,
     specialPacket,
     specialOffer,
     manualIssue,

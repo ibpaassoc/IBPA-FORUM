@@ -24,6 +24,7 @@ import {
   ticketCanBeDeleted,
   type AdminManualTicketRecipient,
 } from "@/features/tickets/lib/admin-ticket-rules";
+import { isGalaOnlyOrigin } from "@/features/tickets/lib/labels";
 import { adminT } from "@/lib/i18n/admin";
 import UnifiedScanner from "@/features/check-in/components/UnifiedScanner";
 import ManualTicketDialog from "./ManualTicketDialog";
@@ -57,7 +58,7 @@ type TicketRecord = {
   phone: string;
   instagram: string | null;
   type: string;
-  origin: "STANDARD" | "SPECIAL_PACKET" | "JURY_GALA" | "SPECIAL_OFFER";
+  origin: "STANDARD" | "SPECIAL_PACKET" | "JURY_GALA" | "SPECIAL_OFFER" | "GALA_ONLY";
   manualIssue: boolean;
   galaDinner: boolean;
   isIbpaMember: boolean;
@@ -200,7 +201,6 @@ function SendPaymentLinkAction({ ticketId }: { ticketId: string }) {
 }
 
 function ticketTypeLabelRu(type: string) {
-  if (type === "GALA_ONLY") return "Только гала-ужин";
   return adminT.tickets.typeLabels[type] ?? type.replace("_", " ").toLowerCase();
 }
 
@@ -729,7 +729,7 @@ function TicketDetailPanel({
   return (
     <div className="px-4 pb-4 pt-3 lg:px-5">
       <div className="relative">
-        {!editing && ticket.origin !== "JURY_GALA" && (
+        {!editing && !isGalaOnlyOrigin(ticket.origin) && (
           <IconButton
             label={ticketAdminCopy.editTicket}
             icon={Pencil}
@@ -827,7 +827,7 @@ function TicketDetailPanel({
       />
       <DetailItem label={adminT.tickets.paymentStatus} value={ticketStatusBadge(ticket.status, payment?.status, ticket.manualIssue)} />
       <div className="sm:col-span-2">
-        <PaymentSummary payment={payment} noPayment={ticket.origin === "JURY_GALA" || ticket.manualIssue} />
+        <PaymentSummary payment={payment} noPayment={isGalaOnlyOrigin(ticket.origin) || ticket.manualIssue} />
       </div>
       <DetailItem label={adminT.tickets.paymentTime} value={ticket.paidAt ? formatDate(ticket.paidAt) : null} />
       <DetailItem label={adminT.tickets.created} value={formatDate(ticket.createdAt)} />
@@ -950,6 +950,8 @@ function TicketRow({
             )}
             {ticket.origin === "SPECIAL_OFFER" ? (
               <div className="mt-2"><DashboardBadge tone="purple">Спецпредложение</DashboardBadge></div>
+            ) : ticket.origin === "GALA_ONLY" ? (
+              <div className="mt-2"><DashboardBadge tone="purple">{adminT.tickets.galaOnlyBadge}</DashboardBadge></div>
             ) : ticket.origin === "JURY_GALA" ? (
               <div className="mt-2"><DashboardBadge tone="purple">Бесплатный гала-ужин</DashboardBadge></div>
             ) : null}

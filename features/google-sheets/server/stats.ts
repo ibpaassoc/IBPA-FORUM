@@ -3,7 +3,7 @@ import { prisma } from "@/shared/lib/prisma";
 import { CATEGORY_ORDER, orderCategories } from "./categories";
 import type { SheetValues } from "./client";
 import { formatDateTime, formatUsd } from "./format";
-import { ticketTypeLabelRu } from "./labels";
+import { ticketAccessLabelRu } from "./labels";
 
 /**
  * Compute platform statistics directly from the database (rather than relying on
@@ -122,7 +122,7 @@ export async function computeStatsLayout(): Promise<StatsLayout> {
     }),
     prisma.ticket.findMany({
       where: { kind: "FORUM" },
-      select: { type: true, status: true },
+      select: { type: true, origin: true, status: true },
     }),
     prisma.payment.groupBy({
       by: ["purchaseType"],
@@ -164,7 +164,7 @@ export async function computeStatsLayout(): Promise<StatsLayout> {
 
   const ticketTypeCounts = new Map<string, number>();
   for (const ticket of soldTickets) {
-    increment(ticketTypeCounts, ticketTypeLabelRu(ticket.type ?? "TWO_DAYS"));
+    increment(ticketTypeCounts, ticketAccessLabelRu(ticket.origin, ticket.type));
   }
 
   const now = formatDateTime(new Date());

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { findTicketWithPaymentByToken } from "@/features/tickets/server/ticket-repository";
-import { ticketTypeLabel } from "@/features/tickets/lib/labels";
+import { isGalaOnlyOrigin, ticketTypeLabel } from "@/features/tickets/lib/labels";
 import { parseTicketActivity } from "@/features/database/json-fields";
 
 export const metadata = {
@@ -24,6 +24,8 @@ export default async function TicketPaymentPage({
   const manualIssue = parseTicketActivity(ticket.activity).events.some(
     (event) => event.type === "CREATED_MANUALLY"
   );
+  // Gala-only tickets carry a placeholder forum type, so `origin` decides the label.
+  const galaOnly = isGalaOnlyOrigin(ticket.origin);
   const amountFormatted = payment
     ? new Intl.NumberFormat("en-US", {
         style: "currency",
@@ -61,13 +63,17 @@ export default async function TicketPaymentPage({
           <Row
             label={manualIssue ? "Тип" : "Type"}
             value={
-              manualIssue
-                ? ticket.type === "ONE_DAY"
-                  ? "Форум — 1 день"
-                  : "Форум — 2 дня"
-                : ticket.specialPacketId
-                  ? "Special Packet — 2-Day Forum Pass"
-                  : ticketTypeLabel(ticket.type ?? "TWO_DAYS")
+              galaOnly
+                ? manualIssue
+                  ? "Гала-ужин — без доступа на дни форума"
+                  : "Gala Dinner Only — no forum day access"
+                : manualIssue
+                  ? ticket.type === "ONE_DAY"
+                    ? "Форум — 1 день"
+                    : "Форум — 2 дня"
+                  : ticket.specialPacketId
+                    ? "Special Packet — 2-Day Forum Pass"
+                    : ticketTypeLabel(ticket.type ?? "TWO_DAYS")
             }
           />
           <Row

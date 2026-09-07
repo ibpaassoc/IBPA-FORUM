@@ -1,5 +1,6 @@
 import "server-only";
-import type { JuryReviewStatus, TicketType } from "@prisma/client";
+import type { JuryReviewStatus, TicketOrigin, TicketType } from "@prisma/client";
+import { isGalaOnlyOrigin } from "@/features/tickets/lib/labels";
 
 /**
  * Russian labels for the system-generated enum values that surface in the
@@ -34,6 +35,18 @@ export function scoreStatusLabel(status: JuryReviewStatus): string {
 
 export function ticketTypeLabelRu(type: TicketType): string {
   return TICKET_TYPE_RU[type] ?? String(type);
+}
+
+/**
+ * Gala-only tickets carry a placeholder forum type to satisfy the database
+ * constraint, so the sheet must read `origin` to describe them honestly.
+ */
+export function ticketAccessLabelRu(
+  origin: TicketOrigin,
+  type: TicketType | null
+): string {
+  if (isGalaOnlyOrigin(origin)) return "Только гала-ужин";
+  return ticketTypeLabelRu(type ?? "TWO_DAYS");
 }
 
 /** Russian payment label for a ticket derived from its status. */
