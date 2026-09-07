@@ -31,6 +31,7 @@ import { ticketApiSchema } from "@/features/tickets/schemas/ticket-form-schema";
 import {
   adminTicketUpdateSchema,
   adminManualTicketSchema,
+  resolveManualTicketAccess,
   ADMIN_GENERATED_VALUE,
   compareEditableTicketChanges,
   hasQrRelevantChanges,
@@ -39,6 +40,7 @@ import {
 } from "@/features/tickets/lib/admin-ticket-rules";
 import { translations } from "@/lib/i18n/translations";
 import { ticketConfirmationTemplate } from "@/features/tickets/templates/ticket-confirmation";
+import { isGalaOnlyOrigin } from "@/features/tickets/lib/labels";
 
 let passed = 0;
 let failed = 0;
@@ -441,6 +443,98 @@ console.log("manual admin ticket issuance");
   assert(email.subject.includes("Ваш билет подтверждён"), "manual ticket email subject is Russian");
   assert(email.html.includes("Билет оформлен без оплаты"), "manual ticket email states no payment is required");
   assert(!email.html.includes("Payment received"), "manual ticket email never claims payment was received");
+}
+
+// ── Gala-dinner-only tickets ─────────────────────────────────────────────
+console.log("gala-dinner-only tickets");
+{
+  const parsed = adminManualTicketSchema.safeParse({
+    recipientSource: "MANUAL",
+    fullName: "Анна Иванова",
+    email: "anna@example.com",
+    type: "GALA_ONLY",
+    galaDinner: false,
+  });
+  assert(parsed.success, "manual ticket payload accepts the gala-only type");
+
+  // The forum-day access lives on `origin`; `type` stays a placeholder because
+  // the database requires every FORUM ticket to carry one.
+  const access = resolveManualTicketAccess("GALA_ONLY", false);
+  eq(access.origin, "GALA_ONLY", "gala-only selection is stored as a GALA_ONLY origin");
+  eq(access.type, "TWO_DAYS", "gala-only ticket keeps a placeholder forum type");
+  eq(access.galaDinner, true, "gala-only ticket always includes the gala dinner");
+  eq(
+    resolveManualTicketAccess("ONE_DAY", false).origin,
+    "STANDARD",
+    "a normal manual ticket stays a standard-origin ticket"
+  );
+  eq(
+    resolveManualTicketAccess("TWO_DAYS", true).galaDinner,
+    true,
+    "a normal manual ticket keeps the chosen gala selection"
+  );
+
+  eq(isGalaOnlyOrigin("GALA_ONLY"), true, "GALA_ONLY origin is gala-only");
+  eq(isGalaOnlyOrigin("JURY_GALA"), true, "complimentary jury gala ticket is gala-only");
+  eq(isGalaOnlyOrigin("STANDARD"), false, "a standard ticket is not gala-only");
+
+  const ru = ticketConfirmationTemplate({
+    fullName: "Анна Иванова",
+    type: access.type,
+    galaDinner: access.galaDinner,
+    paymentUrl: "https://example.com/tickets/token",
+    galaOnly: true,
+    manualIssue: true,
+  });
+  assert(
+    ru.subject.includes("гала-ужин"),
+    "gala-only email subject names the gala dinner"
+  );
+  assert(
+    ru.html.includes("только на гала-ужин"),
+    "gala-only email says the ticket is for the gala dinner only"
+  );
+  assert(
+    ru.html.includes("Доступ на дни форума"),
+    "gala-only email spells out that forum-day access is excluded"
+  );
+  assert(
+    !ru.html.includes("Форум — 2 дня"),
+    "gala-only email never shows the placeholder 2-day forum label"
+  );
+  assert(
+    ru.text.includes("доступ на дни форума в него не входит"),
+    "gala-only plain-text email carries the same restriction"
+  );
+
+  const en = ticketConfirmationTemplate({
+    fullName: "Jane Doe",
+    type: "TWO_DAYS",
+    galaDinner: true,
+    paymentUrl: "https://example.com/tickets/token",
+    galaOnly: true,
+  });
+  assert(en.subject.includes("Gala Dinner Ticket"), "English gala-only subject names the gala dinner");
+  assert(
+    en.html.includes("gala-dinner-only ticket"),
+    "English gala-only email states the ticket is gala dinner only"
+  );
+  assert(en.html.includes("Forum Day Access"), "English gala-only email lists forum access as excluded");
+
+  const normal = ticketConfirmationTemplate({
+    fullName: "Jane Doe",
+    type: "TWO_DAYS",
+    galaDinner: true,
+    paymentUrl: "https://example.com/tickets/token",
+  });
+  assert(
+    !normal.html.includes("gala-dinner-only ticket"),
+    "a normal ticket email carries no gala-only restriction"
+  );
+  assert(
+    !normal.html.includes("Forum Day Access"),
+    "a normal ticket email does not list a forum-access exclusion row"
+  );
 }
 
 // ── Refund notice localization (scenarios 13, 14, 15, 16) ────────────────────

@@ -22,7 +22,7 @@ type ManualTicketForm = {
   accountId: string;
   fullName: string;
   email: string;
-  type: "ONE_DAY" | "TWO_DAYS";
+  type: "ONE_DAY" | "TWO_DAYS" | "GALA_ONLY";
   galaDinner: boolean;
 };
 
@@ -91,7 +91,9 @@ export default function ManualTicketDialog({
   const fullName = form.fullName ?? "";
   const email = form.email ?? "";
   const ticketType = form.type ?? initialForm.type;
-  const galaDinner = form.galaDinner ?? initialForm.galaDinner;
+  const galaOnly = ticketType === "GALA_ONLY";
+  // A gala-only ticket is the gala dinner, so the add-on is implied and locked on.
+  const galaDinner = galaOnly || (form.galaDinner ?? initialForm.galaDinner);
   const availableRecipients = useMemo(
     () => recipients.filter((recipient) => recipient.role === recipientType),
     [recipientType, recipients]
@@ -359,14 +361,17 @@ export default function ManualTicketDialog({
                 </div>
                 <div className="grid gap-2.5 sm:grid-cols-2">
                   {([
-                    ["ONE_DAY", copy.oneDay],
-                    ["TWO_DAYS", copy.twoDays],
-                  ] as const).map(([value, label]) => {
+                    ["ONE_DAY", copy.oneDay, null],
+                    ["TWO_DAYS", copy.twoDays, null],
+                    ["GALA_ONLY", copy.galaOnly, copy.galaOnlyHint],
+                  ] as const).map(([value, label, hint]) => {
                     const selected = ticketType === value;
                     return (
                       <label
                         key={value}
                         className={`flex min-h-12 cursor-pointer items-center justify-between gap-3 rounded-[17px] border px-4 py-3 text-sm font-semibold transition focus-within:ring-4 focus-within:ring-[var(--color-blue)]/12 ${
+                          hint ? "sm:col-span-2" : ""
+                        } ${
                           selected
                             ? "border-[var(--color-blue)]/55 bg-white text-[#1766bd] shadow-[0_8px_20px_rgba(114,160,193,0.12)]"
                             : "border-[rgba(114,160,193,0.2)] bg-white/58 text-[#10182a]/65"
@@ -380,9 +385,14 @@ export default function ManualTicketDialog({
                           onChange={() => update("type", value)}
                           className="sr-only"
                         />
-                        <span>{label}</span>
+                        <span className="flex flex-col gap-0.5 text-left">
+                          <span>{label}</span>
+                          {hint ? (
+                            <span className="text-[0.7rem] font-medium text-[#10182a]/48">{hint}</span>
+                          ) : null}
+                        </span>
                         <span
-                          className={`flex size-6 items-center justify-center rounded-[9px] border transition ${
+                          className={`flex size-6 shrink-0 items-center justify-center rounded-[9px] border transition ${
                             selected
                               ? "border-[var(--color-blue)] bg-[var(--color-blue)] text-white shadow-[0_5px_12px_rgba(114,160,193,0.25)]"
                               : "border-[rgba(37,42,45,0.16)] bg-white/72"
@@ -396,7 +406,9 @@ export default function ManualTicketDialog({
                 </div>
 
                 <label
-                  className={`mt-3 flex cursor-pointer items-center justify-between gap-4 rounded-[17px] border px-4 py-3.5 text-sm font-semibold transition focus-within:ring-4 focus-within:ring-[var(--color-blue)]/12 ${
+                  className={`mt-3 flex items-center justify-between gap-4 rounded-[17px] border px-4 py-3.5 text-sm font-semibold transition focus-within:ring-4 focus-within:ring-[var(--color-blue)]/12 ${
+                    galaOnly ? "cursor-default opacity-80" : "cursor-pointer"
+                  } ${
                     galaDinner
                       ? "border-[var(--color-blue)]/55 bg-[var(--color-blue-wash)]/72 text-[#1766bd]"
                       : "border-[rgba(114,160,193,0.2)] bg-white/58 text-[#10182a]/72"
@@ -405,12 +417,20 @@ export default function ManualTicketDialog({
                   <input
                     type="checkbox"
                     checked={galaDinner}
+                    disabled={galaOnly}
                     onChange={(event) => update("galaDinner", event.target.checked)}
                     className="sr-only"
                   />
-                  <span>{copy.galaDinner}</span>
+                  <span className="flex flex-col gap-0.5 text-left">
+                    <span>{copy.galaDinner}</span>
+                    {galaOnly ? (
+                      <span className="text-[0.7rem] font-medium text-[#10182a]/48">
+                        {copy.galaAlwaysIncluded}
+                      </span>
+                    ) : null}
+                  </span>
                   <span
-                    className={`flex size-7 items-center justify-center rounded-[10px] border transition ${
+                    className={`flex size-7 shrink-0 items-center justify-center rounded-[10px] border transition ${
                       galaDinner
                         ? "border-[var(--color-blue)] bg-[var(--color-blue)] text-white shadow-[0_6px_14px_rgba(114,160,193,0.25)]"
                         : "border-[rgba(37,42,45,0.16)] bg-white/80"

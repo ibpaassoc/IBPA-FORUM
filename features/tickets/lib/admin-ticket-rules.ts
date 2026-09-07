@@ -1,10 +1,35 @@
-import type { TicketType } from "@prisma/client";
+import type { TicketOrigin, TicketType } from "@prisma/client";
 import { z } from "zod";
 import { adminT } from "@/lib/i18n/admin";
 
 export const ADMIN_EDITABLE_TICKET_TYPES = ["ONE_DAY", "TWO_DAYS"] as const;
+/**
+ * Manual issuing offers one selection the editable form does not: GALA_ONLY —
+ * a ticket that grants the gala dinner and no forum-day access. It is not a
+ * `TicketType`; it is stored as `origin = "GALA_ONLY"` (see
+ * `resolveManualTicketAccess`).
+ */
+export const ADMIN_MANUAL_TICKET_TYPES = ["ONE_DAY", "TWO_DAYS", "GALA_ONLY"] as const;
 export const ADMIN_MANUAL_RECIPIENT_TYPES = ["APPLICANT", "JURY"] as const;
 export const ADMIN_GENERATED_VALUE = "ADMIN-GENERATED";
+
+export type AdminManualTicketType = (typeof ADMIN_MANUAL_TICKET_TYPES)[number];
+
+/**
+ * A FORUM ticket must carry a `type` (the `Ticket_forum_type_required` database
+ * constraint), so a gala-only ticket stores a placeholder type and marks its
+ * access through `origin`, exactly as the complimentary jury gala ticket does.
+ * `origin` — not `type` — is what the scanner and the admin table read.
+ */
+export function resolveManualTicketAccess(
+  type: AdminManualTicketType,
+  galaDinner: boolean
+): { origin: TicketOrigin; type: TicketType; galaDinner: boolean } {
+  if (type === "GALA_ONLY") {
+    return { origin: "GALA_ONLY", type: "TWO_DAYS", galaDinner: true };
+  }
+  return { origin: "STANDARD", type, galaDinner };
+}
 
 export type AdminManualTicketRecipient = {
   id: string;
@@ -31,7 +56,7 @@ export const adminTicketUpdateSchema = z.object({
 export type AdminTicketUpdateInput = z.infer<typeof adminTicketUpdateSchema>;
 
 const adminManualTicketDetailsSchema = z.object({
-  type: z.enum(ADMIN_EDITABLE_TICKET_TYPES),
+  type: z.enum(ADMIN_MANUAL_TICKET_TYPES),
   galaDinner: z.boolean(),
 });
 

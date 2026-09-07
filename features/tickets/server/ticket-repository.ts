@@ -1,7 +1,7 @@
 import "server-only";
 
 import crypto from "crypto";
-import type { DataScope, Prisma, TicketStatus, TicketType } from "@prisma/client";
+import type { DataScope, Prisma, TicketOrigin, TicketStatus, TicketType } from "@prisma/client";
 import { decideTicketReplacement } from "@/features/tickets/lib/replacement";
 import { isTicketPaymentConfirmed } from "@/features/tickets/lib/ticket-status";
 import {
@@ -14,6 +14,7 @@ import {
 import { prisma } from "@/shared/lib/prisma";
 import type { TicketPurchaseManifest } from "./ticket-purchase-manifest";
 import type { AdminManualTicketRecipient } from "@/features/tickets/lib/admin-ticket-rules";
+import { isGalaOnlyOrigin } from "@/features/tickets/lib/labels";
 
 export type CreateTicketInput = {
   fullName: string;
@@ -77,6 +78,8 @@ type CreateAdminManualTicketInput = CreateTicketInput & {
   accountId: string | null;
   applicantProfileId: string | null;
   recipientRole: AdminManualTicketRecipient["role"] | "MANUAL";
+  /** Defaults to STANDARD; GALA_ONLY issues a gala-dinner-only ticket. */
+  origin?: TicketOrigin;
 };
 
 export async function createAdminManualTicket(input: CreateAdminManualTicketInput) {
@@ -85,6 +88,7 @@ export async function createAdminManualTicket(input: CreateAdminManualTicketInpu
   return prisma.ticket.create({
     data: {
       ...ticketData(input, token),
+      origin: input.origin ?? "STANDARD",
       accountId: input.accountId,
       applicantProfileId: input.applicantProfileId,
       status: "PAID",
@@ -485,7 +489,7 @@ export async function getAllTickets() {
   });
   return tickets.map((ticket) => ({
     ...ticket,
-    type: ticket.origin === "JURY_GALA" ? "GALA_ONLY" : (ticket.type ?? "TWO_DAYS"),
+    type: isGalaOnlyOrigin(ticket.origin) ? "GALA_ONLY" : (ticket.type ?? "TWO_DAYS"),
     manualIssue: parseTicketActivity(ticket.activity).events.some(
       (event) => event.type === "CREATED_MANUALLY"
     ),

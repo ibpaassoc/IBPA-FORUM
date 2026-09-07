@@ -3,6 +3,7 @@ import "server-only";
 import crypto from "crypto";
 import { Prisma, type Ticket } from "@prisma/client";
 import { parseTicketActivity } from "@/features/database/json-fields";
+import { isGalaOnlyOrigin } from "@/features/tickets/lib/labels";
 import { syncCheckInOnChange } from "@/features/google-sheets";
 import { adminT } from "@/lib/i18n/admin";
 import { prisma } from "@/shared/lib/prisma";
@@ -44,7 +45,7 @@ function externalKind(ticket: Ticket): TicketKind {
 function normalizeForumTicket(ticket: Ticket): NormalizedTicket {
   const dayOneCheckedInAt = ticket.dayOneCheckInAt ?? ticket.forumCheckInAt;
   const dayTwoCheckedInAt = ticket.dayTwoCheckInAt;
-  const isGalaOnly = ticket.origin === "JURY_GALA" || ticket.type === null;
+  const isGalaOnly = isGalaOnlyOrigin(ticket.origin) || ticket.type === null;
   const isOneDayPass = ticket.type === "ONE_DAY";
   const dayOneAvailable = !isGalaOnly && (!isOneDayPass || !dayTwoCheckedInAt);
   const dayTwoAvailable = !isGalaOnly && (!isOneDayPass || !dayOneCheckedInAt);
@@ -204,7 +205,7 @@ function validateScope(ticket: Ticket, scope: CheckInScope): CheckInError | null
   if (scope !== "DAY_ONE" && scope !== "DAY_TWO" && scope !== "GALA") {
     return { ok: false, code: "BAD_SCOPE", status: 400, message: "Недопустимый тип чек-ина." };
   }
-  if ((ticket.origin === "JURY_GALA" || ticket.type === null) && scope !== "GALA") {
+  if ((isGalaOnlyOrigin(ticket.origin) || ticket.type === null) && scope !== "GALA") {
     return { ok: false, code: "BAD_SCOPE", status: 400, message: "Этот билет действует только на гала-ужин." };
   }
   if (scope === "GALA" && !ticket.galaDinner) {

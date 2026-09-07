@@ -17,10 +17,12 @@ import {
   compareEditableTicketChanges,
   getEditableTicketSnapshot,
   hasQrRelevantChanges,
+  resolveManualTicketAccess,
   ticketCanBeDeleted,
   ticketCanReceiveQr,
   type AdminTicketUpdateInput,
 } from "@/features/tickets/lib/admin-ticket-rules";
+import { isGalaOnlyOrigin } from "@/features/tickets/lib/labels";
 import { prisma } from "@/shared/lib/prisma";
 import { sendTicketQrEmail } from "./ticket-email.workflow";
 import { generateTicketQRDataUrl } from "./ticket-qr";
@@ -145,6 +147,7 @@ export async function createAndSendAdminManualTicket(rawInput: unknown) {
     };
   }
 
+  const access = resolveManualTicketAccess(parsed.data.type, parsed.data.galaDinner);
   const ticket = await createAdminManualTicket({
     accountId: recipient.id,
     applicantProfileId: recipient.applicantProfileId,
@@ -153,8 +156,9 @@ export async function createAndSendAdminManualTicket(rawInput: unknown) {
     email: recipient.email.trim().toLowerCase(),
     phone: ADMIN_GENERATED_VALUE,
     instagram: null,
-    type: parsed.data.type,
-    galaDinner: parsed.data.galaDinner,
+    origin: access.origin,
+    type: access.type,
+    galaDinner: access.galaDinner,
     isIbpaMember: false,
   });
   let delivery;
@@ -445,6 +449,7 @@ export async function sendCurrentTicketQr(
     secureToken: credential.token,
     instagram: ticket.instagram,
     accessUpdated: options.accessUpdated ?? false,
+    galaOnly: isGalaOnlyOrigin(ticket.origin),
     specialPacket: Boolean(ticket.specialPacketId),
     manualIssue: parseTicketActivity(ticket.activity).events.some(
       (event) => event.type === "CREATED_MANUALLY"

@@ -10,6 +10,8 @@ type TicketConfirmationParams = {
   paymentUrl: string;
   instagram?: string | null;
   accessUpdated?: boolean;
+  /** Gala dinner only — the ticket grants no access to the forum days. */
+  galaOnly?: boolean;
   specialPacket?: boolean;
   specialOffer?: boolean;
   manualIssue?: boolean;
@@ -22,24 +24,40 @@ export function ticketConfirmationTemplate({
   paymentUrl,
   instagram,
   accessUpdated = false,
+  galaOnly = false,
   specialPacket = false,
   specialOffer = false,
   manualIssue = false,
 }: TicketConfirmationParams) {
-  const ticketLabel = specialPacket
-    ? "Special Packet — 2-Day Forum Pass"
-    : specialOffer
-      ? "Special Offer — 2-Day Forum Pass"
-      : manualIssue
-        ? type === "ONE_DAY"
-          ? "Форум — 1 день"
-          : "Форум — 2 дня"
-        : TICKET_TYPE_LABELS[type];
+  const ticketLabel = galaOnly
+    ? manualIssue
+      ? "Гала-ужин — без доступа на дни форума"
+      : "Gala Dinner Only — no forum day access"
+    : specialPacket
+      ? "Special Packet — 2-Day Forum Pass"
+      : specialOffer
+        ? "Special Offer — 2-Day Forum Pass"
+        : manualIssue
+          ? type === "ONE_DAY"
+            ? "Форум — 1 день"
+            : "Форум — 2 дня"
+          : TICKET_TYPE_LABELS[type];
   const instagramRow = instagram
     ? `
               <tr>
                 <td style="font-size:13px;color:#6b7280;padding-top:8px;">Instagram</td>
                 <td style="font-size:13px;font-weight:600;color:#111827;padding-top:8px;">@${instagram}</td>
+              </tr>`
+    : "";
+  const forumAccessRowRu = galaOnly
+    ? `
+            <tr><td style="font-size:13px;color:#6b7280;padding-bottom:8px;">Доступ на дни форума</td><td style="font-size:13px;font-weight:600;color:#111827;padding-bottom:8px;">Не включён</td></tr>`
+    : "";
+  const forumAccessRowEn = galaOnly
+    ? `
+              <tr>
+                <td style="font-size:13px;color:#6b7280;padding-bottom:8px;">Forum Day Access</td>
+                <td style="font-size:13px;font-weight:600;color:#111827;padding-bottom:8px;">Not included</td>
               </tr>`
     : "";
 
@@ -60,6 +78,11 @@ export function ticketConfirmationTemplate({
           <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#374151;">Здравствуйте, <strong>${fullName}</strong>!</p>
           <p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:#374151;">Ваш билет на <strong>IBPA BEAUTY AWARD 2026</strong> готов. Данные билета и QR-код для регистрации указаны ниже.</p>
           ${
+            galaOnly
+              ? `<p style="margin:0 0 24px;font-size:14px;line-height:1.65;color:#374151;background:#f6f2fb;border:1px solid #e2d6f3;border-radius:10px;padding:14px 16px;"><strong>Это билет только на гала-ужин: доступ на дни форума в него не входит.</strong></p>`
+              : ""
+          }
+          ${
             accessUpdated
               ? `<p style="margin:0 0 24px;font-size:14px;line-height:1.65;color:#374151;background:#f2f8fb;border:1px solid #dbeafe;border-radius:10px;padding:14px 16px;">Данные билета обновлены. Используйте этот QR-код на мероприятии: ранее отправленный QR-код больше не действует.</p>`
               : ""
@@ -67,7 +90,7 @@ export function ticketConfirmationTemplate({
           <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;border-radius:10px;padding:20px 24px;margin-bottom:28px;">
             <tr><td style="font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#9ca3af;padding-bottom:14px;" colspan="2">Данные билета</td></tr>
             <tr><td style="font-size:13px;color:#6b7280;padding-bottom:8px;width:40%;">Тип билета</td><td style="font-size:13px;font-weight:600;color:#111827;padding-bottom:8px;">${ticketLabel}</td></tr>
-            <tr><td style="font-size:13px;color:#6b7280;">Гала-ужин</td><td style="font-size:13px;font-weight:600;color:#111827;">${galaDinner ? "✓ Включён" : "Не включён"}</td></tr>${instagramRow}
+            ${forumAccessRowRu}<tr><td style="font-size:13px;color:#6b7280;">Гала-ужин</td><td style="font-size:13px;font-weight:600;color:#111827;">${galaDinner ? "✓ Включён" : "Не включён"}</td></tr>${instagramRow}
           </table>
           <p style="margin:0 0 14px;font-size:13px;font-weight:600;color:#374151;text-align:center;">Покажите этот QR-код на стойке регистрации</p>
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;"><tr><td align="center"><img src="cid:${QR_CID}" alt="QR-код билета" width="200" height="200" border="0" style="display:block;width:200px;height:200px;border-radius:12px;border:1px solid #e5e7eb;padding:10px;background:#ffffff;" /></td></tr></table>
@@ -87,6 +110,7 @@ export function ticketConfirmationTemplate({
       "Ваш билет на IBPA BEAUTY AWARD 2026 готов. Оплата не требуется.",
       `Тип билета: ${ticketLabel}`,
       `Гала-ужин: ${galaDinner ? "Включён" : "Не включён"}`,
+      ...(galaOnly ? ["Это билет только на гала-ужин: доступ на дни форума в него не входит."] : []),
       ...(accessUpdated
         ? ["Данные билета обновлены. Используйте новый QR-код: ранее отправленный QR-код больше не действует."]
         : []),
@@ -97,7 +121,9 @@ export function ticketConfirmationTemplate({
     ].join("\n\n");
 
     return {
-      subject: "Ваш билет подтверждён — IBPA BEAUTY AWARD 2026",
+      subject: galaOnly
+        ? "Ваш билет на гала-ужин подтверждён — IBPA BEAUTY AWARD 2026"
+        : "Ваш билет подтверждён — IBPA BEAUTY AWARD 2026",
       html,
       text,
     };
@@ -145,6 +171,13 @@ export function ticketConfirmationTemplate({
               Your ticket details and check-in QR code are below.
             </p>
             ${
+              galaOnly
+                ? `<p style="margin:0 0 24px;font-size:14px;line-height:1.65;color:#374151;background:#f6f2fb;border:1px solid #e2d6f3;border-radius:10px;padding:14px 16px;">
+              <strong>This is a gala-dinner-only ticket: it admits you to the Gala Dinner and does not include access to the forum days.</strong>
+            </p>`
+                : ""
+            }
+            ${
               accessUpdated
                 ? `<p style="margin:0 0 24px;font-size:14px;line-height:1.65;color:#374151;background:#f2f8fb;border:1px solid #dbeafe;border-radius:10px;padding:14px 16px;">
               Your ticket details have been updated. Please use this new QR code at the event; any QR code we sent previously is no longer valid.
@@ -163,6 +196,7 @@ export function ticketConfirmationTemplate({
                 <td style="font-size:13px;color:#6b7280;padding-bottom:8px;width:40%;">Ticket Type</td>
                 <td style="font-size:13px;font-weight:600;color:#111827;padding-bottom:8px;">${ticketLabel}</td>
               </tr>
+${forumAccessRowEn}
               <tr>
                 <td style="font-size:13px;color:#6b7280;">Gala Dinner</td>
                 <td style="font-size:13px;font-weight:600;color:#111827;">${galaDinner ? "✓ Included" : "Not included"}</td>
@@ -231,6 +265,7 @@ export function ticketConfirmationTemplate({
     `Your registration for the IBPA BEAUTY AWARD 2026 is complete.`,
     `Ticket type: ${ticketLabel}`,
     `Gala Dinner: ${galaDinner ? "Included" : "Not included"}`,
+    ...(galaOnly ? ["This is a gala-dinner-only ticket: it admits you to the Gala Dinner and does not include access to the forum days."] : []),
     ...(accessUpdated
       ? [
           "Your ticket details have been updated. Please use this new QR code at the event; any QR code we sent previously is no longer valid.",
@@ -244,7 +279,9 @@ export function ticketConfirmationTemplate({
   ].join("\n\n");
 
   return {
-    subject: "Your Ticket Is Confirmed — IBPA BEAUTY AWARD 2026",
+    subject: galaOnly
+      ? "Your Gala Dinner Ticket Is Confirmed — IBPA BEAUTY AWARD 2026"
+      : "Your Ticket Is Confirmed — IBPA BEAUTY AWARD 2026",
     html,
     text,
   };
