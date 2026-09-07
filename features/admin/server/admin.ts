@@ -14,7 +14,7 @@ import {
   ScoringHttpError,
 } from "@/features/jury/server/scoring-shared";
 import { isSubmittedReviewStatus } from "@/features/jury/scoring/review-status";
-import { assertScoringOpen } from "@/features/jury/server/scoring-state";
+import { assertScoringOpen, lockScoringState } from "@/features/jury/server/scoring-state";
 import {
   getCategoryScoringDefinition,
   readReviewScores,
@@ -710,10 +710,10 @@ export async function getAdminApplicationScoringDetail(nominationId: string) {
 
 export async function reopenNominationReview(reviewId: string) {
   const review = await prisma.$transaction(async (tx) => {
-    await assertScoringOpen(tx);
+    await lockScoringState(tx);
     const existingReview = await tx.juryNominationReview.findUnique({
       where: { id: reviewId },
-      select: { id: true, nominationId: true, status: true },
+      select: { id: true, nominationId: true, status: true, juryProfileId: true },
     });
 
     if (!existingReview) {
@@ -723,6 +723,10 @@ export async function reopenNominationReview(reviewId: string) {
     if (existingReview.status !== "SUBMITTED") {
       throw new ScoringHttpError(409, adminT.api.submittedScoresOnly);
     }
+
+    // Оценку можно вернуть в работу, только если оценивание открыто этому судье —
+    // глобально или через ручной доступ на вкладке прогресса жюри.
+    await assertScoringOpen(tx, existingReview.juryProfileId);
 
     return tx.juryNominationReview.update({
       where: { id: reviewId },
