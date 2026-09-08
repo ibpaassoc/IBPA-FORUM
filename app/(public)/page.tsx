@@ -3,6 +3,7 @@ import {
   HomeHero,
   HomeAwardsInfo,
   HomeThreeExperiences,
+  HomeFounder,
   HomeProgram,
   HomeConversionBlock,
   HomeDressCode,
@@ -38,6 +39,7 @@ export default function HomePagePremium() {
       <HomeHero />
       <HomeAwardsInfo />
       <HomeThreeExperiences />
+      <HomeFounder />
       <HomeConversionBlock />
       <HomeProgram />
       <HomeSpeakers />
