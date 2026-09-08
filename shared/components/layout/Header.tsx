@@ -19,7 +19,7 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const headerRef = useRef<HTMLElement | null>(null);
   const pathname = usePathname();
-  const { language, t } = useLanguage();
+  const { t } = useLanguage();
 
   const isDarkHero = DARK_HERO_PAGES.includes(pathname);
   const isLightHero = LIGHT_HERO_PAGES.includes(pathname);
@@ -176,15 +176,18 @@ export default function Header() {
               <LanguageSwitcher transparent={useWhiteText} />
             </div>
 
-            <div
-              className={`rounded-full transition-all duration-700 ${
+            <Link
+              href="/account/login"
+              className={`group relative inline-flex shrink-0 items-center overflow-hidden rounded-full border px-5 py-2.5 text-[0.72rem] font-semibold uppercase tracking-[0.13em] backdrop-blur-2xl transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-[1px] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#72a0c1]/30 ${
                 useWhiteText
-                  ? "shadow-[0_12px_34px_rgba(0,0,0,0.12)]"
-                  : "shadow-[0_12px_34px_rgba(114,160,193,0.18)]"
+                  ? "border-white/48 bg-white/10 text-white shadow-[0_14px_34px_rgba(0,0,0,0.18)] hover:border-white/70 hover:bg-white/18"
+                  : "border-[#b9d9eb]/65 bg-white/64 text-[#172430] shadow-[0_14px_34px_rgba(114,160,193,0.16)] hover:border-[#8eb6d3]/75 hover:bg-white/82"
               }`}
             >
-              <JuryMenu transparent={useWhiteText} />
-            </div>
+              <span className="absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-white/80 to-transparent" />
+              <span className="absolute inset-0 rounded-full bg-[#72a0c1]/5 transition-opacity duration-500 group-hover:opacity-80" />
+              <span className="relative z-10">{t.common.account}</span>
+            </Link>
           </div>
 
           <button
