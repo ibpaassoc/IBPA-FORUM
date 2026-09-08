@@ -44,7 +44,7 @@ const EASING = [0.22, 1, 0.36, 1] as const;
 
 function SponsorStory({ sponsor, copy }: { sponsor: Sponsor; copy: SponsorsCopy }) {
   return (
-    <article className="grid gap-9 px-5 py-1 sm:gap-10 md:grid-cols-[minmax(17rem,0.82fr)_minmax(0,1.35fr)] md:px-0 md:py-5 md:items-center md:gap-12 lg:grid-cols-[minmax(19rem,0.9fr)_minmax(0,1.45fr)] lg:gap-16">
+    <article className="grid gap-9 py-1 sm:gap-10 md:grid-cols-[minmax(17rem,0.82fr)_minmax(0,1.35fr)] md:items-center md:gap-12 md:py-5 lg:grid-cols-[minmax(19rem,0.9fr)_minmax(0,1.45fr)] lg:gap-16">
       <div className="relative isolate self-start transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 motion-reduce:transition-none">
         <span
           aria-hidden="true"
@@ -270,15 +270,9 @@ export default function HomeSponsors() {
         <div className="absolute bottom-[-20%] right-[-10%] h-72 w-72 rounded-full bg-[#b9d9eb]/24 blur-3xl md:h-[32rem] md:w-[32rem]" />
       </div>
 
-      <div
-        className="page-section relative max-md:px-0"
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
-        onFocusCapture={() => setIsPaused(true)}
-        onBlurCapture={() => setIsPaused(false)}
-      >
+      <div className="page-section relative">
         <Reveal>
-          <div className="max-w-3xl max-md:px-5">
+          <div className="max-w-3xl">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#b9d9eb]/60 bg-white/70 px-4 py-2 font-[var(--font-ui-family)] text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#2f6f9f] backdrop-blur-xl">
               <Handshake className="h-4 w-4" aria-hidden="true" />
               {copy.eyebrow}
@@ -292,8 +286,16 @@ export default function HomeSponsors() {
             </h2>
           </div>
         </Reveal>
+      </div>
 
-        <Reveal delay={0.08} className="mt-10 md:mt-14">
+      <div
+        className="relative mt-10 px-[clamp(1rem,3.25vw,4.5rem)] md:mt-14"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+        onFocusCapture={() => setIsPaused(true)}
+        onBlurCapture={() => setIsPaused(false)}
+      >
+        <Reveal delay={0.08}>
           <div
             id="sponsor-content"
             role="region"
@@ -331,7 +333,7 @@ export default function HomeSponsors() {
 
         {isSwitcher ? (
           <Reveal delay={0.12} className="mt-8 md:mt-10">
-            <div className="flex items-center gap-3 px-5 md:gap-4 md:px-0">
+            <div className="flex items-center gap-3 md:gap-4">
               <button
                 type="button"
                 aria-label={copy.prevLabel}
