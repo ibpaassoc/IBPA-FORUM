@@ -19,16 +19,11 @@ type MasterClass = {
   bonus?: string;
 };
 
-const ROLLOUT_EASING = [0.22, 1, 0.36, 1] as const;
-type Direction = 1 | -1;
-
 export default function HomeMasterClasses() {
   const { t } = useLanguage();
   const c = t.home.masterClassesSection;
   const masterClasses = c.masterClasses as readonly MasterClass[];
   const [openClass, setOpenClass] = useState<number | null>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [direction, setDirection] = useState<Direction>(1);
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
@@ -49,41 +44,6 @@ export default function HomeMasterClasses() {
   }, [openClass]);
 
   const activeClass = openClass !== null ? masterClasses[openClass] : null;
-  const activeMasterClass = masterClasses[activeIndex];
-
-  const selectMasterClass = (index: number) => {
-    if (index === activeIndex) return;
-    setDirection(index > activeIndex ? 1 : -1);
-    setActiveIndex(index);
-  };
-
-  const rolloutVariants = {
-    enter: (slideDirection: Direction) =>
-      reducedMotion
-        ? { opacity: 0 }
-        : {
-            opacity: 0,
-            x: slideDirection * 36,
-            scale: 0.985,
-            clipPath:
-              slideDirection === 1
-                ? "inset(0 0 0 100% round 1.875rem)"
-                : "inset(0 100% 0 0 round 1.875rem)",
-          },
-    center: { opacity: 1, x: 0, scale: 1, clipPath: "inset(0 0 0 0 round 1.875rem)" },
-    exit: (slideDirection: Direction) =>
-      reducedMotion
-        ? { opacity: 0 }
-        : {
-            opacity: 0,
-            x: slideDirection * -24,
-            scale: 0.992,
-            clipPath:
-              slideDirection === 1
-                ? "inset(0 100% 0 0 round 1.875rem)"
-                : "inset(0 0 0 100% round 1.875rem)",
-          },
-  };
 
   return (
     <section className="relative overflow-hidden bg-[linear-gradient(180deg,#f4f9fc_0%,#ffffff_48%,#f8f8f6_100%)] py-20 md:py-28">
@@ -108,100 +68,56 @@ export default function HomeMasterClasses() {
       </div>
 
       <div className="relative mt-[var(--space-xl)] px-[clamp(1rem,3.25vw,4.5rem)]">
-        <div className="mx-auto max-w-[112rem] xl:grid xl:grid-cols-[minmax(0,1fr)_10rem] xl:gap-4">
-          <div className="relative h-[31rem] overflow-hidden rounded-[30px] border border-[#b9d9eb]/62 bg-[#eaf4f9] shadow-[0_22px_62px_rgba(114,160,193,0.15)] sm:h-[34rem] md:h-[clamp(34rem,48vw,43rem)]">
-            <AnimatePresence initial={false} custom={direction}>
-              {activeMasterClass ? (
-                <motion.button
-                  type="button"
-                  key={activeMasterClass.name}
-                  custom={direction}
-                  variants={rolloutVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{ duration: reducedMotion ? 0.1 : 0.46, ease: ROLLOUT_EASING }}
-                  aria-haspopup="dialog"
-                  aria-label={`${c.readMore}: ${activeMasterClass.name}`}
-                  onClick={() => setOpenClass(activeIndex)}
-                  className="group absolute inset-0 cursor-pointer appearance-none overflow-hidden text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-[#72a0c1]/60"
-                >
-                  <Image
-                    src={activeMasterClass.photo}
-                    alt=""
-                    aria-hidden="true"
-                    fill
-                    quality={45}
-                    sizes="(max-width: 1279px) 100vw, 84vw"
-                    className="scale-110 object-cover opacity-45 blur-2xl"
-                  />
-                  <Image
-                    src={activeMasterClass.photo}
-                    alt={activeMasterClass.name}
-                    fill
-                    quality={90}
-                    sizes="(max-width: 1279px) 100vw, 84vw"
-                    className="object-contain object-center transition-transform duration-700 ease-out motion-safe:group-hover:scale-[1.012]"
-                  />
-                  <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(16,24,42,0.18)_0%,rgba(16,24,42,0.04)_42%,rgba(16,24,42,0.78)_100%)]" />
+        <div className="mx-auto grid max-w-[112rem] gap-4 sm:grid-cols-2 lg:gap-5 xl:grid-cols-4">
+          {masterClasses.map((masterClass, index) => (
+            <motion.button
+              type="button"
+              key={masterClass.name}
+              aria-haspopup="dialog"
+              aria-label={`${c.readMore}: ${masterClass.name}`}
+              onClick={() => setOpenClass(index)}
+              whileHover={reducedMotion ? undefined : { y: -6 }}
+              whileTap={reducedMotion ? undefined : { scale: 0.99 }}
+              transition={{ duration: reducedMotion ? 0 : 0.26, ease: [0.22, 1, 0.36, 1] }}
+              className="group relative isolate aspect-[3/4] cursor-pointer overflow-hidden rounded-[30px] border border-[#b9d9eb]/64 bg-[#eaf4f9] text-left shadow-[0_18px_48px_rgba(114,160,193,0.13)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#72a0c1]/55"
+            >
+              <Image
+                src={masterClass.photo}
+                alt=""
+                aria-hidden="true"
+                fill
+                quality={45}
+                sizes="(max-width: 639px) calc(100vw - 2rem), (max-width: 1279px) calc((100vw - 6rem) / 2), 25vw"
+                className="scale-110 object-cover opacity-40 blur-2xl"
+              />
+              <Image
+                src={masterClass.photo}
+                alt={masterClass.name}
+                fill
+                quality={90}
+                sizes="(max-width: 639px) calc(100vw - 2rem), (max-width: 1279px) calc((100vw - 6rem) / 2), 25vw"
+                className="object-contain object-center transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.018]"
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(16,24,42,0.04)_20%,rgba(16,24,42,0.12)_48%,rgba(16,24,42,0.82)_100%)]" />
 
-                  <div className="absolute inset-x-0 bottom-0 flex min-w-0 flex-col p-6 text-white sm:p-8 lg:p-10">
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="rounded-full border border-white/25 bg-[#10182a]/18 px-3 py-1.5 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/84 backdrop-blur-md">
-                        {c.formatLabel}
-                      </span>
-                      <span className="font-[var(--font-accent)] text-[1.2rem] italic tracking-[0.08em] text-white/76">
-                        {String(activeIndex + 1).padStart(2, "0")}
-                      </span>
-                    </div>
-
-                    <h3 className="mt-3 max-w-3xl font-[var(--font-title-family)] text-[clamp(2.7rem,5vw,5.8rem)] font-light leading-[0.9] tracking-[-0.045em] text-white">
-                      {activeMasterClass.name}
-                    </h3>
-
-                    <div className="mt-5 max-w-xl rounded-[20px] border border-white/20 bg-white/12 p-4 backdrop-blur-md">
-                      <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-white/65">{c.topicLabel}</p>
-                      <h4 className="mt-1.5 text-lg font-semibold leading-snug tracking-[-0.025em] text-white sm:text-xl">{activeMasterClass.topic}</h4>
-                    </div>
-                  </div>
-                </motion.button>
-              ) : null}
-            </AnimatePresence>
-          </div>
-
-          <div className="mt-3 flex gap-3 overflow-x-auto pb-2 [scrollbar-color:rgba(92,159,198,0.52)_transparent] [scrollbar-width:thin] xl:mt-0 xl:grid xl:overflow-visible xl:pb-0">
-            {masterClasses.map((masterClass, index) => {
-              const isActive = activeIndex === index;
-
-              return (
-                <button
-                  type="button"
-                  key={masterClass.name}
-                  aria-label={`${c.readMore}: ${masterClass.name}`}
-                  aria-pressed={isActive}
-                  onClick={() => selectMasterClass(index)}
-                  className={`group relative h-20 w-24 shrink-0 cursor-pointer overflow-hidden rounded-2xl border transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#72a0c1]/45 active:translate-y-0 xl:h-auto xl:w-auto ${
-                    isActive
-                      ? "border-[#72a0c1]/85 shadow-[0_10px_24px_rgba(114,160,193,0.22)]"
-                      : "border-[#b9d9eb]/62 hover:border-[#9fc7df]/80"
-                  }`}
-                >
-                  <Image
-                    src={masterClass.photo}
-                    alt=""
-                    fill
-                    quality={80}
-                    sizes="(max-width: 1279px) 6rem, 10rem"
-                    className={`object-cover transition duration-300 ${isActive ? "scale-105 opacity-100" : "opacity-65 group-hover:opacity-95"}`}
-                  />
-                  <span className="absolute inset-0 bg-[#10182a]/20" aria-hidden="true" />
-                  <span className="absolute bottom-2 left-2 font-[var(--font-accent)] text-sm italic tracking-[0.08em] text-white" aria-hidden="true">
+              <div className="absolute inset-x-0 bottom-0 p-5 text-white sm:p-6">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="rounded-full border border-white/25 bg-[#10182a]/20 px-3 py-1.5 text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-white/85 backdrop-blur-md">
+                    {c.formatLabel}
+                  </span>
+                  <span className="font-[var(--font-accent)] text-[1.1rem] italic tracking-[0.08em] text-white/78">
                     {String(index + 1).padStart(2, "0")}
                   </span>
-                </button>
-              );
-            })}
-          </div>
+                </div>
+                <h3 className="mt-3 text-balance font-[var(--font-title-family)] text-[clamp(2rem,3.25vw,3.45rem)] font-light leading-[0.9] tracking-[-0.04em] text-white">
+                  {masterClass.name}
+                </h3>
+                <p className="mt-3 line-clamp-2 text-sm leading-5 text-white/80">
+                  {masterClass.topic}
+                </p>
+              </div>
+            </motion.button>
+          ))}
         </div>
       </div>
 
