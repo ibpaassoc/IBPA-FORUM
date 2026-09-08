@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, Check, GraduationCap, Sparkles, X } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { Check, GraduationCap, Sparkles, X } from "lucide-react";
 import { createPortal } from "react-dom";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
@@ -25,6 +25,7 @@ export default function HomeMasterClasses() {
   const masterClasses = c.masterClasses as readonly MasterClass[];
   const [openClass, setOpenClass] = useState<number | null>(null);
   const [activePreview, setActivePreview] = useState(0);
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
     if (openClass === null) return;
@@ -71,12 +72,17 @@ export default function HomeMasterClasses() {
             const isActive = activePreview === index;
 
             return (
-              <article
+              <button
+                type="button"
                 key={masterClass.name}
-                onMouseEnter={() => setActivePreview(index)}
+                aria-haspopup="dialog"
+                aria-label={`${c.readMore}: ${masterClass.name}`}
+                onMouseEnter={() => {
+                  if (!reducedMotion) setActivePreview(index);
+                }}
                 onFocus={() => setActivePreview(index)}
-                onClick={() => setActivePreview(index)}
-                className={`group relative h-[31rem] shrink-0 snap-center overflow-hidden rounded-[30px] border bg-white/74 shadow-[0_20px_58px_rgba(114,160,193,0.12)] backdrop-blur-xl transition-[flex-grow,width,border-color,box-shadow] duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] hover:border-[#9fc7df]/70 hover:shadow-[0_24px_68px_rgba(114,160,193,0.17)] sm:h-[33rem] md:h-[30rem] md:min-w-0 md:snap-none motion-reduce:transition-none ${
+                onClick={() => setOpenClass(index)}
+                className={`group relative h-[31rem] shrink-0 snap-center cursor-pointer appearance-none overflow-hidden rounded-[30px] border bg-white/74 text-left shadow-[0_20px_58px_rgba(114,160,193,0.12)] backdrop-blur-xl transition-[flex-grow,width,border-color,box-shadow] duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] hover:border-[#9fc7df]/70 hover:shadow-[0_24px_68px_rgba(114,160,193,0.17)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#72a0c1]/45 sm:h-[33rem] md:h-[30rem] md:min-w-0 md:snap-none motion-reduce:transition-none ${
                   isActive
                     ? "w-[min(82vw,25rem)] border-[#9fc7df]/70 md:flex-[3.2]"
                     : "w-[12rem] border-[#b9d9eb]/45 md:flex-[0.78]"
@@ -97,6 +103,14 @@ export default function HomeMasterClasses() {
                 </div>
 
                 <div className="absolute inset-x-0 bottom-0 flex min-w-0 flex-col p-5 text-white sm:p-6 md:p-7">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="rounded-full border border-white/25 bg-[#10182a]/18 px-3 py-1.5 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/84 backdrop-blur-md">
+                      {c.formatLabel}
+                    </span>
+                    <span className="font-[var(--font-accent)] text-[1.15rem] italic tracking-[0.08em] text-white/76">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                  </div>
 
                   <h3 className={`mt-2 font-[var(--font-title-family)] font-light leading-[0.98] tracking-[-0.035em] text-white transition-[font-size,transform] duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] ${isActive ? "text-[clamp(2.2rem,4vw,4.25rem)]" : "text-[1.75rem] md:text-[2rem]"}`}>
                     {masterClass.name}
@@ -109,21 +123,8 @@ export default function HomeMasterClasses() {
                     </div>
                   </div>
 
-                  <button
-                    type="button"
-                    aria-label={c.readMore}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      setOpenClass(index);
-                    }}
-                    className={`absolute right-5 top-5 flex size-11 items-center justify-center rounded-full border border-white/45 bg-white/88 text-slate-800 shadow-lg backdrop-blur-xl transition-[opacity,transform,background-color] duration-500 hover:bg-white hover:text-[#2f6f9f] sm:right-6 sm:top-6 md:right-7 md:top-7 ${
-                      isActive ? "opacity-100" : "pointer-events-none -translate-y-2 opacity-0"
-                    }`}
-                  >
-                    <ArrowRight className="h-4 w-4 -rotate-45" />
-                  </button>
                 </div>
-              </article>
+              </button>
             );
           })}
         </div>
