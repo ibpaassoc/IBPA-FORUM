@@ -1,9 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Check, GraduationCap, Sparkles, X } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Award,
+  Check,
+  GraduationCap,
+  Sparkles,
+  X,
+} from "lucide-react";
 import { createPortal } from "react-dom";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
@@ -24,6 +32,8 @@ export default function HomeMasterClasses() {
   const c = t.home.masterClassesSection;
   const masterClasses = c.masterClasses as readonly MasterClass[];
   const [openClass, setOpenClass] = useState<number | null>(null);
+  const [activeCard, setActiveCard] = useState(0);
+  const galleryRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
@@ -45,79 +55,195 @@ export default function HomeMasterClasses() {
 
   const activeClass = openClass !== null ? masterClasses[openClass] : null;
 
+  const moveGallery = (direction: 1 | -1) => {
+    const nextIndex = Math.min(
+      Math.max(activeCard + direction, 0),
+      masterClasses.length - 1,
+    );
+    const nextCard = galleryRef.current?.querySelector<HTMLElement>(
+      `[data-master-card="${nextIndex}"]`,
+    );
+
+    nextCard?.scrollIntoView({
+      behavior: reducedMotion ? "auto" : "smooth",
+      block: "nearest",
+      inline: "start",
+    });
+    setActiveCard(nextIndex);
+  };
+
+  const updateActiveCard = () => {
+    const gallery = galleryRef.current;
+    if (!gallery) return;
+
+    const cards = Array.from(
+      gallery.querySelectorAll<HTMLElement>("[data-master-card]"),
+    );
+    const currentPosition = gallery.scrollLeft + gallery.clientLeft + 24;
+    const closestIndex = cards.reduce(
+      (closest, card, index) =>
+        Math.abs(card.offsetLeft - currentPosition) <
+        Math.abs(cards[closest].offsetLeft - currentPosition)
+          ? index
+          : closest,
+      0,
+    );
+
+    setActiveCard(closestIndex);
+  };
+
   return (
-    <section className="relative overflow-hidden bg-[linear-gradient(180deg,#f4f9fc_0%,#ffffff_48%,#f8f8f6_100%)] py-20 md:py-28">
+    <section
+      id="master-classes"
+      className="relative overflow-hidden bg-[linear-gradient(110deg,#f4f9fc_0%,#ffffff_47%,#eef7fb_100%)] py-20 md:py-28"
+    >
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="absolute -left-40 top-20 h-[30rem] w-[30rem] rounded-full bg-[#b9d9eb]/24 blur-3xl" />
+        <div className="absolute right-[18%] top-[-12rem] h-[26rem] w-[26rem] rounded-full bg-white/70 blur-3xl" />
         <div className="absolute -right-40 bottom-28 h-[28rem] w-[28rem] rounded-full bg-[#72a0c1]/10 blur-3xl" />
         <div className="absolute inset-x-0 top-0 h-px bg-[var(--landing-divider)]" />
       </div>
 
       <div className="page-section relative">
-        <div className="mx-auto max-w-4xl text-center">
-          <p className="page-eyebrow">{c.eyebrow}</p>
+        <div className="grid items-end gap-10 lg:grid-cols-[minmax(16rem,0.36fr)_minmax(0,1fr)] lg:gap-12">
+          <div className="max-w-[22rem]">
+            <div className="flex items-center gap-3 text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-[#72a0c1]">
+              <span className="size-1.5 rounded-full bg-[#72a0c1]" />
+              <span>{c.eyebrow}</span>
+            </div>
 
-          <h2 className="mt-[var(--space-sm)] font-[var(--font-title-family)] text-[clamp(3rem,7vw,6.5rem)] font-light uppercase leading-[0.92] tracking-[0.035em] text-[var(--color-ink)]">
-            {c.title}
-          </h2>
+            <h2 className="mt-5 max-w-[11ch] font-[var(--font-title-family)] text-[clamp(3.35rem,6vw,6.8rem)] font-light uppercase leading-[0.78] tracking-[-0.045em] text-[var(--color-ink)]">
+              {c.title}
+            </h2>
 
-          <p className="mx-auto mt-[var(--space-md)] max-w-2xl text-[clamp(0.95rem,1.6vw,1.08rem)] leading-[1.8] text-[var(--color-ink-soft)]">
-            {c.description}
-          </p>
-        </div>
-      </div>
+            <p className="mt-7 max-w-[20rem] text-[0.96rem] leading-[1.7] text-[var(--color-ink-soft)] md:text-[1.02rem]">
+              {c.description}
+            </p>
 
-      <div className="relative mt-[var(--space-xl)] px-[clamp(1rem,3.25vw,4.5rem)]">
-        <div className="mx-auto grid max-w-[112rem] gap-4 sm:grid-cols-2 lg:gap-5 xl:grid-cols-4">
-          {masterClasses.map((masterClass, index) => (
-            <motion.button
-              type="button"
-              key={masterClass.name}
-              aria-haspopup="dialog"
-              aria-label={`${c.readMore}: ${masterClass.name}`}
-              onClick={() => setOpenClass(index)}
-              whileHover={reducedMotion ? undefined : { y: -6 }}
-              whileTap={reducedMotion ? undefined : { scale: 0.99 }}
-              transition={{ duration: reducedMotion ? 0 : 0.26, ease: [0.22, 1, 0.36, 1] }}
-              className="group relative isolate aspect-[3/4] cursor-pointer overflow-hidden rounded-[30px] border border-[#b9d9eb]/64 bg-[#eaf4f9] text-left shadow-[0_18px_48px_rgba(114,160,193,0.13)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#72a0c1]/55"
+            <a
+              href="#program"
+              className="group mt-7 inline-flex items-center gap-5 rounded-full border border-[#72a0c1]/35 bg-white/65 px-5 py-3 text-sm font-semibold text-[#2f6f9f] shadow-[0_12px_28px_rgba(114,160,193,0.1)] backdrop-blur-xl transition duration-200 hover:border-[#72a0c1]/65 hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#72a0c1]/30"
             >
-              <Image
-                src={masterClass.photo}
-                alt=""
-                aria-hidden="true"
-                fill
-                quality={45}
-                sizes="(max-width: 639px) calc(100vw - 2rem), (max-width: 1279px) calc((100vw - 6rem) / 2), 25vw"
-                className="scale-110 object-cover opacity-40 blur-2xl"
-              />
-              <Image
-                src={masterClass.photo}
-                alt={masterClass.name}
-                fill
-                quality={90}
-                sizes="(max-width: 639px) calc(100vw - 2rem), (max-width: 1279px) calc((100vw - 6rem) / 2), 25vw"
-                className="object-contain object-center transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.018]"
-              />
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(16,24,42,0.04)_20%,rgba(16,24,42,0.12)_48%,rgba(16,24,42,0.82)_100%)]" />
+              <span>{c.ctaLabel}</span>
+              <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
+            </a>
 
-              <div className="absolute inset-x-0 bottom-0 p-5 text-white sm:p-6">
-                <div className="flex items-center justify-between gap-3">
-                  <span className="rounded-full border border-white/25 bg-[#10182a]/20 px-3 py-1.5 text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-white/85 backdrop-blur-md">
-                    {c.formatLabel}
-                  </span>
-                  <span className="font-[var(--font-accent)] text-[1.1rem] italic tracking-[0.08em] text-white/78">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                </div>
-                <h3 className="mt-3 text-balance font-[var(--font-title-family)] text-[clamp(2rem,3.25vw,3.45rem)] font-light leading-[0.9] tracking-[-0.04em] text-white">
-                  {masterClass.name}
-                </h3>
-                <p className="mt-3 line-clamp-2 text-sm leading-5 text-white/80">
-                  {masterClass.topic}
-                </p>
+            <div className="mt-10 grid max-w-[22rem] grid-cols-3 gap-3 border-t border-[#72a0c1]/20 pt-5">
+              <div className="flex flex-col gap-2 text-[0.63rem] leading-[1.35] text-[#64788b]">
+                <span className="flex size-8 items-center justify-center rounded-full border border-[#72a0c1]/55 text-[#2f6f9f]">
+                  <Sparkles className="h-3.5 w-3.5" />
+                </span>
+                <span>{c.featurePractice}</span>
               </div>
-            </motion.button>
-          ))}
+              <div className="flex flex-col gap-2 text-[0.63rem] leading-[1.35] text-[#64788b]">
+                <span className="flex size-8 items-center justify-center rounded-full border border-[#72a0c1]/55 text-[#2f6f9f]">
+                  <GraduationCap className="h-3.5 w-3.5" />
+                </span>
+                <span>{c.featureTechniques}</span>
+              </div>
+              <div className="flex flex-col gap-2 text-[0.63rem] leading-[1.35] text-[#64788b]">
+                <span className="flex size-8 items-center justify-center rounded-full border border-[#72a0c1]/55 text-[#2f6f9f]">
+                  <Award className="h-3.5 w-3.5" />
+                </span>
+                <span>{c.featureCertificate}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="min-w-0 xl:mr-[calc((min(100vw,var(--content-width))-100vw)/2)]">
+            <div className="mb-4 flex items-center justify-between gap-4 text-[0.66rem] font-semibold uppercase tracking-[0.18em] text-[#7a8b99]">
+              <span>{c.sessionsLabel}</span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  aria-label={c.previousLabel}
+                  disabled={activeCard === 0}
+                  onClick={() => moveGallery(-1)}
+                  className="flex size-10 items-center justify-center rounded-full border border-[#72a0c1]/35 bg-white/70 text-[#2f6f9f] shadow-sm transition hover:border-[#72a0c1]/65 hover:bg-white disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#72a0c1]/30"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  aria-label={c.nextLabel}
+                  disabled={activeCard >= masterClasses.length - 1}
+                  onClick={() => moveGallery(1)}
+                  className="flex size-10 items-center justify-center rounded-full border border-[#72a0c1]/35 bg-white/70 text-[#2f6f9f] shadow-sm transition hover:border-[#72a0c1]/65 hover:bg-white disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#72a0c1]/30"
+                >
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+
+            <div
+              ref={galleryRef}
+              onScroll={updateActiveCard}
+              aria-label={c.galleryLabel}
+              className="masterclass-gallery no-scrollbar flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-5 pr-8 sm:gap-5"
+            >
+              {masterClasses.map((masterClass, index) => (
+                <motion.button
+                  type="button"
+                  key={masterClass.name}
+                  data-master-card={index}
+                  aria-haspopup="dialog"
+                  aria-label={`${c.readMore}: ${masterClass.name}`}
+                  onClick={() => setOpenClass(index)}
+                  whileHover={reducedMotion ? undefined : { y: -7, rotate: 0 }}
+                  whileTap={reducedMotion ? undefined : { scale: 0.985 }}
+                  transition={{ duration: reducedMotion ? 0 : 0.26, ease: [0.22, 1, 0.36, 1] }}
+                  style={{ rotate: reducedMotion ? 0 : index % 3 === 1 ? -1 : index % 3 === 2 ? 0.8 : 0 }}
+                  className="group relative isolate aspect-[0.73] w-[min(72vw,19rem)] shrink-0 snap-start cursor-pointer overflow-hidden rounded-[1.35rem] border border-white/80 bg-[#dcecf4] text-left shadow-[0_20px_45px_rgba(45,83,110,0.15)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#72a0c1]/55 sm:w-[min(43vw,18.5rem)] lg:w-[clamp(11.75rem,13.2vw,15.5rem)]"
+                >
+                  <Image
+                    src={masterClass.photo}
+                    alt={masterClass.name}
+                    fill
+                    quality={90}
+                    sizes="(max-width: 639px) 72vw, (max-width: 1023px) 43vw, 17vw"
+                    className="object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.035]"
+                  />
+                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(16,24,42,0.04)_18%,rgba(16,24,42,0.08)_42%,rgba(8,17,33,0.94)_100%)]" />
+
+                  <div className="absolute inset-x-0 top-0 flex items-start justify-between p-4 text-white/80">
+                    <span className="font-[var(--font-accent)] text-[0.9rem] italic tracking-[0.08em]">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <span className="rounded-full border border-white/30 bg-[#10182a]/25 px-2.5 py-1 text-[0.5rem] font-semibold uppercase tracking-[0.16em] backdrop-blur-md">
+                      {c.formatLabel}
+                    </span>
+                  </div>
+
+                  <div className="absolute inset-x-0 bottom-0 p-4 text-white sm:p-5">
+                    <h3 className="text-balance font-[var(--font-title-family)] text-[clamp(1.8rem,3.15vw,3rem)] font-light leading-[0.86] tracking-[-0.045em]">
+                      {masterClass.name}
+                    </h3>
+                    <p className="mt-3 line-clamp-3 text-[0.72rem] leading-[1.4] text-white/78">
+                      {masterClass.topic}
+                    </p>
+                    <div className="mt-5 flex items-center justify-between gap-3 text-[0.65rem] font-semibold tracking-[0.05em] text-white/82">
+                      <span>{c.detailsLabel}</span>
+                      <span className="flex size-8 items-center justify-center rounded-full border border-white/45 transition duration-200 group-hover:border-white group-hover:bg-white group-hover:text-[#10182a]">
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      </span>
+                    </div>
+                  </div>
+                </motion.button>
+              ))}
+            </div>
+
+            <div className="mt-2 flex items-center gap-2" aria-label={c.galleryProgressLabel}>
+              {masterClasses.map((masterClass, index) => (
+                <span
+                  key={masterClass.name}
+                  aria-hidden="true"
+                  className={`h-1 rounded-full transition-all duration-300 ${
+                    index === activeCard ? "w-10 bg-[#72a0c1]" : "w-1.5 bg-[#72a0c1]/30"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -161,7 +287,7 @@ export default function HomeMasterClasses() {
                       alt=""
                       aria-hidden="true"
                       fill
-                      quality={45}
+                      quality={75}
                       sizes="(max-width: 767px) 100vw, (max-width: 1279px) 32vw, 380px"
                       className="scale-110 object-cover opacity-45 blur-2xl"
                     />

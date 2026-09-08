@@ -194,6 +194,16 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+.masterclass-gallery {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.masterclass-gallery::-webkit-scrollbar {
+  display: none;
+  height: 0;
+}
+
 h1 {
   font-family: var(--font-title-family);
   font-weight: 400;
