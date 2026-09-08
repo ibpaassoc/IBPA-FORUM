@@ -54,7 +54,7 @@ export default function HomeFounder() {
       aria-labelledby="founder-heading"
       className="landing-section relative overflow-hidden bg-[linear-gradient(160deg,rgba(242,248,251,0.82)_0%,rgba(255,255,255,0.86)_54%,rgba(232,244,250,0.82)_100%)] py-[clamp(4.5rem,9vw,8rem)]"
     >
-      <div data-founder-reveal data-founder-masthead aria-hidden className="pointer-events-none absolute -right-[8vw] top-0 font-[var(--font-title-family)] text-[clamp(9rem,27vw,28rem)] leading-[0.72] tracking-[-0.09em] text-[var(--color-blue)]/[0.14]">
+      <div data-founder-reveal data-founder-masthead aria-hidden className="pointer-events-none absolute left-1/2 top-[clamp(3rem,8vw,6rem)] w-max -translate-x-1/2 whitespace-nowrap text-center font-[var(--font-title-family)] text-[clamp(9rem,27vw,28rem)] leading-[0.72] tracking-[-0.09em] text-[var(--color-blue)]/[0.14]">
         {founder.masthead}
       </div>
       <div aria-hidden className="pointer-events-none absolute bottom-[12%] left-[-10rem] size-[24rem] rounded-full bg-[var(--color-blue-soft)]/30 blur-3xl" />
