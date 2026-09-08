@@ -951,6 +951,57 @@ const en = {
           ],
           bonus:
             "Every participant will receive a $20 coupon for PLATINUM materials to explore the professional UV/LED system and begin introducing the technology into their work."
+        },
+        {
+          name: "Anastasia Guk",
+          photo: "/images/master-classes/anastasia-guk.jpg",
+          role:
+            "Licensed esthetician in California, acne-care specialist, founder of H.A. Skin Lab, and creator of the Acne Balance Method. Anastasia has more than 10 years of experience in aesthetic cosmetology, focusing on comprehensive acne and post-acne correction, skin-barrier recovery, and long-term care strategies that support stable remission. She is also the author of an acne book, professional learning materials, and methodology programs for beauty-industry specialists.",
+          topic:
+            "Acne-Correction Mistakes That Keep Skin from Reaching Remission",
+          description:
+            "Anastasia will unpack the common mistakes that can lead to stalled progress, recurring flare-ups, and a compromised skin barrier. The session examines why aggressive intervention does not always deliver a faster result and how to build home and professional care around the client’s individual triggers, tolerance, and rate of adaptation to active ingredients.",
+          highlights: [
+            "Recognize the mistakes that most often prevent stable acne remission.",
+            "Assess the skin barrier before introducing active ingredients.",
+            "Combine professional procedures and home care without overloading the skin.",
+            "Increase treatment intensity gradually while minimizing irritation.",
+            "Build a clear multi-month strategy around the full system of acne triggers."
+          ]
+        },
+        {
+          name: "Anzhelika Syveniuk",
+          photo: "/images/master-classes/anzhelika-syveniuk.jpg",
+          role:
+            "Dermatovenereologist by education and a Licensed Esthetician in California specializing in acne-prone, sensitive, and barrier-compromised skin. With more than nine years of experience, Anzhelika created BOAA™ — the Barrier-Oriented Acne Approach — which pairs effective active therapy with close attention to barrier condition and treatment tolerance. She is the founder of MARUA™, author of the book “BOAA — Barrier-Oriented Acne Approach,” professional and scientific publications, and a speaker and judge at international beauty events.",
+          topic:
+            "Acne and the Skin Barrier: Pairing Active Therapy with Professional Treatment Without Overloading the Skin",
+          description:
+            "This practical session offers a barrier-oriented alternative to the “more actives, faster result” mindset. Anzhelika will show how to assess the current state of the skin, set an appropriate active load, and structure a professional procedure that supports — rather than conflicts with — a client’s home therapy.",
+          highlights: [
+            "Tell when the skin is ready for an active step and when recovery comes first.",
+            "Evaluate the skin’s cumulative active load and signs of overload.",
+            "Adapt a professional procedure for clients using retinoids, acids, or benzoyl peroxide.",
+            "Follow a gentle, step-by-step protocol for acne-prone and sensitive skin.",
+            "Balance acne correction with ongoing barrier support."
+          ]
+        },
+        {
+          name: "Anastasia Moskaliuk & Viktoriia Voloshyna",
+          photo: "/images/master-classes/anastasia-moskaliuk-gel-point.png",
+          role:
+            "Anastasia Moskaliuk is the founder of Gel Point (USA), President of the American Nail Artist Association (ANAA), founder of Nail Point studios in Kyiv and Beverly Hills, and an international champion, judge, and speaker with more than 15 years in the U.S. and Ukrainian nail industries. Together with Gel Point ambassador Viktoriia Voloshyna, she will lead this live practical session.",
+          topic:
+            "Faster. Cleaner. Better. How to Reduce Service Time Without Sacrificing Quality",
+          description:
+            "A live, practical master class on Gel Point’s most popular line — not a product lecture. Anastasia Moskaliuk and Viktoriia Voloshyna will demonstrate how to work with hard gels without surface filing, model and extend quickly, and eliminate unnecessary steps while protecting the durability and quality of the result.",
+          highlights: [
+            "Use Gel Point hard gels without surface filing.",
+            "Model and extend nails faster with fewer unnecessary steps.",
+            "Improve long-term wear while reducing lifting, chips, cracks, and complex repairs.",
+            "Apply the key product techniques behind a faster, cleaner workflow.",
+            "Increase team speed, service quality, and client return rates."
+          ]
         }
       ]
     },
@@ -3711,6 +3762,57 @@ const ru: typeof en = {
           ],
           bonus:
             "Каждый участник получит купон на $20 на материалы PLATINUM, чтобы познакомиться с профессиональной UV/LED-системой и начать внедрение технологии в своей работе."
+        },
+        {
+          name: "Анастасия Гук",
+          photo: "/images/master-classes/anastasia-guk.jpg",
+          role:
+            "Лицензированный эстетист в Калифорнии, специалист по работе с акне, основатель H.A. Skin Lab и автор Acne Balance Method. Анастасия более 10 лет работает в эстетической косметологии и специализируется на комплексной коррекции акне и постакне, восстановлении кожного барьера и построении долгосрочных стратегий ухода для устойчивой ремиссии. Автор книги об акне, профессиональных обучающих материалов и методических программ для специалистов индустрии красоты.",
+          topic:
+            "Ошибки в коррекции акне, которые мешают выйти в ремиссию",
+          description:
+            "На мастер-классе Анастасия разберёт распространённые ошибки, которые приводят к отсутствию результата, постоянным обострениям и повреждению защитного барьера кожи. Мы поговорим о том, почему агрессивное воздействие не всегда ускоряет результат, и как выстраивать домашний и профессиональный уход с учётом индивидуальных триггеров, переносимости и постепенной адаптации к активным компонентам.",
+          highlights: [
+            "Какие ошибки чаще всего мешают добиться устойчивой ремиссии акне.",
+            "Как оценивать состояние кожного барьера перед введением активных компонентов.",
+            "Как сочетать профессиональные процедуры и домашний уход без перегрузки кожи.",
+            "Как постепенно усиливать терапию, не провоцируя раздражение.",
+            "Как выстроить последовательную стратегию работы с клиентом на несколько месяцев."
+          ]
+        },
+        {
+          name: "Анжелика Сивенюк",
+          photo: "/images/master-classes/anzhelika-syveniuk.jpg",
+          role:
+            "Врач-дерматовенеролог по образованию, Licensed Esthetician в Калифорнии, специалист по работе с акне, чувствительной и барьерно-компрометированной кожей. Более 9 лет работает с проблемной кожей и коррекцией акне. Автор профессиональной концепции BOAA™ — Barrier-Oriented Acne Approach, основанной на сочетании эффективной активной терапии с контролем состояния кожного барьера и переносимости ухода. Основатель skincare-бренда MARUA™, автор книги «BOAA — Barrier-Oriented Acne Approach», профессиональных и научных публикаций, преподаватель, спикер и судья международных чемпионатов.",
+          topic:
+            "Акне и кожный барьер: как сочетать активную терапию и профессиональную процедуру без перегрузки кожи",
+          description:
+            "Практический мастер-класс о барьер-ориентированном подходе вместо принципа «чем больше активов — тем быстрее результат». Анжелика покажет, как оценить текущее состояние кожи, определить допустимый уровень активной нагрузки и выстроить профессиональную процедуру так, чтобы она поддерживала, а не конфликтовала с домашней терапией клиента.",
+          highlights: [
+            "Как отличать кожу, которой нужен активный этап, от кожи, которой сначала необходимо восстановление.",
+            "Как оценивать суммарную активную нагрузку и признаки перегрузки кожи.",
+            "Как адаптировать процедуру для клиентов, использующих ретиноиды, кислоты или бензоилпероксид.",
+            "Пошаговый деликатный протокол для кожи, склонной к акне и чувствительности.",
+            "Как сочетать коррекцию акне и поддержку кожного барьера."
+          ]
+        },
+        {
+          name: "Анастасия Москалюк и Виктория Волошина",
+          photo: "/images/master-classes/anastasia-moskaliuk-gel-point.png",
+          role:
+            "Анастасия Москалюк — основатель профессионального бренда материалов Gel Point (США), президент American Nail Artist Association (ANAA), основатель сети студий Nail Point в Киеве и Beverly Hills, международный чемпион, судья и спикер с опытом в nail-индустрии США и Украины более 15 лет. Вместе с амбассадором Gel Point Викторией Волошиной она проведёт живой практический мастер-класс.",
+          topic:
+            "Быстрее. Чище. Качественнее. Как сократить время работы мастера без потери качества",
+          description:
+            "Это не лекция о материалах, а живой практический мастер-класс по самой популярной линейке Gel Point. Анастасия Москалюк и Виктория Волошина покажут, как работать с hard-гелями без поверхностного опила, быстро моделировать и наращивать ногти, сокращая лишние этапы без ущерба для стойкости и качества результата.",
+          highlights: [
+            "Работа с hard-гелями Gel Point без поверхностного опила.",
+            "Быстрое моделирование и наращивание с минимумом лишних этапов.",
+            "Как добиться длительной носки и сократить количество отслоек, сколов, трещин и сложных ремонтов.",
+            "Главные особенности и фишки работы с линейкой Gel Point.",
+            "Как повысить скорость работы команды, качество услуг и возвращаемость клиентов."
+          ]
         }
       ]
     },
@@ -6472,6 +6574,57 @@ const ua: typeof en = {
           ],
           bonus:
             "Кожен учасник отримає купон на $20 на матеріали PLATINUM, щоб познайомитися з професійною UV/LED-системою та розпочати впровадження технології у своїй роботі."
+        },
+        {
+          name: "Анастасія Гук",
+          photo: "/images/master-classes/anastasia-guk.jpg",
+          role:
+            "Ліцензована естетистка в Каліфорнії, спеціалістка з роботи з акне, засновниця H.A. Skin Lab та авторка Acne Balance Method. Анастасія понад 10 років працює в естетичній косметології та спеціалізується на комплексній корекції акне й постакне, відновленні шкірного бар’єра та побудові довгострокових стратегій догляду для сталої ремісії. Авторка книги про акне, професійних навчальних матеріалів і методичних програм для фахівців індустрії краси.",
+          topic:
+            "Помилки в корекції акне, які заважають досягти ремісії",
+          description:
+            "На майстер-класі Анастасія розбере поширені помилки, що призводять до відсутності результату, постійних загострень і пошкодження захисного бар’єра шкіри. Ми поговоримо про те, чому агресивний вплив не завжди пришвидшує результат, і як вибудовувати домашній та професійний догляд з урахуванням індивідуальних тригерів, переносимості та поступової адаптації до активних компонентів.",
+          highlights: [
+            "Які помилки найчастіше заважають досягти сталої ремісії акне.",
+            "Як оцінювати стан шкірного бар’єра перед введенням активних компонентів.",
+            "Як поєднувати професійні процедури та домашній догляд без перевантаження шкіри.",
+            "Як поступово посилювати терапію, не провокуючи подразнення.",
+            "Як вибудувати послідовну стратегію роботи з клієнтом на кілька місяців."
+          ]
+        },
+        {
+          name: "Анжеліка Сивенюк",
+          photo: "/images/master-classes/anzhelika-syveniuk.jpg",
+          role:
+            "Лікарка-дерматовенерологиня за освітою, Licensed Esthetician у Каліфорнії, спеціалістка з роботи з акне, чутливою та бар’єрно-компрометованою шкірою. Понад 9 років працює з проблемною шкірою та корекцією акне. Авторка професійної концепції BOAA™ — Barrier-Oriented Acne Approach, заснованої на поєднанні ефективної активної терапії з контролем стану шкірного бар’єра та переносимості догляду. Засновниця skincare-бренду MARUA™, авторка книги «BOAA — Barrier-Oriented Acne Approach», професійних і наукових публікацій, викладачка, спікерка та суддя міжнародних чемпіонатів.",
+          topic:
+            "Акне та шкірний бар’єр: як поєднати активну терапію й професійну процедуру без перевантаження шкіри",
+          description:
+            "Практичний майстер-клас про бар’єрно-орієнтований підхід замість принципу «що більше активів — то швидший результат». Анжеліка покаже, як оцінити поточний стан шкіри, визначити допустимий рівень активного навантаження та вибудувати професійну процедуру так, щоб вона підтримувала, а не конфліктувала з домашньою терапією клієнта.",
+          highlights: [
+            "Як відрізнити шкіру, якій потрібен активний етап, від шкіри, якій спочатку необхідне відновлення.",
+            "Як оцінювати сумарне активне навантаження та ознаки перевантаження шкіри.",
+            "Як адаптувати процедуру для клієнтів, які використовують ретиноїди, кислоти або бензоїлпероксид.",
+            "Покроковий делікатний протокол для шкіри, схильної до акне та чутливості.",
+            "Як поєднувати корекцію акне й підтримку шкірного бар’єра."
+          ]
+        },
+        {
+          name: "Анастасія Москалюк і Вікторія Волошина",
+          photo: "/images/master-classes/anastasia-moskaliuk-gel-point.png",
+          role:
+            "Анастасія Москалюк — засновниця професійного бренду матеріалів Gel Point (США), президентка American Nail Artist Association (ANAA), засновниця мережі студій Nail Point у Києві та Beverly Hills, міжнародна чемпіонка, суддя й спікерка з досвідом у nail-індустрії США та України понад 15 років. Разом з амбасадоркою Gel Point Вікторією Волошиною вона проведе живий практичний майстер-клас.",
+          topic:
+            "Швидше. Чистіше. Якісніше. Як скоротити час роботи майстра без втрати якості",
+          description:
+            "Це не лекція про матеріали, а живий практичний майстер-клас за найпопулярнішою лінійкою Gel Point. Анастасія Москалюк і Вікторія Волошина покажуть, як працювати з hard-гелями без поверхневого опилу, швидко моделювати та нарощувати нігті, скорочуючи зайві етапи без шкоди для стійкості й якості результату.",
+          highlights: [
+            "Робота з hard-гелями Gel Point без поверхневого опилу.",
+            "Швидке моделювання та нарощування з мінімумом зайвих етапів.",
+            "Як досягти тривалої носки й скоротити кількість відшарувань, сколів, тріщин і складних ремонтів.",
+            "Головні особливості та фішки роботи з лінійкою Gel Point.",
+            "Як підвищити швидкість роботи команди, якість послуг і повернення клієнтів."
+          ]
         }
       ]
     },
