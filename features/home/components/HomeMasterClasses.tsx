@@ -19,6 +19,8 @@ type MasterClass = {
   bonus?: string;
 };
 
+const ROLLOUT_EASING = [0.22, 1, 0.36, 1] as const;
+
 export default function HomeMasterClasses() {
   const { t } = useLanguage();
   const c = t.home.masterClassesSection;
@@ -74,7 +76,8 @@ export default function HomeMasterClasses() {
             const isActive = activePreview === index;
 
             return (
-              <button
+              <motion.button
+                layout
                 type="button"
                 key={masterClass.name}
                 aria-haspopup="dialog"
@@ -84,7 +87,12 @@ export default function HomeMasterClasses() {
                 }}
                 onFocus={() => setActivePreview(index)}
                 onClick={() => setOpenClass(index)}
-                className={`group relative h-[31rem] shrink-0 snap-center cursor-pointer appearance-none overflow-hidden rounded-[30px] border bg-white/74 text-left shadow-[0_20px_58px_rgba(114,160,193,0.12)] backdrop-blur-xl transition-[flex-grow,width,border-color,box-shadow] duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] hover:border-[#9fc7df]/70 hover:shadow-[0_24px_68px_rgba(114,160,193,0.17)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#72a0c1]/45 sm:h-[33rem] md:h-[clamp(33rem,46vw,41rem)] md:min-w-0 md:snap-none motion-reduce:transition-none ${
+                transition={
+                  reducedMotion
+                    ? { duration: 0 }
+                    : { layout: { duration: 0.72, ease: ROLLOUT_EASING } }
+                }
+                className={`group relative h-[31rem] shrink-0 snap-center cursor-pointer appearance-none overflow-hidden rounded-[30px] border bg-white/74 text-left shadow-[0_20px_58px_rgba(114,160,193,0.12)] backdrop-blur-xl transition-[border-color,box-shadow] duration-500 hover:border-[#9fc7df]/70 hover:shadow-[0_24px_68px_rgba(114,160,193,0.17)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#72a0c1]/45 sm:h-[33rem] md:h-[clamp(33rem,46vw,41rem)] md:min-w-0 md:snap-none motion-reduce:transition-none ${
                   isActive
                     ? "w-[min(82vw,25rem)] border-[#9fc7df]/70 md:flex-[4.2]"
                     : "w-[12rem] border-[#b9d9eb]/45 md:flex-[0.9]"
@@ -126,7 +134,7 @@ export default function HomeMasterClasses() {
                   </div>
 
                 </div>
-              </button>
+              </motion.button>
             );
           })}
         </div>
