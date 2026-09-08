@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ChevronLeft, ChevronRight, Globe, Handshake, Mail, MapPin } from "lucide-react";
+import { Globe, Handshake, Mail, MapPin } from "lucide-react";
 import { FaInstagram } from "react-icons/fa6";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
@@ -91,8 +91,8 @@ function SponsorSlide({ sponsor, copy }: { sponsor: Sponsor; copy: SponsorsCopy 
         <span aria-hidden="true" className="absolute left-8 top-8 size-24 rounded-full border border-white/54 bg-white/16 blur-[1px]" />
         <span aria-hidden="true" className="absolute bottom-[-3rem] right-[-2rem] size-48 rounded-full border border-white/36 bg-[#72a0c1]/12" />
 
-        <div className="absolute inset-5 flex flex-col justify-between rounded-[1.5rem] border border-white/58 bg-white/12 p-5 backdrop-blur-[2px] sm:inset-7 sm:p-7">
-          <span className="w-fit rounded-full border border-white/58 bg-white/56 px-3 py-1.5 font-[var(--font-ui-family)] text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[#2f6f9f] backdrop-blur-xl">
+        <div className="absolute inset-5 grid place-items-center rounded-[1.5rem] border border-white/58 bg-white/12 p-5 backdrop-blur-[2px] sm:inset-7 sm:p-7">
+          <span className="absolute left-5 top-5 w-fit rounded-full border border-white/58 bg-white/56 px-3 py-1.5 font-[var(--font-ui-family)] text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[#2f6f9f] backdrop-blur-xl sm:left-7 sm:top-7">
             {copy.eyebrow}
           </span>
           <div className="flex h-28 items-center justify-center rounded-[1.35rem] border border-white/80 bg-white/88 px-7 py-5 shadow-[0_16px_42px_rgba(19,61,87,0.16)] backdrop-blur-xl sm:h-32 sm:px-10">
@@ -144,8 +144,6 @@ export default function HomeSponsors() {
     setDirection(index > safeIndex ? 1 : -1);
     setActiveIndex(index);
   };
-  const goPrevious = () => selectSponsor((safeIndex - 1 + sponsors.length) % sponsors.length);
-  const goNext = () => selectSponsor((safeIndex + 1) % sponsors.length);
   const slideVariants = {
     enter: (slideDirection: Direction) => reducedMotion ? { opacity: 0 } : { opacity: 0, x: slideDirection * 52, scale: 0.988 },
     center: { opacity: 1, x: 0, scale: 1 },
@@ -184,19 +182,16 @@ export default function HomeSponsors() {
 
         {sponsors.length > 1 ? (
           <Reveal delay={0.12} className="mt-6 md:mt-8">
-            <nav aria-label={copy.sliderLabel} className="flex items-center gap-3 md:gap-4">
-              <button type="button" aria-label={copy.prevLabel} onClick={goPrevious} className={`flex size-11 shrink-0 items-center justify-center rounded-full border border-[#b9d9eb]/70 bg-white/80 text-[#2f6f9f] shadow-sm transition hover:border-[#72a0c1]/65 hover:bg-white active:scale-95 ${FOCUS_RING}`}>
-                <ChevronLeft className="size-4" aria-hidden="true" />
-              </button>
-              <div className="min-w-0 flex-1 overflow-x-auto pb-1 [scrollbar-color:rgba(92,159,198,0.5)_transparent] [scrollbar-width:thin]">
-                <ul className="flex w-max items-center gap-2.5 md:gap-3">
+            <nav aria-label={copy.sliderLabel} className="flex justify-center">
+              <div className="max-w-full overflow-x-auto pb-1 [scrollbar-color:rgba(92,159,198,0.5)_transparent] [scrollbar-width:thin]">
+                <ul className="flex min-w-full w-max items-center justify-center gap-2.5 px-1 md:gap-3">
                   {sponsors.map((sponsor, index) => {
                     const isActive = index === safeIndex;
                     return (
                       <li key={sponsor.id}>
-                        <button type="button" aria-label={`${copy.goToLabel}: ${sponsor.name}`} aria-pressed={isActive} onClick={() => selectSponsor(index)} className={`group relative flex h-16 w-28 items-center justify-center rounded-2xl border px-3 transition-[border-color,background-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 active:translate-y-0 ${FOCUS_RING} ${isActive ? "border-[#72a0c1]/75 bg-white shadow-[0_10px_26px_rgba(114,160,193,0.16)]" : "border-[#b9d9eb]/58 bg-white/46 hover:border-[#9fc7df]/80 hover:bg-white/82"}`}>
-                          <span className="relative h-8 w-full max-w-[5.6rem]">
-                            <Image src={sponsor.logo} alt="" fill sizes="7rem" className={`object-contain transition-opacity ${isActive ? "opacity-100" : "opacity-58 group-hover:opacity-90"}`} />
+                        <button type="button" aria-label={`${copy.goToLabel}: ${sponsor.name}`} aria-pressed={isActive} onClick={() => selectSponsor(index)} className={`group relative flex h-14 w-[6.15rem] items-center justify-center rounded-2xl border px-3 transition-[border-color,background-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 active:translate-y-0 md:w-[6.6rem] ${FOCUS_RING} ${isActive ? "border-[#72a0c1]/75 bg-white shadow-[0_10px_26px_rgba(114,160,193,0.16)]" : "border-[#b9d9eb]/58 bg-white/46 hover:border-[#9fc7df]/80 hover:bg-white/82"}`}>
+                          <span className="relative h-7 w-full max-w-[5.4rem]">
+                            <Image src={sponsor.logo} alt="" fill sizes="6.6rem" className={`object-contain transition-opacity ${isActive ? "opacity-100" : "opacity-58 group-hover:opacity-90"}`} />
                           </span>
                           {isActive ? <span aria-hidden="true" className="absolute inset-x-5 bottom-1.5 h-0.5 rounded-full bg-[#5c9fc6]" /> : null}
                         </button>
@@ -205,9 +200,6 @@ export default function HomeSponsors() {
                   })}
                 </ul>
               </div>
-              <button type="button" aria-label={copy.nextLabel} onClick={goNext} className={`flex size-11 shrink-0 items-center justify-center rounded-full border border-[#b9d9eb]/70 bg-white/80 text-[#2f6f9f] shadow-sm transition hover:border-[#72a0c1]/65 hover:bg-white active:scale-95 ${FOCUS_RING}`}>
-                <ChevronRight className="size-4" aria-hidden="true" />
-              </button>
             </nav>
           </Reveal>
         ) : null}
