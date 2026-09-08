@@ -81,6 +81,8 @@ function SponsorContacts({ sponsor, copy }: { sponsor: Sponsor; copy: SponsorsCo
 }
 
 function SponsorSlide({ sponsor, copy }: { sponsor: Sponsor; copy: SponsorsCopy }) {
+  const [logoFailed, setLogoFailed] = useState(false);
+
   return (
     <article className="grid overflow-hidden rounded-[2rem] border border-[#b9d9eb]/72 bg-white/58 shadow-[0_24px_70px_rgba(83,145,184,0.13),inset_0_1px_0_rgba(255,255,255,0.94)] backdrop-blur-xl md:h-[33rem] md:grid-cols-[minmax(18rem,0.9fr)_minmax(0,1.1fr)]">
       <div className="relative isolate min-h-[19rem] overflow-hidden bg-[radial-gradient(circle_at_22%_22%,#ffffff_0%,#e6f3fa_36%,#b9d9eb_100%)] md:min-h-0">
@@ -95,10 +97,16 @@ function SponsorSlide({ sponsor, copy }: { sponsor: Sponsor; copy: SponsorsCopy 
           <span className="absolute left-5 top-5 w-fit rounded-full border border-white/58 bg-white/56 px-3 py-1.5 font-[var(--font-ui-family)] text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[#2f6f9f] backdrop-blur-xl sm:left-7 sm:top-7">
             {copy.eyebrow}
           </span>
-          <div className="flex h-28 items-center justify-center rounded-[1.35rem] border border-white/80 bg-white/88 px-7 py-5 shadow-[0_16px_42px_rgba(19,61,87,0.16)] backdrop-blur-xl sm:h-32 sm:px-10">
-            <div className="relative h-full w-full max-w-[16rem]">
-              <Image src={sponsor.logo} alt={sponsor.logoAlt} fill sizes="(max-width: 767px) 14rem, 16rem" className="object-contain" />
-            </div>
+          <div className="flex h-28 w-full max-w-[22rem] items-center justify-center rounded-[1.35rem] border border-white/80 bg-white/88 px-7 py-5 shadow-[0_16px_42px_rgba(19,61,87,0.16)] backdrop-blur-xl sm:h-32 sm:px-10">
+            {logoFailed ? (
+              <span className="text-center font-[var(--font-display)] text-[clamp(1.25rem,3vw,2rem)] leading-none tracking-[-0.04em] text-[#10182a]">
+                {sponsor.name}
+              </span>
+            ) : (
+              <div className="relative h-full w-full">
+                <Image src={sponsor.logo} alt={sponsor.logoAlt} fill sizes="(max-width: 767px) min(100vw - 5rem, 18rem), 22rem" className="object-contain" onError={() => setLogoFailed(true)} />
+              </div>
+            )}
           </div>
         </div>
       </div>

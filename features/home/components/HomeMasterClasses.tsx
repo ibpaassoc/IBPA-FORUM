@@ -128,11 +128,20 @@ export default function HomeMasterClasses() {
                 >
                   <Image
                     src={activeMasterClass.photo}
+                    alt=""
+                    aria-hidden="true"
+                    fill
+                    quality={45}
+                    sizes="(max-width: 1279px) 100vw, 84vw"
+                    className="scale-110 object-cover opacity-45 blur-2xl"
+                  />
+                  <Image
+                    src={activeMasterClass.photo}
                     alt={activeMasterClass.name}
                     fill
                     quality={90}
                     sizes="(max-width: 1279px) 100vw, 84vw"
-                    className="object-cover transition-transform duration-700 ease-out motion-safe:group-hover:scale-[1.018]"
+                    className="object-contain object-center transition-transform duration-700 ease-out motion-safe:group-hover:scale-[1.012]"
                   />
                   <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(16,24,42,0.18)_0%,rgba(16,24,42,0.04)_42%,rgba(16,24,42,0.78)_100%)]" />
 
@@ -233,11 +242,20 @@ export default function HomeMasterClasses() {
                   <div className="relative min-h-[300px] overflow-hidden bg-[#eef5f9] md:h-full md:min-h-0">
                     <Image
                       src={activeClass.photo}
+                      alt=""
+                      aria-hidden="true"
+                      fill
+                      quality={45}
+                      sizes="(max-width: 767px) 100vw, (max-width: 1279px) 32vw, 380px"
+                      className="scale-110 object-cover opacity-45 blur-2xl"
+                    />
+                    <Image
+                      src={activeClass.photo}
                       alt={activeClass.name}
                       fill
                       quality={90}
                       sizes="(max-width: 767px) 100vw, (max-width: 1279px) 32vw, 380px"
-                      className="object-cover"
+                      className="object-contain object-center"
                     />
                     <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_38%,rgba(16,24,42,0.72)_100%)]" />
                     <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-7 lg:p-8">
