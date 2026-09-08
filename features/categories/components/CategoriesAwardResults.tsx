@@ -1,11 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import {
-  ArrowRight,
   CheckCircle2,
-  Info,
-  ShieldCheck,
   Trophy,
   UsersRound,
 } from "lucide-react";
@@ -21,12 +17,6 @@ export default function CategoriesAwardResults() {
     c.timeline.applicationsOpen,
     c.timeline.registrationCloses,
     c.timeline.awardCeremony,
-  ];
-
-  const pricingRows = [
-    c.pricing.oneNomination,
-    c.pricing.threeNominations,
-    c.pricing.fiveNominations,
   ];
 
   return (
@@ -100,7 +90,7 @@ export default function CategoriesAwardResults() {
           </GlassCard>
         </Reveal>
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-[0.82fr_1.18fr]">
+        <div className="mt-6">
           <Reveal delay={0.14}>
             <GlassCard className="relative h-full overflow-hidden rounded-[42px] border border-white/70 bg-white/58 p-7 shadow-[0_22px_66px_rgba(114,160,193,0.1),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-xl sm:p-8">
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#72a0c1]/10 text-[#72a0c1] ring-1 ring-[#72a0c1]/12">
@@ -134,71 +124,6 @@ export default function CategoriesAwardResults() {
             </GlassCard>
           </Reveal>
 
-          <Reveal delay={0.2}>
-            <GlassCard className="relative h-full overflow-hidden rounded-[42px] border border-[#b9d9eb]/45 bg-white/66 p-5 shadow-[0_24px_72px_rgba(114,160,193,0.13),inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-xl sm:p-7 lg:p-8">
-              <p className="page-eyebrow text-[#72a0c1]">
-                {c.pricing.eyebrow}
-              </p>
-
-              <div className="mt-8 overflow-hidden rounded-[32px] border border-[#b9d9eb]/40 bg-white/62">
-                <div className="grid grid-cols-[1.25fr_0.85fr_0.95fr] border-b border-[#b9d9eb]/35 bg-[#eef7fb]/70 px-4 py-4 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[#72a0c1] sm:px-6">
-                  <span>{c.pricing.headers.nominations}</span>
-                  <span className="text-right">
-                    {c.pricing.headers.members}
-                  </span>
-                  <span className="text-right">
-                    {c.pricing.headers.nonMembers}
-                  </span>
-                </div>
-
-                {pricingRows.map((row, index) => (
-                  <div
-                    key={row.label}
-                    className={[
-                      "grid grid-cols-[1.25fr_0.85fr_0.95fr] items-center gap-3 border-b border-[#b9d9eb]/25 px-4 py-5 last:border-b-0 sm:px-6",
-                      index === 2 ? "bg-[#eef7fb]/56" : "bg-white/32",
-                    ].join(" ")}
-                  >
-                    <div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="font-medium text-[#1e2430]">
-                          {row.label}
-                        </p>
-
-                        {index === 2 && (
-                          <span className="rounded-full bg-white/82 px-3 py-1 text-[0.55rem] font-semibold uppercase tracking-[0.16em] text-[#72a0c1] ring-1 ring-[#72a0c1]/14">
-                            {c.pricing.grandPrixEligibility}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <p className="font-[var(--font-display)] text-right text-[1.65rem] leading-none tracking-[-0.04em] text-[#1e2430]">
-                      {row.member}
-                    </p>
-
-                    <p className="font-[var(--font-display)] text-right text-[1.65rem] leading-none tracking-[-0.04em] text-[#1e2430]">
-                      {row.nonMember}
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-5">
-                <div className="flex items-start gap-3 rounded-[26px] border border-[#72a0c1]/16 bg-white/62 px-5 py-4">
-                  <Info
-                    className="mt-0.5 h-5 w-5 shrink-0 text-[#72a0c1]"
-                    strokeWidth={1.7}
-                  />
-
-                  <p className="text-[0.88rem] leading-6 text-[#6b7582]">
-                    {c.pricing.nonRefundable}
-                  </p>
-                </div>
-
-              </div>
-            </GlassCard>
-          </Reveal>
         </div>
       </div>
     </section>

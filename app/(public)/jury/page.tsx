@@ -10,7 +10,6 @@ import {
   JuryResponsibilities,
   JuryBenefits,
   JuryCredibility,
-  JuryCta,
 } from "@/features/jury/components/pages";
 import { LandingPageShell } from "@/shared/components/public";
 
@@ -38,7 +37,6 @@ export default async function JuryPage() {
       <JuryBenefits />
       <JuryCredibility />
       <JuryActiveMembers juryMembers={juryMembers} />
-      <JuryCta />
       <JuryFaq />
     </LandingPageShell>
   );
