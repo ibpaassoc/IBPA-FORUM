@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { HeroPrimaryButton, HeroSecondaryButton } from "@/shared/components/public";
+import { HeroSecondaryButton } from "@/shared/components/public";
 import { PUBLIC_MOTION_EASE, PUBLIC_MOTION_DURATION } from "@/shared/components/public/motion-tokens";
 
 export default function GrandPrixHero() {
@@ -72,9 +72,6 @@ export default function GrandPrixHero() {
           {...enter(0.54)}
           className="mt-10 flex flex-wrap items-center justify-center gap-4"
         >
-          <HeroPrimaryButton href="/account/login">
-            {t.grandPrixPage.hero.cta ?? "Apply Now"}
-          </HeroPrimaryButton>
           <HeroSecondaryButton href="#more-info">
             {t.grandPrixPage.hero.learnMore}
           </HeroSecondaryButton>

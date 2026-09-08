@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 export default function CTASection() {
@@ -21,21 +20,6 @@ export default function CTASection() {
           {t.home.cta.text}
         </p>
 
-        <div className="mt-[var(--space-lg)] flex flex-wrap items-center justify-center gap-[var(--space-sm)]">
-          <Link
-            href="/account/login"
-            className="ibpa-button ibpa-button-blue"
-          >
-            {t.common.applyNow}
-          </Link>
-
-          <Link
-            href="/jury"
-            className="ibpa-button ibpa-button-ghost"
-          >
-            {t.home.cta.judge}
-          </Link>
-        </div>
       </div>
     </section>
   );

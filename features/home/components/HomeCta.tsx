@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Sparkles } from "lucide-react";
 
@@ -51,14 +50,6 @@ export default function HomeCta() {
                 />
               </BuyTicketsButton>
 
-              <Link href="/account/login" className={buttonClass}>
-                <ButtonLayers />
-                <span className="relative z-10">{fc.applyAward}</span>
-                <ArrowRight
-                  size={16}
-                  className="relative z-10 text-[#4d88b2] transition-all duration-500 group-hover:translate-x-1.5 group-hover:scale-110"
-                />
-              </Link>
             </div>
           </div>
         </div>

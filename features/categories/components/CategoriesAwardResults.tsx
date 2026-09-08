@@ -12,7 +12,6 @@ import {
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { GlassCard, Reveal } from "@/shared/components/public";
-import { LandingPrimaryButton } from "@/shared/components/public";
 
 export default function CategoriesAwardResults() {
   const { t } = useLanguage();
@@ -185,7 +184,7 @@ export default function CategoriesAwardResults() {
                 ))}
               </div>
 
-              <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
+              <div className="mt-5">
                 <div className="flex items-start gap-3 rounded-[26px] border border-[#72a0c1]/16 bg-white/62 px-5 py-4">
                   <Info
                     className="mt-0.5 h-5 w-5 shrink-0 text-[#72a0c1]"
@@ -197,9 +196,6 @@ export default function CategoriesAwardResults() {
                   </p>
                 </div>
 
-                <LandingPrimaryButton href="/account/login">
-                  {t.common.applyNow}
-                </LandingPrimaryButton>
               </div>
             </GlassCard>
           </Reveal>

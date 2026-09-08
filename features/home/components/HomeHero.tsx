@@ -75,15 +75,9 @@ export default function HomeHero() {
                   {h.buyTickets}
                 </HeroPrimaryButton>
 
-                <div className="flex flex-wrap items-center justify-center gap-3">
-                  <HeroSecondaryButton href="/account/login">
-                    {t.common.applyNow}
-                  </HeroSecondaryButton>
-
-                  <HeroSecondaryButton href="/account/login">
-                    {t.common.account}
-                  </HeroSecondaryButton>
-                </div>
+                <HeroSecondaryButton href="/account/login">
+                  {t.common.account}
+                </HeroSecondaryButton>
               </div>
             </>
           ) : (
@@ -119,15 +113,9 @@ export default function HomeHero() {
                   {h.buyTickets}
                 </HeroPrimaryButton>
 
-                <div className="flex flex-wrap items-center justify-center gap-3">
-                  <HeroSecondaryButton href="/account/login">
-                    {t.common.applyNow}
-                  </HeroSecondaryButton>
-
-                  <HeroSecondaryButton href="/account/login">
-                    {t.common.account}
-                  </HeroSecondaryButton>
-                </div>
+                <HeroSecondaryButton href="/account/login">
+                  {t.common.account}
+                </HeroSecondaryButton>
               </motion.div>
             </>
           )}

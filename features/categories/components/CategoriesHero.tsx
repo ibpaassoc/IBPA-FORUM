@@ -6,7 +6,6 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import {
-  HeroPrimaryButton,
   HeroSecondaryButton,
 } from "@/shared/components/public";
 import { PUBLIC_MOTION_EASE, PUBLIC_MOTION_DURATION } from "@/shared/components/public/motion-tokens";
@@ -108,10 +107,6 @@ export default function CategoriesHero() {
           {...enter(0.44)}
           className="mt-9 flex flex-wrap items-center justify-center gap-4"
         >
-          <HeroPrimaryButton href="/account/login">
-            {t.common.applyAsParticipant}
-          </HeroPrimaryButton>
-
           <HeroSecondaryButton href="#categories">
             {t.common.browseCategories}
           </HeroSecondaryButton>
