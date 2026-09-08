@@ -89,6 +89,7 @@ export default function HomeMasterClasses() {
                     src={masterClass.photo}
                     alt={masterClass.name}
                     fill
+                    quality={90}
                     sizes="(max-width: 767px) 82vw, (min-width: 768px) 50vw, 20vw"
                     className="object-cover transition-transform duration-700 ease-out motion-safe:group-hover:scale-[1.025]"
                   />
@@ -167,6 +168,7 @@ export default function HomeMasterClasses() {
                       src={activeClass.photo}
                       alt={activeClass.name}
                       fill
+                      quality={90}
                       sizes="(max-width: 767px) 100vw, (max-width: 1279px) 32vw, 380px"
                       className="object-cover"
                     />

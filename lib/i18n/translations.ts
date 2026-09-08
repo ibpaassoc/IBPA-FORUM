@@ -898,7 +898,7 @@ const en = {
         },
         {
           name: "Tetiana Kysliuk",
-          photo: "/images/master-classes/tetiana-kysliuk.png",
+          photo: "/images/master-classes/tetiana-kysliuk-editorial.png",
           secondaryPhoto: "/images/master-classes/tetiana-kysliuk-poster.png",
           role:
             "Practicing lash-lift and brow artist and educator, multiple winner of international championships, international beauty championship judge, and author of professional training materials and methodological guides. Co-owner of TE’ORA Beauty and the TE’ORA Beauty Championship online competition. Tetiana’s teaching focuses on the logic behind lamination: reading the client’s starting point, choosing the right shield, controlling placement, working with formulas, and predicting the final result.",
@@ -3658,7 +3658,7 @@ const ru: typeof en = {
         },
         {
           name: "Татьяна Кислюк",
-          photo: "/images/master-classes/tetiana-kysliuk.png",
+          photo: "/images/master-classes/tetiana-kysliuk-editorial.png",
           secondaryPhoto: "/images/master-classes/tetiana-kysliuk-poster.png",
           role:
             "Практикующий мастер и преподаватель по ламинированию ресниц и оформлению бровей, многократный победитель международных чемпионатов, международный судья beauty-чемпионатов, автор профессиональных обучающих материалов и методических пособий. Совладелец бренда TE’ORA Beauty и онлайн-чемпионата TE’ORA Beauty Championship. В работе Татьяна делает акцент на понимании логики ламинирования: анализе исходных данных клиента, правильном выборе валика, контроле выкладки, работе с составами и прогнозировании конечного результата.",
@@ -6419,7 +6419,7 @@ const ua: typeof en = {
         },
         {
           name: "Тетяна Кислюк",
-          photo: "/images/master-classes/tetiana-kysliuk.png",
+          photo: "/images/master-classes/tetiana-kysliuk-editorial.png",
           secondaryPhoto: "/images/master-classes/tetiana-kysliuk-poster.png",
           role:
             "Практикуюча майстриня та викладачка з ламінування вій і оформлення брів, багаторазова переможниця міжнародних чемпіонатів, міжнародна суддя beauty-чемпіонатів, авторка професійних навчальних матеріалів і методичних посібників. Співвласниця бренду TE’ORA Beauty та онлайн-чемпіонату TE’ORA Beauty Championship. У роботі Тетяна зосереджується на розумінні логіки ламінування: аналізі вихідних даних клієнта, правильному виборі валика, контролі викладки, роботі зі складами та прогнозуванні кінцевого результату.",
