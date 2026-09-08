@@ -637,16 +637,16 @@ const en = {
 
       pricing: {
         eyebrow: "Pricing",
-        title: "Participation Pricing",
+        title: "Forum Ticket Pricing",
         description:
-          "Forum tickets, award nominations, and jury registration are priced separately. Forum and award pricing differs for IBPA members and guests.",
+          "Choose the forum pass that fits your schedule. Current IBPA Association members receive special ticket pricing.",
         option: "Option",
         members: "IBPA Members",
         standard: "Guest",
         nonMembers: "Non-members",
         memberPricingNote: "IBPA Member pricing is available to current IBPA Association members.",
         awardPricingNote: "Save more with multi-nomination packages.",
-        memberDiscountNote: "IBPA members receive a discounted jury registration rate.",
+        memberDiscountNote: "IBPA members receive reduced forum-ticket rates.",
         mostPopular: "Most popular",
 
         forum: {
@@ -3394,9 +3394,9 @@ const ru: typeof en = {
 
       pricing: {
         eyebrow: "Стоимость",
-        title: "Стоимость участия",
+        title: "Стоимость билетов на форум",
         description:
-          "Билеты на форум, номинации премии и регистрация судей оплачиваются отдельно. Стоимость форума и премии отличается для участников IBPA и гостей.",
+          "Выберите формат участия в форуме. Для действующих участников Ассоциации IBPA действуют специальные цены на билеты.",
 
         option: "Опция",
         members: "IBPA Участники",
@@ -3404,7 +3404,7 @@ const ru: typeof en = {
         nonMembers: "Без участия",
         memberPricingNote: "Специальные цены для участников IBPA.",
         awardPricingNote: "Сэкономьте больше с пакетами для подачи нескольких заявок.",
-        memberDiscountNote: "Участники IBPA могут зарегистрироваться по льготной цене.",
+        memberDiscountNote: "Участники IBPA получают льготные цены на билеты форума.",
         mostPopular: "Популярное",
 
         forum: {
@@ -6156,9 +6156,9 @@ const ua: typeof en = {
 
       pricing: {
         eyebrow: "Вартість",
-        title: "Вартість участі",
+        title: "Вартість квитків на форум",
         description:
-          "Квитки на форум, номінації премії та реєстрація суддів оплачуються окремо. Вартість форуму й премії відрізняється для учасників IBPA та гостей.",
+          "Оберіть формат участі у форумі. Для чинних учасників Асоціації IBPA діють спеціальні ціни на квитки.",
 
         option: "Опція",
         members: "IBPA Учасники",
@@ -6166,7 +6166,7 @@ const ua: typeof en = {
         nonMembers: "Без участі",
         memberPricingNote: "Спеціальні ціни для учасників IBPA",
         awardPricingNote: "Заощаджуйте більше з пакетами для подання кількох заявок.",
-        memberDiscountNote: "Учасники IBPA можуть зареєструватися за пільговою ціною.",
+        memberDiscountNote: "Учасники IBPA отримують пільгові ціни на квитки форуму.",
         mostPopular: "Популярне",
 
         forum: {
