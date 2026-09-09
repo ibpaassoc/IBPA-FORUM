@@ -1060,35 +1060,24 @@ const en = {
     },
     talentVisaConsultation: {
       eyebrow: "Complimentary case review",
-      title: "Planning to apply for a talent visa?",
+      title: "Free talent visa case review",
       intro:
-        "Not sure whether your achievements are strong enough—or where to begin building your case? On September 25–26 at Beauty Business Forum in Los Angeles, every participant can receive a complimentary individual consultation with Iuliia Andreeva, the forum organizer and president of IBPA.",
-      experience:
-        "Iuliia has spent many years in the beauty industry. She owned her own studio, competed in professional championships, served as a judge, and has publication experience. She understands which professional achievements can help strengthen a talent visa case.",
-      proof:
-        "Today, Iuliia also helps beauty professionals assemble and structure their cases. One of the talent visa cases she worked on has already been approved this year.",
-      questionsTitle: "Bring your questions",
+        "On September 25–26, every forum participant can receive a complimentary 15–20-minute consultation with Iuliia Andreeva. She will help you understand what can strengthen your case and what to work on next.",
+      questionsTitle: "What you can discuss",
       questions: [
-        "Which achievements should be included in your case?",
-        "Do you need awards, judging experience, publications, or association memberships?",
-        "Which parts of your professional profile still need strengthening?",
-        "What practical steps should you take next?",
+        "What should go into your case",
+        "Awards, judging, publications, and memberships",
+        "What is missing from your profile",
+        "Your next practical steps",
       ],
-      availabilityTitle: "Consultation windows",
       dates: [
         { date: "September 25", dateTime: "2026-09-25", time: "During master classes · 4:45–6:45 PM" },
         { date: "September 26", dateTime: "2026-09-26", time: "During master classes · 1:30–3:30 PM" },
       ],
-      availabilityNote:
-        "Iuliia will reserve 2–3 hours across the two-day master-class program for individual consultations.",
-      formatLabel: "Individual format",
-      formatValue: "15–20 minutes",
-      participantLabel: "Complimentary for participants",
+      formatValue: "15–20 min",
       portraitLabel: "Your consultant",
       portraitRole: "Iuliia Andreeva · President of IBPA",
-      caseStamp: "Case review",
       imageAlt: "Iuliia Andreeva at Beauty Business Forum in Los Angeles",
-      closing: "September 25–26 · Los Angeles · Beauty Business Forum. See you there!",
     },
     dressCode: {
       eyebrow: "Beauty Business Forum",
@@ -3976,35 +3965,24 @@ const ru: typeof en = {
     },
     talentVisaConsultation: {
       eyebrow: "Бесплатный разбор кейса",
-      title: "Планируете подаваться на визу талантов?",
+      title: "Бесплатный разбор кейса на визу талантов",
       intro:
-        "Не понимаете, достаточно ли у вас достижений и с чего начинать собирать кейс? 25–26 сентября на Beauty Business Forum в Лос-Анджелесе каждый участник сможет получить бесплатную индивидуальную консультацию у Юлии Андреевой — организатора форума и президента ассоциации IBPA.",
-      experience:
-        "Юлия много лет работает в beauty-индустрии: владела собственной студией, участвовала в чемпионатах, была судьёй, имеет опыт публикаций и хорошо понимает, какие профессиональные достижения могут усиливать кейс на визу талантов.",
-      proof:
-        "Сегодня Юлия также помогает beauty-мастерам собирать и выстраивать свои кейсы. Уже в этом году один из кейсов, над которым она работала, получил одобрение на визу талантов.",
-      questionsTitle: "На консультации вы сможете спросить",
+        "25–26 сентября каждый участник форума сможет получить бесплатную консультацию Юлии Андреевой продолжительностью 15–20 минут. Юлия поможет понять, что может усилить ваш кейс и над чем стоит работать дальше.",
+      questionsTitle: "Что можно обсудить",
       questions: [
-        "Что стоит включать в ваш кейс?",
-        "Нужны ли награды, судейство, публикации или членство в ассоциациях?",
-        "Чего вам ещё не хватает в профессиональном профиле?",
-        "Какие шаги стоит сделать дальше?",
+        "Что стоит включить в кейс",
+        "Награды, судейство, публикации и членство",
+        "Чего не хватает вашему профилю",
+        "Какие шаги сделать дальше",
       ],
-      availabilityTitle: "Время консультаций",
       dates: [
         { date: "25 сентября", dateTime: "2026-09-25", time: "Во время мастер-классов · 16:45–18:45" },
         { date: "26 сентября", dateTime: "2026-09-26", time: "Во время мастер-классов · 13:30–15:30" },
       ],
-      availabilityNote:
-        "В рамках двухдневной программы мастер-классов Юлия выделит 2–3 часа на индивидуальные консультации.",
-      formatLabel: "Индивидуальный формат",
-      formatValue: "15–20 минут",
-      participantLabel: "Бесплатно для участников",
+      formatValue: "15–20 мин",
       portraitLabel: "Ваш консультант",
       portraitRole: "Юлия Андреева · Президент IBPA",
-      caseStamp: "Разбор кейса",
       imageAlt: "Юлия Андреева на Beauty Business Forum в Лос-Анджелесе",
-      closing: "25–26 сентября · Лос-Анджелес · Beauty Business Forum. До встречи!",
     },
     dressCode: {
       eyebrow: "Beauty Business Forum",
@@ -6893,35 +6871,24 @@ const ua: typeof en = {
     },
     talentVisaConsultation: {
       eyebrow: "Безкоштовний розбір кейсу",
-      title: "Плануєте подаватися на візу талантів?",
+      title: "Безкоштовний розбір кейсу на візу талантів",
       intro:
-        "Не розумієте, чи достатньо у вас досягнень і з чого починати збирати кейс? 25–26 вересня на Beauty Business Forum у Лос-Анджелесі кожен учасник зможе отримати безкоштовну індивідуальну консультацію Юлії Андреевої — організаторки форуму та президентки асоціації IBPA.",
-      experience:
-        "Юлія багато років працює в beauty-індустрії: володіла власною студією, брала участь у чемпіонатах, була суддею, має досвід публікацій і добре розуміє, які професійні досягнення можуть посилити кейс на візу талантів.",
-      proof:
-        "Сьогодні Юлія також допомагає beauty-майстрам збирати та структурувати свої кейси. Уже цього року один із кейсів, над яким вона працювала, отримав схвалення на візу талантів.",
-      questionsTitle: "На консультації ви зможете запитати",
+        "25–26 вересня кожен учасник форуму зможе отримати безкоштовну консультацію Юлії Андреевої тривалістю 15–20 хвилин. Юлія допоможе зрозуміти, що може посилити ваш кейс і над чим варто працювати далі.",
+      questionsTitle: "Що можна обговорити",
       questions: [
-        "Що варто включити до вашого кейсу?",
-        "Чи потрібні нагороди, суддівство, публікації або членство в асоціаціях?",
-        "Чого вам іще бракує у професійному профілі?",
-        "Які кроки варто зробити далі?",
+        "Що варто включити до кейсу",
+        "Нагороди, суддівство, публікації та членство",
+        "Чого бракує вашому профілю",
+        "Які кроки зробити далі",
       ],
-      availabilityTitle: "Час консультацій",
       dates: [
         { date: "25 вересня", dateTime: "2026-09-25", time: "Під час майстер-класів · 16:45–18:45" },
         { date: "26 вересня", dateTime: "2026-09-26", time: "Під час майстер-класів · 13:30–15:30" },
       ],
-      availabilityNote:
-        "У межах дводенної програми майстер-класів Юлія виділить 2–3 години на індивідуальні консультації.",
-      formatLabel: "Індивідуальний формат",
-      formatValue: "15–20 хвилин",
-      participantLabel: "Безкоштовно для учасників",
+      formatValue: "15–20 хв",
       portraitLabel: "Ваша консультантка",
       portraitRole: "Юлія Андреева · Президентка IBPA",
-      caseStamp: "Розбір кейсу",
       imageAlt: "Юлія Андреева на Beauty Business Forum у Лос-Анджелесі",
-      closing: "25–26 вересня · Лос-Анджелес · Beauty Business Forum. До зустрічі!",
     },
     dressCode: {
       eyebrow: "Beauty Business Forum",
