@@ -4,7 +4,7 @@ import Image from "next/image";
 import { ArrowRight, Trophy } from "lucide-react";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { LandingPrimaryButton, Reveal } from "@/shared/components/public";
+import { Reveal } from "@/shared/components/public";
 
 export default function GrandPrixCTA() {
   const { t } = useLanguage();
@@ -46,11 +46,6 @@ export default function GrandPrixCTA() {
               {c.description}
             </p>
 
-            <div className="mt-8">
-              <LandingPrimaryButton href="/account/login">
-                {t.common.applyNow}
-              </LandingPrimaryButton>
-            </div>
           </div>
         </Reveal>
       </div>

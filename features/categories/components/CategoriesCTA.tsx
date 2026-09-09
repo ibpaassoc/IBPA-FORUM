@@ -4,7 +4,6 @@ import Image from "next/image";
 import { ArrowRight, Sparkles, Trophy } from "lucide-react";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { LandingPrimaryButton } from "@/shared/components/public";
 
 export default function CategoriesCTA() {
   const { t } = useLanguage();
@@ -41,11 +40,6 @@ export default function CategoriesCTA() {
               {c.ctaText}
             </p>
 
-            <div className="relative mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <LandingPrimaryButton href="/account/login" >
-                {c.ctaButton}
-              </LandingPrimaryButton>
-            </div>
           </div>
         </div>
       </div>

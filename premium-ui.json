@@ -1,0 +1,32 @@
+{
+  "profile": "product-admin",
+  "sourceRoots": [
+    "app/admin/scoring",
+    "features/admin/components/scoring",
+    "features/account/components/jury"
+  ],
+  "locale": "ru-RU",
+  "canonicalMap": "UX-CONTRACT.md",
+  "requiredCapabilities": [
+    "Select/Listbox",
+    "Form",
+    "Scrollbar",
+    "Toast",
+    "CRUD"
+  ],
+  "ownership": {
+    "Select/Listbox": "authored",
+    "Form": "authored",
+    "Scrollbar": "authored",
+    "Toast": "authored",
+    "CRUD": "authored"
+  },
+  "requiredCommands": ["unit"],
+  "commands": {
+    "unit": "npm run test:scoring-management"
+  },
+  "evidence": {
+    "crudFullFlow": "scripts/test-scoring-management.ts",
+    "failurePaths": "scripts/test-scoring-management.ts"
+  }
+}

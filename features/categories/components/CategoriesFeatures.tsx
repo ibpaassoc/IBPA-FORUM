@@ -11,12 +11,6 @@ import type { PublicRegulations } from "@/features/regulations/types";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { translations } from "@/lib/i18n/translations";
 
-const continueCopy = {
-  en: "Continue to application",
-  ru: "Перейти к заявке",
-  ua: "Перейти до заявки",
-} as const;
-
 const generalRegulationsCopy = {
   en: "General regulations",
   ru: "Общий регламент",
@@ -100,12 +94,10 @@ export default function CategoriesFeatures({
           regulationsByCategory={regulations.categories}
           regulationLanguage={language}
           regulationCopy={regulationCopy[language]}
-          getAwardHref={() => "/account/login"}
           copy={{
             nominationSingular: t.categoriesPage.copy.nominationSingular,
             nominationPlural: t.categoriesPage.copy.nominationPlural,
             selected: "",
-            continueToApplication: continueCopy[language],
           }}
         />
       </div>

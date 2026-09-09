@@ -17,7 +17,6 @@ import {
   JuryBenefits,
   JuryCredibility,
   JuryActiveMembers,
-  JuryCta,
 } from "@/features/jury/components/pages";
 
 
@@ -30,7 +29,6 @@ export default function JuryPage({ juryMembers }: { juryMembers: JuryMember[] })
       <JuryTimeline />
       <JuryBenefits />
       <JuryCredibility />
-      <JuryCta />
     </main>
   );
 }

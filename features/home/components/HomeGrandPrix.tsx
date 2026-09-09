@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Star } from "lucide-react";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { GlassCard, LandingPrimaryButton, LandingSecondaryButton, Reveal } from "@/shared/components/public";
+import { GlassCard, LandingSecondaryButton, Reveal } from "@/shared/components/public";
 
 export default function HomeGrandPrix() {
   const { t } = useLanguage();
@@ -83,7 +83,6 @@ export default function HomeGrandPrix() {
 
           <Reveal delay={0.3}>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <LandingPrimaryButton href="/account/login">{gp.cta}</LandingPrimaryButton>
               <LandingSecondaryButton href="/grand-prix">{gp.learnMore}</LandingSecondaryButton>
             </div>
           </Reveal>

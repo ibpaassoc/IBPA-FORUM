@@ -529,6 +529,32 @@ const en = {
       title: "IBPA Beauty Awards 2026",
       text: "IBPA Beauty Awards 2026 is an international award in beauty, education, and beauty business, held as part of the IBPA Beauty Business Forum. Our mission is to recognize outstanding professionals, support professional development, and unite industry leaders for the exchange of experience, innovation, and new growth opportunities.",
     },
+    founder: {
+      eyebrow: "Founder · Beauty Business Forum",
+      masthead: "FOUNDER",
+      nameLines: ["Iuliia", "Andreeva"],
+      role: "Founder & Organizer of Beauty Business Forum · President of IBPA · Beauty Industry Entrepreneur",
+      lede: "An entrepreneur and beauty industry expert who built her career from hands-on artistry to education, judging, consulting, and industry leadership.",
+      paragraphs: [
+        "Iuliia began her professional journey as a lash artist and educator. She later founded her own lash extension school and studio, became a winner of professional championships, and served as a competition judge.",
+        "Today, Iuliia is the owner of a consulting company that helps beauty professionals obtain professional licenses in the United States, advance their careers, build strong professional portfolios, and develop their personal brands.",
+      ],
+      missionTitle: "Why Beauty Business Forum exists",
+      missionText: "Combining her practical experience as a beauty professional, educator, and entrepreneur, Iuliia created Beauty Business Forum as a platform for growth, knowledge exchange, meaningful business connections, and recognition within the beauty industry.",
+      imageAlt: "Iuliia Andreeva, founder and president of IBPA, at a Beauty Business Forum event",
+      cardLabel: "IBPA President",
+      cardRole: "Founder & Organizer",
+      initials: "IA",
+      railLabel: "Beauty Industry Entrepreneur",
+      journeyEyebrow: "Professional journey",
+      journeyMeta: "Craft → leadership → community",
+      journey: [
+        { title: "Beauty professional", text: "Lash artist and hands-on industry practitioner" },
+        { title: "Educator & judge", text: "School founder, championship winner, competition judge" },
+        { title: "Entrepreneur", text: "Consulting, licensing, career growth and personal brands" },
+        { title: "Industry builder", text: "IBPA President and founder of Beauty Business Forum" },
+      ],
+    },
     threeExperiences: {
       eyebrow: "One Event",
       title: "Three Powerful Experiences",
@@ -637,16 +663,16 @@ const en = {
 
       pricing: {
         eyebrow: "Pricing",
-        title: "Participation Pricing",
+        title: "Forum Ticket Pricing",
         description:
-          "Forum tickets, award nominations, and jury registration are priced separately. Forum and award pricing differs for IBPA members and guests.",
+          "Choose the forum pass that fits your schedule. Current IBPA Association members receive special ticket pricing.",
         option: "Option",
         members: "IBPA Members",
         standard: "Guest",
         nonMembers: "Non-members",
         memberPricingNote: "IBPA Member pricing is available to current IBPA Association members.",
         awardPricingNote: "Save more with multi-nomination packages.",
-        memberDiscountNote: "IBPA members receive a discounted jury registration rate.",
+        memberDiscountNote: "IBPA members receive reduced forum-ticket rates.",
         mostPopular: "Most popular",
 
         forum: {
@@ -853,7 +879,16 @@ const en = {
       title: "Master Classes",
       description:
         "Focused, hands-on sessions where leading educators turn signature techniques into clear, repeatable systems you can apply in your own work.",
+      ctaLabel: "View the program",
+      featurePractice: "Practical learning",
+      featureTechniques: "Current techniques",
+      featureCertificate: "Participant certificate",
       sessionsLabel: "live master classes",
+      galleryLabel: "Master class educators",
+      galleryProgressLabel: "Master class gallery position",
+      previousLabel: "Previous master class",
+      nextLabel: "Next master class",
+      detailsLabel: "Details",
       formatLabel: "Master Class",
       educatorLabel: "About the educator",
       topicLabel: "Topic",
@@ -898,7 +933,7 @@ const en = {
         },
         {
           name: "Tetiana Kysliuk",
-          photo: "/images/master-classes/tetiana-kysliuk.png",
+          photo: "/images/master-classes/tetiana-kysliuk-editorial.png",
           secondaryPhoto: "/images/master-classes/tetiana-kysliuk-poster.png",
           role:
             "Practicing lash-lift and brow artist and educator, multiple winner of international championships, international beauty championship judge, and author of professional training materials and methodological guides. Co-owner of TE’ORA Beauty and the TE’ORA Beauty Championship online competition. Tetiana’s teaching focuses on the logic behind lamination: reading the client’s starting point, choosing the right shield, controlling placement, working with formulas, and predicting the final result.",
@@ -951,6 +986,57 @@ const en = {
           ],
           bonus:
             "Every participant will receive a $20 coupon for PLATINUM materials to explore the professional UV/LED system and begin introducing the technology into their work."
+        },
+        {
+          name: "Anastasia Guk",
+          photo: "/images/master-classes/anastasia-guk.jpg",
+          role:
+            "Licensed esthetician in California, acne-care specialist, founder of H.A. Skin Lab, and creator of the Acne Balance Method. Anastasia has more than 10 years of experience in aesthetic cosmetology, focusing on comprehensive acne and post-acne correction, skin-barrier recovery, and long-term care strategies that support stable remission. She is also the author of an acne book, professional learning materials, and methodology programs for beauty-industry specialists.",
+          topic:
+            "Acne-Correction Mistakes That Keep Skin from Reaching Remission",
+          description:
+            "Anastasia will unpack the common mistakes that can lead to stalled progress, recurring flare-ups, and a compromised skin barrier. The session examines why aggressive intervention does not always deliver a faster result and how to build home and professional care around the client’s individual triggers, tolerance, and rate of adaptation to active ingredients.",
+          highlights: [
+            "Recognize the mistakes that most often prevent stable acne remission.",
+            "Assess the skin barrier before introducing active ingredients.",
+            "Combine professional procedures and home care without overloading the skin.",
+            "Increase treatment intensity gradually while minimizing irritation.",
+            "Build a clear multi-month strategy around the full system of acne triggers."
+          ]
+        },
+        {
+          name: "Anzhelika Syveniuk",
+          photo: "/images/master-classes/anzhelika-syveniuk.jpg",
+          role:
+            "Dermatovenereologist by education and a Licensed Esthetician in California specializing in acne-prone, sensitive, and barrier-compromised skin. With more than nine years of experience, Anzhelika created BOAA™ — the Barrier-Oriented Acne Approach — which pairs effective active therapy with close attention to barrier condition and treatment tolerance. She is the founder of MARUA™, author of the book “BOAA — Barrier-Oriented Acne Approach,” professional and scientific publications, and a speaker and judge at international beauty events.",
+          topic:
+            "Acne and the Skin Barrier: Pairing Active Therapy with Professional Treatment Without Overloading the Skin",
+          description:
+            "This practical session offers a barrier-oriented alternative to the “more actives, faster result” mindset. Anzhelika will show how to assess the current state of the skin, set an appropriate active load, and structure a professional procedure that supports — rather than conflicts with — a client’s home therapy.",
+          highlights: [
+            "Tell when the skin is ready for an active step and when recovery comes first.",
+            "Evaluate the skin’s cumulative active load and signs of overload.",
+            "Adapt a professional procedure for clients using retinoids, acids, or benzoyl peroxide.",
+            "Follow a gentle, step-by-step protocol for acne-prone and sensitive skin.",
+            "Balance acne correction with ongoing barrier support."
+          ]
+        },
+        {
+          name: "Anastasia Moskaliuk & Viktoriia Voloshyna",
+          photo: "/images/master-classes/anastasia-moskaliuk-gel-point.png",
+          role:
+            "Anastasia Moskaliuk is the founder of Gel Point (USA), President of the American Nail Artist Association (ANAA), founder of Nail Point studios in Kyiv and Beverly Hills, and an international champion, judge, and speaker with more than 15 years in the U.S. and Ukrainian nail industries. Together with Gel Point ambassador Viktoriia Voloshyna, she will lead this live practical session.",
+          topic:
+            "Faster. Cleaner. Better. How to Reduce Service Time Without Sacrificing Quality",
+          description:
+            "A live, practical master class on Gel Point’s most popular line — not a product lecture. Anastasia Moskaliuk and Viktoriia Voloshyna will demonstrate how to work with hard gels without surface filing, model and extend quickly, and eliminate unnecessary steps while protecting the durability and quality of the result.",
+          highlights: [
+            "Use Gel Point hard gels without surface filing.",
+            "Model and extend nails faster with fewer unnecessary steps.",
+            "Improve long-term wear while reducing lifting, chips, cracks, and complex repairs.",
+            "Apply the key product techniques behind a faster, cleaner workflow.",
+            "Increase team speed, service quality, and client return rates."
+          ]
         }
       ]
     },
@@ -1125,26 +1211,26 @@ const en = {
             { time: "10:30", speaker: "", title: "Program begins", kind: "opening" },
             {
               time: "10:45",
-              speaker: "Larisa Berdnikova",
-              title: "Why 80% of Beauty Professionals Never Become High-Priced Experts",
-              kind: "talk",
-            },
-            {
-              time: "11:15",
               speaker: "Danil Tegay",
               title: "Attracting Clients Through Events and Staff Professionalism",
               kind: "talk",
             },
             {
+              time: "11:15",
+              speaker: "Sasha Zvereva",
+              title: "Personal Experience of Building a Business While Raising Four Children",
+              kind: "talk",
+            },
+            {
               time: "11:45",
-              speaker: "Eleonora Bediukh",
-              title: "Content That Sells: A Social Media Growth System for Beauty Professionals Without Burnout",
+              speaker: "Larisa Berdnikova",
+              title: "Why 80% of Beauty Professionals Never Become High-Priced Experts",
               kind: "talk",
             },
             {
               time: "12:15",
-              speaker: "Sasha Zvereva",
-              title: "Personal Experience of Building a Business While Raising Four Children",
+              speaker: "Eleonora Bediukh",
+              title: "Content That Sells: A Social Media Growth System for Beauty Professionals Without Burnout",
               kind: "talk",
             },
             { time: "12:45–13:30", speaker: "", title: "Break and coffee", kind: "break" },
@@ -1164,7 +1250,10 @@ const en = {
                 speaker: "Anastasia Huk",
                 title: "Mistakes in Acne Correction That Prevent Lasting Remission",
               },
-              { speaker: "Anastasiia Moskaliuk", title: "Modern techniques in the nail industry" },
+              {
+                speaker: "Anastasia Moskaliuk & Viktoriia Voloshyna",
+                title: "FASTER. CLEANER. BETTER. How to Reduce a Manicure Master’s Working Time Without Sacrificing Quality",
+              },
             ],
           },
           galaDinner: [
@@ -3285,6 +3374,32 @@ const ru: typeof en = {
       title: "IBPA Beauty Awards 2026",
       text: "IBPA Beauty Awards 2026 — международная премия в сфере красоты, образования и бьюти-бизнеса, проводимая в рамках IBPA Beauty Business Forum. Наша миссия — признавать выдающихся специалистов, поддерживать профессиональное развитие и объединять лидеров индустрии для обмена опытом, инновациями и новыми возможностями роста.",
     },
+    founder: {
+      eyebrow: "Основатель · Beauty Business Forum",
+      masthead: "FOUNDER",
+      nameLines: ["Юлия", "Андреева"],
+      role: "Основатель и организатор Beauty Business Forum · Президент IBPA · Предприниматель в beauty-индустрии",
+      lede: "Предприниматель и эксперт beauty-индустрии, которая прошла путь от практической работы мастером до образования, судейства, консалтинга и отраслевого лидерства.",
+      paragraphs: [
+        "Юлия начала профессиональный путь как лэшмейкер и преподаватель. Позже она основала собственную школу и студию по наращиванию ресниц, стала победительницей профессиональных чемпионатов и судьёй конкурсов.",
+        "Сегодня Юлия владеет консалтинговой компанией, которая помогает специалистам beauty-индустрии получать профессиональные лицензии в США, развивать карьеру, формировать сильное профессиональное портфолио и создавать личный бренд.",
+      ],
+      missionTitle: "Зачем существует Beauty Business Forum",
+      missionText: "Опираясь на практический опыт специалиста, преподавателя и предпринимателя, Юлия создала Beauty Business Forum — платформу для роста, обмена знаниями, полезных деловых связей и профессионального признания в beauty-индустрии.",
+      imageAlt: "Юлия Андреева, основатель и президент IBPA, на мероприятии Beauty Business Forum",
+      cardLabel: "Президент IBPA",
+      cardRole: "Основатель и организатор",
+      initials: "IA",
+      railLabel: "Предприниматель в beauty-индустрии",
+      journeyEyebrow: "Профессиональный путь",
+      journeyMeta: "Мастерство → лидерство → сообщество",
+      journey: [
+        { title: "Beauty-профессионал", text: "Лэшмейкер и практикующий специалист индустрии" },
+        { title: "Преподаватель и судья", text: "Основатель школы, победитель чемпионатов, судья конкурсов" },
+        { title: "Предприниматель", text: "Консалтинг, лицензирование, карьерный рост и личные бренды" },
+        { title: "Создатель индустрии", text: "Президент IBPA и основатель Beauty Business Forum" },
+      ],
+    },
     threeExperiences: {
       eyebrow: "Одно событие",
       title: "Три мощных направления",
@@ -3394,9 +3509,9 @@ const ru: typeof en = {
 
       pricing: {
         eyebrow: "Стоимость",
-        title: "Стоимость участия",
+        title: "Стоимость билетов на форум",
         description:
-          "Билеты на форум, номинации премии и регистрация судей оплачиваются отдельно. Стоимость форума и премии отличается для участников IBPA и гостей.",
+          "Выберите формат участия в форуме. Для действующих участников Ассоциации IBPA действуют специальные цены на билеты.",
 
         option: "Опция",
         members: "IBPA Участники",
@@ -3404,7 +3519,7 @@ const ru: typeof en = {
         nonMembers: "Без участия",
         memberPricingNote: "Специальные цены для участников IBPA.",
         awardPricingNote: "Сэкономьте больше с пакетами для подачи нескольких заявок.",
-        memberDiscountNote: "Участники IBPA могут зарегистрироваться по льготной цене.",
+        memberDiscountNote: "Участники IBPA получают льготные цены на билеты форума.",
         mostPopular: "Популярное",
 
         forum: {
@@ -3522,7 +3637,7 @@ const ru: typeof en = {
           website: "https://www.vaulabs.com"
         },
         {
-          name: "Eleonora Bediukh",
+          name: "Элеонора Бедюх",
           photo: "/images/speakers/eleonora-bediukh.jpg",
           role:
             "Мастер-бровист и лами-мейкер, преподаватель по коррекции, окрашиванию и ламинированию бровей. Автор книги Brows Top Start, международный судья, организатор чемпионата TB Champions, соучредитель TE’ORA Beauty Corp и beauty-инфлюэнсер.",
@@ -3613,7 +3728,16 @@ const ru: typeof en = {
       title: "Мастер-классы",
       description:
         "Практические занятия, на которых ведущие преподаватели превращают авторские техники в понятные и воспроизводимые системы для вашей работы.",
+      ctaLabel: "Смотреть программу",
+      featurePractice: "Только практика",
+      featureTechniques: "Актуальные техники",
+      featureCertificate: "Сертификат участника",
       sessionsLabel: "живых мастер-классов",
+      galleryLabel: "Преподаватели мастер-классов",
+      galleryProgressLabel: "Позиция в галерее мастер-классов",
+      previousLabel: "Предыдущий мастер-класс",
+      nextLabel: "Следующий мастер-класс",
+      detailsLabel: "Подробнее",
       formatLabel: "Мастер-класс",
       educatorLabel: "О преподавателе",
       topicLabel: "Тема",
@@ -3658,7 +3782,7 @@ const ru: typeof en = {
         },
         {
           name: "Татьяна Кислюк",
-          photo: "/images/master-classes/tetiana-kysliuk.png",
+          photo: "/images/master-classes/tetiana-kysliuk-editorial.png",
           secondaryPhoto: "/images/master-classes/tetiana-kysliuk-poster.png",
           role:
             "Практикующий мастер и преподаватель по ламинированию ресниц и оформлению бровей, многократный победитель международных чемпионатов, международный судья beauty-чемпионатов, автор профессиональных обучающих материалов и методических пособий. Совладелец бренда TE’ORA Beauty и онлайн-чемпионата TE’ORA Beauty Championship. В работе Татьяна делает акцент на понимании логики ламинирования: анализе исходных данных клиента, правильном выборе валика, контроле выкладки, работе с составами и прогнозировании конечного результата.",
@@ -3711,6 +3835,57 @@ const ru: typeof en = {
           ],
           bonus:
             "Каждый участник получит купон на $20 на материалы PLATINUM, чтобы познакомиться с профессиональной UV/LED-системой и начать внедрение технологии в своей работе."
+        },
+        {
+          name: "Анастасия Гук",
+          photo: "/images/master-classes/anastasia-guk.jpg",
+          role:
+            "Лицензированный эстетист в Калифорнии, специалист по работе с акне, основатель H.A. Skin Lab и автор Acne Balance Method. Анастасия более 10 лет работает в эстетической косметологии и специализируется на комплексной коррекции акне и постакне, восстановлении кожного барьера и построении долгосрочных стратегий ухода для устойчивой ремиссии. Автор книги об акне, профессиональных обучающих материалов и методических программ для специалистов индустрии красоты.",
+          topic:
+            "Ошибки в коррекции акне, которые мешают выйти в ремиссию",
+          description:
+            "На мастер-классе Анастасия разберёт распространённые ошибки, которые приводят к отсутствию результата, постоянным обострениям и повреждению защитного барьера кожи. Мы поговорим о том, почему агрессивное воздействие не всегда ускоряет результат, и как выстраивать домашний и профессиональный уход с учётом индивидуальных триггеров, переносимости и постепенной адаптации к активным компонентам.",
+          highlights: [
+            "Какие ошибки чаще всего мешают добиться устойчивой ремиссии акне.",
+            "Как оценивать состояние кожного барьера перед введением активных компонентов.",
+            "Как сочетать профессиональные процедуры и домашний уход без перегрузки кожи.",
+            "Как постепенно усиливать терапию, не провоцируя раздражение.",
+            "Как выстроить последовательную стратегию работы с клиентом на несколько месяцев."
+          ]
+        },
+        {
+          name: "Анжелика Сивенюк",
+          photo: "/images/master-classes/anzhelika-syveniuk.jpg",
+          role:
+            "Врач-дерматовенеролог по образованию, Licensed Esthetician в Калифорнии, специалист по работе с акне, чувствительной и барьерно-компрометированной кожей. Более 9 лет работает с проблемной кожей и коррекцией акне. Автор профессиональной концепции BOAA™ — Barrier-Oriented Acne Approach, основанной на сочетании эффективной активной терапии с контролем состояния кожного барьера и переносимости ухода. Основатель skincare-бренда MARUA™, автор книги «BOAA — Barrier-Oriented Acne Approach», профессиональных и научных публикаций, преподаватель, спикер и судья международных чемпионатов.",
+          topic:
+            "Акне и кожный барьер: как сочетать активную терапию и профессиональную процедуру без перегрузки кожи",
+          description:
+            "Практический мастер-класс о барьер-ориентированном подходе вместо принципа «чем больше активов — тем быстрее результат». Анжелика покажет, как оценить текущее состояние кожи, определить допустимый уровень активной нагрузки и выстроить профессиональную процедуру так, чтобы она поддерживала, а не конфликтовала с домашней терапией клиента.",
+          highlights: [
+            "Как отличать кожу, которой нужен активный этап, от кожи, которой сначала необходимо восстановление.",
+            "Как оценивать суммарную активную нагрузку и признаки перегрузки кожи.",
+            "Как адаптировать процедуру для клиентов, использующих ретиноиды, кислоты или бензоилпероксид.",
+            "Пошаговый деликатный протокол для кожи, склонной к акне и чувствительности.",
+            "Как сочетать коррекцию акне и поддержку кожного барьера."
+          ]
+        },
+        {
+          name: "Анастасия Москалюк и Виктория Волошина",
+          photo: "/images/master-classes/anastasia-moskaliuk-gel-point.png",
+          role:
+            "Анастасия Москалюк — основатель профессионального бренда материалов Gel Point (США), президент American Nail Artist Association (ANAA), основатель сети студий Nail Point в Киеве и Beverly Hills, международный чемпион, судья и спикер с опытом в nail-индустрии США и Украины более 15 лет. Вместе с амбассадором Gel Point Викторией Волошиной она проведёт живой практический мастер-класс.",
+          topic:
+            "Быстрее. Чище. Качественнее. Как сократить время работы мастера без потери качества",
+          description:
+            "Это не лекция о материалах, а живой практический мастер-класс по самой популярной линейке Gel Point. Анастасия Москалюк и Виктория Волошина покажут, как работать с hard-гелями без поверхностного опила, быстро моделировать и наращивать ногти, сокращая лишние этапы без ущерба для стойкости и качества результата.",
+          highlights: [
+            "Работа с hard-гелями Gel Point без поверхностного опила.",
+            "Быстрое моделирование и наращивание с минимумом лишних этапов.",
+            "Как добиться длительной носки и сократить количество отслоек, сколов, трещин и сложных ремонтов.",
+            "Главные особенности и фишки работы с линейкой Gel Point.",
+            "Как повысить скорость работы команды, качество услуг и возвращаемость клиентов."
+          ]
         }
       ]
     },
@@ -3866,11 +4041,11 @@ const ru: typeof en = {
                 title: "Pixie без страха: как создавать короткие стрижки с уверенностью в результате",
               },
               {
-                speaker: "Viktoriya Tesalova",
+                speaker: "Виктория Тесалова",
                 title: "Сложная колористика перманентного макияжа — простым языком. Как правильно подбирать пигмент для губ, чтобы получать прогнозируемые результаты",
               },
               {
-                speaker: "Анджелика Сивенюк",
+                speaker: "Анжелика Сивенюк",
                 title: "Акне и кожный барьер: как сочетать активную терапию и профессиональную процедуру без перегрузки кожи",
               },
             ],
@@ -3885,26 +4060,26 @@ const ru: typeof en = {
             { time: "10:30", speaker: "", title: "Начало программы", kind: "opening" },
             {
               time: "10:45",
+              speaker: "Данил Тегай",
+              title: "Привлечение клиентов через эвенты и профессионализм сотрудников",
+              kind: "talk",
+            },
+            {
+              time: "11:15",
+              speaker: "Саша Зверева",
+              title: "Личный опыт выстраивания бизнеса с четырьмя детьми",
+              kind: "talk",
+            },
+            {
+              time: "11:45",
               speaker: "Лариса Бердникова",
               title: "Почему 80% мастеров никогда не становятся дорогими специалистами",
               kind: "talk",
             },
             {
-              time: "11:15",
-              speaker: "Danil Tegay",
-              title: "Привлечение клиентов через эвенты и профессионализм сотрудников",
-              kind: "talk",
-            },
-            {
-              time: "11:45",
-              speaker: "Eleonora Bediukh",
-              title: "Контент, который продаёт: система продвижения бьюти-мастера в соцсетях без хаоса и выгорания",
-              kind: "talk",
-            },
-            {
               time: "12:15",
-              speaker: "Саша Зверева",
-              title: "Личный опыт выстраивания бизнеса с четырьмя детьми",
+              speaker: "Элеонора Бедюх",
+              title: "Контент, который продаёт: система продвижения бьюти-мастера в соцсетях без хаоса и выгорания",
               kind: "talk",
             },
             { time: "12:45–13:30", speaker: "", title: "Перерыв, кофе-брейк", kind: "break" },
@@ -3913,18 +4088,21 @@ const ru: typeof en = {
             time: "13:30–15:30",
             sessions: [
               {
-                speaker: "Olha Ladaniuk",
-                title: "Professional Sketch + AirContour: Championship Brow System",
+                speaker: "Ольга Ладанюк",
+                title: "Professional Sketch + AirContour: чемпионская система бровей",
               },
               {
                 speaker: "Катерина Лушакова",
                 title: "Как внедрить UV/LED-наращивание ресниц в свой beauty-бизнес и увеличить доход",
               },
               {
-                speaker: "Anastasia Huk",
+                speaker: "Анастасия Гук",
                 title: "Ошибки в коррекции акне, которые мешают достичь стойкой ремиссии",
               },
-              { speaker: "Анастасия Москалюк", title: "Современные техники в Nail-индустрии" }
+              {
+                speaker: "Анастасия Москалюк и Виктория Волошина",
+                title: "БЫСТРЕЕ. ЧИЩЕ. КАЧЕСТВЕННЕЕ. Как сократить время работы мастера-маникюра без потери качества",
+              }
             ],
           },
           galaDinner: [
@@ -6047,6 +6225,32 @@ const ua: typeof en = {
       title: "IBPA Beauty Awards 2026",
       text: "IBPA Beauty Awards 2026 — міжнародна премія у сфері краси, освіти та beauty-бізнесу, що проводиться в межах IBPA Beauty Business Forum. Наша місія — визнавати видатних спеціалістів, підтримувати професійний розвиток і об’єднувати лідерів індустрії для обміну досвідом, інноваціями та новими можливостями зростання.",
     },
+    founder: {
+      eyebrow: "Засновниця · Beauty Business Forum",
+      masthead: "FOUNDER",
+      nameLines: ["Юлія", "Андреева"],
+      role: "Засновниця та організаторка Beauty Business Forum · Президентка IBPA · Підприємиця у beauty-індустрії",
+      lede: "Підприємиця та експертка beauty-індустрії, яка пройшла шлях від практичної роботи майстринею до освіти, суддівства, консалтингу та галузевого лідерства.",
+      paragraphs: [
+        "Юлія розпочала професійний шлях як лешмейстерка та викладачка. Згодом вона заснувала власну школу та студію нарощування вій, стала переможницею професійних чемпіонатів і суддею конкурсів.",
+        "Сьогодні Юлія володіє консалтинговою компанією, яка допомагає фахівцям beauty-індустрії отримувати професійні ліцензії у США, розвивати кар’єру, формувати сильне професійне портфоліо та створювати особистий бренд.",
+      ],
+      missionTitle: "Навіщо існує Beauty Business Forum",
+      missionText: "Поєднавши практичний досвід фахівчині, викладачки та підприємиці, Юлія створила Beauty Business Forum — платформу для розвитку, обміну знаннями, змістовних ділових зв’язків і професійного визнання у beauty-індустрії.",
+      imageAlt: "Юлія Андреева, засновниця та президентка IBPA, на заході Beauty Business Forum",
+      cardLabel: "Президентка IBPA",
+      cardRole: "Засновниця та організаторка",
+      initials: "IA",
+      railLabel: "Підприємиця у beauty-індустрії",
+      journeyEyebrow: "Професійний шлях",
+      journeyMeta: "Майстерність → лідерство → спільнота",
+      journey: [
+        { title: "Beauty-фахівчиня", text: "Лешмейстерка та практикуюча спеціалістка індустрії" },
+        { title: "Викладачка і суддя", text: "Засновниця школи, переможниця чемпіонатів, суддя конкурсів" },
+        { title: "Підприємиця", text: "Консалтинг, ліцензування, кар’єрний розвиток та особисті бренди" },
+        { title: "Творчиня індустрії", text: "Президентка IBPA та засновниця Beauty Business Forum" },
+      ],
+    },
     threeExperiences: {
       eyebrow: "Одна подія",
       title: "Три потужні напрями",
@@ -6156,9 +6360,9 @@ const ua: typeof en = {
 
       pricing: {
         eyebrow: "Вартість",
-        title: "Вартість участі",
+        title: "Вартість квитків на форум",
         description:
-          "Квитки на форум, номінації премії та реєстрація суддів оплачуються окремо. Вартість форуму й премії відрізняється для учасників IBPA та гостей.",
+          "Оберіть формат участі у форумі. Для чинних учасників Асоціації IBPA діють спеціальні ціни на квитки.",
 
         option: "Опція",
         members: "IBPA Учасники",
@@ -6166,7 +6370,7 @@ const ua: typeof en = {
         nonMembers: "Без участі",
         memberPricingNote: "Спеціальні ціни для учасників IBPA",
         awardPricingNote: "Заощаджуйте більше з пакетами для подання кількох заявок.",
-        memberDiscountNote: "Учасники IBPA можуть зареєструватися за пільговою ціною.",
+        memberDiscountNote: "Учасники IBPA отримують пільгові ціни на квитки форуму.",
         mostPopular: "Популярне",
 
         forum: {
@@ -6283,7 +6487,7 @@ const ua: typeof en = {
           website: "https://www.vaulabs.com"
         },
         {
-          name: "Eleonora Bediukh",
+          name: "Елеонора Бедюх",
           photo: "/images/speakers/eleonora-bediukh.jpg",
           role:
             "Бровист і ламі-мейкер, викладач з корекції, фарбування та ламінування брів. Автор книги Brows Top Start, міжнародний суддя, організатор чемпіонату TB Champions, співзасновниця TE’ORA Beauty Corp та beauty-інфлюенсер.",
@@ -6374,7 +6578,16 @@ const ua: typeof en = {
       title: "Майстер-класи",
       description:
         "Практичні заняття, на яких провідні викладачі перетворюють авторські техніки на зрозумілі й відтворювані системи для вашої роботи.",
+      ctaLabel: "Переглянути програму",
+      featurePractice: "Лише практика",
+      featureTechniques: "Актуальні техніки",
+      featureCertificate: "Сертифікат учасника",
       sessionsLabel: "живих майстер-класів",
+      galleryLabel: "Викладачі майстер-класів",
+      galleryProgressLabel: "Позиція в галереї майстер-класів",
+      previousLabel: "Попередній майстер-клас",
+      nextLabel: "Наступний майстер-клас",
+      detailsLabel: "Детальніше",
       formatLabel: "Майстер-клас",
       educatorLabel: "Про викладача",
       topicLabel: "Тема",
@@ -6419,7 +6632,7 @@ const ua: typeof en = {
         },
         {
           name: "Тетяна Кислюк",
-          photo: "/images/master-classes/tetiana-kysliuk.png",
+          photo: "/images/master-classes/tetiana-kysliuk-editorial.png",
           secondaryPhoto: "/images/master-classes/tetiana-kysliuk-poster.png",
           role:
             "Практикуюча майстриня та викладачка з ламінування вій і оформлення брів, багаторазова переможниця міжнародних чемпіонатів, міжнародна суддя beauty-чемпіонатів, авторка професійних навчальних матеріалів і методичних посібників. Співвласниця бренду TE’ORA Beauty та онлайн-чемпіонату TE’ORA Beauty Championship. У роботі Тетяна зосереджується на розумінні логіки ламінування: аналізі вихідних даних клієнта, правильному виборі валика, контролі викладки, роботі зі складами та прогнозуванні кінцевого результату.",
@@ -6472,6 +6685,57 @@ const ua: typeof en = {
           ],
           bonus:
             "Кожен учасник отримає купон на $20 на матеріали PLATINUM, щоб познайомитися з професійною UV/LED-системою та розпочати впровадження технології у своїй роботі."
+        },
+        {
+          name: "Анастасія Гук",
+          photo: "/images/master-classes/anastasia-guk.jpg",
+          role:
+            "Ліцензована естетистка в Каліфорнії, спеціалістка з роботи з акне, засновниця H.A. Skin Lab та авторка Acne Balance Method. Анастасія понад 10 років працює в естетичній косметології та спеціалізується на комплексній корекції акне й постакне, відновленні шкірного бар’єра та побудові довгострокових стратегій догляду для сталої ремісії. Авторка книги про акне, професійних навчальних матеріалів і методичних програм для фахівців індустрії краси.",
+          topic:
+            "Помилки в корекції акне, які заважають досягти ремісії",
+          description:
+            "На майстер-класі Анастасія розбере поширені помилки, що призводять до відсутності результату, постійних загострень і пошкодження захисного бар’єра шкіри. Ми поговоримо про те, чому агресивний вплив не завжди пришвидшує результат, і як вибудовувати домашній та професійний догляд з урахуванням індивідуальних тригерів, переносимості та поступової адаптації до активних компонентів.",
+          highlights: [
+            "Які помилки найчастіше заважають досягти сталої ремісії акне.",
+            "Як оцінювати стан шкірного бар’єра перед введенням активних компонентів.",
+            "Як поєднувати професійні процедури та домашній догляд без перевантаження шкіри.",
+            "Як поступово посилювати терапію, не провокуючи подразнення.",
+            "Як вибудувати послідовну стратегію роботи з клієнтом на кілька місяців."
+          ]
+        },
+        {
+          name: "Анжеліка Сивенюк",
+          photo: "/images/master-classes/anzhelika-syveniuk.jpg",
+          role:
+            "Лікарка-дерматовенерологиня за освітою, Licensed Esthetician у Каліфорнії, спеціалістка з роботи з акне, чутливою та бар’єрно-компрометованою шкірою. Понад 9 років працює з проблемною шкірою та корекцією акне. Авторка професійної концепції BOAA™ — Barrier-Oriented Acne Approach, заснованої на поєднанні ефективної активної терапії з контролем стану шкірного бар’єра та переносимості догляду. Засновниця skincare-бренду MARUA™, авторка книги «BOAA — Barrier-Oriented Acne Approach», професійних і наукових публікацій, викладачка, спікерка та суддя міжнародних чемпіонатів.",
+          topic:
+            "Акне та шкірний бар’єр: як поєднати активну терапію й професійну процедуру без перевантаження шкіри",
+          description:
+            "Практичний майстер-клас про бар’єрно-орієнтований підхід замість принципу «що більше активів — то швидший результат». Анжеліка покаже, як оцінити поточний стан шкіри, визначити допустимий рівень активного навантаження та вибудувати професійну процедуру так, щоб вона підтримувала, а не конфліктувала з домашньою терапією клієнта.",
+          highlights: [
+            "Як відрізнити шкіру, якій потрібен активний етап, від шкіри, якій спочатку необхідне відновлення.",
+            "Як оцінювати сумарне активне навантаження та ознаки перевантаження шкіри.",
+            "Як адаптувати процедуру для клієнтів, які використовують ретиноїди, кислоти або бензоїлпероксид.",
+            "Покроковий делікатний протокол для шкіри, схильної до акне та чутливості.",
+            "Як поєднувати корекцію акне й підтримку шкірного бар’єра."
+          ]
+        },
+        {
+          name: "Анастасія Москалюк і Вікторія Волошина",
+          photo: "/images/master-classes/anastasia-moskaliuk-gel-point.png",
+          role:
+            "Анастасія Москалюк — засновниця професійного бренду матеріалів Gel Point (США), президентка American Nail Artist Association (ANAA), засновниця мережі студій Nail Point у Києві та Beverly Hills, міжнародна чемпіонка, суддя й спікерка з досвідом у nail-індустрії США та України понад 15 років. Разом з амбасадоркою Gel Point Вікторією Волошиною вона проведе живий практичний майстер-клас.",
+          topic:
+            "Швидше. Чистіше. Якісніше. Як скоротити час роботи майстра без втрати якості",
+          description:
+            "Це не лекція про матеріали, а живий практичний майстер-клас за найпопулярнішою лінійкою Gel Point. Анастасія Москалюк і Вікторія Волошина покажуть, як працювати з hard-гелями без поверхневого опилу, швидко моделювати та нарощувати нігті, скорочуючи зайві етапи без шкоди для стійкості й якості результату.",
+          highlights: [
+            "Робота з hard-гелями Gel Point без поверхневого опилу.",
+            "Швидке моделювання та нарощування з мінімумом зайвих етапів.",
+            "Як досягти тривалої носки й скоротити кількість відшарувань, сколів, тріщин і складних ремонтів.",
+            "Головні особливості та фішки роботи з лінійкою Gel Point.",
+            "Як підвищити швидкість роботи команди, якість послуг і повернення клієнтів."
+          ]
         }
       ]
     },
@@ -6627,11 +6891,11 @@ const ua: typeof en = {
                 title: "Pixie без страху: як створювати короткі стрижки з упевненістю в результаті",
               },
               {
-                speaker: "Viktoriia Tesalova",
+                speaker: "Вікторія Тесалова",
                 title: "Складна колористика перманентного макіяжу — простою мовою. Як правильно добирати пігмент для губ, щоб отримувати прогнозовані результати",
               },
               {
-                speaker: "Анджеліка Сивенюк",
+                speaker: "Анжеліка Сивенюк",
                 title: "Акне та шкірний бар’єр: як поєднати активну терапію і професійну процедуру без перевантаження шкіри",
               },
             ],
@@ -6646,26 +6910,26 @@ const ua: typeof en = {
             { time: "10:30", speaker: "", title: "Початок програми", kind: "opening" },
             {
               time: "10:45",
+              speaker: "Даніл Тегай",
+              title: "Залучення клієнтів через івенти та професіоналізм співробітників",
+              kind: "talk",
+            },
+            {
+              time: "11:15",
+              speaker: "Саша Звєрєва",
+              title: "Особистий досвід побудови бізнесу з чотирма дітьми",
+              kind: "talk",
+            },
+            {
+              time: "11:45",
               speaker: "Лариса Бердникова",
               title: "Чому 80% майстрів ніколи не стають дорогими фахівцями",
               kind: "talk",
             },
             {
-              time: "11:15",
-              speaker: "Danil Tegay",
-              title: "Залучення клієнтів через івенти та професіоналізм співробітників",
-              kind: "talk",
-            },
-            {
-              time: "11:45",
-              speaker: "Eleonora Bediukh",
-              title: "Контент, що продає: система просування beauty-майстра в соцмережах без хаосу та вигорання",
-              kind: "talk",
-            },
-            {
               time: "12:15",
-              speaker: "Саша Звєрєва",
-              title: "Особистий досвід побудови бізнесу з чотирма дітьми",
+              speaker: "Елеонора Бедюх",
+              title: "Контент, що продає: система просування beauty-майстра в соцмережах без хаосу та вигорання",
               kind: "talk",
             },
             { time: "12:45–13:30", speaker: "", title: "Перерва, кава-брейк", kind: "break" },
@@ -6682,10 +6946,13 @@ const ua: typeof en = {
                 title: "Як впровадити UV/LED-нарощування вій у свій beauty-бізнес і збільшити дохід",
               },
               {
-                speaker: "Anastasia Huk",
+                speaker: "Анастасія Гук",
                 title: "Помилки в корекції акне, які заважають досягти стійкої ремісії",
               },
-              { speaker: "Анастасія Москалюк", title: "Сучасні техніки в Nail-індустрії" },
+              {
+                speaker: "Анастасія Москалюк і Вікторія Волошина",
+                title: "ШВИДШЕ. ЧИСТІШЕ. ЯКІСНІШЕ. Як скоротити час роботи майстра манікюру без втрати якості",
+              },
             ],
           },
           galaDinner: [

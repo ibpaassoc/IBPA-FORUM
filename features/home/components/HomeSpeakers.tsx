@@ -162,6 +162,7 @@ export default function HomeSpeakers() {
                 src={speaker.photo}
                 alt={speaker.name}
                 fill
+                quality={90}
                 sizes="(max-width: 640px) calc(100vw - (2 * var(--page-gutter))), (max-width: 1024px) 480px, 240px"
                 className="object-cover"
               />
@@ -313,6 +314,7 @@ export default function HomeSpeakers() {
                       src={activeSpeaker.photo}
                       alt={activeSpeaker.name}
                       fill
+                      quality={90}
                       sizes="(max-width: 640px) 100vw, 260px"
                       className="object-cover object-[center_25%]"
                     />
@@ -322,6 +324,7 @@ export default function HomeSpeakers() {
                           src={secondaryPhoto}
                           alt={`${activeSpeaker.name} portrait`}
                           fill
+                          quality={90}
                           sizes="80px"
                           className="object-cover"
                         />
