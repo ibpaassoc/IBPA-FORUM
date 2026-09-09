@@ -1407,6 +1407,17 @@ const en = {
           instagram: "https://www.instagram.com/lux_photograph_/",
           instagramLabel: "@lux_photograph_",
         },
+        {
+          id: "maksimova-photo",
+          name: "maksimova_photo",
+          label: "Featured Sponsor",
+          logo: "/images/sponsors/maksimova-photo/maksimova-photo-logo.webp",
+          logoAlt: "maksimova_photo logo",
+          description:
+            "maksimova_photo is the photography studio of Daria Maksimova, a professional photographer capturing weddings, portraits, and everyday memories with genuine emotion and close attention to detail — because every smile and every little moment deserves to be remembered.",
+          instagram: "https://www.instagram.com/maksimova_photo",
+          instagramLabel: "@maksimova_photo",
+        },
       ],
     },
     contactUs: {
@@ -4164,6 +4175,17 @@ const ru: typeof en = {
             "LUX Photography — бренд фотографа Sofia Dobrianskyi, специализирующийся на персональной, lifestyle- и креативной фотографии. В работе сочетаются современная эстетика, внимание к деталям и индивидуальный подход к каждому проекту. Стиль отличают чистые, выразительные и утончённые кадры, которые подчёркивают индивидуальность и сохраняют естественность момента.",
           instagram: "https://www.instagram.com/lux_photograph_/",
           instagramLabel: "@lux_photograph_",
+        },
+        {
+          id: "maksimova-photo",
+          name: "maksimova_photo",
+          label: "Главный спонсор",
+          logo: "/images/sponsors/maksimova-photo/maksimova-photo-logo.webp",
+          logoAlt: "Логотип maksimova_photo",
+          description:
+            "maksimova_photo — фотостудия Дарьи Максимовой, профессионального фотографа, которая снимает свадьбы, портреты и повседневные моменты жизни с настоящими эмоциями и вниманием к деталям — ведь каждая улыбка и каждое маленькое мгновение заслуживают того, чтобы остаться в памяти.",
+          instagram: "https://www.instagram.com/maksimova_photo",
+          instagramLabel: "@maksimova_photo",
         },
       ],
     },
@@ -6923,6 +6945,17 @@ const ua: typeof en = {
             "LUX Photography — бренд фотографа Sofia Dobrianskyi, що спеціалізується на персональній, lifestyle- та креативній фотографії. У роботі поєднуються сучасна естетика, увага до деталей та індивідуальний підхід до кожного проєкту. Стиль вирізняють чисті, виразні й витончені кадри, які підкреслюють індивідуальність і зберігають природність моменту.",
           instagram: "https://www.instagram.com/lux_photograph_/",
           instagramLabel: "@lux_photograph_",
+        },
+        {
+          id: "maksimova-photo",
+          name: "maksimova_photo",
+          label: "Головний спонсор",
+          logo: "/images/sponsors/maksimova-photo/maksimova-photo-logo.webp",
+          logoAlt: "Логотип maksimova_photo",
+          description:
+            "maksimova_photo — фотостудія Дарії Максимової, професійної фотографки, яка знімає весілля, портрети та повсякденні моменти життя зі щирими емоціями та увагою до деталей — адже кожна усмішка і кожна маленька мить заслуговують на те, щоб залишитися в пам'яті.",
+          instagram: "https://www.instagram.com/maksimova_photo",
+          instagramLabel: "@maksimova_photo",
         },
       ],
     },
