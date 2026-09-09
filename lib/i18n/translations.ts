@@ -1430,6 +1430,17 @@ const en = {
           website: "https://www.nepopradio.com/",
           websiteLabel: "nepopradio.com",
         },
+        {
+          id: "beauty-professionals-magazine",
+          name: "Beauty Professionals Magazine",
+          label: "Featured Sponsor",
+          logo: "/images/sponsors/beauty-professionals-magazine/beauty-professionals-magazine-logo.webp",
+          logoAlt: "Beauty Professionals Magazine logo",
+          description:
+            "Beauty Professionals Magazine publishes interviews, industry notes, beauty reporting, and culture coverage for professionals and readers.",
+          website: "https://beautyprofessionalsmagazine.com/",
+          websiteLabel: "beautyprofessionalsmagazine.com",
+        },
       ],
     },
     contactUs: {
@@ -4210,6 +4221,17 @@ const ru: typeof en = {
             "NePOP Radio — это не фон. Это звук нашей реальности. Музыка, на которой выросли. Музыка, под которую живем. И разговоры без фильтров — про жизнь, адаптацию и иммиграцию в США — честно, местами жестко, всегда по делу.",
           website: "https://www.nepopradio.com/",
           websiteLabel: "nepopradio.com",
+        },
+        {
+          id: "beauty-professionals-magazine",
+          name: "Beauty Professionals Magazine",
+          label: "Главный спонсор",
+          logo: "/images/sponsors/beauty-professionals-magazine/beauty-professionals-magazine-logo.webp",
+          logoAlt: "Логотип Beauty Professionals Magazine",
+          description:
+            "Beauty Professionals Magazine публикует интервью, отраслевые новости, репортажи о beauty-индустрии и материалы о культуре — для профессионалов и читателей.",
+          website: "https://beautyprofessionalsmagazine.com/",
+          websiteLabel: "beautyprofessionalsmagazine.com",
         },
       ],
     },
@@ -6992,6 +7014,17 @@ const ua: typeof en = {
             "NePOP Radio — це не фон. Це звук нашої реальності. Музика, на якій ми виросли. Музика, під яку живемо. І розмови без фільтрів — про життя, адаптацію та імміграцію в США — чесно, подекуди жорстко, завжди по суті.",
           website: "https://www.nepopradio.com/",
           websiteLabel: "nepopradio.com",
+        },
+        {
+          id: "beauty-professionals-magazine",
+          name: "Beauty Professionals Magazine",
+          label: "Головний спонсор",
+          logo: "/images/sponsors/beauty-professionals-magazine/beauty-professionals-magazine-logo.webp",
+          logoAlt: "Логотип Beauty Professionals Magazine",
+          description:
+            "Beauty Professionals Magazine публікує інтерв'ю, галузеві новини, репортажі про beauty-індустрію та матеріали про культуру — для професіоналів і читачів.",
+          website: "https://beautyprofessionalsmagazine.com/",
+          websiteLabel: "beautyprofessionalsmagazine.com",
         },
       ],
     },
