@@ -1311,6 +1311,15 @@ const en = {
 
       sponsors: [
         {
+          id: "andreeva-consulting",
+          name: "Andreeva Consulting",
+          label: "Featured Sponsor",
+          logo: "/images/sponsors/andreeva-consulting/andreeva-consulting-logo.png",
+          logoAlt: "Andreeva Consulting Inc",
+          description:
+            "Andreeva Consulting helps beauty industry professionals build their careers legally in the United States. The company guides clients through the professional beauty licensing process, explains licensing requirements, and helps prepare the necessary documents.\n\nAndreeva Consulting also supports accomplished professionals as they assemble a talent visa case, helping them prepare and structure the materials needed for the immigration process and legal professional development in the United States.",
+        },
+        {
           id: "formula-beauty-club",
           name: "FORMULA Beauty Club",
           label: "Featured Sponsor",
@@ -4159,6 +4168,15 @@ const ru: typeof en = {
       goToLabel: "Перейти к партнёру",
 
       sponsors: [
+        {
+          id: "andreeva-consulting",
+          name: "Andreeva Consulting",
+          label: "Главный спонсор",
+          logo: "/images/sponsors/andreeva-consulting/andreeva-consulting-logo.png",
+          logoAlt: "Andreeva Consulting Inc",
+          description:
+            "Andreeva Consulting — консалтинговая компания, которая помогает специалистам beauty-индустрии легально развивать профессиональную деятельность в США. Компания сопровождает процесс получения профессиональных beauty-лицензий, помогает разобраться с требованиями лицензирования и подготовить необходимые документы.\n\nТакже Andreeva Consulting сопровождает специалистов с выдающимися профессиональными достижениями в процессе сбора кейса на визу талантов, помогая подготовить и структурировать материалы для иммиграционного процесса и легализации в США.",
+        },
         {
           id: "formula-beauty-club",
           name: "FORMULA Beauty Club",
@@ -7009,6 +7027,15 @@ const ua: typeof en = {
       goToLabel: "Перейти до партнера",
 
       sponsors: [
+        {
+          id: "andreeva-consulting",
+          name: "Andreeva Consulting",
+          label: "Головний спонсор",
+          logo: "/images/sponsors/andreeva-consulting/andreeva-consulting-logo.png",
+          logoAlt: "Andreeva Consulting Inc",
+          description:
+            "Andreeva Consulting — консалтингова компанія, яка допомагає фахівцям beauty-індустрії легально розвивати професійну діяльність у США. Компанія супроводжує процес отримання професійних beauty-ліцензій, допомагає розібратися у вимогах ліцензування та підготувати необхідні документи.\n\nAndreeva Consulting також супроводжує фахівців із видатними професійними досягненнями під час формування кейсу на візу талантів, допомагаючи підготувати й структурувати матеріали для імміграційного процесу та легалізації у США.",
+        },
         {
           id: "formula-beauty-club",
           name: "FORMULA Beauty Club",
