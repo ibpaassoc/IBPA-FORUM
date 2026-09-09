@@ -4,6 +4,7 @@ import {
   HomeAwardsInfo,
   HomeThreeExperiences,
   HomeFounder,
+  HomeTalentVisaConsultation,
   HomeProgram,
   HomeConversionBlock,
   HomeDressCode,
@@ -44,6 +45,7 @@ export default function HomePagePremium() {
       <HomeProgram />
       <HomeSpeakers />
       <HomeMasterClasses />
+      <HomeTalentVisaConsultation />
       <HomeDressCode />
       <HomeSponsors />
       <HomePreviousForum />

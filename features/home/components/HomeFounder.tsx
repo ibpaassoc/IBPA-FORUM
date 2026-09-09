@@ -71,7 +71,7 @@ export default function HomeFounder() {
             <div aria-hidden className="absolute -inset-3 rounded-[2.1rem] border border-[var(--color-blue-soft)]/80 bg-white/25" />
             <div className="relative aspect-[4/5] overflow-hidden rounded-[1.75rem] border border-white/80 bg-white/60 shadow-[0_26px_70px_rgba(67,106,132,0.18)]">
               <Image
-                src="/images/founder/iuliia-andreeva.jpg"
+                src="/images/founder/iuliia-andreeva-forum.png"
                 alt={founder.imageAlt}
                 fill
                 sizes="(max-width: 1023px) min(100vw - 2rem, 31rem), 34vw"
