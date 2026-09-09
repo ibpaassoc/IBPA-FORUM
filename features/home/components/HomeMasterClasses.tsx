@@ -55,19 +55,52 @@ export default function HomeMasterClasses() {
 
   const activeClass = openClass !== null ? masterClasses[openClass] : null;
 
+  useEffect(() => {
+    const gallery = galleryRef.current;
+    if (!gallery) return;
+
+    const resetGallery = () => {
+      gallery.scrollTo({ left: 0, behavior: "auto" });
+      setActiveCard(0);
+    };
+
+    resetGallery();
+    const frame = window.requestAnimationFrame(resetGallery);
+    const timer = window.setTimeout(resetGallery, 120);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(timer);
+    };
+  }, [masterClasses.length]);
+
   const moveGallery = (direction: 1 | -1) => {
+    const gallery = galleryRef.current;
+    if (!gallery) return;
+
     const nextIndex = Math.min(
       Math.max(activeCard + direction, 0),
       masterClasses.length - 1,
     );
-    const nextCard = galleryRef.current?.querySelector<HTMLElement>(
+    const nextCard = gallery.querySelector<HTMLElement>(
       `[data-master-card="${nextIndex}"]`,
     );
+    if (!nextCard) return;
 
-    nextCard?.scrollIntoView({
+    const galleryLeft = gallery.getBoundingClientRect().left;
+    const nextCardLeft = nextCard.getBoundingClientRect().left;
+    const maxScrollLeft = gallery.scrollWidth - gallery.clientWidth;
+    const targetScrollLeft = Math.min(
+      Math.max(
+        0,
+        gallery.scrollLeft + nextCardLeft - galleryLeft,
+      ),
+      maxScrollLeft,
+    );
+
+    gallery.scrollTo({
+      left: targetScrollLeft,
       behavior: reducedMotion ? "auto" : "smooth",
-      block: "nearest",
-      inline: "start",
     });
     setActiveCard(nextIndex);
   };
@@ -79,17 +112,19 @@ export default function HomeMasterClasses() {
     const cards = Array.from(
       gallery.querySelectorAll<HTMLElement>("[data-master-card]"),
     );
-    const currentPosition = gallery.scrollLeft + gallery.clientLeft + 24;
+    const galleryLeft = gallery.getBoundingClientRect().left;
     const closestIndex = cards.reduce(
       (closest, card, index) =>
-        Math.abs(card.offsetLeft - currentPosition) <
-        Math.abs(cards[closest].offsetLeft - currentPosition)
+        Math.abs(card.getBoundingClientRect().left - galleryLeft) <
+        Math.abs(cards[closest].getBoundingClientRect().left - galleryLeft)
           ? index
           : closest,
       0,
     );
 
-    setActiveCard(closestIndex);
+    setActiveCard((currentIndex) =>
+      currentIndex === closestIndex ? currentIndex : closestIndex,
+    );
   };
 
   return (
