@@ -898,6 +898,24 @@ const en = {
       closeLabel: "Close",
       masterClasses: [
         {
+          name: "Iuliia Andreeva",
+          photo: "/images/founder/iuliia-andreeva.jpg",
+          role:
+            "Iuliia Andreeva is an entrepreneur and beauty industry expert with many years of experience. She is the founder and organizer of Beauty Business Forum and the president of the International Beauty Professionals Association (IBPA). Iuliia began her professional journey as a lash artist and educator, later founded her own lash extension school and studio, became a winner of professional championships, and served as a competition judge. Today, through her consulting company, she helps beauty professionals obtain professional licenses in the United States, advance their careers, build strong professional portfolios, and develop their personal brands.",
+          topic: "Talent Visa Case Review: Free Individual Consultation",
+          description:
+            "Planning to apply for a talent visa but unsure whether your achievements are strong enough or where to begin? During Beauty Business Forum, Iuliia will offer individual case reviews for forum participants. Drawing on her beauty-industry background, championship and judging experience, publication experience, and work structuring talent visa materials, she helps professionals identify the achievements that can strengthen a case. One case she supported has already received talent visa approval this year.",
+          highlights: [
+            "Identify which professional achievements are worth including in your case.",
+            "Understand how awards, judging, publications, and association memberships may support your materials.",
+            "See which parts of your professional record may still need strengthening.",
+            "Define practical next steps for organizing and developing your case.",
+            "Receive a focused 15–20-minute individual review.",
+          ],
+          bonus:
+            "The consultation is free for every forum participant. Iuliia will reserve 2–3 hours across the September 25–26 master-class program for individual reviews.",
+        },
+        {
           name: "Olha Ladaniuk",
           photo: "/images/master-classes/olha-ladaniuk.png",
           role:
@@ -1184,6 +1202,10 @@ const en = {
             time: "16:45–18:45",
             sessions: [
               {
+                speaker: "Iuliia Andreeva",
+                title: "Free individual talent visa case consultation · 15–20 minutes per participant",
+              },
+              {
                 speaker: "Tetiana Kysliuk",
                 title: "Error-Free Lash Lifting: An Algorithm for Predictable Results",
               },
@@ -1238,6 +1260,10 @@ const en = {
           masterClasses: {
             time: "13:30–15:30",
             sessions: [
+              {
+                speaker: "Iuliia Andreeva",
+                title: "Free individual talent visa case consultation · 15–20 minutes per participant",
+              },
               {
                 speaker: "Olha Ladaniuk",
                 title: "Professional Sketch + AirContour: Championship Brow System",
@@ -3756,6 +3782,24 @@ const ru: typeof en = {
       closeLabel: "Закрыть",
       masterClasses: [
         {
+          name: "Юлия Андреева",
+          photo: "/images/founder/iuliia-andreeva.jpg",
+          role:
+            "Юлия Андреева — предприниматель и эксперт с многолетним опытом в beauty-индустрии, основатель и организатор Beauty Business Forum и президент International Beauty Professionals Association (IBPA). Юлия начинала профессиональный путь как lash-мастер и преподаватель, основала собственную школу-студию по наращиванию ресниц, становилась победителем профессиональных чемпионатов и выступала в качестве судьи. Сегодня через свою консалтинговую компанию она помогает beauty-профессионалам получать профессиональные лицензии в США, развивать карьеру, создавать сильное профессиональное портфолио и личный бренд.",
+          topic: "Разбор кейса на визу талантов: бесплатная индивидуальная консультация",
+          description:
+            "Планируете подаваться на визу талантов, но не понимаете, достаточно ли у вас достижений и с чего начинать собирать кейс? На Beauty Business Forum Юлия проведёт индивидуальные разборы для участников форума. Благодаря опыту работы в beauty-индустрии, участия в чемпионатах, судейства, публикаций и структурирования материалов на визу талантов она хорошо понимает, какие профессиональные достижения могут усилить кейс. Уже в этом году один из кейсов, над которым работала Юлия, получил одобрение на визу талантов.",
+          highlights: [
+            "Определить, какие профессиональные достижения стоит включить в ваш кейс.",
+            "Понять, как награды, судейство, публикации и членство в ассоциациях могут усилить материалы.",
+            "Увидеть, каких элементов профессионального профиля вам ещё не хватает.",
+            "Наметить практические следующие шаги по сбору и развитию кейса.",
+            "Получить сфокусированный индивидуальный разбор продолжительностью 15–20 минут.",
+          ],
+          bonus:
+            "Консультация бесплатна для каждого участника форума. Юлия выделит 2–3 часа в рамках программы мастер-классов 25–26 сентября на индивидуальные разборы.",
+        },
+        {
           name: "Ольга Ладанюк",
           photo: "/images/master-classes/olha-ladaniuk.png",
           role:
@@ -4042,6 +4086,10 @@ const ru: typeof en = {
             time: "16:45–18:45",
             sessions: [
               {
+                speaker: "Юлия Андреева",
+                title: "Бесплатная индивидуальная консультация по кейсу на визу талантов · 15–20 минут на участника",
+              },
+              {
                 speaker: "Татьяна Кислюк",
                 title: "Ламинирование ресниц без ошибок: алгоритм, который даёт предсказуемый результат",
               },
@@ -4096,6 +4144,10 @@ const ru: typeof en = {
           masterClasses: {
             time: "13:30–15:30",
             sessions: [
+              {
+                speaker: "Юлия Андреева",
+                title: "Бесплатная индивидуальная консультация по кейсу на визу талантов · 15–20 минут на участника",
+              },
               {
                 speaker: "Ольга Ладанюк",
                 title: "Professional Sketch + AirContour: чемпионская система бровей",
@@ -6615,6 +6667,24 @@ const ua: typeof en = {
       closeLabel: "Закрити",
       masterClasses: [
         {
+          name: "Юлія Андреева",
+          photo: "/images/founder/iuliia-andreeva.jpg",
+          role:
+            "Юлія Андреева — підприємиця та експертка з багаторічним досвідом у beauty-індустрії, засновниця й організаторка Beauty Business Forum та президентка International Beauty Professionals Association (IBPA). Юлія розпочала професійний шлях як lash-майстриня та викладачка, заснувала власну школу-студію нарощування вій, ставала переможницею професійних чемпіонатів і працювала суддею. Сьогодні через свою консалтингову компанію вона допомагає beauty-професіоналам отримувати професійні ліцензії у США, розвивати кар’єру, створювати сильне професійне портфоліо та особистий бренд.",
+          topic: "Розбір кейсу на візу талантів: безкоштовна індивідуальна консультація",
+          description:
+            "Плануєте подаватися на візу талантів, але не розумієте, чи достатньо у вас досягнень і з чого починати збирати кейс? На Beauty Business Forum Юлія проведе індивідуальні розбори для учасників форуму. Завдяки досвіду роботи в beauty-індустрії, участі в чемпіонатах, суддівства, публікацій і структурування матеріалів на візу талантів вона добре розуміє, які професійні досягнення можуть посилити кейс. Уже цього року один із кейсів, над яким працювала Юлія, отримав схвалення на візу талантів.",
+          highlights: [
+            "Визначити, які професійні досягнення варто включити до вашого кейсу.",
+            "Зрозуміти, як нагороди, суддівство, публікації та членство в асоціаціях можуть посилити матеріали.",
+            "Побачити, яких елементів професійного профілю вам іще бракує.",
+            "Окреслити практичні наступні кроки зі збирання та розвитку кейсу.",
+            "Отримати сфокусований індивідуальний розбір тривалістю 15–20 хвилин.",
+          ],
+          bonus:
+            "Консультація безкоштовна для кожного учасника форуму. Юлія виділить 2–3 години в межах програми майстер-класів 25–26 вересня на індивідуальні розбори.",
+        },
+        {
           name: "Ольга Ладанюк",
           photo: "/images/master-classes/olha-ladaniuk.png",
           role:
@@ -6901,6 +6971,10 @@ const ua: typeof en = {
             time: "16:45–18:45",
             sessions: [
               {
+                speaker: "Юлія Андреева",
+                title: "Безкоштовна індивідуальна консультація щодо кейсу на візу талантів · 15–20 хвилин на учасника",
+              },
+              {
                 speaker: "Тетяна Кислюк",
                 title: "Ламінування вій без помилок: алгоритм, що дає передбачуваний результат",
               },
@@ -6955,6 +7029,10 @@ const ua: typeof en = {
           masterClasses: {
             time: "13:30–15:30",
             sessions: [
+              {
+                speaker: "Юлія Андреева",
+                title: "Безкоштовна індивідуальна консультація щодо кейсу на візу талантів · 15–20 хвилин на учасника",
+              },
               {
                 speaker: "Ольга Ладанюк",
                 title: "Professional Sketch + AirContour: чемпіонська система брів",
