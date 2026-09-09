@@ -1211,26 +1211,26 @@ const en = {
             { time: "10:30", speaker: "", title: "Program begins", kind: "opening" },
             {
               time: "10:45",
-              speaker: "Larisa Berdnikova",
-              title: "Why 80% of Beauty Professionals Never Become High-Priced Experts",
-              kind: "talk",
-            },
-            {
-              time: "11:15",
               speaker: "Danil Tegay",
               title: "Attracting Clients Through Events and Staff Professionalism",
               kind: "talk",
             },
             {
+              time: "11:15",
+              speaker: "Sasha Zvereva",
+              title: "Personal Experience of Building a Business While Raising Four Children",
+              kind: "talk",
+            },
+            {
               time: "11:45",
-              speaker: "Eleonora Bediukh",
-              title: "Content That Sells: A Social Media Growth System for Beauty Professionals Without Burnout",
+              speaker: "Larisa Berdnikova",
+              title: "Why 80% of Beauty Professionals Never Become High-Priced Experts",
               kind: "talk",
             },
             {
               time: "12:15",
-              speaker: "Sasha Zvereva",
-              title: "Personal Experience of Building a Business While Raising Four Children",
+              speaker: "Eleonora Bediukh",
+              title: "Content That Sells: A Social Media Growth System for Beauty Professionals Without Burnout",
               kind: "talk",
             },
             { time: "12:45–13:30", speaker: "", title: "Break and coffee", kind: "break" },
@@ -1250,7 +1250,10 @@ const en = {
                 speaker: "Anastasia Huk",
                 title: "Mistakes in Acne Correction That Prevent Lasting Remission",
               },
-              { speaker: "Anastasiia Moskaliuk", title: "Modern techniques in the nail industry" },
+              {
+                speaker: "Anastasia Moskaliuk & Viktoriia Voloshyna",
+                title: "FASTER. CLEANER. BETTER. How to Reduce a Manicure Master’s Working Time Without Sacrificing Quality",
+              },
             ],
           },
           galaDinner: [
@@ -3634,7 +3637,7 @@ const ru: typeof en = {
           website: "https://www.vaulabs.com"
         },
         {
-          name: "Eleonora Bediukh",
+          name: "Элеонора Бедюх",
           photo: "/images/speakers/eleonora-bediukh.jpg",
           role:
             "Мастер-бровист и лами-мейкер, преподаватель по коррекции, окрашиванию и ламинированию бровей. Автор книги Brows Top Start, международный судья, организатор чемпионата TB Champions, соучредитель TE’ORA Beauty Corp и beauty-инфлюэнсер.",
@@ -4038,11 +4041,11 @@ const ru: typeof en = {
                 title: "Pixie без страха: как создавать короткие стрижки с уверенностью в результате",
               },
               {
-                speaker: "Viktoriya Tesalova",
+                speaker: "Виктория Тесалова",
                 title: "Сложная колористика перманентного макияжа — простым языком. Как правильно подбирать пигмент для губ, чтобы получать прогнозируемые результаты",
               },
               {
-                speaker: "Анджелика Сивенюк",
+                speaker: "Анжелика Сивенюк",
                 title: "Акне и кожный барьер: как сочетать активную терапию и профессиональную процедуру без перегрузки кожи",
               },
             ],
@@ -4057,26 +4060,26 @@ const ru: typeof en = {
             { time: "10:30", speaker: "", title: "Начало программы", kind: "opening" },
             {
               time: "10:45",
+              speaker: "Данил Тегай",
+              title: "Привлечение клиентов через эвенты и профессионализм сотрудников",
+              kind: "talk",
+            },
+            {
+              time: "11:15",
+              speaker: "Саша Зверева",
+              title: "Личный опыт выстраивания бизнеса с четырьмя детьми",
+              kind: "talk",
+            },
+            {
+              time: "11:45",
               speaker: "Лариса Бердникова",
               title: "Почему 80% мастеров никогда не становятся дорогими специалистами",
               kind: "talk",
             },
             {
-              time: "11:15",
-              speaker: "Danil Tegay",
-              title: "Привлечение клиентов через эвенты и профессионализм сотрудников",
-              kind: "talk",
-            },
-            {
-              time: "11:45",
-              speaker: "Eleonora Bediukh",
-              title: "Контент, который продаёт: система продвижения бьюти-мастера в соцсетях без хаоса и выгорания",
-              kind: "talk",
-            },
-            {
               time: "12:15",
-              speaker: "Саша Зверева",
-              title: "Личный опыт выстраивания бизнеса с четырьмя детьми",
+              speaker: "Элеонора Бедюх",
+              title: "Контент, который продаёт: система продвижения бьюти-мастера в соцсетях без хаоса и выгорания",
               kind: "talk",
             },
             { time: "12:45–13:30", speaker: "", title: "Перерыв, кофе-брейк", kind: "break" },
@@ -4085,18 +4088,21 @@ const ru: typeof en = {
             time: "13:30–15:30",
             sessions: [
               {
-                speaker: "Olha Ladaniuk",
-                title: "Professional Sketch + AirContour: Championship Brow System",
+                speaker: "Ольга Ладанюк",
+                title: "Professional Sketch + AirContour: чемпионская система бровей",
               },
               {
                 speaker: "Катерина Лушакова",
                 title: "Как внедрить UV/LED-наращивание ресниц в свой beauty-бизнес и увеличить доход",
               },
               {
-                speaker: "Anastasia Huk",
+                speaker: "Анастасия Гук",
                 title: "Ошибки в коррекции акне, которые мешают достичь стойкой ремиссии",
               },
-              { speaker: "Анастасия Москалюк", title: "Современные техники в Nail-индустрии" }
+              {
+                speaker: "Анастасия Москалюк и Виктория Волошина",
+                title: "БЫСТРЕЕ. ЧИЩЕ. КАЧЕСТВЕННЕЕ. Как сократить время работы мастера-маникюра без потери качества",
+              }
             ],
           },
           galaDinner: [
@@ -6481,7 +6487,7 @@ const ua: typeof en = {
           website: "https://www.vaulabs.com"
         },
         {
-          name: "Eleonora Bediukh",
+          name: "Елеонора Бедюх",
           photo: "/images/speakers/eleonora-bediukh.jpg",
           role:
             "Бровист і ламі-мейкер, викладач з корекції, фарбування та ламінування брів. Автор книги Brows Top Start, міжнародний суддя, організатор чемпіонату TB Champions, співзасновниця TE’ORA Beauty Corp та beauty-інфлюенсер.",
@@ -6885,11 +6891,11 @@ const ua: typeof en = {
                 title: "Pixie без страху: як створювати короткі стрижки з упевненістю в результаті",
               },
               {
-                speaker: "Viktoriia Tesalova",
+                speaker: "Вікторія Тесалова",
                 title: "Складна колористика перманентного макіяжу — простою мовою. Як правильно добирати пігмент для губ, щоб отримувати прогнозовані результати",
               },
               {
-                speaker: "Анджеліка Сивенюк",
+                speaker: "Анжеліка Сивенюк",
                 title: "Акне та шкірний бар’єр: як поєднати активну терапію і професійну процедуру без перевантаження шкіри",
               },
             ],
@@ -6904,26 +6910,26 @@ const ua: typeof en = {
             { time: "10:30", speaker: "", title: "Початок програми", kind: "opening" },
             {
               time: "10:45",
+              speaker: "Даніл Тегай",
+              title: "Залучення клієнтів через івенти та професіоналізм співробітників",
+              kind: "talk",
+            },
+            {
+              time: "11:15",
+              speaker: "Саша Звєрєва",
+              title: "Особистий досвід побудови бізнесу з чотирма дітьми",
+              kind: "talk",
+            },
+            {
+              time: "11:45",
               speaker: "Лариса Бердникова",
               title: "Чому 80% майстрів ніколи не стають дорогими фахівцями",
               kind: "talk",
             },
             {
-              time: "11:15",
-              speaker: "Danil Tegay",
-              title: "Залучення клієнтів через івенти та професіоналізм співробітників",
-              kind: "talk",
-            },
-            {
-              time: "11:45",
-              speaker: "Eleonora Bediukh",
-              title: "Контент, що продає: система просування beauty-майстра в соцмережах без хаосу та вигорання",
-              kind: "talk",
-            },
-            {
               time: "12:15",
-              speaker: "Саша Звєрєва",
-              title: "Особистий досвід побудови бізнесу з чотирма дітьми",
+              speaker: "Елеонора Бедюх",
+              title: "Контент, що продає: система просування beauty-майстра в соцмережах без хаосу та вигорання",
               kind: "talk",
             },
             { time: "12:45–13:30", speaker: "", title: "Перерва, кава-брейк", kind: "break" },
@@ -6940,10 +6946,13 @@ const ua: typeof en = {
                 title: "Як впровадити UV/LED-нарощування вій у свій beauty-бізнес і збільшити дохід",
               },
               {
-                speaker: "Anastasia Huk",
+                speaker: "Анастасія Гук",
                 title: "Помилки в корекції акне, які заважають досягти стійкої ремісії",
               },
-              { speaker: "Анастасія Москалюк", title: "Сучасні техніки в Nail-індустрії" },
+              {
+                speaker: "Анастасія Москалюк і Вікторія Волошина",
+                title: "ШВИДШЕ. ЧИСТІШЕ. ЯКІСНІШЕ. Як скоротити час роботи майстра манікюру без втрати якості",
+              },
             ],
           },
           galaDinner: [
