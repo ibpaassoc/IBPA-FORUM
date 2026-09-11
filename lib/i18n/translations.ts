@@ -930,24 +930,6 @@ const en = {
             "The consultation is free for every forum participant. Iuliia will reserve 2–3 hours across the September 25–26 master-class program for individual reviews.",
         },
         {
-          name: "Olha Ladaniuk",
-          photo: "/images/master-classes/olha-ladaniuk.png",
-          role:
-            "International brow and PMU artist, judge, speaker, and educator with more than 7 years of professional experience. Member of the International Association of Beauty Artists (IABA), multiple winner of international championships including Elan Beauty Show and New Stars, and a judge and speaker at beauty conferences and championships including Kwantum and Global Talent Beauty Cup. Creator of the Left Hand PMU, Professional Sketch, and AirContour techniques; author of the Left Hand PMU training manual, international professional articles, and the Professional Sketch online course. Licensed brow and PMU artist based in Chicago and New York.",
-          topic: "Professional Sketch + AirContour: Championship Brow System",
-          description:
-            "Discover how to create championship-level brows with Olha’s signature Professional Sketch and AirContour techniques. This master class turns an award-winning approach into a precise, repeatable workflow for everyday and competition work.",
-          highlights: [
-            "Build a precise brow sketch and achieve accurate symmetry.",
-            "Recognize and avoid the most common sketching mistakes.",
-            "Create brows that meet international championship standards.",
-            "Understand what judges evaluate and which details distinguish award-winning work.",
-            "Apply Professional Sketch and AirContour as one complete brow system."
-          ],
-          bonus:
-            "Every participant will receive a complimentary personal consultation with Olha to discuss professional questions."
-        },
-        {
           name: "Masha Pixie",
           photo: "/images/master-classes/masha-pixie.jpg",
           role:
@@ -1298,10 +1280,6 @@ const en = {
               {
                 speaker: "Iuliia Andreeva",
                 title: "Free individual talent visa case consultation · 15–20 minutes per participant",
-              },
-              {
-                speaker: "Olha Ladaniuk",
-                title: "Professional Sketch + AirContour: Championship Brow System",
               },
               {
                 speaker: "Kateryna Lushakova",
@@ -3883,24 +3861,6 @@ const ru: typeof en = {
             "Консультация бесплатна для каждого участника форума. Юлия выделит 2–3 часа в рамках программы мастер-классов 25–26 сентября на индивидуальные разборы.",
         },
         {
-          name: "Ольга Ладанюк",
-          photo: "/images/master-classes/olha-ladaniuk.png",
-          role:
-            "Международный мастер по бровям и перманентному макияжу, судья, спикер и преподаватель с более чем 7-летним профессиональным опытом. Член International Association of Beauty Artists (IABA), многократный победитель международных чемпионатов, включая Elan Beauty Show и New Stars, судья и спикер beauty-конференций и чемпионатов, среди которых Kwantum и Global Talent Beauty Cup. Создатель авторских техник Left Hand PMU, Professional Sketch и AirContour, автор учебного пособия Left Hand PMU, профессиональных статей в международных beauty-журналах и онлайн-курса Professional Sketch. Лицензированный brow- и PMU-мастер, работающий в Чикаго и Нью-Йорке.",
-          topic: "Professional Sketch + AirContour: чемпионская система бровей",
-          description:
-            "Узнайте, как создавать брови чемпионского уровня с помощью авторских техник Ольги Professional Sketch и AirContour. На мастер-классе конкурсный подход будет превращён в точную, воспроизводимую систему для повседневной и чемпионатной работы.",
-          highlights: [
-            "Построение точного эскиза бровей и достижение правильной симметрии.",
-            "Распознавание и предотвращение самых распространённых ошибок при построении эскиза.",
-            "Создание бровей, соответствующих стандартам международных чемпионатов.",
-            "Критерии судейской оценки и детали, которые отличают призовые работы.",
-            "Объединение Professional Sketch и AirContour в единую систему работы с бровями."
-          ],
-          bonus:
-            "Каждый участник получит бесплатную личную консультацию с Ольгой по профессиональным вопросам."
-        },
-        {
           name: "Masha Pixie",
           photo: "/images/master-classes/masha-pixie.jpg",
           role:
@@ -4251,10 +4211,6 @@ const ru: typeof en = {
               {
                 speaker: "Юлия Андреева",
                 title: "Бесплатная индивидуальная консультация по кейсу на визу талантов · 15–20 минут на участника",
-              },
-              {
-                speaker: "Ольга Ладанюк",
-                title: "Professional Sketch + AirContour: чемпионская система бровей",
               },
               {
                 speaker: "Катерина Лушакова",
@@ -6837,24 +6793,6 @@ const ua: typeof en = {
             "Консультація безкоштовна для кожного учасника форуму. Юлія виділить 2–3 години в межах програми майстер-класів 25–26 вересня на індивідуальні розбори.",
         },
         {
-          name: "Ольга Ладанюк",
-          photo: "/images/master-classes/olha-ladaniuk.png",
-          role:
-            "Міжнародна майстриня з брів і перманентного макіяжу, суддя, спікерка та викладачка з понад 7-річним професійним досвідом. Членкиня International Association of Beauty Artists (IABA), багаторазова переможниця міжнародних чемпіонатів, зокрема Elan Beauty Show і New Stars, суддя та спікерка beauty-конференцій і чемпіонатів, серед яких Kwantum і Global Talent Beauty Cup. Авторка технік Left Hand PMU, Professional Sketch та AirContour, навчального посібника Left Hand PMU, професійних статей у міжнародних beauty-журналах і онлайн-курсу Professional Sketch. Ліцензована brow- і PMU-майстриня, яка працює в Чикаго та Нью-Йорку.",
-          topic: "Professional Sketch + AirContour: чемпіонська система брів",
-          description:
-            "Дізнайтеся, як створювати брови чемпіонського рівня за допомогою авторських технік Ольги Professional Sketch та AirContour. На майстер-класі конкурсний підхід буде перетворено на точну, відтворювану систему для щоденної та чемпіонатної роботи.",
-          highlights: [
-            "Побудова точного ескізу брів і досягнення правильної симетрії.",
-            "Розпізнавання та запобігання найпоширенішим помилкам під час побудови ескізу.",
-            "Створення брів, що відповідають стандартам міжнародних чемпіонатів.",
-            "Критерії суддівського оцінювання та деталі, які вирізняють призові роботи.",
-            "Об’єднання Professional Sketch та AirContour у цілісну систему роботи з бровами."
-          ],
-          bonus:
-            "Кожен учасник отримає безкоштовну особисту консультацію з Ольгою щодо професійних питань."
-        },
-        {
           name: "Masha Pixie",
           photo: "/images/master-classes/masha-pixie.jpg",
           role:
@@ -7205,10 +7143,6 @@ const ua: typeof en = {
               {
                 speaker: "Юлія Андреева",
                 title: "Безкоштовна індивідуальна консультація щодо кейсу на візу талантів · 15–20 хвилин на учасника",
-              },
-              {
-                speaker: "Ольга Ладанюк",
-                title: "Professional Sketch + AirContour: чемпіонська система брів",
               },
               {
                 speaker: "Катерина Лушакова",
