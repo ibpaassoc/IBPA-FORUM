@@ -101,6 +101,10 @@ const en = {
       continuePayment: "Continue to Payment",
       secureCheckout: "Secure checkout powered by Stripe",
     },
+    refund: {
+      label: "Refund note",
+      note: "Refunds are available only up to 1 month before the forum.",
+    },
   },
   pricing: {
     specialEyebrow: "Special Package",
@@ -115,6 +119,7 @@ const en = {
     permanent: "Permanent 30",
     earlyBird: "Early Bird",
     off: "off",
+    refundNote: "Refunds are available only up to 1 month before the forum.",
   },
 };
 
@@ -219,6 +224,10 @@ const ru: typeof en = {
       continuePayment: "Перейти к оплате",
       secureCheckout: "Безопасная оплата через Stripe",
     },
+    refund: {
+      label: "Условия возврата",
+      note: "Возврат доступен только не позднее чем за 1 месяц до форума.",
+    },
   },
   pricing: {
     specialEyebrow: "Специальное предложение",
@@ -233,6 +242,7 @@ const ru: typeof en = {
     permanent: "Постоянная скидка 30%",
     earlyBird: "Ранняя регистрация",
     off: "скидка",
+    refundNote: "Возврат доступен только не позднее чем за 1 месяц до форума.",
   },
 };
 
@@ -337,6 +347,10 @@ const ua: typeof en = {
       continuePayment: "Перейти до оплати",
       secureCheckout: "Безпечна оплата через Stripe",
     },
+    refund: {
+      label: "Умови повернення",
+      note: "Повернення доступне лише не пізніше ніж за 1 місяць до форуму.",
+    },
   },
   pricing: {
     specialEyebrow: "Спеціальна пропозиція",
@@ -351,6 +365,7 @@ const ua: typeof en = {
     permanent: "Постійна знижка 30%",
     earlyBird: "Рання реєстрація",
     off: "знижка",
+    refundNote: "Повернення доступне лише не пізніше ніж за 1 місяць до форуму.",
   },
 };
 
