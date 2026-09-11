@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import clsx from "clsx";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -238,8 +238,10 @@ export default function TicketForm() {
   const [promoPreview, setPromoPreview] = useState<PromoPreview | null>(null);
   const [promoError, setPromoError] = useState("");
   const [promoPending, setPromoPending] = useState(false);
+  const [refundHintOpen, setRefundHintOpen] = useState(false);
   const [secondPaymentDate] = useState(() => getSecondInstallmentDate(new Date()));
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const refundHintId = useId();
 
   const {
     register,
@@ -869,7 +871,36 @@ export default function TicketForm() {
           {submitting ? copy.actions.creatingCheckout : visibleCertStatus === "checking" ? copy.actions.verifyingCertificate : copy.actions.continuePayment}
         </SwapValue>
       </LandingPrimaryButton>
-      <p className="mt-1.5 flex items-center justify-center gap-1.5 text-[0.64rem] text-[#10182a]/42"><LockKeyhole size={11} /> {copy.actions.secureCheckout}</p>
+      <div className="mt-1.5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[0.64rem] text-[#10182a]/42">
+        <span className="inline-flex items-center gap-1.5"><LockKeyhole size={11} /> {copy.actions.secureCheckout}</span>
+        <span className="relative inline-flex flex-col items-center sm:inline-flex">
+          <button
+            type="button"
+            aria-expanded={refundHintOpen}
+            aria-controls={refundHintId}
+            onClick={() => setRefundHintOpen((open) => !open)}
+            onBlur={() => setRefundHintOpen(false)}
+            className="inline-flex items-center gap-1 rounded-full border border-[#cfe0eb] bg-white/62 px-2 py-1 text-[0.62rem] font-semibold text-[#1766bd] transition hover:border-[#72a0c1] hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-blue)]/15"
+          >
+            <Info size={11} /> {copy.refund.label}
+          </button>
+          <AnimatePresence>
+            {refundHintOpen ? (
+              <motion.span
+                id={refundHintId}
+                role="status"
+                className="mt-1 block w-[min(18rem,82vw)] rounded-[12px] border border-[#cfe0eb] bg-white px-3 py-2 text-left text-[0.68rem] leading-4 text-[#10182a]/62 shadow-[0_12px_30px_rgba(20,49,71,0.14)] sm:absolute sm:bottom-[calc(100%+0.45rem)] sm:right-0 sm:z-10 sm:mt-0 sm:w-[min(17rem,72vw)]"
+                initial={reducedMotion ? false : { opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={reducedMotion ? undefined : { opacity: 0, y: 4 }}
+                transition={{ duration: reducedMotion ? 0 : 0.16, ease: EASE_OUT }}
+              >
+                {copy.refund.note}
+              </motion.span>
+            ) : null}
+          </AnimatePresence>
+        </span>
+      </div>
       </motion.div>
 
       </motion.div>

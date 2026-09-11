@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, Ticket, Users, Zap } from "lucide-react";
+import { Info, Sparkles, Ticket, Users, Zap } from "lucide-react";
 
 import { formatStripeAmount } from "@/features/pricing/types";
 import { useStripePricing } from "@/features/pricing/useStripePricing";
@@ -87,6 +87,10 @@ export default function HomeRegistrationSection() {
                     <p className="mt-4 flex items-center gap-2 text-xs leading-5 text-[#10182a]/48">
                       <Sparkles className="size-3.5 shrink-0 text-[#72a0c1]" />
                       {c.pricing.memberDiscountNote}
+                    </p>
+                    <p className="mt-2 flex items-start gap-2 text-[0.7rem] leading-5 text-[#10182a]/45">
+                      <Info className="mt-0.5 size-3.5 shrink-0 text-[#72a0c1]" />
+                      {ticketCopy.pricing.refundNote}
                     </p>
                   </div>
                 </div>
