@@ -845,6 +845,20 @@ const en = {
             "https://www.instagram.com/medbusinessacademy?igsh=ZTk2MnJ3djUzZmFo"
         },
         {
+          name: "Danil Tegay",
+          photo: "/images/speakers/danil-tegay.png",
+          secondaryPhoto: "/images/speakers/danil-tegay-alt.png",
+          role:
+            "Entrepreneur, founder of Wonderland Beauty, and professional Event Manager and Host with more than 15 years of experience in the event industry. Danil creates, organizes, and hosts events, working with audiences, brands, and partners. Today, he combines his event expertise with experience growing a beauty business, creating events and collaborations that help brands attract new clients, build loyal audiences, and strengthen their positioning. He focuses on partnerships with global beauty brands, customer experience, and using events as an effective tool for marketing and business growth.",
+          city: "Los Angeles, California, USA",
+          topic:
+            "Attracting Clients Through Events and Global Brands: How to Create Collaborations That Grow a Beauty Business",
+          description:
+            "In today’s beauty business, providing quality services is not enough. Clients want an emotion, an impression, and a unique experience they will want to repeat and share.\n\nDrawing on 15 years of experience as an Event Manager and Host, Danil will show how well-organized events and collaboration with global beauty brands can become powerful tools for attracting clients and growing a business.\n\nThe presentation will cover:\n• events as a client-acquisition tool;\n• the power of global brands;\n• collaborations and partnerships for mutual growth;\n• events as part of a marketing strategy;\n• emotions and customer experience;\n• how to turn an event guest into a client before, during, and after the event.\n\nParticipants will learn how to create events, find partners, attract brands, and use event formats to promote their business—even without large advertising budgets. Special attention will be given to turning a one-time event into a long-term tool for building a brand, community, and client base.",
+          instagram: "",
+          website: ""
+        },
+        {
           name: "Sasha Zvereva",
           photo: "/images/speakers/sasha-zvereva.jpg",
           secondaryPhoto: "/images/speakers/sasha-zvereva-alt.jpg",
@@ -3782,6 +3796,20 @@ const ru: typeof en = {
           youtube: "https://youtube.com/@artmediconsult?si=sq22RI4KOv2kBZ2J",
           academyInstagram:
             "https://www.instagram.com/medbusinessacademy?igsh=ZTk2MnJ3djUzZmFo"
+        },
+        {
+          name: "Данил Тегай",
+          photo: "/images/speakers/danil-tegay.png",
+          secondaryPhoto: "/images/speakers/danil-tegay-alt.png",
+          role:
+            "Предприниматель, основатель beauty-бизнеса Wonderland Beauty, профессиональный Event Manager и Host с более чем 15-летним опытом в event-индустрии. Данил занимается созданием, организацией и проведением мероприятий, работает с аудиторией, брендами и партнёрами. Сегодня он объединяет экспертизу в event-индустрии с опытом развития beauty-бизнеса, создавая мероприятия и коллаборации, которые помогают брендам привлекать новых клиентов, формировать лояльную аудиторию и усиливать своё позиционирование. Особое внимание уделяет партнёрствам с мировыми beauty-брендами, клиентскому опыту и использованию events как инструмента маркетинга и развития бизнеса.",
+          city: "Лос-Анджелес, Калифорния, США",
+          topic:
+            "Привлечение клиентов через events и мировые бренды: как создавать коллаборации, которые развивают beauty-бизнес",
+          description:
+            "В современном beauty-бизнесе недостаточно просто предоставлять качественные услуги. Клиенту важно получить эмоцию, впечатление и уникальный опыт, который захочется повторить и которым захочется поделиться.\n\nОпираясь на 15-летний опыт работы Event Manager и Host, Данил покажет, как грамотно организованные мероприятия и сотрудничество с мировыми beauty-брендами могут стать мощным инструментом привлечения клиентов и развития бизнеса.\n\nВ выступлении будут рассмотрены:\n• events как инструмент привлечения клиентов;\n• сила мировых брендов;\n• коллаборации и партнёрства для взаимного роста;\n• event как часть маркетинговой стратегии;\n• эмоции и клиентский опыт;\n• как превратить гостя мероприятия в клиента — до, во время и после event.\n\nУчастники узнают, как самостоятельно создавать мероприятия, находить партнёров, привлекать бренды и использовать event-форматы для продвижения своего бизнеса даже без больших рекламных бюджетов. Отдельное внимание будет уделено тому, как превратить разовое мероприятие в долгосрочный инструмент построения бренда, сообщества и клиентской базы.",
+          instagram: "",
+          website: ""
         },
         {
           name: "Саша Зверева",
@@ -6722,6 +6750,20 @@ const ua: typeof en = {
           youtube: "https://youtube.com/@artmediconsult?si=sq22RI4KOv2kBZ2J",
           academyInstagram:
             "https://www.instagram.com/medbusinessacademy?igsh=ZTk2MnJ3djUzZmFo"
+        },
+        {
+          name: "Даніл Тегай",
+          photo: "/images/speakers/danil-tegay.png",
+          secondaryPhoto: "/images/speakers/danil-tegay-alt.png",
+          role:
+            "Підприємець, засновник beauty-бізнесу Wonderland Beauty, професійний Event Manager і Host із понад 15-річним досвідом в event-індустрії. Даніл займається створенням, організацією та проведенням заходів, працює з аудиторією, брендами й партнерами. Сьогодні він поєднує експертизу в event-індустрії з досвідом розвитку beauty-бізнесу, створюючи заходи та колаборації, які допомагають брендам залучати нових клієнтів, формувати лояльну аудиторію та посилювати своє позиціонування. Особливу увагу приділяє партнерствам зі світовими beauty-брендами, клієнтському досвіду та використанню events як ефективного інструменту маркетингу й розвитку бізнесу.",
+          city: "Лос-Анджелес, Каліфорнія, США",
+          topic:
+            "Залучення клієнтів через events і світові бренди: як створювати колаборації, що розвивають beauty-бізнес",
+          description:
+            "У сучасному beauty-бізнесі недостатньо просто надавати якісні послуги. Клієнту важливо отримати емоцію, враження та унікальний досвід, який захочеться повторити й яким захочеться поділитися.\n\nСпираючись на 15-річний досвід роботи Event Manager і Host, Даніл покаже, як грамотно організовані заходи та співпраця зі світовими beauty-брендами можуть стати потужним інструментом залучення клієнтів і розвитку бізнесу.\n\nУ виступі буде розглянуто:\n• events як інструмент залучення клієнтів;\n• силу світових брендів;\n• колаборації та партнерства для взаємного зростання;\n• event як частину маркетингової стратегії;\n• емоції та клієнтський досвід;\n• як перетворити гостя заходу на клієнта — до, під час і після event.\n\nУчасники дізнаються, як самостійно створювати заходи, знаходити партнерів, залучати бренди та використовувати event-формати для просування свого бізнесу навіть без великих рекламних бюджетів. Окрему увагу буде приділено тому, як перетворити разову подію на довгостроковий інструмент побудови бренду, спільноти та клієнтської бази.",
+          instagram: "",
+          website: ""
         },
         {
           name: "Саша Звєрєва",
