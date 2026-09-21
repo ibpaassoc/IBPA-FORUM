@@ -916,6 +916,22 @@ const en = {
             "The consultation is free for every forum participant. Iuliia will reserve 2–3 hours across the September 25–26 master-class program for individual reviews.",
         },
         {
+          name: "Mavlyuda Amanova",
+          photo: "/images/master-classes/mavliuda-amanova.jpg",
+          role:
+            "Makeup artist, expert, educator, award winner, and international beauty championship judge with extensive experience in international projects. Her work has appeared in ELLE, Cosmopolitan, Esquire, Marie Claire, GQ, Tatler, and other fashion publications. She is the author of signature makeup techniques and guides for makeup artists.",
+          topic: "Grooming: The Nuances of Men's Makeup and a Signature Technique",
+          description:
+            "Explore how grooming differs from conventional makeup and how to work with men's skin. Mavlyuda will also discuss work on photo and video shoots and the psychology of working with nonprofessional models.",
+          highlights: [
+            "See Mavlyuda's signature grooming technique, developed through hands-on work with different male face types and skin conditions.",
+            "Learn how to adapt grooming to the characteristics of men's skin.",
+            "Understand the practical demands of photo and video shoots.",
+            "Discuss how to work with nonprofessional models on set.",
+          ],
+          bonus: "Every participant will receive Mavlyuda's signature grooming guide.",
+        },
+        {
           name: "Masha Pixie",
           photo: "/images/master-classes/masha-pixie.jpg",
           role:
@@ -1272,6 +1288,10 @@ const en = {
               {
                 speaker: "Anastasia Moskaliuk & Viktoriia Voloshyna",
                 title: "FASTER. CLEANER. BETTER. How to Reduce a Manicure Master’s Working Time Without Sacrificing Quality",
+              },
+              {
+                speaker: "Mavlyuda Amanova",
+                title: "Grooming: The Nuances of Men's Makeup and a Signature Technique",
               },
             ],
           },
@@ -3827,6 +3847,22 @@ const ru: typeof en = {
             "Консультация бесплатна для каждого участника форума. Юлия выделит 2–3 часа в рамках программы мастер-классов 25–26 сентября на индивидуальные разборы.",
         },
         {
+          name: "Мавлюда Аманова",
+          photo: "/images/master-classes/mavliuda-amanova.jpg",
+          role:
+            "Визажист, эксперт, обладатель престижных наград, преподаватель и международный судья бьюти-чемпионатов с большим опытом работы в международных проектах. Её работы представлены в ELLE, Cosmopolitan, Esquire, Marie Claire, GQ, Tatler и других fashion-изданиях. Автор уникальных техник макияжа и гайдов для визажистов.",
+          topic: "Груминг. Особенности макияжа для мужчин, авторская техника",
+          description:
+            "Мавлюда расскажет, чем груминг отличается от обычного макияжа, как работать с мужской кожей, а также об особенностях фото- и видеосъёмок и психологии работы с непрофессиональными моделями.",
+          highlights: [
+            "Покажет авторскую технику груминга, основанную на практическом опыте работы с разными типами лица и состояниями кожи у мужчин.",
+            "Разберёт особенности работы с мужской кожей.",
+            "Объяснит специфику работы на фото- и видеосъёмках.",
+            "Расскажет о подходе к непрофессиональным моделям на съёмочной площадке.",
+          ],
+          bonus: "Каждый участник получит в подарок авторский гайд по грумингу.",
+        },
+        {
           name: "Masha Pixie",
           photo: "/images/master-classes/masha-pixie.jpg",
           role:
@@ -4183,7 +4219,11 @@ const ru: typeof en = {
               {
                 speaker: "Анастасия Москалюк и Виктория Волошина",
                 title: "БЫСТРЕЕ. ЧИЩЕ. КАЧЕСТВЕННЕЕ. Как сократить время работы мастера-маникюра без потери качества",
-              }
+              },
+              {
+                speaker: "Мавлюда Аманова",
+                title: "Груминг. Особенности макияжа для мужчин, авторская техника",
+              },
             ],
           },
           galaDinner: [
@@ -6739,6 +6779,22 @@ const ua: typeof en = {
             "Консультація безкоштовна для кожного учасника форуму. Юлія виділить 2–3 години в межах програми майстер-класів 25–26 вересня на індивідуальні розбори.",
         },
         {
+          name: "Мавлюда Аманова",
+          photo: "/images/master-classes/mavliuda-amanova.jpg",
+          role:
+            "Візажистка, експертка, володарка престижних нагород, викладачка та міжнародна суддя б’юті-чемпіонатів із великим досвідом роботи в міжнародних проєктах. Її роботи представлені в ELLE, Cosmopolitan, Esquire, Marie Claire, GQ, Tatler та інших модних виданнях. Авторка унікальних технік макіяжу й посібників для візажистів.",
+          topic: "Грумінг. Особливості макіяжу для чоловіків, авторська техніка",
+          description:
+            "Мавлюда розповість, чим грумінг відрізняється від звичайного макіяжу, як працювати з чоловічою шкірою, а також про особливості фото- та відеозйомок і психологію роботи з непрофесійними моделями.",
+          highlights: [
+            "Покаже авторську техніку грумінгу, засновану на практичному досвіді роботи з різними типами обличчя та станами шкіри у чоловіків.",
+            "Розбере особливості роботи з чоловічою шкірою.",
+            "Пояснить специфіку роботи на фото- та відеозйомках.",
+            "Розповість про підхід до непрофесійних моделей на знімальному майданчику.",
+          ],
+          bonus: "Кожен учасник отримає в подарунок авторський посібник із грумінгу.",
+        },
+        {
           name: "Masha Pixie",
           photo: "/images/master-classes/masha-pixie.jpg",
           role:
@@ -7095,6 +7151,10 @@ const ua: typeof en = {
               {
                 speaker: "Анастасія Москалюк і Вікторія Волошина",
                 title: "ШВИДШЕ. ЧИСТІШЕ. ЯКІСНІШЕ. Як скоротити час роботи майстра манікюру без втрати якості",
+              },
+              {
+                speaker: "Мавлюда Аманова",
+                title: "Грумінг. Особливості макіяжу для чоловіків, авторська техніка",
               },
             ],
           },
