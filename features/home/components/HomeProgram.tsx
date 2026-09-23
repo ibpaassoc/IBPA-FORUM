@@ -36,6 +36,7 @@ const eventIcons: Record<ProgramEvent["kind"], LucideIcon> = {
   awards: Trophy,
   performance: Music2,
   entertainment: PartyPopper,
+  closing: Flag,
 };
 
 export default function HomeProgram() {
