@@ -18,6 +18,7 @@
     "test:applicant-flow": "tsx scripts/test-applicant-flow.ts",
     "test:nomination-upload": "tsx scripts/test-nomination-upload.ts",
     "test:tickets": "tsx scripts/test-tickets-logic.ts",
+    "test:ticket-bulk-resend": "tsx scripts/test-ticket-bulk-resend.ts",
     "test:promo-codes": "tsx scripts/test-promo-codes.ts",
     "test:regulations": "tsx scripts/test-regulations.ts",
     "test:jury-closure": "tsx scripts/test-jury-closure.ts",

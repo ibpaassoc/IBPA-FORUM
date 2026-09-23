@@ -19,6 +19,7 @@ export async function sendTicketConfirmationEmail({
   specialPacket = false,
   specialOffer = false,
   manualIssue = false,
+  idempotencyKey,
 }: {
   to: string;
   fullName: string;
@@ -32,6 +33,7 @@ export async function sendTicketConfirmationEmail({
   specialPacket?: boolean;
   specialOffer?: boolean;
   manualIssue?: boolean;
+  idempotencyKey?: string;
 }) {
   const qrBuffer = await generateTicketQRBuffer(secureToken);
   const paymentUrl = `${getAppUrl()}/tickets/${secureToken}`;
@@ -61,6 +63,7 @@ export async function sendTicketConfirmationEmail({
         contentId: QR_CID,
       },
     ],
+    idempotencyKey,
   });
 }
 
