@@ -872,6 +872,19 @@ const en = {
           instagram: "https://www.instagram.com/solncevrusya",
           website: ""
         },
+        {
+          name: "Evgenii Zhenin",
+          photo: "/images/speakers/evgenii-zhenin.png",
+          role:
+            "Founder of 2bizy in Los Angeles. Evgenii works directly with beauty and medspa business owners on websites, web applications, internal systems, AI visibility, and the automation of inquiries, booking, and day-to-day processes.",
+          city: "Los Angeles, California, USA",
+          topic:
+            "More and more clients are finding you through ChatGPT. Is your beauty business ready?",
+          description:
+            "Evgenii will show how the customer journey works as one connected system—from discovery to response, booking, and repeat visits. Together we will identify where an already interested client can get lost: whether AI can find the business, whether booking is easy on a phone, who answers calls and messages, what happens to an open slot after a cancellation, and how the business brings clients back. The practical takeaway is simple: before increasing ad spend, find the weakest point in the existing customer journey and fix it first.",
+          instagram: "https://www.instagram.com/2bizy.ai/",
+          website: "https://2bizy.com/"
+        },
       ]
     },
     masterClassesSection: {
@@ -1252,8 +1265,8 @@ const en = {
             { time: "10:30", speaker: "", title: "Program begins", kind: "opening" },
             {
               time: "11:15",
-              speaker: "Sasha Zvereva",
-              title: "Personal Experience of Building a Business While Raising Four Children",
+              speaker: "Eleonora Bediukh",
+              title: "Content That Sells: A Social Media Growth System for Beauty Professionals Without Burnout",
               kind: "talk",
             },
             {
@@ -1264,8 +1277,8 @@ const en = {
             },
             {
               time: "12:15",
-              speaker: "Eleonora Bediukh",
-              title: "Content That Sells: A Social Media Growth System for Beauty Professionals Without Burnout",
+              speaker: "Evgenii Zhenin",
+              title: "More and more clients are finding you through ChatGPT. Is your beauty business ready?",
               kind: "talk",
             },
             { time: "12:45–13:30", speaker: "", title: "Break and coffee", kind: "break" },
@@ -3803,6 +3816,19 @@ const ru: typeof en = {
           instagram: "https://www.instagram.com/solncevrusya",
           website: ""
         },
+        {
+          name: "Евгений Женин",
+          photo: "/images/speakers/evgenii-zhenin.png",
+          role:
+            "Основатель 2bizy в Лос-Анджелесе. Евгений напрямую работает с владельцами beauty- и medspa-бизнесов: разрабатывает и обновляет сайты, веб-приложения и внутренние системы, повышает AI-видимость и автоматизирует обработку обращений, запись и внутренние процессы.",
+          city: "Лос-Анджелес, Калифорния, США",
+          topic:
+            "Вас всё чаще ищут через ChatGPT. Готов ли к этому ваш бьюти-бизнес?",
+          description:
+            "Евгений покажет путь клиента как одну систему — от поиска и первого ответа до записи и повторного визита. На конкретных примерах разберём, где уже заинтересованный человек может потеряться: находят ли бизнес нейросети, удобно ли записаться с телефона, кто и как быстро отвечает на звонки и сообщения, что происходит с освободившимся тайм-слотом после отмены и как бизнес возвращает клиентов. Главный практический вывод: прежде чем увеличивать расходы на рекламу, стоит найти самое слабое место в существующем пути клиента и исправить его первым.",
+          instagram: "https://www.instagram.com/2bizy.ai/",
+          website: "https://2bizy.com/"
+        },
       ]
     },
     masterClassesSection: {
@@ -4183,8 +4209,8 @@ const ru: typeof en = {
             { time: "10:30", speaker: "", title: "Начало программы", kind: "opening" },
             {
               time: "11:15",
-              speaker: "Саша Зверева",
-              title: "Личный опыт выстраивания бизнеса с четырьмя детьми",
+              speaker: "Элеонора Бедюх",
+              title: "Контент, который продаёт: система продвижения бьюти-мастера в соцсетях без хаоса и выгорания",
               kind: "talk",
             },
             {
@@ -4195,8 +4221,8 @@ const ru: typeof en = {
             },
             {
               time: "12:15",
-              speaker: "Элеонора Бедюх",
-              title: "Контент, который продаёт: система продвижения бьюти-мастера в соцсетях без хаоса и выгорания",
+              speaker: "Евгений Женин",
+              title: "Вас всё чаще ищут через ChatGPT. Готов ли к этому ваш бьюти-бизнес?",
               kind: "talk",
             },
             { time: "12:45–13:30", speaker: "", title: "Перерыв, кофе-брейк", kind: "break" },
@@ -6735,6 +6761,19 @@ const ua: typeof en = {
           instagram: "https://www.instagram.com/solncevrusya",
           website: ""
         },
+        {
+          name: "Євген Женін",
+          photo: "/images/speakers/evgenii-zhenin.png",
+          role:
+            "Засновник 2bizy у Лос-Анджелесі. Євген безпосередньо працює з власниками beauty- та medspa-бізнесів: розробляє й оновлює сайти, вебзастосунки та внутрішні системи, посилює AI-видимість і автоматизує обробку звернень, запис та внутрішні процеси.",
+          city: "Лос-Анджелес, Каліфорнія, США",
+          topic:
+            "Вас дедалі частіше знаходять через ChatGPT. Чи готовий до цього ваш beauty-бізнес?",
+          description:
+            "Євген покаже шлях клієнта як одну систему — від пошуку та першої відповіді до запису й повторного візиту. На конкретних прикладах розберемо, де вже зацікавлена людина може загубитися: чи знаходять бізнес нейромережі, чи зручно записатися з телефона, хто і як швидко відповідає на дзвінки та повідомлення, що відбувається зі звільненим часом після скасування і як бізнес повертає клієнтів. Головний практичний висновок: перш ніж збільшувати витрати на рекламу, варто знайти найслабше місце в наявному шляху клієнта й виправити його першим.",
+          instagram: "https://www.instagram.com/2bizy.ai/",
+          website: "https://2bizy.com/"
+        },
       ]
     },
     masterClassesSection: {
@@ -7115,8 +7154,8 @@ const ua: typeof en = {
             { time: "10:30", speaker: "", title: "Початок програми", kind: "opening" },
             {
               time: "11:15",
-              speaker: "Саша Звєрєва",
-              title: "Особистий досвід побудови бізнесу з чотирма дітьми",
+              speaker: "Елеонора Бедюх",
+              title: "Контент, що продає: система просування beauty-майстра в соцмережах без хаосу та вигорання",
               kind: "talk",
             },
             {
@@ -7127,8 +7166,8 @@ const ua: typeof en = {
             },
             {
               time: "12:15",
-              speaker: "Елеонора Бедюх",
-              title: "Контент, що продає: система просування beauty-майстра в соцмережах без хаосу та вигорання",
+              speaker: "Євген Женін",
+              title: "Вас дедалі частіше знаходять через ChatGPT. Чи готовий до цього ваш beauty-бізнес?",
               kind: "talk",
             },
             { time: "12:45–13:30", speaker: "", title: "Перерва, кава-брейк", kind: "break" },
