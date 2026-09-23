@@ -16,7 +16,8 @@ type ProgramEventKind =
   | "address"
   | "awards"
   | "performance"
-  | "entertainment";
+  | "entertainment"
+  | "closing";
 
 type ProgramEvent = {
   time: string;
@@ -1082,7 +1083,7 @@ const en = {
         "Your next practical steps",
       ],
       dates: [
-        { date: "September 25", dateTime: "2026-09-25", time: "During master classes · 4:45–6:45 PM" },
+        { date: "September 25", dateTime: "2026-09-25", time: "During master classes · 5:15–7:15 PM" },
         { date: "September 26", dateTime: "2026-09-26", time: "During master classes · 1:30–3:30 PM" },
       ],
       formatValue: "15–20 min",
@@ -1196,8 +1197,8 @@ const en = {
           date: "September 25",
           dayLabel: "Day 1",
           mainStage: [
-            { time: "12:00", speaker: "", title: "Doors open and registration", kind: "doors" },
-            { time: "13:00", speaker: "", title: "Conference begins", kind: "opening" },
+            { time: "12:00–13:00", speaker: "", title: "Doors open and guest registration", kind: "doors" },
+            { time: "13:00–13:15", speaker: "Iuliia Andreeva", title: "Forum opening", kind: "opening" },
             {
               time: "13:15",
               speaker: "Yaroslavna Atapina",
@@ -1205,41 +1206,42 @@ const en = {
               kind: "talk",
             },
             {
-              time: "13:45",
+              time: "13:55",
               speaker: "Natalie Vaulin",
               title: "How to Build Your Own Beauty Brand in the USA: From Idea to Store Shelf",
               kind: "talk",
             },
             {
-              time: "14:15",
+              time: "14:35",
               speaker: "Yulia Malina",
               title: "The Next Generation of Beauty Business: How an AI Team Helps You Create, Sell, and Grow",
               kind: "talk",
             },
             {
-              time: "14:45",
+              time: "15:05",
               speaker: "Yulia Bailo",
               title: "Before Scaling: How to Identify Bottlenecks and Find Growth Opportunities in Your Beauty Business",
               kind: "talk",
             },
             {
-              time: "15:15",
+              time: "15:45",
               speaker: "Rustam Solntsev",
               title: "Speak So They Remember You: The Art of Self-Presentation",
               kind: "talk",
             },
-            { time: "15:45–16:45", speaker: "", title: "Break and coffee", kind: "break" },
+            { time: "16:15–17:15", speaker: "", title: "Coffee break and catering", kind: "break" },
+            { time: "19:15", speaker: "", title: "End of the first day programme", kind: "closing" },
           ],
           masterClasses: {
-            time: "16:45–18:45",
+            time: "17:15–19:15",
             sessions: [
               {
                 speaker: "Iuliia Andreeva",
-                title: "Free individual talent visa case consultation · 15–20 minutes per participant",
+                title: "Free individual consultations on talent visa cases · 15–20 minutes per consultation",
               },
               {
                 speaker: "Tetiana Kysliuk",
-                title: "Error-Free Lash Lifting: An Algorithm for Predictable Results",
+                title: "Error-Free Lash Lamination: An Algorithm for Predictable Results",
               },
               {
                 speaker: "Masha Pixie",
@@ -1247,11 +1249,11 @@ const en = {
               },
               {
                 speaker: "Viktoriia Tesalova",
-                title: "Complex Color Theory — Explained Simply: Choosing the Right Lip Pigment for Predictable Results",
+                title: "Complex Color Theory Made Simple: Choosing the Right Lip Pigment for Predictable Results",
               },
               {
                 speaker: "Anzhelika Syveniuk",
-                title: "Acne and the Skin Barrier: How to Combine Active Therapy with a Professional Procedure Without Overloading the Skin",
+                title: "Acne and the Skin Barrier: How to Combine Active Therapy and Professional Procedures Without Overloading the Skin",
               },
             ],
           },
@@ -1261,12 +1263,18 @@ const en = {
           date: "September 26",
           dayLabel: "Day 2",
           mainStage: [
-            { time: "10:00", speaker: "", title: "Doors open and registration", kind: "doors" },
-            { time: "10:30", speaker: "", title: "Program begins", kind: "opening" },
+            { time: "10:00–10:30", speaker: "", title: "Doors open and guest registration", kind: "doors" },
+            { time: "10:30–10:45", speaker: "Iuliia Andreeva", title: "Opening of the second forum day", kind: "opening" },
             {
-              time: "11:15",
+              time: "10:45",
               speaker: "Eleonora Bediukh",
               title: "Content That Sells: A Social Media Growth System for Beauty Professionals Without Burnout",
+              kind: "talk",
+            },
+            {
+              time: "11:15",
+              speaker: "Alexandra Zvereva",
+              title: "Personal Experience of Building a Business and Raising Four Children",
               kind: "talk",
             },
             {
@@ -1281,45 +1289,46 @@ const en = {
               title: "More and more clients are finding you through ChatGPT. Is your beauty business ready?",
               kind: "talk",
             },
-            { time: "12:45–13:30", speaker: "", title: "Break and coffee", kind: "break" },
+            { time: "12:45–13:30", speaker: "", title: "Coffee break and catering", kind: "break" },
+            { time: "15:30", speaker: "", title: "End of the daytime Beauty Business Forum programme", kind: "closing" },
           ],
           masterClasses: {
             time: "13:30–15:30",
             sessions: [
               {
                 speaker: "Iuliia Andreeva",
-                title: "Free individual talent visa case consultation · 15–20 minutes per participant",
+                title: "Free individual consultations on talent visa cases · 15–20 minutes per participant",
               },
               {
                 speaker: "Kateryna Lushakova",
-                title: "How to Introduce UV/LED Eyelash Extensions Into Your Beauty Business and Increase Revenue",
+                title: "How to Introduce UV/LED Eyelash Extensions into Your Beauty Business and Increase Revenue",
               },
               {
                 speaker: "Anastasia Huk",
-                title: "Mistakes in Acne Correction That Prevent Lasting Remission",
+                title: "Mistakes in Acne Correction That Prevent Long-Term Remission",
               },
               {
                 speaker: "Anastasia Moskaliuk & Viktoriia Voloshyna",
-                title: "FASTER. CLEANER. BETTER. How to Reduce a Manicure Master’s Working Time Without Sacrificing Quality",
+                title: "FASTER. CLEANER. BETTER. How to Reduce a Manicure Master’s Working Time Without Losing Quality",
               },
               {
                 speaker: "Mavlyuda Amanova",
-                title: "Grooming: The Nuances of Men's Makeup and a Signature Technique",
+                title: "Grooming: The Nuances of Men’s Makeup and a Signature Technique",
               },
             ],
           },
           galaDinner: [
-            { time: "17:30", speaker: "", title: "Gala Dinner doors open and registration", kind: "doors" },
+            { time: "17:30–18:00", speaker: "", title: "Gala Dinner doors open and registration", kind: "doors" },
             { time: "18:00", speaker: "", title: "Gala Dinner begins", kind: "opening" },
             { time: "18:00–18:10", speaker: "", title: "President’s address", kind: "address" },
             {
               time: "18:10–20:00",
               speaker: "",
-              title: "Official announcement of the IBPA Beauty Award 2026 results and winner ceremony",
+              title: "Official announcement of the IBPA Beauty Awards 2026 results and winner ceremony",
               kind: "awards",
             },
             { time: "20:00–20:30", speaker: "", title: "Awarding the TB Championship winners", kind: "performance" },
-            { time: "20:30–21:00", speaker: "Sasha Zvereva", title: "Performance", kind: "performance" },
+            { time: "20:30–21:00", speaker: "Alexandra Zvereva", title: "Musical performance", kind: "performance" },
             { time: "21:00–22:00", speaker: "", title: "Entertainment program", kind: "entertainment" },
           ],
         },
@@ -4026,7 +4035,7 @@ const ru: typeof en = {
         "Какие шаги сделать дальше",
       ],
       dates: [
-        { date: "25 сентября", dateTime: "2026-09-25", time: "Во время мастер-классов · 16:45–18:45" },
+        { date: "25 сентября", dateTime: "2026-09-25", time: "Во время мастер-классов · 17:15–19:15" },
         { date: "26 сентября", dateTime: "2026-09-26", time: "Во время мастер-классов · 13:30–15:30" },
       ],
       formatValue: "15–20 мин",
@@ -4140,8 +4149,8 @@ const ru: typeof en = {
           date: "25 сентября",
           dayLabel: "День 1",
           mainStage: [
-            { time: "12:00", speaker: "", title: "Открытие дверей и регистрация", kind: "doors" },
-            { time: "13:00", speaker: "", title: "Начало конференции", kind: "opening" },
+            { time: "12:00–13:00", speaker: "", title: "Открытие дверей и регистрация гостей", kind: "doors" },
+            { time: "13:00–13:15", speaker: "Юлия Андреева", title: "Открытие форума", kind: "opening" },
             {
               time: "13:15",
               speaker: "Ярославна Атапина",
@@ -4149,53 +4158,54 @@ const ru: typeof en = {
               kind: "talk",
             },
             {
-              time: "13:45",
-              speaker: "Натали Ваулин",
+              time: "13:55",
+              speaker: "Natalie Vaulin",
               title: "Как создать собственный beauty-бренд в США: от идеи до полки магазина",
               kind: "talk",
             },
             {
-              time: "14:15",
-              speaker: "Юлия Малина",
-              title: "Beauty-бизнес нового поколения: как AI-команда помогает создавать, продавать и расти",
+              time: "14:35",
+              speaker: "Yulia Malina",
+              title: "Новое поколение beauty-бизнеса: как AI-команда помогает создавать, продавать и расти",
               kind: "talk",
             },
             {
-              time: "14:45",
-              speaker: "Юлия Байло",
-              title: "Перед масштабом: как выявить узкие места и найти точки роста в бьюти-бизнесе",
+              time: "15:05",
+              speaker: "Yulia Bailo",
+              title: "Перед масштабированием: как определить узкие места и найти возможности для роста вашего beauty-бизнеса",
               kind: "talk",
             },
             {
-              time: "15:15",
+              time: "15:45",
               speaker: "Рустам Солнцев",
-              title: "Искусство самопрезентации: говори так, чтобы запомнили",
+              title: "Говорите так, чтобы вас запомнили: искусство самопрезентации",
               kind: "talk",
             },
-            { time: "15:45–16:45", speaker: "", title: "Перерыв, кофе-брейк", kind: "break" },
+            { time: "16:15–17:15", speaker: "", title: "Кофе-брейк и кейтеринг", kind: "break" },
+            { time: "19:15", speaker: "", title: "Завершение программы первого дня", kind: "closing" },
           ],
           masterClasses: {
-            time: "16:45–18:45",
+            time: "17:15–19:15",
             sessions: [
               {
                 speaker: "Юлия Андреева",
-                title: "Бесплатная индивидуальная консультация по кейсу на визу талантов · 15–20 минут на участника",
+                title: "Бесплатные индивидуальные консультации по кейсам talent visa · 15–20 минут на консультацию",
               },
               {
                 speaker: "Татьяна Кислюк",
-                title: "Ламинирование ресниц без ошибок: алгоритм, который даёт предсказуемый результат",
+                title: "Ламинирование ресниц без ошибок: алгоритм предсказуемого результата",
               },
               {
                 speaker: "Masha Pixie",
-                title: "Pixie без страха: как создавать короткие стрижки с уверенностью в результате",
+                title: "Пикси без страха: создание коротких стрижек с уверенностью",
               },
               {
                 speaker: "Виктория Тесалова",
-                title: "Сложная колористика перманентного макияжа — простым языком. Как правильно подбирать пигмент для губ, чтобы получать прогнозируемые результаты",
+                title: "Сложная теория цвета простыми словами: выбор правильного пигмента для губ для предсказуемого результата",
               },
               {
                 speaker: "Анжелика Сивенюк",
-                title: "Акне и кожный барьер: как сочетать активную терапию и профессиональную процедуру без перегрузки кожи",
+                title: "Акне и кожный барьер: как сочетать активную терапию и профессиональные процедуры, не перегружая кожу",
               },
             ],
           },
@@ -4205,65 +4215,72 @@ const ru: typeof en = {
           date: "26 сентября",
           dayLabel: "День 2",
           mainStage: [
-            { time: "10:00", speaker: "", title: "Открытие дверей и регистрация", kind: "doors" },
-            { time: "10:30", speaker: "", title: "Начало программы", kind: "opening" },
+            { time: "10:00–10:30", speaker: "", title: "Открытие дверей и регистрация гостей", kind: "doors" },
+            { time: "10:30–10:45", speaker: "Юлия Андреева", title: "Открытие второго дня форума", kind: "opening" },
+            {
+              time: "10:45",
+              speaker: "Элеонора Бедюх",
+              title: "Контент, который продаёт: система роста в социальных сетях для beauty-профессионалов без выгорания",
+              kind: "talk",
+            },
             {
               time: "11:15",
-              speaker: "Элеонора Бедюх",
-              title: "Контент, который продаёт: система продвижения бьюти-мастера в соцсетях без хаоса и выгорания",
+              speaker: "Александра Зверева",
+              title: "Личный опыт построения бизнеса и воспитания четверых детей",
               kind: "talk",
             },
             {
               time: "11:45",
               speaker: "Лариса Бердникова",
-              title: "Почему 80% мастеров никогда не становятся дорогими специалистами",
+              title: "Почему 80% beauty-профессионалов так и не становятся высокооплачиваемыми экспертами",
               kind: "talk",
             },
             {
               time: "12:15",
               speaker: "Евгений Женин",
-              title: "Вас всё чаще ищут через ChatGPT. Готов ли к этому ваш бьюти-бизнес?",
+              title: "Вас всё чаще ищут через ChatGPT. Готов ли к этому ваш beauty-бизнес?",
               kind: "talk",
             },
-            { time: "12:45–13:30", speaker: "", title: "Перерыв, кофе-брейк", kind: "break" },
+            { time: "12:45–13:30", speaker: "", title: "Кофе-брейк и кейтеринг", kind: "break" },
+            { time: "15:30", speaker: "", title: "Завершение дневной программы Beauty Business Forum", kind: "closing" },
           ],
           masterClasses: {
             time: "13:30–15:30",
             sessions: [
               {
                 speaker: "Юлия Андреева",
-                title: "Бесплатная индивидуальная консультация по кейсу на визу талантов · 15–20 минут на участника",
+                title: "Бесплатные индивидуальные консультации по кейсам talent visa, 15–20 минут на участника",
               },
               {
-                speaker: "Катерина Лушакова",
-                title: "Как внедрить UV/LED-наращивание ресниц в свой beauty-бизнес и увеличить доход",
+                speaker: "Kate Lushakova",
+                title: "Как внедрить UV/LED-наращивание ресниц в beauty-бизнес и увеличить доход",
               },
               {
-                speaker: "Анастасия Гук",
-                title: "Ошибки в коррекции акне, которые мешают достичь стойкой ремиссии",
+                speaker: "Anastasia Huk",
+                title: "Ошибки в коррекции акне, которые препятствуют длительной ремиссии",
               },
               {
-                speaker: "Анастасия Москалюк и Виктория Волошина",
-                title: "БЫСТРЕЕ. ЧИЩЕ. КАЧЕСТВЕННЕЕ. Как сократить время работы мастера-маникюра без потери качества",
+                speaker: "Anastasia Moskaliuk & Viktoriia Voloshyna",
+                title: "FASTER. CLEANER. BETTER. Как сократить время работы мастера маникюра без потери качества",
               },
               {
                 speaker: "Мавлюда Аманова",
-                title: "Груминг. Особенности макияжа для мужчин, авторская техника",
+                title: "Grooming: нюансы мужского макияжа и авторская техника",
               },
             ],
           },
           galaDinner: [
-            { time: "17:30", speaker: "", title: "Открытие дверей Gala Dinner и регистрация", kind: "doors" },
+            { time: "17:30–18:00", speaker: "", title: "Открытие дверей Gala Dinner и регистрация", kind: "doors" },
             { time: "18:00", speaker: "", title: "Начало Gala Dinner", kind: "opening" },
             { time: "18:00–18:10", speaker: "", title: "Слово президента", kind: "address" },
             {
               time: "18:10–20:00",
               speaker: "",
-              title: "Торжественное оглашение результатов премии IBPA Beauty Award 2026 и награждение победителей",
+              title: "Торжественное оглашение результатов IBPA Beauty Awards 2026 и награждение победителей",
               kind: "awards",
             },
             { time: "20:00–20:30", speaker: "", title: "Награждение победителей TB Championship", kind: "performance" },
-            { time: "20:30–21:00", speaker: "Саша Зверева", title: "Выступление", kind: "performance" },
+            { time: "20:30–21:00", speaker: "Александра Зверева", title: "Музыкальное выступление", kind: "performance" },
             { time: "21:00–22:00", speaker: "", title: "Развлекательная программа", kind: "entertainment" },
           ],
         },
@@ -6971,7 +6988,7 @@ const ua: typeof en = {
         "Які кроки зробити далі",
       ],
       dates: [
-        { date: "25 вересня", dateTime: "2026-09-25", time: "Під час майстер-класів · 16:45–18:45" },
+        { date: "25 вересня", dateTime: "2026-09-25", time: "Під час майстер-класів · 17:15–19:15" },
         { date: "26 вересня", dateTime: "2026-09-26", time: "Під час майстер-класів · 13:30–15:30" },
       ],
       formatValue: "15–20 хв",
@@ -7085,8 +7102,8 @@ const ua: typeof en = {
           date: "25 вересня",
           dayLabel: "День 1",
           mainStage: [
-            { time: "12:00", speaker: "", title: "Відкриття дверей і реєстрація", kind: "doors" },
-            { time: "13:00", speaker: "", title: "Початок конференції", kind: "opening" },
+            { time: "12:00–13:00", speaker: "", title: "Відкриття дверей і реєстрація гостей", kind: "doors" },
+            { time: "13:00–13:15", speaker: "Юлія Андреева", title: "Відкриття форуму", kind: "opening" },
             {
               time: "13:15",
               speaker: "Ярославна Атапіна",
@@ -7094,53 +7111,54 @@ const ua: typeof en = {
               kind: "talk",
             },
             {
-              time: "13:45",
-              speaker: "Наталі Ваулін",
+              time: "13:55",
+              speaker: "Natalie Vaulin",
               title: "Як створити власний beauty-бренд у США: від ідеї до полиці магазину",
               kind: "talk",
             },
             {
-              time: "14:15",
-              speaker: "Юлія Маліна",
-              title: "Beauty-бізнес нового покоління: як AI-команда допомагає створювати, продавати та зростати",
+              time: "14:35",
+              speaker: "Yulia Malina",
+              title: "Нове покоління beauty-бізнесу: як AI-команда допомагає створювати, продавати та зростати",
               kind: "talk",
             },
             {
-              time: "14:45",
+              time: "15:05",
               speaker: "Юлія Байло",
-              title: "Перед масштабуванням: як виявити вузькі місця та знайти точки зростання в beauty-бізнесі",
+              title: "Перед масштабуванням: як визначити вузькі місця та знайти можливості для зростання вашого beauty-бізнесу",
               kind: "talk",
             },
             {
-              time: "15:15",
+              time: "15:45",
               speaker: "Рустам Солнцев",
-              title: "Мистецтво самопрезентації: говори так, щоб запам’ятали",
+              title: "Говоріть так, щоб вас запам’ятали: мистецтво самопрезентації",
               kind: "talk",
             },
-            { time: "15:45–16:45", speaker: "", title: "Перерва, кава-брейк", kind: "break" },
+            { time: "16:15–17:15", speaker: "", title: "Кава-брейк і кейтеринг", kind: "break" },
+            { time: "19:15", speaker: "", title: "Завершення програми першого дня", kind: "closing" },
           ],
           masterClasses: {
-            time: "16:45–18:45",
+            time: "17:15–19:15",
             sessions: [
               {
                 speaker: "Юлія Андреева",
-                title: "Безкоштовна індивідуальна консультація щодо кейсу на візу талантів · 15–20 хвилин на учасника",
+                title: "Безкоштовні індивідуальні консультації щодо кейсів на візу талантів · 15–20 хвилин на консультацію",
               },
               {
                 speaker: "Тетяна Кислюк",
-                title: "Ламінування вій без помилок: алгоритм, що дає передбачуваний результат",
+                title: "Ламінування вій без помилок: алгоритм передбачуваного результату",
               },
               {
                 speaker: "Masha Pixie",
-                title: "Pixie без страху: як створювати короткі стрижки з упевненістю в результаті",
+                title: "Піксі без страху: створення коротких стрижок з упевненістю",
               },
               {
                 speaker: "Вікторія Тесалова",
-                title: "Складна колористика перманентного макіяжу — простою мовою. Як правильно добирати пігмент для губ, щоб отримувати прогнозовані результати",
+                title: "Складна теорія кольору простими словами: вибір правильного пігменту для губ для передбачуваного результату",
               },
               {
                 speaker: "Анжеліка Сивенюк",
-                title: "Акне та шкірний бар’єр: як поєднати активну терапію і професійну процедуру без перевантаження шкіри",
+                title: "Акне та шкірний бар’єр: як поєднати активну терапію і професійні процедури, не перевантажуючи шкіру",
               },
             ],
           },
@@ -7150,65 +7168,72 @@ const ua: typeof en = {
           date: "26 вересня",
           dayLabel: "День 2",
           mainStage: [
-            { time: "10:00", speaker: "", title: "Відкриття дверей і реєстрація", kind: "doors" },
-            { time: "10:30", speaker: "", title: "Початок програми", kind: "opening" },
+            { time: "10:00–10:30", speaker: "", title: "Відкриття дверей і реєстрація гостей", kind: "doors" },
+            { time: "10:30–10:45", speaker: "Юлія Андреева", title: "Відкриття другого дня форуму", kind: "opening" },
+            {
+              time: "10:45",
+              speaker: "Елеонора Бедюх",
+              title: "Контент, що продає: система зростання в соціальних мережах для beauty-професіоналів без вигорання",
+              kind: "talk",
+            },
             {
               time: "11:15",
-              speaker: "Елеонора Бедюх",
-              title: "Контент, що продає: система просування beauty-майстра в соцмережах без хаосу та вигорання",
+              speaker: "Олександра Звєрєва",
+              title: "Особистий досвід побудови бізнесу та виховання чотирьох дітей",
               kind: "talk",
             },
             {
               time: "11:45",
               speaker: "Лариса Бердникова",
-              title: "Чому 80% майстрів ніколи не стають дорогими фахівцями",
+              title: "Чому 80% beauty-професіоналів так і не стають високооплачуваними експертами",
               kind: "talk",
             },
             {
               time: "12:15",
               speaker: "Євген Женін",
-              title: "Вас дедалі частіше знаходять через ChatGPT. Чи готовий до цього ваш beauty-бізнес?",
+              title: "Вас дедалі частіше шукають через ChatGPT. Чи готовий до цього ваш beauty-бізнес?",
               kind: "talk",
             },
-            { time: "12:45–13:30", speaker: "", title: "Перерва, кава-брейк", kind: "break" },
+            { time: "12:45–13:30", speaker: "", title: "Кава-брейк і кейтеринг", kind: "break" },
+            { time: "15:30", speaker: "", title: "Завершення денної програми Beauty Business Forum", kind: "closing" },
           ],
           masterClasses: {
             time: "13:30–15:30",
             sessions: [
               {
                 speaker: "Юлія Андреева",
-                title: "Безкоштовна індивідуальна консультація щодо кейсу на візу талантів · 15–20 хвилин на учасника",
+                title: "Безкоштовні індивідуальні консультації щодо кейсів на візу талантів, 15–20 хвилин на учасника",
               },
               {
-                speaker: "Катерина Лушакова",
-                title: "Як впровадити UV/LED-нарощування вій у свій beauty-бізнес і збільшити дохід",
+                speaker: "Kate Lushakova",
+                title: "Як впровадити UV/LED-нарощування вій у beauty-бізнес і збільшити дохід",
               },
               {
-                speaker: "Анастасія Гук",
-                title: "Помилки в корекції акне, які заважають досягти стійкої ремісії",
+                speaker: "Anastasia Huk",
+                title: "Помилки в корекції акне, які перешкоджають тривалій ремісії",
               },
               {
-                speaker: "Анастасія Москалюк і Вікторія Волошина",
-                title: "ШВИДШЕ. ЧИСТІШЕ. ЯКІСНІШЕ. Як скоротити час роботи майстра манікюру без втрати якості",
+                speaker: "Anastasia Moskaliuk & Viktoriia Voloshyna",
+                title: "FASTER. CLEANER. BETTER. Як скоротити час роботи майстра манікюру без втрати якості",
               },
               {
                 speaker: "Мавлюда Аманова",
-                title: "Грумінг. Особливості макіяжу для чоловіків, авторська техніка",
+                title: "Grooming: нюанси чоловічого макіяжу й авторська техніка",
               },
             ],
           },
           galaDinner: [
-            { time: "17:30", speaker: "", title: "Відкриття дверей Gala Dinner і реєстрація", kind: "doors" },
+            { time: "17:30–18:00", speaker: "", title: "Відкриття дверей Gala Dinner і реєстрація", kind: "doors" },
             { time: "18:00", speaker: "", title: "Початок Gala Dinner", kind: "opening" },
             { time: "18:00–18:10", speaker: "", title: "Слово президента", kind: "address" },
             {
               time: "18:10–20:00",
               speaker: "",
-              title: "Урочисте оголошення результатів премії IBPA Beauty Award 2026 і нагородження переможців",
+              title: "Урочисте оголошення результатів IBPA Beauty Awards 2026 і нагородження переможців",
               kind: "awards",
             },
             { time: "20:00–20:30", speaker: "", title: "Нагородження переможців TB Championship", kind: "performance" },
-            { time: "20:30–21:00", speaker: "Саша Звєрєва", title: "Виступ", kind: "performance" },
+            { time: "20:30–21:00", speaker: "Олександра Звєрєва", title: "Музичний виступ", kind: "performance" },
             { time: "21:00–22:00", speaker: "", title: "Розважальна програма", kind: "entertainment" },
           ],
         },
