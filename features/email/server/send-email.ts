@@ -31,6 +31,11 @@ export type SendEmailInput = {
   templateType?: string;
   category?: string;
   relatedEntity?: { type: string; id: string };
+  /**
+   * Identifies one logical delivery so transient retries do not send a second
+   * copy. Resend retains idempotency keys for 24 hours.
+   */
+  idempotencyKey?: string;
 };
 
 export type SendEmailResult = {
@@ -45,6 +50,9 @@ export type SendEmailResult = {
     | "resend_missing"
     | "resend_error";
   error?: string;
+  providerErrorCode?: string;
+  providerStatusCode?: number | null;
+  retryAfterSeconds?: number;
 };
 
 function getResendApiKey() {
@@ -136,15 +144,38 @@ async function sendEmailToProvider(input: SendEmailInput): Promise<SendEmailResu
 
   const resend = new Resend(resendApiKey);
 
-  const result = await resend.emails.send({
-    from: payload.from,
-    to: payload.to,
-    subject: payload.subject,
-    html: payload.html,
-    text: payload.text,
-    replyTo: payload.replyTo,
-    attachments: payload.attachments,
-  });
+  let result: Awaited<ReturnType<typeof resend.emails.send>>;
+  try {
+    result = await resend.emails.send(
+      {
+        from: payload.from,
+        to: payload.to,
+        subject: payload.subject,
+        html: payload.html,
+        text: payload.text,
+        replyTo: payload.replyTo,
+        attachments: payload.attachments,
+      },
+      input.idempotencyKey ? { idempotencyKey: input.idempotencyKey } : undefined,
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown Resend error.";
+    console.error("Resend request failed before a response was received.", {
+      type: input.type,
+      from: payload.from,
+      to: payload.to,
+      subject: payload.subject,
+      error,
+    });
+    return {
+      delivered: false,
+      recipient: payload.to,
+      reason: "resend_error",
+      error: message,
+      providerErrorCode: "application_error",
+      providerStatusCode: null,
+    };
+  }
 
   if (result.error) {
     console.error("Resend failed to send email.", {
@@ -160,6 +191,9 @@ async function sendEmailToProvider(input: SendEmailInput): Promise<SendEmailResu
       recipient: payload.to,
       reason: "resend_error",
       error: result.error.message,
+      providerErrorCode: result.error.name,
+      providerStatusCode: result.error.statusCode,
+      retryAfterSeconds: parseRetryAfterSeconds(result.headers?.["retry-after"]),
     };
   }
 
@@ -168,6 +202,16 @@ async function sendEmailToProvider(input: SendEmailInput): Promise<SendEmailResu
     recipient: payload.to,
     providerId: result.data.id,
   };
+}
+
+function parseRetryAfterSeconds(value: string | undefined) {
+  if (!value) return undefined;
+  const seconds = Number(value);
+  if (Number.isFinite(seconds) && seconds >= 0) return seconds;
+
+  const retryAt = Date.parse(value);
+  if (!Number.isFinite(retryAt)) return undefined;
+  return Math.max(0, Math.ceil((retryAt - Date.now()) / 1000));
 }
 
 function inferredTemplateType(input: SendEmailInput) {

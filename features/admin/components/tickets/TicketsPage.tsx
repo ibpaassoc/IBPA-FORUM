@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { PaymentStatus, TicketStatus } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Ticket, Camera, X, ChevronDown, Send, Pencil, QrCode, RefreshCw, Mail, Loader2, Save, PackageOpen, CalendarClock, CreditCard, AlertTriangle, Trash2 } from "lucide-react";
+import { Ticket, Camera, X, ChevronDown, Send, Pencil, QrCode, RefreshCw, Mail, Loader2, Save, PackageOpen, CalendarClock, CreditCard, AlertTriangle, Trash2, MailCheck } from "lucide-react";
 import {
   DashboardAccentBlock,
   DashboardCard,
@@ -14,6 +15,7 @@ import {
   DashboardEmptyState,
   DashboardPageHeader,
   DashboardPrimaryBtn,
+  DashboardSecondaryBtn,
   DashboardDangerBtn,
   IconButton,
   SearchBar,
@@ -28,11 +30,16 @@ import { isGalaOnlyOrigin } from "@/features/tickets/lib/labels";
 import { adminT } from "@/lib/i18n/admin";
 import UnifiedScanner from "@/features/check-in/components/UnifiedScanner";
 import ManualTicketDialog from "./ManualTicketDialog";
+import BulkTicketResendDialog from "./BulkTicketResendDialog";
+import {
+  isBulkTicketResendEligible,
+  type BulkTicketResendResult,
+} from "@/features/tickets/lib/bulk-resend";
 
 type TicketPayment = {
   amount: number;
   currency: string;
-  status: string;
+  status: PaymentStatus;
   paymentPlan: string;
   nextPaymentAt: Date | string | null;
   lastPaymentError: string | null;
@@ -62,7 +69,7 @@ type TicketRecord = {
   manualIssue: boolean;
   galaDinner: boolean;
   isIbpaMember: boolean;
-  status: string;
+  status: TicketStatus;
   paidAt: Date | string | null;
   lastCheckIn: Date | string | null;
   forumCheckInAt: Date | string | null;
@@ -1040,11 +1047,13 @@ export default function TicketsPage({
   const reduceMotion = useReducedMotion() ?? false;
   const [showScanner, setShowScanner] = useState(false);
   const [showManualTicket, setShowManualTicket] = useState(false);
+  const [showBulkResend, setShowBulkResend] = useState(false);
   const [search, setSearch] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [toast, setToast] = useState<ToastState>(null);
   const [packetEnabled, setPacketEnabled] = useState(specialPacketEnabled);
   const [packetPending, setPacketPending] = useState(false);
+  const [bulkResendResult, setBulkResendResult] = useState<BulkTicketResendResult | null>(null);
 
   function showToast(next: ToastState) {
     setToast(next);
@@ -1085,6 +1094,9 @@ export default function TicketsPage({
     const status = t.payments[0]?.status;
     return status === "PARTIALLY_PAID" || status === "PAST_DUE" || status === "FAILED" || status === "EXPIRED";
   });
+  const resendEligibleCount = tickets.filter((ticket) =>
+    isBulkTicketResendEligible(ticket.status)
+  ).length;
 
   const query = search.trim().toLowerCase();
   const filtered = tickets.filter(
@@ -1101,6 +1113,14 @@ export default function TicketsPage({
         title={adminT.tickets.title}
         actions={
           <div className="flex flex-wrap gap-2">
+            <DashboardSecondaryBtn
+              onClick={() => setShowBulkResend(true)}
+              disabled={resendEligibleCount === 0}
+              title={resendEligibleCount === 0 ? adminT.tickets.bulkResend.empty : undefined}
+            >
+              <MailCheck size={16} />
+              {adminT.tickets.bulkResend.action}
+            </DashboardSecondaryBtn>
             <DashboardPrimaryBtn onClick={() => setShowManualTicket(true)}>
               <Send size={16} />
               {adminT.tickets.send}
@@ -1112,6 +1132,19 @@ export default function TicketsPage({
           </div>
         }
       />
+
+      {bulkResendResult ? (
+        <div
+          role={bulkResendResult.failed > 0 || bulkResendResult.skipped > 0 ? "alert" : "status"}
+          className={`rounded-[20px] border px-4 py-3 text-sm leading-6 ${
+            bulkResendResult.failed > 0 || bulkResendResult.skipped > 0
+              ? "border-amber-200 bg-amber-50 text-amber-900"
+              : "border-emerald-200 bg-emerald-50 text-emerald-800"
+          }`}
+        >
+          {adminT.tickets.bulkResend.result(bulkResendResult)}
+        </div>
+      ) : null}
 
       <DashboardCard className="p-4 md:p-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -1217,6 +1250,15 @@ export default function TicketsPage({
         onClose={() => setShowManualTicket(false)}
         onCreated={(message, tone) => {
           showToast({ tone, message });
+          router.refresh();
+        }}
+      />
+      <BulkTicketResendDialog
+        open={showBulkResend}
+        eligibleCount={resendEligibleCount}
+        onClose={() => setShowBulkResend(false)}
+        onComplete={(result) => {
+          setBulkResendResult(result);
           router.refresh();
         }}
       />

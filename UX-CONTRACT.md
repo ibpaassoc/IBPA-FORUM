@@ -67,6 +67,7 @@
 | Save review draft | `Save draft` localized | Stable busy action | Current review | Inline saved notice | Preserve values and show error | Current workspace | `features/jury/server/reviews.ts` |
 | Submit final review | `Submit final score` localized | Confirmation and stable busy action | Current review, read-only | Inline submitted notice | Preserve values and show error | Current workspace | `features/jury/server/reviews.ts` |
 | Search/filter | Compact controls | Preserve table frame | Current tab/query | Updated range/count | Reset filters or retry | Search/filter control | Current request |
+| Resend all tickets | `Отправить все повторно` + confirmation | Dialog remains open; action is busy and duplicate-safe | Current Tickets page | Persistent exact sent/failed/skipped summary | Same-run retry uses provider idempotency keys | Summary region; trigger restored on close | Current Tickets request; `features/tickets/server/ticket-bulk-resend.ts` |
 | Cancel/back | `Отмена` / localized Back | None | Trigger/originating filtered list | None | n/a | Restored trigger or list context | Shared navigation pattern |
 
 ## Navigation and responsive behavior
@@ -89,6 +90,7 @@
 
 - Mutation default: pessimistic for scoring closure and final review submission.
 - Idempotency and duplicate-submit policy: the UI blocks repeats; the database serializes closure and jury writes with the same advisory lock.
+- Ticket bulk resend uses one provider idempotency key per run and ticket, starts at most eight Resend requests per second, and retries only bounded transient/rate-limit failures. Paid/checked-in and admin-issued tickets are included; pending and canceled tickets are excluded.
 - Auto-save/draft recovery: drafts remain `IN_PROGRESS`; closure never promotes or deletes them.
 - Retry/timeout behavior: mutation errors remain in context with an explicit retry path.
 - Stale-request policy: server navigation is authoritative for committed filters; client mutation completion refreshes authoritative state.

@@ -423,7 +423,12 @@ export async function getTicketQrPreview(ticketId: string) {
 
 export async function sendCurrentTicketQr(
   ticketId: string,
-  options: { adminId?: string | null; accessUpdated?: boolean } = {}
+  options: {
+    adminId?: string | null;
+    accessUpdated?: boolean;
+    bulkRunId?: string;
+    idempotencyKey?: string;
+  } = {}
 ) {
   let ticket = await prisma.ticket.findUnique({ where: { id: ticketId } });
   if (!ticket) return { ok: false as const, reason: "not_found" as const };
@@ -454,6 +459,7 @@ export async function sendCurrentTicketQr(
     manualIssue: parseTicketActivity(ticket.activity).events.some(
       (event) => event.type === "CREATED_MANUALLY"
     ),
+    idempotencyKey: options.idempotencyKey,
   });
 
   await prisma.$transaction(async (tx) => {
@@ -491,7 +497,12 @@ export async function sendCurrentTicketQr(
     const activity = appendActivity(
       parseTicketActivity(current.activity),
       delivery.delivered ? "QR_RESENT" : "QR_EMAIL_FAILED",
-      { adminId: options.adminId ?? null, credentialId: credential.id, delivery }
+      {
+        adminId: options.adminId ?? null,
+        credentialId: credential.id,
+        bulkRunId: options.bulkRunId ?? null,
+        delivery,
+      }
     );
     await tx.ticket.update({
       where: { id: ticketId },
