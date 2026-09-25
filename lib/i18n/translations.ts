@@ -1565,8 +1565,8 @@ const en = {
           logoAlt: "LUX Photography logo",
           description:
             "LUX Photography is the brand of photographer Sofia Dobrianskyi, specializing in personal, lifestyle, and creative photography. Its work combines modern aesthetics, attention to detail, and a personalized approach to every project. The style is defined by clean, expressive, and refined imagery that highlights individuality while preserving the natural feel of the moment.",
-          instagram: "https://www.instagram.com/lux_photograph_/",
-          instagramLabel: "@lux_photograph_",
+          instagram: "https://www.instagram.com/sony.lux.photography?utm_source=qr",
+          instagramLabel: "@sony.lux.photography",
         },
         {
           id: "maksimova-photo",
@@ -4517,8 +4517,8 @@ const ru: typeof en = {
           logoAlt: "Логотип LUX Photography",
           description:
             "LUX Photography — бренд фотографа Sofia Dobrianskyi, специализирующийся на персональной, lifestyle- и креативной фотографии. В работе сочетаются современная эстетика, внимание к деталям и индивидуальный подход к каждому проекту. Стиль отличают чистые, выразительные и утончённые кадры, которые подчёркивают индивидуальность и сохраняют естественность момента.",
-          instagram: "https://www.instagram.com/lux_photograph_/",
-          instagramLabel: "@lux_photograph_",
+          instagram: "https://www.instagram.com/sony.lux.photography?utm_source=qr",
+          instagramLabel: "@sony.lux.photography",
         },
         {
           id: "maksimova-photo",
@@ -7470,8 +7470,8 @@ const ua: typeof en = {
           logoAlt: "Логотип LUX Photography",
           description:
             "LUX Photography — бренд фотографа Sofia Dobrianskyi, що спеціалізується на персональній, lifestyle- та креативній фотографії. У роботі поєднуються сучасна естетика, увага до деталей та індивідуальний підхід до кожного проєкту. Стиль вирізняють чисті, виразні й витончені кадри, які підкреслюють індивідуальність і зберігають природність моменту.",
-          instagram: "https://www.instagram.com/lux_photograph_/",
-          instagramLabel: "@lux_photograph_",
+          instagram: "https://www.instagram.com/sony.lux.photography?utm_source=qr",
+          instagramLabel: "@sony.lux.photography",
         },
         {
           id: "maksimova-photo",
