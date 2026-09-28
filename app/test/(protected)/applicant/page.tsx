@@ -1,4 +1,4 @@
-import { AlertCircle, CheckCircle2, FileWarning, Layers3, PlusCircle, UserRoundPlus } from "lucide-react";
+import { AlertCircle, CheckCircle2, FileWarning, Layers3, MessageSquareText, PlusCircle, UserRoundPlus } from "lucide-react";
 import { getTestApplicantRecords } from "@/features/test/server/flow-records";
 import {
   createApplicantScenarioAction,
@@ -22,6 +22,7 @@ const scenarios = [
   ["applicant-incomplete", "Incomplete nomination", "Partial data and real completion errors", AlertCircle],
   ["applicant-submitted", "Submitted nomination", "Complete and submitted state", CheckCircle2],
   ["applicant-multiple", "Multiple nominations", "Three paid submitted nominations", Layers3],
+  ["applicant-scores", "Published scores", "Three ranked nominations with six judge reviews and comments each", MessageSquareText],
   ["applicant-upload-failure", "Upload failure", "Invalid upload metadata scenario", FileWarning],
 ] as const;
 
@@ -97,6 +98,13 @@ export default async function TestApplicantPage({
                             <StatusBadge tone={nomination.status === "SUBMITTED" ? "green" : "amber"}>{nomination.status}</StatusBadge>
                           </div>
                           <p className="mt-3 text-xs text-zinc-500">{nomination.answers.length} answers · {nomination.files.length} files · {nomination.paymentStatus.toLowerCase()}</p>
+                          {nomination.scoresReleasedAt ? (
+                            <form action={openTestAccountAction} className="mt-3">
+                              <input type="hidden" name="accountId" value={account.id} />
+                              <input type="hidden" name="nominationId" value={nomination.id} />
+                              <button type="submit" className="text-xs font-semibold text-sky-300 underline underline-offset-4 hover:text-sky-100">Open scores in applicant account</button>
+                            </form>
+                          ) : null}
                           {nomination.status === "SUBMITTED" || nomination.status === "LOCKED" ? (
                             <form action={reopenTestNominationAction} className="mt-3">
                               <input type="hidden" name="nominationId" value={nomination.id} />

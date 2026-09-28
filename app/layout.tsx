@@ -14,21 +14,21 @@ export const metadata: Metadata = {
   },
 };
 
-export const bodoniModa = Bodoni_Moda({
+const bodoniModa = Bodoni_Moda({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   style: ["normal", "italic"],
   variable: "--font-display",
 });
 
-export const lora = Lora({
+const lora = Lora({
   subsets: ["latin", "cyrillic"],
   weight: ["400", "500", "600", "700"],
   style: ["normal", "italic"],
   variable: "--font-body",
 });
 
-export const cormorant = Cormorant_Garamond({
+const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   style: ["normal", "italic"],

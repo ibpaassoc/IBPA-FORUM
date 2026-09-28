@@ -21,6 +21,7 @@ export type ApplicantScenarioKind =
   | "applicant-incomplete"
   | "applicant-submitted"
   | "applicant-multiple"
+  | "applicant-scores"
   | "applicant-upload-failure";
 
 export type JuryScenarioKind =
@@ -38,12 +39,15 @@ function uniqueEmail(kind: string) {
   return `test+${kind}.${Date.now()}.${crypto.randomBytes(4).toString("hex")}@example.invalid`;
 }
 
-async function catalogChoice(tx: Prisma.TransactionClient): Promise<CatalogChoice> {
-  const award = await tx.award.findFirst({
+async function catalogChoice(tx: Prisma.TransactionClient, index = 0): Promise<CatalogChoice> {
+  const awards = await tx.award.findMany({
     include: { category: { select: { id: true, name: true, slug: true } } },
     orderBy: [{ categoryId: "asc" }, { name: "asc" }],
+    skip: index,
+    take: 1,
   });
-  if (!award) throw new Error("At least one Award and Category are required for test scenarios.");
+  const award = awards[0];
+  if (!award) throw new Error(`At least ${index + 1} Awards are required for this test scenario.`);
   return { award: { id: award.id, name: award.name }, category: award.category };
 }
 
@@ -71,7 +75,7 @@ function answersDocument(kind: ApplicantScenarioKind) {
 }
 
 function nominationStatus(kind: ApplicantScenarioKind): NominationStatus {
-  return kind === "applicant-submitted" || kind === "applicant-multiple" ? "SUBMITTED" : "DRAFT";
+  return kind === "applicant-submitted" || kind === "applicant-multiple" || kind === "applicant-scores" ? "SUBMITTED" : "DRAFT";
 }
 
 async function createApplicantRecords(
@@ -105,10 +109,10 @@ async function createApplicantRecords(
   records.accounts.push(account.id);
   records.applicantProfiles.push(profile.id);
 
-  const nominationCount = kind === "applicant-empty" ? 0 : kind === "applicant-multiple" ? 3 : 1;
+  const nominationCount = kind === "applicant-empty" ? 0 : kind === "applicant-multiple" || kind === "applicant-scores" ? 3 : 1;
   const nominations = [];
   for (let index = 0; index < nominationCount; index += 1) {
-    const catalog = await catalogChoice(tx);
+    const catalog = await catalogChoice(tx, index);
     const payment = await tx.payment.create({
       data: {
         accountId: account.id,
@@ -136,6 +140,7 @@ async function createApplicantRecords(
         files: testJson(emptyStoredFiles()),
         scoringSchema: testJson(getCategoryScoringDefinition(catalog.category.slug)),
         submittedAt: status === "SUBMITTED" ? new Date() : null,
+        scoresReleasedAt: kind === "applicant-scores" ? new Date() : null,
         dataScope: "TEST",
       },
       include: { award: true, category: true },
@@ -145,6 +150,70 @@ async function createApplicantRecords(
     nominations.push(nomination);
   }
   return { account, profile, nominations };
+}
+
+function sampleScores(maximums: Array<{ key: string; maxScore: number }>, desiredTotal: number) {
+  const scores = Object.fromEntries(maximums.map((criterion) => [criterion.key, criterion.maxScore]));
+  let deficit = maximums.reduce((sum, criterion) => sum + criterion.maxScore, 0) - desiredTotal;
+  for (let cursor = 0; deficit > 0; cursor += 1) {
+    const criterion = maximums[cursor % maximums.length];
+    if (scores[criterion.key] > 0) {
+      scores[criterion.key] -= 1;
+      deficit -= 1;
+    }
+  }
+  return scores;
+}
+
+async function addApplicantScoreSamples(
+  tx: Prisma.TransactionClient,
+  nominations: Awaited<ReturnType<typeof createApplicantRecords>>["nominations"],
+  records: TestCreatedRecords,
+) {
+  const names = ["Maria Iurkivska", "Olena Sokolova", "Daria Koval", "Iryna Petrenko", "Nataliia Romanova", "Anastasiia Melnyk"];
+  const totals = [
+    [100, 93, 91, 88, 87, 84],
+    [91, 89, 86, 84, 82, 79],
+    [84, 82, 80, 78, 75, 73],
+  ];
+  const notes = [
+    "A compelling nomination with strong technical mastery and a clear record of professional growth. The submitted work consistently meets a high standard.",
+    "The portfolio is carefully presented and shows confident execution. I particularly appreciated the breadth of techniques and the thoughtful client outcomes.",
+    "Strong evidence of both skill and sustained development. The nomination makes a persuasive case through its results and professional achievements.",
+    "A polished submission with excellent attention to detail. Continued documentation of industry contributions would make this even stronger.",
+    "The work demonstrates a distinctive point of view and sound professional standards. The supporting materials were clear and easy to evaluate.",
+    "A very good overall result. The nomination communicates experience, care, and consistent quality across the submitted examples.",
+  ];
+  const first = nominations[0];
+  if (!first) return;
+  for (let judgeIndex = 0; judgeIndex < names.length; judgeIndex += 1) {
+    const judge = await createJuryRecords(tx, "jury-submitted", records, first.id);
+    await tx.juryProfile.update({ where: { id: judge.profile.id }, data: {
+      fullName: names[judgeIndex],
+      approvedCategories: [...new Set(nominations.map((nomination) => nomination.category.name))],
+    } });
+    await tx.juryApplication.update({ where: { id: judge.application.id }, data: { fullName: names[judgeIndex] } });
+    for (let nominationIndex = 0; nominationIndex < nominations.length; nominationIndex += 1) {
+      const nomination = nominations[nominationIndex];
+      const definition = getCategoryScoringDefinition(nomination.category.slug);
+      const total = totals[nominationIndex][judgeIndex];
+      const reviewData = {
+        status: "SUBMITTED" as const,
+        scoreData: testJson({ version: 1, categorySlug: definition.categorySlug, scores: sampleScores(definition.criteria, total) }),
+        totalScore: total,
+        comments: notes[judgeIndex],
+        startedAt: new Date(), submittedAt: new Date(),
+      };
+      if (nominationIndex === 0 && judge.review) {
+        await tx.juryNominationReview.update({ where: { id: judge.review.id }, data: reviewData });
+      } else {
+        const review = await tx.juryNominationReview.create({
+          data: { nominationId: nomination.id, juryProfileId: judge.profile.id, dataScope: "TEST", ...reviewData },
+        });
+        records.reviews.push(review.id);
+      }
+    }
+  }
 }
 
 async function createJuryRecords(
@@ -265,12 +334,13 @@ export async function createApplicantScenario(kind: ApplicantScenarioKind) {
       const records = emptyTestCreatedRecords();
       return unscopedPrisma.$transaction(async (tx) => {
         const created = await createApplicantRecords(tx, kind, records);
+        if (kind === "applicant-scores") await addApplicantScoreSamples(tx, created.nominations, records);
         await tx.test.update({
           where: { id: scenario.id },
           data: { createdRecords: testJson(records), status: "COMPLETED" },
         });
         return created;
-      });
+      }, { timeout: kind === "applicant-scores" ? 60_000 : 5_000 });
     });
     return { scenario: await unscopedPrisma.test.findUniqueOrThrow({ where: { id: scenario.id } }), ...result };
   } catch (error) {
