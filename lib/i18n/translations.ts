@@ -2091,8 +2091,8 @@ const en = {
         ctaButton: "Registration",
     },
     awardResults: {
-      eyebrow: "Award results",
-      title: "Award results",
+      eyebrow: "Award milestones",
+      title: "Award timeline",
       timeline: {
         applicationsOpen: {
           label: "Applications open",
@@ -5046,8 +5046,8 @@ const ru: typeof en = {
         ctaButton: "Регистрация",
     },
     awardResults: {
-      eyebrow: "Результаты премии",
-      title: "Результаты премии",
+      eyebrow: "Этапы премии",
+      title: "Хронология премии",
       timeline: {
         applicationsOpen: {
           label: "Прием заявок открыт",
@@ -8001,8 +8001,8 @@ const ua: typeof en = {
         ctaButton: "Реєстрація",
     },
     awardResults: {
-      eyebrow: "Результати премії",
-      title: "Результати премії",
+      eyebrow: "Етапи премії",
+      title: "Хронологія премії",
       timeline: {
         applicationsOpen: {
           label: "Прийом заявок відкрито",
