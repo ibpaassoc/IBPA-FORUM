@@ -10,6 +10,7 @@ import {
   MoreHorizontal,
   PanelLeftClose,
   PanelLeftOpen,
+  ChartNoAxesCombined,
   Settings,
   Ticket,
   UserRound,
@@ -27,6 +28,7 @@ import {
 const navItemDefs = [
   { href: "/account/applicant", key: "overview", shortKey: "overviewShort", icon: LayoutDashboard },
   { href: "/account/applicant/nominations", key: "nominations", shortKey: "nominationsShort", icon: FileText },
+  { href: "/account/applicant/scorings", key: "scorings", shortKey: "scoringsShort", icon: ChartNoAxesCombined },
   { href: "/account/applicant/tickets", key: "tickets", shortKey: "ticketsShort", icon: Ticket },
   { href: "/account/applicant/notifications", key: "notifications", shortKey: "notificationsShort", icon: BellRing },
   { href: "/account/applicant/profile", key: "profile", shortKey: "profileShort", icon: UserRound },
@@ -35,10 +37,14 @@ const navItemDefs = [
 
 function isActive(pathname: string, href: string) {
   if (href === "/account/applicant") return pathname === href;
+  const isScoreDetail = /^\/account\/applicant\/nominations\/[^/]+\/scores\/?$/.test(pathname);
+  if (href === "/account/applicant/scorings") {
+    return pathname === href || pathname.startsWith(`${href}/`) || isScoreDetail;
+  }
   if (href === "/account/applicant/nominations") {
     return (
       pathname === href ||
-      pathname.startsWith(`${href}/`) ||
+      (pathname.startsWith(`${href}/`) && !isScoreDetail) ||
       pathname === "/account/applicant/add-nomination"
     );
   }
@@ -187,6 +193,7 @@ export default function ApplicantSidebar({
                 <Link
                   key={href}
                   href={href}
+                  aria-current={active ? "page" : undefined}
                   onClick={() => setDrawerOpen(false)}
                   className={`flex min-h-12 items-center justify-between rounded-[18px] px-4 text-sm font-semibold transition ${
                     active
