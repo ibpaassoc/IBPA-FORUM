@@ -7,15 +7,16 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import type { getApplicantNominationScores } from "@/features/account/server/nomination-scores";
+import { criterionCopy, type ScoreLanguage } from "@/features/account/components/scores/criterion-copy";
 
 gsap.registerPlugin(useGSAP);
 
 type ScoreData = Awaited<ReturnType<typeof getApplicantNominationScores>>;
-type Language = "en" | "ru" | "ua";
+type Language = ScoreLanguage;
 
 const copy = {
   en: {
-    back: "Back to my nominations", details: "Nomination details", scores: "Scores & feedback",
+    back: "Back to Scorings", details: "Nomination details", scores: "Scores & feedback",
     finalScore: "Final score", position: "Position in this award", place: "place",
     evaluated: "Evaluated by", judges: "judges", evaluation: "Judges’ evaluation",
     evaluationDescription: "Individual scores and comments from the judges who reviewed your nomination.",
@@ -25,7 +26,7 @@ const copy = {
     noRank: "Position pending", noScore: "Score pending", judge: "Judge", outOf: "out of",
   },
   ru: {
-    back: "К моим номинациям", details: "Данные номинации", scores: "Оценки и отзывы",
+    back: "К оценкам", details: "Данные номинации", scores: "Оценки и отзывы",
     finalScore: "Итоговый балл", position: "Место в этой награде", place: "место",
     evaluated: "Оценили", judges: "судей", evaluation: "Оценки жюри",
     evaluationDescription: "Баллы и комментарии каждого члена жюри, оценившего вашу номинацию.",
@@ -35,7 +36,7 @@ const copy = {
     noRank: "Место ещё не определено", noScore: "Оценка ожидается", judge: "Судья", outOf: "из",
   },
   ua: {
-    back: "До моїх номінацій", details: "Дані номінації", scores: "Оцінки та відгуки",
+    back: "До оцінок", details: "Дані номінації", scores: "Оцінки та відгуки",
     finalScore: "Підсумковий бал", position: "Місце в цій нагороді", place: "місце",
     evaluated: "Оцінили", judges: "суддів", evaluation: "Оцінки журі",
     evaluationDescription: "Бали та коментарі кожного члена журі, який оцінив вашу номінацію.",
@@ -45,28 +46,6 @@ const copy = {
     noRank: "Місце ще не визначено", noScore: "Оцінка очікується", judge: "Суддя", outOf: "з",
   },
 } as const;
-
-const criterionCopy: Record<Language, Record<string, string>> = {
-  en: {},
-  ru: {
-    professionalQualification: "Профессиональная квалификация",
-    professionalAchievements: "Достижения и признание",
-    portfolioQuality: "Качество портфолио и материалов",
-    professionalDevelopment: "Деятельность и развитие",
-    industryContribution: "Вклад в развитие индустрии",
-    professionalStandards: "Профессиональные стандарты",
-    ibpaLevelAlignment: "Соответствие уровню IBPA",
-  },
-  ua: {
-    professionalQualification: "Професійна кваліфікація",
-    professionalAchievements: "Досягнення та визнання",
-    portfolioQuality: "Якість портфоліо та матеріалів",
-    professionalDevelopment: "Діяльність і розвиток",
-    industryContribution: "Внесок у розвиток індустрії",
-    professionalStandards: "Професійні стандарти",
-    ibpaLevelAlignment: "Відповідність рівню IBPA",
-  },
-};
 
 const linkFocus = "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.28)]";
 
@@ -93,7 +72,7 @@ export default function NominationScoresView({ data, language }: { data: ScoreDa
   return (
     <div ref={root} className="mx-auto w-full max-w-[1180px] pb-8">
       <header data-score-reveal>
-        <Link href="/account/applicant/nominations" className={`inline-flex min-h-11 items-center gap-2 rounded-full px-1 text-[0.78rem] text-[var(--color-ink-soft)] transition hover:text-[var(--color-blue)] ${linkFocus}`}>
+        <Link href="/account/applicant/scorings" className={`inline-flex min-h-11 items-center gap-2 rounded-full px-1 text-[0.78rem] text-[var(--color-ink-soft)] transition hover:text-[var(--color-blue)] ${linkFocus}`}>
           <ArrowLeft aria-hidden size={16} /> {c.back}
         </Link>
         <div className="mt-5 flex flex-wrap items-start justify-between gap-4">

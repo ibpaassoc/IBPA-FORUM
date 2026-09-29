@@ -21,10 +21,13 @@ export default async function ApplicantNominationPage({
   const locked = nomination.status === "LOCKED" || !submissionAccess.isOpen;
   const scoreVisible = nomination.scoresReleasedAt !== null;
   const categoryFields = categoryFieldConfigs[nomination.category.slug] ?? [];
-  const submittedScores = nomination.reviews
-    .map((score) => score.totalScore)
-    .filter((value) => value !== null)
-    .map(Number);
+  // Never serialize an unpublished score to the applicant-facing client component.
+  const submittedScores = scoreVisible
+    ? nomination.reviews
+        .map((score) => score.totalScore)
+        .filter((value) => value !== null)
+        .map(Number)
+    : [];
   const averageScore =
     submittedScores.length > 0
       ? submittedScores.reduce((sum, value) => sum + value, 0) / submittedScores.length
