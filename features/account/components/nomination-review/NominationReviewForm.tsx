@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { AlertTriangle, Briefcase, Loader2, PenLine, Save, Send, UploadCloud } from "lucide-react";
+import { AlertTriangle, Briefcase, Loader2, MessageSquareText, PenLine, Save, Send, UploadCloud } from "lucide-react";
+import Link from "next/link";
 import { nominationTone, type NominationTone } from "@/features/account/components/nomination-presentation";
 import { computeNominationProgress } from "@/features/account/lib/nomination-progress";
 import {
@@ -703,6 +704,16 @@ export default function NominationReviewForm({
           description={headerDescription}
         />
       </div>
+
+      {scoreVisible ? (
+        <Link
+          href={`/account/applicant/nominations/${nominationId}/scores`}
+          className="inline-flex min-h-11 w-fit items-center gap-2 self-start rounded-full border border-[rgba(114,160,193,0.28)] bg-[var(--color-blue-wash)] px-5 text-[0.76rem] font-semibold text-[#356f98] transition hover:border-[var(--color-blue)] hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.28)]"
+        >
+          <MessageSquareText aria-hidden size={16} />
+          {language === "ru" ? "Оценки и отзывы судей" : language === "ua" ? "Оцінки та відгуки суддів" : "View judges’ scores & feedback"}
+        </Link>
+      ) : null}
 
       <div className="grid gap-2 lg:hidden">
         {notice ? <NoticePanel tone="success" role="status">{notice}</NoticePanel> : null}

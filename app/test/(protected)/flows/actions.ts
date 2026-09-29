@@ -20,6 +20,7 @@ const applicantKinds = new Set<ApplicantScenarioKind>([
   "applicant-incomplete",
   "applicant-submitted",
   "applicant-multiple",
+  "applicant-scores",
   "applicant-upload-failure",
 ]);
 
@@ -54,11 +55,23 @@ export async function createFullFlowScenarioAction() {
 export async function openTestAccountAction(formData: FormData) {
   await requireTestSession();
   const accountId = String(formData.get("accountId") ?? "");
+  const nominationId = String(formData.get("nominationId") ?? "");
   const account = await runWithDataScope({ dataScope: "TEST" }, () =>
     prisma.account.findUnique({ where: { id: accountId }, select: { id: true, role: true, status: true } }),
   );
   if (!account || account.status === "DISABLED") throw new Error("Test account not found or disabled.");
+  if (nominationId) {
+    if (account.role !== "APPLICANT") throw new Error("Only applicant accounts can open nomination scores.");
+    const nomination = await runWithDataScope({ dataScope: "TEST" }, () =>
+      prisma.nomination.findFirst({
+        where: { id: nominationId, applicantProfile: { accountId: account.id }, scoresReleasedAt: { not: null } },
+        select: { id: true },
+      }),
+    );
+    if (!nomination) throw new Error("Published test nomination not found for this account.");
+  }
   await createTestActor({ accountId: account.id, role: account.role });
+  if (nominationId) redirect(`/account/applicant/nominations/${nominationId}/scores`);
   redirect(account.role === "JURY" ? "/account/jury" : "/account/applicant");
 }
 
