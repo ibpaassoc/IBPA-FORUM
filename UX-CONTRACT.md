@@ -73,6 +73,7 @@
 ## Navigation and responsive behavior
 
 - Route document title policy: `{Page} — IBPA Admin` for admin scoring routes.
+- Applicant Scorings and individual score pages use localized titles with the `IBPA Beauty Award 2026` suffix.
 - Route error behavior: app-owned error boundary with retry; authentication remains server-enforced.
 - Tab policy: route-backed peer views use `tab=overview`, `tab=rankings`, and `tab=jury-progress`; tab-specific query state is preserved.
 - Responsive table strategy: horizontal scroll preserves row/column comparison, with the identifier column visually anchored where practical.
