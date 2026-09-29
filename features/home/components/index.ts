@@ -1,6 +1,7 @@
 export { default as HomeCategoriesRow } from "./HomeCategoriesRow"
 export { default as HomeHero } from "./HomeHero"
 export { default as HomeAwardsInfo } from "./HomeAwardsInfo"
+export { default as HomeResultsNotice } from "./HomeResultsNotice"
 export { default as HomeFounder } from "./HomeFounder"
 export { default as HomeTalentVisaConsultation } from "./HomeTalentVisaConsultation"
 export { default as HomeThreeExperiences } from "./HomeThreeExperiences"

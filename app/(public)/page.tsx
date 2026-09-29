@@ -2,14 +2,13 @@ import dynamic from "next/dynamic";
 import {
   HomeHero,
   HomeAwardsInfo,
+  HomeResultsNotice,
   HomeThreeExperiences,
   HomeFounder,
-  HomeTalentVisaConsultation,
   HomeProgram,
   HomeConversionBlock,
   HomeDressCode,
   HomePreviousForum,
-  HomePartners,
 } from "@/features/home/components";
 import { LandingPageShell } from "@/shared/components/public";
 
@@ -24,9 +23,6 @@ const HomeMasterClasses = dynamic(
 const HomePreviousWinners = dynamic(
   () => import("@/features/home/components/HomePreviousWinners")
 );
-const HomeWhyAttend = dynamic(
-  () => import("@/features/home/components/HomeWhyAttend")
-);
 const HomeSponsors = dynamic(
   () => import("@/features/home/components/HomeSponsors")
 );
@@ -38,6 +34,7 @@ export default function HomePagePremium() {
   return (
     <LandingPageShell>
       <HomeHero />
+      <HomeResultsNotice />
       <HomeAwardsInfo />
       <HomeThreeExperiences />
       <HomeFounder />
