@@ -705,15 +705,13 @@ export default function NominationReviewForm({
         />
       </div>
 
-      {scoreVisible ? (
-        <Link
-          href={`/account/applicant/nominations/${nominationId}/scores`}
-          className="inline-flex min-h-11 w-fit items-center gap-2 self-start rounded-full border border-[rgba(114,160,193,0.28)] bg-[var(--color-blue-wash)] px-5 text-[0.76rem] font-semibold text-[#356f98] transition hover:border-[var(--color-blue)] hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.28)]"
-        >
-          <MessageSquareText aria-hidden size={16} />
-          {language === "ru" ? "Оценки и отзывы судей" : language === "ua" ? "Оцінки та відгуки суддів" : "View judges’ scores & feedback"}
-        </Link>
-      ) : null}
+      <Link
+        href={`/account/applicant/nominations/${nominationId}/scores`}
+        className="inline-flex min-h-11 w-fit items-center gap-2 self-start rounded-full border border-[rgba(114,160,193,0.28)] bg-[var(--color-blue-wash)] px-5 text-[0.76rem] font-semibold text-[#356f98] transition hover:border-[var(--color-blue)] hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(114,160,193,0.28)]"
+      >
+        <MessageSquareText aria-hidden size={16} />
+        {language === "ru" ? "Оценки и отзывы судей" : language === "ua" ? "Оцінки та відгуки суддів" : "View judges’ scores & feedback"}
+      </Link>
 
       <div className="grid gap-2 lg:hidden">
         {notice ? <NoticePanel tone="success" role="status">{notice}</NoticePanel> : null}
