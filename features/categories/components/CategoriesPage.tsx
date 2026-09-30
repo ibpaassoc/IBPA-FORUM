@@ -1,6 +1,8 @@
 import dynamic from "next/dynamic";
 import type { CategoryOption } from "@/features/applications/types/application.types";
 import type { PublicRegulations } from "@/features/regulations/types";
+import type { PublicAwardResult } from "@/features/categories/server/public-results";
+import CategoriesResultsExplorer from "@/features/categories/components/CategoriesResultsExplorer";
 import {
   CategoriesHero,
   CategoriesInfo,
@@ -20,9 +22,11 @@ const CategoriesFAQ = dynamic(
 export default function CategoriesPagePremium({
   categories,
   regulations,
+  results,
 }: {
   categories: CategoryOption[];
   regulations: PublicRegulations;
+  results: PublicAwardResult[];
 }) {
   return (
     <LandingPageShell>
@@ -31,6 +35,7 @@ export default function CategoriesPagePremium({
       <CategoriesFeatures categories={categories} regulations={regulations} />
       <CategoriesWhyJoin />
       <CategoriesAwardResults />
+      <CategoriesResultsExplorer categories={categories} results={results} />
       <CategoriesCTA />
       <CategoriesFAQ />
     </LandingPageShell>
