@@ -38,11 +38,11 @@ export default function HomePagePremium() {
       <HomeAwardsInfo />
       <HomeThreeExperiences />
       <HomeFounder />
-      <HomeConversionBlock />
-      <HomeProgram />
-      <HomeSpeakers />
-      <HomeMasterClasses />
-      <HomeDressCode />
+      {/*<HomeConversionBlock />*/}
+      {/*<HomeProgram />*/}
+      {/*<HomeSpeakers />*/}
+      {/*<HomeMasterClasses />*/}
+      {/*<HomeDressCode />*/}
       <HomeSponsors />
       <HomePreviousForum />
       <HomePreviousWinners />
