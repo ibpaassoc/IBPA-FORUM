@@ -69,7 +69,7 @@ export default function WinnersGallery() {
           </div>
           <div data-hero-reveal className={styles.heroArtwork} aria-hidden="true">
             <div className={styles.heroHalo} />
-            <div className={styles.heroPortrait}><Image src={winnersByYear[winnerYears[0]][0].image} alt="" fill priority sizes="(max-width: 900px) 75vw, 440px" className={styles.image} /></div>
+            <div className={styles.heroPortrait}><Image src="/images/events/HomeHero.jpg" alt="" fill priority quality={90} sizes="(max-width: 900px) 100vw, 55vw" className={styles.image} /></div>
             <div className={styles.heroYear}>{winnerYears[0]}</div>
             <div className={styles.heroSeal}>IBPA<br />AWARDS</div>
           </div>

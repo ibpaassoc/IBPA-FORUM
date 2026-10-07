@@ -12,8 +12,8 @@
 .explore:focus-visible,.closing a:focus-visible{outline:3px solid #4987b3;outline-offset:5px}
 .heroArtwork{position:relative;min-height:600px;margin-right:calc(-1 * var(--page-gutter))}
 .heroPortrait{position:absolute;inset:calc(-1 * var(--site-header-height,90px)) 0 0 0;overflow:hidden}
-.heroPortrait::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#e9f4fa 0%,#dcecf399 17%,transparent 55%),linear-gradient(0deg,#315b764d,transparent 33%)}
-.heroPortrait .image{object-position:center 23%}
+.heroPortrait::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#e9f4fa 0%,#dcecf366 12%,transparent 34%),linear-gradient(0deg,#315b764d,transparent 33%)}
+.heroPortrait .image{object-position:left center}
 .image{object-fit:cover;transition:transform .75s cubic-bezier(.19,1,.22,1)}
 .heroHalo{position:absolute;z-index:1;inset:13% 10% 10% 5%;border:1px solid #ecf8fba8;border-radius:50%;transform:rotate(-17deg);pointer-events:none}
 .heroYear{position:absolute;z-index:1;right:6%;bottom:10%;font:400 clamp(7rem,15vw,16rem)/.7 var(--font-title-family);letter-spacing:-.1em;color:#fff;text-shadow:0 9px 34px #315d7e35}
