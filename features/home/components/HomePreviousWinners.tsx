@@ -2,84 +2,14 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
-import { ArrowLeft, ArrowRight, Crown } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Crown } from "lucide-react";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
-const winners = [
-  {
-    name: "Tetiana Kysliuk",
-    category: "Brow artist and Lash lamimaker",
-    badge: "1st",
-    image: "/images/winners/Tetiana_Kysliuk.jpg",
-  },
-  {
-    name: "Anastasiia Sikova",
-    category: "Nail artist and Educator",
-    badge: "2nd",
-    image: "/images/winners/Anastasiia_Sikova.jpg",
-  },
-  {
-    name: "Masha Pixie",
-    category: "Hairstylist and Mentor",
-    badge: "3rd",
-    image: "/images/winners/Masha_Pixie.jpg",
-  },
-  {
-    name: "Svetlana Nesterova",
-    category: "Makeup artist known for refined taste and trend vision",
-    badge: "",
-    image: "/images/winners/Svetlana_Nesterova.jpg",
-  },
-  {
-    name: "Eleonora Bedyukh",
-    category: "Brow and Lash expert, creator of an innovative approach to color and shape",
-    badge: "",
-    image: "/images/winners/Eleonora_Bedyukh.jpg",
-  },
-  {
-    name: "Julia Karpus",
-    category: "Massage therapist integrating aesthetics and Wellness",
-    badge: "",
-    image: "/images/winners/Julia_Karpus.jpg",
-  },
-  {
-    name: "Diana Derkach",
-    category: "Cosmetologist specializing in modern therapies and advanced Skincare",
-    badge: "",
-    image: "/images/winners/Diana_Derkach.jpg",
-  },
-  {
-    name: "Natalia Yakovleva",
-    category: "Nail master recognized for precision and contemporary design",
-    badge: "",
-    image: "/images/winners/Natalia_Yakovleva.jpg",
-  },
-  {
-    name: "Natalia Firsova",
-    category: "Hair extension specialist and creative Stylist",
-    badge: "",
-    image: "/images/winners/Natalia_Firsova.jpg",
-  },
-  {
-    name: "Anastasiia Arabadzhy",
-    category: "Nail artist known for elegance and attention to detail",
-    badge: "",
-    image: "/images/winners/Anastasiia_Arabadzhy.jpg",
-  },
-  {
-    name: "Anastasia Shevchenko",
-    category: "Brow artist and Lamimaker, emphasizing natural beauty and symmetry",
-    badge: "",
-    image: "/images/winners/Anastasia_Shevchenko.jpg",
-  },
-  {
-    name: "Yulia Simonenko",
-    category: "Nail expert, blending technique with artistic expression",
-    badge: "",
-    image: "/images/winners/Yulia_Simonenko.jpg",
-  },
-];
+import Link from "next/link";
+import { winnersByYear } from "@/features/winners/data";
+
+const winners = winnersByYear[2025].slice(0, 5);
 
 export default function PreviousWinnersSection() {
   const { t } = useLanguage();
@@ -212,6 +142,11 @@ export default function PreviousWinnersSection() {
             }`}
           />
         ))}
+      </div>
+      <div className="page-section mt-10 flex justify-center">
+        <Link href="/winners" className="group inline-flex min-h-12 items-center gap-4 rounded-full border border-[#72a0c1]/45 bg-white/80 px-7 text-xs font-semibold uppercase tracking-[0.14em] text-[#254f72] transition hover:border-[#72a0c1] hover:bg-[#edf7fc] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[#4987b3]">
+          {t.home.previousWinners.seeAll} <ArrowUpRight size={17} aria-hidden="true" className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+        </Link>
       </div>
     </section>
   );
