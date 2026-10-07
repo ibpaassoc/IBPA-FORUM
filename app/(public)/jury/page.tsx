@@ -29,7 +29,7 @@ export default async function JuryPage() {
     <LandingPageShell>
       <JuryHero />
       <JuryAbout />
-      <JuryTimeline />
+      {/*<JuryTimeline />*/}
       <JuryRequirements />
       <JuryGallery />
       <JurySteps />

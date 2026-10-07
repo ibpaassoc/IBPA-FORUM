@@ -24,7 +24,7 @@ export default function GrandPrixPagePremium() {
       <GrandPrixWhySpecial />
       <GrandPrixDecision />
       <GrandPrixRewards />
-      <GrandPrixTimeline />
+      {/*<GrandPrixTimeline />*/}
       <GrandPrixCTA />
       <GrandPrixFaq />
     </LandingPageShell>

@@ -26,7 +26,7 @@ export default function JuryPage({ juryMembers }: { juryMembers: JuryMember[] })
     <main className="page-shell">
       <JuryHero />
       <JuryActiveMembers juryMembers={juryMembers} />
-      <JuryTimeline />
+      {/*<JuryTimeline />*/}
       <JuryBenefits />
       <JuryCredibility />
     </main>
