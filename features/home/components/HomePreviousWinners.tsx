@@ -10,8 +10,10 @@ import Link from "next/link";
 import { winnersByYear } from "@/features/winners/data";
 
 const winners = winnersByYear[2025].slice(0, 5);
-const DESKTOP_CARD_WIDTH = 222;
+const DESKTOP_MIN_CARD_WIDTH = 240;
+const DESKTOP_MAX_CARD_WIDTH = 340;
 const DESKTOP_GAP = 20;
+const DESKTOP_EDGE_SPACE = 24;
 
 export default function PreviousWinnersSection() {
   const { t } = useLanguage();
@@ -21,14 +23,17 @@ export default function PreviousWinnersSection() {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [showAll, setShowAll] = useState(false);
+  const [desktopCardWidth, setDesktopCardWidth] = useState(DESKTOP_MIN_CARD_WIDTH);
 
   useEffect(() => {
     const layout = layoutRef.current;
     if (!layout) return;
     const measure = () => {
-      const requiredWidth = winners.length * DESKTOP_CARD_WIDTH + (winners.length - 1) * DESKTOP_GAP;
-      const gutter = parseFloat(getComputedStyle(layout).getPropertyValue("--page-gutter")) || 0;
-      setShowAll(layout.clientWidth - gutter * 2 >= requiredWidth);
+      const availableWidth = layout.clientWidth - DESKTOP_EDGE_SPACE * 2;
+      const gapsWidth = (winners.length - 1) * DESKTOP_GAP;
+      const cardWidth = (availableWidth - gapsWidth) / winners.length;
+      setShowAll(cardWidth >= DESKTOP_MIN_CARD_WIDTH);
+      setDesktopCardWidth(Math.min(DESKTOP_MAX_CARD_WIDTH, Math.floor(cardWidth)));
     };
     measure();
     const observer = new ResizeObserver(measure);
@@ -113,7 +118,8 @@ export default function PreviousWinnersSection() {
           <article
             key={winner.name}
             data-winner-card
-            className={`group relative shrink-0 snap-start overflow-hidden border border-[#b9d9eb]/60 bg-white/86 p-2 backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 ${showAll ? "w-[222px] rounded-[1.6rem]" : "w-[78vw] max-w-[390px] rounded-[2.3rem] sm:w-[390px]"}`}
+            style={showAll ? { width: desktopCardWidth } : undefined}
+            className={`group relative shrink-0 snap-start overflow-hidden border border-[#b9d9eb]/60 bg-white/86 p-2 backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 ${showAll ? "rounded-[1.8rem]" : "w-[78vw] max-w-[390px] rounded-[2.3rem] sm:w-[390px]"}`}
           >
             <div className={`relative aspect-[4/5] overflow-hidden bg-[#eef5f9] ${showAll ? "rounded-[1.25rem]" : "rounded-[1.9rem]"}`}>
               <Image
@@ -121,7 +127,7 @@ export default function PreviousWinnersSection() {
                 alt={winner.name}
                 fill
                 className="object-cover transition duration-300 group-hover:scale-[1.02]"
-                sizes={showAll ? "222px" : "(max-width: 640px) 78vw, 390px"}
+                sizes={showAll ? "(max-width: 1700px) 20vw, 340px" : "(max-width: 640px) 78vw, 390px"}
               />
 
               <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(16,24,42,0.02)_0%,rgba(16,24,42,0.04)_42%,rgba(16,24,42,0.72)_100%)]" />
@@ -134,10 +140,10 @@ export default function PreviousWinnersSection() {
               ) : null}
 
               <div className={`absolute border border-white/25 bg-black/35 text-white backdrop-blur-2xl ${showAll ? "bottom-2 left-2 right-2 rounded-2xl p-3" : "bottom-4 left-4 right-4 rounded-[1.6rem] p-4"}`}>
-                <h3 className={`font-[var(--font-display)] leading-none tracking-[-0.04em] ${showAll ? "text-[1.45rem]" : "text-3xl"}`}>
+                <h3 className={`font-[var(--font-display)] leading-none tracking-[-0.04em] ${showAll ? "text-[clamp(1.6rem,2vw,2rem)]" : "text-3xl"}`}>
                   {winner.name}
                 </h3>
-                <p className={`mt-2 leading-5 text-white/78 ${showAll ? "text-[.68rem]" : "text-sm"}`}>
+                <p className={`mt-2 leading-5 text-white/78 ${showAll ? "text-[.8rem]" : "text-sm"}`}>
                   {winner.category}
                 </p>
               </div>
