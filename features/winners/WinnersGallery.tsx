@@ -6,11 +6,12 @@ import Link from "next/link";
 import { ArrowDown, ArrowUpRight, Crown } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { winnerYears, winnersByYear } from "./data";
 import styles from "./WinnersGallery.module.css";
 
-gsap.registerPlugin(useGSAP);
+gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const copy = {
   en: { eyebrow: "The IBPA archive", title: "The names behind the moment.", intro: "A celebration of the artists whose craft, vision and dedication left a mark on the 2025 forum.", explore: "Explore the winners", edition: "The 2025 edition", people: "Honoured artists", back: "Back to the forum", portrait: "Portrait of" },
@@ -24,19 +25,36 @@ export default function WinnersGallery() {
   const root = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    gsap.fromTo("[data-hero-reveal]", { autoAlpha: 0, y: 35 }, { autoAlpha: 1, y: 0, duration: 1, stagger: 0.12, ease: "power3.out", clearProps: "all" });
-    const cards = gsap.utils.toArray<HTMLElement>("[data-winner-reveal]");
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        const card = entry.target as HTMLElement;
-        gsap.fromTo(card, { autoAlpha: 0, y: 65, rotate: 2 }, { autoAlpha: 1, y: 0, rotate: 0, duration: 0.9, ease: "power3.out", clearProps: "all" });
-        observer.unobserve(card);
+    const motion = gsap.matchMedia();
+    motion.add("(prefers-reduced-motion: no-preference)", () => {
+      gsap.fromTo("[data-hero-reveal]", { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 1, stagger: 0.11, ease: "power3.out", clearProps: "all" });
+
+      const cards = gsap.utils.toArray<HTMLElement>("[data-winner-reveal]");
+      cards.forEach((card, index) => {
+        const photo = card.querySelector<HTMLElement>("[data-winner-photo]");
+        const image = card.querySelector<HTMLElement>("[data-winner-image]");
+        const title = card.querySelector<HTMLElement>("[data-winner-title]");
+        const detail = card.querySelector<HTMLElement>("[data-winner-detail]");
+        if (!photo || !image || !title || !detail) return;
+
+        const timeline = gsap.timeline({
+          defaults: { ease: "none" },
+          scrollTrigger: {
+            trigger: card,
+            start: () => `top ${92 - (index % 3) * 4}%`,
+            end: () => `top ${42 - (index % 3) * 4}%`,
+            scrub: 0.45,
+            invalidateOnRefresh: true,
+          },
+        });
+        timeline
+          .fromTo(photo, { clipPath: "inset(0 0 100% 0)" }, { clipPath: "inset(0 0 0% 0)", duration: 0.75 }, 0)
+          .fromTo(image, { scale: 1.09, yPercent: -3 }, { scale: 1, yPercent: 0, duration: 1 }, 0)
+          .fromTo(title, { yPercent: 105 }, { yPercent: 0, duration: 0.42 }, 0.4)
+          .fromTo(detail, { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.35 }, 0.58);
       });
-    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.12 });
-    cards.forEach((card) => observer.observe(card));
-    return () => observer.disconnect();
+    });
+    return () => motion.revert();
   }, { scope: root });
 
   return (
@@ -69,13 +87,13 @@ export default function WinnersGallery() {
             <div className={styles.grid}>
               {winnersByYear[year].map((winner, index) => (
                 <article key={winner.name} data-winner-reveal className={styles.card}>
-                  <div className={styles.photo}>
-                    <Image src={winner.image} alt={`${c.portrait} ${winner.name}`} fill sizes="(max-width: 640px) 90vw, (max-width: 1000px) 45vw, 30vw" className={styles.image} />
+                  <div data-winner-photo className={styles.photo}>
+                    <Image data-winner-image src={winner.image} alt={`${c.portrait} ${winner.name}`} fill sizes="(max-width: 640px) 90vw, (max-width: 1000px) 45vw, 30vw" className={styles.image} />
                     <span className={styles.photoShade} />
                     {winner.badge && <span className={styles.badge}><Crown size={14} aria-hidden="true" />{winner.badge}</span>}
                     <span className={styles.photoNumber}>{String(index + 1).padStart(2, "0")}</span>
                   </div>
-                  <div className={styles.cardText}><h3>{winner.name}</h3><p>{winner.category}</p></div>
+                  <div className={styles.cardText}><div className={styles.titleMask}><h3 data-winner-title>{winner.name}</h3></div><p data-winner-detail>{winner.category}</p></div>
                 </article>
               ))}
             </div>
