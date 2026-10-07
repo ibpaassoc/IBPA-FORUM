@@ -1,94 +1,52 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { ArrowLeft, ArrowRight, Crown } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Crown } from "lucide-react";
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
-const winners = [
-  {
-    name: "Tetiana Kysliuk",
-    category: "Brow artist and Lash lamimaker",
-    badge: "1st",
-    image: "/images/winners/Tetiana_Kysliuk.jpg",
-  },
-  {
-    name: "Anastasiia Sikova",
-    category: "Nail artist and Educator",
-    badge: "2nd",
-    image: "/images/winners/Anastasiia_Sikova.jpg",
-  },
-  {
-    name: "Masha Pixie",
-    category: "Hairstylist and Mentor",
-    badge: "3rd",
-    image: "/images/winners/Masha_Pixie.jpg",
-  },
-  {
-    name: "Svetlana Nesterova",
-    category: "Makeup artist known for refined taste and trend vision",
-    badge: "",
-    image: "/images/winners/Svetlana_Nesterova.jpg",
-  },
-  {
-    name: "Eleonora Bedyukh",
-    category: "Brow and Lash expert, creator of an innovative approach to color and shape",
-    badge: "",
-    image: "/images/winners/Eleonora_Bedyukh.jpg",
-  },
-  {
-    name: "Julia Karpus",
-    category: "Massage therapist integrating aesthetics and Wellness",
-    badge: "",
-    image: "/images/winners/Julia_Karpus.jpg",
-  },
-  {
-    name: "Diana Derkach",
-    category: "Cosmetologist specializing in modern therapies and advanced Skincare",
-    badge: "",
-    image: "/images/winners/Diana_Derkach.jpg",
-  },
-  {
-    name: "Natalia Yakovleva",
-    category: "Nail master recognized for precision and contemporary design",
-    badge: "",
-    image: "/images/winners/Natalia_Yakovleva.jpg",
-  },
-  {
-    name: "Natalia Firsova",
-    category: "Hair extension specialist and creative Stylist",
-    badge: "",
-    image: "/images/winners/Natalia_Firsova.jpg",
-  },
-  {
-    name: "Anastasiia Arabadzhy",
-    category: "Nail artist known for elegance and attention to detail",
-    badge: "",
-    image: "/images/winners/Anastasiia_Arabadzhy.jpg",
-  },
-  {
-    name: "Anastasia Shevchenko",
-    category: "Brow artist and Lamimaker, emphasizing natural beauty and symmetry",
-    badge: "",
-    image: "/images/winners/Anastasia_Shevchenko.jpg",
-  },
-  {
-    name: "Yulia Simonenko",
-    category: "Nail expert, blending technique with artistic expression",
-    badge: "",
-    image: "/images/winners/Yulia_Simonenko.jpg",
-  },
-];
+import Link from "next/link";
+import { winnersByYear } from "@/features/winners/data";
+
+const winners = winnersByYear[2025].slice(0, 5);
+const DESKTOP_MIN_CARD_WIDTH = 240;
+const DESKTOP_MAX_CARD_WIDTH = 340;
+const DESKTOP_GAP = 20;
+const DESKTOP_EDGE_SPACE = 24;
 
 export default function PreviousWinnersSection() {
   const { t } = useLanguage();
   const c = t.home.previousWinners;
   const sliderRef = useRef<HTMLDivElement>(null);
+  const layoutRef = useRef<HTMLElement>(null);
 
   const [activeIndex, setActiveIndex] = useState(0);
+  const [showAll, setShowAll] = useState(false);
+  const [desktopCardWidth, setDesktopCardWidth] = useState(DESKTOP_MIN_CARD_WIDTH);
+
+  useEffect(() => {
+    const layout = layoutRef.current;
+    if (!layout) return;
+    const measure = () => {
+      const availableWidth = layout.clientWidth - DESKTOP_EDGE_SPACE * 2;
+      const gapsWidth = (winners.length - 1) * DESKTOP_GAP;
+      const cardWidth = (availableWidth - gapsWidth) / winners.length;
+      setShowAll(cardWidth >= DESKTOP_MIN_CARD_WIDTH);
+      setDesktopCardWidth(Math.min(DESKTOP_MAX_CARD_WIDTH, Math.floor(cardWidth)));
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(layout);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (showAll && sliderRef.current) sliderRef.current.scrollLeft = 0;
+  }, [showAll]);
 
   const updateActiveIndex = () => {
+    if (showAll) return;
     const slider = sliderRef.current;
     if (!slider) return;
 
@@ -100,6 +58,7 @@ export default function PreviousWinnersSection() {
   };
 
   const scroll = (direction: "prev" | "next") => {
+    if (showAll) return;
     const slider = sliderRef.current;
     if (!slider) return;
 
@@ -113,7 +72,7 @@ export default function PreviousWinnersSection() {
   };
 
   return (
-    <section className="landing-section relative overflow-hidden py-20 md:py-28">
+    <section ref={layoutRef} className="landing-section relative overflow-hidden py-20 md:py-28">
       <div className="absolute left-[-10%] top-1/4 h-72 w-72 rounded-full bg-[#b9d9eb]/14 blur-2xl" />
 
       <div className="page-section relative">
@@ -126,12 +85,12 @@ export default function PreviousWinnersSection() {
             </h2>
           </div>
 
-          <div className="hidden md:flex items-center gap-3">
+          {!showAll && <div className="hidden md:flex items-center gap-3">
             <button
               type="button"
               aria-label={c.prevLabel}
               onClick={() => scroll("prev")}
-              className="flex size-11 items-center justify-center rounded-full border border-[#b9d9eb]/70 bg-white/70 text-[#10182a] backdrop-blur-xl transition hover:border-[#72a0c1]/45 hover:bg-white md:size-12"
+              className="flex size-11 items-center justify-center rounded-full border border-[#b9d9eb]/70 bg-white/70 text-[#10182a] backdrop-blur-xl transition hover:border-[#72a0c1]/45 hover:bg-white focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[#4987b3] md:size-12"
             >
               <ArrowLeft size={18} />
             </button>
@@ -140,32 +99,35 @@ export default function PreviousWinnersSection() {
               type="button"
               aria-label={c.nextLabel}
               onClick={() => scroll("next")}
-              className="flex size-11 items-center justify-center rounded-full border border-[#b9d9eb]/70 bg-white/70 text-[#10182a] backdrop-blur-xl transition hover:border-[#72a0c1]/45 hover:bg-white md:size-12"
+              className="flex size-11 items-center justify-center rounded-full border border-[#b9d9eb]/70 bg-white/70 text-[#10182a] backdrop-blur-xl transition hover:border-[#72a0c1]/45 hover:bg-white focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[#4987b3] md:size-12"
             >
               <ArrowRight size={18} />
             </button>
-          </div>
+          </div>}
         </div>
       </div>
 
       <div
         ref={sliderRef}
         onScroll={updateActiveIndex}
-        className="relative flex snap-x snap-mandatory gap-5 overflow-x-auto px-[max(1rem,calc((100vw-1200px)/2))] pb-2 [scrollbar-width:none] md:gap-6 [&::-webkit-scrollbar]:hidden"
+        className={showAll
+          ? "relative mx-auto flex w-fit max-w-full justify-center gap-5 overflow-visible px-0 pb-2"
+          : "relative flex snap-x snap-mandatory gap-5 overflow-x-auto px-[max(1rem,calc((100vw-1200px)/2))] pb-2 [scrollbar-width:none] md:gap-6 [&::-webkit-scrollbar]:hidden"}
       >
         {winners.map((winner) => (
           <article
             key={winner.name}
             data-winner-card
-            className="group relative w-[78vw] max-w-[390px] shrink-0 snap-start overflow-hidden rounded-[2.3rem] border border-[#b9d9eb]/60 bg-white/86 p-2 backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 sm:w-[390px]"
+            style={showAll ? { width: desktopCardWidth } : undefined}
+            className={`group relative shrink-0 snap-start overflow-hidden border border-[#b9d9eb]/60 bg-white/86 p-2 backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 ${showAll ? "rounded-[1.8rem]" : "w-[78vw] max-w-[390px] rounded-[2.3rem] sm:w-[390px]"}`}
           >
-            <div className="relative aspect-[4/5] overflow-hidden rounded-[1.9rem] bg-[#eef5f9]">
+            <div className={`relative aspect-[4/5] overflow-hidden bg-[#eef5f9] ${showAll ? "rounded-[1.25rem]" : "rounded-[1.9rem]"}`}>
               <Image
                 src={winner.image}
                 alt={winner.name}
                 fill
                 className="object-cover transition duration-300 group-hover:scale-[1.02]"
-                sizes="(max-width: 640px) 78vw, 390px"
+                sizes={showAll ? "(max-width: 1700px) 20vw, 340px" : "(max-width: 640px) 78vw, 390px"}
               />
 
               <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(16,24,42,0.02)_0%,rgba(16,24,42,0.04)_42%,rgba(16,24,42,0.72)_100%)]" />
@@ -177,11 +139,11 @@ export default function PreviousWinnersSection() {
                 </div>
               ) : null}
 
-              <div className="absolute bottom-4 left-4 right-4 rounded-[1.6rem] border border-white/25 bg-black/35 p-4 text-white backdrop-blur-2xl">
-                <h3 className="font-[var(--font-display)] text-3xl leading-none tracking-[-0.04em]">
+              <div className={`absolute border border-white/25 bg-black/35 text-white backdrop-blur-2xl ${showAll ? "bottom-2 left-2 right-2 rounded-2xl p-3" : "bottom-4 left-4 right-4 rounded-[1.6rem] p-4"}`}>
+                <h3 className={`font-[var(--font-display)] leading-none tracking-[-0.04em] ${showAll ? "text-[clamp(1.6rem,2vw,2rem)]" : "text-3xl"}`}>
                   {winner.name}
                 </h3>
-                <p className="mt-2 text-sm leading-5 text-white/78">
+                <p className={`mt-2 leading-5 text-white/78 ${showAll ? "text-[.8rem]" : "text-sm"}`}>
                   {winner.category}
                 </p>
               </div>
@@ -189,7 +151,7 @@ export default function PreviousWinnersSection() {
           </article>
         ))}
       </div>
-      <div className="mt-8 flex justify-center gap-3">
+      {!showAll && <div className="mt-6 flex justify-center gap-1">
         {winners.map((winner, index) => (
           <button
             key={winner.name}
@@ -205,13 +167,16 @@ export default function PreviousWinnersSection() {
                 behavior: "smooth",
               });
             }}
-            className={`h-3 rounded-full transition-all duration-300 ${
-              activeIndex === index
-                ? "w-3 bg-[#72a0c1]"
-                : "w-3 bg-[#72a0c1]/30 hover:bg-[#72a0c1]/50"
-            }`}
-          />
+            className="grid size-11 place-items-center rounded-full focus-visible:outline-3 focus-visible:outline-offset-1 focus-visible:outline-[#4987b3]"
+          >
+            <span aria-hidden="true" className={`size-3 rounded-full transition-colors duration-300 ${activeIndex === index ? "bg-[#72a0c1]" : "bg-[#72a0c1]/30 hover:bg-[#72a0c1]/50"}`} />
+          </button>
         ))}
+      </div>}
+      <div className="page-section mt-10 flex justify-center">
+        <Link href="/winners" className="group inline-flex min-h-12 items-center gap-4 rounded-full border border-[#72a0c1]/45 bg-white/80 px-7 text-xs font-semibold uppercase tracking-[0.14em] text-[#254f72] transition hover:border-[#72a0c1] hover:bg-[#edf7fc] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[#4987b3]">
+          {t.home.previousWinners.seeAll} <ArrowUpRight size={17} aria-hidden="true" className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+        </Link>
       </div>
     </section>
   );

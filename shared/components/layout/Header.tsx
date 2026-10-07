@@ -33,6 +33,7 @@ export default function Header() {
     { href: "/categories", label: t.header.navigation.categories },
     { href: "/jury", label: t.header.navigation.jury },
     { href: "/grand-prix", label: t.header.navigation.grandPrix },
+    { href: "/winners", label: t.header.navigation.winners },
     {
       href: "/association",
       label: "IBPA",

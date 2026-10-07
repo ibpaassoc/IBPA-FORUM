@@ -503,6 +503,7 @@ const en = {
       categories: "Categories",
       jury: "Jury",
       grandPrix: "Grand Prix",
+      winners: "Winners",
     },
     openMenu: "Open menu",
     closeMenu: "Close menu",
@@ -1181,6 +1182,7 @@ const en = {
       prevLabel: "Previous winners",
       nextLabel: "Next winners",
       goToLabel: "Go to winner",
+      seeAll: "Explore all 2025 winners",
     },
     program: {
       eyebrow: "September 2026",
@@ -3453,6 +3455,7 @@ const ru: typeof en = {
       categories: "Категории",
       jury: "Жюри",
       grandPrix: "Гран-при",
+      winners: "Победители",
     },
     openMenu: "Открыть меню",
     closeMenu: "Закрыть меню",
@@ -4135,6 +4138,7 @@ const ru: typeof en = {
       prevLabel: "Предыдущие победители",
       nextLabel: "Следующие победители",
       goToLabel: "Перейти к победителю",
+      seeAll: "Все победители 2025",
     },
     program: {
       eyebrow: "Сентябрь 2026",
@@ -6409,6 +6413,7 @@ const ua: typeof en = {
       categories: "Категорії",
       jury: "Журі",
       grandPrix: "Гран-прі",
+      winners: "Переможці",
     },
     openMenu: "Відкрити меню",
     closeMenu: "Закрити меню",
@@ -7090,6 +7095,7 @@ const ua: typeof en = {
       prevLabel: "Попередні переможці",
       nextLabel: "Наступні переможці",
       goToLabel: "Перейти до переможця",
+      seeAll: "Усі переможці 2025",
     },
     program: {
       eyebrow: "Вересень 2026",
