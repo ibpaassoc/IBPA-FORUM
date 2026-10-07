@@ -34,7 +34,7 @@ export default function CategoriesPagePremium({
       <CategoriesInfo />
       <CategoriesFeatures categories={categories} regulations={regulations} />
       <CategoriesWhyJoin />
-      <CategoriesAwardResults />
+      {/*<CategoriesAwardResults />*/}
       <CategoriesResultsExplorer categories={categories} results={results} />
       <CategoriesCTA />
       <CategoriesFAQ />
