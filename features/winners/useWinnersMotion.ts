@@ -112,13 +112,29 @@ export function useWinnersMotion(root: RefObject<HTMLDivElement | null>) {
     media.add("(max-width: 1023px) and (prefers-reduced-motion: no-preference)", () => {
       container.querySelectorAll<HTMLElement>("[data-category]").forEach((category) => {
         const title = category.querySelector<HTMLElement>("[data-category-title]");
-        if (title) gsap.fromTo(title, { x: -14 }, { x: 0, ease: "none", scrollTrigger: { trigger: category, start: "top 95%", end: "top 42%", scrub: 0.5 } });
+        const word = category.querySelector<HTMLElement>("[data-category-word]");
+        if (title && word) {
+          gsap.timeline({ scrollTrigger: { trigger: category, start: "top 94%", end: "top 44%", scrub: 0.55 } })
+            .fromTo(title, { xPercent: -13, autoAlpha: 0.35 }, { xPercent: 0, autoAlpha: 1, ease: "none", duration: 1 }, 0)
+            .fromTo(word, { xPercent: 10 }, { xPercent: -8, ease: "none", duration: 1 }, 0);
+        }
         category.querySelectorAll<HTMLElement>("[data-spotlight]").forEach((panel) => {
           const photo = panel.querySelector<HTMLElement>("[data-spotlight-photo]");
           const name = panel.querySelector<HTMLElement>("[data-spotlight-name]");
-          if (!photo || !name) return;
-          gsap.fromTo(photo, { y: 24, scale: 1.055 }, { y: 0, scale: 1, ease: "none", scrollTrigger: { trigger: panel, start: "top 94%", end: "top 48%", scrub: 0.45 } });
-          gsap.fromTo(name, { yPercent: 80 }, { yPercent: 0, ease: "none", scrollTrigger: { trigger: panel, start: "top 84%", end: "top 45%", scrub: 0.45 } });
+          const awards = panel.querySelector<HTMLElement>("[data-spotlight-awards]");
+          if (!photo || !name || !awards) return;
+          gsap.fromTo(photo, { y: 52, xPercent: 8, scale: 1.09, rotation: 1.5 }, {
+            y: 0, xPercent: 0, scale: 1, rotation: 0, ease: "none",
+            scrollTrigger: { trigger: photo, start: "top 94%", end: "top 39%", scrub: 0.55 },
+          });
+          gsap.fromTo(name, { yPercent: 105 }, {
+            yPercent: 0, ease: "none",
+            scrollTrigger: { trigger: name, start: "top 95%", end: "top 74%", scrub: 0.4 },
+          });
+          gsap.fromTo(awards, { y: 25, autoAlpha: 0.35 }, {
+            y: 0, autoAlpha: 1, ease: "none",
+            scrollTrigger: { trigger: awards, start: "top 96%", end: "top 75%", scrub: 0.4 },
+          });
         });
       });
     });
