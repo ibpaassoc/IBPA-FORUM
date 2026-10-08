@@ -61,7 +61,7 @@ export const winnerCategories2026: WinnerCategory2026[] = [
   ] },
   { title: "Lash", winners: [
     winner("Eleonora Bediukh", "Eleonora Bediukh.JPG", "elionora.brows", "Award Of Excellence In Lash Lift"),
-    winner("Inna Bahriantseva", "Inna Bahriantseva.png", "eyelash_extension_us",
+    winner("Inna Bahriantseva", "Inna Bahriantseva.jpeg", "eyelash_extension_us",
       "Award Of Excellence In Classic Lash Extension",
       "Award Of Excellence In Creative Lash Extension Design",
       "Award Of Excellence In Volume Lash Extension"),
