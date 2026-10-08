@@ -1,24 +1,13 @@
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
-import { winner2026AwardCount, winnerCategories2026 } from "./data2026";
+import { winnerCategories2026 } from "./data2026";
 import type { WinnersCopy } from "./copy";
 import styles from "./Winners2026.module.css";
-
-const artistCount = new Set(winnerCategories2026.flatMap((category) => category.winners.map((person) => person.name))).size;
 
 export default function Winners2026({ c }: { c: WinnersCopy }) {
   return (
     <section id="winners-2026" className={styles.edition} aria-labelledby="edition-2026-title">
-      <div className={styles.intro}>
-        <p className={styles.eyebrow}>{c.edition}</p>
-        <h2 id="edition-2026-title">{c.editionTitleOne}<br /><em>{c.editionTitleTwo}</em></h2>
-        <p>{c.editionIntro}</p>
-        <div className={styles.stats} aria-label={c.edition}>
-          <span><strong>{String(winnerCategories2026.length).padStart(2, "0")}</strong>{c.categories}</span>
-          <span><strong>{String(winner2026AwardCount).padStart(2, "0")}</strong>{c.awards}</span>
-          <span><strong>{String(artistCount).padStart(2, "0")}</strong>{c.artists}</span>
-        </div>
-      </div>
+      <h2 id="edition-2026-title" className="sr-only">{c.edition}</h2>
 
       <div className={styles.categories}>
         {winnerCategories2026.map((category, categoryIndex) => (
