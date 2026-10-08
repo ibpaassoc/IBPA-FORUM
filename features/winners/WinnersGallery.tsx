@@ -7,6 +7,7 @@ import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import WinnersHero from "./WinnersHero";
 import Winners2026 from "./Winners2026";
 import Winners2025 from "./Winners2025";
+import { useWinnersMotion } from "./useWinnersMotion";
 import { winnersCopy } from "./copy";
 import styles from "./WinnersGallery.module.css";
 
@@ -14,6 +15,7 @@ export default function WinnersGallery() {
   const { language } = useLanguage();
   const c = winnersCopy[language];
   const root = useRef<HTMLDivElement>(null);
+  useWinnersMotion(root);
 
   return (
     <div ref={root} className={styles.page}>
