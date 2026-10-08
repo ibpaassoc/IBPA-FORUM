@@ -10,7 +10,7 @@ import JuryMenu from "@/shared/components/layout/JuryMenu";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 // Dark photo heroes — transparent header with white text/logo
-const DARK_HERO_PAGES: string[] = ["/", "/jury", "/grand-prix", "/categories", "/association"];
+const DARK_HERO_PAGES: string[] = ["/", "/jury", "/grand-prix", "/categories", "/association", "/winners"];
 // Light photo heroes — transparent header with ink text/logo
 const LIGHT_HERO_PAGES: string[] = ["/apply"];
 
