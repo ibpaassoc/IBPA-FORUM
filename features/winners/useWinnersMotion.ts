@@ -28,30 +28,6 @@ export function useWinnersMotion(root: RefObject<HTMLDivElement | null>) {
           scrollTrigger: { trigger: hero, start: "top top", end: "bottom top", scrub: 0.65 },
         });
       }
-
-      const archiveIntro = container.querySelector<HTMLElement>("[data-archive-intro]");
-      const yearDigits = archiveIntro?.querySelectorAll<HTMLElement>("[data-archive-year-digit]");
-      const archiveCopy = archiveIntro?.querySelector<HTMLElement>("[data-archive-intro-copy]");
-      if (archiveIntro && yearDigits?.length && archiveCopy) {
-        gsap.timeline({
-          scrollTrigger: { trigger: archiveIntro, start: "top 88%", end: "top 28%", scrub: 0.7 },
-        })
-          .fromTo(yearDigits, { yPercent: 120, rotation: 7 }, { yPercent: 0, rotation: 0, ease: "none", duration: 0.78, stagger: 0.13 }, 0)
-          .fromTo(archiveCopy, { x: 28, autoAlpha: 0.25 }, { x: 0, autoAlpha: 1, ease: "none", duration: 0.65 }, 0.42);
-      }
-
-      container.querySelectorAll<HTMLElement>("[data-archive-card]").forEach((card) => {
-        const photo = card.querySelector<HTMLElement>("[data-archive-image]");
-        const name = card.querySelector<HTMLElement>("[data-archive-name]");
-        if (!photo || !name) return;
-        const timeline = gsap.timeline({
-          scrollTrigger: { trigger: card, start: "top 94%", end: "top 42%", scrub: 0.6 },
-        });
-        timeline
-          .fromTo(card, { y: 30 }, { y: 0, ease: "none", duration: 1 }, 0)
-          .fromTo(photo, { scale: 1.12, yPercent: 5 }, { scale: 1, yPercent: 0, ease: "none", duration: 1 }, 0)
-          .fromTo(name, { yPercent: 95 }, { yPercent: 0, ease: "none", duration: 0.62 }, 0.28);
-      });
     });
 
     media.add("(min-width: 1024px) and (prefers-reduced-motion: no-preference)", () => {
@@ -71,6 +47,7 @@ export function useWinnersMotion(root: RefObject<HTMLDivElement | null>) {
             end: () => `+=${Math.round(window.innerHeight * (0.4 + panels.length * 0.78))}`,
             pin: true,
             scrub: 0.7,
+            refreshPriority: 1,
             anticipatePin: 1,
             invalidateOnRefresh: true,
           },
@@ -138,6 +115,59 @@ export function useWinnersMotion(root: RefObject<HTMLDivElement | null>) {
         });
       });
     });
+
+    const setupArchiveMotion = () => {
+      const archiveIntro = container.querySelector<HTMLElement>("[data-archive-intro]");
+      const yearDigits = archiveIntro?.querySelectorAll<HTMLElement>("[data-archive-year-digit]");
+      const archiveCopy = archiveIntro?.querySelector<HTMLElement>("[data-archive-intro-copy]");
+      if (archiveIntro && yearDigits?.length && archiveCopy) {
+        gsap.timeline({
+          scrollTrigger: { trigger: archiveIntro, start: "top 88%", end: "top 28%", scrub: 0.7 },
+        })
+          .fromTo(yearDigits, { yPercent: 120, rotation: 7 }, { yPercent: 0, rotation: 0, ease: "none", duration: 0.78, stagger: 0.13 }, 0)
+          .fromTo(archiveCopy, { x: 28, autoAlpha: 0.25 }, { x: 0, autoAlpha: 1, ease: "none", duration: 0.65 }, 0.42);
+      }
+
+      const carousel = container.querySelector<HTMLElement>("[data-archive-carousel]");
+      const track = carousel?.querySelector<HTMLElement>("[data-archive-track]");
+      const progress = carousel?.querySelector<HTMLElement>("[data-archive-progress]");
+      const position = carousel?.querySelector<HTMLElement>("[data-archive-position]");
+      const cards = track?.querySelectorAll<HTMLElement>("article");
+      if (!carousel || !track || !progress || !position || !cards?.length) return;
+
+      carousel.dataset.animated = "true";
+      const total = cards.length;
+      const distance = () => Math.max(1, track.scrollWidth - carousel.clientWidth);
+      let horizontalTween: gsap.core.Tween | null = null;
+      horizontalTween = gsap.to(track, {
+        x: () => -distance(),
+        ease: "none",
+        onUpdate: () => {
+          const value = horizontalTween?.progress() ?? 0;
+          progress.style.transform = `scaleX(${value})`;
+          position.textContent = `${String(Math.min(total, 1 + Math.round(value * (total - 1)))).padStart(2, "0")} / ${String(total).padStart(2, "0")}`;
+        },
+        scrollTrigger: {
+          trigger: carousel,
+          start: "top top",
+          end: () => `+=${distance()}`,
+          pin: true,
+          scrub: 0.7,
+          snap: { snapTo: 1 / (total - 1), duration: { min: 0.22, max: 0.5 }, delay: 0.12, ease: "power2.inOut" },
+          refreshPriority: -1,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      return () => {
+        delete carousel.dataset.animated;
+        progress.style.transform = "";
+        position.textContent = `01 / ${String(total).padStart(2, "0")}`;
+      };
+    };
+    media.add("(min-width: 1024px) and (prefers-reduced-motion: no-preference)", setupArchiveMotion);
+    media.add("(max-width: 1023px) and (prefers-reduced-motion: no-preference)", setupArchiveMotion);
 
     const syncAnchor = () => {
       const id = decodeURIComponent(window.location.hash.slice(1));
