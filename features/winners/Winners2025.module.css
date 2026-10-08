@@ -2,7 +2,9 @@
 .intro{display:flex;align-items:end;justify-content:space-between;gap:3rem;max-width:var(--content-width);margin:0 auto 4rem;padding-bottom:2rem;border-bottom:1px solid #b9d3e2}
 .eyebrow{margin:0 0 1rem;color:#5685a5;font:700 .69rem var(--font-ui-family);letter-spacing:.23em;text-transform:uppercase}
 .intro h2{margin:0;color:#162633;font:400 clamp(6rem,14vw,14rem)/.78 var(--font-title-family);letter-spacing:-.09em}
-.intro h2 span{color:#72a0c1}
+.yearMask{display:flex;overflow:hidden;padding:.08em .1em .12em 0}
+.yearMask span{display:block}
+.yearMask .yearDot{color:#72a0c1}
 .introSide{display:grid;gap:1.5rem;max-width:22rem;padding-bottom:.4rem}
 .introSide p{margin:0;color:#4f6576;font:400 clamp(1rem,1.5vw,1.25rem)/1.6 var(--font-body-family)}
 .introSide span{color:#6689a1;font:700 .67rem var(--font-ui-family);letter-spacing:.16em;text-transform:uppercase}

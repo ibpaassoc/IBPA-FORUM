@@ -29,6 +29,17 @@ export function useWinnersMotion(root: RefObject<HTMLDivElement | null>) {
         });
       }
 
+      const archiveIntro = container.querySelector<HTMLElement>("[data-archive-intro]");
+      const yearDigits = archiveIntro?.querySelectorAll<HTMLElement>("[data-archive-year-digit]");
+      const archiveCopy = archiveIntro?.querySelector<HTMLElement>("[data-archive-intro-copy]");
+      if (archiveIntro && yearDigits?.length && archiveCopy) {
+        gsap.timeline({
+          scrollTrigger: { trigger: archiveIntro, start: "top 88%", end: "top 28%", scrub: 0.7 },
+        })
+          .fromTo(yearDigits, { yPercent: 120, rotation: 7 }, { yPercent: 0, rotation: 0, ease: "none", duration: 0.78, stagger: 0.13 }, 0)
+          .fromTo(archiveCopy, { x: 28, autoAlpha: 0.25 }, { x: 0, autoAlpha: 1, ease: "none", duration: 0.65 }, 0.42);
+      }
+
       container.querySelectorAll<HTMLElement>("[data-archive-card]").forEach((card) => {
         const photo = card.querySelector<HTMLElement>("[data-archive-image]");
         const name = card.querySelector<HTMLElement>("[data-archive-name]");

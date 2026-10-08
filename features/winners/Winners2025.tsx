@@ -8,9 +8,9 @@ export default function Winners2025({ c }: { c: WinnersCopy }) {
   const winners = winnersByYear[2025];
   return (
     <section id="winners-2025" className={styles.archive} aria-labelledby="edition-2025-title">
-      <div className={styles.intro}>
-        <div><p className={styles.eyebrow}>{c.archive}</p><h2 id="edition-2025-title">2025<span>.</span></h2></div>
-        <div className={styles.introSide}><p>{c.archiveIntro}</p><span>{String(winners.length).padStart(2, "0")} / {c.archiveArtists}</span></div>
+      <div className={styles.intro} data-archive-intro>
+        <div><p className={styles.eyebrow}>{c.archive}</p><h2 id="edition-2025-title" aria-label="2025" data-archive-year><span className={styles.yearMask} aria-hidden="true"><span data-archive-year-digit>2</span><span data-archive-year-digit>0</span><span data-archive-year-digit>2</span><span data-archive-year-digit>5</span><span data-archive-year-digit className={styles.yearDot}>.</span></span></h2></div>
+        <div className={styles.introSide} data-archive-intro-copy><p>{c.archiveIntro}</p><span>{String(winners.length).padStart(2, "0")} / {c.archiveArtists}</span></div>
       </div>
       <div className={styles.grid}>
         {winners.map((winner, index) => (
