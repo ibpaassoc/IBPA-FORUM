@@ -50,18 +50,39 @@ export function useWinnersMotion(root: RefObject<HTMLDivElement | null>) {
 
         animatedPanels.push(panels);
         let activePanel = -1;
-        const showPanel = (nextPanel: number) => {
+        const showPanel = contextSafe((nextPanel: number, immediate = false) => {
           if (nextPanel === activePanel) return;
+          const previousPanel = activePanel;
+          const direction = previousPanel < nextPanel ? 1 : -1;
           activePanel = nextPanel;
+
           panels.forEach((panel, index) => {
             const isActive = index === nextPanel;
-            gsap.set(panel, { autoAlpha: isActive ? 1 : 0 });
             panel.inert = !isActive;
             panel.setAttribute("aria-hidden", isActive ? "false" : "true");
           });
-        };
 
-        showPanel(0);
+          gsap.killTweensOf(panels);
+          const incoming = panels[nextPanel];
+          const outgoing = previousPanel >= 0 ? panels[previousPanel] : null;
+
+          if (immediate || !outgoing) {
+            gsap.set(panels, { autoAlpha: 0, y: 0 });
+            gsap.set(incoming, { autoAlpha: 1 });
+            return;
+          }
+
+          panels.forEach((panel, index) => {
+            if (index !== previousPanel && index !== nextPanel) gsap.set(panel, { autoAlpha: 0, y: 0 });
+          });
+          gsap.set(incoming, { autoAlpha: 0, y: direction * 14 });
+          gsap.timeline()
+            .to(outgoing, { autoAlpha: 0, y: direction * -10, duration: 0.14, ease: "power2.in" }, 0)
+            .to(incoming, { autoAlpha: 1, y: 0, duration: 0.22, ease: "power3.out" }, 0.045)
+            .set(outgoing, { y: 0 });
+        });
+
+        showPanel(0, true);
         ScrollTrigger.create({
           id: `winners-${category.id}`,
           trigger: stage,
