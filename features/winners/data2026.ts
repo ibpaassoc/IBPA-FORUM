@@ -32,7 +32,7 @@ export const winnerCategories2026: WinnerCategory2026[] = [
     viktoriia("Award Of Excellence In Professional Beauty Training"),
   ] },
   { title: "Makeup Artistry", winners: [
-    winner("Anastasiia Lazarenko", "Anastasia Feshchenko (Lazarenko).png", "anastasia_feshchenko",
+    winner("Anastasiia Lazarenko", "Anastasia Feshchenko (Lazarenko).jpeg", "anastasia_feshchenko",
       "Award Of Excellence In Bridal Makeup Artistry",
       "Award Of Excellence In Creative Makeup Artistry",
       "Award Of Excellence In Daytime Makeup Artistry",
@@ -51,12 +51,12 @@ export const winnerCategories2026: WinnerCategory2026[] = [
   ] },
   { title: "Body, Wellness & Nutrition", winners: [
     winner("Angelina Davydyan", "Angelina Davidyan.png", "bodysculptorangelina", "Award Of Excellence In Anti-Cellulite Treatment"),
-    winner("Olha Isber", "Ольга Исбер (2).png", "olga_isber", "Award Of Excellence In Body Transformation"),
+    winner("Olha Isber", "Olha Isber.jpeg", "olga_isber", "Award Of Excellence In Body Transformation"),
     winner("Anastasiia Huk", "Anastasiia Huk.JPG", "huk_esthetician_", "Award Of Excellence In Nutrition & Diet Correction"),
   ] },
   { title: "Permanent Makeup", winners: [
     viktoriia("Award Of Excellence In Camouflage & Correction", "Award Of Excellence In Lips Pmu"),
-    winner("Olha Kruhlenko", "Olha Kruhlenko.png", "perfect.style.pmu", "Award Of Excellence In Eyeliner Precision"),
+    winner("Olha Kruhlenko", "Olha Kruhlenko.jpeg", "perfect.style.pmu", "Award Of Excellence In Eyeliner Precision"),
     winner("Anna Matiushina", "Anna Matiushina.png", "anna_matyushina_pm", "Award Of Excellence In Pmu Brows"),
   ] },
   { title: "Lash", winners: [
