@@ -4,13 +4,14 @@ import type { RefObject } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 
-gsap.registerPlugin(useGSAP, ScrollTrigger);
+gsap.registerPlugin(useGSAP, ScrollTrigger, ScrollToPlugin);
 
 export function useWinnersMotion(root: RefObject<HTMLDivElement | null>) {
-  useGSAP(() => {
+  useGSAP((_context, contextSafe) => {
     const container = root.current;
-    if (!container) return;
+    if (!container || !contextSafe) return;
     const categories = Array.from(container.querySelectorAll<HTMLElement>("[data-category]"));
     categories.forEach((category) => { category.dataset.animated = "true"; });
     const media = gsap.matchMedia();
@@ -168,14 +169,133 @@ export function useWinnersMotion(root: RefObject<HTMLDivElement | null>) {
     media.add("(min-width: 1024px) and (prefers-reduced-motion: no-preference)", setupArchiveMotion);
     media.add("(max-width: 1023px) and (prefers-reduced-motion: no-preference)", setupArchiveMotion);
 
+    const topicNav = container.querySelector<HTMLElement>("[data-winners-topic-nav]");
+    const topicLinks = Array.from(container.querySelectorAll<HTMLAnchorElement>("[data-topic-link]"));
+    const archive = container.querySelector<HTMLElement>("#winners-2025");
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const usesHorizontalTopics = window.matchMedia("(max-width: 1279px)");
+    let activeTopic = "";
+    let topicScrollTween: gsap.core.Tween | null = null;
+    let restoreScrollBehavior: (() => void) | null = null;
+
+    const stopTopicScroll = () => {
+      topicScrollTween?.kill();
+      topicScrollTween = null;
+      restoreScrollBehavior?.();
+      restoreScrollBehavior = null;
+    };
+
+    const activateTopic = contextSafe((id: string) => {
+      if (id === activeTopic) return;
+      activeTopic = id;
+      let activeLink: HTMLAnchorElement | undefined;
+
+      topicLinks.forEach((link) => {
+        const isActive = link.hash === `#${id}`;
+        link.dataset.active = isActive ? "true" : "false";
+        if (isActive) {
+          link.setAttribute("aria-current", "location");
+          activeLink = link;
+        } else {
+          link.removeAttribute("aria-current");
+        }
+      });
+
+      if (!topicNav || !activeLink || !usesHorizontalTopics.matches || topicNav.scrollWidth <= topicNav.clientWidth) return;
+      const left = Math.max(0, activeLink.offsetLeft - (topicNav.clientWidth - activeLink.offsetWidth) / 2);
+      gsap.to(topicNav, {
+        scrollTo: { x: left },
+        duration: prefersReducedMotion.matches ? 0 : 0.24,
+        ease: "power2.out",
+        overwrite: "auto",
+      });
+    });
+
+    if (topicNav && archive && categories.length) {
+      const topicSections = [...categories, archive];
+      const updateTopics = () => {
+        const anchorLine = window.innerHeight * 0.52;
+        const firstRect = topicSections[0].getBoundingClientRect();
+        const archiveRect = archive.getBoundingClientRect();
+        const isVisible = firstRect.top <= window.innerHeight * 0.78 && archiveRect.bottom > 0;
+        topicNav.dataset.visible = isVisible ? "true" : "false";
+        if (!isVisible) return;
+
+        let activeSection = topicSections[0];
+        topicSections.forEach((section) => {
+          if (section.getBoundingClientRect().top <= anchorLine) activeSection = section;
+        });
+        activateTopic(activeSection.id);
+      };
+
+      ScrollTrigger.create({
+        id: "winners-topic-tracker",
+        trigger: container,
+        start: 0,
+        end: "max",
+        onUpdate: updateTopics,
+        onRefresh: updateTopics,
+      });
+      updateTopics();
+    }
+
+    const topicTop = (id: string) => {
+      const target = document.getElementById(id);
+      if (!target) return null;
+      const pinned = id.startsWith("winner-category-") ? ScrollTrigger.getById(`winners-${id}`) : null;
+      const rawTop = pinned ? pinned.start : target.getBoundingClientRect().top + window.scrollY;
+      if (id === "winners-2025" && usesHorizontalTopics.matches) {
+        const headerHeight = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--site-header-height")) || 0;
+        return Math.max(0, rawTop - headerHeight);
+      }
+      return rawTop;
+    };
+
+    const onTopicClick = contextSafe((event: MouseEvent) => {
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const link = event.currentTarget as HTMLAnchorElement;
+      const id = decodeURIComponent(link.hash.slice(1));
+      const top = topicTop(id);
+      if (top === null) return;
+
+      event.preventDefault();
+      window.history.replaceState(null, "", `#${id}`);
+      activateTopic(id);
+      stopTopicScroll();
+
+      if (prefersReducedMotion.matches) {
+        window.scrollTo({ top, behavior: "instant" });
+        return;
+      }
+
+      const distance = Math.abs(window.scrollY - top);
+      const duration = Math.min(0.62, Math.max(0.26, 0.22 + (distance / window.innerHeight) * 0.045));
+      const html = document.documentElement;
+      const previousScrollBehavior = html.style.scrollBehavior;
+      html.style.scrollBehavior = "auto";
+      restoreScrollBehavior = () => { html.style.scrollBehavior = previousScrollBehavior; };
+      const finishTopicScroll = () => {
+        topicScrollTween = null;
+        restoreScrollBehavior?.();
+        restoreScrollBehavior = null;
+      };
+      topicScrollTween = gsap.to(window, {
+        scrollTo: { y: top, autoKill: false },
+        duration,
+        ease: "power3.inOut",
+        overwrite: "auto",
+        onComplete: finishTopicScroll,
+        onInterrupt: finishTopicScroll,
+      });
+    });
+
+    topicLinks.forEach((link) => link.addEventListener("click", onTopicClick));
+
     const syncAnchor = () => {
       const id = decodeURIComponent(window.location.hash.slice(1));
       if (!id || !/^(winner-category-\d+|winners-202[56])$/.test(id)) return;
-      const target = document.getElementById(id);
-      if (!target) return;
-      const stage = target.querySelector<HTMLElement>("[data-category-stage]");
-      const pin = stage && ScrollTrigger.getAll().find((trigger) => trigger.trigger === stage);
-      const top = pin ? pin.start : target.getBoundingClientRect().top + window.scrollY;
+      const top = topicTop(id);
+      if (top === null) return;
       window.scrollTo({ top, behavior: "instant" });
     };
 
@@ -192,6 +312,9 @@ export function useWinnersMotion(root: RefObject<HTMLDivElement | null>) {
       active = false;
       cancelAnimationFrame(frame);
       window.removeEventListener("hashchange", onHashChange);
+      topicLinks.forEach((link) => link.removeEventListener("click", onTopicClick));
+      stopTopicScroll();
+      if (topicNav) delete topicNav.dataset.visible;
       media.revert();
       categories.forEach((category) => { delete category.dataset.animated; });
     };
