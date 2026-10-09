@@ -31,59 +31,58 @@ export function useWinnersMotion(root: RefObject<HTMLDivElement | null>) {
     });
 
     media.add("(min-width: 1024px) and (prefers-reduced-motion: no-preference)", () => {
+      const animatedPanels: HTMLElement[][] = [];
+
       container.querySelectorAll<HTMLElement>("[data-category]").forEach((category) => {
         const stage = category.querySelector<HTMLElement>("[data-category-stage]");
-        const title = category.querySelector<HTMLElement>("[data-category-title]");
         const word = category.querySelector<HTMLElement>("[data-category-word]");
         const panels = Array.from(category.querySelectorAll<HTMLElement>("[data-spotlight]"));
-        if (!stage || !title || !word || !panels.length) return;
+        if (!stage || !word || !panels.length) return;
 
-        if (panels.length > 1) gsap.set(panels.slice(1), { autoAlpha: 0 });
-        const timeline = gsap.timeline({
-          defaults: { ease: "none" },
-          scrollTrigger: {
-            trigger: stage,
-            start: "top top",
-            end: () => `+=${Math.round(window.innerHeight * (0.4 + panels.length * 0.78))}`,
-            pin: true,
-            scrub: 0.7,
-            refreshPriority: 1,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
+        gsap.fromTo(word, { xPercent: 3 }, {
+          xPercent: -3,
+          ease: "none",
+          scrollTrigger: { trigger: category, start: "top bottom", end: "bottom top", scrub: 0.25 },
+        });
+
+        if (panels.length === 1) return;
+
+        animatedPanels.push(panels);
+        let activePanel = -1;
+        const showPanel = (nextPanel: number) => {
+          if (nextPanel === activePanel) return;
+          activePanel = nextPanel;
+          panels.forEach((panel, index) => {
+            const isActive = index === nextPanel;
+            gsap.set(panel, { autoAlpha: isActive ? 1 : 0 });
+            panel.inert = !isActive;
+            panel.setAttribute("aria-hidden", isActive ? "false" : "true");
+          });
+        };
+
+        showPanel(0);
+        ScrollTrigger.create({
+          id: `winners-${category.id}`,
+          trigger: stage,
+          start: "top top",
+          end: () => `+=${Math.round(window.innerHeight * (panels.length - 1) * 0.48)}`,
+          pin: true,
+          refreshPriority: 1,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+          onUpdate: (self) => {
+            const nextPanel = Math.min(panels.length - 1, Math.floor(self.progress * panels.length));
+            showPanel(nextPanel);
           },
         });
-
-        timeline
-          .fromTo(title, { xPercent: -6, autoAlpha: 0.48 }, { xPercent: 0, autoAlpha: 1, duration: 0.55 }, 0)
-          .fromTo(word, { xPercent: 7 }, { xPercent: -7, duration: Math.max(1.1, panels.length) }, 0);
-
-        panels.forEach((panel, index) => {
-          const photo = panel.querySelector<HTMLElement>("[data-spotlight-photo]");
-          const name = panel.querySelector<HTMLElement>("[data-spotlight-name]");
-          const awards = panel.querySelector<HTMLElement>("[data-spotlight-awards]");
-          const copy = panel.querySelector<HTMLElement>("[data-spotlight-copy]");
-          if (!photo || !name || !awards || !copy) return;
-          const enterAt = index === 0 ? 0 : 0.72 + (index - 1) * 1.02;
-
-          if (index > 0) {
-            const previous = panels[index - 1];
-            const oldPhoto = previous.querySelector<HTMLElement>("[data-spotlight-photo]");
-            const oldCopy = previous.querySelector<HTMLElement>("[data-spotlight-copy]");
-            if (oldPhoto && oldCopy) {
-              timeline
-                .to(oldPhoto, { xPercent: -30, scale: 0.88, autoAlpha: 0, duration: 0.38 }, enterAt + 0.08)
-                .to(oldCopy, { xPercent: -7, autoAlpha: 0, duration: 0.2 }, enterAt)
-                .set(previous, { autoAlpha: 0 }, enterAt + 0.45);
-            }
-            timeline.set(panel, { autoAlpha: 1 }, enterAt);
-          }
-
-          timeline
-            .fromTo(photo, { xPercent: index ? 30 : 0, scale: index ? 1.14 : 1.055, autoAlpha: index ? 0 : 1 }, { xPercent: 0, scale: 1, autoAlpha: 1, duration: 0.5 }, enterAt)
-            .fromTo(name, { yPercent: index ? 90 : 18 }, { yPercent: 0, duration: 0.35 }, enterAt + (index ? 0.23 : 0))
-            .fromTo(awards, { y: index ? 25 : 9, autoAlpha: index ? 0 : 0.8 }, { y: 0, autoAlpha: 1, duration: 0.34 }, enterAt + (index ? 0.36 : 0));
-        });
       });
+
+      return () => {
+        animatedPanels.flat().forEach((panel) => {
+          panel.inert = false;
+          panel.removeAttribute("aria-hidden");
+        });
+      };
     });
 
     media.add("(max-width: 1023px) and (prefers-reduced-motion: no-preference)", () => {
