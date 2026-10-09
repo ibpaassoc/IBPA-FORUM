@@ -1,4 +1,4 @@
-.nav{--rail-surface:#f8f8f6ed;position:sticky;top:var(--site-header-height,90px);z-index:80;width:100%;height:var(--winners-index-height,58px);overflow-x:auto;overflow-y:hidden;border-block:1px solid #b9d3e2;background:var(--rail-surface);box-shadow:0 12px 32px #244f6b12;backdrop-filter:blur(18px);scrollbar-gutter:stable}
+.nav{--rail-surface:#f8f8f6ed;position:sticky;top:68px;z-index:80;width:100%;height:var(--winners-index-height,58px);overflow-x:auto;overflow-y:hidden;border-block:1px solid #b9d3e2;background:var(--rail-surface);box-shadow:0 12px 32px #244f6b12;backdrop-filter:blur(18px);scrollbar-gutter:stable}
 .list{display:flex;align-items:center;gap:.45rem;width:max-content;min-width:100%;height:100%;margin:0;padding:.45rem var(--page-gutter);list-style:none}
 .list a{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:38px;padding:.48rem .82rem;border:1px solid #b9d3e2;border-radius:99px;background:#fff9;color:#48697f;font:700 .64rem/1 var(--font-ui-family);letter-spacing:.06em;text-decoration:none;white-space:nowrap;cursor:pointer;transition:border-color .2s ease,background-color .2s ease,box-shadow .2s ease,color .2s ease,transform .2s ease}
 .list a:hover{border-color:#72a0c1;background:#fff;color:#214d6c;transform:translateY(-1px)}
@@ -9,6 +9,8 @@
 .topicItem a[data-active="true"]>span{background:#2f6f99;box-shadow:0 0 0 3px #b9d9eb66}
 .yearItem a{min-width:72px;color:#54748a;letter-spacing:.13em}
 .yearItem a[data-active="true"]{border-color:#5f94b7;background:#eaf4f9;color:#173f5b}
+
+@media(min-width:1024px) and (max-width:1279px){.nav{top:80px}}
 
 @media(min-width:1280px){
   .nav{position:fixed;top:calc(var(--site-header-height,90px) + 1rem);left:clamp(1rem,2vw,2rem);width:9rem;height:auto;max-height:calc(100svh - var(--site-header-height,90px) - 2rem);overflow-x:hidden;overflow-y:auto;border:0;background:transparent;box-shadow:none;backdrop-filter:none;opacity:0;pointer-events:none;transform:translateX(-.5rem);transition:opacity .22s ease,transform .22s ease}
