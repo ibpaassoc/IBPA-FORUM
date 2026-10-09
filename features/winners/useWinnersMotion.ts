@@ -49,8 +49,20 @@ export function useWinnersMotion(root: RefObject<HTMLDivElement | null>) {
         if (panels.length === 1) return;
 
         animatedPanels.push(panels);
-        let activePanel = -1;
-        const showPanel = contextSafe((nextPanel: number, immediate = false) => {
+        gsap.set(panels, { opacity: 0, visibility: "hidden", y: 0 });
+        gsap.set(panels[0], { opacity: 1, visibility: "visible" });
+        const setY = panels.map((panel) => gsap.quickSetter(panel, "y", "px"));
+        const setVisibility = panels.map((panel) => gsap.quickSetter(panel, "visibility"));
+        const fadeTo = panels.map((panel) => gsap.quickTo(panel, "opacity", { duration: 0.18, ease: "power2.out" }));
+        const moveTo = panels.map((panel) => gsap.quickTo(panel, "y", { duration: 0.22, ease: "power3.out" }));
+        let activePanel = 0;
+        panels.forEach((panel, index) => {
+          const isActive = index === activePanel;
+          panel.inert = !isActive;
+          panel.setAttribute("aria-hidden", isActive ? "false" : "true");
+        });
+
+        const showPanel = (nextPanel: number) => {
           if (nextPanel === activePanel) return;
           const previousPanel = activePanel;
           const direction = previousPanel < nextPanel ? 1 : -1;
@@ -62,27 +74,22 @@ export function useWinnersMotion(root: RefObject<HTMLDivElement | null>) {
             panel.setAttribute("aria-hidden", isActive ? "false" : "true");
           });
 
-          gsap.killTweensOf(panels);
           const incoming = panels[nextPanel];
-          const outgoing = previousPanel >= 0 ? panels[previousPanel] : null;
-
-          if (immediate || !outgoing) {
-            gsap.set(panels, { autoAlpha: 0, y: 0 });
-            gsap.set(incoming, { autoAlpha: 1 });
-            return;
-          }
-
           panels.forEach((panel, index) => {
-            if (index !== previousPanel && index !== nextPanel) gsap.set(panel, { autoAlpha: 0, y: 0 });
+            if (index !== previousPanel && index !== nextPanel) {
+              setVisibility[index]("hidden");
+              fadeTo[index](0);
+              moveTo[index](0);
+            }
           });
-          gsap.set(incoming, { autoAlpha: 0, y: direction * 14 });
-          gsap.timeline()
-            .to(outgoing, { autoAlpha: 0, y: direction * -10, duration: 0.14, ease: "power2.in" }, 0)
-            .to(incoming, { autoAlpha: 1, y: 0, duration: 0.22, ease: "power3.out" }, 0.045)
-            .set(outgoing, { y: 0 });
-        });
+          setVisibility[nextPanel]("visible");
+          if (Number(gsap.getProperty(incoming, "opacity")) < 0.05) setY[nextPanel](direction * 14);
+          fadeTo[previousPanel](0);
+          moveTo[previousPanel](direction * -10);
+          fadeTo[nextPanel](1);
+          moveTo[nextPanel](0);
+        };
 
-        showPanel(0, true);
         ScrollTrigger.create({
           id: `winners-${category.id}`,
           trigger: stage,
@@ -236,10 +243,13 @@ export function useWinnersMotion(root: RefObject<HTMLDivElement | null>) {
       const topicSections = [...categories, archive];
       const updateTopics = () => {
         const anchorLine = window.innerHeight * 0.52;
+        const sectionBoundary = Math.max(0, document.querySelector("header")?.getBoundingClientRect().bottom ?? 0);
         const firstRect = topicSections[0].getBoundingClientRect();
         const archiveRect = archive.getBoundingClientRect();
-        const isVisible = firstRect.top <= window.innerHeight * 0.78 && archiveRect.bottom > 0;
+        const isVisible = firstRect.top <= sectionBoundary && archiveRect.top > sectionBoundary;
         topicNav.dataset.visible = isVisible ? "true" : "false";
+        topicNav.inert = !isVisible;
+        topicNav.setAttribute("aria-hidden", isVisible ? "false" : "true");
         if (!isVisible) return;
 
         let activeSection = topicSections[0];
@@ -335,7 +345,11 @@ export function useWinnersMotion(root: RefObject<HTMLDivElement | null>) {
       window.removeEventListener("hashchange", onHashChange);
       topicLinks.forEach((link) => link.removeEventListener("click", onTopicClick));
       stopTopicScroll();
-      if (topicNav) delete topicNav.dataset.visible;
+      if (topicNav) {
+        topicNav.inert = false;
+        topicNav.removeAttribute("aria-hidden");
+        delete topicNav.dataset.visible;
+      }
       media.revert();
       categories.forEach((category) => { delete category.dataset.animated; });
     };
