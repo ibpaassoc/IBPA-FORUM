@@ -4,7 +4,7 @@ import { LandingPageShell } from "@/shared/components/public";
 
 export const metadata: Metadata = {
   title: "Winners | IBPA Beauty Awards",
-  description: "Meet the artists and innovators celebrated at the 2025 IBPA Beauty Awards.",
+  description: "Meet the winners of the 2026 IBPA Beauty Awards and explore the 2025 archive.",
 };
 
 export default function WinnersPage() {

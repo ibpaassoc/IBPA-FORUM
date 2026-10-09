@@ -1177,12 +1177,12 @@ const en = {
       unmuteLabel: "Unmute",
     },
     previousWinners: {
-      eyebrow: "Previous Winners",
-      title: "Winners who shaped the previous forum",
+      eyebrow: "IBPA Beauty Awards / 2026",
+      title: "The artists behind the awards",
       prevLabel: "Previous winners",
       nextLabel: "Next winners",
       goToLabel: "Go to winner",
-      seeAll: "Explore all 2025 winners",
+      seeAll: "Explore the 2026 winners",
     },
     program: {
       eyebrow: "September 2026",
@@ -4133,12 +4133,12 @@ const ru: typeof en = {
       unmuteLabel: "Включить звук",
     },
     previousWinners: {
-      eyebrow: "Победители прошлого форума",
-      title: "Победители, ставшие частью Beauty Business Forum 2025",
+      eyebrow: "IBPA Beauty Awards / 2026",
+      title: "Мастера, стоящие за наградами",
       prevLabel: "Предыдущие победители",
       nextLabel: "Следующие победители",
       goToLabel: "Перейти к победителю",
-      seeAll: "Все победители 2025",
+      seeAll: "Смотреть победителей 2026",
     },
     program: {
       eyebrow: "Сентябрь 2026",
@@ -7090,12 +7090,12 @@ const ua: typeof en = {
       unmuteLabel: "Увімкнути звук",
     },
     previousWinners: {
-      eyebrow: "Переможці попереднього форуму",
-      title: "Переможці, які стали частиною Beauty Business Forum 2025",
+      eyebrow: "IBPA Beauty Awards / 2026",
+      title: "Майстри, що стоять за нагородами",
       prevLabel: "Попередні переможці",
       nextLabel: "Наступні переможці",
       goToLabel: "Перейти до переможця",
-      seeAll: "Усі переможці 2025",
+      seeAll: "Дивитися переможців 2026",
     },
     program: {
       eyebrow: "Вересень 2026",
