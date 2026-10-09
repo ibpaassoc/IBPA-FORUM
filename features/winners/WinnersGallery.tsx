@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import WinnersHero from "./WinnersHero";
+import WinnersTopicNav from "./WinnersTopicNav";
 import Winners2026 from "./Winners2026";
 import Winners2025 from "./Winners2025";
 import { useWinnersMotion } from "./useWinnersMotion";
@@ -20,6 +21,7 @@ export default function WinnersGallery() {
   return (
     <div ref={root} className={styles.page}>
       <WinnersHero c={c} />
+      <WinnersTopicNav c={c} />
       <Winners2026 c={c} />
       <Winners2025 c={c} />
       <div className={styles.closing}>
