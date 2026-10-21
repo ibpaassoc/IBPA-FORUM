@@ -1,450 +1,222 @@
 "use client";
 
-import { useActionState, useMemo, useState } from "react";
-import {
-  CheckCircle2,
-  Loader2,
-  Mail,
-  Search,
-  Send,
-  UserRoundCheck,
-  Users,
-} from "lucide-react";
-import {
-  type MailingActionState,
-  sendMailingAction,
-} from "@/features/admin/actions/mailing.actions";
+import { useCallback, useMemo, useState } from "react";
+import { ArrowDown } from "lucide-react";
 import {
   DEFAULT_MAILING_SUBJECT,
   DEFAULT_MAILING_TEXT,
+  planMailingBatches,
+  type MailingOutcome,
+  type MailingRecipientGroup,
 } from "@/features/admin/lib/mailing";
 import type { MailingRecipient } from "@/features/admin/server/mailing";
+import { StatusBadge } from "@/shared/components/admin/DashboardUI";
+import MailingComposer, { type MailingTemplateKey } from "./MailingComposer";
+import MailingRecipientPicker from "./MailingRecipientPicker";
 import {
-  DashboardCard,
-  DashboardHeader,
-  DashboardKpiBar,
-  DashboardPanel,
-  DashboardPrimaryBtn,
-  DashboardSecondaryBtn,
-  MetricCard,
-  StatusBadge,
-  dashboardInputClass,
-  dashboardSelectClass,
-  dashboardTextareaClass,
-} from "@/shared/components/admin/DashboardUI";
+  GROUP_META,
+  GROUP_ORDER,
+  type RecipientSendStatuses,
+} from "./mailing-recipient-meta";
+import { applyOutcomes, useMailingSender } from "./use-mailing-sender";
 
-const initialState: MailingActionState = { status: "idle" };
-
-type RegistrationFilter = "all" | "registered" | "not-registered";
-
-function recipientMatches(
-  recipient: MailingRecipient,
-  search: string,
-  registrationFilter: RegistrationFilter,
-) {
-  const normalizedSearch = search.trim().toLocaleLowerCase("ru-RU");
-  const matchesSearch =
-    !normalizedSearch ||
-    recipient.fullName.toLocaleLowerCase("ru-RU").includes(normalizedSearch) ||
-    recipient.email.toLocaleLowerCase("ru-RU").includes(normalizedSearch);
-  const matchesRegistration =
-    registrationFilter === "all" ||
-    recipient.registrationState.key === registrationFilter;
-  return matchesSearch && matchesRegistration;
-}
-
-function RecipientRow({
-  recipient,
-  checked,
-  onToggle,
-}: {
-  recipient: MailingRecipient;
-  checked: boolean;
-  onToggle: (id: string) => void;
-}) {
-  const registrationTone =
-    recipient.registrationState.key === "registered"
-      ? "green"
-      : recipient.registrationState.key === "disabled"
-        ? "red"
-        : "amber";
-
-  return (
-    <DashboardPanel
-      className={`transition ${
-        checked
-          ? "border-[rgba(114,160,193,0.5)] bg-[var(--color-blue-wash)]/82"
-          : "hover:border-[rgba(114,160,193,0.3)]"
-      } ${recipient.selectable ? "" : "opacity-65"}`}
-    >
-      <label className={recipient.selectable ? "cursor-pointer" : "cursor-not-allowed"}>
-        <div className="flex items-start gap-3">
-          <input
-            type="checkbox"
-            checked={checked}
-            disabled={!recipient.selectable}
-            onChange={() => onToggle(recipient.id)}
-            className="mt-1 size-4 shrink-0 accent-[var(--color-blue)]"
-            aria-label={`Выбрать ${recipient.fullName}`}
-          />
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-              <div className="min-w-0">
-                <p className="truncate font-semibold text-[var(--color-ink)]">
-                  {recipient.fullName}
-                </p>
-                <p className="mt-1 truncate text-sm text-[var(--color-ink-soft)]">
-                  {recipient.email}
-                </p>
-              </div>
-              <StatusBadge tone={registrationTone}>
-                {recipient.registrationState.label}
-              </StatusBadge>
-            </div>
-
-            {recipient.role === "APPLICANT" ? (
-              <div className="mt-4">
-                <DashboardKpiBar
-                  value={recipient.completionPercentage ?? 0}
-                  label={
-                    recipient.nominationCount === 0
-                      ? "Нет номинаций"
-                      : `Заполнение · номинаций: ${recipient.nominationCount}`
-                  }
-                />
-              </div>
-            ) : (
-              <p className="mt-3 text-xs uppercase tracking-[0.12em] text-[var(--color-ink-soft)]">
-                Аккаунт жюри
-              </p>
-            )}
-          </div>
-        </div>
-      </label>
-    </DashboardPanel>
-  );
-}
-
-function RecipientSection({
-  title,
-  description,
-  recipients,
-  selected,
-  onToggle,
-  emptyText,
-  actions,
-  tone,
-}: {
-  title: string;
-  description: string;
-  recipients: MailingRecipient[];
-  selected: Set<string>;
-  onToggle: (id: string) => void;
-  emptyText: string;
-  actions: React.ReactNode;
-  tone: "applicant" | "jury";
-}) {
-  return (
-    <DashboardCard
-      className={
-        tone === "applicant"
-          ? "border-[rgba(114,160,193,0.26)]"
-          : "border-[rgba(139,92,246,0.2)]"
-      }
-    >
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <span
-              className={`flex size-9 items-center justify-center rounded-full ${
-                tone === "applicant"
-                  ? "bg-[var(--color-blue-wash)] text-[var(--color-blue)]"
-                  : "bg-violet-50 text-violet-600"
-              }`}
-            >
-              {tone === "applicant" ? <UserRoundCheck size={17} /> : <Users size={17} />}
-            </span>
-            <h2 className="font-[var(--font-title-family)] text-2xl font-light">
-              {title}
-            </h2>
-          </div>
-          <p className="mt-2 text-sm leading-6 text-[var(--color-ink-soft)]">
-            {description}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">{actions}</div>
-      </div>
-
-      <div className="mt-5 grid gap-3 xl:grid-cols-2">
-        {recipients.length > 0 ? (
-          recipients.map((recipient) => (
-            <RecipientRow
-              key={recipient.id}
-              recipient={recipient}
-              checked={selected.has(recipient.id)}
-              onToggle={onToggle}
-            />
-          ))
-        ) : (
-          <DashboardPanel className="xl:col-span-2">
-            <p className="py-6 text-center text-sm text-[var(--color-ink-soft)]">
-              {emptyText}
-            </p>
-          </DashboardPanel>
-        )}
-      </div>
-    </DashboardCard>
-  );
-}
+const TEMPLATES: Record<MailingTemplateKey, { subject: string; body: string }> = {
+  reminder: { subject: DEFAULT_MAILING_SUBJECT, body: DEFAULT_MAILING_TEXT },
+  blank: { subject: "", body: "" },
+};
 
 export default function AdminMailingPage({
   applicants,
   jury,
+  tickets,
 }: {
   applicants: MailingRecipient[];
   jury: MailingRecipient[];
+  tickets: MailingRecipient[];
 }) {
-  const [state, formAction, pending] = useActionState(sendMailingAction, initialState);
+  const groups = useMemo<Record<MailingRecipientGroup, MailingRecipient[]>>(
+    () => ({ APPLICANT: applicants, JURY: jury, TICKET: tickets }),
+    [applicants, jury, tickets],
+  );
+  const recipientsByRef = useMemo(() => {
+    const map = new Map<string, MailingRecipient>();
+    for (const group of GROUP_ORDER) {
+      for (const recipient of groups[group]) map.set(recipient.ref, recipient);
+    }
+    return map;
+  }, [groups]);
+
   const [selected, setSelected] = useState<Set<string>>(() => new Set());
-  const [search, setSearch] = useState("");
-  const [registrationFilter, setRegistrationFilter] =
-    useState<RegistrationFilter>("all");
+  const [statuses, setStatuses] = useState<RecipientSendStatuses>({});
+  const [template, setTemplate] = useState<MailingTemplateKey>("reminder");
+  const [subject, setSubject] = useState(TEMPLATES.reminder.subject);
+  const [body, setBody] = useState(TEMPLATES.reminder.body);
+  const [confirmed, setConfirmed] = useState(false);
 
-  const visibleApplicants = useMemo(
-    () =>
-      applicants.filter((recipient) =>
-        recipientMatches(recipient, search, registrationFilter),
-      ),
-    [applicants, registrationFilter, search],
-  );
-  const visibleJury = useMemo(
-    () =>
-      jury.filter((recipient) =>
-        recipientMatches(recipient, search, registrationFilter),
-      ),
-    [jury, registrationFilter, search],
+  const handleOutcomes = useCallback(
+    (outcomes: MailingOutcome[], duplicates: string[]) => {
+      setStatuses((current) => applyOutcomes(current, outcomes, duplicates));
+      // Everything that was handled leaves the selection; failures stay so the
+      // next press of "Send" retries exactly those recipients.
+      setSelected((current) => {
+        const next = new Set(current);
+        for (const outcome of outcomes) {
+          if (outcome.status !== "failed") next.delete(outcome.ref);
+        }
+        for (const ref of duplicates) next.delete(ref);
+        return next;
+      });
+    },
+    [],
   );
 
-  function toggleRecipient(id: string) {
+  const { progress, running, start, stop } = useMailingSender({
+    onOutcomes: handleOutcomes,
+  });
+
+  const selectedRecipients = useMemo(
+    () =>
+      [...selected]
+        .map((ref) => recipientsByRef.get(ref))
+        .filter((recipient): recipient is MailingRecipient => Boolean(recipient)),
+    [selected, recipientsByRef],
+  );
+
+  const selectedPerGroup = useMemo(() => {
+    const counts: Record<MailingRecipientGroup, number> = {
+      APPLICANT: 0,
+      JURY: 0,
+      TICKET: 0,
+    };
+    for (const recipient of selectedRecipients) counts[recipient.group] += 1;
+    return counts;
+  }, [selectedRecipients]);
+
+  const plan = useMemo(
+    () => planMailingBatches(selectedRecipients),
+    [selectedRecipients],
+  );
+
+  const toggleRecipient = useCallback((ref: string) => {
     setSelected((current) => {
       const next = new Set(current);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(ref)) next.delete(ref);
+      else next.add(ref);
       return next;
     });
-  }
+  }, []);
 
-  function addRecipients(recipients: MailingRecipient[]) {
+  const selectMany = useCallback((refs: string[], checked: boolean) => {
     setSelected((current) => {
       const next = new Set(current);
-      for (const recipient of recipients) {
-        if (recipient.selectable) next.add(recipient.id);
+      for (const ref of refs) {
+        if (checked) next.add(ref);
+        else next.delete(ref);
       }
       return next;
+    });
+  }, []);
+
+  function clearGroup(group: MailingRecipientGroup) {
+    selectMany(
+      groups[group].map((recipient) => recipient.ref),
+      false,
+    );
+  }
+
+  function changeTemplate(key: MailingTemplateKey) {
+    setTemplate(key);
+    setSubject(TEMPLATES[key].subject);
+    setBody(TEMPLATES[key].body);
+  }
+
+  function send() {
+    // Each run needs a fresh confirmation, including a retry of failures.
+    setConfirmed(false);
+    void start({
+      subject,
+      body,
+      recipients: selectedRecipients.map((recipient) => ({
+        ref: recipient.ref,
+        email: recipient.email,
+      })),
     });
   }
 
   const registeredCount = [...applicants, ...jury].filter(
-    (recipient) => recipient.registrationState.key === "registered",
-  ).length;
-  const incompleteCount = applicants.filter(
-    (recipient) => (recipient.completionPercentage ?? 0) < 100,
+    (recipient) => recipient.registrationState?.key === "registered",
   ).length;
 
   return (
-    <form action={formAction} className="flex flex-col gap-6">
-      <DashboardHeader
-        label="Коммуникации"
-        title="Рассылка"
-        description="Подготовьте письмо и выберите получателей. Заявители и жюри разделены по типу аккаунта; каждому адресату письмо отправляется отдельно."
-        meta={
-          <div className="flex flex-wrap gap-2">
-            <StatusBadge tone="blue">Выбрано: {selected.size}</StatusBadge>
-            <StatusBadge tone="green">Зарегистрировано: {registeredCount}</StatusBadge>
-            <StatusBadge tone="amber">Незавершённых заявок: {incompleteCount}</StatusBadge>
-          </div>
-        }
-      />
+    <div className="flex flex-col gap-5 pb-20 xl:pb-0">
+      <header className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+        <div className="min-w-0">
+          <p className="font-[var(--font-accent-family)] text-[clamp(0.95rem,1.6vw,1.15rem)] italic tracking-[0.03em] text-[var(--color-blue)]">
+            Коммуникации
+          </p>
+          <h1 className="font-[var(--font-title-family)] text-[clamp(2rem,4.4vw,3.2rem)] font-light leading-none tracking-[-0.025em] text-[var(--color-ink)]">
+            Рассылка
+          </h1>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--color-ink-soft)]">
+            Выберите получателей — заявителей, жюри или владельцев билетов — и напишите
+            письмо. Отправка идёт небольшими партиями с прогрессом, поэтому большой
+            список не зависает.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {GROUP_ORDER.map((group) => (
+            <StatusBadge key={group} tone={group === "TICKET" ? "green" : "blue"}>
+              {GROUP_META[group].label}: {groups[group].length}
+            </StatusBadge>
+          ))}
+          <StatusBadge tone="green">Зарегистрировано: {registeredCount}</StatusBadge>
+        </div>
+      </header>
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        <MetricCard label="Заявители" value={applicants.length} icon={UserRoundCheck} />
-        <MetricCard label="Жюри" value={jury.length} icon={Users} accent="purple" />
-        <MetricCard label="Получатели" value={selected.size} icon={Mail} accent="green" />
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.1fr)_minmax(400px,0.9fr)] xl:items-start">
+        <MailingRecipientPicker
+          groups={groups}
+          selected={selected}
+          statuses={statuses}
+          locked={running}
+          onToggle={toggleRecipient}
+          onSelectMany={selectMany}
+        />
+        <div
+          id="mailing-composer"
+          className="scroll-mt-4 xl:sticky xl:top-4 xl:max-h-[calc(100vh-2rem)] xl:overflow-y-auto xl:rounded-[28px]"
+        >
+          <MailingComposer
+            subject={subject}
+            body={body}
+            template={template}
+            onSubjectChange={setSubject}
+            onBodyChange={setBody}
+            onTemplateChange={changeTemplate}
+            selectedPerGroup={selectedPerGroup}
+            uniqueCount={plan.uniqueCount}
+            duplicateCount={plan.duplicateCount}
+            confirmed={confirmed}
+            onConfirmedChange={setConfirmed}
+            progress={progress}
+            running={running}
+            onSend={send}
+            onStop={stop}
+            onClearGroup={clearGroup}
+            onClearAll={() => setSelected(new Set())}
+          />
+        </div>
       </div>
 
-      <DashboardCard>
-        <div className="flex items-center gap-3">
-          <span className="flex size-10 items-center justify-center rounded-full bg-[var(--color-blue-wash)] text-[var(--color-blue)]">
-            <Mail size={18} />
-          </span>
-          <div>
-            <h2 className="font-[var(--font-title-family)] text-2xl font-light">
-              Текст письма
-            </h2>
-            <p className="text-sm text-[var(--color-ink-soft)]">
-              Текст ниже уже заполнен напоминанием для заявителей и доступен для редактирования.
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-5 grid gap-4">
-          <label className="grid gap-2 text-sm font-semibold text-[var(--color-ink)]">
-            Тема письма
-            <input
-              name="subject"
-              required
-              maxLength={160}
-              defaultValue={DEFAULT_MAILING_SUBJECT}
-              className={dashboardInputClass}
-            />
-          </label>
-          <label className="grid gap-2 text-sm font-semibold text-[var(--color-ink)]">
-            Сообщение
-            <textarea
-              name="body"
-              required
-              maxLength={10_000}
-              rows={16}
-              defaultValue={DEFAULT_MAILING_TEXT}
-              className={`${dashboardTextareaClass} min-h-[360px]`}
-            />
-          </label>
-        </div>
-      </DashboardCard>
-
-      <DashboardCard>
-        <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_250px_auto] md:items-end">
-          <label className="grid gap-2 text-sm font-semibold text-[var(--color-ink)]">
-            Поиск получателя
-            <span className="relative block">
-              <Search
-                aria-hidden
-                size={16}
-                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-ink-soft)]"
-              />
-              <input
-                type="search"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder="Имя или email"
-                className={`${dashboardInputClass} pl-11`}
-              />
-            </span>
-          </label>
-          <label className="grid gap-2 text-sm font-semibold text-[var(--color-ink)]">
-            Регистрация аккаунта
-            <select
-              value={registrationFilter}
-              onChange={(event) =>
-                setRegistrationFilter(event.target.value as RegistrationFilter)
-              }
-              className={dashboardSelectClass}
-            >
-              <option value="all">Все статусы</option>
-              <option value="registered">Зарегистрирован</option>
-              <option value="not-registered">Не зарегистрирован</option>
-            </select>
-          </label>
-          <DashboardSecondaryBtn type="button" onClick={() => setSelected(new Set())}>
-            Очистить выбор
-          </DashboardSecondaryBtn>
-        </div>
-      </DashboardCard>
-
-      <RecipientSection
-        title={`Заявители · ${visibleApplicants.length}`}
-        description="Для каждого заявителя показан средний процент заполнения всех активных номинаций."
-        recipients={visibleApplicants}
-        selected={selected}
-        onToggle={toggleRecipient}
-        emptyText="Заявители по заданным условиям не найдены."
-        tone="applicant"
-        actions={
-          <>
-            <DashboardSecondaryBtn
-              type="button"
-              onClick={() => addRecipients(visibleApplicants)}
-            >
-              Выбрать показанных
-            </DashboardSecondaryBtn>
-            <DashboardSecondaryBtn
-              type="button"
-              onClick={() =>
-                addRecipients(
-                  visibleApplicants.filter(
-                    (recipient) => (recipient.completionPercentage ?? 0) < 100,
-                  ),
-                )
-              }
-            >
-              Выбрать незавершённых
-            </DashboardSecondaryBtn>
-          </>
-        }
-      />
-
-      <RecipientSection
-        title={`Жюри · ${visibleJury.length}`}
-        description="В рассылку доступны только члены жюри с одобренными заявками."
-        recipients={visibleJury}
-        selected={selected}
-        onToggle={toggleRecipient}
-        emptyText="Члены жюри по заданным условиям не найдены."
-        tone="jury"
-        actions={
-          <DashboardSecondaryBtn type="button" onClick={() => addRecipients(visibleJury)}>
-            Выбрать показанных
-          </DashboardSecondaryBtn>
-        }
-      />
-
-      {[...selected].map((id) => (
-        <input key={id} type="hidden" name="recipientIds" value={id} />
-      ))}
-
-      <DashboardCard className="sticky bottom-4 z-20 border-[rgba(114,160,193,0.32)] bg-white/92 shadow-[0_24px_70px_rgba(37,42,45,0.15)]">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <label className="flex cursor-pointer items-start gap-3 text-sm leading-6 text-[var(--color-ink-soft)]">
-            <input
-              type="checkbox"
-              name="confirmation"
-              value="yes"
-              required
-              className="mt-1 size-4 shrink-0 accent-[var(--color-blue)]"
-            />
-            <span>
-              Подтверждаю отправку отдельного письма каждому выбранному получателю.
-            </span>
-          </label>
-          <DashboardPrimaryBtn type="submit" disabled={pending || selected.size === 0}>
-            {pending ? (
-              <>
-                <Loader2 className="animate-spin" size={16} /> Отправка…
-              </>
-            ) : (
-              <>
-                <Send size={16} /> Отправить выбранным ({selected.size})
-              </>
-            )}
-          </DashboardPrimaryBtn>
-        </div>
-
-        {state.message ? (
-          <div
-            role={state.status === "error" ? "alert" : "status"}
-            className={`mt-4 flex items-start gap-2 rounded-[18px] border px-4 py-3 text-sm ${
-              state.status === "success"
-                ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-                : "border-red-200 bg-red-50 text-red-800"
-            }`}
-          >
-            {state.status === "success" ? (
-              <CheckCircle2 className="mt-0.5 shrink-0" size={16} />
-            ) : null}
-            <span>{state.message}</span>
-          </div>
-        ) : null}
-      </DashboardCard>
-    </form>
+      <a
+        href="#mailing-composer"
+        className="fixed inset-x-4 bottom-4 z-30 flex items-center justify-between rounded-full border border-[rgba(114,160,193,0.32)] bg-white/94 px-5 py-3 text-sm font-semibold shadow-[0_18px_50px_rgba(37,42,45,0.18)] backdrop-blur-xl xl:hidden"
+      >
+        <span>Выбрано: {selected.size}</span>
+        <span className="inline-flex items-center gap-1.5 text-[var(--color-blue)]">
+          К письму <ArrowDown size={15} />
+        </span>
+      </a>
+    </div>
   );
 }
