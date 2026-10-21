@@ -6,7 +6,7 @@ export const maxDuration = 300;
 
 export default async function MailingPage() {
   await requireAdmin();
-  const { applicants, jury } = await getMailingRecipients();
+  const { applicants, jury, tickets } = await getMailingRecipients();
 
-  return <AdminMailingPage applicants={applicants} jury={jury} />;
+  return <AdminMailingPage applicants={applicants} jury={jury} tickets={tickets} />;
 }
