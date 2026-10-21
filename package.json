@@ -26,7 +26,7 @@
     "test:scoring-management": "tsx scripts/test-scoring-management.ts",
     "test:jury-approved-categories": "tsx scripts/test-jury-approved-categories.ts",
     "test:role-auth": "tsx scripts/test-role-auth.ts",
-    "test:admin-mailing": "tsx scripts/test-admin-mailing.ts",
+    "test:admin-mailing": "tsx scripts/test-admin-mailing.ts && tsx scripts/test-admin-mailing-runner.ts",
     "test:google-sheets": "tsx scripts/test-google-sheets.ts",
     "verify:account-migration": "tsx scripts/verify-account-migration.ts",
     "repair:test-uploads": "tsx scripts/repair-test-uploads.ts",

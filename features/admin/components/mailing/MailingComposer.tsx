@@ -10,7 +10,7 @@ import {
   dashboardTextareaClass,
 } from "@/shared/components/admin/DashboardUI";
 import { GROUP_META, GROUP_ORDER } from "./mailing-recipient-meta";
-import type { SendProgress } from "./use-mailing-sender";
+import type { SendProgress } from "@/features/admin/lib/mailing-runner";
 
 export type MailingTemplateKey = "reminder" | "blank";
 
