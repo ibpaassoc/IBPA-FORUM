@@ -296,7 +296,7 @@ export default function MailingRecipientPicker({
               >
                 <Icon aria-hidden size={16} className="hidden shrink-0 sm:block" />
                 <span className="min-w-0 text-center sm:text-left">
-                  <span className="block truncate text-[0.7rem] font-semibold uppercase tracking-[0.1em]">
+                  <span className="block truncate text-[0.6rem] font-semibold uppercase tracking-[0.04em] sm:text-[0.7rem] sm:tracking-[0.1em]">
                     {groupMeta.label}
                   </span>
                   <span
@@ -316,8 +316,8 @@ export default function MailingRecipientPicker({
 
         <p className="text-sm text-[var(--color-ink-soft)]">{meta.description}</p>
 
-        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_repeat(2,minmax(0,170px))]">
-          <label className="relative block sm:col-span-2 lg:col-span-1">
+        <div className="grid grid-cols-2 gap-2 lg:grid-cols-[minmax(0,1fr)_repeat(2,minmax(0,170px))]">
+          <label className="relative col-span-2 block lg:col-span-1">
             <span className="sr-only">Поиск получателя</span>
             <Search
               aria-hidden
@@ -344,7 +344,7 @@ export default function MailingRecipientPicker({
             >
               {config.primary.options.map((option) => (
                 <option key={option.value} value={option.value}>
-                  {config.primary!.label}: {option.label}
+                  {option.label}
                 </option>
               ))}
             </select>
@@ -358,7 +358,7 @@ export default function MailingRecipientPicker({
             >
               {config.secondary.options.map((option) => (
                 <option key={option.value} value={option.value}>
-                  {config.secondary!.label}: {option.label}
+                  {option.label}
                 </option>
               ))}
             </select>
