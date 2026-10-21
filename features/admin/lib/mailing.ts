@@ -20,6 +20,61 @@ Please make sure in advance that all of your nominations are fully completed and
 
 If you have any questions or need assistance with your application, please contact us on Instagram: @bbeauty_forum - we’ll be happy to help.`;
 
+/** Recipients are sent in small client-driven batches so one request never has to outlive the platform timeout. */
+export const MAILING_BATCH_SIZE = 20;
+export const MAILING_MAX_RECIPIENTS_PER_REQUEST = 50;
+
+export type MailingRecipientKind = "account" | "ticket";
+export type MailingRecipientGroup = "APPLICANT" | "JURY" | "TICKET";
+
+const RECIPIENT_REF_PATTERN = /^(account|ticket):([A-Za-z0-9_-]+)$/;
+
+export function toRecipientRef(kind: MailingRecipientKind, id: string) {
+  return `${kind}:${id}`;
+}
+
+export function parseRecipientRef(ref: string) {
+  const match = RECIPIENT_REF_PATTERN.exec(ref);
+  if (!match) return null;
+  return { kind: match[1] as MailingRecipientKind, id: match[2] };
+}
+
+/** A bare id predates ticket recipients and always meant an account. */
+function normalizeRecipientRef(value: string) {
+  return RECIPIENT_REF_PATTERN.test(value) ? value : toRecipientRef("account", value);
+}
+
+export function splitRecipientRefs(refs: string[]) {
+  const accountIds: string[] = [];
+  const ticketIds: string[] = [];
+  for (const ref of refs) {
+    const parsed = parseRecipientRef(ref);
+    if (!parsed) continue;
+    (parsed.kind === "account" ? accountIds : ticketIds).push(parsed.id);
+  }
+  return { accountIds, ticketIds };
+}
+
+const recipientRefsSchema = z
+  .array(
+    z
+      .string()
+      .trim()
+      .min(1)
+      .transform(normalizeRecipientRef)
+      .pipe(z.string().regex(RECIPIENT_REF_PATTERN, "Некорректный получатель.")),
+  )
+  .transform((refs) => Array.from(new Set(refs)))
+  .pipe(
+    z
+      .array(z.string())
+      .min(1, "Выберите хотя бы одного получателя.")
+      .max(
+        MAILING_MAX_RECIPIENTS_PER_REQUEST,
+        `За один запрос можно отправить не более ${MAILING_MAX_RECIPIENTS_PER_REQUEST} писем.`,
+      ),
+  );
+
 export const mailingFormSchema = z.object({
   subject: z
     .string()
@@ -31,15 +86,16 @@ export const mailingFormSchema = z.object({
     .trim()
     .min(1, "Введите текст письма.")
     .max(10_000, "Текст письма не должен превышать 10 000 символов."),
-  recipientIds: z
-    .array(z.string().trim().min(1))
-    .transform((ids) => Array.from(new Set(ids)))
-    .pipe(
-      z
-        .array(z.string())
-        .min(1, "Выберите хотя бы одного получателя.")
-        .max(500, "За одну рассылку можно выбрать не более 500 получателей."),
-    ),
+  recipientIds: recipientRefsSchema,
+  /**
+   * Identifies one logical mailing across batches and retries. It seeds the
+   * provider idempotency key, so re-sending a batch never double-delivers.
+   */
+  runId: z
+    .string()
+    .trim()
+    .regex(/^[A-Za-z0-9_-]{8,64}$/, "Некорректный идентификатор рассылки.")
+    .optional(),
   confirmation: z.literal("yes", {
     error: "Подтвердите отправку выбранным получателям.",
   }),
@@ -52,8 +108,49 @@ export function parseMailingFormData(formData: FormData) {
     subject: formData.get("subject"),
     body: formData.get("body"),
     recipientIds: formData.getAll("recipientIds"),
+    runId: formData.get("runId") ?? undefined,
     confirmation: formData.get("confirmation"),
   });
+}
+
+export type MailingOutcome = {
+  ref: string;
+  status: "sent" | "failed" | "skipped";
+  reason?: string;
+};
+
+export type MailingBatchResult = {
+  status: "success" | "error";
+  message?: string;
+  outcomes: MailingOutcome[];
+};
+
+export function chunkItems<T>(items: readonly T[], size: number) {
+  const chunkSize = Math.max(1, Math.floor(size));
+  const chunks: T[][] = [];
+  for (let index = 0; index < items.length; index += chunkSize) {
+    chunks.push(items.slice(index, index + chunkSize));
+  }
+  return chunks;
+}
+
+/**
+ * Collapses a selection to one entry per mailbox (a person can be an applicant
+ * and a ticket holder at once) and splits it into sendable batches.
+ */
+export function planMailingBatches(
+  recipients: Array<{ ref: string; email: string }>,
+  batchSize = MAILING_BATCH_SIZE,
+) {
+  const unique = deduplicateRecipientsByEmail(recipients);
+  return {
+    batches: chunkItems(
+      unique.map((recipient) => recipient.ref),
+      batchSize,
+    ),
+    uniqueCount: unique.length,
+    duplicateCount: recipients.length - unique.length,
+  };
 }
 
 export function averageCompletion(percentages: number[]) {
